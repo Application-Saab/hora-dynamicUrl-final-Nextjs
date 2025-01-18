@@ -9,6 +9,7 @@ import { GoogleTagManager } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ["latin"] });
 export default function RootLayout({ children }) {
+  // branch changes
   return (
     <html lang="en">
       <Head>
