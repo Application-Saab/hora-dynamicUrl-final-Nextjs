@@ -477,7 +477,48 @@ const FoodDeliveryCheckout = () => {
     };
 
 
+    const pushToGTM = () => {
+        if (selectedMealList.length > 0 && selectedOption && !isEventPushed) {
+          const itemsData = selectedMealList.map(meal => 
+            `${meal.name}`
+          ).join(', ');
+      
+          window.dataLayer = window.dataLayer || [];
+      
+          let eventName = '';
+          let pageUrl = ''; 
+          let page_location = '';
+          let _url = '';
+          
+          if (selectedOption === 'party-food-delivery') {
+            eventName = 'party_food_delivery_checkout_page';
+            pageUrl = "/fooddelivery"; 
+            page_location = "pagelocation";
+            _url = "_url";            
+          } else if (selectedOption === 'party-live-buffet-catering') {
+            eventName = 'party_live_buffet_catering_checkout_page';
+            pageUrl = "/livecatering";
+            page_location = "pagelocation";
+            _url = "_url"; 
+          }
+      
+          if (eventName) {
+            window.dataLayer.push({
+              event: eventName,
+              pageUrl: pageUrl,
+              UserPhoneNumber: phoneNumber,
+              items: itemsData,
+              page_location: page_location,
+              _url: _url
+            });
+      
+            setIsEventPushed(true);
+          }
+        }
+      };
+
     const onContinueClick = async () => {
+        pushToGTM();
         setLoading(true)
         const apiUrl = BASE_URL + PAYMENT;
         const storedUserID = await localStorage.getItem('userID');

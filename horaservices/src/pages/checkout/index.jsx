@@ -43,6 +43,10 @@ const Checkout = () => {
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [isEventPushed, setIsEventPushed] = useState(false);
+  const phoneNumber =  localStorage.getItem("mobileNumber");
+
+
   if (product) {
     product = JSON.parse(product)
   }
@@ -233,7 +237,7 @@ const Checkout = () => {
     setLoading(true);
     const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await localStorage.getItem('userID');
-    const phoneNumber = await localStorage.getItem('mobileNumber')
+    // const phoneNumber = await localStorage.getItem('mobileNumber')
     let merchantTransactionId;
     console.log('selectedAddOnProduct' , selectedAddOnProduct , phoneNumber);
     try {
@@ -346,6 +350,21 @@ console.log("redData" , requestData);
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (product?.name && product?.price && !isEventPushed) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'decoration_checkout_page',
+        pageUrl: window.location.href,
+        productName: product.name,
+        productPrice: product.price, 
+        UserPhoneNumber: phoneNumber
+      });
+
+      setIsEventPushed(true);
+    }
+  }, [product, isEventPushed]); 
 
   if (!isClient) return null;
 

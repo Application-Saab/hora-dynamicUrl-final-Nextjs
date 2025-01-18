@@ -21,6 +21,9 @@ import InfoIcon from '../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../css/chefOrder.css';
+import Link from 'next/link';
+import whatsppicon from "../../../assets/whatsapp-icon.png";
+
 
 const FoodDeliveryCreateOrder = (currentStep) => {
   const viewBottomSheetRef = useRef(null);
@@ -483,8 +486,44 @@ console.log('selectedOption',selectedOption)
     return <SkeletonLoader loading={true} />;
   }
 
+  const FoodAndCateringHandleClick = () => {
+    console.log(selectedOption,"seeleectedoptons");
+    let eventName = '';
+    let productName = '';
+  
+    if (selectedOption === 'party-food-delivery') {
+      eventName = 'party_food_delivery_whatsappclick';
+      productName = 'Food Delivery Button Clicked';
+    } else if (selectedOption === 'party-live-buffet-catering') {
+      eventName = 'party_live_buffet_catering_whatsappclick';
+      productName = 'Live Buffet Catering Button Clicked';
+    } else {
+      console.log("nothings happends");
+    }
+  
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: eventName,
+      pageUrl: window.location.href,           
+      productName: productName,      
+    });
+  
+  };
+
+
   return (
     <div className="chef-create-order">
+      <Link
+      href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+      target="_blank"
+    >
+      <Image
+        className='whatappicon'
+        src={whatsppicon}
+        alt="WhatsApp Icon"
+        onClick={FoodAndCateringHandleClick} // Attach the event handler
+      />
+    </Link>
       <div className="order-container chef">
         <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.08)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
           <Image style={{ width: "20px", height: '20px', marginRight: "5px" }} src={InfoIcon} />
