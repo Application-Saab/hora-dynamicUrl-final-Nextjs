@@ -42,6 +42,8 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
   const [selectedTab, setSelectedTab] = useState("Appliances");
   const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isEventPushed, setIsEventPushed] = useState(false);
+    const phoneNumber = localStorage.getItem('mobileNumber');
 
   let {
     selectedOption,
@@ -371,7 +373,51 @@ console.log(dishCount)
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20catering%20service"
     );
   };
+
+  const pushToGTM = () => {
+    if (selectedMealList.length > 0 && selectedOption && !isEventPushed) {
+      const itemsData = selectedMealList.map(meal => 
+        `${meal.name}`
+      ).join(', ');
+  
+      window.dataLayer = window.dataLayer || [];
+  
+      let eventName = '';
+      let pageUrl = ''; 
+      let page_location = '';
+      let _url = '';
+      
+      if (selectedOption === 'party-food-delivery') {
+        eventName = 'party_food_delivery_checkout_page';
+        pageUrl = "/fooddelivery"; 
+        page_location = "pagelocation";
+        _url = "_url";            
+      } else if (selectedOption === 'party-live-buffet-catering') {
+        eventName = 'party_live_buffet_catering_checkout_page';
+        pageUrl = "/livecatering";
+        page_location = "pagelocation";
+        _url = "_url"; 
+      }
+  
+      if (eventName) {
+        window.dataLayer.push({
+          event: eventName,
+          pageUrl: pageUrl,
+          UserPhoneNumber: phoneNumber,
+          items: itemsData,
+          page_location: page_location,
+          _url: _url
+        });
+  
+        setIsEventPushed(true);
+  
+        console.log(window.dataLayer, "products data sent to GTM for event:", eventName);
+      }
+    }
+  };
+
   const onContinueClick = () => {
+    pushToGTM();
     const totalOrderAmount =
       selectedOption === "party-live-buffet-catering"
         ? (discountedPrice * 1.1 + 6500).toFixed(0)

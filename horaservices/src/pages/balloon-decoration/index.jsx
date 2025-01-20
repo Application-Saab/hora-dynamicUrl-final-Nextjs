@@ -25,6 +25,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import { sendGTMEvent  } from '@next/third-parties/google';
 import dec1 from '../../assets/dec1.png';
 import dec2 from '../../assets/dec3.png';
+import Link from 'next/link';
+import whatsppicon from "../../assets/whatsapp-icon.png";
 
 
 const decCat = [
@@ -68,15 +70,24 @@ const Decoration = () => {
     window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
    }
 
-    const handleViewMore = (category) => {
-        const categoryItem = decCat.find(cat => cat.subCategory === category);
-        console.log('Category Item:', categoryItem); 
-        if (categoryItem) {
-            openCatItems(categoryItem);
-        } else {
-            console.log('No matching category item found.');
-        }
-    };
+   const handleViewMore = (category) => {
+    const categoryItem = decCat.find((cat) => cat.subCategory === category);
+    console.log("Category Item:", categoryItem);
+
+    if (categoryItem) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "title_and_viewmore_decoration_page_clicked", 
+        categoryName: categoryItem.name,
+        subCategory: categoryItem.subCategory,
+        catValue: categoryItem.catValue, 
+        imgAlt: categoryItem.imgAlt,
+      });
+      openCatItems(categoryItem); 
+    } else {
+      console.log("No matching category item found.");
+    }
+  };
 
     const birthdayData = [
       {
@@ -592,90 +603,154 @@ const Decoration = () => {
         }
 
 
-        const SliderSection = ({ title, data, handleViewMore , viewLink }) => (
-        <div className="slider-container dec-grid-section">
-          <div className="slider-header">
-            <h2 onClick={() => handleViewMore(viewLink)} style={{ cursor: "pointer" }}>{title}</h2>
-            <button className="viewbtn btn btn-primary" onClick={() => handleViewMore(viewLink)}>View More</button>
-          </div>
-          <div className="slider-container slider-decoration-inner decoration-item-grid">
-          {data.map((item, index) => {
-        if (item.isViewMore) {
-        return (
-        <a 
-        key={index} 
-        className="view-more-slide slider-item" 
-        // onClick={() => openWahtsappRedirection(item.title)}
-        >
-        <div className="view-more-chatwith-us">
-          <div class="button-whatspp-decoration-cta">
-          <p>Customize ?? </p>
-          <div >
-          <button class="button-sec" onClick={() => openWahtsappRedirection(item.title)}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta">
-          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>Chat with Us</button>
-          </div>
-          </div>
-         
-          <div class="button-chatus-decoration-cta">
-          <p >800 Plus design</p>
-          <div >
-          <button className="button-sec" onClick={() => handleViewMore(viewLink)}>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" style={{ fill: 'rgb(166, 115, 185)' }}>
-    <path d="M3 12c0-.55.45-1 1-1h16c.55 0 1 .45 1 1s-.45 1-1 1H4c-.55 0-1-.45-1-1zM3 7c0-.55.45-1 1-1h16c.55 0 1 .45 1 1s-.45 1-1 1H4c-.55 0-1-.45-1-1zM3 17c0-.55.45-1 1-1h16c.55 0 1 .45 1 1s-.45 1-1 1H4c-.55 0-1-.45-1-1z"/>
-  </svg>
-  View More
-</button>
-          </div>
-          </div>
-         
-        </div>
-      
-        </a>
-        );
-        } else {
-        return (
-        <a key={index} className="slider-item" href={item.link}>
-        <div style={{ position: "relative" }}>
-        <Image 
-          src={item.Image} 
-          alt={item.title} 
-          className="slider-image" 
-          width={200} 
-          height={250} 
-        />
-        <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
-          <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
-            <Image src={logo} style={{ width: "70px", height: "80px" }} className="hora-watermark-image" />
-          </span>
-        </div>
-        </div>
-        <div className="decorationdiscount">
-        ₹{getDiscountedDifference(item.price)} {'off'}
-        </div>
-        <div className="slider-item-details">
-        <h3>{item.title}</h3>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "top" }} className='pri_details'>
-          <div style={{ display: "flex", alignItems: 'left', justifyContent: 'space-between' }} className='pro_price'>
-            <p style={{ fontWeight: '700', fontSize: 15, color: '#9252AA', textAlign: "left", margin: "10px 10px 7px 0" }}>
-              {item.price}
-            </p>
-            <p style={{ color: '#444', fontWeight: '700', fontSize: 15, textAlign: "left", margin: "10px 0px 7px", textDecoration: 'line-through' }}>
-              ₹{getDiscountedPrice(item.price)}
-            </p>
-          </div>
-        </div>
-        </div>
-        </a>
-        );
+        const DecorationHandleClick = () => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "decoration_page_whatsappclick", 
+            pageUrl: window.location.href,          
+            productName: "decoration page whatsapp button clicked", 
+          });
         }
-        })}
 
-          </div>
+        const SliderSection = ({ title, data, handleViewMore, viewLink }) => {
 
-       
-        </div>
-        );
-        
+          const handleItemClick = (item) => {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: 'decoration_item_clicked',
+              event_category: 'SliderSection',
+              event_label: item.title,
+              categoryName: item.categoryName,
+              subCategory: item.subCategory,
+              catValue: item.catValue,
+              imgAlt: item.imgAlt
+            });
+      
+      let lastEvent = window.dataLayer[window.dataLayer.length - 1];
+      
+          };
+      
+          return (
+            <div className="slider-container dec-grid-section">
+              <div className="slider-header">
+                <h2
+                  onClick={() => handleViewMore(viewLink)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {title}
+                </h2>
+                <button
+                  className="viewbtn btn btn-primary"
+                  onClick={() => handleViewMore(viewLink)}
+                >
+                  View More
+                </button>
+              </div>
+              <div className="slider-container slider-decoration-inner decoration-item-grid">
+                {data.map((item, index) => {
+                  if (item.isViewMore) {
+                    return (
+                      <a
+                        key={index}
+                        className="view-more-slide slider-item"
+                      >
+                        {/* Your view-more related content */}
+                      </a>
+                    );
+                  } else {
+                    return (
+                      <a
+                        key={index}
+                        className="slider-item"
+                        href={item.link}
+                        onClick={() => handleItemClick(item)}
+                      >
+                        <div style={{ position: "relative" }}>
+                          <Image
+                            src={item.Image}
+                            alt={item.title}
+                            className="slider-image"
+                            width={200}
+                            height={250}
+                          />
+                          <div
+                            style={{
+                              position: "absolute",
+                              bottom: 3,
+                              right: 3,
+                              borderRadius: "50%",
+                              padding: 10,
+                            }}
+                          >
+                            <span
+                              style={{
+                                color: "rgba(157, 74, 147, 0.6)",
+                                fontWeight: "600",
+                              }}
+                            >
+                              <Image
+                                src={logo}
+                                style={{ width: "70px", height: "80px" }}
+                                className="hora-watermark-image"
+                              />
+                            </span>
+                          </div>
+                        </div>
+                        <div className="decorationdiscount">
+                          ₹{getDiscountedDifference(item.price)} {"off"}
+                        </div>
+                        <div className="slider-item-details">
+                          <h3>{item.title}</h3>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "top",
+                            }}
+                            className="pri_details"
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "left",
+                                justifyContent: "space-between",
+                              }}
+                              className="pro_price"
+                            >
+                              <p
+                                style={{
+                                  fontWeight: "700",
+                                  fontSize: 15,
+                                  color: "#9252AA",
+                                  textAlign: "left",
+                                  margin: "10px 10px 7px 0",
+                                }}
+                              >
+                                {item.price}
+                              </p>
+                              <p
+                                style={{
+                                  color: "#444",
+                                  fontWeight: "700",
+                                  fontSize: 15,
+                                  textAlign: "left",
+                                  margin: "10px 0px 7px",
+                                  textDecoration: "line-through",
+                                }}
+                              >
+                                ₹{getDiscountedPrice(item.price)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  }
+                })}
+              </div>
+            </div>
+          );
+        };
      
     
     return (
@@ -687,20 +762,43 @@ const Decoration = () => {
     .map((item, index) => (
     <div key={index} className="imageContainer">
     <a href={item.link}>
-    <Image
-    src={item.image}
-    className="decCatimage"
-    alt={item.imgAlt}
-    onClick={() => openCatItems(item)}
-    width={300}
-    height={300}
-    />
-    </a>
+          <Image
+            src={item.image}
+            className="decCatimage"
+            alt={item.imgAlt}
+            onClick={() => {
+              window.dataLayer = window.dataLayer || [];
+
+              window.dataLayer.push({
+                event: 'categoryClick',  
+                categoryName: item.name,  
+                subCategory: item.subCategory, 
+                catValue: item.catValue, 
+                imageAlt: item.imgAlt,
+                itemLink: item.link,  
+              });
+              openCatItems(item);
+            }}
+            width={300}
+            height={300}
+          />
+        </a>
     </div>
 
       
     ))}
 </div>
+<Link
+      href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+      target="_blank"
+    >
+      <Image
+        className='whatappicon'
+        src={whatsppicon}
+        alt="WhatsApp Icon"
+        onClick={DecorationHandleClick}
+      />
+    </Link>
 <div className="page-width decorationlanding-slider">
 
 

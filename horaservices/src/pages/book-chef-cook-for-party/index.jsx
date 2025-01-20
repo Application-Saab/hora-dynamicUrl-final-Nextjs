@@ -29,6 +29,8 @@ import { useRouter } from "next/router";
 import Popup from '../../utils/popup';
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
+import Link from 'next/link';
+import whatsppicon from "../../assets/whatsapp-icon.png";
 
 const CreateOrder = ({ history, currentStep }) => {
     const [isMobile, setIsMobile] = useState(false);
@@ -606,8 +608,28 @@ const CreateOrder = ({ history, currentStep }) => {
         return <SkeletonLoader loading={true} />;
     };
 
+    const ChefForPartyHandleClick = () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "chefforparty_page_whatsappclick", 
+          pageUrl: window.location.href,          
+          productName: "chef for party page whatsapp button clicked", 
+        });
+      }
+
     return (
         <div className="chef-create-order">
+             <Link
+      href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+      target="_blank"
+    >
+      <Image
+        className='whatappicon'
+        src={whatsppicon}
+        alt="WhatsApp Icon"
+        onClick={ChefForPartyHandleClick} 
+      />
+    </Link>
             <div className="order-container chef">
                 <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.23)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
                     <Image style={{ width: "20px", height: "20px", marginRight: "10px" }} src={InfoIcon} alt="info" />
