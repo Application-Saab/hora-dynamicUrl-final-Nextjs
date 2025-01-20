@@ -495,7 +495,23 @@ return (
            />
           <div className="carousel-content slide-content">
             <h2 className="party-title1 slide-title">{slide.title}</h2>
-            <button className="slide-button book-now"  onClick={() => openSliderLink(slide.link, slide.title)}>book Now</button>
+            {/* <button className="slide-button book-now"  onClick={() => openSliderLink(slide.link, slide.title)}>book Now</button> */}
+            <button
+                      className="slide-button book-now"
+                      onClick={() => {
+                        window.dataLayer = window.dataLayer || [];
+                        window.dataLayer.push({
+                          event: "slider_button_click",
+                          slide_title: slide.title,
+                          slide_link: slide.link,
+                        });
+                        console.log(window.dataLayer, "sliderdatalayer");
+                        openSliderLink(slide.link, slide.title);
+                      }}
+                    >
+                      Book Noww
+                  
+                    </button>
           </div>
         </div>
       ))}
@@ -659,11 +675,11 @@ return (
 
 
     </div>
-    <div>
+    {/* <div>
       <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
         <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon" />
       </Link>
-    </div>
+    </div> */}
 </>
 );
 }
