@@ -556,7 +556,8 @@ export default function Home() {
                         openSliderLink(slide.link, slide.title);
                       }}
                     >
-                      Book Now
+                      Book Noww
+                  
                     </button>
                   </div>
                 </div>
