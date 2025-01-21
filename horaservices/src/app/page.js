@@ -511,7 +511,19 @@ return (
     <div className="food-cards desktop">
     {foodData.map(item => (
       <div key={item.id} className="food-card">
-        <a href={item.link} className="food-card-link">
+         <a href={item.link} className="food-card-link"
+          onClick={() => {
+        const eventName = item.title.replace(/\s+/g, "") + "Click";
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    itemTitle: item.title,
+    itemLink: item.link,
+  });
+  console.log("DataLayer:", window.dataLayer);
+  localStorage(window.dataLayer, "lkdjfldsf");
+  handleTitleClick(item.title);
+}}>
           <Image src={item.image} alt={item.title} className="food-image"  width={200} height={100}/>
           <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
         </a>
@@ -522,7 +534,22 @@ return (
     <div className="food-cards mobile">
   {foodData.slice(0, 1).map(item => (
     <div key={item.id} className="food-card left-side">
-      <a href={item.link} className="food-card-link">
+      <a
+href={item.link}
+className="food-card-link"
+onClick={() => {
+  const eventName = item.title.replace(/\s+/g, "") + "Click";
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    itemTitle: item.title,
+    itemLink: item.link,
+  });
+  console.log("DataLayer:", window.dataLayer);
+  localStorage(window.dataLayer, "lkdjfldsf");
+handleTitleClick(item.title);
+}}
+>
         <Image src={item.image} alt={item.title} className="food-image" width={200} height={100}/>
         <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
       </a>
@@ -552,7 +579,16 @@ return (
     </div>
     <div className="service-image-container">
       <Image src="https://horaservices.com/api/uploads/homepage_decoration.webp" alt="Decoration" className="service-image" width={200} height={100}/>
-      <button className="book-now2" id="home-decoration-sec" onClick={() => window.location.href = '/balloon-decoration'} >Book Now</button>
+      <button className="book-now2" id="home-decoration-sec" 
+        onClick={() => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'decoration_button_click',  // Custom event name
+            custom_button_id: 'decoration_button',  // Custom parameter name with your chosen value
+          });
+          window.location.href = '/balloon-decoration';
+        }}
+       >Book Now</button>
     </div>
   </div>
   <div className="service">
@@ -564,7 +600,16 @@ return (
     </div>
     <div className="service-image-container">
       <Image src="https://horaservices.com/api/uploads/homepage_photography.webp" alt="Photography" className="service-image" width={200} height={100}/>
-      <button className="book-now2" id="home-phtography-sec-sec" onClick={photographyUrl} >Book Now</button>
+      <button className="book-now2" id="home-phtography-sec-sec"
+       onClick={() => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'photography_button_click',  // Custom event name
+          photography_button_id: 'photography_button',  // Custom parameter name with another value
+        });
+        photographyUrl();
+      }}
+       >Book Now</button>
     </div>
   </div>
    </div>
@@ -661,7 +706,14 @@ return (
     </div>
     <div>
       <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
-        <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon" />
+        <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon"
+        onClick={() => {
+            dataLayer.push({
+              'event': 'homepage_whatsapp_click',
+              'page_url': '/homepage',
+              'page_title': 'This is home page WhatsApp click'
+            });
+          }} />
       </Link>
     </div>
 </>

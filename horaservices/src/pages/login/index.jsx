@@ -381,6 +381,28 @@ const sendWelcomeMessage = async (mobileNumber) => {
                     )}
                     {loginMsg && <span className="successmsg">{loginMsg} </span>}
                     {otpError && <span className="error">{otpError}</span>}
+                    {otpError && (
+  <p className="error">
+    Not able to Login? Chat with us on{' '}
+    <a
+      target="_blank"
+      href="https://wa.me/+917338584828/?text=Hi%2C%20I%20am%20facing%20difficulty%20in%20login%2C%20please%20help%20us%20in%20further%20process"
+      rel="noopener noreferrer"
+    >
+      <img
+        alt="WhatsApp Icon"
+        loading="lazy"
+        width="24" // Adjust size if needed
+        height="24"
+        decoding="async"
+        data-nimg="1"
+        className="whatsapp-icon"
+        src="/_next/static/media/whatsapp-icon.67742e9a.png"
+        style={{ color: 'transparent' }}
+      />
+    </a>
+  </p>
+)}
                     {otpError ? (
                         <div className="d-flex justify-content-between mt-4">
                             <p className="m-0 p-0 text-danger font-13px">*Wrong OTP</p>

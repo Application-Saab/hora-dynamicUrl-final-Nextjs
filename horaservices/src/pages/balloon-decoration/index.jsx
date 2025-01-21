@@ -72,6 +72,14 @@ const Decoration = () => {
         const categoryItem = decCat.find(cat => cat.subCategory === category);
         console.log('Category Item:', categoryItem); 
         if (categoryItem) {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "title_and_viewmore_decoration_page_clicked", 
+            categoryName: categoryItem.name,
+            subCategory: categoryItem.subCategory,
+            catValue: categoryItem.catValue, 
+            imgAlt: categoryItem.imgAlt,
+          });
             openCatItems(categoryItem);
         } else {
             console.log('No matching category item found.');
@@ -591,6 +599,22 @@ const Decoration = () => {
         
         }
 
+        const handleItemClick = (item) => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'decoration_item_clicked',
+            event_category: 'SliderSection',
+            event_label: item.title,
+            categoryName: item.categoryName,
+            subCategory: item.subCategory,
+            catValue: item.catValue,
+            imgAlt: item.imgAlt
+          });
+
+    let lastEvent = window.dataLayer[window.dataLayer.length - 1];
+
+        };
+
 
         const SliderSection = ({ title, data, handleViewMore , viewLink }) => (
         <div className="slider-container dec-grid-section">
@@ -634,7 +658,7 @@ const Decoration = () => {
         );
         } else {
         return (
-        <a key={index} className="slider-item" href={item.link}>
+        <a key={index} className="slider-item" href={item.link}  onClick={() => handleItemClick(item)}>
         <div style={{ position: "relative" }}>
         <Image 
           src={item.Image} 
@@ -691,7 +715,19 @@ const Decoration = () => {
     src={item.image}
     className="decCatimage"
     alt={item.imgAlt}
-    onClick={() => openCatItems(item)}
+     onClick={() => {
+              window.dataLayer = window.dataLayer || [];
+
+              window.dataLayer.push({
+                event: 'categoryClick',  
+                categoryName: item.name,  
+                subCategory: item.subCategory, 
+                catValue: item.catValue, 
+                imageAlt: item.imgAlt,
+                itemLink: item.link,  
+              });
+              openCatItems(item);
+            }}
     width={300}
     height={300}
     />
