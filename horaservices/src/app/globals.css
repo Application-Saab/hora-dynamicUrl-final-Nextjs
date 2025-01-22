@@ -700,6 +700,9 @@ h4.contact-us-heading a {
 
 /* select date chef flow */
 @media (max-width: 800px) {
+  select.timeslot.form-control {
+    font-size: 11px !important;
+}
   .ordersummaryproduct div:first-child{
     width: 90%;
   }

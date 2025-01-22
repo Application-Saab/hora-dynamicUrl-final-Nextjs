@@ -37,6 +37,15 @@ const DecorationCatPage = () => {
         setCity(queryCity);
         ///alert(`city: ${queryCity}`);
       }
+      
+    }
+    else {
+      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
+      const parts = path.split('/'); // Split by '/'
+      const dynamicValue = parts[2];
+
+      setCatValue(dynamicValue);
+
     }
   }, [router.isReady, router.query]);
   const altTagCatValue = catValue.replace(/-/g, ' ');
@@ -88,7 +97,13 @@ const DecorationCatPage = () => {
     { label: 'Unicorn Theme', value: 'Unicorn' },
   ];
   function getSubCategory(catValue) {
-    if (!catValue) return ''; // Handle cases where catValue is null or undefined
+    if (!catValue){
+      
+      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
+      const parts = path.split('/'); // Split by '/'
+      const dynamicValue = parts[2];
+      return dynamicValue
+    }
 
     if (catValue === 'birthday-decoration') {
       return 'Birthday';

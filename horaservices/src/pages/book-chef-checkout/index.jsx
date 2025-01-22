@@ -195,7 +195,7 @@ const ChefCheckout = () => {
     const generateTimeSlots = () => {
         const startTime = 7; // Starting hour
         const endTime = 22; // Ending hour
-        const interval = orderType == 2 ? 1 : 3; // Interval in hours
+        const interval =  1 ; // Interval in hours
 
         const timeSlots = [];
         for (let hour = startTime; hour < endTime; hour += interval) {
@@ -409,7 +409,7 @@ const ChefCheckout = () => {
 
                             <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center'
                                 style={{ fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                                Chef details will be shared 5 hours before the order time.
+                                Chef service will be available for 6 hours after arrival.
                             </div>
 
                             <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between   align-items-lg-center justify-content-lg-between'>
@@ -561,7 +561,7 @@ const ChefCheckout = () => {
                             </Container>
                             <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center'
                                 style={{ fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA", margin: "9px 0 0" }}>
-                                Chef details will be shared 5 hours before the order time.
+                                Chef service will be available for 6 hours after arrival.
                             </div>
 
                             <div style={{ display: 'flex', margin: "5px 0px -10px", flexDirection: "row" }} className='row align-items-between justify-content-between  align-items-lg-center justify-content-lg-between'>
@@ -748,15 +748,16 @@ export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicke
 export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
     return (
         <div className={`timepkerSec d-flex flex-column border border-1 ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
-            <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time</p>
+            <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
             <div>
                 <Form.Control
                     as="select"
                     value={selectedTimeSlot}
                     onChange={handleTimeSlotChange}
                     style={{ fontSize: "14px", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
+                    className="timeslot"
                 >
-                    <option value="">Select a time slot</option>
+                    <option value="">Chef Arrival time</option>
                     {generateTimeSlots().map((timeSlot, index) => (
                         <option key={index} value={timeSlot}>
                             {timeSlot}
