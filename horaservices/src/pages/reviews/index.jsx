@@ -396,7 +396,7 @@ const CustomersReviews = () => {
                 Hygiene: false,
                 Punctuality: true,
             },
-            text: "Elite Celebration Designs transformed our anniversary party into something truly special. The creative decorations and personalized touches made the event memorable. The team was great to work with, and I couldn't have asked for more",
+            text: "Hora Celebration Designs transformed our anniversary party into something truly special. The creative decorations and personalized touches made the event memorable. The team was great to work with, and I couldn't have asked for more",
         },
 
 
@@ -518,7 +518,7 @@ const CustomersReviews = () => {
                     "Hygiene": true,
                     "Punctuality": true
                 },
-                "text": "Elite Celebration Designs exceeded our expectations with their exceptional service. The anniversary celebration was beautifully styled, and every detail was perfect. Highly recommend their services!"
+                "text": "Hora Celebration Designs exceeded our expectations with their exceptional service. The anniversary celebration was beautifully styled, and every detail was perfect. Highly recommend their services!"
             },
             {
                 "name": "Akshay Singh",
@@ -534,7 +534,7 @@ const CustomersReviews = () => {
                     "Hygiene": false,
                     "Punctuality": true
                 },
-                "text": "Creative Moments did a great job with our baby shower decorations. The setup was lovely, and the team was very professional. However, there were minor cleanliness issues that could be addressed."
+                "text": "Hora did a great job with our baby shower decorations. The setup was lovely, and the team was very professional. However, there were minor cleanliness issues that could be addressed."
             },
         {
             "name": "Aarav Sharma",
@@ -550,7 +550,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "Creative Moments truly exceeded our expectations! The balloon decorations were stunning, and the live catering was a hit with everyone. The team was punctual and very attentive to our needs. Highly recommend their services for any event!"
+            "text": "Hora truly exceeded our expectations! The balloon decorations were stunning, and the live catering was a hit with everyone. The team was punctual and very attentive to our needs. Highly recommend their services for any event!"
         },
         {
             "name": "Saanvi Patel",
@@ -566,7 +566,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": false
             },
-            "text": "The chef provided by Creative Moments was fantastic! The food was delicious, and the presentation was impressive. However, there was a slight delay in service, which affected the overall experience."
+            "text": "The chef provided by Hora was fantastic! The food was delicious, and the presentation was impressive. However, there was a slight delay in service, which affected the overall experience."
         },
         {
             "name": "Vivaan Gupta",
@@ -598,7 +598,7 @@ const CustomersReviews = () => {
                 "Hygiene": false,
                 "Punctuality": true
             },
-            "text": "Creative Moments did a great job with our baby shower decorations. The setup was lovely, and the team was very professional. However, there were minor cleanliness issues that could be addressed."
+            "text": "Hora did a great job with our baby shower decorations. The setup was lovely, and the team was very professional. However, there were minor cleanliness issues that could be addressed."
         },
         {
             "name": "Arjun Singh",
@@ -630,7 +630,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "Our wedding reception was a huge success thanks to Creative Moments. Both the decorations and the food were exceptional. Everything was handled perfectly, and the team was incredibly professional and accommodating."
+            "text": "Our wedding reception was a huge success thanks to Hora. Both the decorations and the food were exceptional. Everything was handled perfectly, and the team was incredibly professional and accommodating."
         },
         {
             "name": "Kartik Agarwal",
@@ -662,7 +662,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "Creative Moments made our graduation party memorable with excellent catering and service. The food was superb, and the team was punctual and professional. Highly recommend them for any event."
+            "text": "Hora made our graduation party memorable with excellent catering and service. The food was superb, and the team was punctual and professional. Highly recommend them for any event."
         },
         {
             "name": "Rohan Kapoor",
@@ -742,7 +742,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "Creative Moments did a wonderful job with the balloon decorations and live catering. The setup was beautiful, and the food was tasty. The team was professional, although there was a slight delay in the setup."
+            "text": "Hora did a wonderful job with the balloon decorations and live catering. The setup was beautiful, and the food was tasty. The team was professional, although there was a slight delay in the setup."
         },
         {
             "name": "Aanya Verma",
@@ -758,7 +758,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The chef and catering service provided by Creative Moments for our anniversary party were exceptional. The food was delicious and the service was flawless. Highly recommend them for any special occasion!"
+            "text": "The chef and catering service provided by Hora for our anniversary party were exceptional. The food was delicious and the service was flawless. Highly recommend them for any special occasion!"
         },
         {
             "name": "Kiran Reddy",
@@ -790,7 +790,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "Creative Moments made our family reunion memorable with their excellent live catering service. The food was superb, and the team was very accommodating. We received many compliments from our guests."
+            "text": "Hora made our family reunion memorable with their excellent live catering service. The food was superb, and the team was very accommodating. We received many compliments from our guests."
         },
         {
             "name": "Nikhil Joshi",
@@ -838,7 +838,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The live catering service was fantastic for our graduation party. The food was amazing, and the team was very professional. The event went off without a hitch, thanks to Creative Moments."
+            "text": "The live catering service was fantastic for our graduation party. The food was amazing, and the team was very professional. The event went off without a hitch, thanks to Hora."
         },
         {
             "name": "Siddhi Rao",
@@ -870,7 +870,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "Creative Moments provided excellent chef and decoration services for our housewarming. The food was delicious and the decorations were perfect. The team was very professional and timely."
+            "text": "Hora provided excellent chef and decoration services for our housewarming. The food was delicious and the decorations were perfect. The team was very professional and timely."
         },
         {
             "name": "Pooja Agarwal",
@@ -982,7 +982,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The chef provided by Creative Moments was outstanding. The food was amazing and the service was top-notch. Our graduation party was a success thanks to their excellent catering."
+            "text": "The chef provided by Hora was outstanding. The food was amazing and the service was top-notch. Our graduation party was a success thanks to their excellent catering."
         },
         {
             "name": "Gaurav Kumar",
