@@ -478,6 +478,7 @@ const FoodDeliveryCheckout = () => {
 
 
     const onContinueClick = async () => {
+        alert(selectedDeliveryOption)
         setLoading(true)
         const apiUrl = BASE_URL + PAYMENT;
         const storedUserID = await localStorage.getItem('userID');
@@ -496,7 +497,7 @@ const FoodDeliveryCheckout = () => {
                 "phone_no": phoneNumber,
                 "order_time": selectedTimeSlot,
                 "no_of_people": peopleCount,
-                "type": 6,
+                "type": selectedDeliveryOption === 'party-food-delivery' ? 6 : 7,
                 "fromId": storedUserID,
                 "is_discount": "0",
                 "addressId": addressID,
