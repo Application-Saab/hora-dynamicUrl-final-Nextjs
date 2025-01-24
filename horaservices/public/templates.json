@@ -1,0 +1,23 @@
+[
+    {
+      "id": "template1",
+      "name": "Elegant Wedding",
+      "background": "#FFD700",
+      "elements": [
+        { "type": "text", "content": "You're Invited!", "left": 300, "top": 50, "fontSize": 30, "color": "#000" },
+        { "type": "text", "content": "Name: [Edit Here]", "left": 250, "top": 200, "fontSize": 20, "color": "#333" },
+        { "type": "text", "content": "Date: [Edit Here]", "left": 250, "top": 250, "fontSize": 20, "color": "#333" }
+      ]
+    },
+    {
+      "id": "template2",
+      "name": "Modern Party",
+      "background": "#FF5733",
+      "elements": [
+        { "type": "circle", "radius": 150, "left": 250, "top": 150, "fill": "#FF5733" },
+        { "type": "text", "content": "Party Invitation", "left": 220, "top": 100, "fontSize": 24, "color": "#fff" },
+        { "type": "text", "content": "Venue: [Edit Here]", "left": 220, "top": 280, "fontSize": 18, "color": "#fff" }
+      ]
+    }
+  ]
+  
