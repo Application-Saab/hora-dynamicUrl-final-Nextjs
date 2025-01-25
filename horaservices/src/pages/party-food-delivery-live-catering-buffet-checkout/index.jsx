@@ -103,9 +103,9 @@ const FoodDeliveryCheckout = () => {
           
     const dishCount = dishObject.filter(x => x.mealId == "63f1b6b7ed240f7a09f7e2de" || x.mealId == "63f1b39a4082ee76673a0a9f" || x.mealId == "63edc4757e1b370928b149b3").length;
 
-    console.log(dishCount)
+    // console.log(dishCount)
     function calculateDiscountPercentage(peopleCount) {
-      console.log(peopleCount)
+    //   console.log(peopleCount)
       if (peopleCount <= 39){
         return 1
       }
@@ -150,7 +150,7 @@ const FoodDeliveryCheckout = () => {
 
 
 
-    console.log(selectedMealList)
+    // console.log(selectedMealList)
     
     
     const discountPercentagePrice = calculateDiscountPercentage(peopleCount);
@@ -161,7 +161,7 @@ const FoodDeliveryCheckout = () => {
     var newTotalPrice = 0
     var totalPrice = 0
     selectedMealList.forEach((dish) => {
-      console.log(dish)
+    //   console.log(dish)
       if (
         dish.name !== "Tawa Rotis" &&
         dish.name !== "Rumali Rotis" &&
@@ -176,16 +176,16 @@ const FoodDeliveryCheckout = () => {
       totalPrice = totalPrice + dish.price * peopleCount
     });
 
-    console.log(newTotalPrice)
-    console.log(totalPrice)
+    // console.log(newTotalPrice)
+    // console.log(totalPrice)
     newTotalPrice = newTotalPrice * discountPercentagePrice
 
-    console.log(newTotalPrice)
-    console.log(totalPrice)
+    // console.log(newTotalPrice)
+    // console.log(totalPrice)
     var discountedPrice = selectedOption === 'party-live-buffet-catering' ?  ((newTotalPrice) * 1.1 + 6500).toFixed(0) : newTotalPrice.toFixed(0);
     totalPrice = selectedOption === 'party-live-buffet-catering' ?  ((totalPrice) * 1.1 + 6500).toFixed(0) : totalPrice.toFixed(0);
-    console.log(discountedPrice)
-    console.log(totalPrice)
+    // console.log(discountedPrice)
+    // console.log(totalPrice)
     const calculateFinalTotal = () => {
         let finalTotal = 0; // Initialize finalTotal with 0
     
@@ -199,7 +199,7 @@ const FoodDeliveryCheckout = () => {
             }
 
             //finalTotal = totalPrice - parseFloat(discountedPrice) + deliveryCharges;
-            console.log("Initial total after applying discount and delivery charges: " + finalTotal);
+            // console.log("Initial total after applying discount and delivery charges: " + finalTotal);
             
             finalTotal += parseFloat(packingCost);
             console.log("Total after adding packing cost: " + finalTotal);
@@ -213,17 +213,17 @@ const FoodDeliveryCheckout = () => {
             ? parseFloat(discountedPrice)
             : parseFloat(discountedPrice) + deliveryCharges;
         
-            console.log("Initial total after applying discount: " + finalTotal);
+            // console.log("Initial total after applying discount: " + finalTotal);
     
             if (includeTables) {
                 finalTotal += 1200;
-                console.log("Total after adding table cost: " + finalTotal);
+                // console.log("Total after adding table cost: " + finalTotal);
             }
         }
     
         // Ensure finalTotal is a number and rounded to the nearest whole number
         finalTotal = parseFloat(finalTotal.toFixed(0));
-        console.log("Final total after adjustments: " + finalTotal);
+        // console.log("Final total after adjustments: " + finalTotal);
     
         return finalTotal;
     };
@@ -486,7 +486,7 @@ const FoodDeliveryCheckout = () => {
         const advance = calculateAdvancePayment();
         const total = calculateFinalTotal();
         const balanceAmount = total - advance;
-        console.log(selectedTimeSlot);
+        // console.log(selectedTimeSlot);
         try {
             const addressID = await saveAddress();
             const storedUserID = await localStorage.getItem('userID');
@@ -496,7 +496,7 @@ const FoodDeliveryCheckout = () => {
                 "phone_no": phoneNumber,
                 "order_time": selectedTimeSlot,
                 "no_of_people": peopleCount,
-                "type": 6,
+                "type": selectedDeliveryOption === 'party-food-delivery' ? 6 : 7,
                 "fromId": storedUserID,
                 "is_discount": "0",
                 "addressId": addressID,
@@ -703,7 +703,7 @@ const FoodDeliveryCheckout = () => {
                                                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3  , borderBottom:"1px solid rgb(215, 215, 215)" }}>
                                                     <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>Delivery Charges</p>
                                                     <div style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px', display: 'flex', flexDirection: "row" }}>
-                                                        {discountedPrice > 4000 ? (
+                                                    {totalPrice - discountedPrice > 4000 ? (
                                                             <>
                                                                 <p style={{ color: "#008631", fontWeight: '600', marginRight: 5 }}>FREE</p>
                                                                 <p style={{ textDecoration: "line-through", color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
