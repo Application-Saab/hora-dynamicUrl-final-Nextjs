@@ -17,6 +17,7 @@ import Link from "next/link";
 import logo from '../../../assets/new_logo_light.png.png';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { sendGTMEvent  } from '@next/third-parties/google';
+import whatsppicon from "../../../assets/whatsapp-icon.png";
 
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
@@ -527,7 +528,27 @@ const getSubCatItems = async () => {
     </button>
   )}
 </div>
+      
       </>
+    
+      <div>
+        <Link
+          href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+          target="_blank"
+          onClick={() => {
+            dataLayer.push({
+              'event': 'decoration_productlistedpage_whatsapp_click',
+            });
+          }}
+        >
+          <Image
+            className="whatappicon"
+            src={whatsppicon}
+            alt="WhatsApp Icon"
+          />
+
+        </Link>
+      </div>
     </div>
   );
 }
