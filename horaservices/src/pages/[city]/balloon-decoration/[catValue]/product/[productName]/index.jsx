@@ -18,6 +18,8 @@ import Image from "next/image";
 import faqData from '../../../../../../utils/faqData.json'
 import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
+import Link from "next/link";
+import whatsppicon from "../../../../../../assets/whatsapp-icon.png";
 
 // Skeleton Loader Component
 const SkeletonLoader = () => {
@@ -660,7 +662,24 @@ function DecorationCatDetails() {
         </div>
       </div>
     </div>
+    <div>
+        <Link
+          href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+          target="_blank"
+          onClick={() => {
+            dataLayer.push({
+              'event': 'decoration_productcitypage_whatsapp_click',
+            });
+          }}
+        >
+          <Image
+            className="whatappicon"
+            src={whatsppicon}
+            alt="WhatsApp Icon"
+          />
 
+        </Link>
+      </div>
   
 
    

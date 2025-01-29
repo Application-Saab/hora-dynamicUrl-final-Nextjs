@@ -16,6 +16,7 @@ import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
+import whatsppicon from "../../../../assets/whatsapp-icon.png";
 
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
@@ -489,6 +490,25 @@ const DecorationCatPage = () => {
         ))
         }
         </div> */}
+
+<div>
+        <Link
+          href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+          target="_blank"
+          onClick={() => {
+            dataLayer.push({
+              'event': 'decoration_productlistedcitypage_whatsapp_click',
+            });
+          }}
+        >
+          <Image
+            className="whatappicon"
+            src={whatsppicon}
+            alt="WhatsApp Icon"
+          />
+
+        </Link>
+      </div>
 
 <div className="category-content">
   {currentCategoryContent.length > 0 ? (

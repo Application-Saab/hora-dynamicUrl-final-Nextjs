@@ -21,7 +21,8 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Link from "next/link";
 import cityData from '../../../utils/cityData';
-import '../../../app/homepage.css'
+import '../../../app/homepage.css';
+import whatsppicon from "../../../assets/whatsapp-icon.png";
 
 const Decoration = () => {
 
@@ -63,6 +64,15 @@ const [decCat, setDecCat] = useState([
      const openWahtsappRedirection = (catTitle) =>{
       window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
      }
+
+     const DecorationHandleClick = () => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "decoration_citypage_whatsappclick", 
+        pageUrl: window.location.href,          
+        productName: "decoration page whatsapp button clicked", 
+      });
+    }
 
      const formatLocalityName = (name) => {
       return name.replace(/\s+/g, '-').toLowerCase();
@@ -107,13 +117,38 @@ const [decCat, setDecCat] = useState([
         };
     
         const handleViewMore = (category) => {
-            const categoryItem = decCat.find(cat => cat.subCategory === category);
-            console.log('Category Item:', categoryItem); 
-            if (categoryItem) {
-                openCatItems(categoryItem);
-            } else {
-                console.log('No matching category item found.');
-            }
+          const categoryItem = decCat.find((cat) => cat.subCategory === category);
+          console.log("Category Item:", categoryItem);
+      
+          if (categoryItem) {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: "title_and_viewmore_decoration_citypage_clicked", 
+              categoryName: categoryItem.name,
+              subCategory: categoryItem.subCategory,
+              catValue: categoryItem.catValue, 
+              imgAlt: categoryItem.imgAlt,
+            });
+            openCatItems(categoryItem); 
+          } else {
+            console.log("No matching category item found.");
+          }
+        };
+
+        const handleItemClick = (item) => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'decoration_cityitem_clicked',
+            event_category: 'SliderSection',
+            event_label: item.title,
+            categoryName: item.categoryName,
+            subCategory: item.subCategory,
+            catValue: item.catValue,
+            imgAlt: item.imgAlt
+          });
+    
+    let lastEvent = window.dataLayer[window.dataLayer.length - 1];
+    
         };
     
         const birthdayData = [
@@ -634,7 +669,11 @@ const [decCat, setDecCat] = useState([
   }
 
 
+  
+
   const SliderSection = ({ title, data, handleViewMore , viewLink }) => (
+    
+
     <div className="slider-container dec-grid-section">
       <div className="slider-header">
         <h2 onClick={() => handleViewMore(viewLink)} style={{ cursor: "pointer" }}>{title}</h2>
@@ -676,7 +715,7 @@ View More
     );
     } else {
     return (
-    <a key={index} className="slider-item" href={item.link}>
+    <a key={index} className="slider-item" href={item.link} onClick={() => handleItemClick(item)}>
     <div style={{ position: "relative" }}>
     <Image 
       src={item.Image} 
@@ -744,7 +783,19 @@ View More
 src={item.image}
 className="decCatimage"
 alt={item.imgAlt}
-onClick={() => openCatItems(item)}
+onClick={() => {
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push({
+    event: 'categoryClick_citypage',  
+    categoryName: item.name,  
+    subCategory: item.subCategory, 
+    catValue: item.catValue, 
+    imageAlt: item.imgAlt,
+    itemLink: item.link,  
+  });
+  openCatItems(item);
+}}
 width={300}
 height={300}
 />
@@ -802,6 +853,17 @@ height={300}
   </div>
 </div>
 
+<Link
+      href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+      target="_blank"
+    >
+      <Image
+        className='whatappicon'
+        src={whatsppicon}
+        alt="WhatsApp Icon"
+        onClick={DecorationHandleClick}
+      />
+    </Link>
 <SliderSection title="Anniversary Decoration" data={AnniversaryData} handleViewMore={handleViewMore} viewLink={'Anniversary'}/>
 
 <div className="slider-container">
