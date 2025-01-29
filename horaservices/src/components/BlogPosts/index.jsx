@@ -32,7 +32,7 @@ import Image from 'next/image';
         <img
           src="https://cdn.prod.website-files.com/593008e46c534e61e392e0f2/5938f139d7978c0a4faf1460_Sep.svg"
           alt=""
-          class="section-separator"
+          className="section-separator"
         ></img>
         <div className="posts">
           {blogData.map((post) => (

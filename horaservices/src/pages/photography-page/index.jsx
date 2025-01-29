@@ -1,21 +1,60 @@
 
-import { useState } from 'react'
+import { useState , useEffect , useCallback } from 'react'
 import './photo.css'
 import { FeaturedWorkData, clients, ourServicesData, InstImageData } from './data'
 import Image from 'next/image'
 import InstagramSection from '@/components/InstaGram-section';
 import CustomerReviewSection from '@/components/Reviews-section';
 import BlogPosts from '@/components/BlogPosts';
-
+import axios from 'axios';
+import { useRouter } from 'next/router';
 const index = () => {
+  const [products, setproducts] = useState([]); // State to store product
   const [email, setEmail] = useState("");
-  const handleSubmit = (e) => {
+  const router = useRouter();
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     console.log("Email submitted:", email);
+  }, [email]);
+  const getCleanInclusionText = (inclusionArray) => {
+    if (!inclusionArray || inclusionArray.length === 0)
+      return "No inclusion details available";
+
+    return inclusionArray
+      .join("")
+      .replace(/<\/?(div|span|br)>/g, "")
+      .replace(/&#10;/g, "\n")
+      .replace(/\s*-\s*/g, "\n- ")
+      .trim();
+  };
+  const fetchData = useCallback(async () => {
+    try {   
+      const res = await axios.get(        
+         'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
+      );
+    
+      setproducts(res.data.data); // Save the response data to state
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setproducts([]); // Set to empty array in case of an error
+    }
+  },[]);
+  useEffect(() => {
+    fetchData(); // Call fetchData when the component mounts
+  }, []);
+  const sendToCheckoutPage = (product) => {
+    router.push({
+      pathname: 'photography-checkout',
+      query: {
+        from: window.location.pathname,      
+        product: JSON.stringify(product),
+        totalAmount: product.price,
+      }
+    });
   };
   return (<>
 
-    <div className="featured-works">
+    <div className="featured-works">   
       <div className="section-small-header">Featured</div>
       <h2 className="hh2">Works</h2>
       <img
@@ -23,21 +62,64 @@ const index = () => {
         alt=""
         className="section-separator"
       />
+        <div className="works-container">
+            {/* Render API product */}
+        {products.map((product, index) => (
+          <div className="work-item" key={product.id || index}>
+            <img src={product.featured_image} alt={product.title} className="work-image" />
+            <div className="work-card-info">
+              <div className="work-details">
+                <h5 className="work-title">{product.name}</h5>
+                {Array.isArray(product.inclusion) && product.inclusion.length > 0 && (
+                  <ul className="work-inclusions">
+                    <li>{getCleanInclusionText(product.inclusion)}</li>
+                    {/* {product.inclusion.map((inc, index) => (
+                      <li className="inclusion-item" key={index}>{inc}</li>
+                    ))} */}
+                  </ul>
+                )}
+                <p className="work-duration">
+                  <b>Duration:</b> {product.duration}
+                </p>
+                <p className="work-price">
+                  <b>Price:</b> {product.price}
+                </p>
+              </div>
+            </div>
+            <button onClick={() => sendToCheckoutPage(product)}>Book Now</button>
+          </div>
+        ))}
+      </div>
+        {/* Render Static product  */}
       <div className="works-container">
         {FeaturedWorkData.map((work, index) => (
-          <div className="work-item" key={index}>
+          <div className="work-item" key={index}  >
             <img src={work.image} alt={work.title} className="work-image" />
             <div className="work-card-info">
               <div className="work-details">
-                <p className="work-category">{work.category}</p>
                 <h5 className="work-title">{work.title}</h5>
-                <p className="work-description">{work.description}</p>
+                {Array.isArray(work.inclusion) && work.inclusion.length > 0 && (
+                  <ul className="work-inclusions">
+                    {work.inclusion.map((inc, index) => (
+                      <li className="inclusion-item" key={index}>{inc}</li>
+                    ))}
+                  </ul>
+                )}
+                <p className="work-duration">
+                  <b>Duration:</b> {work.duration}
+                </p>
+                <p className="work-price">
+                  <b>Price:</b> {work.price}
+                </p>
+                <button >View Sample Work</button>
+                <button onClick={() => sendToCheckoutPage(product)}>Book Now</button>
               </div>
             </div>
           </div>
         ))}
       </div>
 
+      {/* View All Button */}
       <div>
         <a href="/works" className="button-viewall">
           View All Works
@@ -52,7 +134,7 @@ const index = () => {
         <img
           src="https://cdn.prod.website-files.com/593008e46c534e61e392e0f2/5938f139d7978c0a4faf1460_Sep.svg"
           alt=""
-          class="section-separator"
+          className="section-separator"
         ></img>
         <div className="clients-grid">
           {clients.map((client, index) => (
@@ -76,7 +158,7 @@ const index = () => {
         <img
           src="https://cdn.prod.website-files.com/593008e46c534e61e392e0f2/5938f139d7978c0a4faf1460_Sep.svg"
           alt=""
-          class="section-separator"
+          className="section-separator"
         ></img>
 
         <div className="services-grid">
@@ -107,7 +189,7 @@ const index = () => {
         <button className="contact-button">Contact Me</button>
       </div>
     </section>
-   
+
     {/* <CustomerReviewSection /> */}
     <CustomerReviewSection />
     {/* instasection */}
@@ -141,24 +223,26 @@ const index = () => {
               required
             />
             <button type="submit" className="button">
-            Subscribe
+              Subscribe
             </button>
           </div>
         </div>
       </form>
     </div>
-     {/* imforamtiuon */}
-     <div className="two-column-container">
-        <div className="column column-red">
-          <div className="action-title">Contact Me</div>
-          <h5 className="action-subtitle">Let's Work Together</h5>
-        </div>
-        <div className="column column-blue">
-          <div className="action-title">How Am I?</div>
-          <h5 className="action-subtitle">Learn More About Me</h5>
-        </div>
+    {/* imforamtiuon */}
+    <div className="two-column-container">
+      <div className="column column-red">
+        <div className="action-title">Contact Me</div>
+        <h5 className="action-subtitle">Let's Work Together</h5>
       </div>
+      <div className="column column-blue">
+        <div className="action-title">How Am I?</div>
+        <h5 className="action-subtitle">Learn More About Me</h5>
+      </div>
+    </div>
   </>)
 }
+
+
 
 export default index
