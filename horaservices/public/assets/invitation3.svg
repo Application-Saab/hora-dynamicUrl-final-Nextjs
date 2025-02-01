@@ -11447,7 +11447,7 @@ jadu
 >
   Price
 </text>
-		<text transform="matrix(1 0 0 1 98.2044 90.8684)" class="st359 st357 st360">Discount Price</text>
+		<text transform="matrix(1 0 0 1 98.2044 90.8684)" class="st359 st357 st360" id="name1">Discount Price</text>
 		<text transform="matrix(1 0 0 1 48.7244 109.6683)" class="st88 st357 st361">245</text>	
 		<g>
 			<path class="st88" d="M44.41,106.26c-0.04-0.05-0.08-0.1-0.12-0.15c-0.74-0.94-1.49-1.87-2.23-2.81
