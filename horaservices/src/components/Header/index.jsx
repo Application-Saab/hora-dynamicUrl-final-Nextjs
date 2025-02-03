@@ -330,6 +330,11 @@ useEffect(() => {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/invitation" style={styles.subMenuLink}>
+                      Invitation
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/book-chef-cook-for-party" style={styles.subMenuLink}>
                       Chef for Party
                     </Link>

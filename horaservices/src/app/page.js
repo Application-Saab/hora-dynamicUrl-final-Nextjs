@@ -27,6 +27,7 @@ import DecorationIcon from '../assets/decoration_icon.png';
 import PhotographyIcon from '../assets/photography_icon.png';
 import FoodIcon from '../assets/food_icon.png';
 import { sendGTMEvent  } from '@next/third-parties/google';
+import invitationbanner from "../assets/invitation_banner.jpg";
 
 import './homepage.css'
 // remove later
@@ -568,6 +569,21 @@ return (
     </div>
   </div>
    </div>
+
+
+   {/* <div className="heading-container">
+  <h1 className="entertainment-header-whatAre">
+    Invitation 💌
+  </h1>
+</div>
+
+<div className="image-container">
+  <a href="/invitation" target="_self" rel="noopener noreferrer">
+    <Image src={invitationbanner} alt="Description of image" />
+  </a>
+</div>
+ */}
+
 
    {/* <div className="entertainment-container sec-container">
   <h1 className="entertainment-header">

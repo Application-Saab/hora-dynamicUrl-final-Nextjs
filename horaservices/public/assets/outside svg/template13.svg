@@ -3076,15 +3076,17 @@
           <path class="cls-179" d="m427.14,505.56h1.2"/>
         </g>
       </g>
-      <text class="cls-207" transform="translate(223.67 746.95)"><tspan class="cls-196"><tspan x="0" y="0">PRINCESS BIRTHDAY </tspan></tspan><tspan class="cls-237"><tspan x="237.17" y="86.9">PARTY</tspan></tspan></text>
+      <text class="cls-207" transform="translate(160 746.95)"><tspan class="cls-196"><tspan x="0" y="0">PRINCESS BIRTHDAY PARTY</tspan></tspan>
+      <tspan class="cls-237"><tspan x="237.17" y="86.9"></tspan>
+      </tspan></text>
       <polygon class="cls-233" points="195.9 1085.48 207.01 1128.48 250 1139.59 207.01 1150.7 195.9 1193.7 184.78 1150.7 141.79 1139.59 184.78 1128.48 195.9 1085.48"/>
       <polygon class="cls-233" points="256.25 1066.23 262.95 1092.14 288.86 1098.84 262.95 1105.54 256.25 1131.45 249.55 1105.54 223.64 1098.84 249.55 1092.14 256.25 1066.23"/>
       <polygon class="cls-233" points="944.18 996.94 954.9 1038.39 996.35 1049.1 954.9 1059.82 944.18 1101.26 933.47 1059.82 892.02 1049.1 933.47 1038.39 944.18 996.94"/>
       <polygon class="cls-233" points="923.53 1525.9 929.98 1550.88 954.96 1557.34 929.98 1563.8 923.53 1588.78 917.07 1563.8 892.09 1557.34 917.07 1550.88 923.53 1525.9"/>
       <polygon class="cls-233" points="539.43 867.71 545.89 892.69 570.87 899.15 545.89 905.6 539.43 930.58 532.97 905.6 508 899.15 532.97 892.69 539.43 867.71"/>
       <polygon class="cls-233" points="425.56 1463.61 432.02 1488.59 456.99 1495.05 432.02 1501.5 425.56 1526.48 419.1 1501.5 394.12 1495.05 419.1 1488.59 425.56 1463.61"/>
-      <text class="cls-205" transform="translate(318.63 545.81) rotate(-.61)">Sahaj</text>
-      <text class="cls-204" transform="translate(117.59 638.3)">YOU'RE ARE INVITE FOR </text>
+      <text class="cls-205" transform="translate(400 545.81) rotate(-.61)">Sahaj</text>
+      <text class="cls-204" transform="translate(200 638.3)">YOU'RE ARE INVITE FOR </text>
       <ellipse class="cls-201" cx="689.35" cy="1802.05" rx="347.86" ry="21.73"/>
       <path class="cls-202" d="m217.52,1570.46s-83.53-37.05-74.3-69.8c9.23-32.75,93.43-44.51,88.79,58.42l-8.43-.73s-12.56-92.55-58.43-62.62c-30.16,19.67,52.85,63.88,52.85,63.88l-.49,10.86Z"/>
       <path class="cls-202" d="m226.57,1570.83s13.05-90.45,47.07-90.43c34.03.02,68.14,77.88-32.19,101.29l-1.58-8.31s85.69-37.15,44.46-73.21c-27.1-23.7-47.18,68.18-47.18,68.18l-10.58,2.47Z"/>

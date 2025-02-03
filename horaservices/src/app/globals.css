@@ -2756,3 +2756,13 @@ nav.nav-li li {
   position: relative;
 }
 
+.image-container {
+  width: 100%; /* Full width of the container */
+  overflow: hidden; /* Ensures nothing overflows from the container */
+}
+
+.image-container Image {
+  width: 100%; /* Ensures the image stretches across the container */
+  height: auto; /* Maintains the aspect ratio of the image */
+  display: block; /* Removes extra space below the image */
+}
