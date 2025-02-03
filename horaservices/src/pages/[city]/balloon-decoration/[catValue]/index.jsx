@@ -294,7 +294,7 @@ const DecorationCatPage = () => {
     else if(catValue === "baby-shower-decoration") {
       return `Baby Shower in ${city} with Latest Designs by Professionals  Decorators Starting at ₹1199`;
     }
-    else if (catValue === "/welcome-baby-decoration"){
+    else if (catValue === "welcome-baby-decoration"){
       return `Baby Welcome Decoration in ${city} at home by Professionals  Decorators, Starting at ₹1199`;
     }
     else if (catValue === "haldi-mehendi-decoration"){

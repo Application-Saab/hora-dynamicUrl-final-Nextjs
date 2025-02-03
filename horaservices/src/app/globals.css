@@ -2759,3 +2759,16 @@ nav.nav-li li {
   position: relative;
 }
 
+/* css home page */
+.home-slide-content {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: #fff;
+  width: 56%;
+  transform: translateY(-50%);
+}
+.home-slider-inner {
+  position: relative;
+  margin-bottom: 10px;
+}

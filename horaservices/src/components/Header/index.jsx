@@ -171,6 +171,16 @@ useEffect(() => {
     window.open("https://play.google.com/store/apps/details?id=com.hora", "_blank");
   };
 
+  const handleNavClick = (category, action, label) => {
+    window.dataLayer.push({
+      event: 'nav_click',
+      category: category,
+      action: action,
+      label: label,
+    });
+    console.log(window.dataLayer,"decoraitongtm");
+    };
+
   const handleLogout = () => {
     localStorage.setItem("isLoggedIn", "false");
     localStorage.clear();
@@ -325,27 +335,31 @@ useEffect(() => {
               {showDecorationSubMenu && (
                 <ul style={styles.subMenu}>
                   <li>
-                    <Link href="/balloon-decoration" style={styles.subMenuLink}>
+                    <Link href="/balloon-decoration" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Decoration')}>
                       Decoration
                     </Link>
                   </li>
                   <li>
-                    <Link href="/book-chef-cook-for-party" style={styles.subMenuLink}>
+                    <Link href="/book-chef-cook-for-party" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Chef For Party')}>
                       Chef for Party
                     </Link>
                   </li>
                   <li>
-                    <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={styles.subMenuLink}>
+                    <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Food Delivery')}>
                       Food Delivery
                     </Link>
                   </li>
                   <li>
-                    <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={styles.subMenuLink}>
+                    <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Live Catering')}>
                       Live Catering
                     </Link>
                   </li>
                   <li>
-                    <Link href="/" style={{ ...styles.subMenuLink, ...styles.lastChild }} onClick={() => openCatItems("FirstNight")}>
+                    <Link href="/" style={{ ...styles.subMenuLink, ...styles.lastChild }} 
+                     onClick={() => {
+                      handleNavClick('Categories', 'Click', 'Entertainment');
+                      openCatItems("FirstNight");
+                    }}>
                       Entertainment
                     </Link>
                   </li>
@@ -353,17 +367,23 @@ useEffect(() => {
               )}
             </li>
             <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/contactus" style={styles.innerpagelink}>
+              <Link href="/contactus" style={styles.innerpagelink}
+              onClick={() => handleNavClick('Navigation', 'Click', 'Contact Us')}
+              >
                 Contact Us
               </Link>
             </li>
             <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/aboutus" style={styles.innerpagelink}>
+              <Link href="/aboutus" style={styles.innerpagelink}
+              onClick={() => handleNavClick('Navigation', 'Click', 'About Us')}
+              >
                 About Us
               </Link>
             </li>
             <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/reviews" style={styles.innerpagelink}>
+              <Link href="/reviews" style={styles.innerpagelink}
+              onClick={() => handleNavClick('Navigation', 'Click', 'Customer Reviews')}
+              >
                 Customer Reviews
               </Link>
             </li>

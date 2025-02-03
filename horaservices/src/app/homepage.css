@@ -26,7 +26,7 @@
       margin-top: 20px;
     }
     .slide-container {
-      height: 170px; /* Set height to 300px on mobile devices */
+      height: 140px; /* Set height to 300px on mobile devices */
     }
   
     .responsive-image {
@@ -100,7 +100,7 @@
   /* Mobile View Adjustments */
   @media (max-width: 1200px) {
     .page-width {
-      width: 90% !important;
+      width: 94% !important;
   }
   .party-title {
     margin: 17px auto;
@@ -201,7 +201,7 @@ transform: translateY(-31%);
 
     .sec-container {
       text-align: center;
-      margin: 20px 0 0 0;
+      margin: 10px 0 0 0;
     }
     
     .food-title {

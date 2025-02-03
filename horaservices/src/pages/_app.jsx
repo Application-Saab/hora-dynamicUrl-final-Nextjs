@@ -12,7 +12,9 @@ import { useRouter } from 'next/router'; // Import useRouter
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const [currentUrl , setCurrentUrl] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
+  const { catValue , productName} = router.query; 
+
   useEffect(() => {
     setCurrentUrl(router.asPath);
     // Google Tag Manager script
@@ -38,7 +40,7 @@ function MyApp({ Component, pageProps }) {
       pageUrl: window.location.href,
       productName: "decoration page whatsapp button clicked",
     });
-    console.log(window.dataLayer, "chefforpartyhandleclick");
+    console.log(window.dataLayer, "decoration click");
   };
 
   const ChefForPartyHandleClick = () => {
@@ -51,16 +53,29 @@ function MyApp({ Component, pageProps }) {
     console.log(window.dataLayer, "chefforpartyhandleclick");
   };
 
-  // const loginWhatsppClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     event: "login_page_whatsappclick", 
-  //     pageUrl: window.location.href,          
-  //     productName: "login whatsapp button clicked", 
-  //   });
-  //   console.log(window.dataLayer, "login wahtsapp click");
-  // }
+  const DecorationCatergorypagewhatsppClick = () => {
+    console.log("aa11", catValue);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_productlistedpage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_productlist_categorypage_whatsapp_click_${catValue}`, 
+    });
+    console.log(window.dataLayer, "decoration_productlistedpage_whatsapp_click");
+  };
 
+  const DecorationProductPagepagewhatsppClick = () => {
+    console.log("aa11", productName);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_productpage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_productpage_whatsapp_click_${productName}`, 
+    });
+    console.log(window.dataLayer, "decoration_productlistedpage_whatsapp_click");
+  }
+
+  
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -76,20 +91,25 @@ function MyApp({ Component, pageProps }) {
               ></iframe>
             </noscript>
 
-            {
-
-            }
+  
             <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
               <Image 
               className='whatappicon'
                src={whatsppicon} 
                alt="WhatsApp Icon"
-              onClick={
-                  currentUrl === '/balloon-decoration'  ? DecorationHandleClick 
-                  : currentUrl === '/book-chef-cook-for-party' ? ChefForPartyHandleClick
-                  // : currentUrl === '/login' ? loginWhatsppClick
-                  : ''
+               onClick={() => {
+                if (router.pathname === '/balloon-decoration') {
+                  DecorationHandleClick();
+                } else if (router.pathname === '/book-chef-cook-for-party') {
+                  ChefForPartyHandleClick();
+                } 
+                else if (router.pathname === '/balloon-decoration/[catValue]'){
+                  DecorationCatergorypagewhatsppClick();
                 }
+                else if (router.pathname === '/balloon-decoration/[catValue]/product/[productName]'){
+                  DecorationProductPagepagewhatsppClick();
+                }
+              }}
                 />
             </Link>
           </div>

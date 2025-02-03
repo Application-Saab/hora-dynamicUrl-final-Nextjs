@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css"; 
@@ -27,13 +27,9 @@ import DecorationIcon from '../assets/decoration_icon.png';
 import PhotographyIcon from '../assets/photography_icon.png';
 import FoodIcon from '../assets/food_icon.png';
 import { sendGTMEvent  } from '@next/third-parties/google';
+import decorationbanner from '../assets/decoration-home-banner.png'
 
 import './homepage.css'
-// remove later
-// import homepage_entertainment1 from '../assets/homepage_entertainment1.png';
-// import homepage_entertainment2 from '../assets/homepage_entertainment2.png';
-// import homepage_entertainment3 from '../assets/homepage_entertainment3.png';
-// import homepage_entertainment4 from '../assets/homepage_entertainment4.png';
 
 export default function Home() {
 const router = useRouter();
@@ -144,31 +140,31 @@ const settings = {
     ],
   };
 
-  const homeslidersettings = {
-    infinite: true,
-    speed: 1000,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    fade: true, // Enables the fade effect
-    autoplaySpeed: 2500,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+  // const homeslidersettings = {
+  //   infinite: true,
+  //   speed: 1000,
+  //   slidesToShow: 1,
+  //   slidesToScroll: 1,
+  //   autoplay: true,
+  //   fade: true, // Enables the fade effect
+  //   autoplaySpeed: 2500,
+  //   responsive: [
+  //     {
+  //       breakpoint: 1024,
+  //       settings: {
+  //         slidesToShow: 2,
+  //         slidesToScroll: 1,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 768,
+  //       settings: {
+  //         slidesToShow: 1,
+  //         slidesToScroll: 1,
+  //       },
+  //     },
+  //   ],
+  // };
 
   const celebrateslidersettings = {
     infinite: true,
@@ -201,29 +197,6 @@ const settings = {
     sendGTMEvent('event', 'titleClicked', { value: title });
   }
 
-const slides = [
-{
- image: "https://horaservices.com/api/uploads/homepage_slider1.webp",
-  title: 'Decoration at your step',
-  description: 'Transform your space with our expert decorators',
-  imgAlt: 'Decoration services at your step',
-  link:"/balloon-decoration"
-},
-{
-  image: "https://horaservices.com/api/uploads/homepage_slider2.webp",
-  title: 'Party Food Delivery',
-  description: 'Delicious food for all your party needs',
-  imgAlt: 'Party food delivery service',
-  link:"/party-food-delivery-live-catering-buffet/party-food-delivery"
-},
-{
-  image: "https://horaservices.com/api/uploads/homepage_slider3.webp",
-  title: 'Live Cooking at Spot',
-  description: 'Book top-notch performers for your event',
-  imgAlt: 'Live cooking at event location',
-  link:"/party-food-delivery-live-catering-buffet/party-live-buffet-catering"
-}
-];
 
 const foodData = [
   {
@@ -249,36 +222,6 @@ const foodData = [
   },
 ];
 
-// const EntertainmentData = [
-//   { 
-//     id: 1, 
-//     title: 'Tattoo Artist', 
-//     imageUrl: homepage_entertainment1, 
-//     link: '#', 
-//     imgAlt: 'Tattoo artist providing services at an event' 
-//   },
-//   { 
-//     id: 2, 
-//     title: 'Magician', 
-//     imageUrl: homepage_entertainment2, 
-//     link: '#', 
-//     imgAlt: 'Magician performing at an event' 
-//   },
-//   { 
-//     id: 3, 
-//     title: 'Party Host', 
-//     imageUrl: homepage_entertainment3, 
-//     link: '#', 
-//     imgAlt: 'Party host engaging with guests' 
-//   },
-//   { 
-//     id: 4, 
-//     title: 'Mascot', 
-//     imageUrl: homepage_entertainment4, 
-//     link: '#', 
-//     imgAlt: 'Mascot character entertaining at an event' 
-//   },
-// ];
 
 const whereAreYouData = [
   {
@@ -442,11 +385,8 @@ const CustomerReview = [
 
 const openSliderLink = (link , title) => {
   sendGTMEvent('event', 'homePageSliderClicked', { value: title });
-  if (link) {
-    window.location.href = link; // Redirects to the provided link
-  }
+    window.location.href = "/balloon-decoration"; // Redirects to the provided link
 };
-
 
 
 return (
@@ -482,24 +422,14 @@ return (
     <div className="party-services homeslider">
      <h1 className="party-title">All party services on one platform</h1>
 <div className="home-slider-inner">
-<Slider {...homeslidersettings}>
-      {slides.map((slide, index) => (
-        <div key={index} className="slide-container">
-          <Image src={slide.image} alt={slide.title} 
+<div className="slide-container" onClick={() => openSliderLink()}>
+          <Image src={decorationbanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
            width={1200} 
            height={400} 
-           quality={100}         // Adjust quality for better compression
-           priority={false} 
-           layout="responsive" 
            className="responsive-image"
            />
-          <div className="carousel-content slide-content">
-            <h2 className="party-title1 slide-title">{slide.title}</h2>
-            <button className="slide-button book-now"  onClick={() => openSliderLink(slide.link, slide.title)}>book Now</button>
-          </div>
         </div>
-      ))}
-    </Slider>
+
     </div>
 
     </div>
@@ -570,6 +500,27 @@ handleTitleClick(item.title);
 
     </div>
     <div className="dec-photo-con sec-container">
+    <div className="service">
+    <div className="service-header">
+      <h2 className='services-h2'>
+        Photography
+        <Image src={PhotographyIcon} alt="Photography Icon" className="service-icon" />
+      </h2>
+    </div>
+    <div className="service-image-container">
+      <Image src="https://horaservices.com/api/uploads/homepage_photography.webp" alt="Photography" className="service-image" width={200} height={100}/>
+      <button className="book-now2" id="home-phtography-sec-sec"
+       onClick={() => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'photography_button_click',  // Custom event name
+          photography_button_id: 'photography_button',  // Custom parameter name with another value
+        });
+        photographyUrl();
+      }}
+       >Book Now</button>
+    </div>
+  </div>
   <div className="service">
     <div className="service-header">
       <h2 className='services-h2'>
@@ -591,47 +542,10 @@ handleTitleClick(item.title);
        >Book Now</button>
     </div>
   </div>
-  <div className="service">
-    <div className="service-header">
-      <h2 className='services-h2'>
-        Photography
-        <Image src={PhotographyIcon} alt="Photography Icon" className="service-icon" />
-      </h2>
-    </div>
-    <div className="service-image-container">
-      <Image src="https://horaservices.com/api/uploads/homepage_photography.webp" alt="Photography" className="service-image" width={200} height={100}/>
-      <button className="book-now2" id="home-phtography-sec-sec"
-       onClick={() => {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: 'photography_button_click',  // Custom event name
-          photography_button_id: 'photography_button',  // Custom parameter name with another value
-        });
-        photographyUrl();
-      }}
-       >Book Now</button>
-    </div>
-  </div>
+ 
    </div>
 
-   {/* <div className="entertainment-container sec-container">
-  <h1 className="entertainment-header">
-    Entertainment 
-    <Image src={EntertainmentIcon} alt="Entertainment Icon" className="food-icon" />
-  </h1>
-  <div className="entertainment-grid">
-    {EntertainmentData.map(category => (
-      <div key={category.id} className="category-card">
-        <a href={category.link} rel="noopener noreferrer">
-          <div className="category-image-wrapper">
-            <Image src={category.imageUrl} alt={category.title} className="category-image" />
-            <p className="category-title">{category.title}</p>
-          </div>
-        </a>
-      </div>
-    ))}
-  </div>
-  </div> */}
+
     <div className="entertainment-container where-are-you-sec sec-container">
     <h1 className="entertainment-header-whatAre">
     What are you <span className="pink-text">into?</span> 
