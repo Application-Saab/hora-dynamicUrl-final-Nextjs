@@ -49,7 +49,7 @@ const products = [
       {
         id: 8,
         name: "Mickey Mouse Decoration for birthday",
-        image: "/assets/template2.svg",
+        image: "/assets/new2.svg",
       },
     ],
   },
@@ -83,87 +83,84 @@ export default function ProductPage() {
     }
   };
 
-  //   const handleDownload = () => {
-  //     const svgElement = document.querySelector(".product-svg svg");
-  //     if (!svgElement) return;
-
-  //     const svgRect = svgElement.getBoundingClientRect();
-  //     const canvas = document.createElement("canvas");
-  //     const context = canvas.getContext("2d");
-  //     const scaleFactor = 4;
-  //     canvas.width = svgRect.width * scaleFactor;
-  //     canvas.height = svgRect.height * scaleFactor;
-
-  //     const img = new window.Image();
-  //     const svgString = new XMLSerializer().serializeToString(svgElement);
-  //     const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
-  //     const svgUrl = URL.createObjectURL(svgBlob);
-
-  //     img.onload = () => {
-  //       context.drawImage(img, 0, 0, canvas.width, canvas.height);
-  //       const imageUrl = canvas.toDataURL("image/png", 1.0);
-
-  //       const doc = new jsPDF({
-  //         orientation: "portrait",
-  //         unit: "px",
-  //         format: [canvas.width, canvas.height],
-  //       });
-
-  //       doc.addImage(imageUrl, "PNG", 0, 0, canvas.width, canvas.height);
-  //       doc.save("updated_image.pdf");
-  //     };
-
-  //     img.src = svgUrl;
-  //   };
-
-  const handleDownload = () => {
+  const handleShareOnWhatsApp = async () => {
     const svgElement = document.querySelector(".product-svg svg");
-    if (!svgElement) return;
-
+    if (!svgElement) {
+      console.error("SVG element not found!");
+      return;
+    }
+  
     const svgRect = svgElement.getBoundingClientRect();
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
-    const scaleFactor = 4;
+    const scaleFactor = 4; 
     canvas.width = svgRect.width * scaleFactor;
     canvas.height = svgRect.height * scaleFactor;
-
+  
     const clonedSvg = svgElement.cloneNode(true);
-
     const styleSheets = [...document.styleSheets]
       .map((sheet) => {
         try {
           return [...sheet.cssRules].map((rule) => rule.cssText).join("\n");
         } catch (e) {
-          return ""; 
+          console.warn("Failed to access stylesheet:", sheet.href);
+          return "";
         }
       })
       .join("\n");
-
+  
     const styleElement = document.createElement("style");
     styleElement.textContent = styleSheets;
     clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
-
+  
     const svgString = new XMLSerializer().serializeToString(clonedSvg);
     const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
     const svgUrl = URL.createObjectURL(svgBlob);
-
-    const img = new window.Image(); 
-
-    img.onload = () => {
+  
+    const img = new window.Image();
+    img.onload = async () => {
       context.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const imageUrl = canvas.toDataURL("image/png", 1.0);
-
-      const link = document.createElement("a");
-      link.href = imageUrl;
-      link.download = "downloaded_image.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          console.error("Failed to convert canvas to Blob.");
+          return;
+        }
+  
+        if (navigator.share) {
+          try {
+            const title = "Awesome Product - SVG"; 
+            const description = "Check out this amazing product with great features!";
+  
+            console.log("Sharing title:", title);
+            console.log("Sharing text:", description);
+  
+            const file = new File([blob], "shared_image.png", { type: "image/png" });
+  
+            await navigator.share({
+              title: title,
+              text: description,
+              files: [file],
+            });
+  
+            console.log("Image shared successfully!");
+          } catch (error) {
+            console.error("Error sharing via Web Share API:", error);
+          }
+        } else {
+          alert("Your browser does not support the Web Share API. Please use a mobile device.");
+        }
+      }, "image/png", 1.0);
     };
-
+  
+    img.onerror = (error) => {
+      console.error("Failed to load SVG image:", error);
+    };
+  
     img.src = svgUrl;
   };
-
+  
+  
   return (
     <div className="product-details-container">
       <div className="product-content">
@@ -252,7 +249,7 @@ export default function ProductPage() {
             ) : (
               <button onClick={() => setIsEditing(true)}>Edit</button>
             )}
-            <button onClick={handleDownload}>Download</button>
+            <button onClick={handleShareOnWhatsApp}>Share</button>
           </div>
         </div>
       </div>
