@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { jsPDF } from "jspdf";
 import { ReactSVG } from "react-svg";
@@ -9,48 +9,21 @@ const products = [
   {
     category: "Happy Birthday Cards",
     products: [
-      {
-        id: 1,
-        name: "Barbie Doll Decoration for birthday",
-        image: "/assets/template1.svg",
-      },
-      {
-        id: 2,
-        name: "Princess Decoration for birthday",
-        image: "/assets/template13.svg",
-      },
-      {
-        id: 3,
-        name: "Football Decoration for birthday",
-        image: "/assets/template12.svg",
-      },
-      {
-        id: 4,
-        name: "Superhero Decoration for birthday",
-        image: "/assets/template10.svg",
-      },
-      {
-        id: 5,
-        name: "Oceans Decoration for birthday",
-        image: "/assets/template11.svg",
-      },
-
-      {
-        id: 6,
-        name: "Jungle Decoration for birthday",
-        image: "/assets/template7.svg",
-      },
-
-      {
-        id: 7,
-        name: "Mickey Mouse Decoration for birthday",
-        image: "/assets/template8.svg",
-      },
-      {
-        id: 8,
-        name: "Mickey Mouse Decoration for birthday",
-        image: "/assets/new2.svg",
-      },
+      { id: 1, name: "Barbie Doll Decoration for birthday", image: "/assets/template1.svg" },
+      { id: 2, name: "Princess Decoration for birthday", image: "/assets/template13.svg" },
+      { id: 3, name: "Football Decoration for birthday", image: "/assets/template12.svg" },
+      { id: 4, name: "Superhero Decoration for birthday", image: "/assets/template10.svg" },
+      { id: 5, name: "Oceans Decoration for birthday", image: "/assets/template11.svg" },
+      { id: 6, name: "Jungle Decoration for birthday", image: "/assets/template7.svg" },
+      // { id: 7, name: "Mickey Mouse Decoration for birthday", image: "/assets/template8.svg" },
+      { id: 8, name: "Mickey Mouse Decoration for birthday", image: "/assets/template2.svg" },
+      { id: 9, name: "Mickey Mouse Decoration for birthday", image: "/assets/template3.svg" },
+      // { id: 10, name: "Mickey Mouse Decoration for birthday", image: "/assets/template4.svg" },
+      { id: 11, name: "Mickey Mouse Decoration for birthday", image: "/assets/template6.svg" },
+      { id: 12, name: "Mickey Mouse Decoration for birthday", image: "/assets/template9.svg" },
+      { id: 13, name: "Mickey Mouse Decoration for birthday", image: "/assets/template15.svg" },
+      { id: 14, name: "Mickey Mouse Decoration for birthday", image: "/assets/template16.svg" },
+      { id: 15, name: "Mickey Mouse Decoration for birthday", image: "/assets/template17.svg" },
     ],
   },
 ];
@@ -62,23 +35,70 @@ export default function ProductPage() {
     .flatMap((category) => category.products)
     .find((p) => p.id === parseInt(id));
 
+  // new 
+  const [svgContent, setSvgContent] = useState("");
+  const [fullname, setFullname] = useState("John Doe");
+  const [date, setdate] = useState("25 Nov 2025");
+  const [imageSrc, setImageSrc] = useState("/assets/user2.png");
+  
+
   const [isEditing, setIsEditing] = useState(false);
-  const [fullname, setFullname] = useState("Name");
-  const [date, setdate] = useState("Date");
+  // const [fullname, setFullname] = useState("Name");
+  // const [date, setdate] = useState("Date");
   const [address, setAddress] = useState("Address");
   const [category, setCategory] = useState("BIRTHDAY PARTY");
   const [time, setTime] = useState("Time");
-  const [imageSrc, setImageSrc] = useState(product?.image || "");
+  // const [imageSrc, setImageSrc] = useState(product?.image || "");
 
-  if (!product) return <p>Product not found</p>;
+  // new
+  
+  useEffect(() => {
+    if (product) {
+      fetch(product.image) 
+        .then((response) => response.text())
+        .then((data) => setSvgContent(data))
+        .catch((error) => console.error("Error loading SVG:", error));
+    }
+  }, [product]);
 
-  const handleEditClick = () => setIsEditing(!isEditing);
+
+  useEffect(() => {
+    if (svgContent) {
+      const container = document.getElementById("svg-container");
+      if (container) {
+        container.innerHTML = svgContent;
+        const svgElement = container.querySelector("svg");
+
+        if (svgElement) {
+          const nameText = svgElement.querySelector("#name");
+          if (nameText) nameText.textContent = fullname;
+
+          const dateText = svgElement.querySelector("#date");
+          if (dateText) dateText.textContent = date;
+
+          const textTime = svgElement.querySelector("#time");
+          if (textTime) textTime.textContent = time;
+
+          const textAddress = svgElement.querySelector("#address");
+          if (textAddress) textAddress.textContent = address;
+
+          const imageElement = svgElement.querySelector('[data-id="uniqueImage1"]');
+          if (imageElement) {
+            imageElement.setAttribute("href", imageSrc); 
+          }
+        }
+      }
+    }
+  }, [svgContent, fullname, date, imageSrc, time, address]);
+
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setImageSrc(reader.result);
+      reader.onload = (e) => {
+        setImageSrc(e.target.result); 
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -89,14 +109,14 @@ export default function ProductPage() {
       console.error("SVG element not found!");
       return;
     }
-  
+
     const svgRect = svgElement.getBoundingClientRect();
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
-    const scaleFactor = 4; 
+    const scaleFactor = 4;
     canvas.width = svgRect.width * scaleFactor;
     canvas.height = svgRect.height * scaleFactor;
-  
+
     const clonedSvg = svgElement.cloneNode(true);
     const styleSheets = [...document.styleSheets]
       .map((sheet) => {
@@ -108,92 +128,71 @@ export default function ProductPage() {
         }
       })
       .join("\n");
-  
+
     const styleElement = document.createElement("style");
     styleElement.textContent = styleSheets;
     clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
-  
+
     const svgString = new XMLSerializer().serializeToString(clonedSvg);
     const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
     const svgUrl = URL.createObjectURL(svgBlob);
-  
+
     const img = new window.Image();
     img.onload = async () => {
       context.drawImage(img, 0, 0, canvas.width, canvas.height);
-  
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          console.error("Failed to convert canvas to Blob.");
-          return;
-        }
-  
-        if (navigator.share) {
-          try {
-            const title = "Awesome Product - SVG"; 
-            const description = "Check out this amazing product with great features!";
-  
-            console.log("Sharing title:", title);
-            console.log("Sharing text:", description);
-  
-            const file = new File([blob], "shared_image.png", { type: "image/png" });
-  
-            await navigator.share({
-              title: title,
-              text: description,
-              files: [file],
-            });
-  
-            console.log("Image shared successfully!");
-          } catch (error) {
-            console.error("Error sharing via Web Share API:", error);
+
+      canvas.toBlob(
+        async (blob) => {
+          if (!blob) {
+            console.error("Failed to convert canvas to Blob.");
+            return;
           }
-        } else {
-          alert("Your browser does not support the Web Share API. Please use a mobile device.");
-        }
-      }, "image/png", 1.0);
+
+          if (navigator.share) {
+            try {
+              const title = "Awesome Product - SVG";
+              const description =
+                "Check out this amazing product with great features!";
+
+              console.log("Sharing title:", title);
+              console.log("Sharing text:", description);
+
+              const file = new File([blob], "shared_image.png", {
+                type: "image/png",
+              });
+
+              await navigator.share({
+                title: title,
+                text: description,
+                files: [file],
+              });
+
+              console.log("Image shared successfully!");
+            } catch (error) {
+              console.error("Error sharing via Web Share API:", error);
+            }
+          } else {
+            alert(
+              "Your browser does not support the Web Share API. Please use a mobile device."
+            );
+          }
+        },
+        "image/png",
+        1.0
+      );
     };
-  
+
     img.onerror = (error) => {
       console.error("Failed to load SVG image:", error);
     };
-  
+
     img.src = svgUrl;
   };
-  
-  
+
   return (
     <div className="product-details-container">
       <div className="product-content">
-        <div className="product-image-section">
-          {product.image.includes(".svg") ? (
-            <ReactSVG
-              src={product.image}
-              className="product-svg"
-              beforeInjection={(svg) => {
-                console.log(svg.outerHTML, "cjjjjj");
-                const textElement1 = svg.getElementById("name");
-                if (textElement1) textElement1.textContent = fullname;
-                const textElement2 = svg.getElementById("date");
-                if (textElement2) textElement2.textContent = date;
-                const textAddress = svg.getElementById("address");
-                if (textAddress) textAddress.textContent = address;
-                // const textCategory = svg.getElementById("category");
-                // if (textCategory) textCategory.textContent = category;
-                const textTime = svg.getElementById("time");
-                if (textTime) textTime.textContent = time;
-                const imageElement = svg.querySelector(
-                  '[data-id="uniqueImage1"]'
-                );
-                if (imageElement) {
-                  imageElement.setAttribute("xlink:href", imageSrc);
-                }
-              }}
-            />
-          ) : (
-            <Image src={imageSrc} alt={product.name} width={250} height={200} />
-          )}
-        </div>
-
+      <div id="svg-container" className="product-svg" />
         <div className="edit-buttons">
           <div
             style={{
@@ -204,10 +203,10 @@ export default function ProductPage() {
             }}
           >
             <div className="breadcrumb">
-              <span>{product.name}</span>
+              <span>{product ? product.name : "Product Not Found"}</span>
             </div>
 
-            {isEditing ? (
+            {/* {isEditing ? ( */}
               <div className="edit-section">
                 <input
                   type="text"
@@ -234,21 +233,15 @@ export default function ProductPage() {
                   onChange={(e) => setAddress(e.target.value)}
                 />
                 <input
-                  type="text"
-                  placeholder="Enter Category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  style={{ textTransform: "uppercase" }}
-                />
-                <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                 />
+
               </div>
-            ) : (
-              <button onClick={() => setIsEditing(true)}>Edit</button>
-            )}
+            {/* // ) : (
+            //   <button onClick={() => setIsEditing(true)}>Edit</button>
+            // )} */}
             <button onClick={handleShareOnWhatsApp}>Share</button>
           </div>
         </div>

@@ -5317,7 +5317,7 @@
           <text class="cls-21" transform="translate(376 1200.38)">BIRTHDAY</text>
           <text class="cls-181" transform="translate(378.61 1296.66)" id="date">22 Nov 2025 8:00 pm</text>
           <text class="cls-179" transform="translate(249.62 1454.54)" id="address">address</text>
-          <text class="cls-180" transform="translate(239.18 1110.25)" id="name">Sahaj </text>
+          <text class="cls-180" transform="translate(239.18 1110.25)" id="name" textAnchor="middle">Sahaj </text>
         </g>
       </g>
     </g>

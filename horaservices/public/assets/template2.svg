@@ -521,9 +521,10 @@
           <path class="cls-37" d="m876.61,250.35l1.89,5.82c.45,1.38,1.74,2.32,3.19,2.32h6.12c3.25,0,4.6,4.15,1.97,6.06l-4.95,3.59c-1.17.85-1.67,2.37-1.22,3.75l1.89,5.82c1,3.09-2.53,5.65-5.16,3.75l-4.95-3.59c-1.17-.85-2.76-.85-3.94,0l-4.95,3.59c-2.63,1.91-6.16-.66-5.16-3.75l1.89-5.82c.45-1.38-.04-2.89-1.22-3.75l-4.95-3.59c-2.63-1.91-1.28-6.06,1.97-6.06h6.12c1.45,0,2.74-.93,3.19-2.32l1.89-5.82c1-3.09,5.37-3.09,6.37,0Z"/>
           <path class="cls-37" d="m80.13,82.63l1.89,5.82c.45,1.38,1.74,2.32,3.19,2.32h6.11c3.25,0,4.6,4.15,1.97,6.06l-4.95,3.59c-1.17.85-1.67,2.37-1.22,3.75l1.89,5.82c1,3.09-2.53,5.65-5.16,3.75l-4.95-3.59c-1.17-.85-2.76-.85-3.94,0l-4.95,3.59c-2.63,1.91-6.16-.66-5.16-3.75l1.89-5.82c.45-1.38-.04-2.89-1.22-3.75l-4.95-3.59c-2.63-1.91-1.28-6.06,1.97-6.06h6.12c1.45,0,2.74-.93,3.19-2.32l1.89-5.82c1-3.09,5.37-3.09,6.37,0Z"/>
         </g>
-        <text class="cls-4" transform="translate(107.41 1661.31)" id="address">454A Ranka colony, Bannerghatta road </text>
-        <text class="cls-30" transform="translate(280.1 1472.38)" id="date">22 NOV 2025 8:00 PM</text>
-        <text class="cls-7" transform="translate(330 1123.56)" id="name">Sahaj Verma</text>
+        <text class="cls-4" transform="translate(550 1661.31)" id="address" text-anchor="middle">454A Ranka colony, Bannerghatta road </text>
+        <text class="cls-30" transform="translate(280.1 1472.38)" id="date">22 NOV 2025</text>
+         <text class="cls-30" transform="translate(630.1 1472.38)" id="time">8:00 PM</text>
+        <text class="cls-7" transform="translate(550 1123.56)" id="name" text-anchor="middle">Sahaj Verma</text>
         <text class="cls-6" transform="translate(500.56 1338.6)">4</text>
         <rect class="cls-2" x="476.39" y="1358.93" width="177.86" height="14.82"/>
         <rect class="cls-2" x="476.39" y="1507.89" width="177.86" height="14.82"/>

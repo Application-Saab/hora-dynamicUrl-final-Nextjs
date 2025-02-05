@@ -1,0 +1,29 @@
+/* App.css */
+.template-list {
+    text-align: center;
+  }
+  
+  .card-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    width: 200px;
+    margin: 10px;
+    border: 2px solid #ddd;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .card img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .card h3 {
+    margin-top: 10px;
+  }
+  
