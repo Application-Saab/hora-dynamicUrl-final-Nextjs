@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
-import logo from '../../../assets/new_logo_light.png.png';
+import logo from '../../../assets/new_logo_light.png';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 
 

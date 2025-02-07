@@ -12,7 +12,7 @@ import useScrollToTop from '../useScrollToTop'; // Import the custom hook
 import ChefCitypage from "../../pages/[city]/chef-near-me";
  import Popup from "../../utils/popup";
 import { usePathname, useRouter } from "next/navigation";
-import logo from '../../assets/new_logo_light.png.png';
+import logo from '../../assets/new_logo_light.png';
 import logolight from '../../assets/hora-light-innerpage.png'
 import loginIcon from '../../assets/profile_picture.png';
   

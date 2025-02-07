@@ -13,7 +13,7 @@ import { getDecorationOrganizationSchema, getProductFAQSchema } from '../../../u
 import { setState } from '../../../actions/action';
 import { useRouter } from "next/router";
 import Image from "next/image";
-import logo from '../../../assets/new_logo_light.png.png';
+import logo from '../../../assets/new_logo_light.png';
 import { useDispatch } from "react-redux";
 import '../../../css/decoration.css'
 import Slider from 'react-slick';

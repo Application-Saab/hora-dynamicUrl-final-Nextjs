@@ -11,7 +11,7 @@ import '../../../../../css/decoration.css';
 import Head from 'next/head';
 import { useRouter } from "next/router";
 import Image from "next/image";
-import logo from '../../../../../assets/new_logo_light.png.png';
+import logo from '../../../../../assets/new_logo_light.png';
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
 import axios from 'axios';
 import faqData from '../../../../../utils/faqData.json'

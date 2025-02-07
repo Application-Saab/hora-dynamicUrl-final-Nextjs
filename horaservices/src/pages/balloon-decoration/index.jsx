@@ -10,7 +10,7 @@ import { getDecorationOrganizationSchema } from '../../utils/schema';
 import { setState } from '../../actions/action';
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from '../../assets/new_logo_light.png.png';
+import logo from '../../assets/new_logo_light.png';
 import { useDispatch } from "react-redux";
 import '../../css/decoration.css';
 import '../../components/DecorationLandingSlider/decorationladingslider.css';
