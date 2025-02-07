@@ -16,7 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from '../../../assets/new_logo_light.png.png';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
-import { sendGTMEvent  } from '@next/third-parties/google';
+
 
 const DecorationCatPage = () => {
   const dispatch = useDispatch();

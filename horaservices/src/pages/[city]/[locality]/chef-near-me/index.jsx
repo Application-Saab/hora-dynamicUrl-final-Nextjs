@@ -7,7 +7,7 @@ import bannerDecorationImage from '../../../../assets/decoration-home-banner.png
 import bannerChefImage from '../../../../assets/chef-home-banner.png';
 import bannerHospitalityImage from '../../../../assets/hospitality.png';
 import bannerReturnGiftImage from '../../../../assets/return-gift-banner-home.png';
-import bannerEntertainmentImage from '../../../../assets/entertainment-banner-home.png';
+// import bannerEntertainmentImage from '../../../../assets/entertainment-banner-home.png';
 import bannerFoodDeliveryImage from '../../../../assets/food-delivery-home-banner.png';
 import Celebrate1Image from '../../../../assets/Birthday&Celebration.png';
 import Celebrate2Image from '../../../../assets/corporate-party.png';
@@ -23,7 +23,6 @@ import '../../../../app/homepage.css';
 
 import cityData from '../../../../utils/cityData';
 
-console.log("City Data:", cityData); 
 
 const ChefCitypage = () => {
     const [showButton, setShowButton] = useState(false);
@@ -880,21 +879,18 @@ const ChefCitypage = () => {
       
        // Normalize city parameter
        const normalizedCity = city ? city.toLowerCase() : '';
-       console.log("Normalized City:", normalizedCity); // Log normalized city
+
        
        // Determine if the city parameter exists
        const hasCityPageParam = city ? true : false;
-       console.log("Has City Page Param:", hasCityPageParam); // Log if city parameter exists
      
        // State to hold the city localities list
        const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
      
        // Fetch city localities when city changes
        useEffect(() => {
-         console.log("UseEffect Triggered"); // Log when useEffect is triggered
          if (normalizedCity) {
            const localities = cityData[normalizedCity]?.cityLocalitiesList || [];
-           console.log("Fetched Localities:", localities); // Log fetched localities
            setCityLocalitiesList(localities);
          }
        }, [normalizedCity]);
@@ -909,7 +905,6 @@ const ChefCitypage = () => {
          return <div>Please select a city first.</div>;
        }
      
-       console.log("City Localities List:", cityLocalitiesList); // Log final localities list
      
     
        
@@ -942,12 +937,12 @@ const ChefCitypage = () => {
                                 <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Gift & Party Supplies</h2>
                             </Link>
                         </div>
-                        <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
+                        {/* <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
                             <Link href="/" style={{ textDecoration: "none" }}>
                                 <Image src={bannerEntertainmentImage} alt="Entertainment Near me" style={{ height: "auto" }} />
                                 <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Entertainment</h2>
                             </Link>
-                        </div>
+                        </div> */}
                         <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
                             <Link href="/" style={{ textDecoration: "none" }}>
                                 <Image src={bannerFoodDeliveryImage} alt="Food Delivery Near me" style={{ height: "auto" }} />

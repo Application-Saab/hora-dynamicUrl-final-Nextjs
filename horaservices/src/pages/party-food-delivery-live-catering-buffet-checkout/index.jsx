@@ -81,7 +81,6 @@ const FoodDeliveryCheckout = () => {
         setComment(e.target.value);
     };
 
-    // console.log("selectedDishesFoodDelivery", selectedDishesFoodDelivery)
 
     const selectedMealList = selectedDishesFoodDelivery
         ? Object.values(selectedDishesFoodDelivery).map(dish => {
@@ -103,9 +102,9 @@ const FoodDeliveryCheckout = () => {
           
     const dishCount = dishObject.filter(x => x.mealId == "63f1b6b7ed240f7a09f7e2de" || x.mealId == "63f1b39a4082ee76673a0a9f" || x.mealId == "63edc4757e1b370928b149b3").length;
 
-    // console.log(dishCount)
+  
     function calculateDiscountPercentage(peopleCount) {
-    //   console.log(peopleCount)
+    
       if (peopleCount <= 39){
         return 1
       }
@@ -147,12 +146,6 @@ const FoodDeliveryCheckout = () => {
       "63edc4757e1b370928b149b3"
     ];
 
-
-
-
-    // console.log(selectedMealList)
-    
-    
     const discountPercentagePrice = calculateDiscountPercentage(peopleCount);
     
     const discountPercentageQuantity = calculateDiscountPercentageQuantity(dishCount)
@@ -161,7 +154,7 @@ const FoodDeliveryCheckout = () => {
     var newTotalPrice = 0
     var totalPrice = 0
     selectedMealList.forEach((dish) => {
-    //   console.log(dish)
+
       if (
         dish.name !== "Tawa Rotis" &&
         dish.name !== "Rumali Rotis" &&
@@ -176,16 +169,12 @@ const FoodDeliveryCheckout = () => {
       totalPrice = totalPrice + dish.price * peopleCount
     });
 
-    // console.log(newTotalPrice)
-    // console.log(totalPrice)
     newTotalPrice = newTotalPrice * discountPercentagePrice
 
-    // console.log(newTotalPrice)
-    // console.log(totalPrice)
+   
     var discountedPrice = selectedOption === 'party-live-buffet-catering' ?  ((newTotalPrice) * 1.1 + 6500).toFixed(0) : newTotalPrice.toFixed(0);
     totalPrice = selectedOption === 'party-live-buffet-catering' ?  ((totalPrice) * 1.1 + 6500).toFixed(0) : totalPrice.toFixed(0);
-    // console.log(discountedPrice)
-    // console.log(totalPrice)
+   
     const calculateFinalTotal = () => {
         let finalTotal = 0; // Initialize finalTotal with 0
     
@@ -198,9 +187,7 @@ const FoodDeliveryCheckout = () => {
 
             }
 
-            //finalTotal = totalPrice - parseFloat(discountedPrice) + deliveryCharges;
-            // console.log("Initial total after applying discount and delivery charges: " + finalTotal);
-            
+          
             finalTotal += parseFloat(packingCost);
             console.log("Total after adding packing cost: " + finalTotal);
     
@@ -213,18 +200,16 @@ const FoodDeliveryCheckout = () => {
             ? parseFloat(discountedPrice)
             : parseFloat(discountedPrice) + deliveryCharges;
         
-            // console.log("Initial total after applying discount: " + finalTotal);
-    
+       
             if (includeTables) {
                 finalTotal += 1200;
-                // console.log("Total after adding table cost: " + finalTotal);
+               
             }
         }
     
-        // Ensure finalTotal is a number and rounded to the nearest whole number
+        
         finalTotal = parseFloat(finalTotal.toFixed(0));
-        // console.log("Final total after adjustments: " + finalTotal);
-    
+       
         return finalTotal;
     };
     
@@ -323,7 +308,6 @@ const FoodDeliveryCheckout = () => {
     };
 
     const handleDateChange = (date) => {
-        console.log(`Date selected: ${date}`);
         setSelectedDate(date);
         setSelectedDateError(false);
         combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
@@ -331,14 +315,12 @@ const FoodDeliveryCheckout = () => {
 
     const handleTimeSlotChange = (event) => {
         const timeSlot = event.target.value;
-        console.log(`Time slot selected: ${timeSlot}`);
         setSelectedTimeSlot(timeSlot);
         setSelectedDateError(false);
         combineDateTime(selectedDate, timeSlot); // Pass the current selected date
     };
 
     const combineDateTime = (date, timeSlot) => {
-        console.log(`Combining Date: ${date} with Time Slot: ${timeSlot}`);
         if (date && timeSlot) {
             const [startHour, period] = timeSlot.split('-')[0].trim().split(' ');
             let hour = parseInt(startHour.split(':')[0], 10);
@@ -349,12 +331,10 @@ const FoodDeliveryCheckout = () => {
             }
 
             const combinedDate = new Date(date);
-            console.log(`Initial Combined Date: ${combinedDate}`);
             combinedDate.setHours(hour);
             combinedDate.setMinutes(0);
             combinedDate.setSeconds(0);
             combinedDate.setMilliseconds(0);
-            console.log(`Final Combined Date: ${combinedDate}`);
             setCombinedDateTime(combinedDate);
             validateDateTime(combinedDate);
         }
@@ -362,9 +342,7 @@ const FoodDeliveryCheckout = () => {
 
     const validateDateTime = (combinedDate) => {
         const now = new Date();
-        console.log(`Combined Date for Validation: ${combinedDate}`);
         const timeDifference = combinedDate - now;
-        console.log(`Time Difference: ${timeDifference} ms`);
         // Check if the combined date and time are at least 24 hours in the future
         if (timeDifference < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds
             console.log("The selected date and time are less than 24 hours from now.");

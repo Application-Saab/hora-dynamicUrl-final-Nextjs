@@ -178,7 +178,7 @@ useEffect(() => {
       action: action,
       label: label,
     });
-    console.log(window.dataLayer,"decoraitongtm");
+
     };
 
   const handleLogout = () => {

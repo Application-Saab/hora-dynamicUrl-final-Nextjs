@@ -140,7 +140,6 @@ const ChefCheckout = () => {
     };
 
     const handleDateChange = (date) => {
-        console.log(`Date selected: ${date}`);
         setSelectedDate(date);
         setSelectedDateError(false);
         combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
@@ -148,14 +147,12 @@ const ChefCheckout = () => {
 
     const handleTimeSlotChange = (event) => {
         const timeSlot = event.target.value;
-        console.log(`Time slot selected: ${timeSlot}`);
         setSelectedTimeSlot(timeSlot);
         setSelectedDateError(false);
         combineDateTime(selectedDate, timeSlot); // Pass the current selected date
     };
 
     const combineDateTime = (date, timeSlot) => {
-        console.log(`Combining Date: ${date} with Time Slot: ${timeSlot}`);
         if (date && timeSlot) {
             const [startHour, period] = timeSlot.split('-')[0].trim().split(' ');
             let hour = parseInt(startHour.split(':')[0], 10);
@@ -166,12 +163,10 @@ const ChefCheckout = () => {
             }
 
             const combinedDate = new Date(date);
-            console.log(`Initial Combined Date: ${combinedDate}`);
             combinedDate.setHours(hour);
             combinedDate.setMinutes(0);
             combinedDate.setSeconds(0);
             combinedDate.setMilliseconds(0);
-            console.log(`Final Combined Date: ${combinedDate}`);
             setCombinedDateTime(combinedDate);
             validateDateTime(combinedDate);
         }
@@ -179,15 +174,11 @@ const ChefCheckout = () => {
 
     const validateDateTime = (combinedDate) => {
         const now = new Date();
-        // console.log(`Combined Date for Validation: ${combinedDate}`);
         const timeDifference = combinedDate - now;
-        // console.log(`Time Difference: ${timeDifference} ms`);
-        // Check if the combined date and time are at least 24 hours in the future
+        
         if (timeDifference < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds
-            console.log("The selected date and time are less than 24 hours from now.");
             setCombinedDateTimeError(true);
         } else {
-            console.log("The selected date and time are valid.");
             setCombinedDateTimeError(false);
         }
     };
@@ -277,8 +268,7 @@ const ChefCheckout = () => {
                 },
             });
             if (response.status === API_SUCCESS_CODE) {
-                // Handle navigation in React (e.g., using React Router)
-                console.log("Address saved successfully");
+              
                 return response.data.data._id
             }
         } catch (error) {
@@ -383,7 +373,6 @@ const ChefCheckout = () => {
     const priceForPeople = peopleCount * 49
     let totalPrice = parseInt(selectedDishPrice) + priceForPeople
     if (Array.isArray(selectedDishes) && selectedDishes.length > 7) {
-        console.log("more than 7 dishes");
         totalPrice += 700;
     }
     useEffect(() => {

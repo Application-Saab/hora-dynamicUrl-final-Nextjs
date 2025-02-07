@@ -80,7 +80,6 @@ const Checkout = () => {
 
 
   const handleDateChange = (date) => {
-    // console.log(`Date selected: ${date}`);
     setSelectedDate(date);
     setSelectedDateError(false);
     combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
@@ -88,14 +87,12 @@ const Checkout = () => {
 
   const handleTimeSlotChange = (event) => {
     const timeSlot = event.target.value;
-    // console.log(`Time slot selected: ${timeSlot}`);
     setSelectedTimeSlot(timeSlot);
     setSelectedDateError(false);
     combineDateTime(selectedDate, timeSlot); // Pass the current selected date
   };
 
   const combineDateTime = (date, timeSlot) => {
-    // console.log(`Combining Date: ${date} with Time Slot: ${timeSlot}`);
     if (date && timeSlot) {
       const [startHour, period] = timeSlot.split('-')[0].trim().split(' ');
       let hour = parseInt(startHour.split(':')[0], 10);
@@ -106,12 +103,10 @@ const Checkout = () => {
       }
 
       const combinedDate = new Date(date);
-      // console.log(`Initial Combined Date: ${combinedDate}`);
       combinedDate.setHours(hour);
       combinedDate.setMinutes(0);
       combinedDate.setSeconds(0);
       combinedDate.setMilliseconds(0);
-      // console.log(`Final Combined Date: ${combinedDate}`);
       setCombinedDateTime(combinedDate);
       validateDateTime(combinedDate);
     }
@@ -119,15 +114,11 @@ const Checkout = () => {
 
   const validateDateTime = (combinedDate) => {
     const now = new Date();
-    // console.log(`Combined Date for Validation: ${combinedDate}`);
     const timeDifference = combinedDate - now;
-    // console.log(`Time Difference: ${timeDifference} ms`);
-    // Check if the combined date and time are at least 24 hours in the future
+
     if (timeDifference < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds
-      console.log("The selected date and time are less than 24 hours from now.");
       setCombinedDateTimeError(true);
     } else {
-      console.log("The selected date and time are valid.");
       setCombinedDateTimeError(false);
     }
   };
@@ -197,7 +188,6 @@ const Checkout = () => {
 
   const saveAddress = async () => {
     try {
-      console.log("Inside saveAddress");
       const url = BASE_URL + SAVE_LOCATION_ENDPOINT;
       // Retrieve userID from localStorage
       let userId = localStorage.getItem("userID");
@@ -237,7 +227,6 @@ const Checkout = () => {
     const storedUserID = await localStorage.getItem('userID');
     // const phoneNumber = await localStorage.getItem('mobileNumber')
     let merchantTransactionId;
-    console.log('selectedAddOnProduct' , selectedAddOnProduct , phoneNumber);
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
@@ -269,7 +258,6 @@ const Checkout = () => {
         "decoration_comments": getFinalComment(),
         "status": 0
       }
-console.log("redData" , requestData);
       const token = await localStorage.getItem('token');
       const response = await axios.post(url, requestData, {
         headers: {

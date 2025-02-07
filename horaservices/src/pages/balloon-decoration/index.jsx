@@ -22,7 +22,6 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import decorationLandingWhatsapp from '../../assets/wahtsapp-decoration-redirection.jpeg';
 import 'slick-carousel/slick/slick-theme.css';
-import { sendGTMEvent  } from '@next/third-parties/google';
 import dec1 from '../../assets/dec1.png';
 import dec2 from '../../assets/dec3.png';
 
@@ -54,7 +53,6 @@ const Decoration = () => {
 
 
     const openCatItems = (item) => {
-     // sendGTMEvent('event', 'titleClicked', { value: `/balloon-decoration/${item.catValue}` });
         dispatch(setState(item.subCategory, item.imgAlt));
         if (hasCityPageParam) {
             router.push(`/${city}/balloon-decoration/${item.catValue}`);

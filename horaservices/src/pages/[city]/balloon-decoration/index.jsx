@@ -69,18 +69,14 @@ const [decCat, setDecCat] = useState([
     };
   
      const normalizedCity = city ? city.toLowerCase() : '';
-     console.log("Normalized City:", normalizedCity); 
   
     
-     console.log("Has City Page Param:", hasCityPageParam); 
   
      const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
 
      useEffect(() => {
-      console.log("UseEffect Triggered"); 
       if (normalizedCity) {
         const localities = cityData[normalizedCity]?.cityLocalitiesList || [];
-        console.log("Fetched Localities:", localities); // Log fetched localities
         setCityLocalitiesList(localities);
       }
     }, [normalizedCity]);
@@ -107,13 +103,21 @@ const [decCat, setDecCat] = useState([
         };
     
         const handleViewMore = (category) => {
-            const categoryItem = decCat.find(cat => cat.subCategory === category);
-            console.log('Category Item:', categoryItem); 
-            if (categoryItem) {
-                openCatItems(categoryItem);
-            } else {
-                console.log('No matching category item found.');
-            }
+          const categoryItem = decCat.find((cat) => cat.subCategory === category);
+      
+          if (categoryItem) {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: "title_and_viewmore_decoration_citypage_clicked", 
+              categoryName: categoryItem.name,
+              subCategory: categoryItem.subCategory,
+              catValue: categoryItem.catValue, 
+              imgAlt: categoryItem.imgAlt,
+            });
+            openCatItems(categoryItem); 
+          } else {
+            console.log("No matching category item found.");
+          }
         };
     
         const birthdayData = [
@@ -676,7 +680,7 @@ View More
     );
     } else {
     return (
-    <a key={index} className="slider-item" href={item.link}>
+    <a key={index} className="slider-item" href={item.link} onClick={() => handleItemClick(item)}>
     <div style={{ position: "relative" }}>
     <Image 
       src={item.Image} 
@@ -744,7 +748,18 @@ View More
 src={item.image}
 className="decCatimage"
 alt={item.imgAlt}
-onClick={() => openCatItems(item)}
+onClick={() => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'categoryClick_citypage',  
+    categoryName: item.name,  
+    subCategory: item.subCategory, 
+    catValue: item.catValue, 
+    imageAlt: item.imgAlt,
+    itemLink: item.link,  
+  });
+  openCatItems(item);
+}}
 width={300}
 height={300}
 />

@@ -22,13 +22,12 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../../../css/chefOrder.css';
 
-import { sendGTMEvent, GoogleTagManager } from '@next/third-parties/google';
 
 const FoodDeliveryCreateOrder = (currentStep) => {
   const viewBottomSheetRef = useRef(null);
   const bottomSheetRef = useRef(null);
   const router = useRouter();
-  console.log(router)
+
   const { selectedfoodCategory } = router.query;
   const [selectedOption, setSelectedOption] = useState('');
   // const selectedOption = router.asPath.split('/').pop();
@@ -153,7 +152,6 @@ const FoodDeliveryCreateOrder = (currentStep) => {
       const updatedSelectedDishes = [...selectedDishes];
       const updatedSelectedDishDictionary = { ...selectedDishDictionary };
       const dishPriceValue = parseInt(dish.cuisineArray[0], 10);
-      console.log("dishPriceValue" + dishPriceValue)
       if (!isNaN(dishPriceValue)) { // Check if the parsed value is not NaN
         if (updatedSelectedDishes.includes(dish._id)) {
           const index = updatedSelectedDishes.indexOf(dish._id);
@@ -206,7 +204,6 @@ const FoodDeliveryCreateOrder = (currentStep) => {
       setLoading(true);
       const url = BASE_URL + GET_MEAL_DISH_ENDPOINT;
       const is_dish = isNonVegSelected ? 0 : 1;
-      console.log(selectedCuisines);
       const requestData = {
         cuisineId: ["65f1b256aaba27208a89865f"],
         is_dish: is_dish,
@@ -369,7 +366,6 @@ const FoodDeliveryCreateOrder = (currentStep) => {
       }
     </div>
   );
-console.log('selectedOption',selectedOption)
   const addDish = selectedDishPrice => {
     if (!selectedDishDictionary || Object.keys(selectedDishDictionary).length === 0) {
       console.error("selectedDishDictionary is undefined or empty");

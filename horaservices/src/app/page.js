@@ -26,7 +26,6 @@ import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../assets/decoration_icon.png';
 import PhotographyIcon from '../assets/photography_icon.png';
 import FoodIcon from '../assets/food_icon.png';
-import { sendGTMEvent  } from '@next/third-parties/google';
 import decorationbanner from '../assets/decoration-home-banner.png'
 
 import './homepage.css'
@@ -191,11 +190,6 @@ const settings = {
       },
     ],
   };
-
-  const handleTitleClick = (title) => {
-    // Trigger GTM event when the user clicks on the title
-    sendGTMEvent('event', 'titleClicked', { value: title });
-  }
 
 
 const foodData = [
@@ -383,11 +377,14 @@ const CustomerReview = [
   },
 ];
 
-const openSliderLink = (link , title) => {
-  sendGTMEvent('event', 'homePageSliderClicked', { value: title });
-    window.location.href = "/balloon-decoration";
-
-    console.log("clicked1111");
+const openSliderLink = () => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'decoration_banner_homepage', 
+    category: 'Decoration Banner',    
+  });
+  window.location.href = "/balloon-decoration";
+  console.log(window.dataLayer,"windowdin");
 };
 
 
@@ -452,7 +449,6 @@ return (
     itemTitle: item.title,
     itemLink: item.link,
   });
-  console.log("DataLayer:", window.dataLayer);
   localStorage(window.dataLayer, "lkdjfldsf");
   handleTitleClick(item.title);
 }}>
@@ -477,7 +473,6 @@ onClick={() => {
     itemTitle: item.title,
     itemLink: item.link,
   });
-  console.log("DataLayer:", window.dataLayer);
   localStorage(window.dataLayer, "lkdjfldsf");
 handleTitleClick(item.title);
 }}
