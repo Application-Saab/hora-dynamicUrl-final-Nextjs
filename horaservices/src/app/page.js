@@ -385,7 +385,9 @@ const CustomerReview = [
 
 const openSliderLink = (link , title) => {
   sendGTMEvent('event', 'homePageSliderClicked', { value: title });
-    window.location.href = "/balloon-decoration"; // Redirects to the provided link
+    window.location.href = "/balloon-decoration";
+
+    console.log("clicked1111");
 };
 
 
