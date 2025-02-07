@@ -178,7 +178,7 @@ useEffect(() => {
       action: action,
       label: label,
     });
-    console.log(window.dataLayer,"decoraitongtm");
+
     };
 
   const handleLogout = () => {
@@ -484,6 +484,14 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
     }
   };
 
+  const mobileMenuClicked = (category) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'mobileMenuClicked',
+      category: category
+    });
+  };
+
   return (
     <div style={style.drawer} ref={drawerRef}>
       <div style={{ backgroundColor:"rgb(157, 74, 147)" , padding:"30px 10px 20px 20px"}}>
@@ -492,35 +500,29 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
       </Link>
       </div>
       <div style={{ padding:"0px 10px 20px 20px"}}>
-      <Link href="/orderlist" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/orderlist" style={style.drawerLink} onClick={() => { mobileMenuClicked('My Order'); closeDrawer(); }}>
         My Order
       </Link>
-      <Link href="/balloon-decoration" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/balloon-decoration" style={style.drawerLink} onClick={() => { mobileMenuClicked('Decoration'); closeDrawer(); }}>
         Decoration
       </Link>
-      <Link href="/book-chef-cook-for-party" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/book-chef-cook-for-party" style={style.drawerLink} onClick={() => { mobileMenuClicked('Chef For Party'); closeDrawer(); }}>
         Chef for Party
       </Link>
-      <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={style.drawerLink} onClick={() => { mobileMenuClicked('Food Delivery'); closeDrawer(); }}>
         Food Delivery
       </Link>
-      <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={style.drawerLink} onClick={() => { mobileMenuClicked('Live Catering'); closeDrawer(); }}>
         Live Catering
       </Link>
-      <Link href="/" style={style.drawerLink} onClick={closeDrawer}>
-        Entertainment
-      </Link>
-      <Link href="/" style={style.drawerLink} onClick={closeDrawer}>
-        Hospitality Service
-      </Link>
-      <Link href="/aboutus" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/aboutus" style={style.drawerLink} onClick={() => { mobileMenuClicked('About Us'); closeDrawer(); }}>
         About Us
       </Link>
-      <Link href="/contactus" style={style.drawerLink} onClick={closeDrawer}>
+      <Link href="/contactus" style={style.drawerLink} onClick={() => { mobileMenuClicked('Contact Us'); closeDrawer(); }}>
         Contact Us
       </Link>
       {localStorage.getItem("isLoggedIn") !== "true" ? (
-        <Link href="/login" style={style.drawerLink} onClick={closeDrawer} >
+        <Link href="/login" style={style.drawerLink} onClick={() => { mobileMenuClicked('Login'); closeDrawer(); }} >
           Login
         </Link>
       ) : (

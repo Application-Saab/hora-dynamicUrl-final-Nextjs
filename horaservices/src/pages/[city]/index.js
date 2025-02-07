@@ -51,16 +51,12 @@ export default function Home() {
   const scriptTag = JSON.stringify(schemaOrg);
 
   useEffect(() => {
-    console.log(router.query)
-    console.log('Router is ready');
     if (router.isReady) {
-      console.log('Router is ready');
+
       const { city } = router.query;
       if (city) {
         setCity(city);
-        console.log(`City from query: ${city}`);
       } else {
-        console.log('City is undefined');
       }
     }
   }, [router.isReady, router.query]);
@@ -465,18 +461,18 @@ export default function Home() {
   };
 
    const normalizedCity = city ? city.toLowerCase() : '';
-   console.log("Normalized City:", normalizedCity); 
+  
 
    const hasCityPageParam = city ? true : false;
-   console.log("Has City Page Param:", hasCityPageParam); 
+
 
    const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
 
    useEffect(() => {
-     console.log("UseEffect Triggered"); 
+
      if (normalizedCity) {
        const localities = cityData[normalizedCity]?.cityLocalitiesList || [];
-       console.log("Fetched Localities:", localities); // Log fetched localities
+
        setCityLocalitiesList(localities);
      }
    }, [normalizedCity]);
@@ -495,8 +491,6 @@ export default function Home() {
    if (!hasCityPageParam) {
      return <div>Please select a city first.</div>;
    }
-
-   console.log("City Localities List:", cityLocalitiesList);
 
 
 

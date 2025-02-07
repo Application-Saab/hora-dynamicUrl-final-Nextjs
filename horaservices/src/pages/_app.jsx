@@ -28,19 +28,17 @@ function MyApp({ Component, pageProps }) {
       j.async = true;
       j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
       f.parentNode.insertBefore(j, f);
-      console.log('GTM Script Loade22d'); // Debugging zlog
+      console.log('GTM Script Loaded'); // Debugging zlog
     })(window, document, 'script', 'dataLayer', 'GTM-K3SCKLTZ');
   }, [router.asPath]);
 
   const DecorationHandleClick = () => {
-    console.log('decorationclicked');
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "decoration_page_whatsappclick",
       pageUrl: window.location.href,
       productName: "decoration page whatsapp button clicked",
     });
-    console.log(window.dataLayer, "decoration click");
   };
 
   const ChefForPartyHandleClick = () => {
@@ -50,30 +48,53 @@ function MyApp({ Component, pageProps }) {
       pageUrl: window.location.href,          
       productName: "chef for party page whatsapp button clicked", 
     });
-    console.log(window.dataLayer, "chefforpartyhandleclick");
   };
 
   const DecorationCatergorypagewhatsppClick = () => {
-    console.log("aa11", catValue);
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       'event': 'decoration_productlistedpage_whatsapp_click',
       pageUrl: window.location.href,          
       productName: `decoration_productlist_categorypage_whatsapp_click_${catValue}`, 
     });
-    console.log(window.dataLayer, "decoration_productlistedpage_whatsapp_click");
   };
 
   const DecorationProductPagepagewhatsppClick = () => {
-    console.log("aa11", productName);
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       'event': 'decoration_productpage_whatsapp_click',
       pageUrl: window.location.href,          
       productName: `decoration_productpage_whatsapp_click_${productName}`, 
     });
-    console.log(window.dataLayer, "decoration_productlistedpage_whatsapp_click");
   }
+
+  const DecorationcityhatsappClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "decoration_citypage_whatsappclick", 
+      pageUrl: window.location.href,          
+      productName: "decoration page whatsapp button clicked", 
+    });
+  }
+
+  const DecorationCatergorycitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_productlistedcitypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_productlistedcitypage_whatsapp_click`, 
+    });
+  };
+
+  const DecorationProductPageCitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_productcitypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_productcitypage_whatsapp_click`, 
+    });
+  }
+
 
   
   return (
@@ -108,6 +129,15 @@ function MyApp({ Component, pageProps }) {
                 }
                 else if (router.pathname === '/balloon-decoration/[catValue]/product/[productName]'){
                   DecorationProductPagepagewhatsppClick();
+                }
+                else if (router.pathname === '/[city]/balloon-decoration'){
+                  DecorationcityhatsappClick();
+                }
+                else if (router.pathname === '/[city]/balloon-decoration/[catValue]'){
+                  DecorationCatergorycitypagewhatsppClick();
+                }
+                else if (router.name === '/[city]/balloon-decoration/[catValue]/product/[productName]'){
+                  DecorationProductPageCitypagewhatsppClick();
                 }
               }}
                 />

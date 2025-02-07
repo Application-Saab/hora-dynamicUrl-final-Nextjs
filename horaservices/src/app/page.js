@@ -450,7 +450,6 @@ return (
     itemTitle: item.title,
     itemLink: item.link,
   });
-  console.log("DataLayer:", window.dataLayer);
   localStorage(window.dataLayer, "lkdjfldsf");
   handleTitleClick(item.title);
 }}>
@@ -475,7 +474,6 @@ onClick={() => {
     itemTitle: item.title,
     itemLink: item.link,
   });
-  console.log("DataLayer:", window.dataLayer);
   localStorage(window.dataLayer, "lkdjfldsf");
 handleTitleClick(item.title);
 }}

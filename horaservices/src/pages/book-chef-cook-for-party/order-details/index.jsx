@@ -353,7 +353,6 @@ const SelectDate = ({ history, currentStep }) => {
     const getTotalIngredients = () => {
         let totalIngredients = {};
         for (const dishId in data) {
-            // console.log('dishId2' + dishId);
             const dish = data[dishId];
             if (dish.ingredientUsed) {
                 dish.ingredientUsed.forEach((ingredient) => {
@@ -384,7 +383,6 @@ const SelectDate = ({ history, currentStep }) => {
                 });
             }
         }
-        // console.log('totalIngredients', totalIngredients)
         return Object.values(totalIngredients);
     };
 
@@ -519,7 +517,6 @@ const SelectDate = ({ history, currentStep }) => {
     }
 
     const RightTabContent = ({ ingredientList, preparationTextList, toggleShowAll, showAll, renderPreparationText }) => {
-        console.log('ingredientList', ingredientList)
         return (
             <div style={{ overflowY: 'auto', height: '100%', borderRadius: "4px 13px 13px 13px" }}>
                 <div style={{ padding: "0px 20px 20px 20px", flexDirection: 'column', boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1)', backgroundColor: 'white', borderBottomRightRadius: '15px', borderBottomLeftRadius: '15px', display: 'flex', border: "1px solid #efefef" }}>
@@ -567,7 +564,6 @@ const SelectDate = ({ history, currentStep }) => {
             );
         } else if (activeTab === 'right') {
             let totalIngredientsList = getTotalIngredients();
-            // console.log('totalIngredientsList', totalIngredientsList)
             return <RightTabContent ingredientList={totalIngredientsList} />;
         }
     };

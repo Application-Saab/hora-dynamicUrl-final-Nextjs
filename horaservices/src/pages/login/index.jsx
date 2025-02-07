@@ -139,7 +139,6 @@ const sendWelcomeMessage = async (mobileNumber) => {
     // Remove any extra spaces or special characters
     formattedMobileNumber = formattedMobileNumber.replace(/\s+/g, '');
 
-    console.log('Sending WhatsApp message to mobile number:', formattedMobileNumber);
 
     const options = {
         method: 'POST',
@@ -257,7 +256,6 @@ const sendWelcomeMessage = async (mobileNumber) => {
         } catch (error) {
             setLoginMsg(" ");
             setLoginError(true);
-            console.log('Error verifying OTP:', error.message);
             setOtpError('Failed to verify OTP. Please try again.');
         }
     };

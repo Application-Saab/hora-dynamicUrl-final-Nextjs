@@ -73,7 +73,6 @@ const [decCat, setDecCat] = useState([
     
         const handleViewMore = (category) => {
             const categoryItem = decCat.find(cat => cat.subCategory === category);
-            console.log('Category Item:', categoryItem); 
             if (categoryItem) {
                 openCatItems(categoryItem);
             } else {

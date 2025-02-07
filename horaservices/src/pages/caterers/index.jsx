@@ -16,7 +16,6 @@ import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../../assets/decoration_icon.png';
 import PhotographyIcon from '../../assets/photography_icon.png';
 import FoodIcon from '../../assets/food_icon.png';
-import { sendGTMEvent  } from '@next/third-parties/google';
 
 import '../../app/homepage.css'
 // remove later
@@ -188,7 +187,6 @@ const settings = {
 
   const handleTitleClick = (title) => {
     // Trigger GTM event when the user clicks on the title
-    sendGTMEvent('event', 'titleClicked', { value: title });
   }
 
   const slides = [

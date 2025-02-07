@@ -212,13 +212,9 @@ function DecorationCatDetails() {
   }
 
   const handleButtonClick = (subCategory, product) => {
-    //if (buttonClickCount === 0) {
-     // showAddOnmodal(subCategory, product);
-    // console.log("continue clicked");
-   // } else 
-   // {
+
       handleCheckout(subCategory, product);
-   // }
+
     setButtonClickCount(buttonClickCount + 1);
   };
   const handleAddOnClick = (subCategory, product) => {
@@ -368,10 +364,7 @@ function DecorationCatDetails() {
     }
   }
 
-  function getSimilarProducts(product){
-    console.log("product" , product);
-  }
-
+ 
 
   useEffect(() => {
     addSpaces(subCategory);
@@ -645,10 +638,7 @@ function DecorationCatDetails() {
               />
             </div>
 
-            {/* <div className="similar-products">
-              <h2>Similar Products</h2>
-              {getSimilarProducts(product)}
-            </div> */}
+         
 
           </div>
         </div>
