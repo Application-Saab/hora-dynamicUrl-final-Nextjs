@@ -11,7 +11,7 @@ import axios from "axios";
 import Head from "next/head";
 import Success from '../pages/Success';
 import Failure from '../pages/Failure';
-import whatsppicon from "../assets/whatsapp-icon.png";
+import whatsppicon from "../assets/whatsapp-icon.webp";
 import { getHomeOrganizationSchema } from "../utils/schema";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -21,11 +21,11 @@ import './globals.css';
 import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import DecorationIcon from '../assets/decoration_icon.png';
-import PhotographyIcon from '../assets/photography_icon.png';
-import FoodIcon from '../assets/food_icon.png';
+import DecorationIcon from '../assets/decoration_icon.webp';
+import PhotographyIcon from '../assets/photography_icon.webp';
+import FoodIcon from '../assets/food_icon.webp';
 import { sendGTMEvent  } from '@next/third-parties/google';
-import decorationbanner from '../assets/decoration-home-banner.png'
+import decorationbanner from '../assets/decoration-home-banner.webp'
 import './homepage.css'
 
 export default function Home() {
