@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
 import axios from 'axios';
 import Head from 'next/head';
-import  logo  from '../../../../../../assets/new_logo_light.png;
+import  logo  from '../../../../../../assets/new_logo_light.png';
 import { useRouter } from "next/router";
 import Image from "next/image";
 import faqData from '../../../../../../utils/faqData.json'
