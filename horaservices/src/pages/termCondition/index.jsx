@@ -9,6 +9,20 @@ const TermsCondition = () => {
             By accessing this website, we assume you accept these terms and conditions. Do not continue to 
             use Hora Services if you do not agree to take all of the terms and conditions stated on this page.
         </p>
+
+
+
+        <h1>Cancellation and order change policy for Decoration</h1>
+                    <p>1. If the order is beyong 48 Hours: You are eligible for a 100% refund of the advance payment</p>
+                    <p>2. If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.</p>
+                    <p>3. If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.</p>
+          
+    
+        <h1>Cancellation and order change policy for Food delivery, Live catering and chef service</h1>
+    <p>If the order is not assigned to the kitchen: You are eligible for a 100% refund of the advance payment.</p>
+    <p>If the order is cancelled more than 24 hours before the scheduled delivery: You will receive a 50% refund of the advance payment.</p>
+    <p>If the order is cancelled within 24 hours of the scheduled delivery: The full advance amount will be non-refundable, and 100% of the payment is required.</p>
+
     
         <h2>Terminology</h2>
         <p>

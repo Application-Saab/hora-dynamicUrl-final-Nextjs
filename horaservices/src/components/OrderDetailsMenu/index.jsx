@@ -24,8 +24,8 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
           </div>
           <div className="menu-item-details">
             <div className="menu-item-name">{item.name}</div>
-            <div className="menu-item-price">₹ {item.price}</div>
-            {(orderType == 6 || orderType == 7) && <div className="menu-item-price">{foodDeliveryItems[item.name].quantity + " " + foodDeliveryItems[item.name].unit}</div>}
+            {/* <div className="menu-item-price">₹ {item.price}</div> */}
+            {/* {(orderType == 6 || orderType == 7) && <div className="menu-item-price">{foodDeliveryItems[item.name].quantity + " " + foodDeliveryItems[item.name].unit}</div>} */}
           </div>
         </div>
       ));

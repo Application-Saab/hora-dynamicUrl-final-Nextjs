@@ -12,10 +12,10 @@ const footerColumns = [
     title: 'About Hora',
     links: [
       { text: 'My Order', to: '/orderlist' },
-      { text: 'Invitation', to: '/invitation' },
+      // { text: 'Invitation', to: '/invitation' },
       { text: 'About Us', href: '/aboutus' },
-      { text: 'Private Policy', href: 'https://horaservices.com/privacy-policy.html' },
-      { text: 'Terms & Condition', href: 'https://horaservices.com/termCondition.html' },
+      { text: 'Private Policy', href: '/termsCondition' },
+      { text: 'Terms & Condition', href: '/termsCondition' },
       { text: 'Sitemap', href: 'https://horaservices.com/sitemap.xml' },
     ],
   },

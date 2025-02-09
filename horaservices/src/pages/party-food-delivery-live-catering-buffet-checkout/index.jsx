@@ -33,7 +33,7 @@ const FoodDeliveryCheckout = () => {
     const [cityError, setCityError] = useState(false);
     const router = useRouter();
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [deliveryCharges, setDeliveryCharges] = useState(300);
+    const [deliveryCharges, setDeliveryCharges] = useState(350);
     const [packingCost, setpackingCost] = useState(200);
     const [includeDisposable, setIncludeDisposable] = useState(true); // State for checkbox
     const [includeTables, setIncludeTables] = useState(true);
@@ -182,7 +182,7 @@ const FoodDeliveryCheckout = () => {
         if (selectedDeliveryOption === 'party-food-delivery') {
             {
             finalTotal = parseFloat(discountedPrice) > 4000
-            ? parseFloat(discountedPrice)
+            ? parseFloat(discountedPrice) + deliveryCharges
             : parseFloat(discountedPrice) + deliveryCharges;
 
             }
@@ -197,7 +197,7 @@ const FoodDeliveryCheckout = () => {
             }
         } else if (selectedDeliveryOption === 'party-live-buffet-catering') {
             finalTotal = parseFloat(discountedPrice) > 4000
-            ? parseFloat(discountedPrice)
+            ? parseFloat(discountedPrice) + deliveryCharges
             : parseFloat(discountedPrice) + deliveryCharges;
         
        
@@ -681,7 +681,7 @@ const FoodDeliveryCheckout = () => {
                                                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3  , borderBottom:"1px solid rgb(215, 215, 215)" }}>
                                                     <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>Delivery Charges</p>
                                                     <div style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px', display: 'flex', flexDirection: "row" }}>
-                                                    {totalPrice - discountedPrice > 4000 ? (
+                                                    {/* {totalPrice - discountedPrice > 4000 ? (
                                                             <>
                                                                 <p style={{ color: "#008631", fontWeight: '600', marginRight: 5 }}>FREE</p>
                                                                 <p style={{ textDecoration: "line-through", color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
@@ -689,7 +689,11 @@ const FoodDeliveryCheckout = () => {
                                                         ) :
                                                          (
                                                             <p style={{ color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
-                                                        )}
+                                                        )} */}
+                                                         <>
+                                                                <p style={{ color: "#008631", fontWeight: '600', marginRight: 5 }}>FREE</p>
+                                                                <p style={{ textDecoration: "line-through", color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
+                                                            </>
                                                     </div>
                                                 </div>
                                             </div>
@@ -855,14 +859,18 @@ const FoodDeliveryCheckout = () => {
                                                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3   }}>
                                                         <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>Delivery Charges</p>
                                                         <div style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px', display: 'flex', flexDirection: "row" }}>
-                                                            {totalPrice - discountedPrice > 4000 ? (
+                                                            {/* {totalPrice - discountedPrice > 4000 ? (
                                                                 <>
                                                                     <p style={{ color: "#008631", fontWeight: '600', marginRight: 5 }}>FREE</p>
                                                                     <p style={{ textDecoration: "line-through", color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
                                                                 </>
                                                             ) : (
                                                                 <p style={{ color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
-                                                            )}
+                                                            )} */}
+                                                             <>
+                                                                    <p style={{ color: "#008631", fontWeight: '600', marginRight: 5 }}>FREE</p>
+                                                                    <p style={{ textDecoration: "line-through", color: "#9252AA", fontWeight: '600' }}>₹ {deliveryCharges}</p>
+                                                                </>
                                                         </div>
                                                     </div>
                                                 </div>
