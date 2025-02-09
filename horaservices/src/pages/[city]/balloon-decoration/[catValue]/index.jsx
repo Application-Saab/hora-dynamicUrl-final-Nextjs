@@ -417,7 +417,7 @@ const DecorationCatPage = () => {
                   className="decimagecontainer"
                 >
                   <div style={{ position: "relative" }}>
-                    <Image src={`https://horaservices.com/api/uploads/${item?.featured_image}`} alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`} style={styles.decCatimage} width={300} height={300} />
+                      <Image src={`https://horaservices.com/api/uploads/compressed_images/${item?.featured_image}`} alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`} style={styles.decCatimage} width={300} height={300} />
                     {/* Watermark */}
                     <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
                         <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>

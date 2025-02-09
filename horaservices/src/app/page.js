@@ -25,7 +25,7 @@ import DecorationIcon from '../assets/decoration_icon.png';
 import PhotographyIcon from '../assets/photography_icon.png';
 import FoodIcon from '../assets/food_icon.png';
 import { sendGTMEvent  } from '@next/third-parties/google';
-import decorationbanner from '../assets/decoration-home-banner.png'
+import decorationbanner from '../assets/decoration-home-banner.jpg' 
 import './homepage.css'
 
 export default function Home() {
@@ -428,7 +428,7 @@ handleTitleClick(item.title);
        >Book Now</button>
     </div>
   </div>
-  <div className="service">
+  <div className="service decoration">
     <div className="service-header">
       <h2 className='services-h2'>
         Decoration 

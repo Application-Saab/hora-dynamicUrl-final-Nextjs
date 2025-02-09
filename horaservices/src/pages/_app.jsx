@@ -7,7 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '../store/store';
 import Link from 'next/link';
 import Image from 'next/image';
-import whatsppicon from "../assets/whatsapp-icon.png";
+import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from 'next/router'; // Import useRouter
 
 function MyApp({ Component, pageProps }) {
