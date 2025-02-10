@@ -199,7 +199,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                     localStorage.setItem("mobileNumber", mobileNumber);
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem('userID', response.data.data._id);
-                    sendWelcomeMessage(mobileNumber);
+                    // sendWelcomeMessage(mobileNumber);
                     if (previousPage) {
                         if (previousPage.includes("/book-chef-cook-for-party")) {
                             router.push({
@@ -219,6 +219,9 @@ const sendWelcomeMessage = async (mobileNumber) => {
                                 pathname: '/checkout',
                                 query: { subCategory, product, totalAmount , orderType, catValue , selectedAddOnProduct, itemQuantities  }
                             });
+                        }
+                        else if (previousPage === "/orderlist") {
+                            router.push("/orderlist");
                         }
                         else if (previousPage.includes('/party-food-delivery-live-catering-buffet-select-date')) {
                             router.push({
