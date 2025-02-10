@@ -65,7 +65,7 @@
   .party-title::before,
   .party-title::after {
     content: '';
-    background-image: url('../assets/heading_icon.png'); 
+    background-image: url('../assets/heading_icon.webp'); 
     background-size: contain;
     background-repeat: no-repeat;
     width: 2.2rem; 
