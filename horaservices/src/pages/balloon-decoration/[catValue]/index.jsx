@@ -62,6 +62,12 @@ const DecorationCatPage = () => {
   const [discountDifference , setDiscountDifference] = useState(0)
   const [catalogueData, setCatalogueData] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
+  
+  const [currentPage, setCurrentPage] = useState(1); // Track current page
+  const [totalPages, setTotalPages] = useState(1);   // Track total pages
+  const [totalItems, setTotalItems] = useState(0);    // Track total items
+  const [limit] = useState(10);                      
+
   //   const navigate = useNavigate();
   const [priceFilter, setPriceFilter] = useState("all"); // Default: Show all
   const [themeFilter, setThemeFilter] = useState("all"); // Default: Show all
@@ -217,7 +223,9 @@ const DecorationCatPage = () => {
   const getSubCatId = async (subCategory) => {
     try {
       const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
+      console.log(response, "GET_DECORATION_CAT_ID");
       const categoryId = response.data.data?._id;
+      console.log(categoryId, "categoryIddd");
       setCatId(categoryId);
     } catch (error) {
       console.log("Error:", error.message);
@@ -241,30 +249,71 @@ const DecorationCatPage = () => {
     return { discount, discountedPrice , discountDifference }; // Return both discount percentage and discounted price
 };
 
+
+// const getSubCatItems = async () => {
+//   try {
+//       setLoading(true);
+//       const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ITEM + catId);
+//       console.log(response, "response");
+//       if (response.status === API_SUCCESS_CODE) {
+//           const decoratedData = response.data.data.map(item => {
+//               const { discount, discountedPrice , discountDifference} = getDiscountedPrice(item.price); // Destructure the return value
+//               return {
+//                   ...item,
+//                   rating: getRandomRating(),
+//                   userCount: getRandomNumber(20, 500),
+//                   discountPercentage: discount, // Add discount percentage
+//                   discountedPrice: discountedPrice ,// Add discounted price
+//                   discountDifference: discountDifference
+//               };
+//           });
+//           console.log(decoratedData,"decorateddaeata");
+//           setCatalogueData(decoratedData);
+//       }
+//   } catch (error) {
+//       console.log('Error Fetching Data:', error.message);
+//   } finally {
+//       setLoading(false);
+//   }
+// };
+const handlePageChange = (page) => {
+  setCurrentPage(page);
+};
+
+// Fetch data with pagination and catId
 const getSubCatItems = async () => {
   try {
-      setLoading(true);
-      const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ITEM + catId);
-      if (response.status === API_SUCCESS_CODE) {
-          const decoratedData = response.data.data.map(item => {
-              const { discount, discountedPrice , discountDifference} = getDiscountedPrice(item.price); // Destructure the return value
-              return {
-                  ...item,
-                  rating: getRandomRating(),
-                  userCount: getRandomNumber(20, 500),
-                  discountPercentage: discount, // Add discount percentage
-                  discountedPrice: discountedPrice ,// Add discounted price
-                  discountDifference: discountDifference
-              };
-          });
-          setCatalogueData(decoratedData);
-      }
+    setLoading(true);
+    const response = await axios.get(
+      `${BASE_URL}${GET_DECORATION_CAT_ITEM}${catId}?page=${currentPage}&limit=${limit}`
+    );
+    if (response.status === 200) {
+      const decoratedData = response.data.data.map(item => {
+        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);
+        return {
+          ...item,
+          rating: getRandomRating(),
+          userCount: getRandomNumber(20, 500),
+          discountPercentage: discount,
+          discountedPrice: discountedPrice,
+          discountDifference: discountDifference
+        };
+      });
+      setCatalogueData(decoratedData);
+      // Set pagination data
+      setTotalItems(response.data.pagination.totalItems);
+      setTotalPages(response.data.pagination.totalPages);
+    }
   } catch (error) {
-      console.log('Error Fetching Data:', error.message);
+    console.error('Error Fetching Data:', error.message);
   } finally {
-      setLoading(false);
+    setLoading(false);
   }
 };
+
+useEffect(() => {
+  getSubCatItems(); // Fetch items whenever the page changes
+}, [currentPage]); 
 
 
   const handleViewDetails = (subCategory, catValue, product) => {
@@ -413,6 +462,42 @@ const getSubCatItems = async () => {
 
           </div>
         </div>
+
+        <div>
+      {/* Render the catalogue items here */}
+      {loading ? <p>Loading...</p> : (
+        <div>
+          {catalogueData.map(item => (
+            <div key={item._id}>
+              <p>{item.title}</p>
+              <p>{item.discountedPrice}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Pagination buttons */}
+      <div>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* Optional: Display total items and current page */}
+      <div>
+        <p>
+          Showing {limit} of {totalItems} items (Page {currentPage} of {totalPages})
+        </p>
+      </div>
+    </div>
+
+
         <div style={styles.decContainer} className="decContainer">
           {loading ? ([1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
             <div className="decimagecontainer" key={index} style={styles.imageContainer}>
