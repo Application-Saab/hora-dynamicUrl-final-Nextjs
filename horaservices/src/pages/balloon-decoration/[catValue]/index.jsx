@@ -63,9 +63,9 @@ const DecorationCatPage = () => {
   const [catalogueData, setCatalogueData] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
   
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const [totalPages, setTotalPages] = useState(1);   // Track total pages
-  const [totalItems, setTotalItems] = useState(0);    // Track total items
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);   
+  const [totalItems, setTotalItems] = useState(0);   
   const [limit] = useState(10);                      
 
   //   const navigate = useNavigate();
@@ -276,11 +276,19 @@ const DecorationCatPage = () => {
 //       setLoading(false);
 //   }
 // };
+
 const handlePageChange = (page) => {
   setCurrentPage(page);
 };
 
-// Fetch data with pagination and catId
+const handlePreviousNext = (direction) => {
+  if (direction === 'next' && currentPage < totalPages) {
+    setCurrentPage(prevPage => prevPage + 1);
+  } else if (direction === 'previous' && currentPage > 1) {
+    setCurrentPage(prevPage => prevPage - 1);
+  }
+};
+
 const getSubCatItems = async () => {
   try {
     setLoading(true);
@@ -300,7 +308,6 @@ const getSubCatItems = async () => {
         };
       });
       setCatalogueData(decoratedData);
-      // Set pagination data
       setTotalItems(response.data.pagination.totalItems);
       setTotalPages(response.data.pagination.totalPages);
     }
@@ -312,8 +319,27 @@ const getSubCatItems = async () => {
 };
 
 useEffect(() => {
-  getSubCatItems(); // Fetch items whenever the page changes
-}, [currentPage]); 
+  getSubCatItems(); 
+}, [currentPage]);
+
+const getPageNumbers = () => {
+  const pageNumbers = [];
+  let start = Math.max(1, currentPage - 2);
+  let end = Math.min(totalPages, currentPage + 2);
+
+  if (end - start < 4) {
+    if (start === 1) {
+      end = Math.min(5, totalPages);
+    } else if (end === totalPages) {
+      start = Math.max(totalPages - 4, 1);
+    }
+  }
+
+  for (let i = start; i <= end; i++) {
+    pageNumbers.push(i);
+  }
+  return pageNumbers;
+};
 
 
   const handleViewDetails = (subCategory, catValue, product) => {
@@ -463,41 +489,6 @@ useEffect(() => {
           </div>
         </div>
 
-        <div>
-      {/* Render the catalogue items here */}
-      {loading ? <p>Loading...</p> : (
-        <div>
-          {catalogueData.map(item => (
-            <div key={item._id}>
-              <p>{item.title}</p>
-              <p>{item.discountedPrice}</p>
-            </div>
-          ))}
-        </div>
-      )}
-      
-      {/* Pagination buttons */}
-      <div>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            disabled={currentPage === index + 1}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
-
-      {/* Optional: Display total items and current page */}
-      <div>
-        <p>
-          Showing {limit} of {totalItems} items (Page {currentPage} of {totalPages})
-        </p>
-      </div>
-    </div>
-
-
         <div style={styles.decContainer} className="decContainer">
           {loading ? ([1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
             <div className="decimagecontainer" key={index} style={styles.imageContainer}>
@@ -607,6 +598,42 @@ useEffect(() => {
           }
           </div> */}
         </div>
+
+        <div>
+    </div>
+
+    <div className="pagination-container">
+  {/* Previous Button */}
+  <button
+    className="pagination-btn prev-btn"
+    onClick={() => handlePreviousNext('previous')}
+    disabled={currentPage === 1}
+  >
+    Previous
+  </button>
+
+  {/* Page Number Buttons */}
+  {getPageNumbers().map(page => (
+    <button
+      key={page}
+      className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+      onClick={() => handlePageChange(page)}
+      disabled={currentPage === page}
+    >
+      {page}
+    </button>
+  ))}
+
+  {/* Next Button */}
+  <button
+    className="pagination-btn next-btn"
+    onClick={() => handlePreviousNext('next')}
+    disabled={currentPage === totalPages}
+  >
+    Next
+  </button>
+</div>
+
 
         <div className="category-content">
   {currentCategoryContent.length > 0 ? (

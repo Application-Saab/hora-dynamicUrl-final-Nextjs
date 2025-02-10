@@ -2772,3 +2772,88 @@ nav.nav-li li {
   position: relative;
   margin-bottom: 10px;
 }
+
+
+/* pagination on the decoration listed product page */
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination-btn {
+  background-color: #f4f4f4;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-btn:disabled {
+  background-color: #ddd;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+.pagination-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+.pagination-btn.prev-btn,
+.pagination-btn.next-btn {
+  background-color: #28a745;
+  color: white;
+  border-color: #28a745;
+  font-size: 16px;
+}
+
+.pagination-btn.prev-btn:hover:not(:disabled),
+.pagination-btn.next-btn:hover:not(:disabled) {
+  background-color: #218838;
+  border-color: #218838;
+}
+
+.pagination-btn:focus {
+  outline: none;
+}
+
+
+
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: row; /* Ensure buttons stay in a horizontal row */
+    gap: 5px; /* Maintain space between buttons */
+  }
+
+  .pagination-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .pagination-btn.prev-btn,
+  .pagination-btn.next-btn {
+    font-size: 8px;
+    padding: 6px 12px;
+  }
+}
