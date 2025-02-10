@@ -1,38 +1,26 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import "../invitation.css";
-import template15 from "../../../assets/template15.svg";
-import template9 from "../../../assets/template9.svg";
-import template3 from "../../../assets/template3.svg";
-import template2 from "../../../assets/template2.svg";
-import template6 from "../../../assets/template6.svg";
-import template1 from "../../../assets/template1.svg";
-import template13 from "../../../assets/template13.svg";
-import template10 from "../../../assets/template10.svg";
-import template12 from "../../../assets/template12.svg";
-import template7 from "../../../assets/template7.svg";
-import template11 from "../../../assets/template11.svg";
-import template17 from "../../../assets/template17.svg";
 
 const products = [
   {
     category: "Happy Birthday Cards",
     products: [
-      { id: 1, name: "Barbie Doll Decoration for birthday", image: template1},
-      { id: 2, name: "Princess Decoration for birthday", image: template13 },
-      { id: 3, name: "Football Decoration for birthday", image: template12 },
-      { id: 4, name: "Superhero Decoration for birthday", image: template10},
-      { id: 5, name: "Oceans Decoration for birthday", image: template11 },
-      { id: 6, name: "Jungle Decoration for birthday", image: template7 },
+      { id: 1, name: "Barbie Doll Decoration for birthday", image: "/assets/template1.svg"},
+      { id: 2, name: "Princess Decoration for birthday", image: "/assets/template13.svg" },
+      { id: 3, name: "Football Decoration for birthday", image: "/assets/template12.svg" },
+      { id: 4, name: "Superhero Decoration for birthday", image: "/assets/template10.svg"},
+      { id: 5, name: "Oceans Decoration for birthday", image: "/assets/template11.svg" },
+      { id: 6, name: "Jungle Decoration for birthday", image: "/assets/template7.svg" },
       // { id: 7, name: "Mickey Mouse Decoration for birthday", image: "/assets/template8.svg" },
-      { id: 8, name: "Mickey Mouse Decoration for birthday", image: template2 },
-      { id: 9, name: "Mickey Mouse Decoration for birthday", image: template3 },
+      { id: 8, name: "Mickey Mouse Decoration for birthday", image: "/assets/template2.svg" },
+      { id: 9, name: "Mickey Mouse Decoration for birthday", image: "/assets/template3.svg" },
       // { id: 10, name: "Mickey Mouse Decoration for birthday", image: "/assets/template4.svg" },
-      { id: 11, name: "Mickey Mouse Decoration for birthday", image: template6 },
-      { id: 12, name: "Mickey Mouse Decoration for birthday", image: template9 },
-      { id: 13, name: "Mickey Mouse Decoration for birthday", image: template15 },
+      { id: 11, name: "Mickey Mouse Decoration for birthday", image: "/assets/template6.svg" },
+      { id: 12, name: "Mickey Mouse Decoration for birthday", image: "/assets/template9.svg" },
+      { id: 13, name: "Mickey Mouse Decoration for birthday", image: "/assets/template15.svg" },
     //   { id: 14, name: "Mickey Mouse Decoration for birthday", image: template16 },
-      { id: 15, name: "Mickey Mouse Decoration for birthday", image: template17},
+      { id: 15, name: "Mickey Mouse Decoration for birthday", image: "/assets/template17.svg"},
     ],
   },
 ];
