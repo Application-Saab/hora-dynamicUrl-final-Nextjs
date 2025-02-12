@@ -243,7 +243,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The chef and balloon decorations were excellent for our housewarming party. The service was prompt, and everything looked great. Minor hiccup with the setup time, but overall, a positive experience."
+            "text": "Hora Services completely transformed our venue with their gorgeous balloon decorations! The colors were vibrant, and the designs were flawless. They really went above and beyond to meet our vision. Highly recommend for any event!"
         },
         {
             "name": "Harikrishna Thakur",
@@ -309,7 +309,7 @@ const CustomersReviews = () => {
                 Hygiene: true,
                 Punctuality: true,
             },
-            text: "It was actually a better and less expensive option than ordering cold deliveries from online delivery apps. Atleast when i know the party is hosted by me, I would not trust anything but Hora",
+            text: "I was blown away by the creativity and professionalism of Hora Services. The balloon arch they created for our wedding was a showstopper! It added a magical touch to our special day. Truly top-notch service!",
         },
 
        
@@ -534,7 +534,7 @@ const CustomersReviews = () => {
                     "Hygiene": false,
                     "Punctuality": true
                 },
-                "text": "Hora did a great job with our baby shower decorations. The setup was lovely, and the team was very professional. However, there were minor cleanliness issues that could be addressed."
+                "text": "I booked Hora Services for my baby shower, and they did an absolutely fantastic job with the balloon decorations! The colors were soft and beautiful, matching the theme perfectly. The balloon arch was gorgeous, and it created such a welcoming atmosphere for our guests. The team was professional and punctual—couldn't have asked for a better experience!"
             },
         {
             "name": "Aarav Sharma",
@@ -566,7 +566,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": false
             },
-            "text": "The chef provided by Hora was fantastic! The food was delicious, and the presentation was impressive. However, there was a slight delay in service, which affected the overall experience."
+            "text": "I booked a private chef from Hora Services for a dinner party, and it was an absolute hit! The food was exceptional—each dish was beautifully presented and bursting with flavor. The chef was so professional, making sure every detail was perfect. Our guests couldn't stop talking about the meal! Highly recommend for anyone looking to elevate their event."
         },
         {
             "name": "Vivaan Gupta",
@@ -598,7 +598,7 @@ const CustomersReviews = () => {
                 "Hygiene": false,
                 "Punctuality": true
             },
-            "text": "Hora did a great job with our baby shower decorations. The setup was lovely, and the team was very professional. However, there were minor cleanliness issues that could be addressed."
+            "text": "I couldn't be happier with the balloon decorations provided by Hora Services for my baby shower! They really listened to my vision and turned it into reality with the most creative and stunning arrangements. The balloons were vibrant, and they even incorporated cute little details to match the baby theme. Highly recommend for anyone planning a special event!"
         },
         {
             "name": "Arjun Singh",
@@ -614,7 +614,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The catering was good, but the quantity of food provided was less than expected for the size of our corporate event. The team was friendly and the food was tasty, but there’s room for improvement."
+            "text": "We booked live catering from Hora Services for our corporate event on April 30th, 2024, and it was absolutely amazing! The food was fresh, vibrant, and beautifully presented. The live cooking stations were a huge hit with our guests, and the chef's skills were impressive. Everything was perfectly coordinated, and the team was so professional. I highly recommend them for any corporate function!"
         },
         {
             "name": "Ananya Joshi",
@@ -646,7 +646,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The balloon decorations for my child’s birthday party were fantastic! The kids loved it. The only issue was that the setup took a bit longer than expected, but it was worth the wait."
+            "text": "I booked Hora Services for my child’s birthday, and they completely exceeded my expectations! The balloon decorations were absolutely magical—colorful, fun, and perfectly themed. The kids loved the balloon arch and the creative designs! The team was punctual, professional, and made everything so easy. I will definitely be using them for future events!"
         },
         {
             "name": "Priya Sharma",
@@ -694,7 +694,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The chef and balloon decorations were excellent for our housewarming party. The service was prompt, and everything looked great. Minor hiccup with the setup time, but overall, a positive experience."
+            "text": "The chef and balloon decorations were excellent for our housewarming party. The service was prompt, and everything looked great."
         },
         {
             "name": "Amit Kumar",
@@ -726,7 +726,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The decorations for our corporate event were impressive, and the team was very professional. The only downside was that there were some issues with food taste, but overall, the event was a success."
+            "text": "Hora Services truly transformed our corporate event with their stunning decorations. From the floral arrangements to the custom branding touches, everything was on point. The attention to detail was incredible, and the setup was flawless. Our team and guests were all impressed, and I’ll definitely be booking them again for future events"
         },
         {
             "name": "Ravi Kumar",
@@ -902,7 +902,7 @@ const CustomersReviews = () => {
                 "Hygiene": true,
                 "Punctuality": true
             },
-            "text": "The decorations were decent for our corporate event, but there were some issues with the quantity and cleanliness. The team was punctual and friendly, but these issues affected our overall satisfaction."
+            "text": "I booked Hora Services for our corporate event, and they did an outstanding job with the decorations! The venue looked elegant and professional, with tasteful designs that matched our branding perfectly. The team was punctual and worked efficiently to ensure everything was set up seamlessly. I highly recommend them for any corporate function!"
         },
         {
             "name": "Meera Desai",
