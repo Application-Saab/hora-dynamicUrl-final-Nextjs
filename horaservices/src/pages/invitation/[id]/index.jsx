@@ -2,23 +2,73 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import "../invitation.css";
 
-
 const products = [
   {
     category: "Happy Birthday Cards",
     products: [
-      { id: 1, name: "Barbie Doll Decoration for birthday", image: "../../..//assets/template13.svg"},
-      // { id: 2, name: "Princess Decoration for birthday", image: "/assets/template13.svg" },
-      // { id: 3, name: "Football Decoration for birthday", image: "/assets/template12.svg" },
-      // { id: 4, name: "Superhero Decoration for birthday", image: "/assets/template10.svg"},
-      // { id: 5, name: "Oceans Decoration for birthday", image: "/assets/template11.svg" },
-      // { id: 6, name: "Jungle Decoration for birthday", image: "/assets/template7.svg" },
-      // { id: 8, name: "Mickey Mouse Decoration for birthday", image: "/assets/template2.svg" },
-      // { id: 9, name: "Mickey Mouse Decoration for birthday", image: "/assets/template3.svg" },
-      // { id: 11, name: "Mickey Mouse Decoration for birthday", image: "/assets/template6.svg" },
-      // { id: 12, name: "Mickey Mouse Decoration for birthday", image: "/assets/template9.svg" },
-      // { id: 13, name: "Mickey Mouse Decoration for birthday", image: "/assets/template15.svg" },
-      // { id: 15, name: "Mickey Mouse Decoration for birthday", image: "/assets/template17.svg"},
+      {
+        id: 1,
+        name: "Barbie Doll Decoration for birthday",
+        image: "/assets/template1.svg",
+      },
+      {
+        id: 2,
+        name: "Princess Decoration for birthday",
+        image: "/assets/template13.svg",
+      },
+      {
+        id: 3,
+        name: "Football Decoration for birthday",
+        image: "/assets/template12.svg",
+      },
+      {
+        id: 4,
+        name: "Superhero Decoration for birthday",
+        image: "/assets/template10.svg",
+      },
+      {
+        id: 5,
+        name: "Oceans Decoration for birthday",
+        image: "/assets/template11.svg",
+      },
+      {
+        id: 6,
+        name: "Jungle Decoration for birthday",
+        image: "/assets/template7.svg",
+      },
+      // { id: 7, name: "Mickey Mouse Decoration for birthday", image: "/assets/template8.svg" },
+      {
+        id: 8,
+        name: "Mickey Mouse Decoration for birthday",
+        image: "/assets/template2.svg",
+      },
+      {
+        id: 9,
+        name: "Mickey Mouse Decoration for birthday",
+        image: "/assets/template3.svg",
+      },
+      // { id: 10, name: "Mickey Mouse Decoration for birthday", image: "/assets/template4.svg" },
+      {
+        id: 11,
+        name: "Mickey Mouse Decoration for birthday",
+        image: "/assets/template6.svg",
+      },
+      {
+        id: 12,
+        name: "Mickey Mouse Decoration for birthday",
+        image: "/assets/template9.svg",
+      },
+      {
+        id: 13,
+        name: "Mickey Mouse Decoration for birthday",
+        image: "/assets/template15.svg",
+      },
+      //   { id: 14, name: "Mickey Mouse Decoration for birthday", image: template16 },
+      {
+        id: 15,
+        name: "Mickey Mouse Decoration for birthday",
+        image: "/assets/template17.svg",
+      },
     ],
   },
 ];
@@ -40,13 +90,12 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (product) {
-      fetch(product.image) 
+      fetch(product.image)
         .then((response) => response.text())
         .then((data) => setSvgContent(data))
         .catch((error) => console.error("Error loading SVG:", error));
     }
   }, [product]);
-
 
   useEffect(() => {
     if (svgContent) {
@@ -68,23 +117,23 @@ export default function ProductPage() {
           const textAddress = svgElement.querySelector("#address");
           if (textAddress) textAddress.textContent = address;
 
-          const imageElement = svgElement.querySelector('[data-id="uniqueImage1"]');
+          const imageElement = svgElement.querySelector(
+            '[data-id="uniqueImage1"]'
+          );
           if (imageElement) {
-            imageElement.setAttribute("href", imageSrc); 
+            imageElement.setAttribute("href", imageSrc);
           }
         }
-      } 
-      
+      }
     }
   }, [svgContent, fullname, date, imageSrc, time, address]);
-
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImageSrc(e.target.result); 
+        setImageSrc(e.target.result);
       };
       reader.readAsDataURL(file);
     }
@@ -176,7 +225,7 @@ export default function ProductPage() {
   return (
     <div className="product-details-container">
       <div className="product-content">
-      <div id="svg-container" className="product-svg" />
+        <div id="svg-container" className="product-svg" />
         <div className="edit-buttons">
           <div
             style={{
@@ -190,38 +239,37 @@ export default function ProductPage() {
               <span>{product ? product.name : "Product Not Found"}</span>
             </div>
 
-              <div className="edit-section">
-                <input
-                  type="text"
-                  placeholder="Enter Name"
-                  value={fullname}
-                  onChange={(e) => setFullname(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Enter Name 2"
-                  value={date}
-                  onChange={(e) => setdate(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Enter Time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Enter Address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
-
-              </div>
+            <div className="edit-section">
+              <input
+                type="text"
+                placeholder="Enter Name"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Enter Name 2"
+                value={date}
+                onChange={(e) => setdate(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Enter Time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Enter Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+            </div>
             <button onClick={handleShareOnWhatsApp}>Share</button>
           </div>
         </div>

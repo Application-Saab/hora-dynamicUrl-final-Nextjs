@@ -81,11 +81,11 @@ const products = [
         name: "Duck Decoration for birthday",
         image: template15,
       },
-      {
-        id: 14,
-        name: "IronMan Decoration for birthday",
-        image: template16,
-      },
+      // {
+      //   id: 14,
+      //   name: "IronMan Decoration for birthday",
+      //   image: template16,
+      // },
       {
         id: 15,
         name: "MineCraft Decoration for birthday",
