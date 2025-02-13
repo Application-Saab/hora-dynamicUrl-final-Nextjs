@@ -238,6 +238,13 @@ const sendWelcomeMessage = async (mobileNumber) => {
                                 pathname: '/checkout',
                                 query: { subCategory, product, orderType }
                             });
+                        } 
+                        else if (previousPage.startsWith('/photo-gallery')) {
+                            alert(previousPage)
+                            router.push({
+                                pathname: '/photo-gallery',
+                                query: { folderName,customerId }
+                            });
                         } else {
                             router.push('/');
                         }

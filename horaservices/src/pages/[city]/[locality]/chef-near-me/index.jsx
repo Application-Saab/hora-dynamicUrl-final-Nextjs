@@ -7,7 +7,7 @@ import bannerDecorationImage from '../../../../assets/decoration-home-banner.png
 import bannerChefImage from '../../../../assets/chef-home-banner.png';
 import bannerHospitalityImage from '../../../../assets/hospitality.png';
 import bannerReturnGiftImage from '../../../../assets/return-gift-banner-home.png';
-import bannerEntertainmentImage from '../../../../assets/entertainment-banner-home.png';
+// import bannerEntertainmentImage from '../../../../assets/entertainment-banner-home.png';
 import bannerFoodDeliveryImage from '../../../../assets/food-delivery-home-banner.png';
 import Celebrate1Image from '../../../../assets/Birthday&Celebration.png';
 import Celebrate2Image from '../../../../assets/corporate-party.png';
@@ -942,12 +942,12 @@ const ChefCitypage = () => {
                                 <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Gift & Party Supplies</h2>
                             </Link>
                         </div>
-                        <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
+                        {/* <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
                             <Link href="/" style={{ textDecoration: "none" }}>
                                 <Image src={bannerEntertainmentImage} alt="Entertainment Near me" style={{ height: "auto" }} />
                                 <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Entertainment</h2>
                             </Link>
-                        </div>
+                        </div> */}
                         <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
                             <Link href="/" style={{ textDecoration: "none" }}>
                                 <Image src={bannerFoodDeliveryImage} alt="Food Delivery Near me" style={{ height: "auto" }} />

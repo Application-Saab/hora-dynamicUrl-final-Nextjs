@@ -1,166 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Resizer from "react-image-file-resizer";
-import { galleryPhoto } from "./gallery";
-import "./gallery.css";
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/router';
+import ThumbnailGallery from './ThumbnailGallery'; // Import the ThumbnailGallery component
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-export default function Gallery() {
+const PhotoGallery = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const folderName = urlParams.get('folderName');
+  const customerId = urlParams.get('customerId');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [compressedPhotos, setCompressedPhotos] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null); // For popup modal
-  const [rotation, setRotation] = useState(0); // Rotation state
-  const [userPhotos, setUserPhotos] = useState([]); // Store filtered photos
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const router = useRouter();
+  const fromPage = urlParams.get('from'); // Get the 'from' query param (last visited page)
 
+  // Check login status and redirect if not logged in
   useEffect(() => {
     const loggedInStatus = localStorage.getItem("isLoggedIn");
-    const mobileNumber = localStorage.getItem("mobileNumber"); // Retrieve mobile number from localStorage
-
-    setIsLoggedIn(loggedInStatus === "true");
-
-    if (loggedInStatus === "true" && mobileNumber) {
-      console.log("mobileNumber from localStorage:", mobileNumber); // Log the mobile number
-      // Parse mobileNumber to an integer for comparison, ensure it's treated as a number
-      const mobileNumberInt = parseInt(mobileNumber, 10);
-
-      // Find the gallery associated with this mobileNumber
-      const userGallery = galleryPhoto.find(
-        (gallery) => gallery.customerNumber === mobileNumberInt
-      );
-      
-      console.log("userGallery:", userGallery); // Log the found gallery data
-
-      if (userGallery) {
-        setUserPhotos(userGallery.photos); // Set the filtered photos for this mobileNumber
-      } else {
-        console.log("No gallery found for this mobile number.");
-      }
+    if (loggedInStatus !== "true") {
+      router.push({
+        pathname: '/login',
+        query: {
+          from:window.location.pathname,
+          folderName: folderName || "", // Ensure folderName is defined
+          customerId: customerId || "",
+        }
+      });
+    } else {
+      setIsLoggedIn(loggedInStatus === "true");
     }
   }, []);
 
-  const fetchImageAsBlob = async (relativeUrl) => {
-    const absoluteUrl = `${window.location.origin}${relativeUrl}`;
-    const response = await fetch(absoluteUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.statusText}`);
-    }
-    return await response.blob();
-  };
-
-  const compressImages = async (photos) => {
-    const compressedImages = await Promise.all(
-      photos.map(async (photo) => {
-        try {
-          const blob = await fetchImageAsBlob(photo.url);
-          return new Promise((resolve) => {
-            Resizer.imageFileResizer(
-              blob,
-              480,
-              320,
-              "JPEG",
-              80,
-              0,
-              (uri) => {
-                resolve({ id: photo.id, url: uri });
-              },
-              "base64"
-            );
-          });
-        } catch (error) {
-          console.error("Image compression error:", error);
-          return { id: photo.id, url: photo.url };
-        }
-      })
-    );
-    setCompressedPhotos(compressedImages);
-  };
-
+  // Handle the redirect after successful login
   useEffect(() => {
-    if (userPhotos.length > 0) {
-      compressImages(userPhotos);
+    if (isLoggedIn && fromPage) {
+      router.push(fromPage); // Redirect to the stored page after login
     }
-  }, [userPhotos]);
+  }, [isLoggedIn, fromPage, router]);
 
   return (
-    <>
+    <div className="container py-2" >
+      {/* <h2 className="title">Project Thumbnails</h2> */}
       {isLoggedIn ? (
-        <div className="masonry">
-          {compressedPhotos.map((photo, index) => (
-            <div
-              className="images masonry-item"
-              key={photo.id}
-              onClick={() => setSelectedImage(userPhotos[index])} // Show modal with original image
-              style={{ cursor: "pointer" }}
-            >
-              <Image
-                src={photo.url}
-                width={480}
-                height={320}
-                sizes="100vw"
-                alt={`Gallery Image ${photo.id}`}
-              />
-            </div>
-          ))}
-
-          {/* Popup Modal for Zooming Image */}
-          {selectedImage && (
-            <div
-              className="modal-overlay"
-              onClick={() => setSelectedImage(null)} // Close modal on overlay click
-            >
-              <div
-                className="modal-content"
-                onClick={(e) => e.stopPropagation()} // Prevent close on modal click
-              >
-                <button
-                  className="close-button"
-                  onClick={() => {
-                    setSelectedImage(null); // Close modal
-                    setRotation(0); // Reset rotation to 0
-                  }}
-                >
-                  ✖
-                </button>
-
-                {/* Image Container with Rotation */}
-                <div className="image-container">
-                  <Image
-                    src={selectedImage.url}
-                    alt={selectedImage.name}
-                    width={960}
-                    height={600}
-                    style={{
-                      transform: `rotate(${rotation}deg)`, // Apply rotation
-                      transition: "transform 0.3s ease-in-out", // Smooth rotation
-                    }}
-                    className="modal-image"
-                  />
-                </div>
-
-                {/* Buttons for Rotation and Download */}
-                <div className="button-container">
-                  <button
-                    className="rotate-button"
-                    onClick={() => setRotation(rotation + 90)} // Increment rotation by 90 degrees
-                  >
-                    Rotate
-                  </button>
-                  <a
-                    href={selectedImage.url} // Link to the original image
-                    download={selectedImage.name} // Suggested download filename
-                    className="download-button"
-                  >
-                    Download Original
-                  </a>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        folderName && customerId ? (
+          <ThumbnailGallery folderName={folderName} customerId={customerId} />
+        ) : (
+          <p>Please provide the folder and customer ID in the URL.</p>
+        )
       ) : (
-        <div>Not Logged In</div>
+        <p>Loading or redirecting...</p>
       )}
-    </>
+    </div>
   );
-}
+};
+
+export default PhotoGallery;

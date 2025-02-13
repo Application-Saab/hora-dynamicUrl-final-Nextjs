@@ -15,7 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import logo from '../../assets/new_logo_light.png.png';
 import logolight from '../../assets/hora-light-innerpage.png'
 import loginIcon from '../../assets/profile_picture.png';
-  
+import { faInstagram ,faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 function Header() {
   useScrollToTop(); // Use the custo hook
 
@@ -157,6 +157,8 @@ useEffect(() => {
         return "Product";
       case pathname.match(/^\/balloon-decoration\/.+$/) !== null:
         return "Decoration category";
+      case pathname.includes("/photo-gallery"):
+          return "Photo Gallery";
       default:
         return "";
     }
@@ -283,6 +285,7 @@ useEffect(() => {
                   }}
                   onClick={handleBack}
                 />
+        
                 <h1 style={{ margin: 0 , fontSize:"16px" }}>{pageTitle}</h1>
               </>
             )}  
@@ -388,7 +391,7 @@ useEffect(() => {
         </div>
       </div>
       <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
-        <div className="d-flex align-items-center gap-3 z-1" style={{ width:"100%"}}>
+        <div className="d-flex align-items-center gap-3 z-1" style={{ width:"100%" , justifyContent:"space-between"}}>
           {isHomePage && ChefCitypage ? (
             <>
               <FontAwesomeIcon
@@ -403,7 +406,8 @@ useEffect(() => {
             </>
           ) : (
             <>
-              <Image
+           
+              {/* <Image
                 src={backIcon}
                 alt="Back"
                 style={{
@@ -412,8 +416,21 @@ useEffect(() => {
                   cursor: "pointer",
                 }}
                 onClick={handleBack}
-              />
+              /> */}
+               <Link href="/">
+                  <Image src={logo} alt="Logo" style={{ width: "50px", height: "50px", margin:"0px auto",background:"white",borderRadius: "50%"}} />
+                </Link>
               <h1 style={{ margin: 0 , fontSize:"16px" }}>{pageTitle}</h1>
+              
+              <div className="brandLogo">
+
+              <Link href="https://www.instagram.com/horaservices/?fbclid=IwAR0PktJ-rl5rKC6YGSZ8BSw3m8o9qMfLpJchO17FCEZuCXKxvASZWRymifA" target="_blank" rel="noopener noreferrer" className="mx-2" style={{ color: "inherit" }}>
+                <FontAwesomeIcon icon={faInstagram} />
+              </Link>
+              <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank" rel="noopener noreferrer" className="mx-2" style={{ color: "inherit" }}>
+                <FontAwesomeIcon icon={faWhatsapp} />
+              </Link>
+              </div>
             </>
           )}  
         </div>
