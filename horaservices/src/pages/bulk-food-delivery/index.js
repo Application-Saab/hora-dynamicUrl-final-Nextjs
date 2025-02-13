@@ -13,7 +13,7 @@ import '../../app/globals.css';
 import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import DecorationIcon from '../../assets/decoration_icon.png';
+import DecorationIcon from '../../assets/decoration_icon.webp';
 import PhotographyIcon from '../../assets/photography_icon.png';
 import FoodIcon from '../../assets/food_icon.png';
 import { sendGTMEvent  } from '@next/third-parties/google';
