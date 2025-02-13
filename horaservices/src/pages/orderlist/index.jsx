@@ -23,6 +23,7 @@ const Orderlist = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
+
     const fetchOrderList = async () => {
       try {
         const userId = await localStorage.getItem("userID");
@@ -56,6 +57,18 @@ const Orderlist = () => {
     };
 
     fetchOrderList();
+
+    const checkAuth = () => {
+
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+      if (orders.length > 0 && isLoggedIn !== "true") {
+        router.push({
+          pathname: '/login',
+          query: { from: "/orderlist" }
+        });
+      }
+    };
+    checkAuth();
   }, []);
 
   const getOrderStatus = (orderStatusValue) => {

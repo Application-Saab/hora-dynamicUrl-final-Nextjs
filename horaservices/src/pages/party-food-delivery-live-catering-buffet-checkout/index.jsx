@@ -197,7 +197,7 @@ const FoodDeliveryCheckout = () => {
             }
         } else if (selectedDeliveryOption === 'party-live-buffet-catering') {
             finalTotal = parseFloat(discountedPrice) > 4000
-            ? parseFloat(discountedPrice) + deliveryCharges
+            ? parseFloat(discountedPrice)
             : parseFloat(discountedPrice) + deliveryCharges;
         
        
