@@ -16,6 +16,7 @@ import Image from "next/image";
 // order type 5 cleaner
 // order type 6 Food Delivery
 // order type 7 Live Catering
+// order type 8 photography
 
 const Orderlist = () => {
   const router = useRouter();

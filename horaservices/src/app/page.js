@@ -21,11 +21,11 @@ import './globals.css';
 import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import DecorationIcon from '../assets/decoration_icon.png';
-import PhotographyIcon from '../assets/photography_icon.png';
+import DecorationIcon from '../assets/decoration_icon.webp';
+import PhotographyIcon from '../assets/photography_icon.webp';
 import FoodIcon from '../assets/food_icon.png';
 import { sendGTMEvent  } from '@next/third-parties/google';
-import decorationbanner from '../assets/decoration-home-banner.jpg' 
+ import decorationbanner from '../assets/decoration-home-banner.jpg'
 import './homepage.css'
 
 export default function Home() {
@@ -505,7 +505,7 @@ handleTitleClick(item.title);
 
 
     </div>
-    <div>
+    {/* <div>
       <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
         <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon"
         onClick={() => {
@@ -516,7 +516,7 @@ handleTitleClick(item.title);
             });
           }} />
       </Link>
-    </div>
+    </div> */}
 </>
 );
 }

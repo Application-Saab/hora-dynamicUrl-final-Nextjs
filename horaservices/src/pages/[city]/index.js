@@ -18,22 +18,17 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "../../app/page.module.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../app/globals.css';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import DecorationIcon from '../../assets/decoration_icon.png';
-import PhotographyIcon from '../../assets/photography_icon.png';
+import DecorationIcon from '../../assets/decoration_icon.webp';
+import PhotographyIcon from '../../assets/photography_icon.webp';
 import FoodIcon from '../../assets/food_icon.png';
 import EntertainmentIcon from '../../assets/enter_icon.png';
 import '../../app/homepage.css'
 import cityData from '../../utils/cityData';
-// remove later
-// import homepage_entertainment1 from '../../assets/homepage_entertainment1.png';
-// import homepage_entertainment2 from '../../assets/homepage_entertainment2.png';
-// import homepage_entertainment3 from '../../assets/homepage_entertainment3.png';
-// import homepage_entertainment4 from '../../assets/homepage_entertainment4.png';
+import decorationbanner from '../../assets/decoration-home-banner.jpg';
 
 export default function Home() {
   const router = useRouter();
@@ -154,31 +149,7 @@ export default function Home() {
     ],
   };
 
-  const homeslidersettings = {
-    infinite: true,
-    speed: 1000,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    fade: true, // Enables the fade effect
-    autoplaySpeed: 2500,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+ 
 
   const celebrateslidersettings = {
     infinite: true,
@@ -208,29 +179,7 @@ export default function Home() {
 
 
 
-  const slides = [
-    {
-     image: "https://horaservices.com/api/uploads/homepage_slider1.webp",
-      title: 'Decoration at your step',
-      description: 'Transform your space with our expert decorators',
-      imgAlt: 'Decoration services at your step',
-      link:"/balloon-decoration"
-    },
-    {
-      image: "https://horaservices.com/api/uploads/homepage_slider2.webp",
-      title: 'Party Food Delivery',
-      description: 'Delicious food for all your party needs',
-      imgAlt: 'Party food delivery service',
-      link:"/party-food-delivery-live-catering-buffet/party-food-delivery"
-    },
-    {
-      image: "https://horaservices.com/api/uploads/homepage_slider3.webp",
-      title: 'Live Cooking at Spot',
-      description: 'Book top-notch performers for your event',
-      imgAlt: 'Live cooking at event location',
-      link:"/party-food-delivery-live-catering-buffet/party-live-buffet-catering"
-    }
-    ];
+  
 
   const foodData = [
     {
@@ -497,29 +446,21 @@ export default function Home() {
   return (
     <>
       <div className="page-width">
-        <div className="party-services homeslider">
-          <h1 className="party-title">All party services on one platform</h1>
-          <div className="home-slider-inner">
-            <Slider {...homeslidersettings}>
-              {slides.map((slide, index) => (
-                <div key={index} className="slide-container">
-                  <Image src={slide.image} alt={slide.title}
-                    width={1200}
-                    height={400}
-                    //  objectFit="cover" 
-                    layout="responsive"
-                    className="responsive-image"
+       
+           <div className="party-services homeslider">
+            <h1 className="party-title">All party services on one platform</h1>
+       <div className="home-slider-inner">
+       <div className="slide-container" onClick={() => openSliderLink()}>
+                 <Image src={decorationbanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
+                  width={1200} 
+                  height={400} 
+                  className="responsive-image"
                   />
-                  <div className="carousel-content slide-content">
-                    <h2 className="party-title1 slide-title">{slide.title}</h2>
-                    <button className="slide-button book-now" onClick={() => openSliderLink(slide.link , city)}>book Now</button>
-                  </div>
-                </div>
-              ))}
-            </Slider>
-          </div>
-
-        </div>
+               </div>
+       
+           </div>
+       
+           </div>
         <div className="food-container sec-container">
           <h1 className="food-title">
             <span>Food</span>
