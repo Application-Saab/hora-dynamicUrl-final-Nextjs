@@ -60,13 +60,17 @@ const Orderlist = () => {
 
     const checkAuth = () => {
 
-      const isLoggedIn = localStorage.getItem("isLoggedIn");
-      if (orders.length > 0 && isLoggedIn !== "true") {
-        router.push({
-          pathname: '/login',
-          query: { from: "/orderlist" }
-        });
-      }
+      const checkAuth = () => {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+          router.push({
+            pathname: '/login',
+            query: { from: "/orderlist" }
+          });
+        }
+      };
+  
+      checkAuth()
     };
     checkAuth();
   }, []);

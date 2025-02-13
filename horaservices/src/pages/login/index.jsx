@@ -220,6 +220,9 @@ const sendWelcomeMessage = async (mobileNumber) => {
                                 query: { subCategory, product, totalAmount , orderType, catValue , selectedAddOnProduct, itemQuantities  }
                             });
                         }
+                     else if (previousPage === "/orderlist") {
+                        router.push("/orderlist");
+                    }
                         else if (previousPage.includes('/party-food-delivery-live-catering-buffet-select-date')) {
                             router.push({
                                 pathname: "/party-food-delivery-live-catering-buffet-checkout",
@@ -237,7 +240,9 @@ const sendWelcomeMessage = async (mobileNumber) => {
                                 pathname: '/checkout',
                                 query: { subCategory, product, orderType }
                             });
-                        } else {
+                        } 
+
+                        else {
                             router.push('/');
                         }
                     } else {
@@ -331,8 +336,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                     {!otpSent ? (
                         <>
                             <div className="form-group" style={{ display: "flex", justifyContent: "center", flexDirection: "column", textAlign: "center" }}>
-                                <p className='font-16px' style={{ color: "#9252AA", fontWeight: 600 }}>Login with your mobile number </p>
-                                <div className='row gap-1 justify-content-around'>
+                            <p className='font-16px' style={{ color: "#9252AA", fontWeight: 600 }}>Login with your mobile number  {previousPage === "/orderlist" ? "to check your Orders" : ""}</p>                                <div className='row gap-1 justify-content-around'>
                                     <div className='col-2 p-0 m-0 text-center'>
                                         <p className='form-control rounded-2 phone-code font-16px m-0 py-3'>+91</p>
                                     </div>
