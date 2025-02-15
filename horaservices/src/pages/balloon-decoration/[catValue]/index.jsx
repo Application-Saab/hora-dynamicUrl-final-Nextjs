@@ -27,6 +27,7 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
+import { debounce } from 'lodash';
 
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
@@ -179,6 +180,7 @@ const DecorationCatPage = () => {
       }
     }
   };
+  
 
   const filteredData = useMemo(() => {
     return catalogueData.filter((item) => {
@@ -317,6 +319,7 @@ const DecorationCatPage = () => {
     }
   };
 
+  
   // Reset and fetch initial data when catId changes
   useEffect(() => {
     if (catId) {
@@ -420,6 +423,7 @@ const DecorationCatPage = () => {
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
+  
 
   return (
     <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
