@@ -232,6 +232,11 @@
       .cls-66, .cls-39 {
         font-weight: 700;
       }
+      @media (max-width: 768px) {
+  .cls-66 {
+    font-size:40px; 
+  }
+}
 
       .cls-66, .cls-67 {
         fill: #d19537;

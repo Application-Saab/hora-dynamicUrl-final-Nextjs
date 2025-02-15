@@ -56,8 +56,43 @@
         letter-spacing: .07em;
       }
 
+@media (max-width: 768px) {
+  .cls-30 {
+    font-family: Haettenschweiler, Haettenschweiler;
+    font-size: 53px;
+    letter-spacing: 0.07em;
+  }
+
+  /* Adjusting the X position to add a gap between the text elements */
+  #date {
+    transform: translate(240.1 1472.38);
+  }
+
+  #time {
+    transform: translate(710 1472.38); /* Shift the 'time' element to the right to create a gap */
+  }
+}
+
+ .cls-3001 {
+        font-family: Haettenschweiler, Haettenschweiler;
+        font-size: 73px;
+        letter-spacing: .07em;
+      }
+
+@media (max-width: 768px) {
+  .cls-3001 {
+    font-family: Haettenschweiler, Haettenschweiler;
+    font-size: 53px;
+    letter-spacing: 0.07em;
+  }}
+
+
       .cls-30, .cls-31 {
         fill: #eabb4d;
+      }
+
+      .cls-3001 {
+        fill:rgb(250, 248, 245);
       }
 
       .cls-13 {
@@ -746,23 +781,8 @@
               <polygon class="cls-58" points="821.12 952.93 759.2 984.98 787.95 907.74 821.12 952.93"/>
             </g>
             <path class="cls-39" d="m817.88,952.93c-171.15-80.54-369.31-80.54-540.46,0-27.6-58.65-55.2-117.3-82.79-175.94,223.59-105.21,482.45-105.21,706.04,0-27.6,58.65-55.2,117.3-82.79,175.94Z"/>
-            <text class="cls-5" transform="translate(337.83 853.99) rotate(-18.22)"><tspan x="0" y="0">L</tspan></text>
-            <text class="cls-3" transform="translate(366.09 844.66) rotate(-14.99)"><tspan x="0" y="0">E</tspan></text>
-            <text class="cls-3" transform="translate(397.04 836.37) rotate(-12.06)"><tspan x="0" y="0">T</tspan></text>
-            <text class="cls-3" transform="translate(428.25 829.85) rotate(-10.1)"><tspan x="0" y="0">&apos;</tspan></text>
-            <text class="cls-3" transform="translate(442.74 827.06) rotate(-8.05)"><tspan x="0" y="0">S</tspan></text>
-            <text class="cls-3" transform="translate(479.82 822) rotate(-6.03)"><tspan x="0" y="0"> </tspan></text>
-            <text class="cls-3" transform="translate(496.31 820.06) rotate(-4.06)"><tspan x="0" y="0">C</tspan></text>
-            <text class="cls-3" transform="translate(534.27 817.42) rotate(-1.58)"><tspan x="0" y="0">E</tspan></text>
-            <text class="cls-3" transform="translate(566.48 816.54) rotate(.61)"><tspan x="0" y="0">L</tspan></text>
-            <text class="cls-3" transform="translate(596.47 816.83) rotate(2.86)"><tspan x="0" y="0">E</tspan></text>
-            <text class="cls-3" transform="translate(628.57 818.34) rotate(5.51)"><tspan x="0" y="0">B</tspan></text>
-            <text class="cls-3" transform="translate(666.19 821.93) rotate(8.61)"><tspan x="0" y="0">R</tspan></text>
-            <text class="cls-3" transform="translate(703.18 827.5) rotate(12.04)"><tspan x="0" y="0">A</tspan></text>
-            <text class="cls-3" transform="translate(738.88 835.14) rotate(15.69)"><tspan x="0" y="0">T</tspan></text>
-            <text class="cls-3" transform="translate(769.11 843.55) rotate(19.7)"><tspan x="0" y="0">E</tspan></text>
-            <text class="cls-3" transform="translate(799.03 854.47) rotate(23.37)"><tspan x="0" y="0">!</tspan></text>
-            <text class="cls-3" transform="translate(814.67 861.21) rotate(26.27)"><tspan x="0" y="0"> </tspan></text>
+           <text class="cls-3001" transform="translate(320.83 853.99)">LET'S CELEBRATE!</text>
+
           </g>
         </g>
         <g class="cls-71">

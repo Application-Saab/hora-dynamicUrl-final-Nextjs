@@ -267,6 +267,12 @@
       .cls-62, .cls-64 {
         font-family: Playbill, Playbill;
       }
+      @media (max-width: 768px) {
+  .cls-62,.cls-64 {
+    font-family: Playbill, Playbill;
+  }
+}
+
 
       .cls-32 {
         stroke-width: .96px;
@@ -299,6 +305,12 @@
       .cls-64 {
         font-size: 103.34px;
       }
+
+@media (max-width: 768px) {
+  .cls-62,.cls-64 {
+font-size: 60px;
+  }
+}
 
       .cls-37 {
         stroke-width: .95px;

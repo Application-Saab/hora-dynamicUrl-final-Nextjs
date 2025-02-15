@@ -343,3 +343,15 @@
       gap: 5px;
     }
   }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .form-label {
+    font-weight: bold;
+    margin-bottom: 5px; 
+    align-self: flex-start;
+  }

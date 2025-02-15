@@ -118,6 +118,7 @@ export default function App() {
                   <Image
                     src={product.image}
                     alt={product.name}
+                    layout="responsive"
                     width={600}
                     height={480}
                   />

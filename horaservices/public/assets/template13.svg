@@ -1069,6 +1069,20 @@
         font-family: AgencyFB-Bold, 'Agency FB';
         font-weight: 700;
       }
+<!-- 
+        @media (max-width: 768px) {
+  .cls-207 {
+    font-size:70px; 
+    margin-left: 20px;
+  }
+} -->
+@media (max-width: 768px) {
+  .cls-207 {
+    font-size: 66px;
+    margin-left: 30px;
+    margin-bottom: 20px; /* Adds a gap below the element */
+  }
+}
 
       .cls-171 {
         filter: url(#drop-shadow-77);
