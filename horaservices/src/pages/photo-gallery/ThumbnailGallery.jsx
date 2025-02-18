@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import './gallery.css'
-import ImageUploader from "./ImageUploader";
+
 const ThumbnailGallery = ({ folderName, customerId }) => {
   const [thumbnails, setThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);

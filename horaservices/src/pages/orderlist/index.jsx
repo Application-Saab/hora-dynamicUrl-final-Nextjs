@@ -55,6 +55,18 @@ const Orderlist = () => {
     };
 
     fetchOrderList();
+    const checkAuth = () => {
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+      if (isLoggedIn !== "true") {
+        router.push({
+          pathname: '/login',
+          query: { from: "/orderlist" }
+        });
+      }
+    };
+
+    checkAuth()
   }, []);
 
   const getOrderStatus = (orderStatusValue) => {
