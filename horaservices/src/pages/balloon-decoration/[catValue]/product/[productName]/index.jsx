@@ -71,14 +71,17 @@ function DecorationCatDetails() {
     }
   }, [router.isReady, router.query]);
 
-
-
+  
   const handleWhatsApp = () => {
+    dataLayer.push({
+      'event': 'decoration_product_page_customize_whatappclick',
+    });
+  
     const phoneNumber = '7338584828';
     const message = encodeURIComponent('I want to customize a decoration');
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-
   };
+  
 
   useEffect(() => {
     if (apiProduct && !isFetched) {

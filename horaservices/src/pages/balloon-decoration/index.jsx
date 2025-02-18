@@ -62,9 +62,14 @@ const Decoration = () => {
         }
     };
 
-   const openWahtsappRedirection = (catTitle) =>{
+  const openWahtsappRedirection = (catTitle) => {
+    dataLayer.push({
+      'event': 'decoration_whatappclick_mobileview_customize',
+    });
+
     window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
-   }
+  };
+  
 
     const handleViewMore = (category) => {
         const categoryItem = decCat.find(cat => cat.subCategory === category);

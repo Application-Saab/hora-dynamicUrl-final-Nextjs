@@ -96,6 +96,98 @@ function MyApp({ Component, pageProps }) {
   }
 
 
+  const DecorationlocalityhatsappClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_localitypage_whatsappclick',
+      pageUrl: window.location.href,          
+      productName: `decoration_localitypage_whatsappclick`, 
+    });
+  }
+
+
+  const DecorationCheckoutpagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_checkoutpage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_checkoutpage_whatsapp_click`, 
+    });
+  }
+
+  const DecorationCatergorylocalitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_productlistedlocalitypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_productlistedlocalitypage_whatsapp_click`, 
+    });
+  };
+
+
+  const DecorationProductPageLocalitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_productlocalitypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_productlocalitypage_whatsapp_click`, 
+    });
+  }
+
+
+  const DecorationHomepageLocalitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_homepagelocalitypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_homepagelocalitypage_whatsapp_click`, 
+    });
+  }
+
+  const DecorationHomepagecitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'decoration_citypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `decoration_citypage_whatsapp_click`, 
+    });
+  }
+
+  const ChefForPartypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'chefforpartypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `chefforpartypage_whatsapp_click`, 
+    });
+  }
+
+  const ChefForPartyOrderdetailspagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'chefforpartyorderdetailspage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `chefforpartyorderdetailspage_whatsapp_click`, 
+    });
+  }
+
+  const ChefForPartyCheckoutpagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'chefforparty_checkout_whatsapp',
+      pageUrl: window.location.href,          
+      productName: `chefforparty_checkout_whatsapp`, 
+    });
+  }
+
+  const ChefForPartycitypagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'chefforpartycitypage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `chefforpartycitypage_whatsapp_click`, 
+    });
+  }
   
   return (
     <Provider store={store}>
@@ -138,6 +230,36 @@ function MyApp({ Component, pageProps }) {
                 }
                 else if (router.name === '/[city]/balloon-decoration/[catValue]/product/[productName]'){
                   DecorationProductPageCitypagewhatsppClick();
+                } 
+                else if (router.pathname === '/checkout'){
+                  DecorationCheckoutpagewhatsppClick();
+                }
+                else if (router.pathname === '/[city]/[locality]/balloon-decoration'){
+                  DecorationlocalityhatsappClick();
+                }
+                else if (router.pathname === '/[city]/[locality]/balloon-decoration/[catValue]'){
+                  DecorationCatergorylocalitypagewhatsppClick();
+                }
+                else if (router.pathname === '/[city]/[locality]/balloon-decoration/[catValue]/product/[productName]'){
+                  DecorationProductPageLocalitypagewhatsppClick();
+                }
+                else if (router.pathname === '/[city]/[locality]'){
+                  DecorationHomepageLocalitypagewhatsppClick();
+                }
+                else if (router.pathname === '/[city]'){
+                  DecorationHomepagecitypagewhatsppClick();
+                }
+                else if (router.pathname === '/book-chef-cook-for-party'){
+                  ChefForPartypagewhatsppClick();
+                }
+                else if (router.pathname === '/book-chef-cook-for-party/order-details'){
+                  ChefForPartyOrderdetailspagewhatsppClick();
+                }
+                else if (router.pathname === '/book-chef-checkout'){
+                  ChefForPartyCheckoutpagewhatsppClick();
+                }
+                else if (router.pathname === '/[city]/book-chef-cook-for-party'){
+                  ChefForPartycitypagewhatsppClick();
                 }
               }}
                 />

@@ -24,6 +24,7 @@ import DecorationIcon from '../../../assets/decoration_icon.webp';
 import PhotographyIcon from '../../../assets/photography_icon.png';
 import FoodIcon from '../../../assets/food_icon.png';
 import '../../../app/homepage.css';
+import decorationbanner from '../../../assets/decoration-home-banner.jpg';
 // remove later
 // import homepage_entertainment1 from '../../../assets/homepage_entertainment1.png';
 // import homepage_entertainment2 from '../../../assets/homepage_entertainment2.png';
@@ -443,16 +444,9 @@ export default function Home() {
 
   const { locality } = router.query;
 
-
-
-  const openSliderLink = (link, city,locality) => {
-    if (link) {
-      window.location.href = `/${city}/${locality}/${link}`; // Redirects to the provided link
-      //window.location.href = link; // Redirects to the provided link
-    }
+  const openSliderLink = () => {
+      window.location.href = `/${city}/${locality}/balloon-decoration`; 
   };
-
-
 
   return (
     <>
@@ -475,23 +469,13 @@ export default function Home() {
         <div className="party-services homeslider">
           <h1 className="party-title">All party services on one platform</h1>
           <div className="home-slider-inner">
-            <Slider {...homeslidersettings}>
-              {slides.map((slide, index) => (
-                <div key={index} className="slide-container">
-                  <Image src={slide.image} alt={slide.title}
-                    width={1200}
-                    height={400}
-                    //  objectFit="cover" 
-                    layout="responsive"
-                    className="responsive-image"
-                  />
-                  <div className="carousel-content slide-content">
-                    <h2 className="party-title1 slide-title">{slide.title}</h2>
-                    <button className="slide-button book-now" onClick={() => openSliderLink(slide.link , city, locality)}>book Now</button>
-                  </div>
-                </div>
-              ))}
-            </Slider>
+            <div className="slide-container" onClick={() => openSliderLink()}>
+                            <Image src={decorationbanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
+                             width={1200} 
+                             height={400} 
+                             className="responsive-image"
+                             />
+                          </div>
           </div>
 
         </div>
@@ -649,14 +633,8 @@ export default function Home() {
             ))}
           </Slider>
         </div>
-
-
-      </div>
-      <div>
-        <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
-          <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon" />
-        </Link>
-      </div>
+   </div>
+   
     </>
   );
 }

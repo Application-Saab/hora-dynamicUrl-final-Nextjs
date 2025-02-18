@@ -396,14 +396,9 @@ export default function Home() {
     },
   ];
 
-
-
-  const openSliderLink = (link, city) => {
-    if (link) {
-      window.location.href = `/${city}/${link}`; // Redirects to the provided link
-      //window.location.href = link; // Redirects to the provided link
-    }
-  };
+  const openSliderLink = () => {
+    window.location.href = `/${city}/balloon-decoration`; 
+};
 
   const formatLocalityName = (name) => {
     return name.replace(/\s+/g, '-').toLowerCase();
@@ -638,11 +633,7 @@ export default function Home() {
 
 
       </div>
-      <div>
-        <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
-          <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon" />
-        </Link>
-      </div>
+    
     </>
   );
 }
