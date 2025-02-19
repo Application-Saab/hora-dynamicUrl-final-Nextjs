@@ -188,6 +188,15 @@ function MyApp({ Component, pageProps }) {
       productName: `chefforpartycitypage_whatsapp_click`, 
     });
   }
+
+  const FoodDeliveryAndLiveCateringSelectDatepagewhatsppClick = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      'event': 'food&livecateringselectdatepage_whatsapp_click',
+      pageUrl: window.location.href,          
+      productName: `food&livecateringselectdatepage_whatsapp_click`, 
+    });
+  }
   
   return (
     <Provider store={store}>
@@ -260,6 +269,9 @@ function MyApp({ Component, pageProps }) {
                 }
                 else if (router.pathname === '/[city]/book-chef-cook-for-party'){
                   ChefForPartycitypagewhatsppClick();
+                }
+                else if (router.pathname === '/party-food-delivery-live-catering-buffet-select-date/[selectedfoodCategory]'){
+                  FoodDeliveryAndLiveCateringSelectDatepagewhatsppClick();
                 }
               }}
                 />

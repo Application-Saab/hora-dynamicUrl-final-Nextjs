@@ -890,13 +890,13 @@ const ChefCitypage = () => {
                       
                      
                         <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
-                            <Link href="/" style={{ textDecoration: "none" }}>
+                            <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={{ textDecoration: "none" }}>
                                 <Image src={bannerFoodDeliveryImage} alt="Food Delivery Near me" style={{ height: "auto" }} />
                                 <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Food Delivery</h2>
                             </Link>
                         </div>
                         <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
-                            <Link href="/" style={{ textDecoration: "none" }}>
+                            <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={{ textDecoration: "none" }}>
                                 <Image src={liveCateringImage} alt="Live Catering" style={{ height: "85%" }} />
                                 <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Live Catering</h2>
                             </Link>

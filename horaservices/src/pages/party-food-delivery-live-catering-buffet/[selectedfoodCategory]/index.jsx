@@ -488,7 +488,7 @@ console.log('selectedOption',selectedOption)
       <div className="order-container chef">
         <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.08)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
           <Image style={{ width: "20px", height: '20px', marginRight: "5px" }} src={InfoIcon} />
-          <p style={{ color: '#676767', fontSize: "94%", fontWeight: '400', margin: "0" }} className='billheading'>Bill value depends upon Dish selected + Number of people</p>
+          <p style={{ color: '#676767', fontSize: "94%", fontWeight: '400', margin: "0" }} className='billheading'>111Bill value depends upon Dish selected + Number of people</p>
         </div>
         <div className="range-bar">
           <Step active={true.toString()} className="step1">
