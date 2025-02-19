@@ -69,9 +69,6 @@ const [decCat, setDecCat] = useState([
     };
   
      const normalizedCity = city ? city.toLowerCase() : '';
-  
-    
-  
      const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
 
      useEffect(() => {

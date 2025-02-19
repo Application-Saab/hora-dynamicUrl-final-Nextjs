@@ -26,7 +26,7 @@ import DecorationIcon from '../../assets/decoration_icon.webp';
 import PhotographyIcon from '../../assets/photography_icon.webp';
 import FoodIcon from '../../assets/food_icon.png';
 import EntertainmentIcon from '../../assets/enter_icon.png';
-import '../../app/homepage.css'
+import '../../app/homepage.css';
 import cityData from '../../utils/cityData';
 import decorationbanner from '../../assets/decoration-home-banner.jpg';
 
@@ -461,6 +461,7 @@ export default function Home() {
            </div>
        
            </div>
+     
         <div className="food-container sec-container">
           <h1 className="food-title">
             <span>Food</span>
@@ -500,6 +501,8 @@ export default function Home() {
           </div>
 
         </div>
+
+        
         <div className="dec-photo-con sec-container">
           <div className="service">
             <div className="service-header">
