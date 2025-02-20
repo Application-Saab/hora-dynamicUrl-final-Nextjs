@@ -9,6 +9,8 @@ import date_time_icon from "../../assets/date-time-icon.png";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPhoneAlt } from "@fortawesome/free-solid-svg-icons";
 // order.type is 2 for chef
 // order.type is 1 for decoration
 // order.type is 3 for waiter
@@ -22,8 +24,11 @@ const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [executor, setExecutor] = useState("");
+
+  useEffect(() => {
     const fetchOrderList = async () => {
       try {
         const userId = await localStorage.getItem("userID");
@@ -59,18 +64,17 @@ const Orderlist = () => {
     fetchOrderList();
 
     const checkAuth = () => {
-
       const checkAuth = () => {
         const isLoggedIn = localStorage.getItem("isLoggedIn");
         if (isLoggedIn !== "true") {
           router.push({
-            pathname: '/login',
-            query: { from: "/orderlist" }
+            pathname: "/login",
+            query: { from: "/orderlist" },
           });
         }
       };
-  
-      checkAuth()
+
+      checkAuth();
     };
     checkAuth();
   }, []);
@@ -99,9 +103,13 @@ const Orderlist = () => {
     }
   };
 
+  const handleCallClick = (phoneNumber) => {
+    window.location.href = `tel:${phoneNumber}`;
+  };
+
   const openContinueShopping = () => {
-    router.push("/")
-  }
+    router.push("/");
+  };
 
   const getOrderType = (orderTypeValue) => {
     if (orderTypeValue == 1) {
@@ -133,7 +141,7 @@ const Orderlist = () => {
   };
 
   const handleRateUs = (order) => {
-    const { } = order;
+    const {} = order;
     window.open(
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20decoration%20services",
       "_blank"
@@ -165,11 +173,11 @@ const Orderlist = () => {
 
   const handleViewDetail = (order) => {
     const { _id, order_id, type } = order;
-    const apiOrderId = _id
-    const orderType = type
-    const orderId = order_id
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = order_id;
     router.push({
-        pathname:`/order-details`, 
+      pathname: `/order-details`,
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -203,6 +211,73 @@ const Orderlist = () => {
       </center>
     );
   }
+
+  const openSupplierPopup = async (order) => {
+    console.log(order, "order111");
+    const { _id, order_id, type, toId } = order;
+
+    if (!toId) {
+      alert("Details are not present");
+      return;
+    }
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = toId;
+    try {
+      const response = await fetch(
+        `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
+      );
+      console.log(response, "responsed");
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details");
+      }
+      const data = await response.json();
+      console.log(data, "dataasss");
+      setExecutor(data || "Executor not found");
+      setIsPopupOpen(true);
+    } catch (error) {
+      console.error(error.message);
+      setExecutor("Error loading executor");
+      setIsPopupOpen(true);
+    }
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const parseTime = (timeString) => {
+    const [time, modifier] = timeString.split(" ");
+    let [hours, minutes] = time.split(":");
+
+    if (modifier === "PM" && hours !== "12") {
+      hours = parseInt(hours, 10) + 12;
+    }
+    if (modifier === "AM" && hours === "12") {
+      hours = "0";
+    }
+
+    return new Date().setHours(
+      parseInt(hours, 10),
+      parseInt(minutes, 10),
+      0,
+      0
+    );
+  };
+
+  const isWithinFourHourWindow = (orderTimeRange) => {
+    const [startTimeString] = orderTimeRange.split(" - ");
+    const startTime = parseTime(startTimeString);
+
+    const twoHoursBeforeStartTime = startTime - 2 * 60 * 60 * 1000;
+    const twoHoursAfterStartTime = startTime + 2 * 60 * 60 * 1000;
+    const currentTime = new Date();
+
+    return (
+      currentTime.getTime() >= twoHoursBeforeStartTime &&
+      currentTime.getTime() < twoHoursAfterStartTime
+    );
+  };
 
   return (
     <main className="order-list">
@@ -252,25 +327,25 @@ const Orderlist = () => {
                       />{" "}
                       <span>{order.order_time}</span>
                     </div>
-                      {
-                      order?.type == 1 ? "" :
+                    {order?.type == 1 ? (
+                      ""
+                    ) : (
                       <div>
-
-                      <Image
-                      className="contact-us-img"
-                      src={people}
-                      height={20}
-                      width={20}
-                      />{" "}
-                      <span>{order?.no_of_people} People</span>
+                        <Image
+                          className="contact-us-img"
+                          src={people}
+                          height={20}
+                          width={20}
+                        />{" "}
+                        <span>{order?.no_of_people} People</span>
                       </div>
-                      }
+                    )}
                   </div>
                   <div className="right-details">
                     <div>
                       <strong style={{ color: "#9252AA" }}>
                         Total Amount
-                        <p style={{textAlign: "end" , margin: 0}}>
+                        <p style={{ textAlign: "end", margin: 0 }}>
                           {" "}
                           ₹{order?.payable_amount}
                         </p>
@@ -296,7 +371,7 @@ const Orderlist = () => {
                       </strong> */}
                       <strong style={{ color: "#9252AA" }}>
                         Balance Amount
-                        <p style={{textAlign: "end" , margin: 0}}>
+                        <p style={{ textAlign: "end", margin: 0 }}>
                           {" "}
                           ₹{order?.balance_amount}
                         </p>
@@ -313,11 +388,59 @@ const Orderlist = () => {
                     >
                       View Details
                     </button>
+
+                    {isWithinFourHourWindow(order.order_time) && (
+                      <button
+                        className="view-details"
+                        onClick={() => openSupplierPopup(order)}
+                        style={{ marginLeft: "40px" }}
+                      >
+                        Executor Details
+                      </button>
+                    )}
+
+                    {isPopupOpen && (
+                      <div className="popup-container">
+                        <div className="popup-content">
+                          <h2 className="popup-header">Executor Details</h2>
+
+                          <div className="popup-row">
+                            <label className="popup-label">Name:</label>
+                            <h3 className="popup-title">
+                              {executor.data.name}
+                            </h3>
+                          </div>
+
+                          <div className="popup-row">
+                            <label className="popup-label">Phone:</label>
+                            <h3 className="popup-subtitle">
+                              {executor.data.phone}
+                              <FontAwesomeIcon
+                                icon={faPhoneAlt}
+                                className="phone-icon"
+                                onClick={() =>
+                                  handleCallClick(executor.data.phone)
+                                }
+                                style={{
+                                  cursor: "pointer",
+                                  marginLeft: "10px",
+                                }}
+                              />
+                            </h3>
+                          </div>
+
+                          {/* <button className="popup-close-btn" onClick={closePopup}>Close</button> */}
+                          <div className="rate-us-footer" onClick={closePopup}>
+                            <button className="rate-us-button">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {order?.type == 2 &&
                     (orderStatus?.status == "Booked" ||
-                      orderStatus?.status == "Accepted" ||
-                      orderStatus?.status == "In-progress" ? (
+                    orderStatus?.status == "Accepted" ||
+                    orderStatus?.status == "In-progress" ? (
                       <div>
                         <WhatsappShareButton
                           url="https://play.google.com/store/apps/details?id=com.hora"
@@ -356,6 +479,6 @@ const Orderlist = () => {
       </div>
     </main>
   );
-}
+};
 
 export default Orderlist;

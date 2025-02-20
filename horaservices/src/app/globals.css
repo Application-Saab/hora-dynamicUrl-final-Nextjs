@@ -754,11 +754,12 @@ h4.contact-us-heading a {
     /* background-color: #6c63ff; */
     color: #ac108d;
     border: 1px solid #ac108d;
-    padding: 4px 18px !important;
+    padding: 4px 16px !important;
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px !important;
   }
+  
 
   .send-invite {
     color: white;
@@ -2440,7 +2441,7 @@ h4.contact-us-heading a {
 }
 
 /* Decoration view css */
-
+/* 
 .product-container {
   display: flex;
   align-items: flex-start;
@@ -2455,7 +2456,6 @@ h4.contact-us-heading a {
   background-color: #fff;
   padding: 10px;
   min-height: 305px;
-
 }
 
 .product-image-container {
@@ -2529,7 +2529,133 @@ f.product-add-ons ul {
   font-size: 14px;
   color: #666;
   padding-bottom: 20px;
+} */
+
+.product-container {
+  width: 100%; /* Take full width for each product */
+  padding: 10px;
+  margin-bottom: 15px; /* Space between products */
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
 }
+
+.product-image-container {
+  width: 100%; /* Image takes full width of the container */
+  display: block;
+  text-align: center; /* Center the image */
+  margin-bottom: 10px;
+}
+
+.product-image {
+  width: 100%;
+  max-width: 300px; /* Limit the image size */
+  height: auto;
+  object-fit: cover;
+}
+
+.product-info {
+  display: block;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.product-price {
+  font-size: 14px;
+  color: grey;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.product-inclusion ul {
+  list-style-type: none; /* Display bullet points */
+  padding-left: 20px; /* Indent the list items */
+}
+
+.product-inclusion li {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px; /* Add spacing between items */
+}
+
+
+/* Styling for Add-On Section */
+.product-add-ons ul {
+  list-style-type: disc; /* Bullet points for the list */
+  padding-left: 20px; /* Add indentation for bullets */
+  margin-top: 10px; /* Add some space below the "AddOn:" header */
+}
+
+.product-add-ons ul li {
+  display: flex;
+  gap : 10px;
+  font-size: 14px;
+  color: #333;
+  margin: 5px 0; /* Space between items */
+}
+
+.addon-name {
+  font-weight: bold; /* Bold the name */
+}
+
+.addon-price {
+  color: #666; /* Lighter color for price */
+  font-size: 14px;
+}
+
+.comments-header {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: left; /* Align the header to the left */
+}
+
+
+.comment-container {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.comments-text {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Styling for the Cancellation and Order Change Policy */
+.cancellation-policy-container {
+  margin-top: 20px; /* Add spacing above the policy section */
+}
+
+.cancellation-policy-list {
+  list-style-type: disc; /* Bullet points for the policy list */
+  padding-left: 20px; /* Indentation for the bullets */
+  margin-top: 10px; /* Space above the policy list */
+}
+
+.cancellation-policy-list li {
+  font-size: 14px;
+  color: #333; /* Dark color for policy text */
+  margin-bottom: 5px; /* Space between each policy item */
+}
+
+.comments-header {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: left; /* Align the header to the left */
+}
+
+
 
 /* Inclusion for the food */
 .food-delivert-inclusions-container {
@@ -2771,4 +2897,94 @@ nav.nav-li li {
 .home-slider-inner {
   position: relative;
   margin-bottom: 10px;
+}
+
+/* App.css */
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  width: 320px;
+  position: relative;
+}
+
+/* .popup-header {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  margin-right: 35px;
+} */
+
+/* App.css */
+
+/* Popup header styling for larger screens */
+.popup-header {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  margin-right: 85px;
+}
+
+
+@media (max-width: 600px) {
+  .popup-header {
+    font-size: 1.4rem; 
+    margin-right: 40px;   
+    margin-left: 0;    
+    padding: 0 10px;   
+  }
+}
+
+.popup-row {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.popup-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  width: 70px; 
+}
+
+.popup-title, .popup-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  flex: 1; /* Allows text to fill available space */
+}
+
+.popup-close-btn {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.popup-close-btn:hover {
+  background-color: #0056b3;
 }
