@@ -2931,9 +2931,6 @@ nav.nav-li li {
   margin-right: 35px;
 } */
 
-/* App.css */
-
-/* Popup header styling for larger screens */
 .popup-header {
   font-size: 1.6rem;
   font-weight: bold;
@@ -2952,25 +2949,32 @@ nav.nav-li li {
     padding: 0 10px;   
   }
 }
-
 .popup-row {
   display: flex;
-  justify-content: space-between; 
+  justify-content: flex-start; 
   align-items: center;
   margin-bottom: 15px;
+  gap: 50px; 
 }
 
 .popup-label {
   font-size: 1.1rem;
   font-weight: bold;
   color: #333;
-  width: 70px; 
+  width: auto;
 }
 
-.popup-title, .popup-subtitle {
+.popup-title {
   font-size: 1.2rem;
   color: #666;
-  flex: 1; /* Allows text to fill available space */
+  flex: none; 
+  margin-left: 5px;
+}
+
+.popup-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  flex: none; 
 }
 
 .popup-close-btn {
@@ -2988,3 +2992,5 @@ nav.nav-li li {
 .popup-close-btn:hover {
   background-color: #0056b3;
 }
+
+

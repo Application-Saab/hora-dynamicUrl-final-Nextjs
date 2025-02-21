@@ -28,6 +28,8 @@ const Orderlist = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [executor, setExecutor] = useState("");
 
+  const [showPopup, setShowPopup] = useState(false);
+
   useEffect(() => {
     const fetchOrderList = async () => {
       try {
@@ -389,16 +391,42 @@ const Orderlist = () => {
                       View Details
                     </button>
 
-                    {isWithinFourHourWindow(order.order_time) && (
+                          {/* if order.type === 1 => decoration then this visible */}
+                    {order.type === 1 && (
                       <button
                         className="view-details"
-                        onClick={() => openSupplierPopup(order)}
+                        onClick={() => {
+                          if (isWithinFourHourWindow(order.order_time)) {
+                            openSupplierPopup(order);
+                          } else {
+                            setShowPopup(true);
+                          }
+                        }}
                         style={{ marginLeft: "40px" }}
                       >
                         Executor Details
                       </button>
                     )}
 
+                    {/* alert 2 hours wala */}
+                    {showPopup && (
+                      <div className="popup-container">
+                        <div className="popup-overlay">
+                          <div className="popup-content">
+                            <h2>⚠️ Alert</h2>
+                            <p>Executor details will be shown 2 hours before your scheduled time to avoid distractions. 🙂</p>
+                            <div
+                              className="rate-us-footer"
+                              onClick={() => setShowPopup(false)}
+                            >
+                              <button className="rate-us-button">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                      {/*vendor information  */}
                     {isPopupOpen && (
                       <div className="popup-container">
                         <div className="popup-content">
@@ -429,7 +457,6 @@ const Orderlist = () => {
                             </h3>
                           </div>
 
-                          {/* <button className="popup-close-btn" onClick={closePopup}>Close</button> */}
                           <div className="rate-us-footer" onClick={closePopup}>
                             <button className="rate-us-button">Close</button>
                           </div>
