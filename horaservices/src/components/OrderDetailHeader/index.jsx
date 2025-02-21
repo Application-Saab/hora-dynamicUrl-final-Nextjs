@@ -59,13 +59,13 @@ const OrderDetailHeader = ({ orderDetail }) => {
           <GoClock className="header-icons" size={20} style={{marginLeft: "15px"}} />
           <p>{orderDetail?.order_time}</p>
         </div>
+        {orderDetail.type !== 8 && 
         <div className="order-info-div">
           <MdPeopleAlt className="header-icons" size={20} style={{marginLeft: "15px"}} />
           <p>{orderDetail?.no_of_people} People</p>
-        </div>
+        </div>}
       </div>
     </div>
-
   );
 };
 

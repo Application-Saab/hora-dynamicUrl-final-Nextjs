@@ -2,11 +2,17 @@ import React, { useState } from "react";
 import daal_image from "../../assets/daal-image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
+import {
+  BASE_URL,
+  ORDER_CANCEL,
+  GET_PHOTOGRAPHY_BY_NAME,
+} from "../../utils/apiconstants";
 // import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+const axios = require("axios");
+import checkImage from "../../assets/tick.jpeg";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -26,33 +32,38 @@ const OrderDetailTab = ({
   const router = useRouter();
   const [tab, setTab] = useState("Menu");
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-  
+
+  const [name, setname] = useState();
+
+  console.log(orderDetail, "orderdetails");
+  console.log(addOn, "addon");
+
   const getItemInclusion = (inclusion) => {
     if (!inclusion || inclusion.length === 0)
       return "No inclusion details available";
-  
+
     return inclusion
-      .join("") 
-      .replace(/<\/?(div|span)>/g, "") 
-      .replace(/&#10;/g, "\n") 
+      .join("")
+      .replace(/<\/?(div|span)>/g, "")
+      .replace(/&#10;/g, "\n")
       .replace(/\s*-\s*/g, "\n- ")
-      .trim(); 
+      .trim();
   };
 
   const handleCancelOrder = async () => {
     const confirmCancel = window.confirm("Do you want to cancel the order?");
-  
+
     if (confirmCancel) {
       await cancelOrder();
     } else {
       console.log("Order cancellation aborted.");
     }
   };
-  
+
   const cancelOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
-  
+
       const response = await fetch(BASE_URL + ORDER_CANCEL, {
         method: "POST",
         headers: {
@@ -64,7 +75,7 @@ const OrderDetailTab = ({
           Authorisation: token,
         }),
       });
-  
+
       if (response.ok) {
         // Handle success response
         alert("Order cancelled successfully");
@@ -96,6 +107,43 @@ const OrderDetailTab = ({
       console.log("cancelcontactUsRedirection error", error);
     }
   };
+
+  const fetchAndMatchItems = async (orderDetail) => {
+    try {
+      const { items } = orderDetail;
+
+      if (!items || items.length === 0) {
+        return;
+      }
+
+      for (const itemId of items) {
+        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
+
+        try {
+          const response = await axios.get(url);
+          const apiData = response.data;
+
+          if (apiData && apiData.data && apiData.data.length > 0) {
+            const responseData = apiData.data[0];
+
+            if (responseData._id === itemId) {
+              console.log(`Match found for ID ${itemId}:`, responseData.name);
+              setname(responseData.name);
+            }
+          }
+        } catch (axiosError) {
+          console.error(
+            `Error fetching data for ID ${itemId}:`,
+            axiosError.message
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error in fetchAndMatchItems:", error);
+    }
+  };
+
+  fetchAndMatchItems(orderDetail);
 
   return (
     <>
@@ -134,7 +182,10 @@ const OrderDetailTab = ({
             <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
           )}
           {tab === "Appliances" && (
-           <OrderDetailsAppliances orderDetail={orderDetail} orderType={orderType}/>
+            <OrderDetailsAppliances
+              orderDetail={orderDetail}
+              orderType={orderType}
+            />
           )}
           {tab === "Ingredients" && (
             <OrderDetailsIngre
@@ -201,8 +252,130 @@ const OrderDetailTab = ({
             </ul>
           </div>
         </>
+      ) : orderType === 8 ? (
+        <>
+          <div className="decoration-container">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                paddingTop: "10px",
+                position: "relative",
+              }}
+              className="decDetails"
+            >
+              <div
+                style={{ width: "50%", textAlign: "center" }}
+                className="decDetailsLeft"
+              ></div>
+              <div
+                style={{
+                  width: "50%",
+                  paddingLeft: "20px",
+                  paddingRight: "50px",
+                }}
+                className="decDetailsRight"
+              >
+                <div
+                  style={{
+                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                    padding: "10px",
+                    marginBottom: "12px",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <h1
+                    style={{
+                      fontSize: "16px",
+                      color: "#222",
+                      fontSize: "21px",
+                      fontWeight: "#222",
+                    }}
+                  >
+                    {name}
+                  </h1>
+                </div>
+
+                <div
+                  style={{
+                    boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                    padding: "10px",
+                    marginBottom: "12px",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  {orderDetail?.add_on?.length > 0 && (
+                    <>
+                      <div
+                        style={{
+                          fontSize: "21px",
+                          borderBottom: "1px solid #e7eff9",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        Inclusions
+                      </div>
+                      {/* <div className="product-add-ons"> */}
+                      <ul>
+                        {orderDetail.add_on.map((item, index) => (
+                          <li key={index} className="inclusionstyle">
+                            <Image
+                              src={checkImage}
+                              alt="Info"
+                              style={{ height: 13, width: 13, marginRight: 10 }}
+                            />
+                            <span>{item || "NA"}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+
+                {/* Cancellation and Order Change Policy */}
+                <div
+                  className="px-1 py-3 border rounded my-2 cancellatiop-policy"
+                  style={{
+                    background: "rgb(157, 74,147, 28%)",
+                  }}
+                >
+                  <p
+                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
+                    className=" text-center m-1"
+                  >
+                    Cancellation and order change policy
+                  </p>
+                  <p
+                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
+                    className="m-1"
+                  >
+                    1. If the order is beyong 48 Hours: You are eligible for a
+                    100% refund of the advance payment
+                  </p>
+                  <p
+                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
+                    className="m-1"
+                  >
+                    2. If the order is cancelled more than 24 hours before the
+                    scheduled delivery: You will not receive refund of the
+                    advance payment.
+                  </p>
+                  <p
+                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
+                    className="m-1"
+                  >
+                    3. If the order is cancelled within 24 hours: The full
+                    advance amount will be non-refundable, and 100% of the
+                    payment for photography has to be paid by customer.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       ) : orderType === 1 ? (
-        <div  className="decoration-container">
+        <div className="decoration-container">
           {decorationItems?.map((product, index) => {
             return (
               <div key={product?.id} className="product-container">
@@ -213,7 +386,7 @@ const OrderDetailTab = ({
                     className="product-image"
                     height={300}
                     width={300}
-                    style={{height:"auto", width:"auto"}}
+                    style={{ height: "auto", width: "auto" }}
                   />
                 </div>
                 <div className="product-info">
@@ -222,27 +395,25 @@ const OrderDetailTab = ({
                   <h6 className="product-inclusion">
                     {getItemInclusion(product?.inclusion)}
                   </h6>
-                 
-                  {
-                  addOn.length > 0 ? (
-                  <>
-                  <p className="comments-header">AddOn:</p>
-                  <ul>
-                  {addOn.map((item, index) => (
-                  <li key={index}>
-                  <strong>{item.name ? item.name : "NA"}</strong>: ₹{item.price ? item.price : "NA"}
-                  </li>
-                  ))}
-                  </ul>
-                  </>
-                  ) : null
-                  }
-                  
+
+                  {addOn.length > 0 ? (
+                    <>
+                      <p className="comments-header">AddOn:</p>
+                      <ul>
+                        {addOn.map((item, index) => (
+                          <li key={index}>
+                            <strong>{item.name ? item.name : "NA"}</strong>: ₹
+                            {item.price ? item.price : "NA"}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : null}
                 </div>
               </div>
             );
           })}
-            {decorationComments && (
+          {decorationComments && (
             <div className="comment-container">
               <p className="comments-header">Additional Comments:</p>
               <p className="comments-text">{decorationComments}</p>

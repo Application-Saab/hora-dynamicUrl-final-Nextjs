@@ -95,6 +95,10 @@ function MyApp({ Component, pageProps }) {
     });
   }
 
+  const shouldShowWhatsAppIcon = () => {
+    return router.pathname !== '/order-details' && router.pathname !== '/orderlist';
+  };
+  
 
   
   return (
@@ -112,7 +116,7 @@ function MyApp({ Component, pageProps }) {
               ></iframe>
             </noscript>
 
-  
+            {shouldShowWhatsAppIcon() && (
             <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
               <Image 
               className='whatappicon'
@@ -142,6 +146,7 @@ function MyApp({ Component, pageProps }) {
               }}
                 />
             </Link>
+            )}
           </div>
         </PageLayout>
       </PersistGate>

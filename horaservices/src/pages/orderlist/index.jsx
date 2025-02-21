@@ -23,7 +23,6 @@ const Orderlist = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-
     const fetchOrderList = async () => {
       try {
         const userId = await localStorage.getItem("userID");
@@ -59,18 +58,17 @@ const Orderlist = () => {
     fetchOrderList();
 
     const checkAuth = () => {
-
       const checkAuth = () => {
         const isLoggedIn = localStorage.getItem("isLoggedIn");
         if (isLoggedIn !== "true") {
           router.push({
-            pathname: '/login',
-            query: { from: "/orderlist" }
+            pathname: "/login",
+            query: { from: "/orderlist" },
           });
         }
       };
-  
-      checkAuth()
+
+      checkAuth();
     };
     checkAuth();
   }, []);
@@ -100,8 +98,8 @@ const Orderlist = () => {
   };
 
   const openContinueShopping = () => {
-    router.push("/")
-  }
+    router.push("/");
+  };
 
   const getOrderType = (orderTypeValue) => {
     if (orderTypeValue == 1) {
@@ -125,6 +123,9 @@ const Orderlist = () => {
     if (orderTypeValue === 7) {
       return "Live Catering";
     }
+    if (orderTypeValue === 8) {
+      return "Photography";
+    }
   };
 
   const formatDate = (dateString) => {
@@ -133,7 +134,7 @@ const Orderlist = () => {
   };
 
   const handleRateUs = (order) => {
-    const { } = order;
+    const {} = order;
     window.open(
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20decoration%20services",
       "_blank"
@@ -165,11 +166,11 @@ const Orderlist = () => {
 
   const handleViewDetail = (order) => {
     const { _id, order_id, type } = order;
-    const apiOrderId = _id
-    const orderType = type
-    const orderId = order_id
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = order_id;
     router.push({
-        pathname:`/order-details`, 
+      pathname: `/order-details`,
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -252,25 +253,25 @@ const Orderlist = () => {
                       />{" "}
                       <span>{order.order_time}</span>
                     </div>
-                      {
-                      order?.type == 1 ? "" :
+                    {order?.type == 1 || order?.type == 8 ? (
+                      ""
+                    ) : (
                       <div>
-
-                      <Image
-                      className="contact-us-img"
-                      src={people}
-                      height={20}
-                      width={20}
-                      />{" "}
-                      <span>{order?.no_of_people} People</span>
+                        <Image
+                          className="contact-us-img"
+                          src={people}
+                          height={20}
+                          width={20}
+                        />{" "}
+                        <span>{order?.no_of_people} People</span>
                       </div>
-                      }
+                    )}
                   </div>
                   <div className="right-details">
                     <div>
                       <strong style={{ color: "#9252AA" }}>
                         Total Amount
-                        <p style={{textAlign: "end" , margin: 0}}>
+                        <p style={{ textAlign: "end", margin: 0 }}>
                           {" "}
                           ₹{order?.payable_amount}
                         </p>
@@ -296,7 +297,7 @@ const Orderlist = () => {
                       </strong> */}
                       <strong style={{ color: "#9252AA" }}>
                         Balance Amount
-                        <p style={{textAlign: "end" , margin: 0}}>
+                        <p style={{ textAlign: "end", margin: 0 }}>
                           {" "}
                           ₹{order?.balance_amount}
                         </p>
@@ -316,8 +317,8 @@ const Orderlist = () => {
                   </div>
                   {order?.type == 2 &&
                     (orderStatus?.status == "Booked" ||
-                      orderStatus?.status == "Accepted" ||
-                      orderStatus?.status == "In-progress" ? (
+                    orderStatus?.status == "Accepted" ||
+                    orderStatus?.status == "In-progress" ? (
                       <div>
                         <WhatsappShareButton
                           url="https://play.google.com/store/apps/details?id=com.hora"
@@ -356,6 +357,6 @@ const Orderlist = () => {
       </div>
     </main>
   );
-}
+};
 
 export default Orderlist;
