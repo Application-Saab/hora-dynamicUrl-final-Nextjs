@@ -65,7 +65,9 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
           return (
             items?.length > 0 && (
               <div className="meal-category" key={category}>
-                <span className="category-title">
+                <span 
+                // className="category-title"
+                >
                   {category} ({items.length})
                 </span>
                 <div className="menu-items">{items}</div>

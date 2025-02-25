@@ -398,11 +398,11 @@ export default function Home() {
 
 
 
-  const openSliderLink = (link, city) => {
-    if (link) {
-      window.location.href = `/${city}/${link}`; // Redirects to the provided link
+  const openSliderLink = () => {
+   
+      window.location.href = `/${city}/balloon-decoration`; // Redirects to the provided link
       //window.location.href = link; // Redirects to the provided link
-    }
+    // }
   };
 
   const formatLocalityName = (name) => {

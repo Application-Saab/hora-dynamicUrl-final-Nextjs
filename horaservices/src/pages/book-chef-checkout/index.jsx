@@ -136,6 +136,9 @@ const ChefCheckout = () => {
     };
 
     const contactUsRedirection = () => {
+        dataLayer.push({
+            'event': 'chefforparty_checkout_whatsapp_click',
+          });
         window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20personal%20chef%20and%20for%20party%20service', '_blank');
     };
 

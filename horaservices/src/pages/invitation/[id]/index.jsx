@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import "../invitation.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; 
 
 const products = [
   {
@@ -82,7 +84,8 @@ export default function ProductPage() {
 
   const [svgContent, setSvgContent] = useState("");
   const [fullname, setFullname] = useState("John Doe");
-  const [date, setdate] = useState("25 Nov 2025");
+  // const [date, setdate] = useState("25 Nov 2025");
+  const [date, setDate] = useState(new Date());
   const [imageSrc, setImageSrc] = useState("/assets/user2.png");
   const [address, setAddress] = useState("Address");
   const [category, setCategory] = useState("BIRTHDAY PARTY");
@@ -109,7 +112,7 @@ export default function ProductPage() {
           if (nameText) nameText.textContent = fullname;
 
           const dateText = svgElement.querySelector("#date");
-          if (dateText) dateText.textContent = date;
+          if (dateText) dateText.textContent = formatDate(date);
 
           const textTime = svgElement.querySelector("#time");
           if (textTime) textTime.textContent = time;
@@ -127,6 +130,14 @@ export default function ProductPage() {
       }
     }
   }, [svgContent, fullname, date, imageSrc, time, address]);
+
+  const formatDate = (date) => {
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
+
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -224,56 +235,100 @@ export default function ProductPage() {
 
   return (
     <div className="product-details-container">
-      <div className="product-content">
-        <div id="svg-container" className="product-svg" />
-        <div className="edit-buttons">
-          <div
-            style={{
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-              padding: "20px",
-              backgroundColor: "#fff",
-              borderRadius: "10px",
-            }}
-          >
-            <div className="breadcrumb">
-              <span>{product ? product.name : "Product Not Found"}</span>
-            </div>
-
-            <div className="edit-section">
+    <div className="product-content">
+      <div id="svg-container" className="product-svg" />
+      <div className="edit-buttons">
+        <div
+          style={{
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            padding: "20px",
+            backgroundColor: "#fff",
+            borderRadius: "10px",
+          }}
+        >
+          <div className="breadcrumb">
+            <span>{product ? product.name : "Product Not Found"}</span>
+          </div>
+          
+          <div className="edit-section">
+            {/* Name Input */}
+            <div className="form-group">
+              <label htmlFor="name" className="form-label">
+                Full Name:
+              </label>
               <input
+                id="name"
                 type="text"
                 placeholder="Enter Name"
                 value={fullname}
                 onChange={(e) => setFullname(e.target.value)}
+                className="form-input"
               />
-              <input
-                type="text"
-                placeholder="Enter Name 2"
-                value={date}
-                onChange={(e) => setdate(e.target.value)}
+            </div>
+
+            {/* Date Picker */}
+            <div className="form-group">
+              <label htmlFor="date" className="form-label">
+                Date:
+              </label>
+              <DatePicker
+                id="date"
+                selected={date}
+                onChange={(newDate) => setDate(newDate)}
+                dateFormat="dd MMM yyyy"
+                placeholderText="Select Date"
+                className="edit-section"
               />
+            </div>
+
+            {/* Time Picker */}
+            <div className="form-group">
+              <label htmlFor="time" className="form-label">
+                Time:
+              </label>
               <input
-                type="text"
-                placeholder="Enter Time"
+                id="time"
+                type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
+                step="1" 
+                className="edit-section"
               />
+            </div>
+
+            {/* Address Input */}
+            <div className="form-group">
+              <label htmlFor="address" className="form-label">
+                Address:
+              </label>
               <input
+                id="address"
                 type="text"
                 placeholder="Enter Address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                className="form-input"
               />
+            </div>
+
+            {/* Image Upload */}
+            <div className="form-group">
+              <label htmlFor="image" className="form-label">
+                Upload Image:
+              </label>
               <input
+                id="image"
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
+                className="form-input"
               />
             </div>
-            <button onClick={handleShareOnWhatsApp}>Share</button>
           </div>
+          <button onClick={handleShareOnWhatsApp}>Share</button>
         </div>
       </div>
     </div>
+  </div>
   );
 }

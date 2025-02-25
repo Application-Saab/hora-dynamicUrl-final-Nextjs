@@ -60,19 +60,25 @@ const [decCat, setDecCat] = useState([
      ]);
 
 
-     const openWahtsappRedirection = (catTitle) =>{
-      window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
-     }
+     const openWahtsappRedirection = (catTitle) => {
+      dataLayer.push({
+        event: "decoration_citywhatappclick_mobileview_customize",
+      });
+  
+      window.open(
+        "https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.",
+        "_blank"
+      );
+    };
+  
 
      const formatLocalityName = (name) => {
       return name.replace(/\s+/g, '-').toLowerCase();
     };
   
      const normalizedCity = city ? city.toLowerCase() : '';
-  
-    
-  
      const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
+
 
      useEffect(() => {
       if (normalizedCity) {
@@ -118,6 +124,22 @@ const [decCat, setDecCat] = useState([
           } else {
             console.log("No matching category item found.");
           }
+        };
+
+        const handleItemClick = (item) => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: 'decoration_cityitem_clicked',
+            event_category: 'SliderSection',
+            event_label: item.title,
+            categoryName: item.categoryName,
+            subCategory: item.subCategory,
+            catValue: item.catValue,
+            imgAlt: item.imgAlt
+          });
+    
+    let lastEvent = window.dataLayer[window.dataLayer.length - 1];
+    
         };
     
        const birthdayData = [

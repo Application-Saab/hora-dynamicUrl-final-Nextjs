@@ -23,6 +23,7 @@ import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../../../assets/decoration_icon.webp';
 import PhotographyIcon from '../../../assets/photography_icon.png';
 import FoodIcon from '../../../assets/food_icon.png';
+import decorationbanner from '../../../assets/decoration-home-banner.jpg';
 import '../../../app/homepage.css';
 // remove later
 // import homepage_entertainment1 from '../../../assets/homepage_entertainment1.png';
@@ -445,11 +446,11 @@ export default function Home() {
 
 
 
-  const openSliderLink = (link, city,locality) => {
-    if (link) {
-      window.location.href = `/${city}/${locality}/${link}`; // Redirects to the provided link
+  const openSliderLink = () => {
+    // if (link) {
+      window.location.href = `/${city}/${locality}/balloon-decoration`; // Redirects to the provided link
       //window.location.href = link; // Redirects to the provided link
-    }
+    // }
   };
 
 
@@ -473,28 +474,19 @@ export default function Home() {
         <meta property="og:type" content="website" />
       </Head>
         <div className="party-services homeslider">
-          <h1 className="party-title">All party services on one platform</h1>
-          <div className="home-slider-inner">
-            <Slider {...homeslidersettings}>
-              {slides.map((slide, index) => (
-                <div key={index} className="slide-container">
-                  <Image src={slide.image} alt={slide.title}
-                    width={1200}
-                    height={400}
-                    //  objectFit="cover" 
-                    layout="responsive"
-                    className="responsive-image"
-                  />
-                  <div className="carousel-content slide-content">
-                    <h2 className="party-title1 slide-title">{slide.title}</h2>
-                    <button className="slide-button book-now" onClick={() => openSliderLink(slide.link , city, locality)}>book Now</button>
+                   <h1 className="party-title">All party services on one platform</h1>
+              <div className="home-slider-inner">
+              <div className="slide-container" onClick={() => openSliderLink()}>
+                        <Image src={decorationbanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
+                         width={1200} 
+                         height={400} 
+                         className="responsive-image"
+                         />
+                      </div>
+              
                   </div>
-                </div>
-              ))}
-            </Slider>
-          </div>
-
-        </div>
+              
+                  </div>
         <div className="food-container sec-container">
           <h1 className="food-title">
             <span>Food</span>

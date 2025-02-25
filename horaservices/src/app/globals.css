@@ -754,7 +754,7 @@ h4.contact-us-heading a {
     /* background-color: #6c63ff; */
     color: #ac108d;
     border: 1px solid #ac108d;
-    padding: 4px 18px !important;
+    padding: 4px 16px !important;
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px !important;
@@ -2525,12 +2525,6 @@ f.product-add-ons ul {
   margin-bottom: 10px;
 }
 
-.comments-text {
-  font-size: 14px;
-  color: #666;
-  padding-bottom: 20px;
-}
-
 /* Inclusion for the food */
 .food-delivert-inclusions-container {
   margin-top: 1rem;
@@ -2771,4 +2765,139 @@ nav.nav-li li {
 .home-slider-inner {
   position: relative;
   margin-bottom: 10px;
+}
+
+
+/* today */
+
+
+
+.product-container {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px; 
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.product-image-container {
+  width: 100%; 
+  display: block;
+  text-align: center; 
+  margin-bottom: 10px;
+}
+
+.product-image {
+  width: 100%;
+  max-width: 300px; 
+  height: auto;
+  object-fit: cover;
+}
+
+.product-info {
+  display: block;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.product-price {
+  font-size: 14px;
+  color: grey;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.product-inclusion ul {
+  list-style-type: none; 
+  padding-left: 20px; 
+}
+
+.product-inclusion li {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+
+.product-add-ons ul {
+  list-style-type: disc; 
+  padding-left: 20px; 
+  margin-top: 10px; 
+}
+
+.product-add-ons ul li {
+  display: flex;
+  gap : 10px;
+  font-size: 14px;
+  color: #333;
+  margin: 5px 0; /* Space between items */
+}
+
+.addon-name {
+  font-weight: bold; /* Bold the name */
+}
+
+.addon-price {
+  color: #666; /* Lighter color for price */
+  font-size: 14px;
+}
+
+.comments-header {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: left; 
+}
+
+
+.comment-container {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.comments-text {
+  font-size: 14px;
+  color: #666;
+  text-align: left;
+}
+
+.cancellation-policy-container {
+  margin-top: 20px; 
+}
+
+.cancellation-policy-list {
+  list-style-type: disc; 
+  padding-left: 20px;
+  margin-top: 10px; 
+}
+
+.cancellation-policy-list li {
+  font-size: 14px;
+  color: #333; 
+  margin-bottom: 5px; 
+}
+
+.comments-header {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.whatsapp-container {
+  position: fixed;
+  bottom: 20px;   
+  right: 20px;    
+  z-index: 1000;  
 }
