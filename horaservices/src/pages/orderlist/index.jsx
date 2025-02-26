@@ -8,6 +8,7 @@ import people from "../../assets/people.png";
 import date_time_icon from "../../assets/date-time-icon.png";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import Image from "next/image";
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -206,6 +207,22 @@ const Orderlist = () => {
 
   return (
     <main className="order-list">
+      <Head>
+  <title>Your Orders - Manage Your Purchases with Hora Services</title>
+  <meta name="description" content="View and manage all your orders with Hora Services. Check your booking history, track delivery, and make changes to your event services directly from this page." />
+  <meta name="keywords" content="order list, manage orders, order history, track orders, party decoration orders, chef booking orders, event services order, Hora Services orders, order management" />
+  <meta property="og:title" content="Your Orders - Manage Your Purchases with Hora Services" />
+  <meta property="og:description" content="Access your order history and manage your bookings, from decorations to catering and event planning. Track orders, see past events, and make adjustments to upcoming bookings." />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/logo-icon.png" />
+  <meta property="og:image:alt" content="Order history page on Hora Services" />
+  {/* <script type="application/ld+json">{scriptTag}</script> */}
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/orderlist" />
+  <meta property="og:type" content="website" />
+</Head>
+
       <div className="order-container">
         {orders && orders.length > 0 ? (
           orders?.map((order) => {

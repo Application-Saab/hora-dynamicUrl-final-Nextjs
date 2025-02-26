@@ -482,6 +482,21 @@ export default function Home() {
   return (
     <>
       <div className="page-width">
+      <Head>
+  <title>Party Food Delivery, Live Catering & Buffet Services - Hora Services</title>
+  <meta name="description" content="Looking for party food delivery or live catering services? Enjoy buffet catering and personalized meal options for your events. Book our top-rated catering services for birthdays, weddings, corporate events, and more!" />
+  <meta name="keywords" content="party food delivery, live catering, buffet catering, catering for events, birthday party catering, wedding catering, corporate event catering, food delivery for parties, catering services near me, book caterers online" />
+  <meta property="og:title" content="Party Food Delivery, Live Catering & Buffet Services - Hora Services" />
+  <meta property="og:description" content="Get the best party food delivery and live catering services with Hora Services. Whether it’s a birthday, wedding, or corporate event, enjoy personalized buffet catering with exceptional service!" />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/catering-food-banner.jpg" />
+  <meta property="og:image:alt" content="Party food delivery and live catering services for events" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/party-food-delivery-live-catering-buffet" />
+  <meta property="og:type" content="website" />
+</Head>
         <div className="party-services homeslider">
           <h1 className="party-title">All party services on one platform</h1>
           <div className="home-slider-inner">

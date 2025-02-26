@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Head from "next/head";
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -1027,6 +1028,22 @@ const CustomersReviews = () => {
 
     return (
         <Container>
+            <Head>
+  <title>Customer Reviews - See What Our Clients Say About Hora Services</title>
+  <meta name="description" content="Read customer reviews and testimonials for Hora Services. Discover how our event decoration, catering, and chef services have helped people create memorable celebrations!" />
+  <meta name="keywords" content="customer reviews, client testimonials, party decoration reviews, catering reviews, chef services reviews, Hora Services feedback, event planning reviews, party service reviews, wedding decoration reviews, chef for party reviews" />
+  <meta property="og:title" content="Customer Reviews - See What Our Clients Say About Hora Services" />
+  <meta property="og:description" content="Check out what our clients are saying about Hora Services! Read customer reviews about our event decoration, catering, and chef services. Get inspired for your own celebration." />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/logo-icon.png" />
+  <meta property="og:image:alt" content="Customer reviews and testimonials for Hora Services" />
+  {/* <script type="application/ld+json">{scriptTag}</script> */}
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/reviews" />
+  <meta property="og:type" content="website" />
+</Head>
+
             <Header>
                 <h1>Ratings & Reviews</h1>
                 <p>HORA has Served 5 Lakh people in 20+ cities!</p>

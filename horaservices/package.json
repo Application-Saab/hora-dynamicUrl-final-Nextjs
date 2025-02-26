@@ -36,5 +36,9 @@
     "sharp": "^0.33.5",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.12"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^15.1.7",
+    "cross-env": "^7.0.3"
   }
 }

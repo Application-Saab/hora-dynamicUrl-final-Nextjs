@@ -22,10 +22,29 @@ import kanpur from "../../assets/Kanpur.png";
 import surat from "../../assets/Kanpur.png";
 import goa from "../../assets/Goa.png";
 import Image from "next/image";
+import { getDecorationOrganizationSchema } from '../../utils/schema';
+import Head from 'next/head';
 
 const ContactUs = () => {
+          const schemaOrg = getDecorationOrganizationSchema();
+          const scriptTag = JSON.stringify(schemaOrg);
   return (
     <main>
+      <Head>
+  <title>Contact Us - Get in Touch with Hora Decorations for Your Event Needs</title>
+  <meta name="description" content="Have any questions or want to book our decoration, catering, or entertainment services? Contact Hora Decorations for expert assistance and personalized event planning. Our team is here to help you create the perfect celebration!" />
+  <meta name="keywords" content="contact hora services, event planning contact, contact us, party decorators, catering contact, hire a chef, event coordination, customer service, party event consultation, decoration inquiries" />
+  <meta property="og:title" content="Contact Us - Get in Touch with Hora Decorations" />
+  <meta property="og:description" content="Reach out to Hora Decorations for assistance with booking party decorations, catering, or event planning services. Our customer support team is ready to help with your event needs!" />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/contact-us-image.jpg" />
+  <meta property="og:image:alt" content="Contact Hora Decorations for your event services" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/contactus" />
+  <meta property="og:type" content="website" />
+</Head>
       <div className="aboutUsContainer" style={styles.aboutUsContainer}>
         <div
           className="heroSingle"

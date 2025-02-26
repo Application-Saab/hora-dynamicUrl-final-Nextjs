@@ -5,10 +5,30 @@ import how_2 from '../../../public/assets/how_2.svg';
 import how_3 from "../../../public/assets/how_3.svg";
 import Image from "next/image";
 import '../../pages/aboutus/aboutus.css';
+import Head from 'next/head';
+import { getDecorationOrganizationSchema } from '../../utils/schema';
 
 const AboutUs = () => {
+      const schemaOrg = getDecorationOrganizationSchema();
+      const scriptTag = JSON.stringify(schemaOrg);
   return (
     <div className="aboutUsContainer">
+      <Head>
+  <title>About Us - HORA Decorations | Professional Balloon & Flower Decorations for Every Occasion</title>
+  <meta name="description" content="Learn more about HORA Decorations, your trusted partner for stunning balloon and flower decorations for birthdays, weddings, anniversaries, parties, and more. Our mission is to bring your events to life with creativity, passion, and top-quality decor." />
+  <meta name="keywords" content="about hora services, balloon decorations, flower decorations, event decorators, professional decorators, party decorations, wedding decorations, anniversary decorations, event planning" />
+  <meta property="og:title" content="About HORA Decorations - Professional Balloon & Flower Decorators" />
+  <meta property="og:description" content="Discover HORA Decorations, a team of expert decorators providing personalized balloon and flower decorations for events. From intimate gatherings to large-scale celebrations, we bring creativity and professionalism to every occasion." />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content="HORA Decorations logo, balloon and flower decor for events" />
+  <script type="application/ld+json">{scriptTag}</script>  
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/aboutus" />
+  <meta property="og:type" content="website" />
+</Head>
+
       <div className="heroSingle" style={{ backgroundImage: `url(${hero_general.src})` }}>
         <div className="imageOverlay">
           <div className="textContent">

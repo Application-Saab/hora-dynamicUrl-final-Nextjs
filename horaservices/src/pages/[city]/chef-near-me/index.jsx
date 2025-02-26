@@ -19,12 +19,20 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 
+import { getHomeOrganizationSchema } from '../../../utils/schema';
+import Head from 'next/head';
+
 const ChefCitypage = () => {
     const [showButton, setShowButton] = useState(false);
     const [city, setCity] = useState("");
     const openLink = () => {
         window.open("https://play.google.com/store/apps/details?id=com.hora", "_blank");
     };
+
+
+
+      const schemaOrg = getHomeOrganizationSchema();
+      const scriptTag = JSON.stringify(schemaOrg);
 
     useEffect(() => {
         setShowButton(window.innerWidth > 800);
@@ -866,6 +874,22 @@ const ChefCitypage = () => {
 
     return (
         <div>
+            <Head>
+  <title>Hire a Chef Near You - Private Chefs for Parties and Events</title>
+  <meta name="description" content="Looking for a professional chef near you? Hire private chefs for parties, events, and special occasions. Enjoy personalized meals and exceptional culinary experiences at your home or event!" />
+  <meta name="keywords" content="chef near me, hire a chef, private chef, personal chef, chef for parties, event chef, hire chef for birthday, chef for home events, catering near me, private chef hire" />
+  <meta property="og:title" content="Hire a Chef Near You - Private Chefs for Events and Parties" />
+  <meta property="og:description" content="Looking to hire a private chef near you? Get personalized meals and catering services for your party or event. Book professional chefs for birthdays, weddings, and more!" />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/logo-icon.png" />
+  <meta property="og:image:alt" content="Private chef preparing food for an event" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/chef-near-me" />
+  <meta property="og:type" content="website" />
+</Head>
+
             <div style={styles.homebanner} className="homebanner citypage">
                 <div style={{ ...styles.bgImg, backgroundImage: `url(${bannerSvgImage.src})` }} className="bgImg">
                     <div style={styles.pageWidth}>

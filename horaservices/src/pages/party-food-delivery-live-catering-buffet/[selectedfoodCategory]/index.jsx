@@ -21,8 +21,12 @@ import InfoIcon from '../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../css/chefOrder.css';
+import { getHomeOrganizationSchema } from '../../../utils/schema';
+import Head from 'next/head';
 
 const FoodDeliveryCreateOrder = (currentStep) => {
+          const schemaOrg = getHomeOrganizationSchema();
+          const scriptTag = JSON.stringify(schemaOrg);
   const viewBottomSheetRef = useRef(null);
   const bottomSheetRef = useRef(null);
   const router = useRouter();
@@ -485,6 +489,22 @@ console.log('selectedOption',selectedOption)
 
   return (
     <div className="chef-create-order">
+      <Head>
+  <title>Party Food Delivery, Live Catering & Buffet Services - Hora Services</title>
+  <meta name="description" content="Looking for party food delivery or live catering services? Enjoy buffet catering and personalized meal options for your events. Book our top-rated catering services for birthdays, weddings, corporate events, and more!" />
+  <meta name="keywords" content="party food delivery, live catering, buffet catering, catering for events, birthday party catering, wedding catering, corporate event catering, food delivery for parties, catering services near me, book caterers online" />
+  <meta property="og:title" content="Party Food Delivery, Live Catering & Buffet Services - Hora Services" />
+  <meta property="og:description" content="Get the best party food delivery and live catering services with Hora Services. Whether it’s a birthday, wedding, or corporate event, enjoy personalized buffet catering with exceptional service!" />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/catering-food-banner.jpg" />
+  <meta property="og:image:alt" content="Party food delivery and live catering services for events" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/party-food-delivery-live-catering-buffet" />
+  <meta property="og:type" content="website" />
+</Head>
+
       <div className="order-container chef">
         <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.08)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
           <Image style={{ width: "20px", height: '20px', marginRight: "5px" }} src={InfoIcon} />

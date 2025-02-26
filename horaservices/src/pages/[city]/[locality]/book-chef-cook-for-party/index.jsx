@@ -28,6 +28,8 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
+import { getHomeOrganizationSchema } from '../../../../utils/schema';
+import Head from 'next/head';
 
 const CreateOrder = ({ history, currentStep }) => {
     const [isMobile, setIsMobile] = useState(false);
@@ -65,6 +67,8 @@ const CreateOrder = ({ history, currentStep }) => {
         body: "",
         button: "",
     });
+            const schemaOrg = getHomeOrganizationSchema();
+            const scriptTag = JSON.stringify(schemaOrg);
     // Handler for 'Only Veg' toggle switch
     const handleVegSwitch = () => {
         if (isNonVegSelected) return; // Prevent switching if 'Non-Veg' is selected
@@ -600,6 +604,21 @@ const CreateOrder = ({ history, currentStep }) => {
 
     return (
         <div className="chef-create-order">
+              <Head>
+  <title>Book a Professional Chef for Your Party - Hire Expert Cooks for Events</title>
+  <meta name="description" content="Looking for a professional chef to cook for your party? Book a top-rated chef for birthdays, weddings, corporate events, and more. Enjoy delicious, personalized meals made just for your celebration!" />
+  <meta name="keywords" content="book chef for party, hire chef for events, party catering, event chef, birthday party chef, wedding chef, chef for hire, personal chef for events, party food catering, chef services" />
+  <meta property="og:title" content="Book a Professional Chef for Your Party - Hire Expert Cooks" />
+  <meta property="og:description" content="Hire a professional chef for your next event. Whether it’s a birthday, wedding, or corporate gathering, enjoy personalized meals and exceptional service at your party. Book a chef today!" />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/chef-cooking-party.jpg" />
+  <meta property="og:image:alt" content="Chef preparing food for a party event" />
+  <script type="application/ld+json">{scriptTag}</script>  
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content="https://horaservices.com/book-chef-cook-for-party" />
+  <meta property="og:type" content="website" />
+</Head>
             <div className="order-container chef">
                 <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.23)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
                     <Image style={{ width: "20px", height: "20px", marginRight: "10px" }} src={InfoIcon} />

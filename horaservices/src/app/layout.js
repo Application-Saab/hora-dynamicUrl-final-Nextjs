@@ -13,6 +13,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <Head>
+        <meta name="author" content="Hora Services" />
+        <meta name="robots" content="index, follow" />
+        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
       </Head>
       <body className={inter.className}>
         <Header />
