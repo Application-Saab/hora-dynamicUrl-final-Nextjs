@@ -1,6 +1,5 @@
 import React from "react";
 import frame_footer from "../../assets/frame_footer.png";
-import horaFooterImage from '../../assets/hora-footer-bg.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { Container, Row, Col } from 'react-bootstrap';
