@@ -456,7 +456,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_webp/wahtsapp-decoration-redirection.jpeg",
+        "https://horaservices.com/api/uploads/compressed_webp/wahtsapp-decoration-redirection.webp",
       title: "",
       price: "",
       rating: "",
