@@ -29,7 +29,7 @@ const decCat = [
   {
     id: "2",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/Birthday_dec_cat.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/Birthday_dec_cat.webp",
     name: "Birthday",
     subCategory: "Birthday",
     catValue: "birthday-decoration",
@@ -38,7 +38,7 @@ const decCat = [
   {
     id: "3",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/first_night_cat_dec.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/first_night_cat_dec.webp",
     name: "First Night",
     subCategory: "FirstNight",
     catValue: "first-night-decoration",
@@ -48,7 +48,7 @@ const decCat = [
   {
     id: "4",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/aniversary_Cat_Dec.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/aniversary_Cat_Dec.webp",
     name: "Anniversary",
     subCategory: "Anniversary",
     catValue: "anniversary-decoration",
@@ -58,7 +58,7 @@ const decCat = [
   {
     id: "5",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/kids_birthday_decoration.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/kids_birthday_decoration.webp",
     name: "Kids Birthday",
     subCategory: "KidsBirthday",
     catValue: "kids-birthday-decoration",
@@ -68,7 +68,7 @@ const decCat = [
   {
     id: "6",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/baby-shower-dec-cat.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/baby-shower-dec-cat.webp",
     name: "Baby Shower",
     subCategory: "BabyShower",
     catValue: "baby-shower-decoration",
@@ -78,7 +78,7 @@ const decCat = [
   {
     id: "7",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/welcome_baby_dec.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/welcome_baby_dec.webp",
     name: "Welcome Baby",
     subCategory: "WelcomeBaby",
     catValue: "welcome-baby-decoration",
@@ -87,7 +87,7 @@ const decCat = [
   {
     id: "8",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/preminumdecor.webp	",
+      "https://horaservices.com/api/uploads/compressed_webp/preminumdecor.webp	",
     name: "premium Decoration",
     subCategory: "PremiumDecoration",
     catValue: "premium-decoration",
@@ -184,7 +184,7 @@ const Decoration = () => {
   const birthdayData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1705585784757.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1705585784757.webp",
       title: "Blushing Celebration Birthday Decor",
       price: "₹1782",
       rating: 4.7,
@@ -192,7 +192,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711727911194.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711727911194.webp",
       title: "Delightful White & Golden Decoration",
       price: "₹5022",
       rating: 4.6,
@@ -200,7 +200,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1725181762865.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1725181762865.webp",
       title: "Maroon White Birthday Decor",
       price: "₹2624",
       rating: 4.1,
@@ -208,7 +208,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711568028341.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711568028341.webp",
       title: "Birthday Party at Home Black & White",
       price: "₹2159",
       rating: 4.4,
@@ -216,7 +216,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706520980436.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706520980436.webp",
       title: "Classic Attractive Decoration",
       price: "₹7019",
       rating: 4.7,
@@ -235,7 +235,7 @@ const Decoration = () => {
   const firstNightData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/attachment-1712942470417.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1712942470417.webp",
       title: "Bed Decor With Love Moment",
       price: "₹2592",
       rating: 4.5,
@@ -243,7 +243,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713196298004.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713196298004.webp",
       title: "Heart Room With Decor Rose Petal",
       price: "₹6159",
       rating: 4.5,
@@ -251,7 +251,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713195839177.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713195839177.webp",
       title: "First Night With Rose Decoration",
       price: "₹1696",
       rating: 4.5,
@@ -259,7 +259,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706470671060.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706470671060.webp",
       title: "Romantic Wedding Room Decor",
       price: "₹1738",
       rating: 4.3,
@@ -270,7 +270,7 @@ const Decoration = () => {
   const haldiAndMehndiData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1723290555708.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1723290555708.webp",
       title: "Haldi Decoration Ring Look",
       price: "₹15206",
       rating: 4.6,
@@ -278,7 +278,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1722693437219.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1722693437219.webp",
       title: "Mehendi Decoration Green Style",
       price: "₹14580",
       rating: 4.6,
@@ -286,7 +286,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1723209813542.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1723209813542.webp",
       title: "Mehendi Decoration Look Yellow",
       price: "₹7128",
       rating: 4.6,
@@ -294,7 +294,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1723290772620.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1723290772620.webp",
       title: "Haldi Decoration Stage",
       price: "₹15034",
       rating: 4.3,
@@ -305,7 +305,7 @@ const Decoration = () => {
   const AnniversaryData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706461267921.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706461267921.webp",
       title: "Lavender Rose Extravaganza Anniversary Decor",
       price: "₹3239",
       rating: 4.6,
@@ -313,7 +313,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706460114319.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706460114319.webp",
       title: "White & Gold Enchantment Anniversary Decoration",
       price: "₹2699",
       rating: 4.2,
@@ -321,7 +321,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713965416898.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713965416898.webp",
       title: "Anniversary Decoration With Ring Shape",
       price: "₹4590",
       rating: 4.5,
@@ -329,7 +329,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1725953653670.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1725953653670.webp",
       title: "Rose and Gold Heaven Balloon Decor",
       price: "₹9018",
       rating: 4.5,
@@ -337,7 +337,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713189291302.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713189291302.webp",
       title: "Bed Decoration For First Night",
       price: "₹3067",
       rating: 4.0,
@@ -345,7 +345,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1718046543520.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1718046543520.webp",
       title: "Floral Anniversary Decor",
       price: "₹4400",
       rating: 4.5,
@@ -353,7 +353,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1725951536862.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1725951536862.webp",
       title: "Golden n White Petals Balloon decor",
       price: "₹2870",
       rating: 4.8,
@@ -361,7 +361,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/wahtsapp-decoration-redirection.jpeg",
+        "https://horaservices.com/api/uploads/compressed_webp/wahtsapp-decoration-redirection.jpeg",
       title: "",
       price: "",
       rating: "",
@@ -373,7 +373,7 @@ const Decoration = () => {
   const bacheloretteData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1724160189321.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1724160189321.webp",
       title: "Pastel Bride to be Decoration",
       price: "₹2560",
       rating: 4.7,
@@ -381,7 +381,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1724162849757.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1724162849757.webp",
       title: "Classy Bachelorette Wall",
       price: "₹2020",
       rating: 4.0,
@@ -390,7 +390,7 @@ const Decoration = () => {
 
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1724161735052.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1724161735052.webp",
       title: "Bachelorette Ring Backdrop",
       price: "₹3834",
       rating: 4.0,
@@ -398,7 +398,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1724415811393.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1724415811393.webp",
       title: "Bride to be Balloon Arch",
       price: "₹2581",
       rating: 4.0,
@@ -409,7 +409,7 @@ const Decoration = () => {
   const KidsBirthdayData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1705948416594.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1705948416594.webp",
       title: "Minnie Mouse Theme Decoration",
       price: "₹1673",
       rating: 4.5,
@@ -417,7 +417,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713198322285.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713198322285.webp",
       title: "Cocomelon Theme For Birthday Kids",
       price: "₹2483",
       rating: 4.5,
@@ -432,7 +432,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711527333610.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711527333610.webp",
       title: "Cocomelon theme With Shining Balloons",
       price: "₹7096",
       rating: 4.4,
@@ -440,7 +440,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711535459259.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711535459259.webp",
       title: "Mermaid Theme Birthday Ring Decor",
       price: "₹6479",
       rating: 4.3,
@@ -448,7 +448,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1726057785648.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1726057785648.webp",
       title: "Mermaid Sea Shell Shore Decor",
       price: "₹2117",
       rating: 4.4,
@@ -456,7 +456,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/wahtsapp-decoration-redirection.jpeg",
+        "https://horaservices.com/api/uploads/compressed_webp/wahtsapp-decoration-redirection.jpeg",
       title: "",
       price: "",
       rating: "",
@@ -468,7 +468,7 @@ const Decoration = () => {
   const BabyShowerData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713010630004.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713010630004.webp",
       title: "Oh Baby Decor With Baby Feet",
       price: "₹3240",
       rating: 4.2,
@@ -476,7 +476,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1705598937315.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1705598937315.webp",
       title: "Golden, Pink and Blue Baby Shower",
       price: "₹2483",
       rating: 4.5,
@@ -484,7 +484,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711536118870.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711536118870.webp",
       title: "Rosy Whispers Baby Shower",
       price: "₹6610",
       rating: 4.2,
@@ -492,7 +492,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713379165376.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713379165376.webp",
       title: "Oh Baby With Green Decoration",
       price: "₹6772",
       rating: 4.8,
@@ -500,7 +500,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/wahtsapp-decoration-redirection.jpeg",
+        "https://horaservices.com/api/uploads/compressed_webp/wahtsapp-decoration-redirection.",
       title: "",
       price: "",
       rating: "",
@@ -512,7 +512,7 @@ const Decoration = () => {
   const WelcomebabyData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713382130916.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713382130916.webp",
       title: "Welcome Baby By Teddy Theme",
       price: "₹4482",
       rating: 4.8,
@@ -520,7 +520,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713010968590.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713010968590.webp",
       title: "Light Baby Decoration",
       price: "₹4050",
       rating: 4.5,
@@ -528,7 +528,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706471168212.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706471168212.webp",
       title: "Pastel Theme Baby Welcome",
       price: "₹2159",
       rating: 4.7,
@@ -536,7 +536,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706471308375.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706471308375.webp",
       title: "Pink Theme Welcome Baby",
       price: "₹2236",
       rating: 4.2,
@@ -544,7 +544,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711599827419.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711599827419.webp",
       title: "Golden & Pink Theme Baby Welcome",
       price: "₹2807",
       rating: 4.8,
@@ -555,7 +555,7 @@ const Decoration = () => {
   const PremiumData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1713005111181.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1713005111181.webp",
       title: "Birthday Decor With Cocomelon Setup",
       price: "₹9472",
       rating: 4.4,
@@ -563,7 +563,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1712938054361.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1712938054361.webp",
       title: "Boy & Girl Baby Shower Theme",
       price: "₹8262",
       rating: 4.6,
@@ -571,7 +571,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706463835447.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1706463835447.webp",
       title: "Multi Balloon Round Ring",
       price: "₹5044",
       rating: 4.7,
@@ -580,7 +580,7 @@ const Decoration = () => {
 
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711528712533.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711528712533.webp",
       title: "Unicorn Theme Birthday Surprise",
       price: "₹7991",
       rating: 4.6,
@@ -591,7 +591,7 @@ const Decoration = () => {
   const BallonBData = [
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1705949316251.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1705949316251.webp",
       title: "I Love You Balloon Bouquet",
       price: "₹1944",
       rating: 4.3,
@@ -599,7 +599,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1705949583322.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1705949583322.webp",
       title: "LOVE Balloon Bouquet",
       price: "₹1350",
       rating: 4.6,
@@ -607,7 +607,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1711542379923.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1711542379923.webp",
       title: "Barbie Balloon Bouquet",
       price: "₹1450",
       rating: 4.1,
@@ -615,7 +615,7 @@ const Decoration = () => {
     },
     {
       Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1712305355842.png",
+        "https://horaservices.com/api/uploads/compressed_webp/attachment-1712305355842.webp",
       title: "Baby Shark Bouquet",
       price: "₹1420",
       rating: 4.5,
@@ -902,7 +902,7 @@ const Decoration = () => {
         />
         <meta
           property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+          content="https://horaservices.com/api/uploads/attachment-1706520980436.webp"
         />
         <meta
           property="og:image:alt"
@@ -913,7 +913,7 @@ const Decoration = () => {
         <meta name="author" content="Hora Services" />
         <link
           rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
+          href="https://horaservices.com/api/uploads/logo-icon.webp"
           type="image/x-icon"
         />
         <meta
