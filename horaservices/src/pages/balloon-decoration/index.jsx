@@ -11,7 +11,8 @@ import { getDecorationOrganizationSchema } from "../../utils/schema";
 import { setState } from "../../actions/action";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from "../../assets/new_logo_light.png";
+import logo from "../../assets/new_logo_light.webp";
+import mouse from "../../assets/mickeymouseimage.webp";
 import { useDispatch } from "react-redux";
 import "../../css/decoration.css";
 import dynamic from "next/dynamic";
@@ -137,7 +138,6 @@ const decCat = [
 const Decoration = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  // const navigate = useNavigate();
   const schemaOrg = getDecorationOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
   let { city } = useParams();
@@ -424,8 +424,7 @@ const Decoration = () => {
       link: "https://horaservices.com/balloon-decoration/kids-birthday-decoration/product/Cocomelon-Theme-For-Birthday-Kids",
     },
     {
-      Image:
-        "https://horaservices.com/api/uploads/compressed_images/attachment-1706464928126.png",
+      Image: mouse,
       title: "Mickey Ring Birthday Decoration",
       price: "₹2915",
       rating: 4.6,
@@ -703,7 +702,7 @@ const Decoration = () => {
     let lastEvent = window.dataLayer[window.dataLayer.length - 1];
   };
 
-  const SliderSection = ({ title, data, handleViewMore, viewLink }) => (
+  const SliderSection = React.memo(({ title, data, handleViewMore, viewLink }) => (
     <div className="slider-container dec-grid-section">
       <div className="slider-header">
         <h2
@@ -796,6 +795,7 @@ const Decoration = () => {
                     height={250}
                     loading="lazy"
                     srcSet={`${item.Image}?w=200&h=250&fit=crop 200w, ${item.Image}?w=400&h=500&fit=crop 400w`}
+                    quality={85}
                   />
                   <div
                     style={{
@@ -816,6 +816,8 @@ const Decoration = () => {
                         src={logo}
                         style={{ width: "70px", height: "80px" }}
                         className="hora-watermark-image"
+                        loading="lazy"
+                    quality={85}
                       />
                     </span>
                   </div>
@@ -873,7 +875,7 @@ const Decoration = () => {
         })}
       </div>
     </div>
-  );
+));
 
   return (
     <div className="decoration-city-page-sec">
