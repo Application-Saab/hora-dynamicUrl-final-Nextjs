@@ -1,26 +1,26 @@
 import React from "react";
 import { FaTag, FaMapMarkerAlt, FaDownload } from "react-icons/fa";
-import contactusbanner from "../../assets/contactusbanner.png";
-import delhi from "../../assets/delhi.jpg";
-import mumbai from "../../assets/mumbai.jpg";
-import banglore from "../../assets/banglore.jpg";
-import pune from "../../assets/Pune.png";
-import noida from "../../assets/Noida.png";
-import indore from "../../assets/indore.png";
-import bhopal from "../../assets/bhopal.png";
-import ghaziabad from "../../assets/ghaziabad.png";
-import gurugram from "../../assets/gurugram.png";
-import faridabad from "../../assets/faridabad.png";
-import hydrabad from "../../assets/hydrabad.png";
-import chennai from "../../assets/Chennai.png";
-import jaipur from "../../assets/jaipur.png";
-import ahmdabad from "../../assets/Ahmdabad.png";
-import chandigarh from "../../assets/Chandigarh.png";
-import kolkata from "../../assets/kolkata.png";
-import lakhnow from "../../assets/Locknow.png";
-import kanpur from "../../assets/Kanpur.png";
-import surat from "../../assets/Kanpur.png";
-import goa from "../../assets/Goa.png";
+import contactusbanner from "../../assets/contactusbanner.webp";
+import delhi from "../../assets/delhi.webp";
+import mumbai from "../../assets/mumbai.webp";
+import banglore from "../../assets/banglore.webp";
+import pune from "../../assets/Pune.webp";
+import noida from "../../assets/Noida.webp";
+import indore from "../../assets/indore.webp";
+import bhopal from "../../assets/bhopal.webp";
+import ghaziabad from "../../assets/ghaziabad.webp";
+import gurugram from "../../assets/gurugram.webp";
+import faridabad from "../../assets/faridabad.webp";
+import hydrabad from "../../assets/hydrabad.webp";
+import chennai from "../../assets/Chennai.webp";
+import jaipur from "../../assets/jaipur.webp";
+import ahmdabad from "../../assets/Ahmdabad.webp";
+import chandigarh from "../../assets/Chandigarh.webp";
+import kolkata from "../../assets/kolkata.webp";
+import lakhnow from "../../assets/Locknow.webp";
+import kanpur from "../../assets/Kanpur.webp";
+import surat from "../../assets/Kanpur.webp";
+import goa from "../../assets/Goa.webp";
 import Image from "next/image";
 
 const ContactUs = () => {
@@ -48,46 +48,50 @@ const ContactUs = () => {
 
         <div className="contact-us-secRight" style={styles.secRight}>
           <div className="contact-us-boxsection" style={styles.boxHow}>
-            <FaTag style={styles.icon} />
-            <h2
-              style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
-            >
-              Call & Whatsapp
-            </h2>
             <a href="tel:+917338584828" style={{ color: "#444" }}>
+              <FaTag style={styles.icon} />
+              <h2
+                style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
+              >
+                Call & Whatsapp
+              </h2>
+
               +917338584828
             </a>
           </div>
           <div className="contact-us-boxsection" style={styles.boxHow}>
-            <FaMapMarkerAlt style={styles.icon} />
-            <h2
-              style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
-            >
-              Email
-            </h2>
             <a href="mailto:dev@horaservices.com" style={{ color: "#444" }}>
+              <FaMapMarkerAlt style={styles.icon} />
+              <h2
+                style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
+              >
+                Email
+              </h2>
+
               dev@horaservices.com
             </a>
           </div>
           <div className="contact-us-boxsection" style={styles.boxHow}>
-            <FaDownload style={styles.icon} />
-            <h2
-              style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://play.google.com/store/apps/details?id=com.hora"
+              style={{ color: "#444" }}
             >
-              Download Application
-            </h2>
-            <small>
-              -{" "}
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://play.google.com/store/apps/details?id=com.hora"
-                style={{ color: "#444" }}
+              <FaDownload style={styles.icon} />
+              <h2
+                style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
               >
+                Download Application
+              </h2>
+              <small>
+                -{" "}
+
                 Click Here
-              </a>{" "}
-              -
-            </small>
+                {" "}
+                -
+              </small>
+            </a>
           </div>
         </div>
         <div style={styles.contactUs}>
@@ -104,31 +108,71 @@ const ContactUs = () => {
             >
               We Provide Services In These Cities
             </h5>
-            <div>
-              <div
-                className="contact-us-img-section-1"
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  marginBottom: "30px",
-                  gap: "10px",
-                }}
-              >
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={mumbai} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/mumbai">Mumbai</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={delhi} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/delhi">Delhi</a></h4>
-                </div>
 
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={banglore} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/bengaluru">Bengaluru</a></h4>
-                </div>
+            <div
+              className="contact-us-img-section-1"
+              style={styles.cityContact}
+            >
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={mumbai} alt="image" />
+                <h4 className="contact-us-heading"><a href="/mumbai">Mumbai</a></h4>
               </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={delhi} alt="image" />
+                <h4 className="contact-us-heading"><a href="/delhi">Delhi</a></h4>
+              </div>
+
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={banglore} alt="image" />
+                <h4 className="contact-us-heading"><a href="/bengaluru">Bengaluru</a></h4>
+              </div>
+              {/* </div> */}
+              {/* <div
+                className="contact-us-img-section-1"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  marginBottom: "30px",
+                  gap: "10px",
+                }}
+              > */}
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={banglore} alt="image" />
+                <h4 className="contact-us-heading"><a href="/bangalore">Bangalore</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={noida} alt="image" />
+                <h4 className="contact-us-heading"><a href="/noida">Noida</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={ghaziabad} alt="image" />
+                <h4 className="contact-us-heading"><a href="/ghaziabad">Gaziabad</a></h4>
+              </div>
+              {/* </div> */}
+              {/* <div
+                className="contact-us-img-section-1"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  marginBottom: "30px",
+                  gap: "10px",
+                }}
+              > */}
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={gurugram} alt="image" />
+                <h4 className="contact-us-heading"><a href="/gurugram">Gurugram</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={faridabad} alt="image" />
+                <h4 className="contact-us-heading"><a href="/faridabad">Faridabad</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={hydrabad} alt="image" />
+                <h4 className="contact-us-heading">< a href="/hyderabad">Hydrabad</a></h4>
+              </div>
+              {/* </div>
               <div
                 className="contact-us-img-section-1"
                 style={{
@@ -138,90 +182,20 @@ const ContactUs = () => {
                   marginBottom: "30px",
                   gap: "10px",
                 }}
-              >
-                 <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={banglore} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/bangalore">Bangalore</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={noida} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/noida">Noida</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={ghaziabad} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/ghaziabad">Gaziabad</a></h4>
-                </div>
+              > */}
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={chennai} alt="image" />
+                <h4 className="contact-us-heading"><a href="/chennai">Chennai</a></h4>
               </div>
-              <div
-                className="contact-us-img-section-1"
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  marginBottom: "30px",
-                  gap: "10px",
-                }}
-              >
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={gurugram} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/gurugram">Gurugram</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={faridabad} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/faridabad">Faridabad</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={hydrabad} alt="image" />
-                  <h4 className="contact-us-heading">< a href="/hyderabad">Hydrabad</a></h4>
-                </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={kolkata} alt="image" />
+                <h4 className="contact-us-heading"><a href="/kolkata">Kolkata</a></h4>
               </div>
-              <div
-                className="contact-us-img-section-1"
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  marginBottom: "30px",
-                  gap: "10px",
-                }}
-              >
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={chennai} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/chennai">Chennai</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={kolkata} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/kolkata">Kolkata</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={lakhnow} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/lucknow">Lucknow</a></h4>
-                </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={lakhnow} alt="image" />
+                <h4 className="contact-us-heading"><a href="/lucknow">Lucknow</a></h4>
               </div>
-              <div
-                className="contact-us-img-section-1"
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  marginBottom: "30px",
-                  gap: "10px",
-                  gap: "10px",
-                }}
-              >
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={kanpur} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/kanpur">Kanpur</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={indore} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/indore">Indore</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={surat} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/surat">Surat</a></h4>
-                </div>
-              </div>
+              {/* </div>
               <div
                 className="contact-us-img-section-1"
                 style={{
@@ -232,22 +206,46 @@ const ContactUs = () => {
                   gap: "10px",
                   gap: "10px",
                 }}
-              >
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={bhopal} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/bhopal">Bhopal</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={goa}  alt="image"/>
-                  <h4 className="contact-us-heading"><a href="/goa">Goa</a></h4>
-                </div>
-                <div className="contact-us-section-div">
-                  <Image className="contact-us-img" src={pune} alt="image" />
-                  <h4 className="contact-us-heading"><a href="/pune">Pune</a></h4>
-                </div>
+              > */}
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={kanpur} alt="image" />
+                <h4 className="contact-us-heading"><a href="/kanpur">Kanpur</a></h4>
               </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={indore} alt="image" />
+                <h4 className="contact-us-heading"><a href="/indore">Indore</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={surat} alt="image" />
+                <h4 className="contact-us-heading"><a href="/surat">Surat</a></h4>
+              </div>
+              {/* </div> */}
+              {/* <div
+                className="contact-us-img-section-1"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  marginBottom: "30px",
+                  gap: "10px",
+                  gap: "10px",
+                }}
+              > */}
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={bhopal} alt="image" />
+                <h4 className="contact-us-heading"><a href="/bhopal">Bhopal</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={goa} alt="image" />
+                <h4 className="contact-us-heading"><a href="/goa">Goa</a></h4>
+              </div>
+              <div className="contact-us-section-div">
+                <Image className="contact-us-img" src={pune} alt="image" />
+                <h4 className="contact-us-heading"><a href="/pune">Pune</a></h4>
+              </div>
+              {/* </div> */}
               <div className="our-address">
-                <h1 style={{ fontSize:"10px" , textAlign:"center"}}>Our Registered Address: B27/295, Bhopal, 462030</h1>
+                <p style={{ textAlign: "center" }}>Our Registered Address: B27/295, Bhopal, 462030</p>
               </div>
             </div>
           </div>
@@ -263,6 +261,14 @@ const styles = {
   },
   contactUs: {
     backgroundColor: "#fff",
+  },
+  cityContact: {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    alignItems: "center",
+    marginBottom: "30px",
+    gap: "10px",
   },
   heroSingle: {
     position: "relative",

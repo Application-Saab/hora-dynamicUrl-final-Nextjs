@@ -10,6 +10,7 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
 
   
   const categorizeItems = (category) => {
+    console.log("orderMenu", orderMenu);
     return orderMenu
       ?.filter((item) => item.mealId[0].name === category)
       .map((item, index) => (
@@ -18,8 +19,9 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
             <Image
               src={`https://horaservices.com/api/uploads/${item?.image}`}
               alt={item.name}
-              height={56}
+              height={80}
               width={80}
+              aspectratio={1 / 1}
             />
           </div>
           <div className="menu-item-details">
@@ -53,11 +55,14 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
               <div className="advance-preparations-title">
                 *Advance Preparations required
               </div>
-              <div className="advance-preparations-text">
-                {orderMenu?.map((item) => item.preperationtext).join(", ") ||
-                  "NA"}
-              </div>
+            <div className="advance-preparations-text">
+              {orderMenu
+                ?.filter((item) => item.preperationtext?.trim() !== "")
+                .map((item) => item.preperationtext)
+                .join(", ") || ""}
             </div>
+
+          </div>
           )}
 
         {categories.map((category) => {
@@ -65,7 +70,9 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
           return (
             items?.length > 0 && (
               <div className="meal-category" key={category}>
-                <span className="category-title">
+                 <span 
+                // className="category-title"
+                >
                   {category} ({items.length})
                 </span>
                 <div className="menu-items">{items}</div>

@@ -1,8 +1,8 @@
 import React from "react";
-import hero_general from "../../assets/hero_general.jpg";
-import how_1 from '../../../public/assets/how_1.svg';
-import how_2 from '../../../public/assets/how_2.svg';
-import how_3 from "../../../public/assets/how_3.svg";
+import hero_general from "../../assets/hero_general.webp";
+import how_1 from '../../assets/how_1.webp';
+import how_2 from '../../assets/how_2.webp';
+import how_3 from "../../assets/how_3.webp";
 import Image from "next/image";
 import '../../pages/aboutus/aboutus.css';
 
@@ -10,13 +10,13 @@ const AboutUs = () => {
   return (
     <div className="aboutUsContainer">
       <div className="heroSingle" style={{ backgroundImage: `url(${hero_general.src})` }}>
-        <div className="imageOverlay">
+     
           <div className="textContent">
             <h1>About Us</h1>
             <p>Planning And Celebrating Events Since 2019!</p>
           </div>
-        </div>
-        <div className="frame white"></div>
+        
+        {/* <div className="frame white"></div> */}
       </div>
 
       <div className="pattern2 sec1">

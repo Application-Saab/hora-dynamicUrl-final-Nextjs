@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import daal_image from "../../assets/daal-image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-import { BASE_URL, ORDER_CANCEL } from "../../utils/apiconstants";
+import { BASE_URL, ORDER_CANCEL, GET_PHOTOGRAPHY_BY_NAME } from "../../utils/apiconstants";
 // import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import checkImage from "../../assets/tick.jpeg";
+import logo from '../../assets/new_logo_light.png';
+const axios = require("axios");
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -25,34 +28,60 @@ const OrderDetailTab = ({
 }) => {
   const router = useRouter();
   const [tab, setTab] = useState("Menu");
-  const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
-  
-  const getItemInclusion = (inclusion) => {
-    if (!inclusion || inclusion.length === 0)
-      return "No inclusion details available";
-  
-    return inclusion
-      .join("") 
-      .replace(/<\/?(div|span)>/g, "") 
-      .replace(/&#10;/g, "\n") 
-      .replace(/\s*-\s*/g, "\n- ")
-      .trim(); 
-  };
+  const [name, setname] = useState();
 
+  const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
+
+  const getItemInclusion = (inclusion) => {
+    if (!Array.isArray(inclusion) || inclusion.length === 0) {
+      return null;
+    }
+    const htmlString = inclusion[0];
+    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
+    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
+    const statements = withoutSpecialChars.split("<div>");
+    const inclusionItems = statements.flatMap((statement) =>
+      statement.split("-").filter((item) => item.trim() !== "")
+    );
+    const inclusionList = inclusionItems.map((item, index) => (
+      <li key={index} className="inclusionstyle">
+        <Image
+          src={checkImage}
+          alt="Info"
+          style={{ height: 13, width: 13, marginRight: 10 }}
+        />
+        {item.trim()}
+      </li>
+    ));
+    return (
+      <div>
+        <div
+          style={{
+            fontSize: "21px",
+            borderBottom: "1px solid #e7eff9",
+            marginBottom: "10px",
+          }}
+        >
+          Inclusions
+        </div>
+        <ul>{inclusionList}</ul>
+      </div>
+    );
+  };
   const handleCancelOrder = async () => {
     const confirmCancel = window.confirm("Do you want to cancel the order?");
-  
+
     if (confirmCancel) {
       await cancelOrder();
     } else {
       console.log("Order cancellation aborted.");
     }
   };
-  
+
   const cancelOrder = async () => {
     try {
       const token = await localStorage.getItem("token");
-  
+
       const response = await fetch(BASE_URL + ORDER_CANCEL, {
         method: "POST",
         headers: {
@@ -64,7 +93,7 @@ const OrderDetailTab = ({
           Authorisation: token,
         }),
       });
-  
+
       if (response.ok) {
         // Handle success response
         alert("Order cancelled successfully");
@@ -96,7 +125,49 @@ const OrderDetailTab = ({
       console.log("cancelcontactUsRedirection error", error);
     }
   };
+  const fetchAndMatchItems = async (orderDetail) => {
+    try {
+      const { items } = orderDetail;
+      console.log(items, "orderedItems");
 
+      if (!items || items.length === 0) {
+        return;
+      }
+
+      for (const itemId of items) {
+        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
+
+        try {
+          const response = await axios.get(url);
+          const apiData = response.data;
+
+          if (apiData && apiData.data && apiData.data.length > 0) {
+            const responseData = apiData.data[0];
+
+            if (responseData._id === itemId) {
+              console.log(`Match found for ID ${itemId}:`, responseData.name);
+              setname(responseData.name);
+            }
+          }
+        } catch (axiosError) {
+          console.error(
+            `Error fetching data for ID ${itemId}:`,
+            axiosError.message
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error in fetchAndMatchItems:", error);
+    }
+  };
+
+  fetchAndMatchItems(orderDetail);
+
+  const cancellationPolicy = [
+    `If the order is beyond 48 Hours: You are eligible for a 100% refund of the advance payment.`,
+    `If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive a refund of the advance payment.`,
+    `If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for ${orderType === 8 ? "Photography" : "Decoration"} has to be paid by the customer.`,
+  ];
   return (
     <>
       {/* <div className="chef-details">
@@ -134,7 +205,7 @@ const OrderDetailTab = ({
             <OrderDetailsMenu orderDetail={orderDetail} orderType={orderType} />
           )}
           {tab === "Appliances" && (
-           <OrderDetailsAppliances orderDetail={orderDetail} orderType={orderType}/>
+            <OrderDetailsAppliances orderDetail={orderDetail} orderType={orderType} />
           )}
           {tab === "Ingredients" && (
             <OrderDetailsIngre
@@ -202,59 +273,297 @@ const OrderDetailTab = ({
           </div>
         </>
       ) : orderType === 1 ? (
-        <div  className="decoration-container">
+        <div className="decoration-container">
           {decorationItems?.map((product, index) => {
             return (
-              <div key={product?.id} className="product-container">
-                <div className="product-image-container">
-                  <Image
-                    src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                    alt={product?.name}
-                    className="product-image"
-                    height={300}
-                    width={300}
-                    style={{height:"auto", width:"auto"}}
-                  />
+              <div className="decDetails"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  paddingTop: "10px",
+                  position: "relative",
+                }}
+
+              >
+                <div className="decDetailsLeft"
+                  style={{ width: "50%", textAlign: "center" }}
+
+                >
+                  <div className="decDetailsImage"
+                    style={{
+                      width: "80%",
+                      boxShadow: "0 1px 8px rgba(0,0,0,.1)",
+                      padding: "10px",
+                      margin: "0 auto",
+                      position: "relative",
+                    }}
+
+                  >
+                    <div>
+                      <Image
+                        src={`https://horaservices.com/api/uploads/${product.featured_image}`}
+                        style={{ width: "100%", height: "auto" }}
+                        width={300}
+                        height={300}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: 3,
+                          right: 3,
+                          borderRadius: "50%",
+                          padding: 10,
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "rgba(157, 74, 147, 0.6)",
+                            fontWeight: "600",
+                          }}
+                        >
+                          <Image src={logo} style={{ width: "70px", height: "80px" }} className="hora-watermark-image" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="product-info">
-                  <p className="product-name">{product?.name}</p>
-                  <p className="product-price">₹{product?.price}</p>
-                  <h6 className="product-inclusion">
-                    {getItemInclusion(product?.inclusion)}
-                  </h6>
-                 
-                  {
-                  addOn.length > 0 ? (
-                  <>
-                  <p className="comments-header">AddOn:</p>
-                  <ul>
-                  {addOn.map((item, index) => (
-                  <li key={index}>
-                  <strong>{item.name ? item.name : "NA"}</strong>: ₹{item.price ? item.price : "NA"}
-                  </li>
-                  ))}
-                  </ul>
-                  </>
-                  ) : null
-                  }
+
+                <div className="decDetailsRight"
+                  style={{
+                    width: "50%",
+                    paddingLeft: "20px",
+                    paddingRight: "50px",
+                  }}
+
+                >
+                  <div
+                    style={{
+                      boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                      padding: "6px", // Reduced padding
+                      marginBottom: "6px", // Reduced marginBottom
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    <h1
+                      style={{
+                        fontSize: "21px",
+                        color: "#222",
+                        fontWeight: "600",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {product.name}
+                    </h1>
+                    <div className="pro-details-price">
+                      <p
+                        style={{
+                          fontSize: "18px",
+                          color: "#9252AA",
+                          fontWeight: "600",
+                          marginTop: "0",
+                          marginBottom: "-2px",
+                        }}
+                      >
+                        ₹ {product.price}
+                      </p>
+                    </div>
+                  </div>
+
+
+                  <div
+                    style={{
+                      boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                      padding: "10px",
+                      marginBottom: "12px",
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    {getItemInclusion(product.inclusion)}
+                  </div>
+
+                  <div
+                    style={{
+                      boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                      padding: "10px",
+                      marginBottom: "12px",
+                      backgroundColor: "#fff",
+                    }}
+                  >
                   
+                    
+                        <div
+                          style={{
+                            fontSize: "21px",
+                            borderBottom: "1px solid #e7eff9",
+                            marginBottom: "10px",
+                          }}
+                        >
+                          Add On
+                        </div>
+                       { addOn.length > 0 ? (
+                        <ul>
+                          {addOn.map((item, index) => (
+                            <li key={index} className="inclusionstyle">
+                              <span>• {item.name || "NA"}</span>:
+                              <span> ₹{item.price || "NA"}</span>
+                            </li>
+                          ))}
+                        </ul>
+          ):"NA"}
+                      
+                    
+                  </div>
+
+                  {/* Additional Comments */}
+                  <div
+                    style={{
+                      boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                      padding: "10px",
+                      marginBottom: "12px",
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "21px",
+                        borderBottom: "1px solid #e7eff9",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Additional Comments
+                    </div>
+
+                    {decorationComments && (
+                      <div className="comment-container">
+                        <p className="comments-text">{decorationComments}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Cancellation and Order Change Policy */}
+                  <div className="px-1 py-3 border rounded my-2 cancellation-policy"
+                    style={{ background: "rgba(157, 74, 147, 0.28)" }}
+                  >
+                    <p className="m-1"
+                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)",borderBottom: "1px solid #9d4a9347" }} >
+                      Cancellation and Order Change Policy
+                    </p>
+
+                    {cancellationPolicy.map((policy, index) => (
+                      <p key={index} style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className="m-1">
+                        {index + 1}. {policy}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
             );
           })}
-            {decorationComments && (
-            <div className="comment-container">
-              <p className="comments-header">Additional Comments:</p>
-              <p className="comments-text">{decorationComments}</p>
+        </div>
+      ) : orderType === 8 ? (
+        <div className="decoration-container">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              paddingTop: "10px",
+              position: "relative",
+            }}
+            className="decDetails"
+          >
+            <div
+              style={{ width: "50%", textAlign: "center" }}
+              className="decDetailsLeft"
+            ></div>
+            <div
+              style={{
+                width: "50%",
+                paddingLeft: "20px",
+                paddingRight: "50px",
+              }}
+              className="decDetailsRight"
+            >
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <h1
+                  style={{
+                    fontSize: "16px",
+                    color: "#222",
+                    fontSize: "21px",
+                    fontWeight: "#222",
+                  }}
+                >
+                  {name}
+                </h1>
+              </div>
+
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                {orderDetail?.add_on?.length > 0 && (
+                  <>
+                    <div
+                      style={{
+                        fontSize: "21px",
+                        borderBottom: "1px solid #e7eff9",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Inclusions
+                    </div>
+                    {/* <div className="product-add-ons"> */}
+                    <ul>
+                      {orderDetail.add_on.map((item, index) => (
+                        <li key={index} className="inclusionstyle">
+                          <Image
+                            src={checkImage}
+                            alt="Info"
+                            style={{ height: 13, width: 13, marginRight: 10 }}
+                          />
+                          <span>{item || "NA"}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+
+              {/* Cancellation and Order Change Policy */}
+              <div className="px-1 py-3 border rounded my-2 cancellation-policy"
+                style={{ background: "rgba(157, 74, 147, 0.28)" }}
+              >
+                <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className="text-center m-1">
+                  Cancellation and Order Change Policy
+                </p>
+
+                {cancellationPolicy.map((policy, index) => (
+                  <p key={index} style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className="m-1">
+                    {index + 1}. {policy}
+                  </p>
+                ))}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       ) : null}
 
       {/* <div className="rate-us-footer">
         <button className="rate-us-button">Rate Us</button>
       </div> */}
-
+      {/* bottom buttons */}
       {orderStatus === 0 || orderStatus === 1 || orderStatus === 2 ? (
         <div className="rate-us-footer" onClick={handleCancelOrder}>
           <button className="rate-us-button">Cancel Order</button>
