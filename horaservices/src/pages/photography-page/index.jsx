@@ -23,14 +23,16 @@ const index = () => {
   const getCleanInclusionText = (inclusionArray) => {
     if (!inclusionArray || inclusionArray.length === 0)
       return "No inclusion details available";
-
+  
     return inclusionArray
-      .join("")
-      .replace(/<\/?(div|span|br)>/g, "")
-      .replace(/&#10;/g, "\n")
-      .replace(/\s*-\s*/g, "\n- ")
+      .map((item, index) => `${index + 1}. ${item}`)  // Add numbering to each item
+      .join("\n")  // Join the array items with newline for each numbered item
+      .replace(/<\/?(div|span|br)>/g, "")  // Clean out unwanted HTML tags
+      .replace(/&#10;/g, "\n")  // Convert line breaks
+      .replace(/\s*-\s*/g, "\n- ")  // Clean up extra spaces and dashes
       .trim();
   };
+  
   const fetchData = useCallback(async () => {
     try {   
       const res = await axios.get(        
@@ -58,7 +60,7 @@ const index = () => {
   };
   return (<>
         <div>
-              <div className="banner-sec">
+             
           <div className="photograpy-bannner-sec">
           <div className="sec">
                     <Image src={photographyBanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
@@ -70,7 +72,7 @@ const index = () => {
           
               </div>
           
-              </div>
+             
         </div>
       <div className="featured-works">   
      
@@ -141,29 +143,27 @@ Baby Shower, New Born baby, Maternity Shoot
         {FeaturedWorkData.map((work, index) => (
           <div className="work-item" key={index}  >
             {/* <img src={work.image} alt={work.title} className="work-image" /> */}
-            <Image
-              src={triditionalPhoto}
-              width={300}
-              height={250}
-              />
+           
             <div className="work-card-info">
               <div className="work-details">
                 <h5 className="work-title">{work.title}</h5>
-                {/* {Array.isArray(work.inclusion) && work.inclusion.length > 0 && (
-                  <ul className="work-inclusions">
+                <p className="Prefred-occ">Perfect for birthdays, baby showers, weddings, and staged events</p>
+                <b class="inclusion-heading">Inclusion:</b>
+                {Array.isArray(work.inclusion) && work.inclusion.length > 0 && (
+                  <ul className="work-duration">
                     {work.inclusion.map((inc, index) => (
                       <li className="inclusion-item" key={index}>{inc}</li>
                     ))}
                   </ul>
-                )} */}
+                )}
                 <p className="work-duration">
                   <b>Duration:</b> {work.duration}
                 </p>
-                <p className="work-price">
+                <p className="work-duration">
                   <b>Price:</b> {work.price}
                 </p>
-                <button >View Sample Work</button>
-                <button onClick={() => sendToCheckoutPage(product)}>Book Now</button>
+                {/* <button >View Sample Work</button> */}
+                <button onClick={() => sendToCheckoutPage(product)} class="photograpy-ook-now">Book Now</button>
               </div>
             </div>
           </div>
@@ -171,7 +171,7 @@ Baby Shower, New Born baby, Maternity Shoot
         </div>
       </div>
       <div className="works-container products">
-<div className="section-small-header">  Services: 100-300s Guest</div>
+<div className="section-small-header">  Services: 100-300 Guest</div>
 <div className="section-small-header-sec"> Kids, Birthday, House Warming, Naming Ceremony, Corporate, 
 Baby Shower, New Born baby, Maternity Shoot
 
@@ -186,30 +186,27 @@ Baby Shower, New Born baby, Maternity Shoot
         {FeaturedWorkData.map((work, index) => (
           <div className="work-item" key={index}  >
             {/* <img src={work.image} alt={work.title} className="work-image" /> */}
-            <Image
-              src={triditionalPhoto}
-              width={300}
-              height={250}
-              />
             <div className="work-card-info">
               <div className="work-details">
                 <h5 className="work-title">{work.title}</h5>
-                {/* {Array.isArray(work.inclusion) && work.inclusion.length > 0 && (
-                  <ul className="work-inclusions">
+                <p className="Prefred-occ">Perfect for birthdays, baby showers, weddings, and staged events</p>
+                <b class="inclusion-heading">Inclusion:</b>
+                {Array.isArray(work.inclusion) && work.inclusion.length > 0 && (
+                  <ul className="work-duration">
                     {work.inclusion.map((inc, index) => (
                       <li className="inclusion-item" key={index}>{inc}</li>
                     ))}
                   </ul>
-                )} */}
+                )}
                 <p className="work-duration">
                   <b>Duration:</b> {work.duration}
                 </p>
-                <p className="work-price">
+                <p className="work-duration">
                   <b>Price:</b> {work.price}
                 </p>
-                <button >View Sample Work</button>
-                <button onClick={() => sendToCheckoutPage(product)}>Book Now</button>
-              </div>
+                {/* <button >View Sample Work</button> */}
+                <button onClick={() => sendToCheckoutPage(product)} class="photograpy-ook-now">Book Now</button>
+             </div>
             </div>
           </div>
         ))}
@@ -217,11 +214,11 @@ Baby Shower, New Born baby, Maternity Shoot
       </div>
 
       {/* View All Button */}
-      <div>
+      {/* <div>
         <a href="/works" className="button-viewall">
           View All Works
         </a>
-      </div>
+      </div> */}
     </div>
 
     
