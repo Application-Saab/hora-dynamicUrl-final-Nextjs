@@ -144,14 +144,15 @@ const Decoration = () => {
   const hasCityPageParam = city ? true : false;
 
   const openCatItems = (item) => {
+    console.log(item, "items");
     dispatch(setState(item.subCategory, item.imgAlt));
     if (hasCityPageParam) {
       router.push(
-        `https://horaservices.com/${city}/balloon-decoration/${item.catValue}`
+        `/${city}/balloon-decoration/${item.catValue}`
       );
     } else {
       router.push(
-        `https://horaservices.com/balloon-decoration/${item.catValue}`
+        `/balloon-decoration/${item.catValue}`
       );
     }
   };
@@ -787,16 +788,19 @@ const Decoration = () => {
                 onClick={() => handleItemClick(item)}
               >
                 <div style={{ position: "relative" }}>
-                  <Image
-                    src={item.Image}
-                    alt={`Image of ${item.title}`}
-                    className="slider-image"
-                    width={200}
-                    height={250}
-                    loading="lazy"
-                    srcSet={`${item.Image}?w=200&h=250&fit=crop 200w, ${item.Image}?w=400&h=500&fit=crop 400w`}
-                    quality={85}
-                  />
+                 
+<Image
+  src={item.Image}
+  alt={item.imgAlt}
+  width={300}
+  height={300}
+  loading="lazy"
+  placeholder="blur"
+  blurDataURL="/placeholder.webp"
+  className="slider-image"
+  quality={85}
+  sizes="(max-width: 768px) 100vw, 50vw"
+/>
                   <div
                     style={{
                       position: "absolute",
@@ -931,29 +935,18 @@ const Decoration = () => {
           .map((item, index) => (
             <div key={index} className="imageContainer">
               <a href={item.link}>
-                <Image
-                  src={item.image}
-                  className="decCatimage"
-                  // alt={item.imgAlt}
-                  alt={`Image of ${item.imgAlt}`}
-                  srcSet={`${item.Image}?w=200&h=250&fit=crop 200w, ${item.Image}?w=400&h=500&fit=crop 400w`}
-                  loading="lazy"
-                  onClick={() => {
-                    window.dataLayer = window.dataLayer || [];
-
-                    window.dataLayer.push({
-                      event: "categoryClick",
-                      categoryName: item.name,
-                      subCategory: item.subCategory,
-                      catValue: item.catValue,
-                      imageAlt: item.imgAlt,
-                      itemLink: item.link,
-                    });
-                    openCatItems(item);
-                  }}
-                  width={300}
-                  height={300}
-                />
+<Image
+  src={item.image}
+  alt={item.imgAlt}
+  width={300}
+  height={300}
+  loading="lazy"
+  placeholder="blur"
+  blurDataURL="/placeholder.webp"
+  className="decCatimage"
+  quality={85}
+  sizes="(max-width: 768px) 100vw, 50vw"
+/>
               </a>
             </div>
           ))}
