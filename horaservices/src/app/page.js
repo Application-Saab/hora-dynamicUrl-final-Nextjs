@@ -311,7 +311,7 @@ return (
     
     <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
     <meta property="og:image:alt" content="Elegant balloon decoration setup by Hora Decorations" />
-
+    <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
     <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706459457063.png" />
     <meta property="og:image:alt" content="Beautiful floral arrangement for events by Hora Decorations" />
 
