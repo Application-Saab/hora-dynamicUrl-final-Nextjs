@@ -25,6 +25,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { useDispatch } from "react-redux";
+import { setState } from "../../../../../actions/action";
+
+
 // Skeleton Loader Component
 const SkeletonLoader = () => {
   return (
@@ -168,6 +175,8 @@ const SkeletonLoader = () => {
 };
 
 function DecorationCatDetails() {
+  
+  const dispatch = useDispatch();
   const [selCat, setSelCat] = useState("");
   const [orderType, setOrderType] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -185,6 +194,44 @@ function DecorationCatDetails() {
   const [discountInfo, setDiscountInfo] = useState(null);
   const [isArrowDown, setIsArrowDown] = useState(true);
   const [loading, setLoading] = useState(true); // Add a loading state
+
+    const [city, setCity] = useState("");
+  const hasCityPageParam = city ? true : false;
+  
+  const sliderSettings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 3,
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        }
+      }
+    ]
+  };
+
+
   // Use useEffect to handle router query
   useEffect(() => {
     if (router.isReady) {
@@ -658,115 +705,126 @@ function DecorationCatDetails() {
     );
   };
 
-  // Function to generate a random number between min and max (inclusive)
-  const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  // Function to generate a random rating between 4.1 to 4.8
-  const getRandomRating = () => {
-    return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
-  };
 
   if (loading) {
     return <SkeletonLoader />; // Show skeleton loader while loading
   }
 
+
+  const getRandomRating = () => (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
+
+  const getRandomNumber = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const handleViewDetails = (subCategory, catValue, product) => {
+      const productName = product.name.replace(/ /g, "-");
+      dispatch(setState(subCategory, orderType, catValue, product));
+      if (hasCityPageParam) {
+        router.push(
+          `/${city}/balloon-decoration/${catValue}/product/${productName}`
+        );
+      } else {
+        router.push(`/balloon-decoration/${catValue}/product/${productName}`);
+      }
+    };
+  
+
   return (
     <>
-    <div className="App" style={{ backgroundColor: "#EDEDED" }}>
-      <Head>
-        <title>Balloon and Flower Decoration @999</title>
-        <meta
-          name="description"
-          content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
-        />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
-        <meta
-          property="og:title"
-          content="Balloon and Flower Decoration by Professional Decorators"
-        />
-        <meta
-          property="og:description"
-          content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
-        />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
-        <script type="application/ld+json">{scriptTag}</script>
-        <script type="application/ld+json">{faqScriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`}
-        />
-        <meta property="og:type" content="website" />
-      </Head>
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            paddingTop: "10px",
-            position: "relative",
-          }}
-          className="decDetails"
-        >
+      <div className="App" style={{ backgroundColor: "#EDEDED" }}>
+        <Head>
+          <title>Balloon and Flower Decoration @999</title>
+          <meta
+            name="description"
+            content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
+          />
+          <meta name="keywords" content="Balloon and Flower Decoration @999" />
+          <meta
+            property="og:title"
+            content="Balloon and Flower Decoration by Professional Decorators"
+          />
+          <meta
+            property="og:description"
+            content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
+          />
+          <meta
+            property="og:image"
+            content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+          />
+          <script type="application/ld+json">{scriptTag}</script>
+          <script type="application/ld+json">{faqScriptTag}</script>
+          <meta name="robots" content="index, follow" />
+          <meta name="author" content="Hora Services" />
+          <link
+            rel="icon"
+            href="https://horaservices.com/api/uploads/logo-icon.png"
+            type="image/x-icon"
+          />
+          <meta
+            property="og:url"
+            content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`}
+          />
+          <meta property="og:type" content="website" />
+        </Head>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div
-            style={{ width: "50%", textAlign: "center" }}
-            className="decDetailsLeft"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              paddingTop: "10px",
+              position: "relative",
+            }}
+            className="decDetails"
           >
             <div
-              style={{
-                width: "80%",
-                boxShadow: "0 1px 8px rgba(0,0,0,.1)",
-                padding: "10px",
-                margin: "0 auto",
-                position: "relative",
-              }}
-              className="decDetailsImage"
+              style={{ width: "50%", textAlign: "center" }}
+              className="decDetailsLeft"
             >
-              <div>
-                <Image
-                  src={`https://horaservices.com/api/uploads/${product.featured_image}`}
-                  alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
-                  style={{ width: "100%", height: "auto" }}
-                  width={300}
-                  height={300}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 3,
-                    right: 3,
-                    borderRadius: "50%",
-                    padding: 10,
-                  }}
-                >
-                  <span
+              <div
+                style={{
+                  width: "80%",
+                  boxShadow: "0 1px 8px rgba(0,0,0,.1)",
+                  padding: "10px",
+                  margin: "0 auto",
+                  position: "relative",
+                }}
+                className="decDetailsImage"
+              >
+                <div>
+                  <Image
+                    src={`https://horaservices.com/api/uploads/${product.featured_image}`}
+                    alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
+                    style={{ width: "100%", height: "auto" }}
+                    width={300}
+                    height={300}
+                  />
+                  <div
                     style={{
-                      color: "rgba(157, 74, 147, 0.6)",
-                      fontWeight: "600",
+                      position: "absolute",
+                      bottom: 3,
+                      right: 3,
+                      borderRadius: "50%",
+                      padding: 10,
                     }}
                   >
-                    <Image
-                      src={logo}
-                      style={{ width: "70px", height: "80px" }}
-                      className="hora-watermark-image"
-                    />
-                  </span>
+                    <span
+                      style={{
+                        color: "rgba(157, 74, 147, 0.6)",
+                        fontWeight: "600",
+                      }}
+                    >
+                      <Image
+                        src={logo}
+                        style={{ width: "70px", height: "80px" }}
+                        className="hora-watermark-image"
+                      />
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            {/* <div>
+              {/* <div>
       <h2>Similar Products</h2>
       <ul>
         {similarProducts.map((product) => (
@@ -783,255 +841,17 @@ function DecorationCatDetails() {
       </ul>
     </div> */}
 
-            <div
-              style={{
-                border: "1px solid rgb(220, 53, 69)",
-                backgroundColor: "rgb(248, 215, 218)",
-                margin: "13px auto 7px",
-                padding: "10px 10px 11px 16px",
-                borderRadius: 10,
-                width: "80%",
-                textAlign: "left",
-              }}
-              className="inclusiton-details desktop-view"
-            >
-              <p
-                style={{ marginBottom: "0", fontWeight: "bold", fontSize: 12 }}
-              >
-                Note:
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Balloons color can be changed as per your choice.*
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Neon lights can be changed for the event (if included in the
-                design).*
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Age numbers and name are customizable (if included in the
-                design).*
-              </p>
-            </div>
-          </div>
-          <div
-            style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
-            className="decDetailsRight"
-          >
-            <div
-              style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                padding: "10px",
-                marginBottom: "12px",
-                backgroundColor: "#fff",
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "13px",
-                  color: "#222",
-                  margin: "5px 0 5px 0",
-                  fontWeight: "500",
-                }}
-              >
-                <a
-                  style={{ color: "#9252AA", textDecoration: "none" }}
-                  href="/"
-                >
-                  Home
-                </a>
-                {" > "}
-                <a
-                  style={{ color: "#9252AA", textDecoration: "none" }}
-                  href={`/balloon-decoration/${catValue}`}
-                >
-                  {subCategory}
-                </a>
-
-                {" > "}
-                <span>{product.name}</span>
-              </h2>
-              <h1
-                style={{
-                  fontSize: "16px",
-                  color: "#222",
-                  fontSize: "21px",
-                  fontWeight: "#222",
-                }}
-              >
-                {product.name}
-              </h1>
-              <div className="pro-details-price">
-                <p
-                  style={{
-                    fontSize: "18px",
-                    color: "#9252AA",
-                    fontWeight: "600",
-                  }}
-                >
-                  {" "}
-                  ₹ {product.price}
-                </p>
-                <p
-                  style={{
-                    color: "#444",
-                    fontWeight: "700",
-                    fontSize: 18,
-                    textAlign: "left",
-                    margin: "10px 0px 7px",
-                    textDecoration: "line-through",
-                  }}
-                >
-                  ₹ {Math.floor(discountInfo?.discountedPrice)}
-                </p>
-                <div className="decorationdiscount-details">
-                  ₹ {Math.floor(discountInfo?.discountDifference || 0)} {"off"}
-                </div>
-              </div>
-
-              {selectedAddOnProduct.length == 0 && (
-                <button
-                  style={styles.Buttonstyle}
-                  id="continueButton"
-                  className="dec-continueButton"
-                  onClick={() => handleButtonClick(subCategory, product)}
-                >
-                  Continue
-                </button>
-              )}
-
-              {/* <div className="d-flex align-items-center pro-rating-sec">
-              <p className="m-0 p-0 pe-3 pro-rating-sec1" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color:"#9252AA" }}>{getRandomRating()}<span className='px-1 m-0 py-0 img-fluid' style={{ color: '#FFBF00' }}><FontAwesomeIcon style={{ margin: 0 }} icon={faStar} /></span></p>
-              <p className="m-0 p-0" style={{ color: '#9252AA', fontWeight: '500', fontSize: 17, margin: "0px", padding: "0 0 0 10px" }}>({getRandomNumber(20, 500)})</p>
-            </div> */}
-            </div>
-
-            {selectedAddOnProduct.length > 0 && (
-              <ul className="decoration-addons">
-                <>
-                  <div className="addon-sec">
-                    <h1
-                      style={{
-                        color: "#222",
-                        fontSize: "16px",
-                        fontWeight: "#222",
-                      }}
-                    >
-                      {product.name} :{" "}
-                    </h1>
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        color: "#222",
-                        fontWeight: "600",
-                      }}
-                    >
-                      {" "}
-                      ₹ {product.price}
-                    </div>
-                  </div>
-                  <h6>
-                    Customisations
-                    <span
-                      onClick={showAddOnmodal}
-                      style={{ marginLeft: "6px", cursor: "pointer" }}
-                    >
-                      <svg
-                        stroke="currentColor"
-                        fill="currentColor"
-                        stroke-width="0"
-                        viewBox="0 0 576 512"
-                        height="1em"
-                        width="1em"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"></path>
-                      </svg>
-                    </span>
-                  </h6>
-                  {selectedAddOnProduct.map((item, index) => (
-                    <li key={index} className="addon-sec">
-                      <div>{item.title} :</div>
-                      <div>
-                        ₹ {item.price} x {itemQuantities[item.title]} = ₹{" "}
-                        {item.price * itemQuantities[item.title]}
-                      </div>
-                    </li>
-                  ))}
-                  <p
-                    style={{
-                      fontSize: "18px",
-                      color: "#9252AA",
-                      fontWeight: "600",
-                    }}
-                    className="addon-sec"
-                  >
-                    <div>Total:</div>
-                    <div>₹ {totalAmount}</div>
-                  </p>
-
-                  <button
-                    style={styles.Buttonstyle}
-                    id="continueButton"
-                    className="dec-continueButton"
-                    onClick={() =>
-                      handleCheckout(subCategory, product, selectedAddOnProduct)
-                    }
-                  >
-                    Continue
-                  </button>
-                </>
-              </ul>
-            )}
-
-            <div
-              style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                padding: "10px",
-                marginBottom: "12px",
-                backgroundColor: "#fff",
-              }}
-            >
-              {getItemInclusion(product.inclusion)}
-
               <div
                 style={{
                   border: "1px solid rgb(220, 53, 69)",
                   backgroundColor: "rgb(248, 215, 218)",
-                  margin: "13px 2px 7px",
-                  padding: "7px 7px",
+                  margin: "13px auto 7px",
+                  padding: "10px 10px 11px 16px",
                   borderRadius: 10,
+                  width: "80%",
                   textAlign: "left",
-                  margin: "10px auto",
-                  width: "100%",
                 }}
-                className="inclusiton-details mobile-view"
+                className="inclusiton-details desktop-view"
               >
                 <p
                   style={{
@@ -1082,279 +902,613 @@ function DecorationCatDetails() {
                 </p>
               </div>
             </div>
+            <div
+              style={{
+                width: "50%",
+                paddingLeft: "20px",
+                paddingRight: "50px",
+              }}
+              className="decDetailsRight"
+            >
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <h2
+                  style={{
+                    fontSize: "13px",
+                    color: "#222",
+                    margin: "5px 0 5px 0",
+                    fontWeight: "500",
+                  }}
+                >
+                  <a
+                    style={{ color: "#9252AA", textDecoration: "none" }}
+                    href="/"
+                  >
+                    Home
+                  </a>
+                  {" > "}
+                  <a
+                    style={{ color: "#9252AA", textDecoration: "none" }}
+                    href={`/balloon-decoration/${catValue}`}
+                  >
+                    {subCategory}
+                  </a>
 
-            <div className="card-container-cta">
-              <div className="header-section-cta">
-                <div className="addon-section-buttons">
-                  <div className="icon-wrapper-cta">
-                    <span className="user-icon-cta">👤</span>
+                  {" > "}
+                  <span>{product.name}</span>
+                </h2>
+                <h1
+                  style={{
+                    fontSize: "16px",
+                    color: "#222",
+                    fontSize: "21px",
+                    fontWeight: "#222",
+                  }}
+                >
+                  {product.name}
+                </h1>
+                <div className="pro-details-price">
+                  <p
+                    style={{
+                      fontSize: "18px",
+                      color: "#9252AA",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {" "}
+                    ₹ {product.price}
+                  </p>
+                  <p
+                    style={{
+                      color: "#444",
+                      fontWeight: "700",
+                      fontSize: 18,
+                      textAlign: "left",
+                      margin: "10px 0px 7px",
+                      textDecoration: "line-through",
+                    }}
+                  >
+                    ₹ {Math.floor(discountInfo?.discountedPrice)}
+                  </p>
+                  <div className="decorationdiscount-details">
+                    ₹ {Math.floor(discountInfo?.discountDifference || 0)}{" "}
+                    {"off"}
                   </div>
-                  <p className="header-text-cta">
-                    Want to <span className="highlight-cta">customize</span>{" "}
-                    this decoration?
-                    {/* <p className="subtext-cta">Talk with our Experts!</p> */}
+                </div>
+
+                {selectedAddOnProduct.length == 0 && (
+                  <button
+                    style={styles.Buttonstyle}
+                    id="continueButton"
+                    className="dec-continueButton"
+                    onClick={() => handleButtonClick(subCategory, product)}
+                  >
+                    Continue
+                  </button>
+                )}
+
+                {/* <div className="d-flex align-items-center pro-rating-sec">
+              <p className="m-0 p-0 pe-3 pro-rating-sec1" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color:"#9252AA" }}>{getRandomRating()}<span className='px-1 m-0 py-0 img-fluid' style={{ color: '#FFBF00' }}><FontAwesomeIcon style={{ margin: 0 }} icon={faStar} /></span></p>
+              <p className="m-0 p-0" style={{ color: '#9252AA', fontWeight: '500', fontSize: 17, margin: "0px", padding: "0 0 0 10px" }}>({getRandomNumber(20, 500)})</p>
+            </div> */}
+              </div>
+
+              {selectedAddOnProduct.length > 0 && (
+                <ul className="decoration-addons">
+                  <>
+                    <div className="addon-sec">
+                      <h1
+                        style={{
+                          color: "#222",
+                          fontSize: "16px",
+                          fontWeight: "#222",
+                        }}
+                      >
+                        {product.name} :{" "}
+                      </h1>
+                      <div
+                        style={{
+                          fontSize: "16px",
+                          color: "#222",
+                          fontWeight: "600",
+                        }}
+                      >
+                        {" "}
+                        ₹ {product.price}
+                      </div>
+                    </div>
+                    <h6>
+                      Customisations
+                      <span
+                        onClick={showAddOnmodal}
+                        style={{ marginLeft: "6px", cursor: "pointer" }}
+                      >
+                        <svg
+                          stroke="currentColor"
+                          fill="currentColor"
+                          stroke-width="0"
+                          viewBox="0 0 576 512"
+                          height="1em"
+                          width="1em"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"></path>
+                        </svg>
+                      </span>
+                    </h6>
+                    {selectedAddOnProduct.map((item, index) => (
+                      <li key={index} className="addon-sec">
+                        <div>{item.title} :</div>
+                        <div>
+                          ₹ {item.price} x {itemQuantities[item.title]} = ₹{" "}
+                          {item.price * itemQuantities[item.title]}
+                        </div>
+                      </li>
+                    ))}
+                    <p
+                      style={{
+                        fontSize: "18px",
+                        color: "#9252AA",
+                        fontWeight: "600",
+                      }}
+                      className="addon-sec"
+                    >
+                      <div>Total:</div>
+                      <div>₹ {totalAmount}</div>
+                    </p>
+
+                    <button
+                      style={styles.Buttonstyle}
+                      id="continueButton"
+                      className="dec-continueButton"
+                      onClick={() =>
+                        handleCheckout(
+                          subCategory,
+                          product,
+                          selectedAddOnProduct
+                        )
+                      }
+                    >
+                      Continue
+                    </button>
+                  </>
+                </ul>
+              )}
+
+              <div
+                style={{
+                  boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                  padding: "10px",
+                  marginBottom: "12px",
+                  backgroundColor: "#fff",
+                }}
+              >
+                {getItemInclusion(product.inclusion)}
+
+                <div
+                  style={{
+                    border: "1px solid rgb(220, 53, 69)",
+                    backgroundColor: "rgb(248, 215, 218)",
+                    margin: "13px 2px 7px",
+                    padding: "7px 7px",
+                    borderRadius: 10,
+                    textAlign: "left",
+                    margin: "10px auto",
+                    width: "100%",
+                  }}
+                  className="inclusiton-details mobile-view"
+                >
+                  <p
+                    style={{
+                      marginBottom: "0",
+                      fontWeight: "bold",
+                      fontSize: 12,
+                    }}
+                  >
+                    Note:
+                  </p>
+                  <p
+                    style={{
+                      margin: "4px 0 0 0",
+                      padding: 0,
+                      fontWeight: "700",
+                      fontSize: 12,
+                      color: "#444",
+                      fontWeight: 700,
+                    }}
+                  >
+                    *Balloons color can be changed as per your choice.*
+                  </p>
+                  <p
+                    style={{
+                      margin: "4px 0 0 0",
+                      padding: 0,
+                      fontWeight: "700",
+                      fontSize: 12,
+                      color: "#444",
+                      fontWeight: 700,
+                    }}
+                  >
+                    *Neon lights can be changed for the event (if included in
+                    the design).*
+                  </p>
+                  <p
+                    style={{
+                      margin: "4px 0 0 0",
+                      padding: 0,
+                      fontWeight: "700",
+                      fontSize: 12,
+                      color: "#444",
+                      fontWeight: 700,
+                    }}
+                  >
+                    *Age numbers and name are customizable (if included in the
+                    design).*
                   </p>
                 </div>
               </div>
 
-              <div className="button-group-cta">
-                <button
-                  onClick={showAddOnmodal}
-                  className="button-cta call-cta"
-                >
-                  {isArrowDown ? (
-                    <ArrowDown className="icon-cta down-icon" />
-                  ) : (
-                    <ArrowUp className="icon-cta up-icon" />
-                  )}
-                  Decor Upgrade's
-                </button>
-                <button
-                  onClick={handleWhatsApp}
-                  className="button-cta whatsapp-cta"
-                >
-                  <MessageCircle className="icon-cta" />
-                  Whatsapp
-                </button>
-              </div>
-              <div className="addon-sec">
-                {isModalOpen && (
-                  <div
-                    className="modal-overlay11"
-                    onClick={() => setIsModalOpen(false)}
-                    style={{ maxHeight: "500px", overflowY: "scroll" }}
-                  >
-                    <div
-                      className="modal-content`11"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ marginTop: "10px" }}
-                    >
-                      {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
-                      <div className="modal-top-box11">
-                        <h2
-                          style={{ fontSize: 16, fontWeight: 600 }}
-                          className="select-heading-sec"
-                        >
-                          Please select here to add in your decoration
-                        </h2>
-                      </div>
-                      <div className="modal-middle-box 11">
-                        <div className="modal-card-container">
-                          {addOnProductsData.addOnProducts.map(
-                            (item, index) => (
-                              <div key={index} className="modal-card">
-                                <img
-                                  style={{ width: "120px", height: "120px" }}
-                                  src={item.image}
-                                  alt={item.title}
-                                  className="model-image"
-                                />
-                                <h3>{item.title}</h3>
-                                <p>{item.description}</p>
+              <div className="card-container-cta">
+                <div className="header-section-cta">
+                  <div className="addon-section-buttons">
+                    <div className="icon-wrapper-cta">
+                      <span className="user-icon-cta">👤</span>
+                    </div>
+                    <p className="header-text-cta">
+                      Want to <span className="highlight-cta">customize</span>{" "}
+                      this decoration?
+                      {/* <p className="subtext-cta">Talk with our Experts!</p> */}
+                    </p>
+                  </div>
+                </div>
 
-                                <div className="price-container">
-                                  <span className="price">₹ {item.price}</span>
-                                  {itemQuantities[item.title] ? (
-                                    <div>
-                                      <button
-                                        onClick={() =>
-                                          handleRemoveFromCart(item)
-                                        }
-                                        className="quantity-button"
-                                      >
-                                        -
-                                      </button>
-                                      <span>{itemQuantities[item.title]}</span>
+                <div className="button-group-cta">
+                  <button
+                    onClick={showAddOnmodal}
+                    className="button-cta call-cta"
+                  >
+                    {isArrowDown ? (
+                      <ArrowDown className="icon-cta down-icon" />
+                    ) : (
+                      <ArrowUp className="icon-cta up-icon" />
+                    )}
+                    Decor Upgrade's
+                  </button>
+                  <button
+                    onClick={handleWhatsApp}
+                    className="button-cta whatsapp-cta"
+                  >
+                    <MessageCircle className="icon-cta" />
+                    Whatsapp
+                  </button>
+                </div>
+                <div className="addon-sec">
+                  {isModalOpen && (
+                    <div
+                      className="modal-overlay11"
+                      onClick={() => setIsModalOpen(false)}
+                      style={{ maxHeight: "500px", overflowY: "scroll" }}
+                    >
+                      <div
+                        className="modal-content`11"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ marginTop: "10px" }}
+                      >
+                        {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
+                        <div className="modal-top-box11">
+                          <h2
+                            style={{ fontSize: 16, fontWeight: 600 }}
+                            className="select-heading-sec"
+                          >
+                            Please select here to add in your decoration
+                          </h2>
+                        </div>
+                        <div className="modal-middle-box 11">
+                          <div className="modal-card-container">
+                            {addOnProductsData.addOnProducts.map(
+                              (item, index) => (
+                                <div key={index} className="modal-card">
+                                  <img
+                                    style={{ width: "120px", height: "120px" }}
+                                    src={item.image}
+                                    alt={item.title}
+                                    className="model-image"
+                                  />
+                                  <h3>{item.title}</h3>
+                                  <p>{item.description}</p>
+
+                                  <div className="price-container">
+                                    <span className="price">
+                                      ₹ {item.price}
+                                    </span>
+                                    {itemQuantities[item.title] ? (
+                                      <div>
+                                        <button
+                                          onClick={() =>
+                                            handleRemoveFromCart(item)
+                                          }
+                                          className="quantity-button"
+                                        >
+                                          -
+                                        </button>
+                                        <span>
+                                          {itemQuantities[item.title]}
+                                        </span>
+                                        <button
+                                          onClick={() => handleAddToCart(item)}
+                                          className="quantity-button"
+                                        >
+                                          +
+                                        </button>
+                                      </div>
+                                    ) : (
                                       <button
                                         onClick={() => handleAddToCart(item)}
-                                        className="quantity-button"
+                                        className="add-button"
                                       >
-                                        +
+                                        Add
                                       </button>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={() => handleAddToCart(item)}
-                                      className="add-button"
-                                    >
-                                      Add
-                                    </button>
-                                  )}
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            )
-                          )}
+                              )
+                            )}
+                          </div>
+                        </div>
+                        <div className="modal-bottom-box">
+                          <p>
+                            Total: ₹{" "}
+                            {calculateTotalPrice(Number(product.price))}
+                          </p>
+                          <button
+                            className="book-now-button"
+                            onClick={handleContinue}
+                          >
+                            Continue
+                          </button>
                         </div>
                       </div>
-                      <div className="modal-bottom-box">
-                        <p>
-                          Total: ₹ {calculateTotalPrice(Number(product.price))}
-                        </p>
-                        <button
-                          className="book-now-button"
-                          onClick={handleContinue}
-                        >
-                          Continue
-                        </button>
-                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="tab-section-details-productpage">
-              <Tabs tabs={tabs} defaultTab="faq" className="faqtabs" />
+              <div className="tab-section-details-productpage">
+                <Tabs tabs={tabs} defaultTab="faq" className="faqtabs" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
         <h2 className="title">Similar Products</h2>
       </div>
-      
-      <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
-            <div style={styles.decContainer} className="decContainer">
-            
-      {similarProducts.map((product) => (
-          <div key={product._id}>
-  <div style={{ position: "relative" }}>
-                <Image
-                  src={`https://horaservices.com/api/uploads/compressed_images/${product?.featured_image}`}
-                  // alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`}
-                  style={styles.decCatimage}
-                  width={300}
-                  height={300}
-                />
-                {/* Watermark */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 3,
-                    right: 3,
-                    borderRadius: "50%",
-                    padding: 10,
-                  }}
-                >
-                  <span
-                    style={{
-                      color: "rgba(157, 74, 147, 0.6)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    <Image
-                      src={logo}
-                      style={{ width: "70px", height: "80px" }}
-                      className="hora-watermark-image"
-                    />
-                  </span>
-                </div>
-                <div className="decorationdiscount">
-                  {/* ₹ {product.discountDifference} */}
-                  {/* .toFixed(0)} {"off"} */}
-                </div>
-              </div>
-              {/* End of Watermark */}
-              <div className="px-2 py-2">
-                <p
-                  style={{
-                    marginHorizontal: 3,
-                    textAlign: "left",
-                    fontWeight: "600",
-                    fontSize: "16px",
-                    marginTop: "4px",
-                    color: "#9252AA",
 
-                    lineHeight: "18px",
-                    marginBottom: "0px",
-                    textAlign: "left",
-                  }}
-                  className="pro_name"
-                >
-                  {product.name}
-                </p>
+      {/* <div className="similar-products">
+      <div className="product-grid">
+        {similarProducts.map((product) => (
+          <div key={product._id} className="product-card">
+            <img
+              src={`https://horaservices.com/api/uploads/${product.featured_image}`}
+              alt={product.name}
+              className="product-image"
+            />
+            <p className="product-name">{product.name}</p>
+          </div>
+        ))}
+      </div>
+    </div> */}
+
+      <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
+        <>
+          <div
+            style={{
+              textAlign: "center",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ marginTop: "0px" }}>
+              
+              <div className="filterdropdown d-flex flex-row flex-lg-row align-items-center justify-content-center gap-3"></div>
+            </div>
+          </div>
+          
+          <Slider {...sliderSettings}>
+          <div style={styles.decContainer} className="decContainer">
+          {/* <Slider {...sliderSettings}> */}
+            {loading ? (
+              [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
                 <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "top",
-                  }}
-                  className="pri_details"
+                  className="decimagecontainer"
+                  key={index}
+                  style={styles.imageContainer}
                 >
-                  <div
-                    style={{
-                      alignItems: "left",
-                      justifyContent: "space-between",
-                      display: "flex",
-                    }}
-                    className="pro_price"
-                  >
-                    <p
+                  <CardSkeleton />
+                </div>
+              ))
+              // </Slider>
+            ) : similarProducts.length > 0 ? (
+             
+              similarProducts.map((item, index) => (
+                <div
+                  key={item._id}
+                  style={{
+                    ...styles.imageContainer,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleViewDetails(subCategory, catValue, item)}
+                  className="decimagecontainer"
+                >
+                  <div style={{ position: "relative" }}>
+                    <Image
+                      src={`https://horaservices.com/api/uploads/compressed_images/${item?.featured_image}`}
+                      alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`}
+                      style={styles.decCatimage}
+                      width={300}
+                      height={300}
+                    />
+                    {/* Watermark */}
+                    <div
                       style={{
-                        fontWeight: "700",
-                        fontSize: 15,
-                        color: "#9252AA",
-                        textAlign: "left",
-                        margin: "10px 10px 7px 0",
+                        position: "absolute",
+                        bottom: 3,
+                        right: 3,
+                        borderRadius: "50%",
+                        padding: 10,
                       }}
                     >
-                      ₹{product.price}{" "}
-                    </p>
-                    <p
-                      style={{
-                        color: "#444",
-                        fontWeight: "700",
-                        fontSize: 15,
-                        textAlign: "left",
-                        margin: "10px 0px 7px",
-                        textDecoration: "line-through",
-                      }}
-                    >
-                      {/* ₹{Math.floor(product.discountedPrice)} */}
-                    </p>
-                  </div>
-                  <div className="d-flex align-items-center rating-sec">
-                    <p
-                      className="m-0 p-0"
-                      style={{
-                        fontWeight: "500",
-                        fontSize: 17,
-                        margin: "0px",
-                        color: "#9252AA",
-                      }}
-                    >
-                      {product.rating}
                       <span
-                        className="px-1 m-0 py-0 img-fluid"
-                        style={{ color: "#ffc107" }}
+                        style={{
+                          color: "rgba(157, 74, 147, 0.6)",
+                          fontWeight: "600",
+                        }}
                       >
-                        <FontAwesomeIcon
-                          style={{ margin: 0, height: "14px" }}
-                          icon={faStar}
+                        <Image
+                          src={logo}
+                          style={{ width: "70px", height: "80px" }}
+                          className="hora-watermark-image"
                         />
                       </span>
-                    </p>
+                    </div>
+                    <div className="decorationdiscount">
+                      ₹ {item.discount + 100} {"off"}
+                      {/* ₹ {item.discountDifference.toFixed(0)} {"off"} */}
+                    </div>
+                  </div>
+                  {/* End of Watermark */}
+                  <div className="px-2 py-2">
                     <p
                       style={{
-                        color: "#9252AA",
+                        marginHorizontal: 3,
+                        textAlign: "left",
                         fontWeight: "600",
-                        fontSize: 17,
-                        margin: "0px",
-                        padding: "0 0 0 2px",
+                        fontSize: "16px",
+                        marginTop: "4px",
+                        color: "#9252AA",
+
+                        lineHeight: "18px",
+                        marginBottom: "0px",
+                        textAlign: "left",
                       }}
+                      className="pro_name"
                     >
-                      ({product.userCount})
+                      {item.name}
                     </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "top",
+                      }}
+                      className="pri_details"
+                    >
+                      <div
+                        style={{
+                          alignItems: "left",
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
+                        className="pro_price"
+                      >
+                        <p
+                          style={{
+                            fontWeight: "700",
+                            fontSize: 15,
+                            color: "#9252AA",
+                            textAlign: "left",
+                            margin: "10px 10px 7px 0",
+                          }}
+                        >
+                          ₹{item.price}{" "}
+                        </p>
+                        <p
+                          style={{
+                            color: "#444",
+                            fontWeight: "700",
+                            fontSize: 15,
+                            textAlign: "left",
+                            margin: "10px 0px 7px",
+                            textDecoration: "line-through",
+                          }}
+                        >
+                          ₹{Math.floor(item.discount) + 3000}
+                          {/* {getDiscountedPrice(item.discount)} */}
+                          {/* ₹{Math.floor(item.discountedPrice.toFixed(2))} */}
+                        </p>
+                      </div>
+                      <div className="d-flex align-items-center rating-sec">
+                        <p
+                          className="m-0 p-0"
+                          style={{
+                            fontWeight: "500",
+                            fontSize: 17,
+                            margin: "0px",
+                            color: "#9252AA",
+                          }}
+                        >
+                          {getRandomRating()}
+                          <span
+                            className="px-1 m-0 py-0 img-fluid"
+                            style={{ color: "#ffc107" }}
+                          >
+                            <FontAwesomeIcon
+                              style={{ margin: 0, height: "14px" }}
+                              icon={faStar}
+                            />
+                          </span>
+                        </p>
+                        <p
+                          style={{
+                            color: "#9252AA",
+                            fontWeight: "600",
+                            fontSize: 17,
+                            margin: "0px",
+                            padding: "0 0 0 2px",
+                          }}
+                        >
+                          {/* ({item.userCount}) */}
+                          {getRandomNumber(500,1000)}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               
+              ))
+            ) : (
+              <div
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                  padding: "20px 0",
+                }}
+              >
+                <span>Reach out to our support team for this</span>
+                <span style={{ marginLeft: "10px" }}>
+                  <Link
+                    className="conactus"
+                    href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
+                    target="_blank"
+                  >
+                    Click here
+                  </Link>
+                </span>
+              </div>
+            )}
+            
+          </div>
+          
+      </Slider>
+        </>
+        
+      </div>
       
-   </div>      </div>
-         
-   ))}
-       
-    </div> </div>
-      </>
-
+    </>
   );
 }
 
