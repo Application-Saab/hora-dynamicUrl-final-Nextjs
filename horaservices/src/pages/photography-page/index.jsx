@@ -1,7 +1,7 @@
 
 import { useState , useEffect , useCallback } from 'react'
 import './photo.css'
-import { FeaturedWorkData, clients, ourServicesData, InstImageData } from './data'
+import { FeaturedWorkData, clients, ourServicesData, InstImageData } from '../../data/data'
 import Image from 'next/image'
 import axios from 'axios';
 import { useRouter } from 'next/router';
