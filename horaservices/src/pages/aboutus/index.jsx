@@ -1,8 +1,8 @@
 import React from "react";
-import hero_general from "../../assets/hero_general.jpg";
-import how_1 from '../../../public/assets/how_1.svg';
-import how_2 from '../../../public/assets/how_2.svg';
-import how_3 from "../../../public/assets/how_3.svg";
+import hero_general from "../../assets/hero_general.webp";
+import how_1 from '../../assets/how_1.webp';
+import how_2 from '../../assets/how_2.webp';
+import how_3 from "../../assets/how_3.webp";
 import Image from "next/image";
 import '../../pages/aboutus/aboutus.css';
 
@@ -10,13 +10,13 @@ const AboutUs = () => {
   return (
     <div className="aboutUsContainer">
       <div className="heroSingle" style={{ backgroundImage: `url(${hero_general.src})` }}>
-        <div className="imageOverlay">
+     
           <div className="textContent">
             <h1>About Us</h1>
             <p>Planning And Celebrating Events Since 2019!</p>
           </div>
-        </div>
-        <div className="frame white"></div>
+        
+        {/* <div className="frame white"></div> */}
       </div>
 
       <div className="pattern2 sec1">
@@ -53,8 +53,8 @@ const AboutUs = () => {
           <strong> Discover the Hora Difference </strong>
           <br />
           <br />
-          <p className="duwnloadbtn"><a className="btn1" target="_blank" href="https://play.google.com/store/apps/details?id=com.hora" 
-          role="button">Download Application</a></p>
+          <p className="duwnloadbtn"><a className="btn1" target="_blank" href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" 
+          role="button">Connect with Us</a></p>
         </div>
         
         <div className="secRight">

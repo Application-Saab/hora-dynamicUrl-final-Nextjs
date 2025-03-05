@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../utils/apiconstants";
-import { FaRegCalendarAlt, FaClock, FaUsers } from "react-icons/fa";
-import { IoCalendarClear } from "react-icons/io5";
-import { FiClock } from "react-icons/fi";
 import clock from "../../assets/clock.png";
 import people from "../../assets/people.png";
 import date_time_icon from "../../assets/date-time-icon.png";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import informationImage from "../../assets/information.webp";
+import dangerImage from "../../assets/danger.webp";
+import Popup from "../../utils/popup";
 // order.type is 2 for chef
 // order.type is 1 for decoration
 // order.type is 3 for waiter
@@ -22,42 +22,13 @@ const Orderlist = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [executor, setExecutor] = useState("");
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupMessage, setPopupMessage] = useState(null);
   useEffect(() => {
-
-    const fetchOrderList = async () => {
-      try {
-        const userId = await localStorage.getItem("userID");
-        setLoading(true);
-        const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            page: "1",
-            _id: userId,
-          }),
-        });
-        const responseData = await response.json();
-
-        if (responseData && responseData.data && responseData.data.order) {
-          const sortedOrders = responseData.data.order.sort(
-            (a, b) => new Date(b.order_date) - new Date(a.order_date)
-          );
-          setOrders(sortedOrders);
-        } else {
-          console.log("No orders found");
-        }
-      } catch (error) {
-        console.log("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrderList();
-
+    
     const checkAuth = () => {
 
       const checkAuth = () => {
@@ -73,6 +44,27 @@ const Orderlist = () => {
       checkAuth()
     };
     checkAuth();
+    const fetchOrderList = async () => {
+      try {
+        setLoading(true);
+        const userId = await localStorage.getItem("userID");
+        const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify({ page: "1", _id: userId }),
+        });
+        const data = await response.json();
+        if (data?.data?.order) {
+          setOrders(data.data.order.sort((a, b) => new Date(b.order_date) - new Date(a.order_date)));
+      } 
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderList();
   }, []);
 
   const getOrderStatus = (orderStatusValue) => {
@@ -99,10 +91,6 @@ const Orderlist = () => {
     }
   };
 
-  const openContinueShopping = () => {
-    router.push("/")
-  }
-
   const getOrderType = (orderTypeValue) => {
     if (orderTypeValue == 1) {
       return "Decoration";
@@ -125,6 +113,9 @@ const Orderlist = () => {
     if (orderTypeValue === 7) {
       return "Live Catering";
     }
+    if (orderTypeValue === 8) {
+      return "Photography";
+    }
   };
 
   const formatDate = (dateString) => {
@@ -141,7 +132,7 @@ const Orderlist = () => {
   };
 
   const handleSendInvite = (order) => {
-    let message = `You are Invited!!!\n* * * * * *\nEnjoy the gathering with specially cooked by professional chef from hora `;
+    let message = `You are Invited!!!\n* * * * * *\nEnjoy the gathering with specially cooked by professional chef from Hora `;
 
     message += `${order.order_date.slice(0, 10)} ${order.order_time}\n`;
 
@@ -196,13 +187,118 @@ const Orderlist = () => {
       <center>
         <div className="no-orders">
           <h4>No Orders.. Please continue shopping with Hora</h4>
-          <button className="button-style" onClick={openContinueShopping}>
+          <button className="button-style" onClick={() => router.push("/")}>
             Continue Shopping
           </button>
         </div>
       </center>
     );
   }
+
+  const openSupplierPopup = async (order) => {
+    console.log(order, "order111");
+    const { _id, order_id, type, toId } = order;
+
+    // Validate if `toId` exists
+    if (!toId) {
+      alert("Order is not accepted Yet");
+      return;
+    }
+    else {
+      const apiOrderId = _id;
+      const orderType = type;
+      const orderId = toId;
+  
+      try {
+        // Fetch executor details from the API
+        const response = await fetch(
+          `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
+        );
+  
+        console.log(response, "response");
+  
+        if (!response.ok) {
+          throw new Error("Failed to fetch user details");
+        }
+  
+        const data = await response.json();
+        console.log(data, "dataasss");
+  
+        const executorName = data.data.name;
+        const executorPhone = data.data.phone;
+  
+        setPopupMessage({
+          img: informationImage,
+          title: `Executor Name: ${executorName}`,
+          body: `Executor Phone: ${executorPhone}`,
+          button: "Call Vendor",
+          executorPhone: executorPhone,
+          onButtonClick: (phone) => {
+            console.log(phone, "phone");
+            if (phone) {
+              window.location.href = `tel:${phone}`;
+            } else {
+              alert("Phone number not available.");
+            }
+          },
+        });
+  
+        setIsPopupVisible(true);
+      } catch (error) {
+        console.error(error.message);
+        setIsPopupVisible(true);
+      }
+    }
+   
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setIsPopupVisible(false);
+  };
+
+  const parseTime = (timeString, date) => {
+    const [time, modifier] = timeString.split(" ");
+    let [hours, minutes] = time.split(":");
+
+    if (modifier === "PM" && hours !== "12") {
+      hours = parseInt(hours, 10) + 12;
+    }
+    if (modifier === "AM" && hours === "12") {
+      hours = "0";
+    }
+
+    const parsedDate = date ? new Date(date) : new Date();
+    const year = parsedDate.getFullYear();
+    const month = parsedDate.getMonth();
+    const day = parsedDate.getDate();
+
+    return new Date(
+      year,
+      month,
+      day,
+      parseInt(hours, 10),
+      parseInt(minutes, 10),
+      0
+    );
+  };
+
+  const isWithinFourHourWindow = (orderTimeRange, orderDate) => {
+    const [startTimeString] = orderTimeRange.split(" - ");
+    const startTime = parseTime(startTimeString, orderDate);
+    const twoHoursBeforeStartTime = startTime.getTime() - 3 * 60 * 60 * 1000;
+    const twoHoursAfterStartTime = startTime.getTime() + 3 * 60 * 60 * 1000;
+
+    const currentTime = new Date();
+    return (
+      currentTime.getTime() >= twoHoursBeforeStartTime &&
+      currentTime.getTime() < twoHoursAfterStartTime
+    );
+  };
+
+  const handleCallClick = (phoneNumber) => {
+    window.location.href = `tel:${phoneNumber}`;
+  };
 
   return (
     <main className="order-list">
@@ -212,7 +308,7 @@ const Orderlist = () => {
             const orderStatus = getOrderStatus(order?.order_status);
             return (
               <div key={order.order_id} className="order-card">
-                <div className="order-div">
+                <div className="order-div header">
                   <div className="order-id">
                     <div style={{ color: "#9252AA" }}>
                       Order Id: {getOrderId(order?.order_id)}
@@ -252,22 +348,25 @@ const Orderlist = () => {
                       />{" "}
                       <span>{order.order_time}</span>
                     </div>
-                      {
-                      order?.type == 1 ? "" :
+                    {order?.type == 1 || order?.type == 8 ? (
+                      ""
+                    ) : (
                       <div>
 
-                      <Image
-                      className="contact-us-img"
-                      src={people}
-                      height={20}
-                      width={20}
-                      />{" "}
-                      <span>{order?.no_of_people} People</span>
+<Image
+                          className="contact-us-img"
+                          src={people}
+                          height={20}
+                          width={20}
+                          alt="people"
+                        />{" "}
+                        <span>{order?.no_of_people} People</span>
+                     
                       </div>
-                      }
+          )}
                   </div>
                   <div className="right-details">
-                    <div>
+                    <div className="totalAmount">
                       <strong style={{ color: "#9252AA" }}>
                         Total Amount
                         <p style={{textAlign: "end" , margin: 0}}>
@@ -276,7 +375,7 @@ const Orderlist = () => {
                         </p>
                       </strong>
                     </div>
-                    <div>
+                    <div className="BalanceAmount">
                       {/* <strong style={{ color: "#9252AA" }}>
                         Balance Amount
                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
@@ -334,6 +433,52 @@ const Orderlist = () => {
                         </WhatsappShareButton>
                       </div>
                     ) : null)}
+
+                    {order.type === 1 && orderStatus?.status !== "Expired" && (
+                    <div className="Executor-rate-btn">
+                      {orderStatus?.status === "Completed" || orderStatus?.status === "Cancelled" ? (
+                        <button className="send-invite" onClick={() => handleRateUs(order)}>
+                          Rate us
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            className="view-details"
+                            onClick={() => {
+                              if (isWithinFourHourWindow(order.order_time, order.order_date)) {
+                                openSupplierPopup(order);
+                                setIsPopupVisible(true);
+                              } 
+                              else {
+                                setPopupMessage({
+                                  img: dangerImage,
+                                  title:
+                                    "Executor details will be shown 2 hours before your scheduled time to avoid distractions. 🙂",
+                                  body: "",
+                                  button: "OK",
+                                });
+                                console.log(order, "order");
+                                setIsPopupVisible(true);
+                              }
+                            }}
+                            style={{ marginLeft: "40px" }}
+                          >
+                            Executor Details
+                          </button>
+                          {isPopupVisible && (
+                            <Popup
+                              style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                              onClose={closePopup}
+                              popupMessage={popupMessage}
+                            />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
+
+
+
                   {order?.type === 2 && orderStatus?.status == "Completed" ? (
                     <div>
                       <button

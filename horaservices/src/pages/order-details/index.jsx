@@ -33,25 +33,17 @@ const OrderDetail = () => {
   orderType = parseInt(orderType);
 
   useEffect(() => {
-    if (
-      orderType == 2 ||
-      orderType === 8
-    ) {
+    if ([2, 8].includes(orderType)) {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
       fetchDecorationOrderDetails();
-    }
-      else if (orderType == 6 || orderType == 7){
-        fetchFoodDeliveryOrderDetails();
-        
-      }
-  }, [orderType, orderId, apiOrderId]);
-
-  useEffect(() => {
-    if (orderType === 3 || orderType === 4 || orderType === 5) {
+    } else if ([6, 7].includes(orderType)) {
+      fetchFoodDeliveryOrderDetails();
+    } else if ([3, 4, 5].includes(orderType)) {
       fetchOrderDetails();
     }
   }, [orderType, orderId, apiOrderId]);
+  
 
   const fetchOrderDetailsMenu = async () => {
     try {
@@ -60,7 +52,6 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-      console.log(responseData)
       setOrderDetail(responseData.data);
       setLoading(false);
     } catch (error) {

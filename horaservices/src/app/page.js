@@ -505,9 +505,9 @@ handleTitleClick(item.title);
 
 
     </div>
-    {/* <div>
+    <div>
       <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
-        <Image className='whatappicon' src={whatsppicon} alt="WhatsApp Icon"
+        <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
         onClick={() => {
             dataLayer.push({
               'event': 'homepage_whatsapp_click',
@@ -516,7 +516,7 @@ handleTitleClick(item.title);
             });
           }} />
       </Link>
-    </div> */}
+    </div> 
 </>
 );
 }

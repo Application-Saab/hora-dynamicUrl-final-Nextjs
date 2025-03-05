@@ -25,7 +25,12 @@ const Popup = ({ onClose, popupMessage }) => {
   const handleOk = () => {
     onClose();
   };
-
+  const handleCallExecutor = () => {
+    if (popupMessage?.onButtonClick && popupMessage.executorPhone) {
+      popupMessage.onButtonClick(popupMessage.executorPhone); 
+    }
+    onClose();
+  };
 
   return (
     <div className="popup-overlay">
@@ -76,6 +81,11 @@ const Popup = ({ onClose, popupMessage }) => {
               {popupMessage?.button}
             </button>
         )}
+        {popupMessage?.button === "Call Vendor" && (
+          <button className="add-more-button" onClick={handleCallExecutor}>
+            {popupMessage?.button}
+          </button>
+      )}
         </div>
       </div>
     </div>
