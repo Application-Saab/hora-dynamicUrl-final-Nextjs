@@ -364,7 +364,7 @@ console.log("redData" , requestData);
                 <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2>
 
                 <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                  The decorator requires approximately 40-90 minutes to fulfill the service.
+                Photographer will be available for 4 hours after arrival.
                 </div>
 
                 <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between   align-items-lg-center justify-content-lg-between'>
@@ -496,7 +496,7 @@ console.log("redData" , requestData);
                 {/* <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2> */}
 
                 <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center decoratore-note' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                  The decorator requires approximately 40-90 minutes to fulfill the service.
+                Photographer will be available for 4 hours after arrival.
                 </div>
 
                 <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between  align-items-lg-center justify-content-lg-between'>
@@ -566,9 +566,7 @@ console.log("redData" , requestData);
                       {cityError && <p className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}>This field is required!</p>}
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", margin: "20px 0 0" }}>
-                      <div style={{ width: "50%" }}>
-                        <Image className='checkoutRightImg' src={`https://horaservices.com/api/uploads/${product?.featured_image}`} alt='decoration-image' style={{ width: "100%", height: "auto" }} width={300} height={300} />
-                      </div>
+                    
                       <div style={{ width: "50%", paddingLeft: "10px" }}>
                         <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", margin: "20px 0 20px 0" }}>
                           <p style={{ margin: 0, fontSize: "12px", fontWeight: "600", color: "#222" }}>{product?.name}</p>
@@ -674,7 +672,7 @@ export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, gener
           style={{ fontSize: "14px", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
           className="timeslot"
         >
-          <option value="">Executor Arrival Time</option>
+          <option value="">photographer arrival time</option>
           {generateTimeSlots().map((timeSlot, index) => (
             <option key={index} value={timeSlot}>
               {timeSlot}

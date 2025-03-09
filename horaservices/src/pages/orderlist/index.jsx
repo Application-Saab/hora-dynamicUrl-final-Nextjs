@@ -286,8 +286,8 @@ const Orderlist = () => {
   const isWithinFourHourWindow = (orderTimeRange, orderDate) => {
     const [startTimeString] = orderTimeRange.split(" - ");
     const startTime = parseTime(startTimeString, orderDate);
-    const twoHoursBeforeStartTime = startTime.getTime() - 3 * 60 * 60 * 1000;
-    const twoHoursAfterStartTime = startTime.getTime() + 3 * 60 * 60 * 1000;
+    const twoHoursBeforeStartTime = startTime.getTime() - 2 * 60 * 60 * 1000;
+    const twoHoursAfterStartTime = startTime.getTime() + 2 * 60 * 60 * 1000;
 
     const currentTime = new Date();
     return (
@@ -436,11 +436,6 @@ const Orderlist = () => {
 
                     {order.type === 1 && orderStatus?.status !== "Expired" && (
                     <div className="Executor-rate-btn">
-                      {orderStatus?.status === "Completed" || orderStatus?.status === "Cancelled" ? (
-                        <button className="send-invite" onClick={() => handleRateUs(order)}>
-                          Rate us
-                        </button>
-                      ) : (
                         <>
                           <button
                             className="view-details"
@@ -473,7 +468,7 @@ const Orderlist = () => {
                             />
                           )}
                         </>
-                      )}
+                   
                     </div>
                   )}
 
