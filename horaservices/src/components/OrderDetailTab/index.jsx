@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import daal_image from "../../assets/daal-image.png";
+import daal_image from "../../../public/assets/assets/daal-image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
 import { BASE_URL, ORDER_CANCEL, GET_PHOTOGRAPHY_BY_NAME } from "../../utils/apiconstants";
@@ -7,8 +7,8 @@ import { BASE_URL, ORDER_CANCEL, GET_PHOTOGRAPHY_BY_NAME } from "../../utils/api
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import checkImage from "../../assets/tick.jpeg";
-import logo from '../../assets/new_logo_light.png';
+import checkImage from "../../../public/assets/assets/tick.jpeg";
+import logo from '../../../public/assets/assets/new_logo_light.png';
 const axios = require("axios");
 
 // order.type is 2 for chef

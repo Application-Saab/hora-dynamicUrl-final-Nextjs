@@ -10,11 +10,6 @@ ul.list-unstyled-5
     padding: 0;
 }
 
-.page-width {
-    width: 1200px;
-    margin: auto;
-    max-width: 100%;
-}
 .footerheading {
     font-size: 17px;
     font-weight: 600;
@@ -50,12 +45,6 @@ ul.list-unstyled-5
         text-align: center;
     }
 }
-@media (max-width: 790px) {
-    .page-width {
-        width: 90% !important;
-        margin: 0 auto;
-    }
-    }
 @media (max-width: 641px) {
     ul.list-unstyled-3 ,
     ul.list-unstyled-2 , 

@@ -108,9 +108,14 @@ body {
 
 a {
   text-decoration: none;
+  color: black;
 }
 
-
+.page-width {
+  width: 94%;
+  margin: 0 auto;
+  max-width: 1200px;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
