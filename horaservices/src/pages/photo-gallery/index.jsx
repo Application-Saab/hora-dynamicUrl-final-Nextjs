@@ -1,10 +1,12 @@
 "use client";
-
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import ThumbnailGallery from './ThumbnailGallery'; // Import the ThumbnailGallery component
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import shareIcon from '../../assets/share-photo-icon.png'
+
 
 const PhotoGallery = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -40,9 +42,16 @@ const PhotoGallery = () => {
     }
   }, [isLoggedIn, fromPage, router]);
 
+  const handleShareicon = () => {
+    window.open(window.location.href);
+  }
+
   return (
-    <div className="container py-2" >
-      {/* <h2 className="title">Project Thumbnails</h2> */}
+    <div className="photo-container" >
+      <div class="photo-galary-header">
+      <h2 className="title">Your Photos</h2>
+      <Image src= {shareIcon} alt="Info" style={{ height: 20 , width: 20, marginRight: 10 , cursor:'pointer' }} onClick={handleShareicon}/>
+      </div>
       {isLoggedIn ? (
         folderName && customerId ? (
           <ThumbnailGallery folderName={folderName} customerId={customerId} />

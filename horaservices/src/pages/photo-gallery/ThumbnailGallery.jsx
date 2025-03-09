@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 // import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
+import Image from 'next/image';
 import './gallery.css'
+import photogallryIcon from '../../assets/gallry-loading.gif'
 
 const ThumbnailGallery = ({ folderName, customerId }) => {
   const [thumbnails, setThumbnails] = useState([]);
@@ -11,6 +13,7 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [originalImages, setOriginalImages] = useState({});
+ 
 
   useEffect(() => {
     const fetchThumbnails = async () => {
@@ -72,7 +75,11 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
 
   return (
     <div className="thumbnail-gallery">
-      {loading && <p>Loading thumbnails...</p>}
+     {loading && (
+  <p className="loader-photo">
+    <Image src={photogallryIcon} alt="Loading icon" width={200} /> 
+  </p>
+)}
       {error && <p className="text-red-500">Error: {error}</p>}
       <div className="masonryGrid">
         {thumbnails.length > 0 ? (
@@ -94,7 +101,6 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
       {selectedIndex !== null && (
         <div className="popupOverlay" onClick={closePopup}>
           <div className="popupContent" onClick={(e) => e.stopPropagation()}>
-            <button className="closeButton" onClick={closePopup}>X</button>
             <Slider {...sliderSettings} initialSlide={selectedIndex}>
               {thumbnails.map((thumbnail, index) => (
                 <div key={index}>
@@ -103,13 +109,13 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
                     alt="Original"
                     className="popupImage"
                   />
-                  <a
+                  {/* <a
                     href={originalImages[thumbnail.key] || thumbnail.url}
                     download
                     className="downloadButton"
                   >
                     Download Original Image
-                  </a>
+                  </a> */}
                 </div>
               ))}
             </Slider>

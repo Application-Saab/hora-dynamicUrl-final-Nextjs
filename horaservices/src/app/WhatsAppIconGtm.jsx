@@ -100,7 +100,7 @@ const WhatsAppIcon = ({ router }) => {
 
 
   const shouldShowWhatsAppIcon = () => {
-    return router.pathname !== '/order-details' && router.pathname !== '/orderlist';
+    return router.pathname !== '/order-details' && router.pathname !== '/orderlist' && router.pathname !== '/photo-gallery';
   };
 
   return (

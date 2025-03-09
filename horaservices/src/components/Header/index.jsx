@@ -197,7 +197,7 @@ useEffect(() => {
 
   return (
     <>
-     { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
+     { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
     || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
     || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
     || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"
