@@ -1,0 +1,128 @@
+import Image from "next/image";
+
+const whatAreYouInto = ({ city, locality }) => {
+  const whereAreYouData = [
+    {
+      id: 1,
+      title: 'Decoration',
+      link: '/balloon-decoration',
+      imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu1.webp",
+      imgAlt: 'Event decoration service',
+      points: [
+        '✨Choose from 1000+ unique designs for any Event - Birthdays, Anniversaries, Baby showers, Weddings, and more!',
+        '✨Get your venue decorated in just 2 hours, indoors or outdoors.',
+        '✨Best prices, timely service, and support',
+        '✨ 4.8 ⭐ Rating...',
+      ],
+    },
+    {
+      id: 2,
+      title: 'Chef For Party',
+      link: '/book-chef-cook-for-party',
+      imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu2.webp",
+      imgAlt: 'Chef services for party events',
+      points: [
+        " ✨ HORA brings professional chefs to your kitchen",
+        '✨ They use your ingredients and utensils 🍳',
+        '✨ Experience 400 restaurant-style dishes. 🍲',
+        '✨ Affordable & customizable. 💰',
+        '✨ Full hygiene control. 🧼',
+        '✨ 4.8 ⭐ Rating...',
+      ],
+    },
+    {
+      id: 3,
+      title: 'Food Delivery',
+      link: '/party-food-delivery-live-catering-buffet/party-food-delivery',
+      imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu3.webp",
+      imgAlt: 'Food delivery services for events',
+      points: [
+        '✨🎉 Enjoy food delivery with',
+        '✨ Best prices , Timely service',
+        '✨ Delicious taste',
+        '✨ Good packing',
+        '✨ Guaranteed support',
+        '✨ 4.8 ⭐ Rating...',
+      ],
+    },
+    {
+      id: 4,
+      title: 'Live Catering',
+      link: '/party-food-delivery-live-catering-buffet/party-live-buffet-catering',
+      imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu4.webp",
+      imgAlt: 'Live Catering services',
+      points: [
+        '🎉 Enjoy the full buffet/ Catering setup with hot and fresh food cooked by professional chefs starting @300 per plate ',
+        '✨ Best prices , Timely service',
+        '✨ Delicious taste',
+        '✨ Good packing',
+        '✨ Guaranteed support',
+        '✨ 4.8 ⭐ Rating...',
+      ],
+    },
+    {
+      id: 5,
+      title: 'Entertainment',
+      link: '/',
+      imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu5.webp",
+      imgAlt: 'Event food delivery services',
+      points: [
+        '✨ Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services:',
+        '🎨 Tattoo Artist',
+        '🎩 Magician',
+        '🎉 Party Host',
+        '🐻 Mascot ',
+        '🌿 Mehandi',
+        '💅 Nail Art ..and so much more!'
+      ],
+    },
+  ];
+  return (
+    <div className="entertainment-container where-are-you-sec section-container">
+      <h2 className="heading-black">
+        What are you <span className="pink-text">into?</span>
+      </h2>
+
+      <h3 className='subtitle'>We offer a variety of services , differing in the total value of needed.</h3>
+      <div className="categoriesCard-container">
+        {whereAreYouData.map(category => (
+          <div key={category.id} className="categoriesCard-card">
+            <a
+              href={
+                city && locality
+                  ? `/${city}/${locality}/${category.link}`  // If both city and locality exist
+                  : city
+                    ? `${city}/${category.link}`             // If only city exists
+                    : `${category.link}`
+              }
+              rel="noopener noreferrer">
+              <div className="categoriesCard-image-wrapper">
+                <Image src={category.imageUrl} alt={category.title} className="categoriesCard-image" width={200} height={100} />
+              </div>
+            </a>
+            <div className="categories-info">
+              <p className="categoriesCard-title">{category.title}</p>
+              <ul className="categoriesCard-points">
+                {category.points.map((point, index) => (
+                  <li key={index}>{point}</li>
+                ))}
+              </ul>
+              <a href={
+                city && locality
+                  ? `/${city}/${locality}/${category.link}`  // If both city and locality exist
+                  : city
+                    ? `${city}/${category.link}`             // If only city exists
+                    : `${category.link}`
+              } className="categoriesCard-explore-more" >
+                Explore More
+              </a>
+            </div>
+
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default whatAreYouInto;

@@ -108,8 +108,13 @@ body {
 
 a {
   text-decoration: none;
+  color: #000;
 }
-
+.page-width {
+  width: 94%;
+  margin: 0 auto;
+  max-width: 1200px;
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
@@ -697,7 +702,15 @@ h4.contact-us-heading a {
   background-color: #fff;
   font-weight: 400;
 }
-
+p#city-description {
+  padding: 0 4px;
+  font-size: 12px;
+}
+@media (min-width: 800px) {
+  p#city-description {
+    font-size: 16px;
+  }
+}
 /* select date chef flow */
 @media (max-width: 800px) {
   select.timeslot.form-control {
@@ -1118,10 +1131,7 @@ h4.contact-us-heading a {
   }
 
   /*  */
-  p#city-description {
-    padding: 0 20px;
-  }
-
+ 
   .contactus-redirection {
     font-size: 12px;
     font-weight: 600;

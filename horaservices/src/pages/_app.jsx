@@ -10,7 +10,8 @@ import Image from 'next/image';
 import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from 'next/router'; // Import useRouter
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
-
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();

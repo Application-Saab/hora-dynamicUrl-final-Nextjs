@@ -3,72 +3,66 @@ ul.list-unstyled-1,
 ul.list-unstyled-2,
 ul.list-unstyled-3,
 ul.list-unstyled-4,
-ul.list-unstyled-5
-{
-    list-style: none;
-    margin: 0;
-    padding: 0;
+ul.list-unstyled-5 {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.page-width {
-    width: 1200px;
-    margin: auto;
-    max-width: 100%;
-}
 .footerheading {
-    font-size: 17px;
-    font-weight: 600;
-  }
-  .page-width.footerlist li {
-    font-size: 13px;
-  }
-  .page-width.copy-right {
-    font-size: 13px;
-    display: flex;
-    justify-content: space-around;
+  font-size: 17px;
+  font-weight: 600;
 }
-  .page-width.footerlist {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-direction: row;
-    padding-top: 23px;
-  }
+
+.page-width.footerlist li {
+  font-size: 13px;
+}
+
+.page-width.copy-right {
+  font-size: 13px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.page-width.footerlist {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-direction: row;
+  padding-top: 23px;
+}
 
 @media (max-width:800px) {
-    .page-width.footerlist {
-        flex-direction: column;
-      }
-      .footerlist-sec {
-        margin: 0 0 22px 0;
-    }
-    h2.footerheading {
-      margin: 0 0 4px 0;
-    }
-    .page-width.copy-right {
-        flex-direction: column;
-        text-align: center;
-    }
+  .page-width.footerlist {
+    flex-direction: column;
+  }
+
+  .footerlist-sec {
+    margin: 0 0 22px 0;
+  }
+
+  h2.footerheading {
+    margin: 0 0 4px 0;
+  }
+
+  .page-width.copy-right {
+    flex-direction: column;
+    text-align: center;
+  }
 }
-@media (max-width: 790px) {
-    .page-width {
-        width: 90% !important;
-        margin: 0 auto;
-    }
-    }
+
 @media (max-width: 641px) {
-    ul.list-unstyled-3 ,
-    ul.list-unstyled-2 , 
-    ul.list-unstyled-4
-    {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        li{
-            margin-right: 14px;
-        }
+
+  ul.list-unstyled-3,
+  ul.list-unstyled-2,
+  ul.list-unstyled-4 {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+    li {
+      margin-right: 14px;
     }
+  }
 }
-
-
