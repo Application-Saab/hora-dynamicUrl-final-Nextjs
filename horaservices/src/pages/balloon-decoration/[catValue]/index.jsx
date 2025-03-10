@@ -225,7 +225,7 @@ const DecorationCatPage = () => {
       );
       console.log(response, "response");
       const categoryId = response.data.data?._id;
-      console.log(categoryId,"categoryid");
+      console.log(categoryId, "categoryid");
       setCatId(categoryId);
     } catch (error) {
       console.log("Error:", error.message);
@@ -464,9 +464,7 @@ const DecorationCatPage = () => {
             </div>
           </div>
         </div>
-        <div
-         style={styles.decContainer} className="decContainer"
-        >
+        <div style={styles.decContainer} className="decContainer">
           {loading ? (
             [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
               <div
