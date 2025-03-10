@@ -38,6 +38,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber =  localStorage.getItem("mobileNumber");
+  console.log(phoneNumber, "phonenymber");
   const [isMobile, setIsMobile] = useState(false);
   if (product) {
     product = JSON.parse(product)
@@ -340,11 +341,9 @@ console.log("redData" , requestData);
     if (product?.name && product?.price && !isEventPushed) {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
-        event: 'decoration_checkout_page',
+        event: 'photography_checkout_page',
         pageUrl: window.location.href,
         productName: product.name,
-        productPrice: product.price, 
-        UserPhoneNumber: phoneNumber
       });
 
       setIsEventPushed(true);

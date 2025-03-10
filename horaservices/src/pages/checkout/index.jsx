@@ -44,6 +44,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber =  localStorage.getItem("mobileNumber");
+  console.log(phoneNumber, "sophonenymber");
 
   if (product) {
     product = JSON.parse(product)

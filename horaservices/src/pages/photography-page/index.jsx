@@ -47,7 +47,16 @@ const index = () => {
   useEffect(() => {
     fetchData(); // Call fetchData when the component mounts
   }, []);
+
   const sendToCheckoutPage = (product) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "book_now_click",
+      product_name: product.name,
+    });
+    console.log("Data sent to dataLayer:", window.dataLayer);
+
+
     router.push({
       pathname: 'photography-checkout',
       query: {
