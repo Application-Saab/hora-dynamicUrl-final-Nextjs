@@ -201,7 +201,13 @@ const Orderlist = () => {
 
     // Validate if `toId` exists
     if (!toId) {
-      alert("Order is not accepted Yet");
+      setPopupMessage({
+        img: dangerImage,
+        title:
+          "Order is not accepted Yet",
+        body: "",
+        button: "OK",
+      });
       return;
     }
     else {
@@ -313,17 +319,17 @@ const Orderlist = () => {
                     <div style={{ color: "#9252AA" }}>
                       Order Id: {getOrderId(order?.order_id)}
                     </div>
-                    <h6 className="order-otp mt-2" style={{ color: "#9252AA" }}>
+                    <div className="order-otp" style={{ color: "#9252AA" }}>
                       OTP: {order?.otp}
-                    </h6>
+                    </div>
                   </div>
                   <div className="order-status">
                     <span className={orderStatus.className}>
                       {orderStatus.status}
                     </span>
-                    <h6 className="mt-2" style={{ color: "#9252AA" }}>
+                    <div className="m-0" style={{ color: "#9252AA" }}>
                       {getOrderType(order?.type)}
-                    </h6>
+                    </div>
                   </div>
                 </div>
                 <div className="order-details">
@@ -369,7 +375,7 @@ const Orderlist = () => {
                     <div className="totalAmount">
                       <strong style={{ color: "#9252AA" }}>
                         Total Amount
-                        <p style={{textAlign: "end" , margin: 0}}>
+                        <p style={{textAlign: "start" , margin: 0}}>
                           {" "}
                           ₹{order?.payable_amount}
                         </p>
@@ -395,7 +401,7 @@ const Orderlist = () => {
                       </strong> */}
                       <strong style={{ color: "#9252AA" }}>
                         Balance Amount
-                        <p style={{textAlign: "end" , margin: 0}}>
+                        <p style={{textAlign: "start" , margin: 0}}>
                           {" "}
                           ₹{order?.balance_amount}
                         </p>
@@ -407,7 +413,7 @@ const Orderlist = () => {
                 <div className="d-flex button-div">
                   <div>
                     <button
-                      className="view-details"
+                      className="view-details order-details"
                       onClick={() => handleViewDetail(order)}
                     >
                       View Details
@@ -434,11 +440,14 @@ const Orderlist = () => {
                       </div>
                     ) : null)}
 
-                    {order.type === 1 && orderStatus?.status !== "Expired" && (
+                  {(
+                    (order.type === 1 && orderStatus?.status !== "Expired") || 
+                    (order.type === 8 && orderStatus?.status !== "Expired")
+                  ) && (
                     <div className="Executor-rate-btn">
                         <>
                           <button
-                            className="view-details"
+                            className="view-details order-details"
                             onClick={() => {
                               if (isWithinFourHourWindow(order.order_time, order.order_date)) {
                                 openSupplierPopup(order);
@@ -456,7 +465,7 @@ const Orderlist = () => {
                                 setIsPopupVisible(true);
                               }
                             }}
-                            style={{ marginLeft: "40px" }}
+                            style={{ marginLeft: "10px" }}
                           >
                             Executor Details
                           </button>

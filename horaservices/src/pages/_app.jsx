@@ -34,69 +34,7 @@ function MyApp({ Component, pageProps }) {
     })(window, document, 'script', 'dataLayer', 'GTM-K3SCKLTZ');
   }, [router.asPath]);
 
-  // const DecorationHandleClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     event: "decoration_page_whatsappclick",
-  //     pageUrl: window.location.href,
-  //     productName: "decoration page whatsapp button clicked",
-  //   });
-  // };
-
-  // const ChefForPartyHandleClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     event: "chefforparty_page_whatsappclick", 
-  //     pageUrl: window.location.href,          
-  //     productName: "chef for party page whatsapp button clicked", 
-  //   });
-  // };
-
-  // const DecorationCatergorypagewhatsppClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     'event': 'decoration_productlistedpage_whatsapp_click',
-  //     pageUrl: window.location.href,          
-  //     productName: `decoration_productlist_categorypage_whatsapp_click_${catValue}`, 
-  //   });
-  // };
-
-  // const DecorationProductPagepagewhatsppClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     'event': 'decoration_productpage_whatsapp_click',
-  //     pageUrl: window.location.href,          
-  //     productName: `decoration_productpage_whatsapp_click_${productName}`, 
-  //   });
-  // }
-
-  // const DecorationcityhatsappClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     event: "decoration_citypage_whatsappclick", 
-  //     pageUrl: window.location.href,          
-  //     productName: "decoration page whatsapp button clicked", 
-  //   });
-  // }
-
-  // const DecorationCatergorycitypagewhatsppClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     'event': 'decoration_productlistedcitypage_whatsapp_click',
-  //     pageUrl: window.location.href,          
-  //     productName: `decoration_productlistedcitypage_whatsapp_click`, 
-  //   });
-  // };
-
-  // const DecorationProductPageCitypagewhatsppClick = () => {
-  //   window.dataLayer = window.dataLayer || [];
-  //   window.dataLayer.push({
-  //     'event': 'decoration_productcitypage_whatsapp_click',
-  //     pageUrl: window.location.href,          
-  //     productName: `decoration_productcitypage_whatsapp_click`, 
-  //   });
-  // }
-
+  
 
   
   return (

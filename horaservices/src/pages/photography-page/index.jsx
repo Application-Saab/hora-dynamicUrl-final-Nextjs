@@ -10,6 +10,9 @@ import triditionalPhoto from "../../assets/triditional-photo.jpg";
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import whatsppicon from "../../assets/whatsapp-new.webp";
+import Link from 'next/link';
+
 
 const index = () => {
   const [products, setproducts] = useState([]); // State to store product
@@ -19,18 +22,31 @@ const index = () => {
     e.preventDefault();
     console.log("Email submitted:", email);
   }, [email]);
-  const getCleanInclusionText = (inclusionArray) => {
-    if (!inclusionArray || inclusionArray.length === 0)
-      return "No inclusion details available";
 
-    return inclusionArray
-      .map((item, index) => `${index + 1}. ${item}`)  // Add numbering to each item
-      .join("\n")  // Join the array items with newline for each numbered item
-      .replace(/<\/?(div|span|br)>/g, "")  // Clean out unwanted HTML tags
-      .replace(/&#10;/g, "\n")  // Convert line breaks
-      .replace(/\s*-\s*/g, "\n- ")  // Clean up extra spaces and dashes
-      .trim();
-  };
+  const getItemInclusion = (inclusion) => {
+      if (!Array.isArray(inclusion) || inclusion.length === 0) {
+        return null;
+      }
+      const htmlString = inclusion[0];
+      const withoutTags = htmlString.replace(/<[^>]*>/g, ''); // Remove HTML tags
+      const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, ' '); // Replace &# sequences with space
+      const statements = withoutSpecialChars.split('<div>');
+      const inclusionItems = statements.flatMap(statement => statement.split("-").filter(item => item.trim() !== ''));
+      const inclusionList = inclusionItems.map((item, index) => (
+        <li key={index} className="inclusionstyle">
+          {index + 1}{'.'} {item.trim()}
+        </li>
+      ));
+
+      return (
+        <div>
+          <ul class="work-duration">
+            {inclusionList}
+          </ul>
+        </div>
+  
+      );
+    };
 
   const fetchData = useCallback(async () => {
     try {
@@ -48,6 +64,12 @@ const index = () => {
     fetchData(); // Call fetchData when the component mounts
   }, []);
   const sendToCheckoutPage = (product) => {
+    window.dataLayer = window.dataLayer || [];
+     window.dataLayer.push({
+       event: "book_now_click",
+       product_name: product.name,
+     });
+     console.log("Data sent to dataLayer:", window.dataLayer);s
     router.push({
       pathname: 'photography-checkout',
       query: {
@@ -59,19 +81,12 @@ const index = () => {
   };
   return (<>
     <div>
-
-      <div className="photograpy-bannner-sec">
-        <div className="sec">
-          <Image src={photographyBanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
-            width={2000}
-            height={500}
-            className="responsive-image"
-          />
-        </div>
-
-      </div>
-
-
+ <div className="party-services homeslider">
+      <div className="home-slider-inner">
+                <img src="../../../assets/photography-landing.svg" alt="Decoration services, Balloon decoration , decoration for birthday party"
+                 />
+              </div>
+          </div>
     </div>
     <div className="featured-works">
       <div className="works-container products">
@@ -91,11 +106,7 @@ const index = () => {
                   <h5 className="work-title">{work.name}</h5>
                   <p className="Prefred-occ"><b>Price: </b>₹ {work.price}</p>
                   <b class="inclusion-heading">Inclusion:</b>
-                  {Array.isArray(work.inclusion) && work.inclusion.length > 0 && (
-                    <ul className="work-duration">
-                        <li className="inclusion-item" key={index}>{getCleanInclusionText(work.inclusion)}</li>
-                    </ul>
-                  )}
+                  <div> {getItemInclusion(work.inclusion)}</div>
                   <p className="work-duration">
                     <b>Duration:</b> 2-4 Hours (After 4 hours, 650 Rs extra per hour)
                   </p>
@@ -108,6 +119,17 @@ const index = () => {
         </div>
       </div>
 
+    </div>
+
+    <div className="works-container products preweddng">
+        <div className="section-small-header">Wedding and preWedding Services</div>
+       
+        <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20wedding%20photography%20&%20pPrewedding%20services" target="_blank">
+        <div className="section-small-header-sec">Please connect with us on Whatsapp </div> 
+        </Link>
+
+        
+      
     </div>
 
 

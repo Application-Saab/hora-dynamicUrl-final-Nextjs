@@ -657,9 +657,7 @@ button.dec-continueButton {
   padding: 0;
   font-weight: 700;
 }
-.left-details {
-  text-align: left;
-}
+
 
 main.order-list .order-container {
   justify-content: center;
@@ -697,11 +695,31 @@ h4.contact-us-heading a {
   background-color: #fff;
   font-weight: 400;
 }
+.order-id , .order-status{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.Executor-rate-btn button.view-details.order-details {
+  border: 1px solid #9252aa;
+  background-color: #fff;
+  color: #9252aa;
+}
+button.view-details.order-details {
+  background-color: #9252aa;
+  color: #fff;
+}
 
 /* select date chef flow */
 @media (max-width: 800px) {
+  .right-details {
+    font-size: 12px;
+  }
   select.timeslot.form-control {
     font-size: 11px !important;
+}
+.left-details {
+  font-size: 12px;
 }
   .ordersummaryproduct div:first-child{
     width: 90%;
@@ -736,10 +754,7 @@ h4.contact-us-heading a {
   }
 
   /* My order mobile view */
-  .order-list {
-    width: 100% !important;
-  }
-
+ 
   .order-card {
     width: 100% !important;
   }
@@ -749,6 +764,7 @@ h4.contact-us-heading a {
     justify-content: space-between;
     margin-top: 0px !important;
   }
+ 
 
   .view-details {
     /* background-color: #6c63ff; */
@@ -772,12 +788,7 @@ h4.contact-us-heading a {
 
   /* Order detail mobile view */
 
-  .order-details {
-    display: flex;
-    justify-content: space-between;
-    padding: 0px !important;
-    margin-top: 5px;
-  }
+ 
 
   /* Order Header mobile view css */
 
@@ -1110,6 +1121,8 @@ h4.contact-us-heading a {
 
   .contact-us-img {
     border-radius: 5px;
+    width: 17px;
+    height: 17px;
   }
 
   .contact-us-heading {
@@ -1559,27 +1572,18 @@ h4.contact-us-heading a {
 
 }
 
-@media (max-width: 400px) {
-  .ordersummaryproduct div:first-child{
-    width: 50% !important;
-  }
-  .textContainerhome h2 {
-    padding: 4px 8% 5px !important;
-  }
-  .cat-Name{
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    margin-bottom: 0px !important;
-  }
-
-  p.ordersummeryname,
-  .ordersummeryprice {
-    font-size: 10px;
-
-  }
-}
 
 @media (max-width: 480px) {
+  button.view-details.order-details{
+    font-size: 12px !important;
+  }
+  .order-id>div {
+    font-size: 16px;
+    margin-bottom: 1px;
+}
+.order-status> div {
+  font-size: 16px;
+}
   .order-header-left {
     padding: 12px 13px !important;
     border-radius: 0 !important;
@@ -1720,6 +1724,27 @@ h4.contact-us-heading a {
   }
 }
 
+
+@media (max-width: 400px) {
+  .ordersummaryproduct div:first-child{
+    width: 50% !important;
+  }
+  .textContainerhome h2 {
+    padding: 4px 8% 5px !important;
+  }
+  .cat-Name{
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin-bottom: 0px !important;
+  }
+
+  p.ordersummeryname,
+  .ordersummeryprice {
+    font-size: 10px;
+
+  }
+}
+
 @media (max-width: 380px) {
   .order-header-right {
     padding-left: 0 !important;
@@ -1758,10 +1783,12 @@ h4.contact-us-heading a {
 
 @media (max-width: 375px) {
   .order-id>div {
-    font-size: 14px;
+    font-size: 15px;
     margin-bottom: 1px;
-    font-weight: 600;
   }
+  .order-status> div {
+    font-size: 15px;
+}
   button.dec-continueButton {
     margin: 16px auto 12px !important;
     width: 95% !important;
@@ -1769,7 +1796,6 @@ h4.contact-us-heading a {
 
   h6.order-otp {
     font-size: 14px !important;
-    font-weight: 600;
   }
 
   .ingredientrightsecheading {
@@ -1834,7 +1860,6 @@ h4.contact-us-heading a {
 /* My order css */
 
 .order-list {
-  width: 80%;
   margin: 0 auto;
   text-align: center;
 }
@@ -1855,24 +1880,21 @@ h4.contact-us-heading a {
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 60%;
-  padding: 20px;
+  padding: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
 }
 
 .order-div {
   display: flex;
-  justify-content: space-between;
-  background-color: rgb(224, 219, 219);
-  border-radius: 10px;
-  align-items: flex-start;
-  padding: 10px;
+    justify-content: space-between;
+    background-color: rgb(224 219 219 / 53%);
+    border-radius: 0;
+    align-items: flex-start;
+    padding: 9px 8px;
 }
 
-.order-id {
-  font-size: 1.2em;
-  margin-bottom: 10px;
-}
+
 
 .order-otp {
   align-items: flex-start;
@@ -1882,15 +1904,18 @@ h4.contact-us-heading a {
 
 .order-details {
   display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  margin-top: 5px;
+      justify-content: space-between;
+      padding: 8px 4px 0px;
+      margin-top: 5px;
+      flex-direction: column;
 }
 
 .right-details {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-end;
+  justify-content: space-between;
+  margin: 10px 0;
 }
 
 /* .right-details , p{
@@ -1898,14 +1923,11 @@ h4.contact-us-heading a {
 } */
 .left-details {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
+  justify-content: space-between;
 }
 
-.left-details div,
-.right-details div {
-  margin-bottom: 10px;
-}
 
 .view-details {
   /* background-color: #6c63ff; */
@@ -1961,50 +1983,33 @@ h4.contact-us-heading a {
 
 .status-accepted {
   color: blue;
-  background-color: #e6f0ff;
-  /* border: 1px solid blue; */
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-in-progress {
   color: yellow;
-  background-color: #ffffe6;
-  /* border: 1px solid yellow; */
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-completed {
   color: green;
-  background-color: #e6ffe6;
-  /* border: 1px solid green; */
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
+
 }
 
 .status-cancelled {
   color: red;
-  background-color: #ffe6e6;
-  /* border: 1px solid red; */
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-empty {
   color: grey;
-  background-color: #f0f0f0;
-  /* border: 1px solid grey; */
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .status-expired {
   color: rgb(245, 111, 111);
-  background-color: #ffe6e6;
-  /* border: 1px solid grey; */
-  border-radius: 13px;
-  padding: 3px 13px;
+  font-weight: 600;
 }
 
 .no-record-heading {

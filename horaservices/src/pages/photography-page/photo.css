@@ -9,6 +9,10 @@
     letter-spacing: 0;
     line-height: 22px;
   }
+
+  .party-services.homeslider {
+    margin: 9px 7px 0;
+}
   
   .section-small-header-sec {
     color: #F8C15D;
@@ -175,7 +179,13 @@ li.inclusion-item {
       justify-content: flex-start;
       padding: 0 10px;
       gap: initial;
-      margin-bottom: 60px;
+      margin-bottom: 30px;
+  }
+
+  .whatappicon-photo {
+    width: 20px;
+    height: 20px;
+    margin-left: 6px;
   }
 
 .sec-prod {
@@ -211,24 +221,33 @@ li.inclusion-item {
   }
 
   ul.work-duration {
-    min-height: 100px;
+    min-height: 150px;
   }
-  .responsive-image {
-    min-width: 100%;;
-  }
-
-  @media (max-width: 800px) {
-  .responsive-image {
-    min-width: 100%;
-    height: 135px;
-    width: 100%;
+  .works-container.products.preweddng .section-small-header {
+    font-size: 21px;
 }
+.works-container.products.preweddng .section-small-header-sec {
+  font-size: 17px;
+}
+.works-container.products.preweddng .section-small-header-sec {
+  font-size: 17px;
+  border: 1px solid #F8C15D;
+  border-radius: 14px;
+  margin: 10px 0 0;
+  padding: 0 12px;
+}
+ul.work-duration li.inclusionstyle {
+  font-size: 77%;
+}
+  
+@media (max-width: 800px) {
 .photograpy-bannner-sec {
   padding: 9px 0px;
 }
+
 .featured-works {
   text-align: center;
-  padding: 17px 1px;
+  padding: 10px 1px;
 }
 .section-small-header {
   color: #97538C;
@@ -259,41 +278,32 @@ p.work-duration {
   }
 
   @media (max-width: 426px) {
+  
     ul.work-duration {
-      min-height: 131px;
+      min-height: 181px;
   }
   h5.work-title {
     font-size: 15px;
 }
-.responsive-image {
-  height: 135px;
-}
+
     }
 
     @media (max-width: 378px) {
       ul.work-duration {
-        min-height: 151px;
+        min-height: 234px;
     }
   h5.work-title {
     font-size: 13px;
     min-height: 19px;
 }
-.responsive-image {
-  height: 119px;
-}
+
     }
-    @media (max-width: 361px) {
-    .responsive-image {
-      height: 108px;
-  }
-}
+
 
     @media (max-width: 321px) {
-      .responsive-image {
-        height: 100px;
-      }
+   
       ul.work-duration {
-        min-height: 163px;
+        min-height: 275px;
     }
   
     }

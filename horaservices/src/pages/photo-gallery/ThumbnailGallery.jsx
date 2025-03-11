@@ -35,26 +35,26 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
     fetchThumbnails();
   }, [folderName, customerId]);
 
-  useEffect(() => {
-    const fetchOriginalImages = async () => {
-      const newOriginals = {};
-      for (let thumbnail of thumbnails) {
-        try {
-          const response = await fetch(
-            `https://horaservices.com:3000/api/photo/originalImage?thumbnailKey=${thumbnail.key}`
-          );
-          const data = await response.json();
-          newOriginals[thumbnail.key] = data.originalImageUrl;
-        } catch (error) {
-          console.error("Failed to fetch original image:", error);
-        }
-      }
-      setOriginalImages(newOriginals);
-    };
-    if (thumbnails.length > 0) {
-      fetchOriginalImages();
-    }
-  }, [thumbnails]);
+  // useEffect(() => {
+  //   const fetchOriginalImages = async () => {
+  //     const newOriginals = {};
+  //     for (let thumbnail of thumbnails) {
+  //       try {
+  //         const response = await fetch(
+  //           `https://horaservices.com:3000/api/photo/originalImage?thumbnailKey=${thumbnail.key}`
+  //         );
+  //         const data = await response.json();
+  //         newOriginals[thumbnail.key] = data.originalImageUrl;
+  //       } catch (error) {
+  //         console.error("Failed to fetch original image:", error);
+  //       }
+  //     }
+  //     setOriginalImages(newOriginals);
+  //   };
+  //   if (thumbnails.length > 0) {
+  //     fetchOriginalImages();
+  //   }
+  // }, [thumbnails]);
 
   const handleImageClick = (index) => {
     setSelectedIndex(index);
@@ -105,7 +105,7 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
               {thumbnails.map((thumbnail, index) => (
                 <div key={index}>
                   <img
-                    src={originalImages[thumbnail.key] || thumbnail.url}
+                    src={thumbnail.url}
                     alt="Original"
                     className="popupImage"
                   />
