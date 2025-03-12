@@ -283,11 +283,11 @@ return (
 <button
       className="back-button"
       style={{
-        background: "#b8c0ff",
+        background: "rgb(146, 82, 170)",
         borderRadius: "12px",
         border: "none",
-        width: "40px",
-        height: "40px",
+        width: "35px",
+        height: "35px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -295,13 +295,15 @@ return (
       }}
       onClick={handleBack}  
     >
-      <FontAwesomeIcon icon={faChevronLeft} style={{ color: "white",transform: "scale(0.8)"}} />
+      <FontAwesomeIcon icon={faChevronLeft} style={{ color: "white",transform: "scale(0.7)", marginBottom: "8px"}} />
     
     </button>
 
 
                 <h1
-                 style={{ margin: 0, fontSize: "16px", color:"#333", marginRight:"140px"}}>{pageTitle}</h1>
+                 style={{ fontSize: "20px", color:"rgb(146, 82, 170)",
+                  marginLeft: "15px", marginBottom: "0px", fontWeight: "600"
+                 }}>{pageTitle}</h1>
               </>
             )}
           </div>

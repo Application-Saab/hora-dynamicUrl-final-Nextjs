@@ -1260,7 +1260,7 @@ h4.contact-us-heading a {
   .mobileViewHeader {
     color: #fff;
     display: flex !important;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     /* padding: 10px 0px 8px; */
 
