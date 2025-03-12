@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
 // import avtar from '../assets/avtar.jpg';
 import { FaCaretDown } from "react-icons/fa";
@@ -193,16 +196,11 @@ useEffect(() => {
     setShowPopup(true); // Show the popup
     router.push("/");
   };
+  
 
-
-  return (
-    <>
-     { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
-    || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
-    || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"
-     ?  (
-      <header style={styles.headerContainerhome} className="home-header">
+return (
+  <>
+    <header style={styles.headerContainerhome} className="home-header">
       <div className="pageWidth">
         <div style={styles.headerContainerinner} className="headerContainerinner">
           <div className="z-1">
@@ -212,11 +210,8 @@ useEffect(() => {
           </div>
           <nav className="nav-li">
             <ul style={styles.desktopMenu}>
-              {/* <li>
-              <SearchBar />
-              </li> */}
               <li>
-              <Categories isDropdownOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
+                <Categories isDropdownOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
               </li>
               <li style={styles.desktopMenuli}>
                 <Link href="/contactus" style={styles.link}>
@@ -238,17 +233,15 @@ useEffect(() => {
           <div>
             <ul style={styles.desktopMenu}>
               <li> <i className="cart-icon"></i></li>
-             <li><i className="profile-icon"></i></li>
-        {/* <li><i className="language-icon"></i></li> */}
+              <li><i className="profile-icon"></i></li>
               <li style={styles.desktopMenuli1}>
-              {isMounted && (!isLoggedIn ? (
-                <>
-                  <Link href="/login" style={styles.linkicon}>
-                  <Image src={loginIcon} alt={'login icon'} width={20} height={20}/>
-                    <span style={{ marginLeft: "7px" }}>Login</span>
-                  </Link>
-                </>
-               
+                {isMounted && (!isLoggedIn ? (
+                  <>
+                    <Link href="/login" style={styles.linkicon}>
+                      <Image src={loginIcon} alt={'login icon'} width={20} height={20} />
+                      <span style={{ marginLeft: "7px" }}>Login</span>
+                    </Link>
+                  </>
                 ) : (
                   <a style={styles.linkiconLogout} onClick={handleLogout}>
                     <image src={loginIcon} />
@@ -260,17 +253,11 @@ useEffect(() => {
           </div>
         </div>
         <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
-          <div className="mobile-container" style={{ width:"100%"}}>
-            {isHomePage  ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
-    || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
-    || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"
-     ?
-            
-            (
+          <div className="mobile-container" style={{ width: "100%" }}>
+            {routerPathname === "/" ? (
               <>
-               <Link href="/">
-                  <Image src={logo} alt="Logo" style={{ width: "50px", height: "50px", margin:"0px auto"}} />
+                <Link href="/">
+                  <Image src={logo} alt="Logo" style={{ width: "50px", height: "50px", margin: "0px auto" }} />
                 </Link>
                 <FontAwesomeIcon
                   icon={faBars}
@@ -278,175 +265,54 @@ useEffect(() => {
                   style={styles.mobileMenuIcon}
                   onClick={toggleDrawer}
                 />
-               
               </>
             ) : (
               <>
-                <Image
+                {/* <Image
                   src={backIcon}
                   alt="Back"
                   style={{
                     width: "35px",
                     height: "auto",
                     cursor: "pointer",
-                    color:"#96528D",
+                    color: "#96528D",
                   }}
                   onClick={handleBack}
-                />
-                <h1 style={{ margin: 0 , fontSize:"16px" }}>{pageTitle}</h1>
+                /> */}
+
+<button
+      className="back-button"
+      style={{
+        background: "#b8c0ff",
+        borderRadius: "12px",
+        border: "none",
+        width: "40px",
+        height: "40px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+      }}
+      onClick={handleBack}  
+    >
+      <FontAwesomeIcon icon={faChevronLeft} style={{ color: "white",transform: "scale(0.8)"}} />
+    
+    </button>
+
+
+                <h1
+                 style={{ margin: 0, fontSize: "16px", color:"#333", marginRight:"140px"}}>{pageTitle}</h1>
               </>
-            )}  
+            )}
           </div>
         </div>
       </div>
       {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
-      {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
+      {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />}
     </header>
-      ) : (
-    <header style={styles.headerContainerinnerpage} className="inner-page-header">
-    <div className="pageWidth">
-      <div style={styles.headerContainerinner} className="headerContainerinner">
-        <div className="z-1">
-          <Link href="/">
-            <Image src={logolight} alt="Logo" style={styles.logo} />
-          </Link>
-        </div>
-        <nav>
-          <ul style={styles.desktopMenu}>
-            <li
-              style={styles.innerpagedesktopMenuli}
-              onMouseEnter={() => {
-                setShowDecorationSubMenu(true);
-                setIsHovered(true);
-              }}
-              onMouseLeave={() => {
-                setShowDecorationSubMenu(false);
-                setIsHovered(false);
-              }}
-            >
-              <span style={styles.innerpagelink}>Categories</span>
-              {/* <FontAwesomeIcon
-                icon={isHovered ? faCaretUp : faCaretDown}
-                className={`dropdpwnarrow ${isHovered ? "rotate-icon" : ""}`}
-                
-              /> */} 
-              <FaCaretDown  className={`dropdpwnarrow ${isHovered ? "rotate-icon" : ""}`} />
-              {/* <Image src={dropdown} alt='logo'/> */}
-              {showDecorationSubMenu && (
-                <ul style={styles.subMenu}>
-                  <li>
-                    <Link href="/balloon-decoration" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Decoration')}>
-                      Decoration
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/book-chef-cook-for-party" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Chef For Party')}>
-                      Chef for Party
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Food Delivery')}>
-                      Food Delivery
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Live Catering')}>
-                      Live Catering
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/" style={{ ...styles.subMenuLink, ...styles.lastChild }} 
-                     onClick={() => {
-                      handleNavClick('Categories', 'Click', 'Entertainment');
-                      openCatItems("FirstNight");
-                    }}>
-                      Entertainment
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-            <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/contactus" style={styles.innerpagelink}
-              onClick={() => handleNavClick('Navigation', 'Click', 'Contact Us')}
-              >
-                Contact Us
-              </Link>
-            </li>
-            <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/aboutus" style={styles.innerpagelink}
-              onClick={() => handleNavClick('Navigation', 'Click', 'About Us')}
-              >
-                About Us
-              </Link>
-            </li>
-            <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/reviews" style={styles.innerpagelink}
-              onClick={() => handleNavClick('Navigation', 'Click', 'Customer Reviews')}
-              >
-                Customer Reviews
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        <div>
-          <ul style={styles.desktopMenu}>
-            <li style={styles.desktopMenuli1}>
-            {isMounted && (!isLoggedIn ? (
-                <Link href="/login" style={styles.innerpagelinkicon}>
-                  <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                  <span style={{ marginLeft: "3px" }}>Login</span>
-                </Link>
-              ) : (
-                <a style={styles.linkiconLogout} onClick={handleLogout}>
-                  <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                  <span style={{ marginLeft: "3px" }}>Logout</span>
-                </a>
-              ))}
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
-        <div className="d-flex align-items-center gap-3 z-1" style={{ width:"100%"}}>
-          {isHomePage && ChefCitypage ? (
-            <>
-              <FontAwesomeIcon
-                icon={faBars}
-                className="mobileMenuIcon"
-                style={styles.mobileMenuIcon}
-                onClick={toggleDrawer}
-              />
-              <Link href="/" style={{ display:"flex" , width:"80%" , textAlign:"center"}}>
-                <Image src={logoWhite} alt="Logo" style={{ width: "85px", height: "auto", margin:"0px auto"}} />
-              </Link>
-            </>
-          ) : (
-            <>
-              <Image
-                src={backIcon}
-                alt="Back"
-                style={{
-                  width: "35px",
-                  height: "auto",
-                  cursor: "pointer",
-                }}
-                onClick={handleBack}
-              />
-              <h1 style={{ margin: 0 , fontSize:"16px" }}>{pageTitle}</h1>
-            </>
-          )}  
-        </div>
-      </div>
-    </div>
-    {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
-    {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
-  </header>
-      )
-    }
-    </>
-  );
-}
+  </>
+);}
+
 
 const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
   const style = {
