@@ -266,7 +266,7 @@ console.log("redData" , requestData);
       });
       merchantTransactionId = response.data.data._id
       }
-    } catch (error) {
+     catch (error) {
       console.log('Error Confirming Order:', error.message);
     }
   
@@ -373,9 +373,9 @@ console.log("redData" , requestData);
                   <CustomTimePicker handleTimeSlotChange={handleTimeSlotChange} generateTimeSlots={generateTimeSlots} selectedTimeSlot={selectedTimeSlot} combinedDateTimeError={combinedDateTimeError} selectedTimeSlotError={selectedTimeSlotError} />
                 </div>
                 {combinedDateTimeError && <p className="text-danger" style={{ fontSize: '12px', marginBottom: "0px" }}>The selected date and time must be at least 24 hours from now.</p>}
-                <div className='checkoutInputType border-1 rounded-4  ' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
+                <div className='checkoutInputType  rounded-4  ' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
                   <h4 style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marginBottom: "4px" }}>Share your comments (if any)</h4>
-                  <textarea className=' rounded border border-1 p-1 bg-white text-black'
+                  <textarea className=' rounded border  p-1 bg-white text-black'
                     value={comment}
                     onChange={handleComment}
                     rows={3}
@@ -387,7 +387,7 @@ console.log("redData" , requestData);
                     <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: "600" }}>Address:</label>
                     <textarea
                       type="text"
-                      className='rounded border border-1 p-1 bg-white text-black'
+                      className='rounded border  p-1 bg-white text-black'
                       value={address}
                       onChange={handleAddressChange}
                       rows={3}
@@ -398,7 +398,7 @@ console.log("redData" , requestData);
                   <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                     <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>Pin Code:</label>
                     <input
-                      type="text" className=' rounded border border-1 p-1 bg-white text-black'
+                      type="text" className=' rounded border  p-1 bg-white text-black'
                       value={pinCode}
                       onChange={handlePinCodeChange}
                     />
@@ -407,7 +407,7 @@ console.log("redData" , requestData);
                   </div>
                   <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                     <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>City:</label>
-                    <select value={city} className=' rounded border border-1 p-1 bg-white text-black' onChange={handleCityChange}>
+                    <select value={city} className=' rounded border  p-1 bg-white text-black' onChange={handleCityChange}>
                       <option value="">Select City</option>
                       <option value="Bangalore">Bangalore</option>
                       <option value="Delhi">Delhi NCR</option>
@@ -527,7 +527,7 @@ console.log("redData" , requestData);
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: "600" }}>Address:</label>
                       <textarea
                         type="text"
-                        className=' rounded border border-1 p-1 bg-white text-black'
+                        className=' rounded border  p-1 bg-white text-black'
                         value={address}
                         onChange={handleAddressChange}
                         rows={3}
@@ -538,7 +538,7 @@ console.log("redData" , requestData);
                     <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>Pin Code:</label>
                       <input
-                        type="text" className=' rounded border border-1 p-1 bg-white text-black'
+                        type="text" className=' rounded border  p-1 bg-white text-black'
                         value={pinCode}
                         onChange={handlePinCodeChange}
                       />
@@ -547,7 +547,7 @@ console.log("redData" , requestData);
                     </div>
                     <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>City:</label>
-                      <select value={city} className=' rounded border border-1 p-1 bg-white text-black' onChange={handleCityChange}>
+                      <select value={city} className=' rounded border  p-1 bg-white text-black' onChange={handleCityChange}>
                         <option value="">Select City</option>
                         <option value="Bangalore">Bangalore</option>
                         <option value="Delhi">Delhi NCR</option>
@@ -559,9 +559,9 @@ console.log("redData" , requestData);
                     </div>
                  
 
-                    <div className='checkoutInputType border-1 rounded-4  my-3' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
+                    <div className='checkoutInputType  rounded-4  my-3' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
                       <h4 style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marginBottom: "4px" }}>Share your comments (if any)</h4>
-                      <textarea className='rounded border border-1 p-1 bg-white text-black decor-commemnts'
+                      <textarea className='rounded border  p-1 bg-white text-black decor-commemnts'
                         value={comment}
                         onChange={handleComment}
                         rows={3}
@@ -617,7 +617,7 @@ export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicke
   };
 
   return (
-    <div className={`d-flex flex-column border border-1 rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
+    <div className={`d-flex flex-column border  rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
       <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Booking Date</p>
       <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className='border-none p-0'>
         <Dropdown.Toggle
@@ -646,7 +646,7 @@ export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicke
 
 export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
   return (
-    <div className={`timepkerSec d-flex flex-column border border-1 ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
+    <div className={`timepkerSec d-flex flex-column border  ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
       <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
       <div>
         <Form.Control

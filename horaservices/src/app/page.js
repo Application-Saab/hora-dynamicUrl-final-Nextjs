@@ -423,7 +423,7 @@ handleTitleClick(item.title);
           event: 'photography_button_click',  // Custom event name
           photography_button_id: 'photography_button',  // Custom parameter name with another value
         });
-        photographyUrl();
+        window.location.href = `/photography-page`
       }}
        >Book Now</button>
     </div>
