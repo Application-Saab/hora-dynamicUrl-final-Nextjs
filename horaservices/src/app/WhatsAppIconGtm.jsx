@@ -65,10 +65,10 @@ const WhatsAppIcon = ({ router }) => {
         eventName = 'decoration_citypage_whatsapp_click';
         productNameEvent = 'decoration_citypage_whatsapp_click';
         break;
-      case '/book-chef-cook-for-party':
-        eventName = 'chefforpartypage_whatsapp_click';
-        productNameEvent = 'chefforpartypage_whatsapp_click';
-        break;
+      // case '/book-chef-cook-for-party':
+      //   eventName = 'chefforpartypage_whatsapp_click';
+      //   productNameEvent = 'chefforpartypage_whatsapp_click';
+      //   break;
       case '/book-chef-cook-for-party/order-details':
         eventName = 'chefforpartyorderdetailspage_whatsapp_click';
         productNameEvent = 'chefforpartyorderdetailspage_whatsapp_click';
