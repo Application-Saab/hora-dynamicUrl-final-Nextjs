@@ -380,12 +380,12 @@ const CreateOrder = ({ history, currentStep }) => {
                                                 : dish.name}
                                         </p>
                                         <div className="d-flex justify-content-between w-100 px-3 dishPrice">
-                                            <span
+                                            {/* <span
                                                 className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
                                                     }`}
                                             >
                                                 ₹ {dish.dish_rate}
-                                            </span>
+                                            </span> */}
                                             <Button
                                                 className="pluBtn"
                                                 onClick={() =>
@@ -467,12 +467,12 @@ const CreateOrder = ({ history, currentStep }) => {
                                                 : dish.name}
                                         </p>
                                         <div className="d-flex justify-content-between w-100 px-3 dishPrice">
-                                            <span
+                                            {/* <span
                                                 className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
                                                     }`}
                                             >
                                                 ₹ {dish.dish_rate}
-                                            </span>
+                                            </span> */}
                                             <Button
                                                 className="pluBtn"
                                                 onClick={() =>

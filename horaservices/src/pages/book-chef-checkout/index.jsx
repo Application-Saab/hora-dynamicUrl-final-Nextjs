@@ -308,6 +308,7 @@ const ChefCheckout = () => {
                 "balance_amount": balanceAmount,
                 "order_taken_by": "Booked Online",
                 "order_type": true,
+                "order_pincode": pinCode,
                 "items": selectedDishes,
                 "status": 0
             }

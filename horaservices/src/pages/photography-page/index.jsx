@@ -69,7 +69,7 @@ const index = () => {
        event: "book_now_click",
        product_name: product.name,
      });
-     console.log("Data sent to dataLayer:", window.dataLayer);s
+     console.log("Data sent to dataLayer:");
     router.push({
       pathname: 'photography-checkout',
       query: {

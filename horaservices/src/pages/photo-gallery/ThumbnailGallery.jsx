@@ -84,7 +84,7 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
       <div className="masonryGrid">
         {thumbnails.length > 0 ? (
           thumbnails.map((thumbnail, index) => (
-           <div className="masonryItem" key={index}>
+      
             <img
               key={index}
               src={thumbnail.url}
@@ -92,7 +92,7 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
               className="thumbnail"
               onClick={() => handleImageClick(index)}
             />
-            </div>
+         
           ))
         ) : (
           !loading && <p>No thumbnails found.</p>

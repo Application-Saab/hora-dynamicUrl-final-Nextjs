@@ -254,6 +254,7 @@ const Checkout = () => {
         "balance_amount": balanceAmount,
         "order_taken_by": "Booked Online",
         "order_type": true,
+        "order_pincode": pinCode,
         "items": [product._id],
         "decoration_comments": getFinalComment(),
         "status": 0

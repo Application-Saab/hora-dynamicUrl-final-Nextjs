@@ -712,6 +712,10 @@ button.view-details.order-details {
 
 /* select date chef flow */
 @media (max-width: 800px) {
+  .decoration-container.orderdetails {
+    padding: 0px 0 0px;
+    /* margin: 0; */
+}
   .right-details {
     font-size: 12px;
   }
