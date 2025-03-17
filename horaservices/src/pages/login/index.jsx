@@ -200,6 +200,14 @@ const sendWelcomeMessage = async (mobileNumber) => {
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem('userID', response.data.data._id);
                     sendWelcomeMessage(mobileNumber);
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const fromPage = urlParams.get("from");
+                    const folderName = urlParams.get("folderName") || "";
+                    const customerId = urlParams.get("customerId") || "";
+            
+                    console.log("values", fromPage, folderName, customerId);
+
                     if (previousPage) {
                         if (previousPage.includes("/book-chef-cook-for-party")) {
                             router.push({
@@ -241,6 +249,12 @@ const sendWelcomeMessage = async (mobileNumber) => {
                                 query: { subCategory, product, orderType }
                             });
                         } 
+                         else if (fromPage) {
+                            router.push({
+                                pathname: fromPage,
+                                query: { folderName, customerId }
+                            });
+                        }
 
                         else {
                             router.push('/');
