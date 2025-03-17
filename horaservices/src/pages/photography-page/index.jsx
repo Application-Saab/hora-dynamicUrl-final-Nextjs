@@ -15,8 +15,12 @@ import Link from 'next/link';
 
 
 const index = () => {
-  const [products, setproducts] = useState([]); // State to store product
+  const [products, setProducts] = useState([]); // State to store product
   const [email, setEmail] = useState("");
+  const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
+  const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
+  const [discountDifference , setDiscountDifference] = useState(0)
+   
   const router = useRouter();
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
@@ -48,16 +52,41 @@ const index = () => {
       );
     };
 
+    const getDiscountedPrice = (price) => {
+      let discount;
+  
+      // Determine the discount percentage based on the item price
+      if (price < 3000) {
+          discount = 20; // 20% discount
+      } else if (price >= 3000 && price <= 5000) {
+          discount = 27; // 27% discount
+      } else {
+          discount = 35; // 35% discount for prices above 5000
+      }
+  
+      const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
+      const discountDifference =   Math.abs(price - discountedPrice);;
+      return { discount, discountedPrice , discountDifference }; // Return both discount percentage and discounted price
+  };
+
   const fetchData = useCallback(async () => {
     try {
-      const res = await axios.get(
+      const response = await axios.get(
         'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
       );
-
-      setproducts(res.data.data); // Save the response data to state
+      const productData = response.data.data.map(item => {
+        const { discount, discountedPrice , discountDifference} = getDiscountedPrice(item.price); // Destructure the return value
+        return {
+            ...item,
+            discountPercentage: discount, // Add discount percentage
+            discountedPrice: discountedPrice ,// Add discounted price
+            discountDifference: discountDifference
+        };
+    });
+    setProducts(productData);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setproducts([]); // Set to empty array in case of an error
+      setProducts([]); // Set to empty array in case of an error
     }
   }, []);
   useEffect(() => {
@@ -90,9 +119,9 @@ const index = () => {
     </div>
     <div className="featured-works">
       <div className="works-container products">
+      <div className="section-small-header-sec">Kids, Birthday, House Warming, Naming Ceremony, Corporate,
+      Baby Shower, New Born baby, Maternity Shoot</div>
         <div className="section-small-header">  Services: Less than 100 Guest</div>
-        <div className="section-small-header-sec">Kids, Birthday, House Warming, Naming Ceremony, Corporate,
-          Baby Shower, New Born baby, Maternity Shoot</div>
         <img
           src="https://cdn.prod.website-files.com/593008e46c534e61e392e0f2/5938f139d7978c0a4faf1460_Sep.svg"
           alt=""
@@ -104,7 +133,12 @@ const index = () => {
               <div className="work-card-info">
                 <div className="work-details">
                   <h5 className="work-title">{work.name}</h5>
-                  <p className="Prefred-occ"><b>Price: </b>₹ {work.price}</p>
+                  <p className="Prefred-occ">
+                    <span>₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>
+                    <span className='photograpty-disconut'>
+                    ₹ {work.discountDifference.toFixed(0)} {'off'} 
+                  </span>  
+                  </p>
                   <b class="inclusion-heading">Inclusion:</b>
                   <div> {getItemInclusion(work.inclusion)}</div>
                   <p className="work-duration">

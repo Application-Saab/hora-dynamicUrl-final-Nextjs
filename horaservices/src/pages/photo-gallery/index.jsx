@@ -42,15 +42,32 @@ const PhotoGallery = () => {
     }
   }, [isLoggedIn, fromPage, router]);
 
-  const handleShareicon = () => {
-    window.open(window.location.href);
-  }
+  // const handleShareicon = async () => {
+  //   const shareUrl = window.location.href;
+  //   console.log("Share URL: ", shareUrl);  // Log the URL to check it
+  //   if (navigator.share) {
+  //     try {
+  //       await navigator.share({
+  //         title: "Photo Gallery",
+  //         text: "Check out these photos!",
+  //         url: shareUrl,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error sharing:", error);
+  //     }
+  //   } else {
+  //     navigator.clipboard.writeText(shareUrl);
+  //     alert("Link copied to clipboard!");
+  //   }
+  // };
+  
 
   return (
     <div className="photo-container" >
       <div class="photo-galary-header">
       <h2 className="title">Your Photos</h2>
       {/* <Image src= {shareIcon} alt="Info" style={{ height: 20 , width: 20, marginRight: 10 , cursor:'pointer' }} onClick={handleShareicon}/> */}
+     
       </div>
       {isLoggedIn ? (
         folderName && customerId ? (
