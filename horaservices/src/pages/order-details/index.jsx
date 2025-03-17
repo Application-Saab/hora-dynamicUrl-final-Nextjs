@@ -30,7 +30,9 @@ const OrderDetail = () => {
   const [hospitalityServiceTotalAmount, setHospitalityServiceTotalAmount] =
     useState();
 
+    console.log(orderType,"ordertype");
   orderType = parseInt(orderType);
+  console.log(orderType,"ordertypes");
 
   useEffect(() => {
     if (
@@ -60,7 +62,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-      console.log(responseData)
+      console.log(responseData, "json");
       setOrderDetail(responseData.data);
       setLoading(false);
     } catch (error) {
@@ -98,7 +100,7 @@ const OrderDetail = () => {
       );
       const responseData = await response.json();
 
-      console.log(responseData)
+      console.log(responseData,"fdsfdsfdsf");
       //console.log(BASE_URL + GET_FOOD_DELIVERY_DETAILS + "/" + orderId)
       setOrderDetail(responseData.data);
       setHospitalityServiceCount(responseData.data.no_of_people);
@@ -116,7 +118,7 @@ const OrderDetail = () => {
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
-
+      console.log(responseData, "122dres");
       setOrderDetail(responseData.data);
       setHospitalityServiceCount(responseData.data.no_of_people);
       setHospitalityServiceTotalAmount(responseData.data.total_amount);
