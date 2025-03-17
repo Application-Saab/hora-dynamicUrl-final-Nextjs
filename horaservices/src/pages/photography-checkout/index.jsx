@@ -318,9 +318,18 @@ console.log("redData" , requestData);
   }
   }
 
+  // const contactUsRedirection = () => {
+  //   window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20Photography%20services', '_blank');
+  // };
+
   const contactUsRedirection = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        event: "photography_checkout_contact_us_click",
+    });
+
     window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20Photography%20services', '_blank');
-  };
+};
 
 
 

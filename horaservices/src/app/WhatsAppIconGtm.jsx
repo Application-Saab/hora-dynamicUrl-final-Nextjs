@@ -85,6 +85,14 @@ const WhatsAppIcon = ({ router }) => {
         eventName = 'food&livecateringselectdatepage_whatsapp_click';
         productNameEvent = 'food&livecateringselectdatepage_whatsapp_click';
         break;
+      case '/photography-page':
+        eventName = 'photography_page_whatsappclick';
+        productNameEvent = 'photography_page_whatsappclick';
+        break;
+      case '/photography-checkout':
+          eventName = 'photography_checkout_whatsappclick';
+          productNameEvent = 'photography_checkout_whatsappclick';
+          break;
       default:
         return;
     }
