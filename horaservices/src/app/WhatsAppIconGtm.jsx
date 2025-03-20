@@ -100,7 +100,16 @@ const WhatsAppIcon = ({ router }) => {
 
 
   const shouldShowWhatsAppIcon = () => {
-    return router.pathname !== '/order-details' && router.pathname !== '/orderlist' && router.pathname !== '/photo-gallery';
+    return router.pathname !== '/order-details' 
+    && router.pathname !== '/orderlist' 
+    && router.pathname !== '/photo-gallery'
+    && router.pathname !== '/balloon-decoration/youtube/[catValue]' 
+    && router.pathname !== '/balloon-decoration/youtube'
+    && router.pathname !== '/balloon-decoration/youtube/[catValue]/product/[productName]' 
+    && router.pathname !== '/[city]/balloon-decoration/youtube'
+    && router.pathname !== '/[city]/balloon-decoration/youtube/[catValue]'
+    && router.pathname !== '/[city]/balloon-decoration/youtube/[catValue]/product/[productName]'
+    ;
   };
 
   return (
