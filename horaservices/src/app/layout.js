@@ -32,10 +32,6 @@ export default function RootLayout({ children }) {
         <GoogleTagManager />
       </Head>
       <body className={inter.className}>
-      {/* <noscript>
-          <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe>
-        </noscript> */}
         <noscript>
               <iframe
                 src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
