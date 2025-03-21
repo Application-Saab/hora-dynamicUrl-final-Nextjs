@@ -57,11 +57,11 @@ const PhotoGallery = () => {
     }
   }, [isLoggedIn, fromPage, router]);
 
-
   // const handleShareicon = async () => {
   //   const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
   //     folderName
   //   )}&customerId=${customerId}`;
+  //   // http://localhost:3000/photo-gallery?folderName=testing+2&customerId=63edb239d680d47d95870fa0
   //   if (navigator.share) {
   //     try {
   //       await navigator.share({
