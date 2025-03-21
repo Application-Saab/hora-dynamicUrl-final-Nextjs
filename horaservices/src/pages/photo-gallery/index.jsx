@@ -44,33 +44,23 @@ const PhotoGallery = () => {
   }, [isLoggedIn, fromPage, router]);
 
   const handleShareicon = async () => {
-    const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}&customerId=${customerId}`;
+    const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)
+      .replace(/%20/g, "%2520")}&customerId=${customerId}`;
+
     if (navigator.share) {
       try {
         await navigator.share({
-
           title: "Photo Gallery",
-
           text: "Check out these photos!",
-
           url: shareUrl,
-
         });
-
       } catch (error) {
-
         console.error("Error sharing:", error);
-
       }
-
     } else {
-
       navigator.clipboard.writeText(shareUrl);
-
       alert("Link copied to clipboard!");
-
     }
-
   };
 
   return (
