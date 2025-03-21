@@ -25,6 +25,7 @@ const footerColumns = [
     links: [
       { text: 'Chef for Party and Occasions', href: '/book-chef-cook-for-party' },
       { text: 'Decorations for Party and Occasions', href: '/balloon-decoration' },
+      { text: 'Photography for Party and Occasions', href: '/photography-page' },
       { text: 'Food Delivery for Party and Occasions', href: 'party-food-delivery-live-catering-buffet/party-food-delivery' },
       { text: 'Catering Service for Party and Occasions', href: '/party-food-delivery-live-catering-buffet/party-live-buffet-catering' },
       { text: 'Waiter for Party and Occasions', href: '/contactus' },

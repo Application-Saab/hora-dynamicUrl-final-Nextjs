@@ -414,19 +414,34 @@ handleTitleClick(item.title);
         <Image src={PhotographyIcon} alt="Photography Icon" className="service-icon" />
       </h2>
     </div>
-    <div className="service-image-container">
-      <Image src="https://horaservices.com/api/uploads/homepage_photography.webp" alt="Photography" className="service-image" width={200} height={100}/>
-      <button className="book-now2" id="home-phtography-sec-sec"
-       onClick={() => {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: 'photography_button_click',  // Custom event name
-          photography_button_id: 'photography_button',  // Custom parameter name with another value
-        });
-        window.location.href = `/photography-page`
-      }}
-       >Book Now</button>
-    </div>
+    <div 
+  className="service-image-container"
+  onClick={() => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'photography_button_click',  // Custom event name
+      photography_button_id: 'photography_button',  // Custom parameter name with another value
+    });
+    window.location.href = `/photography-page`; // Redirect to the photography page
+  }}
+  style={{ cursor: 'pointer' }}  // Optional: Change the cursor to pointer to indicate it’s clickable
+>
+  <Image 
+    src="https://horaservices.com/api/uploads/homepage_photography.webp" 
+    alt="Photography" 
+    className="service-image" 
+    width={200} 
+    height={100} 
+  />
+  <button 
+    className="book-now2" 
+    id="home-phtography-sec-sec"
+
+  >
+    Book Now
+  </button>
+</div>
+
   </div>
   <div className="service decoration">
     <div className="service-header">
