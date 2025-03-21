@@ -57,11 +57,32 @@ const PhotoGallery = () => {
     }
   }, [isLoggedIn, fromPage, router]);
 
+
+  // const handleShareicon = async () => {
+  //   const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
+  //     folderName
+  //   )}&customerId=${customerId}`;
+  //   if (navigator.share) {
+  //     try {
+  //       await navigator.share({
+  //         title: "Photo Gallery",
+  //         text: "Check out these photos!",
+  //         url: shareUrl,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error sharing:", error);
+  //     }
+  //   } else {
+  //     navigator.clipboard.writeText(shareUrl);
+  //     alert("Link copied to clipboard!");
+  //   }
+  // };
+
+  
   const handleShareicon = async () => {
-    const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
-      folderName
-    )}&customerId=${customerId}`;
-    // http://localhost:3000/photo-gallery?folderName=testing+2&customerId=63edb239d680d47d95870fa0
+    const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)
+      .replace(/%20/g, "%2520")}&customerId=${customerId}`;
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -77,6 +98,7 @@ const PhotoGallery = () => {
       alert("Link copied to clipboard!");
     }
   };
+
 
   return (
     <div className="photo-container">
