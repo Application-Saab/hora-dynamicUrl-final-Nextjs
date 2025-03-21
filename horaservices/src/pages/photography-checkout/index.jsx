@@ -218,6 +218,10 @@ const Checkout = () => {
   };
 
   const onContinueClick = async () => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'photography_checkout_confirm_order',
+    });
     setLoading(true);
     const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await localStorage.getItem('userID');

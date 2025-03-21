@@ -64,6 +64,10 @@ const Decoration = () => {
     };
 
    const openWahtsappRedirection = (catTitle) =>{
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'youtube_chat_with_us_button',
+    });
     window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
    }
 
@@ -805,13 +809,11 @@ const Decoration = () => {
  <div>
  <Link href="https://wa.me/+917338584828/?text=Hi%2C%20I%20saw%20your%20decoration%20on%20YouTube.%20Need%20details!" target="_blank">
         <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
-        // onClick={() => {
-        //     dataLayer.push({
-        //       'event': 'homepage_whatsapp_click',
-        //       'page_url': '/homepage',
-        //       'page_title': 'This is home page WhatsApp click'
-        //     });
-        //   }}
+        onClick={() => {
+            dataLayer.push({
+              'event': 'balloon_decoration_youtube_whatsapp_click',
+            });
+          }}
            /> 
       </Link>
     </div> 

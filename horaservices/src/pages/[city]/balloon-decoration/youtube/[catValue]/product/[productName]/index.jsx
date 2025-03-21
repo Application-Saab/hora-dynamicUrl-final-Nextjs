@@ -86,8 +86,11 @@ function DecorationCatDetails() {
   const handleWhatsApp = () => {
     const phoneNumber = '7338584828';
     const message = encodeURIComponent('I want to customize a decoration');
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'city_youtube_product_detail_decorwhatsapp_click',
+    });  
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-
   };
 
   useEffect(() => {
@@ -669,13 +672,11 @@ function DecorationCatDetails() {
   <div>
   <Link href={`https://wa.me/+917338584828/?text=Hi%2C%20found%20your%20decoration%20on%20Youtube.%20Need%20it%20in%20${city}!`} target="_blank">
                   <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
-                  // onClick={() => {
-                  //     dataLayer.push({
-                  //       'event': 'homepage_whatsapp_click',
-                  //       'page_url': '/homepage',
-                  //       'page_title': 'This is home page WhatsApp click'
-                  //     });
-                  //   }}
+                   onClick={() => {
+                    dataLayer.push({
+                      'event': 'city_balloon_decoration_youtube_product_detail_whatsapp_click',
+                    });
+                  }}
                      />
                 </Link>
               </div> 
