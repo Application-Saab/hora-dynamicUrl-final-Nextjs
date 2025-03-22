@@ -1034,20 +1034,6 @@ height={300}
             </section>
 
 </div>
-<div>
-<Link href={`https://wa.me/+917338584828/?text=Hi%2C%20found%20your%20decoration%20on%20Youtube.%20Need%20it%20in%20${city}!`}
-     target="_blank">
-        <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
-       onClick={() => {
-        dataLayer.push({
-          'event': 'city_balloon_decoration_youtube_whatsapp_click',
-        });
-      }}
-          />
-      </Link>
-    </div> 
-
-
 </div>
     );    
 };

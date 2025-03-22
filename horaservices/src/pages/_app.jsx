@@ -53,35 +53,7 @@ function MyApp({ Component, pageProps }) {
             </noscript>
 
   
-            {/* <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
-              <Image 
-              className='whatappicon'
-               src={whatsppicon} 
-               alt="WhatsApp Icon"
-               onClick={() => {
-                if (router.pathname === '/balloon-decoration') {
-                  DecorationHandleClick();
-                } else if (router.pathname === '/book-chef-cook-for-party') {
-                  ChefForPartyHandleClick();
-                } 
-                else if (router.pathname === '/balloon-decoration/[catValue]'){
-                  DecorationCatergorypagewhatsppClick();
-                }
-                else if (router.pathname === '/balloon-decoration/[catValue]/product/[productName]'){
-                  DecorationProductPagepagewhatsppClick();
-                }
-                else if (router.pathname === '/[city]/balloon-decoration'){
-                  DecorationcityhatsappClick();
-                }
-                else if (router.pathname === '/[city]/balloon-decoration/[catValue]'){
-                  DecorationCatergorycitypagewhatsppClick();
-                }
-                else if (router.name === '/[city]/balloon-decoration/[catValue]/product/[productName]'){
-                  DecorationProductPageCitypagewhatsppClick();
-                }
-              }}
-                />
-            </Link> */}
+
              {/* whatapp icon */}
              <div className="whatsapp-container">
               <WhatsAppIcon router={router} />

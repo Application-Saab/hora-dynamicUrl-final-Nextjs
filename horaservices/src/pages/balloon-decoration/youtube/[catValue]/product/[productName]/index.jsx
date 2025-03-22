@@ -93,7 +93,7 @@ function DecorationCatDetails() {
         try {
           const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
           const response = await axios.get(url);
-          console.log("API Response:", response.data);
+    
           
           // Assuming the product has a price property
           const fetchedProduct = response.data.data[0];
@@ -650,20 +650,6 @@ function DecorationCatDetails() {
           </div>
         </div>
       </div>
-
-      <div>
- <Link href="https://wa.me/+917338584828/?text=Hi%2C%20I%20saw%20your%20decoration%20on%20YouTube.%20Need%20details!" target="_blank">
-        <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
-        onClick={() => {
-          dataLayer.push({
-            'event': 'balloon_decoration_youtube_product_detail_whatsapp_click',
-          });
-        }}
-           />
-      </Link>
-    </div> 
-
-   
     </div>
   );
 };

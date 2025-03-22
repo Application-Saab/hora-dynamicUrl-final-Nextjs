@@ -24,7 +24,6 @@ import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../assets/decoration_icon.webp';
 import PhotographyIcon from '../assets/photography_icon.webp';
 import FoodIcon from '../assets/food_icon.png';
-import { sendGTMEvent  } from '@next/third-parties/google';
  import decorationbanner from '../assets/decoration-home-banner.jpg'
 import './homepage.css'
 
@@ -33,6 +32,19 @@ const router = useRouter();
 const [showButton, setShowButton] = useState(false);
 const [currentSlide, setCurrentSlide] = useState(0);
 
+useEffect(() => {
+  // Google Tag Manager script for GTM
+  (function(w,d,s,l,i){
+    w[l]=w[l]||[];
+    w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+    var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';
+    j.async=true;
+    j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);
+    console.log('GTM Script Loaded'); // Debugging log
+  })(window,document,'script','dataLayer','GTM-K3SCKLTZ');
+}, []);
 
 
 const photographyUrl = () =>{
@@ -298,6 +310,7 @@ const openSliderLink = (link , title) => {
 };
 
 
+
 return (
 <>
   <div className="page-width">
@@ -327,6 +340,16 @@ return (
     <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
     <meta property="og:type" content="website" />
 </head>
+
+<noscript>
+              <iframe
+                src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
+                height="0"
+                width="0"
+                style={{ display: 'none', visibility: 'hidden' }}
+              ></iframe>
+            </noscript>
+
 
     <div className="party-services homeslider">
      <h1 className="party-title">All party services on one platform</h1>

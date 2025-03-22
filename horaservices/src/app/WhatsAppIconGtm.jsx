@@ -8,6 +8,8 @@ const WhatsAppIcon = ({ router }) => {
   const { catValue, productName } = query;
 
   const handleWhatsAppClick = () => {
+    const phoneNumber = '7338584828';
+    const message = encodeURIComponent('I want to customize a decoration');
     console.log(pathname, "pathname");
     let eventName = '';
     let productNameEvent = '';
@@ -65,10 +67,6 @@ const WhatsAppIcon = ({ router }) => {
         eventName = 'decoration_citypage_whatsapp_click';
         productNameEvent = 'decoration_citypage_whatsapp_click';
         break;
-      // case '/book-chef-cook-for-party':
-      //   eventName = 'chefforpartypage_whatsapp_click';
-      //   productNameEvent = 'chefforpartypage_whatsapp_click';
-      //   break;
       case '/book-chef-cook-for-party/order-details':
         eventName = 'chefforpartyorderdetailspage_whatsapp_click';
         productNameEvent = 'chefforpartyorderdetailspage_whatsapp_click';
@@ -92,8 +90,41 @@ const WhatsAppIcon = ({ router }) => {
         case '/photography-checkout':
             eventName = 'photography_checkout_whatsappclick';
             productNameEvent = 'photography_checkout_whatsappclick';
-            break;s
-      default:
+            break; 
+        case '/balloon-decoration/youtube':
+          console.log('inside youtube page');
+          eventName = 'balloon_decoration_youtube_whatsapp_click';
+          productNameEvent = 'balloon_decoration_youtube_whatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+          break;
+        case '/balloon-decoration/youtube/[catValue]':
+          eventName = 'balloon_decoration_youtube_product_list_whatsapp_click';
+          productNameEvent = 'balloon_decoration_youtube_product_list_whatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+          break;
+          case '/balloon-decoration/youtube/[catValue]/product/[productName]':
+            eventName = 'youtube_product_detail_decorwhatsapp_click';
+            productNameEvent = 'youtube_product_detail_decorwhatsapp_click';
+            window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+            break;
+            case '/[city]/balloon-decoration/youtube':
+              console.log('inside youtube page');
+              eventName = 'city_balloon_decoration_youtube_whatsapp_click';
+              productNameEvent = 'city_balloon_decoration_youtube_whatsapp_click';
+              window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+              break;
+            case '[city]/balloon-decoration/youtube/[catValue]':
+              eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+              productNameEvent = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+              window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+              break;
+            case '[city]/balloon-decoration/youtube/[catValue]/product/[productName]':
+              eventName = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+              productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+              window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');s
+              break;
+        default:
+       
         return;
     }
 
@@ -116,7 +147,7 @@ const WhatsAppIcon = ({ router }) => {
     {shouldShowWhatsAppIcon() && (
 <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
       <Image
-        className='whatappicon'
+        className='whatappicon gtmPage'
         src={whatsppicon}
         alt="WhatsApp Icon"
         onClick={handleWhatsAppClick}
