@@ -128,7 +128,7 @@ const Checkout = () => {
   const generateTimeSlots = () => {
     const startTime = 7; // Starting hour
     const endTime = 22; // Ending hour
-    const interval =  3; // Interval in hours
+    const interval =  1// Interval in hours
 
     const timeSlots = [];
     for (let hour = startTime; hour < endTime; hour += interval) {
@@ -251,6 +251,7 @@ const Checkout = () => {
         "balance_amount": balanceAmount,
         "order_taken_by": "Booked Online",
         "order_type": true,
+        "order_pincode": pinCode,
         "items": [product._id],
         "decoration_comments": getFinalComment(),
         "status": 0
@@ -264,8 +265,8 @@ console.log("redData" , requestData);
         },
       });
       merchantTransactionId = response.data.data._id
-      //}
-    } catch (error) {
+      }
+     catch (error) {
       console.log('Error Confirming Order:', error.message);
     }
   
@@ -318,6 +319,10 @@ console.log("redData" , requestData);
   }
 
   const contactUsRedirection = () => {
+    window.dataLayer = window.dataLayer || [];
+     window.dataLayer.push({
+         event: "photography_checkout_contact_us_click",
+     });
     window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20Photography%20services', '_blank');
   };
 
@@ -340,7 +345,7 @@ console.log("redData" , requestData);
     if (product?.name && product?.price && !isEventPushed) {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
-        event: 'decoration_checkout_page',
+        event: 'photography_checkout_page',
         pageUrl: window.location.href,
         productName: product.name,
         productPrice: product.price, 
@@ -364,7 +369,7 @@ console.log("redData" , requestData);
                 <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2>
 
                 <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                  The decorator requires approximately 40-90 minutes to fulfill the service.
+                Photographer will be available for 4 hours after arrival.
                 </div>
 
                 <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between   align-items-lg-center justify-content-lg-between'>
@@ -372,9 +377,9 @@ console.log("redData" , requestData);
                   <CustomTimePicker handleTimeSlotChange={handleTimeSlotChange} generateTimeSlots={generateTimeSlots} selectedTimeSlot={selectedTimeSlot} combinedDateTimeError={combinedDateTimeError} selectedTimeSlotError={selectedTimeSlotError} />
                 </div>
                 {combinedDateTimeError && <p className="text-danger" style={{ fontSize: '12px', marginBottom: "0px" }}>The selected date and time must be at least 24 hours from now.</p>}
-                <div className='checkoutInputType border-1 rounded-4  ' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
+                <div className='checkoutInputType  rounded-4  ' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
                   <h4 style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marginBottom: "4px" }}>Share your comments (if any)</h4>
-                  <textarea className=' rounded border border-1 p-1 bg-white text-black'
+                  <textarea className=' rounded border  p-1 bg-white text-black'
                     value={comment}
                     onChange={handleComment}
                     rows={3}
@@ -386,7 +391,7 @@ console.log("redData" , requestData);
                     <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: "600" }}>Address:</label>
                     <textarea
                       type="text"
-                      className='rounded border border-1 p-1 bg-white text-black'
+                      className='rounded border  p-1 bg-white text-black'
                       value={address}
                       onChange={handleAddressChange}
                       rows={3}
@@ -397,7 +402,7 @@ console.log("redData" , requestData);
                   <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                     <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>Pin Code:</label>
                     <input
-                      type="text" className=' rounded border border-1 p-1 bg-white text-black'
+                      type="text" className=' rounded border  p-1 bg-white text-black'
                       value={pinCode}
                       onChange={handlePinCodeChange}
                     />
@@ -406,7 +411,7 @@ console.log("redData" , requestData);
                   </div>
                   <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                     <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>City:</label>
-                    <select value={city} className=' rounded border border-1 p-1 bg-white text-black' onChange={handleCityChange}>
+                    <select value={city} className=' rounded border  p-1 bg-white text-black' onChange={handleCityChange}>
                       <option value="">Select City</option>
                       <option value="Bangalore">Bangalore</option>
                       <option value="Delhi">Delhi NCR</option>
@@ -424,19 +429,10 @@ console.log("redData" , requestData);
                 <div className='rightsecdecinner decoration'>
                   <h3 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 11px 0", lineHeight: "35px", width: "100%" }}>Order Summary</h3>
                   <div className='d-flex flex-column flex-lg-row'>
-                    <div>
-                      {/* <Image className='checkoutRightImg' src={`https://horaservices.com/api/uploads/${product?.featured_image}`} alt="image" style={{ width: "100%", height: "auto" }} width={300} height={300} /> */}
-                    </div>
+                  
                     <div className='prod-detailsp'>
 
-                      <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", margin: "10px 0 20px 0" }}>
-                        <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 700 }}>Product Name:</label>
-                        <p style={{ margin: 0, windth: "100%" }}>{product?.name}</p>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", margin: "0" }}>
-                        <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 700 }}>Product Price:</label>
-                        <p style={{ margin: 0, windth: "100%" }}>{product?.price}</p>
-                      </div>
+                    
                       <div className='add-on-prices'>
 
                         <div>
@@ -475,7 +471,7 @@ console.log("redData" , requestData);
                 <div >
                   <div className='d-flex flex-wrap justify-content-center align-items-center need-more-info-sec'>
                     <h5 className='mt-2'>Need more info?</h5>
-                    <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "3px 3px" }} className='rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
+                    <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "0px 12px" }} className='rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
                   </div>
                   <div className='px-1 py-3 border rounded my-2 cancellatiop-policy' style={{
                     background: "rgb(157, 74,147, 28%)"
@@ -496,7 +492,7 @@ console.log("redData" , requestData);
                 {/* <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2> */}
 
                 <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center decoratore-note' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                  The decorator requires approximately 40-90 minutes to fulfill the service.
+                Photographer will be available for 4 hours after arrival.
                 </div>
 
                 <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between  align-items-lg-center justify-content-lg-between'>
@@ -509,7 +505,7 @@ console.log("redData" , requestData);
                   <div className='rightcheckoutsec'>
                     <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "5px 0 5px 0" }}>
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 700 }}>Product Amount:</label>
-                      <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: 700 }}>₹  {product?.price}</p>
+                      <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹  {product?.price}</p>
                     </div>
 
                     <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 10px 0" }}>
@@ -535,7 +531,7 @@ console.log("redData" , requestData);
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: "600" }}>Address:</label>
                       <textarea
                         type="text"
-                        className=' rounded border border-1 p-1 bg-white text-black'
+                        className=' rounded border  p-1 bg-white text-black'
                         value={address}
                         onChange={handleAddressChange}
                         rows={3}
@@ -546,7 +542,7 @@ console.log("redData" , requestData);
                     <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>Pin Code:</label>
                       <input
-                        type="text" className=' rounded border border-1 p-1 bg-white text-black'
+                        type="text" className=' rounded border  p-1 bg-white text-black'
                         value={pinCode}
                         onChange={handlePinCodeChange}
                       />
@@ -555,7 +551,7 @@ console.log("redData" , requestData);
                     </div>
                     <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>City:</label>
-                      <select value={city} className=' rounded border border-1 p-1 bg-white text-black' onChange={handleCityChange}>
+                      <select value={city} className=' rounded border  p-1 bg-white text-black' onChange={handleCityChange}>
                         <option value="">Select City</option>
                         <option value="Bangalore">Bangalore</option>
                         <option value="Delhi">Delhi NCR</option>
@@ -565,21 +561,11 @@ console.log("redData" , requestData);
                       </select>
                       {cityError && <p className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}>This field is required!</p>}
                     </div>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", margin: "20px 0 0" }}>
-                      <div style={{ width: "50%" }}>
-                        <Image className='checkoutRightImg' src={`https://horaservices.com/api/uploads/${product?.featured_image}`} alt='decoration-image' style={{ width: "100%", height: "auto" }} width={300} height={300} />
-                      </div>
-                      <div style={{ width: "50%", paddingLeft: "10px" }}>
-                        <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", margin: "20px 0 20px 0" }}>
-                          <p style={{ margin: 0, fontSize: "12px", fontWeight: "600", color: "#222" }}>{product?.name}</p>
-                          <p style={{ margin: 0, fontSize: "12px", fontWeight: "600", color: "#222" }}>₹  {product?.price}</p>
-                        </div>
-                      </div>
-                    </div>
+                 
 
-                    <div className='checkoutInputType border-1 rounded-4  my-3' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
+                    <div className='checkoutInputType  rounded-4  my-3' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
                       <h4 style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marginBottom: "4px" }}>Share your comments (if any)</h4>
-                      <textarea className='rounded border border-1 p-1 bg-white text-black decor-commemnts'
+                      <textarea className='rounded border  p-1 bg-white text-black decor-commemnts'
                         value={comment}
                         onChange={handleComment}
                         rows={3}
@@ -591,7 +577,7 @@ console.log("redData" , requestData);
 
                 <div className='d-flex justify-content-center align-items-center mt-3 mb-0'>
                   <h5 className='fs-6 mt-2'>Need more info?</h5>
-                  <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "3px 3px", fontSize: "13px" }} className=' rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
+                  <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "0px 12px", fontSize: "13px" }} className=' rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
                 </div>
 
                 <div className='px-1 py-3 border rounded my-2 cancellatiop-policy' style={{
@@ -635,7 +621,7 @@ export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicke
   };
 
   return (
-    <div className={`d-flex flex-column border border-1 rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
+    <div className={`d-flex flex-column border  rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
       <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Booking Date</p>
       <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className='border-none p-0'>
         <Dropdown.Toggle
@@ -664,7 +650,7 @@ export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicke
 
 export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
   return (
-    <div className={`timepkerSec d-flex flex-column border border-1 ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
+    <div className={`timepkerSec d-flex flex-column border  ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
       <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
       <div>
         <Form.Control
@@ -674,7 +660,7 @@ export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, gener
           style={{ fontSize: "14px", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
           className="timeslot"
         >
-          <option value="">Executor Arrival Time</option>
+          <option value="">Arrival Time</option>
           {generateTimeSlots().map((timeSlot, index) => (
             <option key={index} value={timeSlot}>
               {timeSlot}

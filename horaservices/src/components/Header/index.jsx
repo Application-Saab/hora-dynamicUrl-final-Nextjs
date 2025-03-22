@@ -97,6 +97,11 @@ const Categories = ({ isDropdownOpen, toggleDropdown }) => (
                       </Link>
                     </li>
                     <li>
+                      <Link href="/photography-page" style={styles.subMenuLink}>
+                        Photography
+                      </Link>
+                    </li>
+                    <li>
                       <Link href="/book-chef-cook-for-party" style={styles.subMenuLink}>
                         Chef for Party
                       </Link>
@@ -261,7 +266,7 @@ useEffect(() => {
         </div>
         <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
           <div className="mobile-container" style={{ width:"100%"}}>
-            {isHomePage  ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
+            {isHomePage   ||  routerPathname === "/photo-gallery"  ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
     || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
     || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
     || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"
@@ -505,6 +510,9 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
       </Link>
       <Link href="/balloon-decoration" style={style.drawerLink} onClick={() => { mobileMenuClicked('Decoration'); closeDrawer(); }}>
         Decoration
+      </Link>
+      <Link href="/photography-page" style={style.drawerLink} onClick={() => { mobileMenuClicked('photography'); closeDrawer(); }}>
+      Photography
       </Link>
       <Link href="/book-chef-cook-for-party" style={style.drawerLink} onClick={() => { mobileMenuClicked('Chef For Party'); closeDrawer(); }}>
         Chef for Party

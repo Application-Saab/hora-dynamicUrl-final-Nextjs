@@ -42,6 +42,8 @@ const Login = () => {
     const selectedDishQuantities = router.query.selectedDishQuantities || null;
     const selectedOption = router.query.selectedOption || null;
     const selectedDishesFoodDelivery = router.query.selectedDishesFoodDelivery || null;
+    const folderName = router.query.folderName || null;
+    const customerId = router.query.customerId || null;
     const [validMobileNumber, setValidMobileNumber] = useState(false); // Add state for valid mobile number
     const otpRefs = useRef([React.createRef(), React.createRef(), React.createRef(), React.createRef()]);
     const { time, isTimeUp, resetTimer } = useTimer(25);
@@ -241,7 +243,12 @@ const sendWelcomeMessage = async (mobileNumber) => {
                                 query: { subCategory, product, orderType }
                             });
                         } 
-
+                        else if (previousPage.startsWith('/photo-gallery')) {
+                            router.push({
+                                pathname: '/photo-gallery',
+                                query: { folderName, customerId }
+                            });
+                        } 
                         else {
                             router.push('/');
                         }

@@ -489,6 +489,7 @@ const FoodDeliveryCheckout = () => {
                 "balance_amount": balanceAmount,
                 "order_taken_by": "Booked Online",
                 "order_type": true,
+                "order_pincode": pinCode,
                 "items": Object.keys(selectedDishesFoodDelivery),
                 "status": 0
             }

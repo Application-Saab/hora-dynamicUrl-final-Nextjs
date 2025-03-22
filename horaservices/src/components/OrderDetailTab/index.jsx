@@ -273,7 +273,7 @@ const OrderDetailTab = ({
           </div>
         </>
       ) : orderType === 1 ? (
-        <div className="decoration-container">
+        <div className="decoration-container orderdetails">
           {decorationItems?.map((product, index) => {
             return (
               <div className="decDetails"
