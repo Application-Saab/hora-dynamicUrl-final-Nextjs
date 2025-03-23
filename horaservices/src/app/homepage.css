@@ -5,6 +5,9 @@
   .home-slider-inner .slick-track{
     gap:0;
   }
+  .slide-container {
+    cursor: pointer;
+  }
   .responsive-image {
     height: auto; /* This ensures the image height adjusts automatically */
   }

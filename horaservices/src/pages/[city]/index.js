@@ -398,11 +398,9 @@ export default function Home() {
 
 
 
-  const openSliderLink = (link, city) => {
-    if (link) {
-      window.location.href = `/${city}/${link}`; // Redirects to the provided link
-      //window.location.href = link; // Redirects to the provided link
-    }
+  const openSliderLink = (city) => {
+      window.location.href = `/${city}/balloon-decoration`; // Redirects to the provided link
+
   };
 
   const formatLocalityName = (name) => {
@@ -450,7 +448,7 @@ export default function Home() {
            <div className="party-services homeslider">
             <h1 className="party-title">All party services on one platform</h1>
        <div className="home-slider-inner">
-       <div className="slide-container" onClick={() => openSliderLink()}>
+       <div className="slide-container" onClick={() => openSliderLink(city)}>
                  <Image src={decorationbanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
                   width={1200} 
                   height={400} 
