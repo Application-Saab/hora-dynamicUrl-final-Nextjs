@@ -66,8 +66,8 @@ const Decoration = () => {
     window.dataLayer.push({
       event: 'youtube_chat_with_us_button',
     });
-    window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
-   }
+    window.open('https://wa.me/917338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
+  }
 
     const handleViewMore = (category) => {
         const categoryItem = decCat.find(cat => cat.subCategory === category);

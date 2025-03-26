@@ -104,12 +104,12 @@ const WhatsAppIcon = ({ router }) => {
         case '/photography-page':
           eventName = 'photography_page_whatsappclick';
           productNameEvent = 'photography_page_whatsappclick';
-          window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
+          window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
           break;
         case '/photography-checkout':
             eventName = 'photography_checkout_whatsappclick';
             productNameEvent = 'photography_checkout_whatsappclick';
-            window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
+            window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
             break; 
         case '/balloon-decoration-youtube':
           console.log('inside youtube page');

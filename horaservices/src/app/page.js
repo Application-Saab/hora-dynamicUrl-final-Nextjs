@@ -305,8 +305,8 @@ const CustomerReview = [
 ];
 
 const openSliderLink = () => {
-  window.open("/balloon-decoration");
-};
+  window.location.href = "/balloon-decoration";
+}
 
 
 

@@ -77,7 +77,7 @@ function DecorationCatDetails() {
 
   const handleWhatsApp = () => {
     const phoneNumber = '7338584828';
-    const message = encodeURIComponent('I want to customize a decoration');
+    const message = encodeURIComponent('Hi, Found your decoration on Youtube. I want to customize a decoration');
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: 'youtube_product_detail_decorwhatsapp_click',

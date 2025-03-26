@@ -323,8 +323,8 @@ console.log("redData" , requestData);
      window.dataLayer.push({
          event: "photography_checkout_contact_us_click",
      });
-    window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20Photography%20services', '_blank');
-  };
+     window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
+    };
 
 
 

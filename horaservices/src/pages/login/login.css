@@ -1,0 +1,98 @@
+.otp-login {
+    font-size: 20px;
+    color: #9252AA;
+    padding: 27px;
+    font-family: Poppins, sans-serif;
+    margin: 10% auto;
+    width: 50%;   
+}
+.otp-error {
+    font-size: 18px;
+    font-weight: 600;
+}
+.otp-login h2 {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 18px;
+}
+.enterotp-input {
+    width: 100% !important;
+}
+.error-message {
+    color: red;
+    font-size: 12px;
+    padding: 3px 0 6px;
+    text-align: center;
+}
+.resend-timer{
+    color: rgb(138, 138, 138);
+    font-weight: 300;
+    font-size: 15px;
+}
+.resend-otp {
+    color: #9252AA;
+    display: flex;
+    justify-content: flex-end;
+    margin: 26px 0 0;
+    font-size: 15px;
+}
+button.loginbtn:disabled {
+    background-color: #ddd;
+    color: #9d4a93;
+    cursor: not-allowed;
+    border: none;
+  }
+.input-group input{
+    background-color: #d7d5d5a8;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    border: rgb(222, 226, 230);
+    padding: 9px 9px;
+    width: 91%;
+}
+.country-code {
+    background-color: #d7d5d5a8;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    border: rgb(222, 226, 230);
+    padding: 9px 16px 9px 12px;
+    margin-right: 10px;
+    width: auto;
+}
+.loginbtn {
+    border: 1px solid #9d4a93;
+    background-color: #9d4a93;
+    color: #fff;
+    font-size: 14px;
+    padding: 7px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 11px 0;
+}
+.input-group.login {
+    flex-wrap: nowrap;
+}
+@media (max-width: 600px) {
+.otp-login {
+    width: 100%;
+    margin: 20% auto;
+}
+}
+
+@media (max-width: 481px) {
+.otp-error {
+font-size: 14px;
+}
+}
+@media (max-width: 375px) {
+.otp-error {
+        font-size: 11px;
+    }
+}
+
