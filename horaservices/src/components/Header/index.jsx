@@ -15,7 +15,8 @@ import { usePathname, useRouter } from "next/navigation";
 import logo from '../../assets/new_logo_light.png';
 import logolight from '../../assets/hora-light-innerpage.png'
 import loginIcon from '../../assets/profile_picture.png';
-  
+import OtploginPopup from '../../components/OtpLoginPopup';
+
 function Header() {
   useScrollToTop(); // Use the custo hook
 
@@ -28,6 +29,7 @@ function Header() {
   const [pageTitle, setPageTitle] = useState("");
   const [isMounted, setIsMounted] = useState(false); // State to check if component has mounted
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const isHomePage = routerPathname === '/';
   const isDelhiPage = routerPathname === '/delhi';
 
@@ -36,6 +38,15 @@ function Header() {
   };
   const handleBack = () => {
     router.back(); // Go back to the previous page
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    console.log('Closing modal...');
+    setIsModalOpen(false); // This will close the modal by setting the state to false
   };
 
   const toggleDropdown = () => {
@@ -248,10 +259,10 @@ useEffect(() => {
               <li style={styles.desktopMenuli1}>
               {isMounted && (!isLoggedIn ? (
                 <>
-                  <Link href="/login" style={styles.linkicon}>
-                  <Image src={loginIcon} alt={'login icon'} width={20} height={20}/>
+                 <div onClick={openModal} style={{ cursor:'pointer' }}>
+                 <Image  src={loginIcon} alt={'login icon'} width={20} height={20}/>
                     <span style={{ marginLeft: "7px" }}>Login</span>
-                  </Link>
+                  </div>
                 </>
                
                 ) : (
@@ -446,9 +457,15 @@ useEffect(() => {
     </div>
     {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
     {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
+
   </header>
       )
     }
+     {
+  isModalOpen ?
+  <OtploginPopup closeModel={closeModal} />
+  : null
+}
     </>
   );
 }
