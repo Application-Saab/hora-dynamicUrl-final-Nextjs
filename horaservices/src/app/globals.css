@@ -1157,7 +1157,7 @@ button.view-details.order-details {
 
   .pri_details {
     margin: 5px 0 0;
-    flex-direction: column;
+    /* flex-direction: column; */
   }
   .pro_price {
     justify-content: flex-start !important;

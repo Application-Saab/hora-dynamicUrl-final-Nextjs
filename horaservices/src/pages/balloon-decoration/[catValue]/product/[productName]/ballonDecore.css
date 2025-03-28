@@ -1,0 +1,227 @@
+/* General Styles */
+.App {
+    background-color: #EDEDED;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .decDetails {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 10px;
+    position: relative;
+  }
+  
+  /* Left Section */
+  .decDetailsLeft {
+    width: 50%;
+    text-align: center;
+  }
+  
+  .decDetailsImage {
+    width: 80%;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .hora-watermark-image {
+    width: 70px;
+    height: 80px;
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    border-radius: 50%;
+    padding: 10px;
+  }
+  
+  .inclusion-details {
+    border: 1px solid rgb(220, 53, 69);
+    background-color: rgb(248, 215, 218);
+    margin: 13px auto 7px;
+    padding: 10px 10px 11px 16px;
+    border-radius: 10px;
+    width: 80%;
+    text-align: left;
+  }
+  
+  .inclusion-details p {
+    margin: 4px 0 0 0;
+    padding: 0;
+    font-weight: 700;
+    font-size: 12px;
+    color: #444;
+  }
+  
+  /* Right Section */
+  .decDetailsRight {
+    width: 50%;
+    padding-left: 20px;
+    padding-right: 50px;
+  }
+  
+  .product-card {
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+    padding: 10px;
+    margin-bottom: 12px;
+    background-color: #fff;
+  }
+  
+  .product-title {
+    font-size: 21px;
+    font-weight: bold;
+    color: #222;
+  }
+  
+  .pro-details-price p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #9252AA;
+  }
+  
+  .discount-price {
+    color: #444;
+    font-weight: 700;
+    font-size: 18px;
+    text-decoration: line-through;
+    margin: 10px 0 7px;
+  }
+  
+  .decorationdiscount-details {
+    font-size: 16px;
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* Button Styles */
+  .dec-continueButton {
+    border: 2px solid rgb(157, 74, 147);
+    background-color: rgb(157, 74, 147);
+    color: #fff;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 23px auto 14px;
+    width: 93%;
+    cursor: pointer;
+  }
+  
+  /* Add-on Section */
+  .addon-sec {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .addon-sec h6 {
+    cursor: pointer;
+  }
+  
+  /* CTA Section */
+  .card-container-cta {
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+    margin-top: 20px;
+    border-radius: 10px;
+  }
+  
+  .header-section-cta {
+    display: flex;
+    align-items: center;
+  }
+  
+  .icon-wrapper-cta {
+    margin-right: 10px;
+  }
+  
+  .header-text-cta {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .highlight-cta {
+    color: #9252AA;
+  }
+  
+  .button-group-cta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .button-cta {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .call-cta {
+    background-color: #9252AA;
+    color: white;
+  }
+  
+  .whatsapp-cta {
+    background-color: #25D366;
+    color: white;
+  }
+  
+  /* Modal Styles */
+  .modal-overlay11 {
+    max-height: 500px;
+    overflow-y: scroll;
+  }
+  
+  .modal-content11 {
+    margin-top: 10px;
+  }
+  
+  .modal-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .modal-card {
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .price-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .quantity-button {
+    background-color: #9252AA;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  .add-button {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
