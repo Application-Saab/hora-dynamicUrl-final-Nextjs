@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
-
+import OtpLoginPopup from "@/components/OtpLoginPopup";
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -53,7 +53,14 @@ const ChefCheckout = () => {
         selectedCount,
         selectedDishes
     } = router.query;
-
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+ 
+    useEffect(() => {
+      if (!isLoggedIn) {
+        setIsModalOpen(true); // Open modal when user is not logged in
+      }
+    }, [isLoggedIn]); // Run this when `isLoggedIn` changes
 
     if (selectedDishDictionary) {
         try {
@@ -383,6 +390,7 @@ const ChefCheckout = () => {
 
     return (
         <div className="App">
+            {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
             {loading && <Loader />}
             {isClient && window.innerWidth > 800 ?
                 <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>

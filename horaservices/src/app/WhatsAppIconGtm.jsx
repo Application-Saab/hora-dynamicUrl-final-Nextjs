@@ -101,49 +101,81 @@ const WhatsAppIcon = ({ router }) => {
         productNameEvent = 'food&livecateringselectdatepage_whatsapp_click';
         window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
         break;
-        case '/photography-page':
-          eventName = 'photography_page_whatsappclick';
-          productNameEvent = 'photography_page_whatsappclick';
-          window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
-          break;
-        case '/photography-checkout':
-            eventName = 'photography_checkout_whatsappclick';
-            productNameEvent = 'photography_checkout_whatsappclick';
-            window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
-            break; 
-        case '/balloon-decoration-youtube':
-          console.log('inside youtube page');
-          eventName = 'balloon_decoration_youtube_whatsapp_click';
-          productNameEvent = 'balloon_decoration_youtube_whatsapp_click';
-          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
-          break;
-        case '/balloon-decoration-youtube/[catValue]':
-          eventName = 'balloon_decoration_youtube_product_list_whatsapp_click';
-          productNameEvent = 'balloon_decoration_youtube_product_list_whatsapp_click';
-          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
-          break;
-          case '/balloon-decoration-youtube/[catValue]/product/[productName]':
-            eventName = 'youtube_product_detail_decorwhatsapp_click';
-            productNameEvent = 'youtube_product_detail_decorwhatsapp_click';
-            window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
-            break;
-            case '/[city]/balloon-decoration-youtube':
-              eventName = 'city_balloon_decoration_youtube_whatsapp_click';
-              productNameEvent = 'city_balloon_decoration_youtube_whatsapp_click';
-              window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
-              break;
-            case '/[city]/balloon-decoration-youtube/[catValue]':
-              eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
-              productNameEvent = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
-              window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
-              break;
-            case '/[city]/balloon-decoration-youtube/[catValue]/product/[productName]':
-              eventName = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
-              productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
-              window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
-              break;
-        default:
-          window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
+      case '/photography-page':
+        eventName = 'photography_page_whatsappclick';
+        productNameEvent = 'photography_page_whatsappclick';
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
+        break;
+      case '/photography-checkout':
+        eventName = 'photography_checkout_whatsappclick';
+        productNameEvent = 'photography_checkout_whatsappclick';
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
+        break;
+      case '/balloon-decoration-youtube':
+        console.log('inside youtube page');
+        eventName = 'balloon_decoration_youtube_whatsapp_click';
+        productNameEvent = 'balloon_decoration_youtube_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+        break;
+      case '/balloon-decoration-youtube/[catValue]':
+        eventName = 'balloon_decoration_youtube_product_list_whatsapp_click';
+        productNameEvent = 'balloon_decoration_youtube_product_list_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+        break;
+      case '/balloon-decoration-youtube/[catValue]/product/[productName]':
+        eventName = 'youtube_product_detail_decorwhatsapp_click';
+        productNameEvent = 'youtube_product_detail_decorwhatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+        break;
+      case '/[city]/balloon-decoration-youtube':
+        eventName = 'city_balloon_decoration_youtube_whatsapp_click';
+        productNameEvent = 'city_balloon_decoration_youtube_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+        break;
+      case '/[city]/balloon-decoration-youtube/[catValue]':
+        eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+        productNameEvent = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+        break;
+      case '/[city]/balloon-decoration-youtube/[catValue]/product/[productName]':
+        eventName = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+        productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Youtube.%20Need%20details.', '_blank');
+        break;
+      case '/balloon-decoration-google-ads':
+        console.log('inside youtube page');
+        eventName = 'balloon_decoration_youtube_whatsapp_click';
+        productNameEvent = 'balloon_decoration_youtube_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.', '_blank');
+        break;
+      case '/balloon-decoration-google-ads/[catValue]':
+        eventName = 'balloon_decoration_youtube_product_list_whatsapp_click';
+        productNameEvent = 'balloon_decoration_youtube_product_list_whatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.', '_blank');
+        break;
+      case '/balloon-decoration-google-ads/[catValue]/product/[productName]':
+        eventName = 'youtube_product_detail_decorwhatsapp_click';
+        productNameEvent = 'youtube_product_detail_decorwhatsapp_click';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.', '_blank');
+        break;
+      case '/[city]/balloon-decoration-google-ads':
+        eventName = 'city_balloon_decoration_youtube_whatsapp_click';
+        productNameEvent = 'city_balloon_decoration_youtube_whatsapp_click';
+        window.open(`https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.`, '_blank');
+        break;
+      case '/[city]/balloon-decoration-google-ads/[catValue]':
+        eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+        productNameEvent = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+        window.open(`https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.`, '_blank');
+        break;
+      case '/[city]/balloon-decoration-google-ads/[catValue]/product/[productName]':
+        eventName = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+        productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+        window.open(`https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.`, '_blank');
+        break;
+
+      default:
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
         return;
     }
 
@@ -163,14 +195,14 @@ const WhatsAppIcon = ({ router }) => {
 
   return (
     <>
-    {shouldShowWhatsAppIcon() && (
-      <Image
+      {shouldShowWhatsAppIcon() && (
+        <Image
           className='whatappicon gtmPage'
           src={whatsppicon}
           alt="WhatsApp Icon"
           onClick={handleWhatsAppClick} // Call handleWhatsAppClick on click
         />
-    )}
+      )}
     </>
   );
 };

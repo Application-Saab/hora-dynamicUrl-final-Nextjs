@@ -41,13 +41,14 @@ function Header() {
   };
 
   const openModal = () => {
+    console.log('Opening modal...');
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    console.log('Closing modal...');
-    setIsModalOpen(false); // This will close the modal by setting the state to false
-  };
+  // const closeModal = () => {
+  //   console.log('Closing modal...');
+  //   setIsModalOpen(false); // This will close the modal by setting the state to false
+  // };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -409,10 +410,14 @@ useEffect(() => {
           <ul style={styles.desktopMenu}>
             <li style={styles.desktopMenuli1}>
             {isMounted && (!isLoggedIn ? (
-                <Link href="/login" style={styles.innerpagelinkicon}>
+                // <Link href="/login" style={styles.innerpagelinkicon}>
+                //   <FontAwesomeIcon icon={faUser} style={styles.icon} />
+                //   <span style={{ marginLeft: "3px" }}>Login</span>
+                // </Link>
+                 <div onClick={openModal} style={{ cursor:'pointer' }}>
                   <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                  <span style={{ marginLeft: "3px" }}>Login</span>
-                </Link>
+                    <span style={{ marginLeft: "7px" }}>Login</span>
+                  </div>
               ) : (
                 <a style={styles.linkiconLogout} onClick={handleLogout}>
                   <FontAwesomeIcon icon={faUser} style={styles.icon} />
@@ -463,14 +468,14 @@ useEffect(() => {
     }
      {
   isModalOpen ?
-  <OtploginPopup closeModel={closeModal} />
+  <OtploginPopup setIsModalOpen={setIsModalOpen} />
   : null
 }
     </>
   );
 }
 
-const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
+const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
   const style = {
     drawer: {
       width: "60%",
@@ -547,9 +552,19 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
         Contact Us
       </Link>
       {localStorage.getItem("isLoggedIn") !== "true" ? (
-        <Link href="/login" style={style.drawerLink} onClick={() => { mobileMenuClicked('Login'); closeDrawer(); }} >
-          Login
-        </Link>
+      <Link 
+      href="/login" 
+      style={style.drawerLink} 
+      onClick={(e) => { 
+        e.preventDefault(); // Prevent default navigation if opening modal
+        mobileMenuClicked('Login'); 
+        closeDrawer(); 
+        openModal(); 
+      }}
+    >
+      <span style={{ marginLeft: "7px", cursor: "pointer" }}>Login</span>
+    </Link>
+    
       ) : (
         <>
           <Link href="/" style={style.drawerLink} onClick={() => {

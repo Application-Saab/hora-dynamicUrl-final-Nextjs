@@ -7,7 +7,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import logo from '../assets/new_logo_light.png';
 import Image from "next/image";
 
-const OtpLogin = ({closeModel}) => {
+const OtpLogin = ({setIsModalOpen}) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -88,6 +88,7 @@ const OtpLogin = ({closeModel}) => {
         alert('OTP verified successfully!'); // You can redirect the user or show another message here
         setOtp('');
         setMobileNumber(''); // Corrected to setMobileNumber('')
+        setIsModalOpen(false); // Close the modal after successful login
       } else {
         setOtpError('Invalid OTP. Please try again.');
         setOtp(''); // Clear OTP field if invalid
@@ -106,7 +107,8 @@ const OtpLogin = ({closeModel}) => {
   };
 
   const hadelClose = () => {
-    closeModel();
+    // closeModel();
+    setIsModalOpen(false);
   };
 
   return (
@@ -115,14 +117,14 @@ const OtpLogin = ({closeModel}) => {
          <div className="popup-header">
           {/* <Image src={logo} alt="Logo"  style={{ width:"60px" , height:"auto"}}/> */}
           <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
-          <h2>Sign Up / Login to HORA</h2>
+          <h2>Login to Hora !</h2>
           </div>
     <div className="otp-login">
 
       {/* Conditionally render mobile number input only if OTP is not sent */}
       {!isOtpSent && (
         <div className="input-group login">
-          <label>Enter Your Mobile Number</label>
+          {/* <label>Enter Your Mobile Number</label> */}
           <div style={{ width:"100%" , display:"flex"}}>
           <div className="country-code">+91</div>
           <input

@@ -42,7 +42,14 @@ const Checkout = () => {
   if (product) {
     product = JSON.parse(product)
   }
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+ useEffect(() => {
+   if (!isLoggedIn) {
+     setIsModalOpen(true); // Open modal when user is not logged in
+   }
+ }, [isLoggedIn]); // Run this when `isLoggedIn` changes
 
   useEffect(() => {
     setIsClient(true)
@@ -360,6 +367,7 @@ console.log("redData" , requestData);
 
   return (
     <div className="App">
+        {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
        {loading && <Loader />}
       {
         isClient && window.innerWidth > 800 ?

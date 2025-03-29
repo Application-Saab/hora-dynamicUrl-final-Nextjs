@@ -59,12 +59,12 @@ function PhotograpgyProdDetails() {
       catValue
     };
 
-    const destination = localStorage.getItem("isLoggedIn") === "true"
-      ? '/photography-checkout'
-      : '/login';
+    // const destination = localStorage.getItem("isLoggedIn") === "true"
+    //   ? '/photography-checkout'
+    //   : '/login';
 
     router.push({
-      pathname: destination,
+      pathname: '/photography-checkout',
       query: stateData
     });
   };
