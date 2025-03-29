@@ -444,20 +444,20 @@ console.log(dishCount)
       selectedOption: selectedOption,
     };
 
-    if (localStorage.getItem("isLoggedIn") !== "true") {
-      router.push({
-        pathname: "/login",
-        query: {
-          from: window.location.pathname,
-          peopleCount: peopleCount,
-          selectedDeliveryOption: selectedOption,
-          selectedDishesFoodDelivery: JSON.stringify(data),
-          totalOrderAmount: totalOrderAmount,
-          selectedDishQuantities: JSON.stringify(selectedDishQuantities),
-          selectedOption: selectedOption,
-        }
-        });
-    } else {
+    // if (localStorage.getItem("isLoggedIn") !== "true") {
+    //   router.push({
+    //     pathname: "/login",
+    //     query: {
+    //       from: window.location.pathname,
+    //       peopleCount: peopleCount,
+    //       selectedDeliveryOption: selectedOption,
+    //       selectedDishesFoodDelivery: JSON.stringify(data),
+    //       totalOrderAmount: totalOrderAmount,
+    //       selectedDishQuantities: JSON.stringify(selectedDishQuantities),
+    //       selectedOption: selectedOption,
+    //     }
+    //     });
+    // } else {
       router.push({
         pathname: "/party-food-delivery-live-catering-buffet-checkout",
         query: {
@@ -470,7 +470,7 @@ console.log(dishCount)
           selectedOption: selectedOption,
         }
       });
-    }
+    // }
   };
 
   useEffect(() => {

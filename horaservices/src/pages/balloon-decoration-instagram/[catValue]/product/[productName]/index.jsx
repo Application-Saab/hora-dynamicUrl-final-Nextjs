@@ -77,10 +77,10 @@ function DecorationCatDetails() {
 
   const handleWhatsApp = () => {
     const phoneNumber = '7338584828';
-    const message = encodeURIComponent('Hi, Found your decoration on Youtube. I want to customize a decoration');
+    const message = encodeURIComponent('Hi, Found your decoration on google-ads. I want to customize a decoration');
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'youtube_product_detail_decorwhatsapp_click',
+      event: 'google-ads_product_detail_decorwhatsapp_click',
     });  
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };
@@ -300,7 +300,7 @@ function DecorationCatDetails() {
       ),
     },
   ];
- 
+
 
   const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
     const stateData = {
@@ -314,21 +314,21 @@ function DecorationCatDetails() {
       totalAmount: totalAmount,
     };
 
-    // if (localStorage.getItem("isLoggedIn") !== "true") {
-    //   router.push({
-    //     pathname: '/login',
-    //     query: {
-    //       from: window.location.pathname,
-    //       subCategory,
-    //       product: JSON.stringify(product),
-    //       orderType,
-    //       catValue,
-    //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-    //       itemQuantities: JSON.stringify(itemQuantities),
-    //       totalAmount: totalAmount,
-    //     }
-    //   });
-    // } else {
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      router.push({
+        pathname: '/login',
+        query: {
+          from: window.location.pathname,
+          subCategory,
+          product: JSON.stringify(product),
+          orderType,
+          catValue,
+          selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+          itemQuantities: JSON.stringify(itemQuantities),
+          totalAmount: totalAmount,
+        }
+      });
+    } else {
       router.push({
         pathname: '/checkout',
         query: {
@@ -342,7 +342,7 @@ function DecorationCatDetails() {
           totalAmount: totalAmount,
         }
       });
-    //}
+    }
   };
 
   function addSpaces(subCategory) {

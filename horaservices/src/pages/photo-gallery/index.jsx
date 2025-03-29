@@ -6,42 +6,34 @@ import ThumbnailGallery from './ThumbnailGallery'; // Import the ThumbnailGaller
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import shareIcon from '../../assets/share-photo-icon.png'
-
+import OtpLoginPopup from '../../components/OtpLoginPopup';
 
 const PhotoGallery = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const folderName = urlParams.get('folderName');
   const customerId = urlParams.get('customerId');
-  const currentUrl = new URL(window.location.href); // Get full URL
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);  // State for login status
   const router = useRouter();
-  const fromPage = urlParams.get('from'); // Get the 'from' query param (last visited page)
 
-  // Check login status and redirect if not logged in
   useEffect(() => {
-    const loggedInStatus = localStorage.getItem("isLoggedIn");
-    if (loggedInStatus !== "true") {
-      router.push({
-        pathname: '/login',
-        query: {
-          from:window.location.pathname,
-          folderName: folderName || "", // Ensure folderName is defined
-          customerId: customerId || "",
-        }
-      });
-    } else {
-      setIsLoggedIn(loggedInStatus === "true");
+    // Check localStorage or a cookie for login status, or call an API
+    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+    setIsLoggedIn(loggedInStatus); // Update state based on login status
+    if (!loggedInStatus) {
+      setIsModalOpen(true); // Open modal if not logged in
     }
-  }, []);
+    setLoading(false); // Done with loading
+  }, []); // Run once when component mounts
 
-  // Handle the redirect after successful login
   useEffect(() => {
-    if (isLoggedIn && fromPage) {
-      router.push(fromPage); // Redirect to the stored page after login
+    // If logged in, close the modal
+    if (isLoggedIn) {
+      setIsModalOpen(false);
     }
-  }, [isLoggedIn, fromPage, router]);
+  }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
   const handleShareicon = async () => {
     const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)
@@ -64,12 +56,17 @@ const PhotoGallery = () => {
   };
 
   return (
-    <div className="photo-container" >
-      <div class="photo-galary-header">
-      <h2 className="title">Your Photos</h2>
-      <Image src= {shareIcon} alt="Info" style={{ height: 20 , width: 20, marginRight: 10 , cursor:'pointer' }} onClick={handleShareicon}/>
-     
+    <div className="photo-container">
+      <div className="photo-galary-header">
+        <h2 className="title">Your Photos</h2>
+        <Image
+          src={shareIcon}
+          alt="Info"
+          style={{ height: 20, width: 20, marginRight: 10, cursor: 'pointer' }}
+          onClick={handleShareicon}
+        />
       </div>
+
       {isLoggedIn ? (
         folderName && customerId ? (
           <ThumbnailGallery folderName={folderName} customerId={customerId} />
@@ -77,7 +74,7 @@ const PhotoGallery = () => {
           <p>Please provide the folder and customer ID in the URL.</p>
         )
       ) : (
-        <p>Loading or redirecting...</p>
+        isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
       )}
     </div>
   );

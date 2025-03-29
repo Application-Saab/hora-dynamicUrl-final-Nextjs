@@ -16,8 +16,10 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
+import OtpLoginPopup from '../../components/OtpLoginPopup';
 
 const FoodDeliveryCheckout = () => {
+
     //   const { selectedDishesFoodDelivery , selectedOption ,orderType, selectedDishDictionary, selectedDishPrice, totalOrderAmount , selectedDishQuantities , peopleCount} = useLocation().state || {}; // Accessing subCategory and itemName safely
     const [comment, setComment] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -41,6 +43,16 @@ const FoodDeliveryCheckout = () => {
     const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);  
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+          setIsModalOpen(true); // Open modal when user is not logged in
+        }
+      }, [isLoggedIn]); // Run this when `isLoggedIn` changes
+     
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -561,7 +573,8 @@ const FoodDeliveryCheckout = () => {
     }
 
     return (
-        <div className="App">
+        <div className="App"> 
+         {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
              {loading && <Loader />}
             {isClient && window.innerWidth > 800 ?
                 <div style={{ padding: "1% 2%", backgroundColor: "rgba(237, 237, 237, 0.79)" }}>

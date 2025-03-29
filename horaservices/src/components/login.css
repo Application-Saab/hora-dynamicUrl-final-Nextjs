@@ -123,6 +123,25 @@ button.loginbtn:disabled {
     align-items: center;
     flex-direction: column;
 }
+.success-message p {
+    color: #707070;
+    text-align: center;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 0 22px;
+}
+.success-message h1 {
+    margin-bottom: 10px;
+    color: #000;
+    text-align: center;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 500;
+    padding: 18px 51px 0px;
+    line-height: 26px;
+}
 @media (max-width: 800px) {
     .popup-content {
         max-width: 90%;

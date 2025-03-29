@@ -173,7 +173,37 @@ const WhatsAppIcon = ({ router }) => {
         productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
         window.open(`https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.`, '_blank');
         break;
-
+        case '/balloon-decoration-instagram':
+          console.log('inside youtube page');
+          eventName = 'balloon_decoration_youtube_whatsapp_click';
+          productNameEvent = 'balloon_decoration_youtube_whatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Need%20details.', '_blank');
+          break;
+        case '/balloon-decoration-instagram/[catValue]':
+          eventName = 'balloon_decoration_youtube_product_list_whatsapp_click';
+          productNameEvent = 'balloon_decoration_youtube_product_list_whatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Need%20details.', '_blank');
+          break;
+        case '/balloon-decoration-instagram/[catValue]/product/[productName]':
+          eventName = 'youtube_product_detail_decorwhatsapp_click';
+          productNameEvent = 'youtube_product_detail_decorwhatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Need%20details.', '_blank');
+          break;
+        case '/[city]/balloon-decoration-instagram':
+          eventName = 'city_balloon_decoration_youtube_whatsapp_click';
+          productNameEvent = 'city_balloon_decoration_youtube_whatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Need%20details.', '_blank');
+          break;
+        case '/[city]/balloon-decoration-instagram/[catValue]':
+          eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+          productNameEvent = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
+          window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Need%20details.', '_blank');
+          break;
+        case '/[city]/balloon-decoration-instagram/[catValue]/product/[productName]':
+          eventName = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+          productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
+          window.open(`https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.`, '_blank');
+          break;
       default:
         window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
         return;

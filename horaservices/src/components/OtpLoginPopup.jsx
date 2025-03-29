@@ -6,14 +6,21 @@ import { useTimer } from "../utils/useTimer";
 import { AiOutlineClose } from "react-icons/ai";
 import logo from '../assets/new_logo_light.png';
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import loginImage from '../assets/login.png';
+
 
 const OtpLogin = ({setIsModalOpen}) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [error, setError] = useState('');
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [otpError, setOtpError] = useState('');
-  const { time, isTimeUp, resetTimer } = useTimer(30); // Timer for resend OTP countdown (in seconds)
+  const { time, isTimeUp, resetTimer } = useTimer(30); 
+  const router = useRouter();
+  const routerPathname = usePathname();
+  const isHomePage = routerPathname === '/';
 
   // Handle mobile number input change
   const handleMobileNumberChange = (e) => {
@@ -95,10 +102,9 @@ const OtpLogin = ({setIsModalOpen}) => {
         setError('');
         setOtpError('');
         setIsOtpSent(false);
-        alert('OTP verified successfully!'); // You can redirect the user or show another message here
+        setIsUserLoggedIn(true);
         setOtp('');
         setMobileNumber(''); // Corrected to setMobileNumber('')
-        setIsModalOpen(false); // Close the modal after successful login
       } else {
         setOtpError('Invalid OTP. Please try again.');
         setOtp(''); // Clear OTP field if invalid
@@ -124,82 +130,100 @@ const OtpLogin = ({setIsModalOpen}) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-         <div className="popup-header">
-          {/* <Image src={logo} alt="Logo"  style={{ width:"60px" , height:"auto"}}/> */}
-          <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
-          <h2>Login to Hora !</h2>
-          </div>
-    <div className="otp-login">
-
-      {/* Conditionally render mobile number input only if OTP is not sent */}
-      {!isOtpSent && (
-        <div className="input-group login">
-          {/* <label>Enter Your Mobile Number</label> */}
-          <div style={{ width:"100%" , display:"flex"}}>
-          <div className="country-code">+91</div>
-          <input
-            type="text"
-            value={mobileNumber}
-            onChange={handleMobileNumberChange}
-            placeholder="Login 10 digit Mobile Number"
-          />
-          </div>
-        </div>
-      )}
-
-      {isOtpSent && (
-        <div className="input-group">
-          <input
-            type="text"
-            value={otp}
-            onChange={handleOtpChange}
-            placeholder="Enter OTP"
-            className="enterotp-input"
-          />
-        </div>
-      )}
-
-      <div className="buttons">
-        {!isOtpSent ? (
-          <button onClick={sendOtp} className="loginbtn">
-            GET OTP
-          </button>
+        {!isUserLoggedIn ? (
+          <>
+            <div className="popup-header">
+              {isHomePage ? (
+                <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
+              ) : (
+                ''
+              )}
+              <h2>Login to Hora!</h2> {/* Fixed missing closing quote */}
+            </div>
+            <div className="otp-login">
+              {/* Render the form if not logged in */}
+  
+              {!isOtpSent && (
+                <div className="input-group login">
+                  <div style={{ width: '100%', display: 'flex' }}>
+                    <div className="country-code">+91</div>
+                    <input
+                      type="text"
+                      value={mobileNumber}
+                      onChange={handleMobileNumberChange}
+                      placeholder="Login 10 digit Mobile Number"
+                    />
+                  </div>
+                </div>
+              )}
+  
+              {isOtpSent && (
+                <div className="input-group">
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={handleOtpChange}
+                    placeholder="Enter OTP"
+                    className="enterotp-input"
+                  />
+                </div>
+              )}
+  
+              <div className="buttons">
+                {!isOtpSent ? (
+                  <button onClick={sendOtp} className="loginbtn">
+                    GET OTP
+                  </button>
+                ) : (
+                  <button
+                    onClick={verifyOtp}
+                    className="loginbtn"
+                    disabled={otp.length !== 4} // Disable if OTP is not 4 digits
+                  >
+                    Verify OTP
+                  </button>
+                )}
+              </div>
+  
+              {otpError ? (
+                <div className="d-flex justify-content-between mt-2 otp-error">
+                  <p className="m-0 p-0 text-danger">* {otpError}</p>
+                  <p
+                    className="m-0 p-0"
+                    style={{ color: '#9252AA', cursor: 'pointer' }}
+                    onClick={resendOtp}
+                  >
+                    Resend Code
+                  </p>
+                </div>
+              ) : isOtpSent ? (
+                <div className="d-flex justify-content-center mt-4 resend-timer">
+                  <p className="m-0 p-0 text-center" style={{ color: '#8A8A8A' }}>
+                    Resend Code in {time} sec
+                  </p>
+                </div>
+              ) : null}
+  
+              {error && <p className="error-message">{error}</p>}
+            </div>
+          </>
         ) : (
-          <button
-            onClick={verifyOtp}
-            className="loginbtn"
-            disabled={otp.length !== 4} // Disable button if OTP length is not 4
-          >
-            Verify OTP
-          </button>
+          <div className="success-message">
+            <div className='popup-header'>  
+              <Image src={loginImage} />
+            <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
+              </div>
+            <h1>Logged In Successful</h1>
+            <p>Welcome Hora! You have been logged out successfully.</p>
+            <button onClick={() => setIsModalOpen(false)} className="loginbtn">
+              Close
+            </button>
+          </div>
         )}
       </div>
-
-      {otpError ? (
-        <div className="d-flex justify-content-between mt-2 otp-error">
-          <p className="m-0 p-0 text-danger">* {otpError}</p>
-          <p
-            className="m-0 p-0"
-            style={{ color: '#9252AA', cursor: 'pointer' }}
-            onClick={resendOtp}
-          >
-            Resend Code
-          </p>
-        </div>
-      ) : isOtpSent ? (
-        <div className="d-flex justify-content-center mt-4 resend-timer">
-          <p className="m-0 p-0 text-center" style={{ color: '#8A8A8A' }}>
-            Resend Code in {time} sec
-          </p>
-        </div>
-      ) : null}
-
-      {error && <p className="error-message">{error}</p>}
-    </div>
-    
-    </div>
     </div>
   );
+  
 };
 
 export default OtpLogin;
