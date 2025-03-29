@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
-
+import OtpLoginPopup from '../../components/OtpLoginPopup';
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -98,18 +98,6 @@ const ChefCheckout = () => {
         width: 30px;     // Smaller width for mobile view
       }
     `;
-
-    // const Image = styled.img`
-    //   width: 48px;       // Default size for mobile view
-    //   height: 48px;
-    //   flex-shrink: 0;
-    //   ${(props) => props.active && `border: 2px solid #000;`};
-
-    //   @media (max-width: 600px) {
-    //   width: 32px;     // Smaller width for mobile view
-    //   height: 32px;    // Maintain aspect ratio
-    // }
-    // `;
 
     const Label = styled.div`
       margin-top: 5px;
@@ -380,9 +368,17 @@ const ChefCheckout = () => {
         setIsClient(true);
     }, [])
 
+   const [isModalOpen, setIsModalOpen] = useState(false);  
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsModalOpen(true); // Open modal when user is not logged in
+    }
+  }, [isLoggedIn]); // Run this when `isLoggedIn` changes
     return (
         <div className="App">
+              {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
             {loading && <Loader />}
             {isClient && window.innerWidth > 800 ?
                 <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>

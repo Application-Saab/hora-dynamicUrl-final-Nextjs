@@ -44,10 +44,10 @@ function Header() {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    console.log('Closing modal...');
-    setIsModalOpen(false); // This will close the modal by setting the state to false
-  };
+  // const closeModal = () => {
+  //   console.log('Closing modal...');
+  //   setIsModalOpen(false); // This will close the modal by setting the state to false
+  // };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -463,7 +463,7 @@ useEffect(() => {
     }
      {
   isModalOpen ?
-  <OtploginPopup closeModel={closeModal} />
+  <OtploginPopup setIsModalOpen={setIsModalOpen} />
   : null
 }
     </>

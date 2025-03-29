@@ -18,7 +18,7 @@ import Image from 'next/image';
 import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
-
+import OtpLoginPopup from "@/components/OtpLoginPopup";
 const Checkout = () => {
   const router = useRouter();
   const { orderType, selectedDishDictionary, selectedDishPrice, selectedCount, peopleCount, totalAmount } = router.query // Accessing subCategory and itemName safely
@@ -44,7 +44,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber =  localStorage.getItem("mobileNumber");
-
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   if (product) {
     product = JSON.parse(product)
   }
@@ -338,6 +338,13 @@ const Checkout = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsModalOpen(true); // Open modal when user is not logged in
+    }
+  }, [isLoggedIn]); // Run this when `isLoggedIn` changes
 
   useEffect(() => {
     if (product?.name && product?.price && !isEventPushed) {
@@ -355,9 +362,9 @@ const Checkout = () => {
   }, [product, isEventPushed])
 
   if (!isClient) return null;
-
   return (
     <div className="App">
+      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
        {loading && <Loader />}
       {
         isClient && window.innerWidth > 800 ?
@@ -650,6 +657,7 @@ const Checkout = () => {
       }
     </div>
   );
+
 }
 
 export default Checkout;

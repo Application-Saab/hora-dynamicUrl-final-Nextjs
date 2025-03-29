@@ -309,21 +309,21 @@ function DecorationCatDetails() {
       totalAmount: totalAmount,
     };
 
-    if (localStorage.getItem("isLoggedIn") !== "true") {
-      router.push({
-        pathname: '/login',
-        query: {
-          from: window.location.pathname,
-          subCategory,
-          product: JSON.stringify(product),
-          orderType,
-          catValue,
-          selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-          itemQuantities: JSON.stringify(itemQuantities),
-          totalAmount: totalAmount,
-        }
-      });
-    } else {
+    // if (localStorage.getItem("isLoggedIn") !== "true") {
+    //   router.push({
+    //     pathname: '/login',
+    //     query: {
+    //       from: window.location.pathname,
+    //       subCategory,
+    //       product: JSON.stringify(product),
+    //       orderType,
+    //       catValue,
+    //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+    //       itemQuantities: JSON.stringify(itemQuantities),
+    //       totalAmount: totalAmount,
+    //     }
+    //   });
+    // } else {
       router.push({
         pathname: '/checkout',
         query: {
@@ -337,7 +337,7 @@ function DecorationCatDetails() {
           totalAmount: totalAmount,
         }
       });
-    }
+    // }
   };
 
   function addSpaces(subCategory) {

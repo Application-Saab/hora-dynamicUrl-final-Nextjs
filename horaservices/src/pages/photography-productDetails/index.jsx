@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
 import axios from 'axios';
+import OtpLoginPopup from '../../components/OtpLoginPopup';
 
 function PhotograpgyProdDetails() {
   const [selCat, setSelCat] = useState("");
@@ -59,12 +60,12 @@ function PhotograpgyProdDetails() {
       catValue
     };
 
-    const destination = localStorage.getItem("isLoggedIn") === "true"
-      ? '/photography-checkout'
-      : '/login';
+    // const destination = localStorage.getItem("isLoggedIn") === "true"
+    //   ? '/photography-checkout'
+    //   : '/login';
 
     router.push({
-      pathname: destination,
+      pathname:'/photography-checkout',
       query: stateData
     });
   };
@@ -100,6 +101,14 @@ function PhotograpgyProdDetails() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+   const [isModalOpen, setIsModalOpen] = useState(false);  
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsModalOpen(true); // Open modal when user is not logged in
+    }
+  }, [isLoggedIn]); // Run this when `isLoggedIn` changes
 
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
@@ -146,6 +155,7 @@ function PhotograpgyProdDetails() {
         <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`} />
         <meta property="og:type" content="website" />
       </Head> */}
+         {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
     {product && product.featured_image ? (
       <div style={styles.container}>
         <div style={styles.decDetails} className="decDetails">
