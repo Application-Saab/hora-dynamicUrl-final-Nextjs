@@ -47,12 +47,22 @@ const FoodDeliveryCheckout = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
   
 
+  useEffect(() => {
+      // Check localStorage or a cookie for login status, or call an API
+      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+      setIsLoggedIn(loggedInStatus); // Update state based on login status
+      if (!loggedInStatus) {
+        setIsModalOpen(true); // Open modal if not logged in
+      }
+      setLoading(false); // Done with loading
+    }, []); // Run once when component mounts
+  
     useEffect(() => {
-        if (!isLoggedIn) {
-          setIsModalOpen(true); // Open modal when user is not logged in
-        }
-      }, [isLoggedIn]); // Run this when `isLoggedIn` changes
-     
+      // If logged in, close the modal
+      if (isLoggedIn) {
+        setIsModalOpen(false);
+      }
+    }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
 // order.type is 2 for chef
 // order.type is 1 for decoration

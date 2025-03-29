@@ -14,6 +14,7 @@ import Image from 'next/image';
 import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
+import OtpLoginPopup from "@/components/OtpLoginPopup";
 
 const Checkout = () => {
   const router = useRouter();
@@ -39,17 +40,29 @@ const Checkout = () => {
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber =  localStorage.getItem("mobileNumber");
   const [isMobile, setIsMobile] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   if (product) {
     product = JSON.parse(product)
   }
-  const [isModalOpen, setIsModalOpen] = useState(false);  
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
 
- useEffect(() => {
-   if (!isLoggedIn) {
-     setIsModalOpen(true); // Open modal when user is not logged in
-   }
- }, [isLoggedIn]); // Run this when `isLoggedIn` changes
+useEffect(() => {
+      // Check localStorage or a cookie for login status, or call an API
+      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+      setIsLoggedIn(loggedInStatus); // Update state based on login status
+      if (!loggedInStatus) {
+        setIsModalOpen(true); // Open modal if not logged in
+      }
+      setLoading(false); // Done with loading
+    }, []); // Run once when component mounts
+  
+    useEffect(() => {
+      // If logged in, close the modal
+      if (isLoggedIn) {
+        setIsModalOpen(false);
+      }
+    }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
   useEffect(() => {
     setIsClient(true)

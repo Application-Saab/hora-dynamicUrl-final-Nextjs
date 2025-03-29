@@ -18,22 +18,23 @@ const PhotoGallery = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);  // State for login status
   const router = useRouter();
 
-  useEffect(() => {
-    // Check localStorage or a cookie for login status, or call an API
-    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
-    setIsLoggedIn(loggedInStatus); // Update state based on login status
-    if (!loggedInStatus) {
-      setIsModalOpen(true); // Open modal if not logged in
-    }
-    setLoading(false); // Done with loading
-  }, []); // Run once when component mounts
+  // useEffect(() => {
+  //   // Check localStorage or a cookie for login status, or call an API
+  //   const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+  //   setIsLoggedIn(loggedInStatus); // Update state based on login status
+  //   if (!loggedInStatus) {
+  //     setIsModalOpen(true); // Open modal if not logged in
+  //   }
+  //   setLoading(false); // Done with loading
+  // }, []); // Run once when component mounts
 
-  useEffect(() => {
-    // If logged in, close the modal
-    if (isLoggedIn) {
-      setIsModalOpen(false);
-    }
-  }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
+  // useEffect(() => {
+  //   // If logged in, close the modal
+  //   if (isLoggedIn) {
+  //     setIsModalOpen(false);
+  //   }
+  // }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
+
 
   const handleShareicon = async () => {
     const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)
@@ -67,7 +68,7 @@ const PhotoGallery = () => {
         />
       </div>
 
-      {isLoggedIn ? (
+      {/* {isLoggedIn ? (
         folderName && customerId ? (
           <ThumbnailGallery folderName={folderName} customerId={customerId} />
         ) : (
@@ -75,7 +76,9 @@ const PhotoGallery = () => {
         )
       ) : (
         isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
-      )}
+      )} */}
+                <ThumbnailGallery folderName={folderName} customerId={customerId} />
+
     </div>
   );
 };
