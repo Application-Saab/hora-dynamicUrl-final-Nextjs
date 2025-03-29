@@ -316,7 +316,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
+      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} openModal={openModal}/>}
       {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
     </header>
       ) : (
@@ -460,7 +460,7 @@ useEffect(() => {
         </div>
       </div>
     </div>
-    {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
+    {showDrawer && <Drawer closeDrawer={toggleDrawer} openModal={openModal} drawerRef={drawerRef} handleLogout={handleLogout} />}
     {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
 
   </header>
@@ -519,6 +519,8 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
     });
   };
 
+  
+
   return (
     <div style={style.drawer} ref={drawerRef}>
       <div style={{ backgroundColor:"rgb(157, 74, 147)" , padding:"30px 10px 20px 20px"}}>
@@ -552,8 +554,7 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
         Contact Us
       </Link>
       {localStorage.getItem("isLoggedIn") !== "true" ? (
-      <Link 
-      href="/login" 
+      <a
       style={style.drawerLink} 
       onClick={(e) => { 
         e.preventDefault(); // Prevent default navigation if opening modal
@@ -562,8 +563,8 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
         openModal(); 
       }}
     >
-      <span style={{ marginLeft: "7px", cursor: "pointer" }}>Login</span>
-    </Link>
+      <span style={{ cursor: "pointer" }}>Login</span>
+    </a>
     
       ) : (
         <>

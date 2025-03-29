@@ -17,7 +17,16 @@ const OtpLogin = ({setIsModalOpen}) => {
 
   // Handle mobile number input change
   const handleMobileNumberChange = (e) => {
-    setMobileNumber(e.target.value);
+    const value = e.target.value;
+    if (/^\d{0,10}$/.test(value)) {
+      setMobileNumber(value);
+      setError('Please enter a valid mobile number');
+    }
+
+    // Reset error message if mobile number length is correct
+    if (value.length === 10) {
+      setError('');
+    }
   };
 
   // Handle OTP input change
@@ -28,10 +37,11 @@ const OtpLogin = ({setIsModalOpen}) => {
 
   // Function to send OTP
   const sendOtp = async () => {
-    if (!mobileNumber) {
-      setError('Please enter a valid mobile number');
+    if (!mobileNumber ) {
+      setError('Mobile number is required.');
       return;
     }
+  
     try {
       const url = BASE_URL + OTP_GENERATE_END_POINT;
       const requestData = {

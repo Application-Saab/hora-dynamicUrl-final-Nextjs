@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: 00000042;
+    background-color: #00000042;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,12 +27,13 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 561px;
     text-align: center;
     padding: 32px 11px;
     font-size: 20px;
     color: #9252AA;
     font-family: Poppins, sans-serif;
+    min-width: auto;
+    max-width: 35%;
   }
 .otp-login {
     padding: 27px;
@@ -122,15 +123,36 @@ button.loginbtn:disabled {
     align-items: center;
     flex-direction: column;
 }
-@media (max-width: 600px) {
-.otp-login {
-    margin: 20% auto;
+@media (max-width: 800px) {
+    .popup-content {
+        max-width: 90%;
+        padding: 19px 11px !important;
+    }
+    .otp-login {
+        margin: 5% auto;
+    }
+    .otp-error {
+        font-size: 16px;
+        }
 }
-}
+
 
 @media (max-width: 481px) {
 .otp-error {
 font-size: 14px;
+} 
+.d-flex.justify-content-center.mt-4.resend-timer {
+    margin-top: 10px !important;
+}
+.input-group input {
+    font-size: 11px;
+}
+.country-code {
+    font-size: 10px;
+}
+.otp-login {
+    margin: 0% auto;
+    padding: 18px 13px;
 }
 }
 @media (max-width: 375px) {
