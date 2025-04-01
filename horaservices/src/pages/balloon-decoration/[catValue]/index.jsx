@@ -16,6 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from '../../../assets/new_logo_light.png';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 
 const DecorationCatPage = () => {
@@ -60,7 +61,9 @@ const DecorationCatPage = () => {
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
   const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
   const [discountDifference , setDiscountDifference] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1);
   const [catalogueData, setCatalogueData] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
   //   const navigate = useNavigate();
   const [priceFilter, setPriceFilter] = useState("all"); // Default: Show all
@@ -148,31 +151,53 @@ const DecorationCatPage = () => {
 
   useEffect(() => {
     addSpaces(subCategory);
-    getSubCatId(subCategory); // Fetch category ID based on the selected subcategory
-    window.addEventListener('scroll', handleScroll); // Add scroll event listener
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll); // Cleanup on unmount
-    };
+    getSubCatId(subCategory);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [subCategory]);
-
+  
   const handleScroll = () => {
     const filterElement = document.querySelector('.filterdropdown');
     if (filterElement) {
-      if (window.scrollY > 50) {
-        filterElement.classList.add('sticky');
-      } else {
-        filterElement.classList.remove('sticky');
-      }
+      filterElement.classList.toggle('sticky', window.scrollY > 50);
     }
   };
-
+  
+  useEffect(() => {
+    let debounceTimeout;
+    const handleScroll = () => {
+      if (loading || !hasMore) return;
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+          setCurrentPage((prevPage) => prevPage + 1);
+        }
+      }, 200);
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loading, hasMore]);
+  
+  
+  useEffect(() => {
+    if (catValue && !loading) {
+      setCatalogueData([]); // Reset data when filters change
+      setCurrentPage(1);
+      getSubCatItems(1);
+    }
+  }, [catValue, priceFilter, themeFilter]);
+  
+  useEffect(() => {
+    if (catValue && currentPage && !loading) {
+      getSubCatItems(currentPage);
+    }
+  }, [catValue, currentPage]);
   
   const filteredData = catalogueData.filter(item => {
     let priceCondition = true;
     let themeCondition = true;
   
-    // Filter by price
     if (priceFilter === "under2000") {
       priceCondition = item.price < 2000;
     } else if (priceFilter === "2000to5000") {
@@ -181,28 +206,24 @@ const DecorationCatPage = () => {
       priceCondition = item.price > 5000;
     }
   
-    // Filter by theme
     if (themeFilter !== "all") {
       const formattedThemeFilter = themeFilter.toLowerCase().split('-')[0];
       const formattedItemName = item.name.toLowerCase().split('-')[0];
       themeCondition = formattedItemName.includes(formattedThemeFilter);
     }
   
-    // Return true if both conditions are met
     return priceCondition && themeCondition;
   });
   
-  // Apply sorting
   const sortedData = filteredData.sort((a, b) => {
     if (priceFilter === 'lowToHigh') {
       return a.price - b.price;
     } else if (priceFilter === 'highToLow') {
       return b.price - a.price;
     }
-    return 0; // Default sort (no sorting)
+    return 0;
   });
   
-
   function addSpaces(subCategory) {
     let result = "";
     for (let i = 0; i < subCategory.length; i++) {
@@ -213,59 +234,75 @@ const DecorationCatPage = () => {
     }
     setSelCat(result);
   }
-
+  
   const getSubCatId = async (subCategory) => {
     try {
+    
       const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
       const categoryId = response.data.data?._id;
-      setCatId(categoryId);
+      if (categoryId) {
+        setCatId(categoryId);
+        setCatValue(categoryId);
+        setCurrentPage(1);
+        getSubCatItems(1);
+      }
     } catch (error) {
       console.log("Error:", error.message);
     }
   };
-
+  
   const getDiscountedPrice = (price) => {
     let discount;
-
-    // Determine the discount percentage based on the item price
     if (price < 3000) {
-        discount = 20; // 20% discount
+      discount = 20;
     } else if (price >= 3000 && price <= 5000) {
-        discount = 27; // 27% discount
+      discount = 27;
     } else {
-        discount = 35; // 35% discount for prices above 5000
+      discount = 35;
     }
-
-    const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
-    const discountDifference =   Math.abs(price - discountedPrice);;
-    return { discount, discountedPrice , discountDifference }; // Return both discount percentage and discounted price
-};
-
-const getSubCatItems = async () => {
-  try {
+  
+    const discountedPrice = price * (1 + discount / 100);
+    const discountDifference = Math.abs(price - discountedPrice);
+    return { discount, discountedPrice, discountDifference };
+  };
+  
+  const getSubCatItems = async (currentPage) => {
+  
+    if (themeFilter !== "all") {
+      setCatalogueData([]);
+      setCurrentPage(1);
+    }
+    try {
       setLoading(true);
-      const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ITEM + catId);
+      setCatId(getSubCategory(catValue))
+      console.log(catId)
+      const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM}v2/${catId}?page=${currentPage}&priceFilter=${priceFilter}&sortBy=desc&theme=${themeFilter}`;
+      console.log("Calling API:", apiUrl);
+  
+      const response = await axios.get(apiUrl);
+  
       if (response.status === API_SUCCESS_CODE) {
-          const decoratedData = response.data.data.map(item => {
-              const { discount, discountedPrice , discountDifference} = getDiscountedPrice(item.price); // Destructure the return value
-              return {
-                  ...item,
-                  rating: getRandomRating(),
-                  userCount: getRandomNumber(20, 500),
-                  discountPercentage: discount, // Add discount percentage
-                  discountedPrice: discountedPrice ,// Add discounted price
-                  discountDifference: discountDifference
-              };
-          });
-          setCatalogueData(decoratedData);
+        const decoratedData = response.data.data.map((item) => {
+          const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);
+          return {
+            ...item,
+            rating: getRandomRating(),
+            userCount: getRandomNumber(20, 500),
+            discountPercentage: discount,
+            discountedPrice,
+            discountDifference,
+          };
+        });
+  
+        setCatalogueData((prevData) => [...prevData, ...decoratedData]);
+        setHasMore(currentPage < response.data.pagination.totalPages);
       }
-  } catch (error) {
-      console.log('Error Fetching Data:', error.message);
-  } finally {
+    } catch (error) {
+      console.error("Error Fetching Data:", error.message);
+    } finally {
       setLoading(false);
-  }
-};
-
+    }
+  };
 
   const handleViewDetails = (subCategory, catValue, product) => {
     const productName = product.name.replace(/ /g, "-");
@@ -278,11 +315,6 @@ const getSubCatItems = async () => {
     }
   };
 
-  useEffect(() => {
-    if (catId) {
-      getSubCatItems();
-    }
-  }, [catId]);
 
   function trimText(text) {
     if (text.length > 60) {
