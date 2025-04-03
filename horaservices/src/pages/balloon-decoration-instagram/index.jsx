@@ -64,9 +64,9 @@ const Decoration = () => {
    const openWahtsappRedirection = (catTitle) =>{
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'google-ads_chat_with_us_button',
+      event: 'instagram_chat_with_us_button',
     });
-    window.open('https://wa.me/917338584828?text=Hi%2C%20Found%20your%20decoration%20on%20google-ads.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
+    window.open('https://wa.me/917338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
   }
 
     const handleViewMore = (category) => {

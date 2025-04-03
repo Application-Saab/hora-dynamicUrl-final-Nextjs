@@ -64,7 +64,7 @@ const [decCat, setDecCat] = useState([
      const openWahtsappRedirection = (catTitle) =>{
       window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'city_youtube_chat_with_us_button',
+      event: 'city_google_ads_chat_with_us_button',
     });
       window.open('https://wa.me/917338584828?text=Hello%20I%20have%20seen%20decoration%20design%20on%20your%20website.%20Please%20help%20me%20for%20more%20customization%20and%20more%20details.', '_blank');
      }

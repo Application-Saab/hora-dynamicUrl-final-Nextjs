@@ -80,7 +80,7 @@ function DecorationCatDetails() {
     const message = encodeURIComponent('Hi, Found your decoration on google-ads. I want to customize a decoration');
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'google-ads_product_detail_decorwhatsapp_click',
+      event: 'google_ads_product_detail_decorwhatsapp_click',
     });  
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };

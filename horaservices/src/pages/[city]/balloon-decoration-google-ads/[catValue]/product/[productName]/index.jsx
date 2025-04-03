@@ -85,7 +85,7 @@ function DecorationCatDetails() {
     const message = encodeURIComponent('I want to customize a decoration');
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'city_youtube_product_detail_decorwhatsapp_click',
+      event: 'city_google_ads_product_detail_decorwhatsapp_click',
     });  
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };
