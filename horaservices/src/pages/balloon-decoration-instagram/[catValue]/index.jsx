@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
-import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM, API_SUCCESS_CODE } from '../../../../utils/apiconstants';
+import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM, API_SUCCESS_CODE } from '../../../utils/apiconstants';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Head from 'next/head';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
-import { CardSkeleton } from "../../../../components/CardSkeleton";
-import { getDecorationCatOrganizationSchema } from "../../../../utils/schema";
-import '../../../../css/decoration.css';
-import { setState } from '../../../../actions/action';
+import { CardSkeleton } from "../../../components/CardSkeleton";
+import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
+import '../../../css/decoration.css';
+import { setState } from '../../../actions/action';
 import { useDispatch } from 'react-redux';
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
-import logo from '../../../../assets/new_logo_light.png';
+import logo from '../../../assets/new_logo_light.png';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
-import whatsppicon from "../../../../assets/whatsapp-icon.png";
-
 
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
@@ -272,10 +270,10 @@ const getSubCatItems = async () => {
     const productName = product.name.replace(/ /g, "-");
     dispatch(setState(subCategory, orderType, catValue, product));
     if (hasCityPageParam) {
-      router.push(`/${city}/balloon-decoration/${catValue}/product/${productName}`);
+      router.push(`/${city}/balloon-decoration-instagram/${catValue}/product/${productName}`);
     }
     else {
-      router.push(`/balloon-decoration/youtube/${catValue}/product/${productName}`);
+      router.push(`/balloon-decoration-instagram/${catValue}/product/${productName}`);
     }
   };
 
@@ -510,18 +508,6 @@ const getSubCatItems = async () => {
             )
           }
           
-          
-                <div>
-           <Link href="https://wa.me/+917338584828/?text=Hi%2C%20I%20saw%20your%20decoration%20on%20YouTube.%20Need%20details!" target="_blank">
-                  <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
-                   onClick={() => {
-                    dataLayer.push({
-                      'event': 'balloon_decoration_youtube_product_list_whatsapp_click',
-                    });
-                  }}
-                     />
-                </Link>
-              </div> 
           {/* <div>
           {
           filteredData.map((item, index) => (

@@ -17,6 +17,7 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
 
   useEffect(() => {
     const fetchThumbnails = async () => {
+      console.log('fetch');
       try {
         const response = await fetch(
           `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${folderName}&customerId=${customerId}`

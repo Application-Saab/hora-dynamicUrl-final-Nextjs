@@ -18,6 +18,8 @@ import Image from 'next/image';
 import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
+import OtpLoginPopup from '../../components/OtpLoginPopup';
+
 
 const Checkout = () => {
   const router = useRouter();
@@ -44,6 +46,26 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber =  localStorage.getItem("mobileNumber");
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check localStorage or a cookie for login status, or call an API
+    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+    setIsLoggedIn(loggedInStatus); // Update state based on login status
+    if (!loggedInStatus) {
+      setIsModalOpen(true); // Open modal if not logged in
+    }
+    setLoading(false); // Done with loading
+  }, []); // Run once when component mounts
+
+  useEffect(() => {
+    // If logged in, close the modal
+    if (isLoggedIn) {
+      setIsModalOpen(false);
+    }
+  }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
+
 
   if (product) {
     product = JSON.parse(product)
@@ -358,6 +380,7 @@ const Checkout = () => {
 
   return (
     <div className="App">
+         {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
        {loading && <Loader />}
       {
         isClient && window.innerWidth > 800 ?

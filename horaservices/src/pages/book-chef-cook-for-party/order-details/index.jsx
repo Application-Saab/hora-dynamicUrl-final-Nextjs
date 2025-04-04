@@ -302,17 +302,17 @@ const SelectDate = ({ history, currentStep }) => {
             selectedCount
         };
 
-        if (!isLoggedIn) {
-            router.push({
-                pathname: '/login',
-                query: navigateState
-            });
-        } else {
+        // if (!isLoggedIn) {
+        //     router.push({
+        //         pathname: '/login',
+        //         query: navigateState
+        //     });
+        // } else {
             router.push({
                 pathname: '/book-chef-checkout',
                 query: navigateState
             });
-        }
+        // }
     };
 
     const getTotalBurnerCount = () => {

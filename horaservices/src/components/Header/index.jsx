@@ -15,7 +15,8 @@ import { usePathname, useRouter } from "next/navigation";
 import logo from '../../assets/new_logo_light.png';
 import logolight from '../../assets/hora-light-innerpage.png'
 import loginIcon from '../../assets/profile_picture.png';
-  
+import OtploginPopup from '../../components/OtpLoginPopup';
+
 function Header() {
   useScrollToTop(); // Use the custo hook
 
@@ -28,6 +29,7 @@ function Header() {
   const [pageTitle, setPageTitle] = useState("");
   const [isMounted, setIsMounted] = useState(false); // State to check if component has mounted
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const isHomePage = routerPathname === '/';
   const isDelhiPage = routerPathname === '/delhi';
 
@@ -37,6 +39,16 @@ function Header() {
   const handleBack = () => {
     router.back(); // Go back to the previous page
   };
+
+  const openModal = () => {
+    console.log('Opening modal...');
+    setIsModalOpen(true);
+  };
+
+  // const closeModal = () => {
+  //   console.log('Closing modal...');
+  //   setIsModalOpen(false); // This will close the modal by setting the state to false
+  // };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -248,10 +260,10 @@ useEffect(() => {
               <li style={styles.desktopMenuli1}>
               {isMounted && (!isLoggedIn ? (
                 <>
-                  <Link href="/login" style={styles.linkicon}>
-                  <Image src={loginIcon} alt={'login icon'} width={20} height={20}/>
+                 <div onClick={openModal} style={{ cursor:'pointer' }}>
+                 <Image  src={loginIcon} alt={'login icon'} width={20} height={20}/>
                     <span style={{ marginLeft: "7px" }}>Login</span>
-                  </Link>
+                  </div>
                 </>
                
                 ) : (
@@ -304,7 +316,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
+      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} openModal={openModal}/>}
       {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
     </header>
       ) : (
@@ -398,10 +410,14 @@ useEffect(() => {
           <ul style={styles.desktopMenu}>
             <li style={styles.desktopMenuli1}>
             {isMounted && (!isLoggedIn ? (
-                <Link href="/login" style={styles.innerpagelinkicon}>
+                // <Link href="/login" style={styles.innerpagelinkicon}>
+                //   <FontAwesomeIcon icon={faUser} style={styles.icon} />
+                //   <span style={{ marginLeft: "3px" }}>Login</span>
+                // </Link>
+                 <div onClick={openModal} style={{ cursor:'pointer' }}>
                   <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                  <span style={{ marginLeft: "3px" }}>Login</span>
-                </Link>
+                    <span style={{ marginLeft: "7px" }}>Login</span>
+                  </div>
               ) : (
                 <a style={styles.linkiconLogout} onClick={handleLogout}>
                   <FontAwesomeIcon icon={faUser} style={styles.icon} />
@@ -444,16 +460,22 @@ useEffect(() => {
         </div>
       </div>
     </div>
-    {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} />}
+    {showDrawer && <Drawer closeDrawer={toggleDrawer} openModal={openModal} drawerRef={drawerRef} handleLogout={handleLogout} />}
     {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
+
   </header>
       )
     }
+     {
+  isModalOpen ?
+  <OtploginPopup setIsModalOpen={setIsModalOpen} />
+  : null
+}
     </>
   );
 }
 
-const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
+const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
   const style = {
     drawer: {
       width: "60%",
@@ -497,6 +519,8 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
     });
   };
 
+  
+
   return (
     <div style={style.drawer} ref={drawerRef}>
       <div style={{ backgroundColor:"rgb(157, 74, 147)" , padding:"30px 10px 20px 20px"}}>
@@ -530,9 +554,18 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout }) => {
         Contact Us
       </Link>
       {localStorage.getItem("isLoggedIn") !== "true" ? (
-        <Link href="/login" style={style.drawerLink} onClick={() => { mobileMenuClicked('Login'); closeDrawer(); }} >
-          Login
-        </Link>
+      <a
+      style={style.drawerLink} 
+      onClick={(e) => { 
+        e.preventDefault(); // Prevent default navigation if opening modal
+        mobileMenuClicked('Login'); 
+        closeDrawer(); 
+        openModal(); 
+      }}
+    >
+      <span style={{ cursor: "pointer" }}>Login</span>
+    </a>
+    
       ) : (
         <>
           <Link href="/" style={style.drawerLink} onClick={() => {

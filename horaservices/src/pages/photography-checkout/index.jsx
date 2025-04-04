@@ -14,6 +14,7 @@ import Image from 'next/image';
 import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
+import OtpLoginPopup from "@/components/OtpLoginPopup";
 
 const Checkout = () => {
   const router = useRouter();
@@ -39,10 +40,29 @@ const Checkout = () => {
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber =  localStorage.getItem("mobileNumber");
   const [isMobile, setIsMobile] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   if (product) {
     product = JSON.parse(product)
   }
+  
 
+useEffect(() => {
+      // Check localStorage or a cookie for login status, or call an API
+      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+      setIsLoggedIn(loggedInStatus); // Update state based on login status
+      if (!loggedInStatus) {
+        setIsModalOpen(true); // Open modal if not logged in
+      }
+      setLoading(false); // Done with loading
+    }, []); // Run once when component mounts
+  
+    useEffect(() => {
+      // If logged in, close the modal
+      if (isLoggedIn) {
+        setIsModalOpen(false);
+      }
+    }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
   useEffect(() => {
     setIsClient(true)
@@ -323,8 +343,8 @@ console.log("redData" , requestData);
      window.dataLayer.push({
          event: "photography_checkout_contact_us_click",
      });
-    window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20Photography%20services', '_blank');
-  };
+     window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
+    };
 
 
 
@@ -360,6 +380,7 @@ console.log("redData" , requestData);
 
   return (
     <div className="App">
+        {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
        {loading && <Loader />}
       {
         isClient && window.innerWidth > 800 ?

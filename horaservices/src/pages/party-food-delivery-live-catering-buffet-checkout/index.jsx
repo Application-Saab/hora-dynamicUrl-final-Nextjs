@@ -16,8 +16,10 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
+import OtpLoginPopup from '../../components/OtpLoginPopup';
 
 const FoodDeliveryCheckout = () => {
+
     //   const { selectedDishesFoodDelivery , selectedOption ,orderType, selectedDishDictionary, selectedDishPrice, totalOrderAmount , selectedDishQuantities , peopleCount} = useLocation().state || {}; // Accessing subCategory and itemName safely
     const [comment, setComment] = useState('');
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -41,6 +43,26 @@ const FoodDeliveryCheckout = () => {
     const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);  
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+
+  useEffect(() => {
+      // Check localStorage or a cookie for login status, or call an API
+      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+      setIsLoggedIn(loggedInStatus); // Update state based on login status
+      if (!loggedInStatus) {
+        setIsModalOpen(true); // Open modal if not logged in
+      }
+      setLoading(false); // Done with loading
+    }, []); // Run once when component mounts
+  
+    useEffect(() => {
+      // If logged in, close the modal
+      if (isLoggedIn) {
+        setIsModalOpen(false);
+      }
+    }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -561,7 +583,8 @@ const FoodDeliveryCheckout = () => {
     }
 
     return (
-        <div className="App">
+        <div className="App"> 
+         {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
              {loading && <Loader />}
             {isClient && window.innerWidth > 800 ?
                 <div style={{ padding: "1% 2%", backgroundColor: "rgba(237, 237, 237, 0.79)" }}>

@@ -17,6 +17,8 @@ import axios from 'axios';
 import faqData from '../../../../../utils/faqData.json'
 import Tabs from '../../../../../components/Tabs';
 import addOnProductsData from '../../../../../utils/addOnProduct.json';
+
+
 // Skeleton Loader Component
 const SkeletonLoader = () => {
   return (
@@ -75,9 +77,12 @@ function DecorationCatDetails() {
 
   const handleWhatsApp = () => {
     const phoneNumber = '7338584828';
-    const message = encodeURIComponent('I want to customize a decoration');
+    const message = encodeURIComponent('Hi, Found your decoration on google-ads. I want to customize a decoration');
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'google-ads_product_detail_decorwhatsapp_click',
+    });  
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-
   };
 
   useEffect(() => {
@@ -86,7 +91,7 @@ function DecorationCatDetails() {
         try {
           const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
           const response = await axios.get(url);
-          console.log("API Response:", response.data);
+    
           
           // Assuming the product has a price property
           const fetchedProduct = response.data.data[0];
@@ -309,21 +314,21 @@ function DecorationCatDetails() {
       totalAmount: totalAmount,
     };
 
-    // if (localStorage.getItem("isLoggedIn") !== "true") {
-    //   router.push({
-    //     pathname: '/login',
-    //     query: {
-    //       from: window.location.pathname,
-    //       subCategory,
-    //       product: JSON.stringify(product),
-    //       orderType,
-    //       catValue,
-    //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-    //       itemQuantities: JSON.stringify(itemQuantities),
-    //       totalAmount: totalAmount,
-    //     }
-    //   });
-    // } else {
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+      router.push({
+        pathname: '/login',
+        query: {
+          from: window.location.pathname,
+          subCategory,
+          product: JSON.stringify(product),
+          orderType,
+          catValue,
+          selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+          itemQuantities: JSON.stringify(itemQuantities),
+          totalAmount: totalAmount,
+        }
+      });
+    } else {
       router.push({
         pathname: '/checkout',
         query: {
@@ -337,7 +342,7 @@ function DecorationCatDetails() {
           totalAmount: totalAmount,
         }
       });
-    
+    }
   };
 
   function addSpaces(subCategory) {
@@ -643,10 +648,6 @@ function DecorationCatDetails() {
           </div>
         </div>
       </div>
-
-    
-
-   
     </div>
   );
 };

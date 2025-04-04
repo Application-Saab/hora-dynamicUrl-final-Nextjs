@@ -13,7 +13,6 @@ import { getHomeOrganizationSchema } from "../utils/schema";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-
 import './globals.css';
 import Slider from 'react-slick';
 import { sendGTMEvent } from '@next/third-parties/google';
@@ -22,6 +21,7 @@ import './homepage.css'
 import CustomerReviewsSection from '@/components/CustomerReviewsSection';
 import WhatAreYouIntoSection from "@/components/WhatAreYouIntoSection";
 import Horaservices from "@/components/HoraServices";
+
 export default function Home() {
   const router = useRouter();
   const [showButton, setShowButton] = useState(false);
@@ -35,10 +35,23 @@ export default function Home() {
       setShowButton(window.innerWidth > 800);
     };
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    // Google Tag Manager script for GTM
+    (function(w,d,s,l,i){
+      w[l]=w[l]||[];
+      w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+      var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;
+      j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+      f.parentNode.insertBefore(j,f);
+      console.log('GTM Script Loaded'); // Debugging log
+    })(window,document,'script','dataLayer','GTM-K3SCKLTZ');
   }, []);
 
   useEffect(() => {

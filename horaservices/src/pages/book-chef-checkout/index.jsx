@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
-
+import OtpLoginPopup from "@/components/OtpLoginPopup";
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -45,6 +45,8 @@ const ChefCheckout = () => {
     const [combinedDateTime, setCombinedDateTime] = useState(null);
     const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     let {
         peopleCount,
         orderType,
@@ -53,7 +55,24 @@ const ChefCheckout = () => {
         selectedCount,
         selectedDishes
     } = router.query;
-
+   
+ 
+    useEffect(() => {
+        // Check localStorage or a cookie for login status, or call an API
+        const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+        setIsLoggedIn(loggedInStatus); // Update state based on login status
+        if (!loggedInStatus) {
+          setIsModalOpen(true); // Open modal if not logged in
+        }
+        setLoading(false); // Done with loading
+      }, []); // Run once when component mounts
+    
+      useEffect(() => {
+        // If logged in, close the modal
+        if (isLoggedIn) {
+          setIsModalOpen(false);
+        }
+      }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
     if (selectedDishDictionary) {
         try {
@@ -383,6 +402,7 @@ const ChefCheckout = () => {
 
     return (
         <div className="App">
+            {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
             {loading && <Loader />}
             {isClient && window.innerWidth > 800 ?
                 <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>
