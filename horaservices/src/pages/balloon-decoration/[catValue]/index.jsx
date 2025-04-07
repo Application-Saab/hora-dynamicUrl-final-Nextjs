@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 // import { useParams } from "react-router-dom";
 import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM, API_SUCCESS_CODE } from '../../../utils/apiconstants';
 import axios from 'axios';
@@ -52,6 +52,7 @@ const DecorationCatPage = () => {
   const altTagCatValue = catValue.replace(/-/g, ' ');
   const [orderType, setOrderType] = useState(1);
   const hasCityPageParam = city ? true : false;
+  const containerRef = useRef(null);
   //   const { catValue } = useParams();
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState("");
@@ -66,8 +67,9 @@ const DecorationCatPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
   //   const navigate = useNavigate();
-  const [priceFilter, setPriceFilter] = useState("all"); // Default: Show all
+  const [priceFilter, setPriceFilter] = useState(''); // Default: Show all
   const [themeFilter, setThemeFilter] = useState("all"); // Default: Show all
+  const [sortFilter, setSortFilter] = useState("asc");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
   const themeFilters = [
@@ -150,79 +152,79 @@ const DecorationCatPage = () => {
 
 
   useEffect(() => {
+    console.log("useEffect1")
     addSpaces(subCategory);
     getSubCatId(subCategory);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, [subCategory]);
   
-  const handleScroll = () => {
-    const filterElement = document.querySelector('.filterdropdown');
-    if (filterElement) {
-      filterElement.classList.toggle('sticky', window.scrollY > 50);
-    }
-  };
+  useEffect(() => {
+    console.log("useEffect2")
+    const handleStickyScroll = () => {
+      const filterElement = document.querySelector('.filterdropdown');
+      if (filterElement) {
+        filterElement.classList.toggle('sticky', window.scrollY >100)
+      }
+    };
+  
+    window.addEventListener('scroll', handleStickyScroll);
+    return () => window.removeEventListener('scroll', handleStickyScroll);
+  }, []);
   
   useEffect(() => {
+    console.log("useEffect3");
+  
     let debounceTimeout;
+  
     const handleScroll = () => {
-      if (loading || !hasMore) return;
+      if (loading || !hasMore || !containerRef.current) return;
+  
       clearTimeout(debounceTimeout);
       debounceTimeout = setTimeout(() => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        const container = containerRef.current;
+        const containerBottom = container.getBoundingClientRect().bottom;
+        const windowHeight = window.innerHeight;
+  
+        if (containerBottom <= windowHeight + 100) {
+          // Reached near bottom of decContainer
           setCurrentPage((prevPage) => prevPage + 1);
         }
       }, 200);
     };
   
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(debounceTimeout);
+    };
   }, [loading, hasMore]);
   
   
+  // Fetch more data when page increases
   useEffect(() => {
-    if (catValue && !loading) {
-      setCatalogueData([]); // Reset data when filters change
-      setCurrentPage(1);
-      getSubCatItems(1);
-    }
-  }, [catValue, priceFilter, themeFilter]);
-  
-  useEffect(() => {
-    if (catValue && currentPage && !loading) {
+    console.log("UseEffect4")
+    if (catValue && currentPage !== 1) {
       getSubCatItems(currentPage);
     }
-  }, [catValue, currentPage]);
+  }, [currentPage]);
   
-  const filteredData = catalogueData.filter(item => {
-    let priceCondition = true;
-    let themeCondition = true;
+  // useEffect(() => {
+  //   console.log("useEffect5")
+  //   if (catValue && currentPage && !loading) {
+  //     getSubCatItems(currentPage);
+  //   }
+  // }, [catValue, currentPage]);
   
-    if (priceFilter === "under2000") {
-      priceCondition = item.price < 2000;
-    } else if (priceFilter === "2000to5000") {
-      priceCondition = item.price >= 2000 && item.price <= 5000;
-    } else if (priceFilter === "above5000") {
-      priceCondition = item.price > 5000;
+  // Filter change
+  useEffect(() => {
+    console.log("useEffect6")
+    if (catValue) {
+      setCatalogueData([]);
+      setCurrentPage(1);
+      getSubCatItems(1); // explicitly fetch again
     }
+  }, [catValue, priceFilter, themeFilter]);
+
   
-    if (themeFilter !== "all") {
-      const formattedThemeFilter = themeFilter.toLowerCase().split('-')[0];
-      const formattedItemName = item.name.toLowerCase().split('-')[0];
-      themeCondition = formattedItemName.includes(formattedThemeFilter);
-    }
-  
-    return priceCondition && themeCondition;
-  });
-  
-  const sortedData = filteredData.sort((a, b) => {
-    if (priceFilter === 'lowToHigh') {
-      return a.price - b.price;
-    } else if (priceFilter === 'highToLow') {
-      return b.price - a.price;
-    }
-    return 0;
-  });
   
   function addSpaces(subCategory) {
     let result = "";
@@ -232,19 +234,18 @@ const DecorationCatPage = () => {
       }
       result += subCategory[i];
     }
+    
     setSelCat(result);
+    
   }
   
   const getSubCatId = async (subCategory) => {
     try {
-    
       const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
       const categoryId = response.data.data?._id;
       if (categoryId) {
         setCatId(categoryId);
-        setCatValue(categoryId);
-        setCurrentPage(1);
-        getSubCatItems(1);
+        setCatValue(subCategory); // triggers the filter effect
       }
     } catch (error) {
       console.log("Error:", error.message);
@@ -266,17 +267,24 @@ const DecorationCatPage = () => {
     return { discount, discountedPrice, discountDifference };
   };
   
-  const getSubCatItems = async (currentPage) => {
+  const getSubCatItems = async (page) => {
+    if (!catId) return;
   
-    if (themeFilter !== "all") {
-      setCatalogueData([]);
-      setCurrentPage(1);
-    }
     try {
       setLoading(true);
-      setCatId(getSubCategory(catValue))
-      console.log(catId)
-      const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM}v2/${catId}?page=${currentPage}&priceFilter=${priceFilter}&sortBy=desc&theme=${themeFilter}`;
+  
+      let newPriceFilter = priceFilter;
+      let newSortFilter = 'asc';
+  
+      if (priceFilter === 'lowToHigh') {
+        newPriceFilter = '';
+        newSortFilter = 'asc';
+      } else if (priceFilter === 'highToLow') {
+        newPriceFilter = '';
+        newSortFilter = 'desc';
+      }
+  
+      const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM}v2/${catId}?page=${page}&priceFilter=${newPriceFilter}&sortBy=${newSortFilter}&theme=${themeFilter}`;
       console.log("Calling API:", apiUrl);
   
       const response = await axios.get(apiUrl);
@@ -294,8 +302,8 @@ const DecorationCatPage = () => {
           };
         });
   
-        setCatalogueData((prevData) => [...prevData, ...decoratedData]);
-        setHasMore(currentPage < response.data.pagination.totalPages);
+        setCatalogueData((prevData) => page === 1 ? decoratedData : [...prevData, ...decoratedData]);
+        setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
       console.error("Error Fetching Data:", error.message);
@@ -303,7 +311,7 @@ const DecorationCatPage = () => {
       setLoading(false);
     }
   };
-
+  
   const handleViewDetails = (subCategory, catValue, product) => {
     const productName = product.name.replace(/ /g, "-");
     dispatch(setState(subCategory, orderType, catValue, product));
@@ -371,27 +379,29 @@ const DecorationCatPage = () => {
     }
   }
 
-   // Set themeFilter based on query parameter when component mounts or query changes
-   useEffect(() => {
-    if (router.isReady) {
-      const theme = router.query.theme || "all";
-      setThemeFilter(theme);
-    }
-  }, [router.isReady, router.query.theme]);
+  //  // Set themeFilter based on query parameter when component mounts or query changes
+  //  useEffect(() => {
+  //   console.log("useEffect7")
+  //   if (router.isReady) {
+  //     const theme = router.query.theme || "all";
+  //     setThemeFilter(theme);
+  //   }
+  // }, [router.isReady, router.query.theme]);
 
-  // Update URL whenever the themeFilter changes
-  useEffect(() => {
-    if (themeFilter !== "all") {
-      router.push(
-        {
-          pathname: router.pathname, // Current page path
-          query: { ...router.query, theme: themeFilter }, // Add or update the theme in the query
-        },
-        undefined,
-        { shallow: true } // Prevents full page reload
-      );
-    }
-  }, [themeFilter]);
+  // // Update URL whenever the themeFilter changes
+  // useEffect(() => {
+  //   console.log("useEffect8")
+  //   if (themeFilter !== "all") {
+  //     router.push(
+  //       {
+  //         pathname: router.pathname, // Current page path
+  //         query: { ...router.query, theme: themeFilter }, // Add or update the theme in the query
+  //       },
+  //       undefined,
+  //       { shallow: true } // Prevents full page reload
+  //     );
+  //   }
+  // }, [themeFilter]);
 
   
   
@@ -432,7 +442,7 @@ const DecorationCatPage = () => {
   </select>
 
   {/* Theme filter */}
-  {selCat === "Kids Birthday" ? (
+  {(selCat === "Kids Birthday" || selCat === "Kidsbirthday") ? (
     <select value={themeFilter} onChange={(e) => setThemeFilter(e.target.value)}
       style={{ fontSize: "16px", color: 'rgb(157, 74, 147)', padding: "7px 10px", borderWidth: 1, borderColor: "rgb(157, 74, 147)", borderRadius: "5px", marginLeft: "5px" }}>
       {themeFilters.map((filter) => (
@@ -444,116 +454,124 @@ const DecorationCatPage = () => {
 
           </div>
         </div>
-        <div style={styles.decContainer} className="decContainer">
-          {loading ? ([1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-            <div className="decimagecontainer" key={index} style={styles.imageContainer}>
+        <div style={styles.decContainer} className="decContainer" ref={containerRef}>
+  {
+    catalogueData.length > 0 ? (
+      <>
+        {catalogueData.map((item, index) => (
+          <div
+            key={item._id}
+            style={{
+              ...styles.imageContainer,
+              cursor: "pointer",
+              ...(hoveredIndex === index && styles.zoomedContainer)
+            }}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            onClick={() => handleViewDetails(subCategory, catValue, item)}
+            className="decimagecontainer"
+          >
+            <div style={{ position: "relative" }}>
+              <Image
+                src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image.split('.')[0]}.webp`}
+                alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`}
+                style={styles.decCatimage}
+                width={300}
+                height={300}
+              />
+              {/* Watermark */}
+              <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
+                <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
+                  <Image src={logo} style={{ width: "70px", height: "80px" }} className="hora-watermark-image" />
+                </span>
+              </div>
+              <div className="decorationdiscount">
+                ₹ {item.discountDifference.toFixed(0)} off
+              </div>
+            </div>
+            <div className='px-2 py-2'>
+              <p
+                style={{
+                  marginHorizontal: 3,
+                  textAlign: 'left',
+                  fontWeight: '600',
+                  fontSize: "16px",
+                  marginTop: "4px",
+                  color: '#9252AA',
+                  lineHeight: "18px",
+                  marginBottom: "0px",
+                  textAlign: "left",
+                }}
+                className="pro_name"
+              >
+                {item.name}
+              </p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "top" }} className="pri_details">
+                <div style={{ alignItems: 'left', justifyContent: 'space-between', display: "flex" }} className="pro_price">
+                  <p style={{
+                    fontWeight: '700',
+                    fontSize: 15,
+                    color: '#9252AA',
+                    textAlign: "left",
+                    margin: "10px 10px 7px 0",
+                  }}>₹{item.price}</p>
+                  <p style={{
+                    color: '#444',
+                    fontWeight: '700',
+                    fontSize: 15,
+                    textAlign: "left",
+                    margin: "10px 0px 7px",
+                    textDecoration: 'line-through'
+                  }}>
+                    ₹{Math.floor(item.discountedPrice.toFixed(2))}
+                  </p>
+                </div>
+                <div className="d-flex align-items-center rating-sec">
+                  <p className="m-0 p-0" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color: '#9252AA' }}>
+                    {item.rating}
+                    <span className='px-1 m-0 py-0 img-fluid' style={{ color: '#ffc107' }}>
+                      <FontAwesomeIcon style={{ margin: 0, height: "14px" }} icon={faStar} />
+                    </span>
+                  </p>
+                  <p style={{ color: '#9252AA', fontWeight: '600', fontSize: 17, margin: "0px", padding: "0 0 0 2px" }}>
+                    ({item.userCount})
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Show bottom skeletons when paginating */}
+        {loading && currentPage > 1 && (
+          [1, 2, 3, 4].map((index) => (
+            <div className="decimagecontainer" key={`skeleton-${index}`} style={styles.imageContainer}>
               <CardSkeleton />
             </div>
-          ))) :
-            (
-              (sortedData.length > 0) ? (
-                sortedData.map((item, index) => (
-                  <div
-                    key={item._id}
-                    style={{
-                      ...styles.imageContainer,
-                      cursor: "pointer",
-                      ...(hoveredIndex === index && styles.zoomedContainer) // Apply zoom effect when hovered
-                    }}
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    onClick={() => handleViewDetails(subCategory, catValue, item)}
-                    className="decimagecontainer"
-                  >
-                    <div style={{ position: "relative" }}>
-                    
-                      <Image  src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image.split('.')[0]}.webp`}  alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`} style={styles.decCatimage} width={300} height={300} />
-                      {/* Watermark */}
-                      <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
-                        <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
-                        <Image src={logo} style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
-                        </span>
-                      </div>
-                      <div className="decorationdiscount">
-                      ₹ {item.discountDifference.toFixed(0)} {'off'} 
-                      </div>
-                    </div>
-                    {/* End of Watermark */}
-                    <div className='px-2 py-2'>
-                      <p
-                        style={{
-                          marginHorizontal: 3,
-                          textAlign: 'left',
-                          fontWeight: '600',
-                          fontSize: "16px",
-                          marginTop: "4px",
-                          color: '#9252AA',
-
-                          lineHeight: "18px",
-                          marginBottom: "0px",
-                          textAlign: "left",
-                        }}
-                        className="pro_name"
-                      >
-                        {item.name}
-                      </p>
-                      <div style={{ display: "flex",  justifyContent: "space-between", alignItems: "top" }} className="pri_details">
-                        <div style={{ alignItems: 'left', justifyContent: 'space-between' , display:"flex" }} className="pro_price">
-                        <p  style={{
-                  
-                            fontWeight: '700',
-                            fontSize: 15,
-                            color: '#9252AA',
-                            textAlign: "left",
-                            margin: "10px 10px 7px 0",
-            
-                          }}>₹{item.price} </p>
-                          <p style={{
-                            color: '#444',
-                            fontWeight: '700',
-                            fontSize: 15,
-                            textAlign: "left",
-                            margin: "10px 0px 7px",
-                            textDecoration: 'line-through'
-                          }}
-                          >
-                             ₹{Math.floor(item.discountedPrice.toFixed(2))} 
-                          </p>
-
-                         
-                       </div>
-                        <div className="d-flex align-items-center rating-sec">
-                          <p className="m-0 p-0" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color: '#9252AA' }}>{item.rating}<span className='px-1 m-0 py-0 img-fluid' style={{ color: '#ffc107' }}><FontAwesomeIcon style={{ margin: 0, height: "14px" }} icon={faStar} /></span></p>
-                          <p style={{ color: '#9252AA', fontWeight: '600', fontSize: 17, margin: "0px", padding: "0 0 0 2px" }}>({item.userCount})</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div style={{ textAlign: "center", width: "100%", padding: "20px 0" }}>
-                  <span>Reach out to our support team for this</span>
-                  <span style={{ marginLeft: "10px" }}>
-                    <Link className="conactus" href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">Click here</Link>
-                  </span>
-                </div>
-              )
-            )
-          }
-          
-          {/* <div>
-          {
-          filteredData.map((item, index) => (
-          <url key={index}>
-          <loc>
-          {`https://horaservices.com/balloon-decoration/${catValue}/product/${item.name.replace(/ /g, "-")}`}
-          </loc>
-          <priority>1.00</priority>
-          </url>
           ))
-          }
-          </div> */}
+        )}
+      </>
+    ) : loading ? (
+      // Show full skeletons on initial load
+      [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
+        <div className="decimagecontainer" key={index} style={styles.imageContainer}>
+          <CardSkeleton />
         </div>
+      ))
+    ) : (
+      // No items + not loading
+      <div style={{ textAlign: "center", width: "100%", padding: "20px 0" }}>
+        <span>Reach out to our support team for this</span>
+        <span style={{ marginLeft: "10px" }}>
+          <Link className="conactus" href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
+            Click here
+          </Link>
+        </span>
+      </div>
+    )
+  }
+</div>
+
 
         <div className="category-content">
   {currentCategoryContent.length > 0 ? (
