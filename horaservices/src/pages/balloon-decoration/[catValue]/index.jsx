@@ -152,13 +152,13 @@ const DecorationCatPage = () => {
 
 
   useEffect(() => {
-    console.log("useEffect1")
+    //console.log("useEffect1")
     addSpaces(subCategory);
     getSubCatId(subCategory);
   }, [subCategory]);
   
   useEffect(() => {
-    console.log("useEffect2")
+    //console.log("useEffect2")
     const handleStickyScroll = () => {
       const filterElement = document.querySelector('.filterdropdown');
       if (filterElement) {
@@ -171,7 +171,7 @@ const DecorationCatPage = () => {
   }, []);
   
   useEffect(() => {
-    console.log("useEffect3");
+    //console.log("useEffect3");
   
     let debounceTimeout;
   
@@ -201,7 +201,7 @@ const DecorationCatPage = () => {
   
   // Fetch more data when page increases
   useEffect(() => {
-    console.log("UseEffect4")
+    //console.log("UseEffect4")
     if (catValue && currentPage !== 1) {
       getSubCatItems(currentPage);
     }
@@ -216,7 +216,7 @@ const DecorationCatPage = () => {
   
   // Filter change
   useEffect(() => {
-    console.log("useEffect6")
+    //console.log("useEffect6")
     if (catValue) {
       setCatalogueData([]);
       setCurrentPage(1);
