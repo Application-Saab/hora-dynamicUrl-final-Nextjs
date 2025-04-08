@@ -57,7 +57,7 @@ const DecorationCatPage = () => {
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const currentCategoryContent = DecorationCatDescriptionData[catValue] || [];
+  const [currentCategoryContent, setCurrentCategoryContent] = useState(DecorationCatDescriptionData[catValue])
   const [loading, setLoading] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
   const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
@@ -216,11 +216,15 @@ const DecorationCatPage = () => {
   
   // Filter change
   useEffect(() => {
+    console.log(DecorationCatDescriptionData[catValue])
     //console.log("useEffect6")
     if (catValue) {
       setCatalogueData([]);
       setCurrentPage(1);
       getSubCatItems(1); // explicitly fetch again
+      if (!currentCategoryContent){
+        setCurrentCategoryContent(DecorationCatDescriptionData[catValue])
+      }
     }
   }, [catValue, priceFilter, themeFilter]);
 
@@ -574,7 +578,7 @@ const DecorationCatPage = () => {
 
 
         <div className="category-content">
-  {currentCategoryContent.length > 0 ? (
+  {(currentCategoryContent && currentCategoryContent.length > 0) ? (
     currentCategoryContent
       .slice(0, showAll ? currentCategoryContent.length : 2)
       .map((item, index) => (
@@ -586,7 +590,7 @@ const DecorationCatPage = () => {
   ) : (
     <p className="no-content-message">No content available for this category.</p>
   )}
-  {currentCategoryContent.length > 2 && (
+  {(currentCategoryContent && currentCategoryContent.length > 2) && (
     <button onClick={toggleShowAll} className="toggle-btn">
       {showAll ? 'See Less' : 'See More'}
     </button>
