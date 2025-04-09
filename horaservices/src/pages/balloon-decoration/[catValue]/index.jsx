@@ -171,8 +171,6 @@ const DecorationCatPage = () => {
   }, []);
   
   useEffect(() => {
-    //console.log("useEffect3");
-  
     let debounceTimeout;
   
     const handleScroll = () => {
@@ -181,12 +179,14 @@ const DecorationCatPage = () => {
       clearTimeout(debounceTimeout);
       debounceTimeout = setTimeout(() => {
         const container = containerRef.current;
-        const containerBottom = container.getBoundingClientRect().bottom;
+        const { top, bottom } = container.getBoundingClientRect();
         const windowHeight = window.innerHeight;
   
-        if (containerBottom <= windowHeight + 100) {
-          // Reached near bottom of decContainer
-          setCurrentPage((prevPage) => prevPage + 1);
+        // Check if any part of the container is visible in the viewport
+        const isPartiallyVisible = bottom > 0 && top < windowHeight;
+  
+        if (isPartiallyVisible) {
+          setCurrentPage(prevPage => prevPage + 1);
         }
       }, 200);
     };
@@ -197,6 +197,7 @@ const DecorationCatPage = () => {
       clearTimeout(debounceTimeout);
     };
   }, [loading, hasMore]);
+  
   
   
   // Fetch more data when page increases
