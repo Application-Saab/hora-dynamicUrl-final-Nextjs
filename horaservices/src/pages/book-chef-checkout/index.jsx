@@ -571,7 +571,7 @@ const ChefCheckout = () => {
                             </Container>
                             <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center'
                                 style={{ fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA", margin: "9px 0 0" }}>
-                                Chef service will be available for 6 hours after arrival.
+                                Chef service will be available for 5 hours after arrival.
                             </div>
 
                             <div style={{ display: 'flex', margin: "5px 0px -10px", flexDirection: "row" }} className='row align-items-between justify-content-between  align-items-lg-center justify-content-lg-between'>

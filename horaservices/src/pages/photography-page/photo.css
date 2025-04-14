@@ -66,11 +66,14 @@ p.Prefred-occ {
   font-weight: 700;
   font-style: normal;
   color: rgb(146, 82, 170);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
 }
 
 p.Prefred-occ span:nth-child(2) {
   color: rgb(68, 68, 68);
-    margin-left: 11px;
     text-decoration: line-through;
 }
   
@@ -84,6 +87,7 @@ p.Prefred-occ span:nth-child(2) {
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, .14);
     padding: 10px;
     background-color: #fff;
+    width: 35%;
   }
   
   .work-image {
@@ -193,7 +197,7 @@ li.inclusion-item {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  flex-wrap: wrap;
+  gap: 10px;
 }
   .work-card-info {
     position: relative;
@@ -248,8 +252,22 @@ ul.work-duration li.inclusionstyle {
     background-color: #f99e1f;
     z-index: 111111111111111;
     color: #fff;
-    margin-left: 12px;
- 
+    z-index: 000;
+}
+
+.custom-spinner {
+  display: flex;
+      justify-content: center;
+      align-items: center;
+      height: auto;
+      padding: 50px 0;
+      flex-direction: column;
+}
+
+.custom-spinner .spinner-border {
+  color: #9252aa;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
   
 @media (max-width: 800px) {
@@ -257,6 +275,9 @@ ul.work-duration li.inclusionstyle {
     font-size: 13px;
     color: rgb(146, 82, 170);
   }
+  .sec-prod {
+    flex-wrap: wrap;
+}
 .photograpy-bannner-sec {
   padding: 9px 0px;
 }
@@ -295,18 +316,42 @@ p.work-duration {
 }
   }
 
+@media (max-width: 481px ){
+  p.Prefred-occ {
+    margin: 7px 0 7px 0;
+  }
+
+  .work-item {
+    width: 94%;
+    border: 1px solid #efefef;
+  }
+  .work-details {
+    padding: 13px;
+  }
+  .sec-prod {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+  ul.work-duration {
+    min-height: auto;
+}
+.works-container.products.preweddng .section-small-header {
+  font-size: 16px;
+}
+.works-container.products.preweddng .section-small-header-sec {
+  font-size: 14px;
+}
+}
   @media (max-width: 426px) {
     p.Prefred-occ {
       font-size: 14px;
   }
+
   .photograpty-disconut {
     font-size: 9px;
 }
-    ul.work-duration {
-      min-height: 181px;
-  }
   h5.work-title {
-    font-size: 15px;
+    font-size: 16px;
 }
 
     }
@@ -319,21 +364,5 @@ p.work-duration {
         margin-left: 0;
         margin-top: 5px;
     }
-      ul.work-duration {
-        min-height: 234px;
-    }
-  h5.work-title {
-    font-size: 12px;
-    min-height: 19px;
-}
 
-    }
-
-
-    @media (max-width: 321px) {
-   
-      ul.work-duration {
-        min-height: 233px;
-    }
-  
     }
