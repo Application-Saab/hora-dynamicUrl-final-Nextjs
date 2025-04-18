@@ -35,7 +35,7 @@ const FoodDeliveryCheckout = () => {
     const [cityError, setCityError] = useState(false);
     const router = useRouter();
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [deliveryCharges, setDeliveryCharges] = useState(350);
+    const [deliveryCharges, setDeliveryCharges] = useState(400);
     const [packingCost, setpackingCost] = useState(200);
     const [includeDisposable, setIncludeDisposable] = useState(true); // State for checkbox
     const [includeTables, setIncludeTables] = useState(true);
@@ -196,7 +196,10 @@ const FoodDeliveryCheckout = () => {
    
     var discountedPrice = selectedOption === 'party-live-buffet-catering' ?  ((newTotalPrice) * 1.1 + 6500).toFixed(0) : newTotalPrice.toFixed(0);
     totalPrice = selectedOption === 'party-live-buffet-catering' ?  ((totalPrice) * 1.1 + 6500).toFixed(0) : totalPrice.toFixed(0);
-   
+    console.log('totalPcie1', totalPrice);
+    totalPrice = parseFloat(totalPrice) + parseFloat(deliveryCharges)
+    console.log('totalPcie', totalPrice);
+
     const calculateFinalTotal = () => {
         let finalTotal = 0; // Initialize finalTotal with 0
     
@@ -659,7 +662,7 @@ const FoodDeliveryCheckout = () => {
                                 <div style={{ paddingTop: "5px" }}>
                                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 3  }}>
                                         <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>Item Total</p>
-                                        <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>₹ {totalPrice}</p>
+                                        <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>₹ {totalPrice }</p>
                                     </div>
                                     {/* <img style={{ width: 290, height: 1, marginTop: 5, marginBottom: 5 }} src="../../assets/Rectangleline.png" alt="line" /> */}
                                     {discountedPrice > 0 && (
@@ -669,7 +672,7 @@ const FoodDeliveryCheckout = () => {
                                                     <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>Item Discount:</p>
                                                 </div>
                                                 <p style={{ color: "#008631", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>
-                                                    {'-'} ₹ {totalPrice - discountedPrice}
+                                                    {'-'} ₹ {totalPrice - discountedPrice - deliveryCharges}
                                                 </p>
                                             </div>
                                             {/* <img style={{ width: 290, height: 1, marginTop: 5, marginBottom: 5 }} src="../../assets/Rectangleline.png" alt="line" /> */}
@@ -846,7 +849,7 @@ const FoodDeliveryCheckout = () => {
                                                         <p style={{ color: "#9252AA", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>Item Discount:</p>
                                                     </div>
                                                     <p style={{ color: "#008631", fontWeight: '600', fontSize: 14, lineHeight: '20px' }}>
-                                                        {'-'} ₹ {totalPrice - discountedPrice}
+                                                        {'-'} ₹ {totalPrice - discountedPrice - deliveryCharges}
                                                     </p>
                                                 </div>
                                           

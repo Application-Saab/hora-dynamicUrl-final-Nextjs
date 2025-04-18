@@ -41,7 +41,9 @@ const OtpLogin = ({setIsModalOpen}) => {
     setOtp(e.target.value);
   };
 
-
+      // Function to send the WhatsApp message
+const sendWelcomeMessage = async (mobileNumber) => {
+};
   // Function to send OTP
   const sendOtp = async () => {
     if (!mobileNumber ) {
@@ -99,6 +101,7 @@ const OtpLogin = ({setIsModalOpen}) => {
         localStorage.setItem("mobileNumber", mobileNumber);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userID', response.data.data._id);
+        sendWelcomeMessage(mobileNumber);
         setError('');
         setOtpError('');
         setIsOtpSent(false);

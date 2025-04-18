@@ -44,6 +44,7 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber = localStorage.getItem('mobileNumber');
   const [isMobile, setIsMobile] = useState(false);
+  const [deliveryCharges, setDeliveryCharges] = useState(400);
 
   let {
     selectedOption,
@@ -159,13 +160,12 @@ console.log(dishCount)
       }
       totalPrice = totalPrice + dish.price * peopleCount
     });
-
-    console.log(newTotalPrice)
-    console.log(totalPrice)
+ 
     newTotalPrice = newTotalPrice * discountPercentagePrice
-
-
     var discountedPrice = selectedOption === 'party-live-buffet-catering' ?  ((newTotalPrice) * 1.1 + 6500).toFixed(0) : newTotalPrice.toFixed(0);
+    discountedPrice = parseFloat(discountedPrice) + deliveryCharges
+    console.log("111", newTotalPrice, discountedPrice)
+    console.log(totalPrice)
 
   // Container for the whole component
   const MainContainer = styled.div`
