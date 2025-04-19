@@ -245,42 +245,16 @@ const DecorationCatPage = () => {
   }
   
   const getSubCatId = async (subCategory) => {
-   if (subCategory === 'Birthday'){
-    setCatId('65a91598ae1586258cccffd4');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'Firstnight'){
-    setCatId('65a92085ae1586258ccd04ff');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'Anniversary'){
-    setCatId('65a92271ae1586258ccd0628');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'KidsBirthday'){
-    setCatId('65aeaf5147d5cb78ba19d4d3');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'BabyShower'){
-    setCatId('65a95dcb6995e7401e78c2ea');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'WelcomeBaby'){
-    setCatId('65a2d129513d9389d34e31d4');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'PremiumDecoration'){
-    setCatId('65a92efbae1586258ccd0c6e');
-    setCatValue(subCategory);
-   }
-   else if (subCategory === 'BalloonBouquets'){
-    setCatId('65a92efbae1586258ccd0c6e');
-    setCatValue(subCategory);
-   }
-   else {
-    setCatId('65a91598ae1586258cccffd4');
-    setCatValue(subCategory);
-   }
+  try {
+    const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
+    const categoryId = response.data.data?._id;
+    if (categoryId) {
+      setCatId(categoryId);
+      setCatValue(subCategory); // triggers the filter effect
+    }
+  } catch (error) {
+    console.log("Error:", error.message);
+  }
   };
   
   const getDiscountedPrice = (price) => {
