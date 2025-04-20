@@ -3,8 +3,8 @@ import { useRouter } from "next/router";
 import "@/app/homepage.css";
 import PhotographyDescription from "../../photography-page/components/PhotographyDescription";
 import PhotographySEOKeywords from "../../photography-page/components/PhotographySEOKeywords";
-import faqData from "@/utils/photographyFAQ.json";
 import PhotographyFAQ from "../../photography-page/components/PhotographyFAQ";
+import { faqData } from "@/utils/photographyFAQData";
 
 
 const PhotographyCityPage = () => {
