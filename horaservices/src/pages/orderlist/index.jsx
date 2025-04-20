@@ -289,8 +289,8 @@ const Orderlist = () => {
   const isWithinFourHourWindow = (orderTimeRange, orderDate) => {
     const [startTimeString] = orderTimeRange.split(" - ");
     const startTime = parseTime(startTimeString, orderDate);
-    const twoHoursBeforeStartTime = startTime.getTime() - 2 * 60 * 60 * 1000;
-    const twoHoursAfterStartTime = startTime.getTime() + 2 * 60 * 60 * 1000;
+    const twoHoursBeforeStartTime = startTime.getTime() - 3 * 60 * 60 * 1000;
+    const twoHoursAfterStartTime = startTime.getTime() + 3 * 60 * 60 * 1000;
 
     const currentTime = new Date();
     return (
@@ -309,7 +309,7 @@ const Orderlist = () => {
       {!isLoggedIn ? (
     // Case 2: User is NOT logged in
     <div className="no-orders">
-      <h4>Please log in to check all your orders.</h4>
+      <h2 className="no-record-heading">Please log in to check all your orders.</h2>
       <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
     </div>
   ):
