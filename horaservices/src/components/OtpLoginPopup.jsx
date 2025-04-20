@@ -155,6 +155,13 @@ const sendWelcomeMessage = async (mobileNumber) => {
         setIsUserLoggedIn(true);
         setOtp('');
         setMobileNumber(''); // Corrected to setMobileNumber('')
+        if (routerPathname === '/orderlist' || routerPathname === '/photo-gallery' ){
+          console.log('inside reload');
+          window.location.reload();
+        }
+        else {
+          console.log('outside reload');
+        }
       } else {
         setOtpError('Invalid OTP. Please try again.');
         setOtp(''); // Clear OTP field if invalid

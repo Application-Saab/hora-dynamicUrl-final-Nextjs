@@ -9,6 +9,8 @@ import Image from "next/image";
 import informationImage from "../../assets/information.webp";
 import dangerImage from "../../assets/danger.webp";
 import Popup from "../../utils/popup";
+import OtpLoginPopup from '../../components/OtpLoginPopup';
+
 // order.type is 2 for chef
 // order.type is 1 for decoration
 // order.type is 3 for waiter
@@ -27,21 +29,17 @@ const Orderlist = () => {
   const [executor, setExecutor] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
   useEffect(() => {
-    
     const checkAuth = () => {
-
-      const checkAuth = () => {
-        const isLoggedIn = localStorage.getItem("isLoggedIn");
+      
         if (isLoggedIn !== "true") {
-          router.push({
-            pathname: '/login',
-            query: { from: "/orderlist" }
-          });
+          setIsModalOpen(true);
         }
-      };
-  
-      checkAuth()
+        else {
+          setIsModalOpen(false);
+        }
     };
     checkAuth();
     const fetchOrderList = async () => {
@@ -63,7 +61,6 @@ const Orderlist = () => {
         setLoading(false);
       }
     };
-
     fetchOrderList();
   }, []);
 
@@ -182,18 +179,18 @@ const Orderlist = () => {
     );
   }
 
-  if (orders.length === 0) {
-    return (
-      <center>
-        <div className="no-orders">
-          <h4>No Orders.. Please continue shopping with Hora</h4>
-          <button className="button-style" onClick={() => router.push("/")}>
-            Continue Shopping
-          </button>
-        </div>
-      </center>
-    );
-  }
+  // if (orders.length === 0) {
+  //   return (
+  //     <center>
+  //       <div className="no-orders">
+  //         <h4>No Orders.. Please continue shopping with Hora</h4>
+  //         <button className="button-style" onClick={() => router.push("/")}>
+  //           Continue Shopping
+  //         </button>
+  //       </div>
+  //     </center>
+  //   );
+  // }
 
   const openSupplierPopup = async (order) => {
     console.log(order, "order111");
@@ -309,7 +306,15 @@ const Orderlist = () => {
   return (
     <main className="order-list">
       <div className="order-container">
-        {orders && orders.length > 0 ? (
+      {!isLoggedIn ? (
+    // Case 2: User is NOT logged in
+    <div className="no-orders">
+      <h4>Please log in to check all your orders.</h4>
+      <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+    </div>
+  ):
+
+         orders.length  > 0 ? (
           orders?.map((order) => {
             const orderStatus = getOrderStatus(order?.order_status);
             return (
@@ -499,8 +504,13 @@ const Orderlist = () => {
           })
         ) : (
           <div className="no-record-div m-5">
-            <h2 className="no-record-heading">No record found</h2>
-          </div>
+          <h2 className="no-record-heading">
+            No Orders.. Please continue shopping with Hora
+          </h2>
+          <button className="button-style" onClick={() => router.push("/")}>
+            Continue Shopping
+          </button>
+        </div>
         )}
       </div>
     </main>
