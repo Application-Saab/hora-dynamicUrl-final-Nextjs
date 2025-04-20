@@ -1,4 +1,5 @@
 import FAQAccordion from "@/components/FAQs";
+import "@/css/decoration.css";
 import React from "react";
 
 export function PhotographyFAQ({faqData}) {
