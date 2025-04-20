@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";
 import "@/app/homepage.css";
-import faqData from "@/utils/photographyFAQ.json";
+import {faqData} from "@/utils/photographyFAQData";
 
 import PhotographyLocalities from "./components/PhotographyLocalities";
 import PhotographyDescription from "./components/PhotographyDescription";
