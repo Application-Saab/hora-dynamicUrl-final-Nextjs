@@ -102,6 +102,28 @@ const footerColumns = [
     ],
   },
   {
+    title: 'Photographer in your city',
+    links: [
+      { text: 'Delhi', to: '/delhi/photography-page' },
+      { text: 'Gurugram', to: '/gurugram/photography-page' },
+      { text: 'Ghaziabad', to: '/ghaziabad/photography-page' },
+      { text: 'Faridabad', to: '/faridabad/photography-page' },
+      { text: 'Noida', to: '/noida/photography-page' },
+      { text: 'Bengaluru', to: '/bengaluru/photography-page' },
+      { text: 'Bangalore', to: '/bangalore/photography-page' },
+      { text: 'Hyderabad', to: '/hyderabad/photography-page' },
+      { text: 'Mumbai', to: '/mumbai/photography-page' },
+      { text: 'Indore', to: '/indore/photography-page' },
+      { text: 'Chennai', to: '/chennai/photography-page' },
+      { text: 'Pune', to: '/pune/photography-page' },
+      { text: 'Surat', to: '/surat/photography-page' },
+      { text: 'Bhopal', to: '/bhopal/photography-page' },
+      { text: 'Kanpur', to: '/kanpur/photography-page' },
+      { text: 'Lucknow', to: '/lucknow/photography-page' },
+      { text: 'Goa', to: '/goa/photography-page' },
+    ],
+  },
+  {
     title: 'Contact',
     links: [
       { text: '+917338584828', href: 'tel:+917338584828' },
