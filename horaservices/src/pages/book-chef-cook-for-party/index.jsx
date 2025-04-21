@@ -186,6 +186,15 @@ const CreateOrder = ({ history, currentStep }) => {
     };
 
     const handleIncreaseQuantity = (dish, isSelected) => {
+        console.log("Selected Dish:", dish);
+        console.log("isSelected:", isSelected);
+        console.log("Selected Dishes:", selectedDishes);
+        console.log("Selected Dish Dictionary:", selectedDishDictionary);
+        console.log("Selected Count:", selectedCount);
+        console.log("Selected Dish Price:", selectedDishPrice);
+        console.log("Selected Cuisines:", selectedCuisines);
+        console.log("Is Dish Selected:", isDishSelected);
+        
         if (selectedDishes.length >= 0 && !isSelected) {
             //setIsButtonVisible(true);
         }
@@ -210,9 +219,11 @@ const CreateOrder = ({ history, currentStep }) => {
             setSelectedCount(updatedSelectedDishes.length);
             if (isSelected) {
                 const updatedPrice = selectedDishPrice - parseInt(dish.dish_rate, 10);
+                console.log("Updated Price:", updatedPrice);
                 setSelectedDishPrice(updatedPrice);
             } else {
                 const updatedPrice = selectedDishPrice + parseInt(dish.dish_rate, 10);
+                console.log("Updated Price2:", updatedPrice);
                 setSelectedDishPrice(updatedPrice);
             }
             if (updatedSelectedDishDictionary[dish._id]) {
@@ -520,6 +531,11 @@ const CreateOrder = ({ history, currentStep }) => {
             }
         });
     };
+
+    console.log("addDish", selectedDishPrice, selectedDishes, selectedCount, isDishSelected);
+    console.log("selectedDishPrice12", selectedDishPrice);
+   
+
     
 
     const closeBottomSheet = () => {

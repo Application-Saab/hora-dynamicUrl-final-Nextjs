@@ -55,6 +55,12 @@ const ChefCheckout = () => {
         selectedCount,
         selectedDishes
     } = router.query;
+
+    console.log("selectedDishes", selectedDishes);
+    console.log(selectedCount, "selectedcount");
+    console.log(selectedDishPrice, "selectedDishPrice");
+    // console.log(selectedDishDictionary, "selectedDishDictionary");
+    console.log(peopleCount, "peopleCount");
    
  
     useEffect(() => {
@@ -390,10 +396,16 @@ const ChefCheckout = () => {
         }
     }
 
-    const priceForPeople = peopleCount * 49
-    let totalPrice = parseInt(selectedDishPrice) + priceForPeople
+    console.log(peopleCount, "peopleCount");
+    const priceForPeople = peopleCount * 49;
+    console.log(priceForPeople, "priceForPeople");
+    console.log(selectedDishPrice, "selectedDishPrice");
+
+    let totalPrice = parseInt(selectedDishPrice) + priceForPeople;
+    console.log(totalPrice, "totalPrice");
     if (Array.isArray(selectedDishes) && selectedDishes.length > 7) {
         totalPrice += 700;
+        console.log(totalPrice, "totalPrice with 700 extra charge");
     }
     useEffect(() => {
         setIsClient(true);

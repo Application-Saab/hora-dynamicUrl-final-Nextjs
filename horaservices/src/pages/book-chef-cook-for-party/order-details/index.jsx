@@ -52,6 +52,13 @@ const SelectDate = ({ history, currentStep }) => {
         selectedCount,
     } = router.query;
 
+    console.log("selectedDishDictionary", selectedDishDictionary);
+    console.log("selectedDishPrice", selectedDishPrice);
+    console.log("selectedDishes", selectedDishes);
+    console.log("isDishSelected", isDishSelected);
+    console.log("selectedCount", selectedCount);
+    console.log("orderType", orderType);
+
     if (selectedDishDictionary) {
         try {
             selectedDishDictionary = JSON.parse(selectedDishDictionary);
@@ -302,6 +309,9 @@ const SelectDate = ({ history, currentStep }) => {
             selectedCount
         };
 
+        // console.log("selectedDishDictionary", selectedDishDictionary);
+        console.log("selectedDishPrice12", selectedDishPrice);
+
         // if (!isLoggedIn) {
         //     router.push({
         //         pathname: '/login',
@@ -353,6 +363,8 @@ const SelectDate = ({ history, currentStep }) => {
     const getTotalIngredients = () => {
         let totalIngredients = {};
         for (const dishId in data) {
+            console.log("dishId", dishId);
+            console.log(data, "data");
             const dish = data[dishId];
             if (dish.ingredientUsed) {
                 dish.ingredientUsed.forEach((ingredient) => {
