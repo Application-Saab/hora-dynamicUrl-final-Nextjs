@@ -11,8 +11,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import whatsppicon from "../../assets/whatsapp-new.webp";
 import Link from 'next/link';
+import Head from 'next/head';
 
-const index = () => {
+const Index = () => {
   const [products, setProducts] = useState([]);
   const [email, setEmail] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
@@ -94,24 +95,32 @@ const index = () => {
   }, []);
 
   const sendToCheckoutPage = (product) => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: product.name,
-    });
-    console.log("Data sent to dataLayer:");
+    // window.dataLayer = window.dataLayer || [];
+    // window.dataLayer.push({
+    //   event: "book_now_click",
+    //   product_name: product.name,
+    // });
+    console.log("Data sent to dataLayer:",product.name);
     router.push({
-      pathname: 'photography-checkout',
+      pathname: `/photography-page/${product.name}`,
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
-        totalAmount: product.price,
+        // totalAmount: product.price,
       }
     });
   };
 
   return (
     <>
+    <Head>
+        <title>Hora: Professional Photographers starting @‌3600 Rs</title>
+    <meta name="description" content="Find the best photographers in your city. Check pricing, portfolio and reviews. Photography for every event. Tradional Photography, Candid Photography & Videography photoshoots for your big day. Photography for Birthday, Photography for Baby Shower, Photography for MaternityPhotography for New Born, Photography for Engagement, Photography for House warming, Photography for Pre-wedding, Photography for Wedding, Photography for Coorporate event, Photography for Portfolio Shoot, Photography for Naming Ceremony, Photography for Family Shoot, Photography for Post Wedding, Photography for Upanayana Ceremony, Photography for Anniversary, Photography for Anaprashaman, Photography for Cradle Ceremony, Photography for E-commerse photoshoot, Photography for Photo- restoration, Photography for Shastipurthi, Photography for Christian wedding, Photography for Muslim Wedding, Photography for Puberty function, Photography for Drone Photography, Photography for Corporate Video Production, Photography for Personalized coffee mug printing Service, Photography for Freelance photographers, Photography for Elements Resort Pre-wedding Shoot, Photography for Fashion shoot, Photography for Baby’s backyard Studio, Photography for Holy Communion Baptism Photoshoot Portfolio" />
+    <meta name="keywords" content="Personal chef, private chef to cook in home in India, home chef, book a cook near you, chef at home, Private cook in Mumbai, Book a cook for home near you, Hire Chef in Bangalore, Private Chef in Delhi, Catering service, balloon, decoration, celebration, party, birthday, anniversary, decorator, candle light dinner,  surprises, couples, bouquets , online caterers, catering services, best caterers, birthday party catering, birthday caterers, party catering, home catering, corporate catering, caterers for small parties, wedding caterers" />
+
+    <meta property="og:title" content="Hora: Professional Photographers starting @‌3600 Rs" />
+    <meta property="og:description" content="Find the best photographers in your city. Check pricing, portfolio and reviews. Photography for every event. Tradional Photography, Candid Photography & Videography photoshoots for your big day. Photography for Birthday, Photography for Baby Shower, Photography for MaternityPhotography for New Born, Photography for Engagement, Photography for House warming, Photography for Pre-wedding, Photography for Wedding, Photography for Coorporate event, Photography for Portfolio Shoot, Photography for Naming Ceremony, Photography for Family Shoot, Photography for Post Wedding, Photography for Upanayana Ceremony, Photography for Anniversary, Photography for Anaprashaman, Photography for Cradle Ceremony, Photography for E-commerse photoshoot, Photography for Photo- restoration, Photography for Shastipurthi, Photography for Christian wedding, Photography for Muslim Wedding, Photography for Puberty function, Photography for Drone Photography, Photography for Corporate Video Production, Photography for Personalized coffee mug printing Service, Photography for Freelance photographers, Photography for Elements Resort Pre-wedding Shoot, Photography for Fashion shoot, Photography for Baby’s backyard Studio, Photography for Holy Communion Baptism Photoshoot Portfolio" />
+</Head>
       <div>
         <div className="party-services homeslider">
           <div className="home-slider-inner">
@@ -181,4 +190,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;
