@@ -67,7 +67,7 @@ const DecorationCatPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
   //   const navigate = useNavigate();
-  const [priceFilter, setPriceFilter] = useState(''); // Default: Show all
+  const [priceFilter, setPriceFilter] = useState('all'); // Default: Show all
   const [themeFilter, setThemeFilter] = useState("all"); // Default: Show all
   const [sortFilter, setSortFilter] = useState("asc");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
