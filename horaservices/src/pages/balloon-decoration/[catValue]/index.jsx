@@ -170,35 +170,66 @@ const DecorationCatPage = () => {
     return () => window.removeEventListener('scroll', handleStickyScroll);
   }, []);
   
+  // useEffect(() => {
+  //   let debounceTimeout;
+  
+  //   const handleScroll = () => {
+  //     if (loading || !hasMore || !containerRef.current) return;
+  
+  //     clearTimeout(debounceTimeout);
+  //     debounceTimeout = setTimeout(() => {
+  //       const container = containerRef.current;
+  //       const { top, bottom } = container.getBoundingClientRect();
+  //       const windowHeight = window.innerHeight;
+  
+  //       // Check if any part of the container is visible in the viewport
+  //       const isPartiallyVisible = bottom > 0 && top < windowHeight;
+  
+  //       if (isPartiallyVisible) {
+  //         setCurrentPage(prevPage => prevPage + 1);
+  //       }
+  //     }, 200);
+  //   };
+  
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll);
+  //     clearTimeout(debounceTimeout);
+  //   };
+  // }, [loading, hasMore]);
+  
+  const sentinelRef = useRef(null);
+
   useEffect(() => {
-    let debounceTimeout;
+    if (loading || !hasMore) return;
   
-    const handleScroll = () => {
-      if (loading || !hasMore || !containerRef.current) return;
+    // Adjust rootMargin based on screen size
+    const isMobile = window.innerWidth <= 768;
+    const rootMargin = isMobile ? '400px' : '1000px';
   
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        const container = containerRef.current;
-        const { top, bottom } = container.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-  
-        // Check if any part of the container is visible in the viewport
-        const isPartiallyVisible = bottom > 0 && top < windowHeight;
-  
-        if (isPartiallyVisible) {
-          setCurrentPage(prevPage => prevPage + 1);
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          setCurrentPage(prev => prev + 1);
         }
-      }, 200);
-    };
+      },
+      {
+        root: null,
+        rootMargin: rootMargin,
+        threshold: 0,
+      }
+    );
   
-    window.addEventListener('scroll', handleScroll);
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
+    }
+  
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(debounceTimeout);
+      if (sentinelRef.current) {
+        observer.unobserve(sentinelRef.current);
+      }
     };
   }, [loading, hasMore]);
-  
-  
   
   // Fetch more data when page increases
   useEffect(() => {
@@ -547,7 +578,7 @@ const DecorationCatPage = () => {
             </div>
           </div>
         ))}
-
+        <div ref={sentinelRef} style={{ height: '1px' }} /> {/* Sentinel at the end */}
         {/* Show bottom skeletons when paginating */}
         {loading && currentPage > 1 && (
           [1, 2, 3, 4].map((index) => (
