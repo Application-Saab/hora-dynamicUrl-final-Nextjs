@@ -1,0 +1,71 @@
+/* this css for the star's  */
+.party-title::before,
+.party-title::after {
+  content: "";
+  background-image: url("../assets/heading_icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 2.2rem;
+  height: 2.2rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.party-title::before {
+  left: 0;
+}
+
+.party-title::after {
+  right: 0;
+}
+
+.text-purple {
+  color: #97538c;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.food-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease-in-out;
+}
+
+.object-fit-cover {
+  object-fit: cover;
+}
+
+@media (max-width: 480px) {
+  .display-5 {
+    font-size: 1.2rem !important;
+  }
+
+  .party-title::before,
+  .party-title::after {
+    content: "";
+    background-image: url("../assets/heading_icon.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 1.2rem;
+    height: 1.2rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .food-icon {
+    width: 25px;
+    height: 25px;
+  }
+}
+.food-card {
+  height: 100%;
+  object-fit: cover;
+}
