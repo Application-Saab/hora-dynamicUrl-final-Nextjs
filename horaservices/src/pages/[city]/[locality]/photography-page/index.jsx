@@ -1,30 +1,35 @@
 import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
-import "@/app/homepage.css";
-import PhotographyDescription from "../../photography-page/components/PhotographyDescription";
-import PhotographySEOKeywords from "../../photography-page/components/PhotographySEOKeywords";
-import PhotographyFAQ from "../../photography-page/components/PhotographyFAQ";
-import { faqData } from "@/utils/photographyFAQData";
-
+import cityData from "@/utils/cityData";
+import FAQAccordion from "@/component/FAQs";
+import SectionDescription from "@/component/Description";
+import { photographyCityDescription } from "@/util/PhotographyMockData/PhotographyDescription";
+import { photographyFAQData } from "@/util/PhotographyMockData/PhotographyFAQ";
+import { PhotographySEOKeywords } from "@/util/PhotographyMockData/GetSEOKeywords";
 
 const PhotographyCityPage = () => {
   const router = useRouter();
-  let { locality } = router.query;
-
-  if (locality) {
-    locality = locality.charAt(0).toUpperCase() + locality.slice(1);
+  let { city } = router.query;
+  if (city) {
+    city = city.charAt(0).toUpperCase() + city.slice(1);
   }
 
+  const cityDescription = photographyCityDescription(city);
 
   return (
-    <div className="page-width">
-      <Index />
-      <PhotographyFAQ faqData={faqData} />
-      <PhotographyDescription city={locality} />
-      <PhotographySEOKeywords city={locality} />
-    </div>
+    <>
+      <div className="container">
+        <Index />
+      </div>
+      <div className="mt-5">
+        <FAQAccordion faqData={photographyFAQData} />
+      </div>
+      <SectionDescription paragraphs={cityDescription} />
+      <div className="my-4 container">
+        <PhotographySEOKeywords city={city} />
+      </div>
+    </>
   );
 };
 
 export default PhotographyCityPage;
-

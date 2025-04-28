@@ -1,4 +1,4 @@
-import { customerReview } from "@/utils/homeDumpData/customerReview";
+import { customerReview } from "@/util/homeMockData/customerReview";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React from "react";

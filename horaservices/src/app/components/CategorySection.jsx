@@ -1,4 +1,4 @@
-import { whereAreYouData } from '@/utils/homeDumpData/whereAreYouData'
+import { whereAreYouData } from '@/util/homeMockData/whereAreYouData'
 import React from 'react'
 
 export function CategorySection() {
