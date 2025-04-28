@@ -1,6 +1,6 @@
 // pages/_app.tsx
 import { React, useEffect , useState} from "react";
-import '../app/globals.css';
+// import '../app/globals.css';
 import PageLayout from '@/components/pagelayout';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -10,7 +10,8 @@ import Image from 'next/image';
 import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from 'next/router'; // Import useRouter
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
-
+import "../app/custom.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();

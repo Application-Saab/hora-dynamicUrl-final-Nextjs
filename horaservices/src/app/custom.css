@@ -76,3 +76,17 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* decoration page bg color */
+
+.decoration-page {
+  background-color:#ddd;
+}
+
+.decoration-card-height{
+  min-height: 370px;
+}
+
+.slick-slider {
+  height: 375px !important;
+}

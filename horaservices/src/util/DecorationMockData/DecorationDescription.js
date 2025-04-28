@@ -1,4 +1,4 @@
-const getCityParagraphs = (city) => [
+export const decorationCityDescription = (city) => [
     `Home Balloon Decoration in ${city?.toUpperCase()} for Birthday Party celebrations`,
     `Decorations and Gifts can make anybody happy. Who doesn’t love getting pampered? Everybody does, though all may not ask for it. A birthday is an occasion to rejoice with our friends and loved ones. These days’ birthday themes and decorations seem to play a major role in any birthday party. Balloons are a necessary thing when it comes to decorating for birthday parties not because Online balloon decoration is cheap and colorful but because balloon decoration adds warm fuzzies to the party which creates a blissful moment in the hearts of people. Balloons are party highlighters! They not only brighten up birthday parties but also bring the group together in balloon bursting activities. Balloon birthday themes have always been fun and easy. The bright and colorful balloons are an ideal choice for any birthday party. When people hear the name of balloons decoration, they anticipate a happy moment to come which makes them feel extremely happy from within. It enlightens the festive mood with its elegant design, color and pattern. There are so many things you can do to create the best balloon decoration with the help of the best party planner in Bangalore or balloon decorators in ${city?.toUpperCase()}. These are the things you can do to make your birthday parties memorable.`,
     `Birthday Balloon Decoration in ${city?.toUpperCase()}`,
@@ -11,5 +11,4 @@ const getCityParagraphs = (city) => [
     `event planning certification, event organizing courses, event planner classes, event planner training, event planning course, event management certification, how to become a certified event planner, event certification, how to plan an event, event planning, event planners, helena paschal, how to plan an event houston, corporate event planner, business event planner, how to become an event planner, how to start an event planner business, event planning for beginners`
   ];
   
-  export default getCityParagraphs;
   

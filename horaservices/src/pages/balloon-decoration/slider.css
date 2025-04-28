@@ -14,7 +14,7 @@
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.14) 0px 6px 16px 0px;
     padding: 10px;
-    background-color: #fff; /* Add a background color to make the gap visible */
+    background-color: #fff; 
 }
 a.view-more-slide.slider-item img {
     height: 199px;
@@ -38,6 +38,9 @@ a.view-more-slide.slider-item img {
     margin-left: 8px;
     margin-right: 8px;
     max-height: 230px;
+}
+.slick-list{
+    left: -11px !important;
 }
 
 
@@ -132,7 +135,7 @@ a.view-more-slide.slider-item img {
    
 }
 .slick-prev{
-    left: 10px !important;
+    left: 3px !important;
     z-index: 1111 !important;
 }
 

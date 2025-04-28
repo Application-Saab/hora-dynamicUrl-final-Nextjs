@@ -1,6 +1,5 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import {faqData} from "@/utils/photographyFAQData";
 import buynowImage from "../../../assets/experts.png";
 import buynowImage1 from "../../../assets/secured.png";
 import buynowImage2 from "../../../assets/service.png";
@@ -10,35 +9,10 @@ import logo from "../../../assets/new_logo_light.png";
 import { useRouter } from "next/router";
 import { GetItemInclusion } from "@/utils/getItemInclusion";
 import { getDiscountedPrice } from "@/utils/getDiscountedPrice";
+import FAQAccordion from "@/component/FAQs";
+import { photographyFAQData } from "@/util/PhotographyMockData/PhotographyFAQ";
 
-const PhotographyFAQSection = ({faqData}) => {
-  const [openIndex, setOpenIndex] = useState(null);
 
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  return (
-    <div className="faqSection">
-      {faqData.map((item, index) => (
-        <div key={index} className="faqItem">
-          <div
-            onClick={() => handleToggle(index)}
-            style={{ cursor: "pointer" }}
-          >
-            <h3>{item.question}</h3>
-            <span>{openIndex === index ? "-" : "+"}</span>
-          </div>
-          {openIndex === index && (
-            <div>
-              <p>{item.answer}</p>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
 
 
 const PhotographDetail = () => {
@@ -48,7 +22,7 @@ const PhotographDetail = () => {
     {
       id: "faq",
       title: "FAQ",
-      content: <PhotographyFAQSection faqData={faqData} />,
+      content: <FAQAccordion faqData={photographyFAQData} />,
     },
     {
       id: "whyHora",

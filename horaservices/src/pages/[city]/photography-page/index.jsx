@@ -1,43 +1,53 @@
 import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";
-import "@/app/homepage.css";
-import {faqData} from "@/utils/photographyFAQData";
-
-import PhotographyLocalities from "./components/PhotographyLocalities";
-import PhotographyDescription from "./components/PhotographyDescription";
-import PhotographySEOKeywords from "./components/PhotographySEOKeywords";
-import PhotographyFAQ from "./components/PhotographyFAQ";
+import LocalitiesSection from "@/component/LocalitiesSection";
+import FAQAccordion from "@/component/FAQs";
+import SectionDescription from "@/component/Description";
+import { photographyCityDescription } from "@/util/PhotographyMockData/PhotographyDescription";
+import { photographyFAQData } from "@/util/PhotographyMockData/PhotographyFAQ";
+import { PhotographySEOKeywords } from "@/util/PhotographyMockData/GetSEOKeywords";
 
 const PhotographyCityPage = () => {
   const router = useRouter();
   let { city } = router.query;
-
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
   }
 
-  const normalizedCity = city ? city.toLowerCase() : "";
-  const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
+  const cityDescription = photographyCityDescription(city);
 
-  useEffect(() => {
-    if (normalizedCity) {
-      const localities = cityData[normalizedCity]?.cityLocalitiesList || [];
-      setCityLocalitiesList(localities);
-    }
-  }, [normalizedCity]);
+  const localities =
+    cityData[city?.toLocaleLowerCase()]?.cityLocalitiesList || [];
+
+  const localityHandleClick = (localityName) => {
+    const formattedLocalityName = localityName
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+    router.push({
+      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography-page`,
+    });
+  };
 
   return (
-    <div className="page-width">
-      <Index />
-      <PhotographyLocalities city={city} localities={cityLocalitiesList} />
-      <PhotographyFAQ faqData={faqData}/>
-      <PhotographyDescription city={city} />
-      <PhotographySEOKeywords city={city} />
-    </div>
+    <>
+      <div className="container">
+        <Index />
+      </div>
+      <LocalitiesSection
+        title={`${city} localities`}
+        localities={localities}
+        handleClick={localityHandleClick}
+      />
+      <div className="mt-5">
+        <FAQAccordion faqData={photographyFAQData} />
+      </div>
+      <SectionDescription paragraphs={cityDescription} />
+      <div className="my-4 container">
+        <PhotographySEOKeywords city={city} />
+      </div>
+    </>
   );
 };
 
 export default PhotographyCityPage;
-

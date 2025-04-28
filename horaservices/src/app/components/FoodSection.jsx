@@ -1,4 +1,4 @@
-import { foodData } from "@/utils/homeDumpData/foodData";
+import { foodData } from "@/util/homeMockData/foodData";
 import Image from "next/image";
 import React from "react";
 import FoodIcon from "../../assets/food_icon.png";
