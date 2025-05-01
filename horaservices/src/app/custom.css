@@ -1,3 +1,54 @@
+:root {
+  /* Global color palette */
+  --primary-color: #97538c;
+  --secondary-color: #f7c948;
+  --accent-color: #e573c7;
+  --background-color: #f8f8f8;
+  --text-color: #222;
+  --card-bg: #fff;
+  --border-color: #e0e0e0;
+
+  /* Font sizes for desktop */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.25rem;
+  --font-xl: 1.5rem;
+  --font-xxl: 2rem;
+}
+
+body {
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font-size: var(--font-md);
+}
+
+/* Example usage for headings */
+h1, .font-xxl { font-size: var(--font-xxl); }
+h2, .font-xl { font-size: var(--font-xl); }
+h3, .font-lg { font-size: var(--font-lg); }
+h4, .font-md { font-size: var(--font-md); }
+h5, .font-sm { font-size: var(--font-sm); }
+h6, .font-xs { font-size: var(--font-xs); }
+
+/* Example usage for colors */
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--secondary-color); }
+.bg-primary { background-color: var(--primary-color); }
+.bg-secondary { background-color: var(--secondary-color); }
+
+/* Responsive font sizes for mobile */
+@media (max-width: 480px) {
+  :root {
+    --font-xs: 0.65rem;
+    --font-sm: 0.75rem;
+    --font-md: 0.9rem;
+    --font-lg: 1.1rem;
+    --font-xl: 1.3rem;
+    --font-xxl: 1.6rem;
+  }
+}
+
 /* this css for the star's  */
 * {
   font-family: 'Montserrat', sans-serif;
@@ -73,7 +124,6 @@
   }
 }
 .food-card {
-  height: 100%;
   object-fit: cover;
 }
 
@@ -84,9 +134,5 @@
 }
 
 .decoration-card-height{
-  min-height: 370px;
-}
-
-.slick-slider {
-  height: 375px !important;
+  min-height: 300px;
 }

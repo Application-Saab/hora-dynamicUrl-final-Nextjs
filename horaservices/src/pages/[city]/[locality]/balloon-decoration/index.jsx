@@ -29,7 +29,7 @@ function DecorationLocalityPage() {
 
   return (
     <>
-      <DecorationPage />
+      <DecorationPage city={city}/>
       <FAQAccordion faqData={cityDecorationFAQ} />
       <SectionDescription paragraphs={cityDescription} />
       <LocalitiesSection

@@ -7,8 +7,8 @@ const DecorationSkeletonPage = () => {
       {/* Top Categories */}
       <div className="d-flex justify-content-lg-between overflow-auto mb-4">
         {[1,2,3,4,5,6,7].map((_, index) => (
-          <div key={index} className="me-3">
-            <div className="placeholder rounded" style={{ width: '100px', height: '100px' }}></div>
+          <div key={index} className="me-3 col-3 col-md-1 rounded-4  ">
+            <div className="placeholder rounded category-card"  style={{ width: '100px', height: '100px' }}></div>
           </div>
         ))}
       </div>
@@ -23,7 +23,7 @@ const DecorationSkeletonPage = () => {
         {[1,2,3,4,5,6,7,8].map((_, index) => (
           <div className="col-6 col-md-3 mb-4" key={index}>
             <div className="card">
-              <div className="placeholder rounded" style={{ width: '100%', height: '180px' }}></div>
+              <div className="placeholder rounded" ></div>
               <div className="card-body">
                 <h5 className="placeholder-glow">
                   <span className="placeholder col-6"></span>

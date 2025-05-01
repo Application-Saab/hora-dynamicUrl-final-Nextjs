@@ -43,7 +43,7 @@ function DecorationCityPage() {
 
   return (
     <>
-      <DecorationPage />
+      <DecorationPage city={city}/>
       <LocalitiesSection
         title={`${city} localities`}
         localities={localities}

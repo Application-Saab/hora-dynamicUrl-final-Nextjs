@@ -1,4 +1,4 @@
-import DecorationCard from "@/component/Cards/DecorationCard";
+import DecorationCard from "@/component/Cards/DecorationCard/DecorationCard";
 import React from "react";
 import Slider from "react-slick";
 
@@ -20,14 +20,14 @@ const DecorationSliderBlock = ({
       },
       {
         breakpoint: 768,
-        settings: { slidesToShow: 1, slidesToScroll: 1, arrows: true },
+        settings: { slidesToShow: 2, slidesToScroll: 1, arrows: true },
       },
     ],
   };
 
   return (
-    <div className="container decoration-card-height">
-      <Slider {...sliderSettings} className="">
+    <div className="container">
+      <Slider {...sliderSettings} className="slider-decoration">
         {data.map((item, index) => (
           <div key={index} className="p-2">
             <DecorationCard

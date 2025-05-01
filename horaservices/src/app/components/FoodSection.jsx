@@ -2,7 +2,7 @@ import { foodData } from "@/util/homeMockData/foodData";
 import Image from "next/image";
 import React from "react";
 import FoodIcon from "../../assets/food_icon.png";
-import FoodCard from "@/components/FoodCard";
+import FoodCard from "@/component/Cards/FoodCard";
 
 export function FoodSection({ handleTitleClick }) {
   return (

@@ -40,7 +40,7 @@ export function CategorySection() {
               <div className="mt-auto">
                 <a
                   href={category.link}
-                  className="btn btn-outline-primary btn-sm w-100"
+                  className="btn btn-danger btn-sm w-100 "
                 >
                   Explore More
                 </a>

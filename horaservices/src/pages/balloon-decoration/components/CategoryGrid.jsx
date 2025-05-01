@@ -3,11 +3,11 @@ import Image from "next/image";
 
 const CategoryGrid = ({ categories, openCatItems }) => {
   return (
-    <div className="d-flex flex-wrap mb-3 justify-content-lg-between">
+    <div className="d-flex flex-wrap mb-3 justify-content-lg-between gap-1">
       {categories
         .filter((item) => item.image)
         .map((item, index) => (
-          <div key={index} className="flex-shrink-0 col-3 col-md-1">
+          <div key={index} className="flex-shrink-0 col-3 col-md-1 rounded-4 category-card" >
             <a href={item.link}>
               <Image
                 src={item.image}
@@ -36,4 +36,4 @@ const CategoryGrid = ({ categories, openCatItems }) => {
   );
 };
 
-export default CategoryGrid;
+export default React.memo(CategoryGrid);

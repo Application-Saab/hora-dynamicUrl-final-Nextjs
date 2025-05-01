@@ -1,4 +1,5 @@
 import React from "react";
+import "./foodCard.css"; 
 
 const FoodCard = ({ item, onClick }) => {
   const handleClick = (link) => {
@@ -23,9 +24,9 @@ const FoodCard = ({ item, onClick }) => {
       <img
         src={item.image}
         alt={item.title}
-        className="img-fluid mb-2 w-100 h-100 food-card"
+        className="img-fluid food-card w-100 h-100"
       />
-      <button className="btn btn-danger position-absolute bottom-0 start-0 px-4 py-2 py-lg-3 fw-semibold w-100" onClick={()=>handleClick(item.link)}>
+      <button className="btn food-card-btn position-absolute  px-4 py-2 py-lg-3 fw-semibold start-50 translate-middle-x " onClick={()=>handleClick(item.link)}>
         {item.title} 
       </button>
     </div>

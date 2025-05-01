@@ -1,0 +1,8 @@
+.food-card-btn{
+    background:linear-gradient(90deg,rgba(221,94,137,.8),var(--primary-color));
+    color:#fff;
+    font-size: 12px;
+    bottom: 1rem;
+    width: 90%;
+    margin: auto;
+}
