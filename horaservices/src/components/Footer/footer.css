@@ -59,7 +59,8 @@ ul.list-unstyled-5
 @media (max-width: 641px) {
     ul.list-unstyled-3 ,
     ul.list-unstyled-2 , 
-    ul.list-unstyled-4
+    ul.list-unstyled-4,
+    ul.list-unstyled-5
     {
         display: flex;
         flex-direction: row;

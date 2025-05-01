@@ -438,8 +438,13 @@ function DecorationCatDetails() {
               <div>
 
                 
-              <Image src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split('.')[0]}.webp`} alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`} style={{ width: "100%", height: "auto" }} width={300} height={300} />
-              
+                      <Image
+          src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split('.')[0]}.webp`}
+          alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
+          style={{ width: "100%", height: "auto" }}
+          width={300}
+          height={300}
+/>              
               
               
               

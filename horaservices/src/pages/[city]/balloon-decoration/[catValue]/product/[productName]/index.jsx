@@ -451,7 +451,14 @@ function DecorationCatDetails() {
         <div style={{ width: "50%", textAlign: "center" }} className="decDetailsLeft">
           <div style={{ width: "80%", boxShadow: "0 1px 8px rgba(0,0,0,.1)", padding: "10px", margin: "0 auto", position: "relative" }} className="decDetailsImage">
             <div>
-            <Image src={`https://horaservices.com/api/uploads/${product.featured_image}`} alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`} style={{ width: "100%", height: "auto" }} width={300} height={300} />
+ <Image
+          src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split('.')[0]}.webp`}
+          alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
+          style={{ width: "100%", height: "auto" }}
+          width={300}
+          height={300}
+/>                          
+            
             <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
                       <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
                       <Image src={logo} style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
