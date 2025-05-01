@@ -163,6 +163,11 @@ a.view-more-slide.slider-item img {
     }
 }
 @media (max-width: 468px) {
+    
+.slick-prev:before, .slick-next:before{
+    color: #9252AA !important;
+    font-size: 20px !important;
+}
     .slick-next{
         right: 10px !important;
     }
