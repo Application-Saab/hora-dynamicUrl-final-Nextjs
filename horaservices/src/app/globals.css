@@ -1432,6 +1432,7 @@ button.view-details.order-details {
   .canceltionPolicy {
     padding: 0px 14px !important;
     margin: 0 0 20px 0 !important;
+    background-color: "rgba(157, 74, 147, 0.28)";
   }
 
   .cancelltionPolicySecHeading {

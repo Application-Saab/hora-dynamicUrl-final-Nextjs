@@ -243,7 +243,7 @@ useEffect(() => {
     const storedUserID = await localStorage.getItem('userID');
     // const phoneNumber = await localStorage.getItem('mobileNumber')
     let merchantTransactionId;
-    console.log('selectedAddOnProduct' , selectedAddOnProduct , phoneNumber);
+    console.log('selectedAddOnProduct' , selectedAddOnProduct , phoneNumber, totalAmount);
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');

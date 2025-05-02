@@ -73,7 +73,7 @@ const PhotographDetail = () => {
                 style={{ color: "gray", fontSize: "12px" }}
                 className="whyHoraSubheading"
               >
-                Experts Decorations
+                Experts Photographers
               </p>
             </div>
             <div className="whyHoraSecBox">
