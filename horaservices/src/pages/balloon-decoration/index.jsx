@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -31,26 +30,26 @@ import DecorationSliderBlock from "./components/DecorationSliderBlock";
 import DecorationSkeletonPage from "@/component/Placeholder/DecorationSkeletonPage";
 import SeoHead from "./components/SeoHead";
 
-const DecorationPage = () => {
+const DecorationPage = ({city}) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [loading, setLoading] = useState(true); // 👈 add loading state
 
-  useEffect(() => {
-    // fake loading simulation
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 50);
+  // useEffect(() => {
+  //   // fake loading simulation
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 50);
 
-    return () => clearTimeout(timer); // clean up
-  }, []);
+  //   return () => clearTimeout(timer); // clean up
+  // }, []);
 
-  let { city } = useParams();
-  const hasCityPageParam = city ? true : false;
+  // let { city } = useParams();
+  // const hasCityPageParam = city ? true : false;  
 
   const openCatItems = (item) => {
     dispatch(setState(item.subCategory, item.imgAlt));
-    if (hasCityPageParam) {
+    if (city) {
       router.push(`/${city}/balloon-decoration/${item.catValue}`);
     } else {
       router.push(`/balloon-decoration/${item.catValue}`);
@@ -66,10 +65,10 @@ const DecorationPage = () => {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: "title_and_viewmore_decoration_page_clicked",
-        categoryName: categoryItem.name||"N/A",
-        subCategory: categoryItem.subCategory||"N/A",
-        catValue: categoryItem.catValue||"N/A",
-        imgAlt: categoryItem.imgAlt||"N/A",
+        categoryName: categoryItem.name || "N/A",
+        subCategory: categoryItem.subCategory || "N/A",
+        catValue: categoryItem.catValue || "N/A",
+        imgAlt: categoryItem.imgAlt || "N/A",
       });
       console.log('gmt working')
       openCatItems(categoryItem);
@@ -78,11 +77,17 @@ const DecorationPage = () => {
     }
   };
 
-  const handleSliderViewMore = (link, city) => {
+  const handleSliderViewMore = (link) => {
+    let cleanLink = link.startsWith("/") ? link.slice(1) : link;
+    let url = city ? `/${city.toLowerCase()}/${cleanLink}` : `/balloon-decoration/${cleanLink}`;
+    url = url.replace(/([^:]\/)\/+/g, "$1"); console.log('url', url)
+    console.log("City:", city);
     if (city) {
-      router.push(`/${city}/${link}`);
+      console.log("City:", city);
+      console.log("Link:", link);
+      router.push(url);
     } else {
-      router.push(`/${link}`);
+      router.push(url);
     }
   };
 
@@ -95,12 +100,12 @@ const DecorationPage = () => {
         event: "decoration_item_clicked",
         event_category: "SliderSection",
         event_label: item.title,
-        categoryName: item.category||"N/A",
-        subCategory: item.subCategory || "N/A", 
-        catValue: item.catValue || "N/A", 
-        imgAlt: item.imgAlt || "N/A", 
+        categoryName: item.category || "N/A",
+        subCategory: item.subCategory || "N/A",
+        catValue: item.catValue || "N/A",
+        imgAlt: item.imgAlt || "N/A",
       });
-  
+
       // Optionally, log the last event pushed to dataLayer for debugging
       let lastEvent = window.dataLayer[window.dataLayer.length - 1];
       console.log("Last Event:", lastEvent);
@@ -108,7 +113,7 @@ const DecorationPage = () => {
       console.error("Item is missing required properties for event tracking");
     }
   };
-  
+
 
   const decorationSections = [
     {
@@ -134,7 +139,7 @@ const DecorationPage = () => {
       title: "Anniversary Decoration",
       data: AnniversaryData,
       viewLink: "Anniversary",
-      category:"Anniversary",
+      category: "Anniversary",
       component: "slider",
     },
     {
@@ -172,13 +177,13 @@ const DecorationPage = () => {
 
   return (
     <>
-      {loading ? (
+      {false ? (
         <div className="container py-3">
           <DecorationSkeletonPage />
         </div>
       ) : (
         <div className="container py-3">
-          <SeoHead/>
+          <SeoHead />
           <CategoryGrid
             categories={DecorationCategories}
             openCatItems={openCatItems}

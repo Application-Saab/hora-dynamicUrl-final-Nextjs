@@ -1,0 +1,10 @@
+.card-decoration-img{
+    height: 250px;
+}
+
+@media (max-width: 576px) {
+    .card-decoration-img {
+        height: 150px;
+    }
+}
+
