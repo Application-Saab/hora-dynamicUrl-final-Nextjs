@@ -12,6 +12,7 @@ const OrderDetailsIngre = ({ orderDetail, orderType }) => {
         BASE_URL + ORDER_INGREDIENTS + "/" + orderDetail.order_id
       );
       const responseData = await response.json();
+      console.log(responseData, "responseData");
       setOrderIngredients(responseData.data);
       setLoading(false);
     } catch (error) {
