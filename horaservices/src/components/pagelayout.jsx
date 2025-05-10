@@ -4,12 +4,17 @@ import Header from "./Header";
 import Footer from "./Footer";
 import '../app/globals.css';
 import Head from "next/head"; 
+import { useRouter } from "next/router";
 
 const PageLayout = ({ children }) => {
 
     // document.addEventListener('contextmenu', function(event) {
     //     event.preventDefault();
     // });
+
+    const router = useRouter();
+    const { catValue } = router.query;
+    const hideHeader = router.pathname === `/testing`;
  
   
   return (
@@ -18,6 +23,7 @@ const PageLayout = ({ children }) => {
             <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe"/>
         </Head>
       <Header />
+      {/* {!hideHeader && <Header/>} */}
       <main className="page-main row m-0">
         <section
           // style={{ backgroundColor: getBackgroundColor() }}
@@ -26,7 +32,9 @@ const PageLayout = ({ children }) => {
           {children}
         </section>
       </main>
-      <Footer />
+      
+    {!hideHeader &&    <Footer />}
+      {/* <Footer /> */}
     </div>
   );
 };
