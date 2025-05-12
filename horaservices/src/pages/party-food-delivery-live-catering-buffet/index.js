@@ -149,7 +149,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image6.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg_image6.PNG"),
       selectedItems: [
         {
           title: "Jeera Rice",
@@ -165,7 +165,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image7.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg_image7.PNG"),
     },
     {
       id: 3,
@@ -173,7 +173,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image8.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg_image8.PNG"),
     },
     {
       id: 4,
@@ -181,7 +181,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image9.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg_image9.PNG"),
     },
   ];
 
@@ -202,7 +202,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image1.svg"),
+      imgSrc: require("../../assets/fooddelivery/nonveg_image1.PNG"),
     },
     {
       id: 2,
@@ -210,7 +210,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image2.svg"),
+      imgSrc: require("../../assets/fooddelivery/nonveg_image6_2.PNG"),
     },
     {
       id: 3,
@@ -218,7 +218,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image3.svg"),
+      imgSrc: require("../../assets/fooddelivery/nonveg_image3.PNG"),
     },
     {
       id: 4,
@@ -226,7 +226,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image4.svg"),
+      imgSrc: require("../../assets/fooddelivery/nonveg_image4.PNG"),
     },
   ];
 
