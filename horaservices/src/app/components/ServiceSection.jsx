@@ -39,6 +39,7 @@ const ServiceSection = () => {
               width={40}
               height={40}
               className="ms-2"
+              loading="lazy"
             />
           </div>
           <div
@@ -53,6 +54,7 @@ const ServiceSection = () => {
               className="img-fluid w-100"
               width={600}
               height={400}
+              loading="lazy"
             />
             <button
               className="btn btn-danger position-absolute bottom-0 start-0 m-3 px-4 py-2 fw-semibold"
@@ -77,6 +79,7 @@ const ServiceSection = () => {
               width={40}
               height={40}
               className="ms-2"
+              loading="lazy"
             />
           </div>
           <div
@@ -91,6 +94,7 @@ const ServiceSection = () => {
               className="img-fluid w-100"
               width={600}
               height={400}
+              loading="lazy"
             />
             <button
               className="btn btn-danger position-absolute bottom-0 start-0 m-3 px-4 py-2 fw-semibold"

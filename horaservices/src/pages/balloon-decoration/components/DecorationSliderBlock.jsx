@@ -1,6 +1,10 @@
 import DecorationCard from "@/component/Cards/DecorationCard/DecorationCard";
+import dynamic from "next/dynamic";
 import React from "react";
-import Slider from "react-slick";
+const Slider = dynamic(() => import('react-slick'), { ssr: false });
+// import "slick-carousel/slick/slick.css";
+// import "slick-carousel/slick/slick-theme.css";
+
 
 const DecorationSliderBlock = ({
   data,
@@ -26,7 +30,6 @@ const DecorationSliderBlock = ({
   };
 
   return (
-    <div className="container">
       <Slider {...sliderSettings} className="slider-decoration">
         {data.map((item, index) => (
           <div key={index} className="p-2">
@@ -39,7 +42,6 @@ const DecorationSliderBlock = ({
           </div>
         ))}
       </Slider>
-    </div>
   );
 };
 

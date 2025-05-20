@@ -1,5 +1,6 @@
 import React from "react";
 import "./foodCard.css"; 
+import Image from "next/image";
 
 const FoodCard = ({ item, onClick }) => {
   const handleClick = (link) => {
@@ -21,10 +22,13 @@ const FoodCard = ({ item, onClick }) => {
       role="button"
       onClick={()=>handleClick(item.link)}
     >
-      <img
+      <Image
         src={item.image}
         alt={item.title}
         className="img-fluid food-card w-100 h-100"
+        width={300}
+        height={300}
+        loading="lazy"
       />
       <button className="btn food-card-btn position-absolute  px-4 py-2 py-lg-3 fw-semibold start-50 translate-middle-x " onClick={()=>handleClick(item.link)}>
         {item.title} 

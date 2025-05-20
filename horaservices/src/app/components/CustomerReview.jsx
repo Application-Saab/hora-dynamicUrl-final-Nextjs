@@ -43,6 +43,7 @@ const Slider = dynamic(() => import("react-slick"), { ssr: false });
                 alt={name}
                 width={50}
                 height={50}
+                loading="lazy"
                 className="rounded-circle me-3"
               />
               <div className="text-start">

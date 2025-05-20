@@ -17,6 +17,7 @@ export function HeroBanner({openDecorationPage}) {
             width={1200}
             height={400}
             className="img-fluid w-100"
+            loading="lazy"
           />
         </div>
       </div>

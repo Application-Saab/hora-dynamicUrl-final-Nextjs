@@ -10,7 +10,7 @@ export function FoodSection({ handleTitleClick }) {
       <h1 className="d-flex align-items-center  gap-2 fw-bold text-dark fs-2 fs-md-1">
         <span className="text-purple fw-bold display-5">Food</span>
         <span>
-          <Image src={FoodIcon} alt="Food Icon" className="food-icon" />
+          <Image src={FoodIcon} alt="Food Icon" className="food-icon" loading="lazy" height={100} width={100}/>
         </span>
       </h1>
 

@@ -13,6 +13,8 @@ const CategoryGrid = ({ categories, openCatItems }) => {
                 src={item.image}
                 className="img-fluid cursor-pointer"
                 alt={item.imgAlt}
+                quality={75}
+                priority={true}
                 onClick={() => {
                   window.dataLayer = window.dataLayer || [];
                   window.dataLayer.push({
@@ -23,7 +25,6 @@ const CategoryGrid = ({ categories, openCatItems }) => {
                     imageAlt: item.imgAlt??"N/A",
                     itemLink: item.link??"N/A",
                   });
-                  console.log('gtm working')
                   openCatItems(item);
                 }}
                 width={300}

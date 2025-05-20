@@ -1,5 +1,6 @@
 import { whereAreYouData } from '@/util/homeMockData/whereAreYouData'
 import React from 'react'
+import Image from 'next/image'
 
 export function CategorySection() {
   return (
@@ -21,11 +22,14 @@ export function CategorySection() {
               rel="noopener noreferrer"
               className="text-decoration-none text-dark"
             >
-              <img
+              <Image
                 src={category.imageUrl}
                 alt={category.title}
                 className="card-img-top object-fit-cover"
-                style={{ height: "180px" }}
+                height={180}
+                width={286}
+                loading="lazy"
+                objectFit="cover"
               />
             </a>
             <div className="card-body d-flex flex-column">

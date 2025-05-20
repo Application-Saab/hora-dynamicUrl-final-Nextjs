@@ -11,12 +11,12 @@ const DecorationSection = ({handleItemClick, title, category, handleViewMore, vi
           {title}
         </h2>
         <div >
-          <button
-            className="btn btn-outline-primary"
+          <span
+            className="text-purple"
             onClick={() => handleViewMore(viewLink || category)}
           >
             view more
-          </button>
+          </span>
         </div>
       </div>
       {children}

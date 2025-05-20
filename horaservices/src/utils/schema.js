@@ -91,7 +91,7 @@ export const getDecorationOrganizationSchema = () => ({
       "https://horaservices.com/api/uploads/attachment-1706459457063.png"
     ],
     "brand": "Horservices.com",
-    "sku": `${categoryName?.toLowerCase().replace(/\s/g, '-')}`,
+    // "sku": `${categoryName?.toLowerCase()?.replace(/\s/g, '-')}`,
     "priceRange": "999-39999",
     "aggregateRating": {
       "@type": "AggregateRating",

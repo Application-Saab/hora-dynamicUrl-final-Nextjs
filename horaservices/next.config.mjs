@@ -1,9 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images:{
-        unoptimized:true
-      },
-    output: "export",
+    images: {
+        remotePatterns: [
+            {
+              protocol: 'https',
+              hostname: 'horaservices.com',
+            //   hostname: 'photography-hora.s3.amazonaws.com',
+              pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'play-lh.googleusercontent.com',
+                pathname: '/**',
+              },
+          ],
+          unoptimized: false,  
+          loader:"default" 
+    },
+    // output: "export",
     // trailingSlash: true,
     webpack(config) {
         config.module.rules.push({

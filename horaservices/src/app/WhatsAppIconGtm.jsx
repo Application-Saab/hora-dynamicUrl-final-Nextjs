@@ -1,7 +1,9 @@
+"use client"
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import whatsppicon from "../assets/whatsapp-new.webp";
+// import whatsppicon from "../assets/whatsapp-new.webp";
 
 const WhatsAppIcon = ({ router }) => {
   const { pathname, query } = router;
@@ -228,8 +230,12 @@ const WhatsAppIcon = ({ router }) => {
       {shouldShowWhatsAppIcon() && (
         <Image
           className='whatappicon gtmPage'
-          src={whatsppicon}
+          // src={whatsppicon}
+          src="https://horaservices.com/api/uploads/whatsapp-new.webp"
+          height={50}
+          width={50}
           alt="WhatsApp Icon"
+          quality={50}
           onClick={handleWhatsAppClick} // Call handleWhatsAppClick on click
         />
       )}

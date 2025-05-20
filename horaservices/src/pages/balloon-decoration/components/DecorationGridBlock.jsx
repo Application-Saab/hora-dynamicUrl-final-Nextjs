@@ -3,7 +3,7 @@ import ChatAndViewCard from "@/component/Cards/ChatAndViewCard";
 
 const DecorationGridBlock = ({ title, data, handleSliderViewMore,handleViewMore }) => {
   return (
-    <div className="container">
+    // <div className="container">
       <div className="row g-3">
         {data?.map((item, index) => {
           if (item.isViewMore) {
@@ -28,7 +28,7 @@ const DecorationGridBlock = ({ title, data, handleSliderViewMore,handleViewMore 
           );
         })}
       </div>
-    </div>
+    // </div>
   );
 };
 

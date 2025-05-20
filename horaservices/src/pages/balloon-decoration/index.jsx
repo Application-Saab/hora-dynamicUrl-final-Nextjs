@@ -1,4 +1,6 @@
-import React, {  useState } from "react";
+"use client"
+
+import React from "react";
 import axios from "axios";
 import {
   BASE_URL,
@@ -9,8 +11,6 @@ import { setState } from "../../actions/action";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import "./slider.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import CategoryGrid from "./components/CategoryGrid";
 import DecorationSection from "./components/DecorationSection";
 import DecorationGridBlock from "./components/DecorationGridBlock";
@@ -30,22 +30,9 @@ import DecorationSliderBlock from "./components/DecorationSliderBlock";
 import DecorationSkeletonPage from "@/component/Placeholder/DecorationSkeletonPage";
 import SeoHead from "./components/SeoHead";
 
-const DecorationPage = ({city}) => {
+const DecorationPage = ({ city }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [loading, setLoading] = useState(true); // 👈 add loading state
-
-  // useEffect(() => {
-  //   // fake loading simulation
-  //   const timer = setTimeout(() => {
-  //     setLoading(false);
-  //   }, 50);
-
-  //   return () => clearTimeout(timer); // clean up
-  // }, []);
-
-  // let { city } = useParams();
-  // const hasCityPageParam = city ? true : false;  
 
   const openCatItems = (item) => {
     dispatch(setState(item.subCategory, item.imgAlt));
@@ -177,46 +164,39 @@ const DecorationPage = ({city}) => {
 
   return (
     <>
-      {false ? (
-        <div className="container py-3">
-          <DecorationSkeletonPage />
-        </div>
-      ) : (
-        <div className="container py-3">
-          <SeoHead />
-          <CategoryGrid
-            categories={DecorationCategories}
-            openCatItems={openCatItems}
-          />
-
-          {decorationSections.map((section, index) => (
-            <DecorationSection
-              key={index}
-              title={section.title}
-              data={section.data}
-              handleViewMore={handleViewMore}
-              viewLink={section.viewLink}
-              category={section.category}
-              handleItemClick={handleItemClick}
-            >
-              {section.component === "grid" ? (
-                <DecorationGridBlock
-                  title={section.title}
-                  data={section.data}
-                  handleSliderViewMore={handleSliderViewMore}
-                  handleViewMore={handleViewMore}
-                />
-              ) : (
-                <DecorationSliderBlock
-                  title={section.title}
-                  data={section.data}
-                  handleSliderViewMore={handleSliderViewMore}
-                />
-              )}
-            </DecorationSection>
-          ))}
-        </div>
-      )}
+      <SeoHead />
+      <div className="container py-3">
+        <CategoryGrid
+          categories={DecorationCategories}
+          openCatItems={openCatItems}
+        />
+        {decorationSections.map((section, index) => (
+          <DecorationSection
+            key={index}
+            title={section.title}
+            data={section.data}
+            handleViewMore={handleViewMore}
+            viewLink={section.viewLink}
+            category={section.category}
+            handleItemClick={handleItemClick}
+          >
+            {section.component === "grid" ? (
+              <DecorationGridBlock
+                title={section.title}
+                data={section.data}
+                handleSliderViewMore={handleSliderViewMore}
+                handleViewMore={handleViewMore}
+              />
+            ) : (
+              <DecorationSliderBlock
+                title={section.title}
+                data={section.data}
+                handleSliderViewMore={handleSliderViewMore}
+              />
+            )}
+          </DecorationSection>
+        ))}
+      </div>
     </>
   );
 };

@@ -5,7 +5,7 @@ import Image from "next/image";
 export const CardSkeleton = ({ ...props }) => {
     return (
         <Card style={{ width: '18rem' }} className='w-100' {...props}>
-            <Image variant="top" className='glow' src={dummyImage} alt='loading' height={300} />
+            <Image variant="top" className='glow' src={dummyImage} alt='loading' height={200} />
             <Card.Body>
                 <Placeholder as={Card.Title} animation="glow">
                     <Placeholder xs={10} />
