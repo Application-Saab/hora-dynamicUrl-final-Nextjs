@@ -214,10 +214,10 @@ useEffect(() => {
 
   return (
     <>
-     { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
+     { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/party-food-delivery-live-catering-buffet" || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
     || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
     || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"
+    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/lucky-draw"
      ?  (
       <header style={styles.headerContainerhome} className="home-header">
       <div className="pageWidth">
@@ -278,10 +278,10 @@ useEffect(() => {
         </div>
         <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
           <div className="mobile-container" style={{ width:"100%"}}>
-            {isHomePage   || routerPathname === "/photography-page" || routerPathname === "/photo-gallery"  ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
+            {isHomePage   || routerPathname === "/photography-page" || routerPathname === "/photo-gallery" || routerPathname === "/party-food-delivery-live-catering-buffet" ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
     || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
     || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"
+    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/lucky-draw"
      ?
             
             (

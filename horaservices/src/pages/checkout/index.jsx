@@ -252,7 +252,7 @@ const Checkout = () => {
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
-      const advanceAmount = Math.round(totalAmount * 0.35);
+      const advanceAmount = Math.round(totalAmount * 0.40);
       const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
       const requestData = {
@@ -297,7 +297,7 @@ const Checkout = () => {
 
     const requestData2 = {
       user_id: storedUserID,
-      price: Math.round(totalAmount * 0.35),
+      price: Math.round(totalAmount * 0.40),
       phone: phoneNumber,
       name: '',
       merchantTransactionId: merchantTransactionId
@@ -493,7 +493,7 @@ const Checkout = () => {
 
                       <div className='detail-item'>
                         <label>Advance Amount:</label>
-                        <p>₹ {Math.round(totalAmount * 0.35)}</p>
+                        <p>₹ {Math.round(totalAmount * 0.40)}</p>
                       </div>
                     </div>
                   </div>
@@ -563,7 +563,7 @@ const Checkout = () => {
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 10px 0" }}>
                       <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 700 }}>Advance Amount:</label>
-                      <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalAmount * 0.35)}</p>
+                      <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalAmount * 0.40)}</p>
                     </div>
 
 
