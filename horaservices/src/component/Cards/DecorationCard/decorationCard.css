@@ -17,3 +17,22 @@
     font-size: 13px;
 }
 }
+
+@media (max-width: 380px) {
+    .text-title {
+      font-size: 10px;
+    }
+
+    .card-decoration-img {
+        height: 120px;
+    }
+
+    .watermark-img{
+        height: 30px!important;
+        width: 30px!important;
+    }
+    
+    .discount-title{
+        font-size: 9px!important;
+    }
+  }

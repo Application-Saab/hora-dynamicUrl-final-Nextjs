@@ -137,13 +137,13 @@ a.view-more-slide.slider-item img {
 .slick-prev:before,
 .slick-next:before {
     color: #9252AA !important;
-    font-size: 40px !important;
+    font-size: 26px !important;
 }
 
 .slick-prev,
 .slick-next {
     width: 30px !important;
-    height: 30px !important;
+    height: 26px !important;
 }
 
 .slick-next {
@@ -335,4 +335,17 @@ a.view-more-slide.slider-item img {
     .slider-decoration {
         height: 250px !important;
     }
+    .category-title{
+        font-size: 18px!important;
+    }
 }
+
+@media (max-width: 380px) {
+    .category-card {
+      width: 23%!important;
+    }
+    .category-title{
+        font-size: 16px!important;
+    }
+  }
+

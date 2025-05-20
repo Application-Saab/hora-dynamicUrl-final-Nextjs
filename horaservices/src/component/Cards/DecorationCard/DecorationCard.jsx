@@ -30,7 +30,7 @@ const DecorationCard = ({ item, onClick }) => {
             alt="Logo Watermark"
             width={50}
             height={50}
-            className="opacity-50"
+            className="opacity-50 watermark-img"
           />
         </div>
         <div className="badge p-2 position-absolute top-0 end-0 m-2 fw-bold" style={{backgroundColor:"#f99e1f"}}>
@@ -43,7 +43,7 @@ const DecorationCard = ({ item, onClick }) => {
         </div>
         <div className="d-flex justify-content-start gap-2 mt-2">
           <span className="fw-bold text-purple text-title"> {String(item.price).includes('₹') ? item.price : `₹${item.price}`}</span>
-          <span className="text-muted text-decoration-line-through text-title">
+          <span className="text-muted text-decoration-line-through text-title discount-title">
             ₹{getDiscountedPrice(item.price)}
           </span>
         </div>

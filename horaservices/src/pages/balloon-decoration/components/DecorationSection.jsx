@@ -5,7 +5,7 @@ const DecorationSection = ({handleItemClick, title, category, handleViewMore, vi
     <div className="mb-5 mt-2" onClick={()=>handleItemClick({title,category})}>
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h2
-          className="h5 text-dark mb-0 fw-bold cursor-pointer"
+          className="h5 text-dark mb-0 fw-bold cursor-pointer category-title"
           onClick={() => handleViewMore(viewLink || category)}
         >
           {title}

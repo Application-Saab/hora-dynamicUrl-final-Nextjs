@@ -17,6 +17,7 @@ import { DecorationDetailsHead } from "@/pages/balloon-decoration/components/Dec
 import FAQAccordion from "@/component/FAQs";
 import { decorationFAQData } from "@/util/DecorationMockData/DecorationFAQ";
 import { getDiscountedPrice } from "@/util/getDiscountedPrice";
+import { getDiscountedDifference } from "@/util/getDiscountedDifference";
 
 
 function DecorationCatDetails() {
@@ -72,9 +73,10 @@ function DecorationCatDetails() {
           // Calculate discount info if price is available
           if (fetchedProduct && fetchedProduct.price) {
             const price = fetchedProduct.price;
-
+            console.log('price',price)
             const discountDetails = getDiscountedPrice(price);
-            setDiscountInfo(discountDetails);
+            const discountedDifference = getDiscountedDifference(price)
+            setDiscountInfo({discountedPrice:discountDetails,discountDifference:discountedDifference});
           } else {
             console.error("Price is not available in the fetched product.");
           }

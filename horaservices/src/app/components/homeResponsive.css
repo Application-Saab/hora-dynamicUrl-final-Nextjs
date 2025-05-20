@@ -1,0 +1,25 @@
+
+
+.hero-title {
+}
+
+.service-icon{}
+.category-title{}
+.category-description{}
+
+@media (max-width: 380px) {
+  .hero-title {
+    font-size: 1rem !important;
+  }
+  .service-icon{
+    height:22px !important;
+    width:22px!important;
+  }
+  .category-title{
+    font-size: 24px!important;
+  }
+  .category-description{
+    font-size:14px!important
+  }
+}
+

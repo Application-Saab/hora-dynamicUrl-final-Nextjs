@@ -5,10 +5,10 @@ import Image from 'next/image'
 export function CategorySection() {
   return (
     <div className="container my-3">
-    <h1 className="fw-bold text-start mb-2 text-center">
+    <h1 className="fw-bold text-start mb-2 text-center category-title">
       What are you <span className="text-purple text-center">into?</span>
     </h1>
-    <h3 className="fs-5 text-muted mb-5 text-center ">
+    <h3 className="fs-5 text-muted mb-5 category-description text-center ">
       We offer a variety of services, differing in the total value of
       needed.
     </h3>

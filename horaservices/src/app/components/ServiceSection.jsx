@@ -38,7 +38,7 @@ const ServiceSection = () => {
               alt="Photography Icon"
               width={40}
               height={40}
-              className="ms-2"
+              className="ms-2 service-icon"
               loading="lazy"
             />
           </div>
@@ -78,7 +78,7 @@ const ServiceSection = () => {
               alt="Decoration Icon"
               width={40}
               height={40}
-              className="ms-2"
+              className="ms-2 service-icon"
               loading="lazy"
             />
           </div>

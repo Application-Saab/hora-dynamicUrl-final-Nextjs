@@ -21,6 +21,7 @@ import { CategorySection } from "./components/CategorySection";
 import CustomerReview from "./components/CustomerReview";
 import ServiceSection from "./components/ServiceSection";
 import { sendGTMEvent } from "@next/third-parties/google";
+import "./components/homeResponsive.css"
 
 export default function Home() {
   const router = useRouter();

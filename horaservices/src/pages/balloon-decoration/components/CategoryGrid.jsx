@@ -3,11 +3,11 @@ import Image from "next/image";
 
 const CategoryGrid = ({ categories, openCatItems }) => {
   return (
-    <div className="d-flex flex-wrap mb-3 justify-content-lg-between gap-1">
+    <div className="d-flex flex-wrap mb-3 justify-content-lg-between gap-1 justify-content-around">
       {categories
         .filter((item) => item.image)
         .map((item, index) => (
-          <div key={index} className="flex-shrink-0 col-3 col-md-1 rounded-4 category-card" >
+          <div key={index} className="flex-shrink-0 col-3 col-md-1 rounded-4 category-card " >
             <a href={item.link}>
               <Image
                 src={item.image}

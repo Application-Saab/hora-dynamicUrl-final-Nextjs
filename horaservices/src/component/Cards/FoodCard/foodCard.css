@@ -6,3 +6,17 @@
     width: 90%;
     margin: auto;
 }
+
+@media (max-width: 380px) {
+    .food-card-btn{
+        background:linear-gradient(90deg,rgba(221,94,137,.8),var(--primary-color));
+        color:#fff;
+        font-size: 9px;
+        bottom: 1rem;
+        width: 90%;
+        margin: auto;
+        padding: 0!important;
+        padding-top: 8px!important;
+        padding-bottom: 8px!important;
+    }
+  }

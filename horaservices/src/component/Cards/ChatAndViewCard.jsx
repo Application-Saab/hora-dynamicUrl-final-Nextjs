@@ -6,7 +6,6 @@ import { IoReorderThreeOutline } from "react-icons/io5";
 function ChatAndViewCard({title,item,handleViewMore}) {
   return (
     <div  className="border rounded p-3 h-100 ">
-      <h6 className="fw-bold text-purple mb-3">{title}</h6>
       <div className="d-flex flex-lg-column justify-content-around justify-content-lg-center align-items-center">
         <div className="mb-lg-2 w-100 p-3 rounded-3 d-flex flex-column align-items-center" style={{background:"#25d366"}}>
           <p className="fw-bold text-center text-12 text-light">Customize ??</p>
