@@ -12,7 +12,6 @@ import Link from "next/link";
 import Image from "next/image";
 import Slider from 'react-slick';
 import DecorationIcon from '../../assets/decoration_icon.webp';
-import '../../app/custom.css'
 import cityData from '../../utils/cityData';
 import { HeroBanner } from "@/app/components/HeroBanner";
 import { SEOHead } from "@/app/components/SEOHead";
@@ -220,7 +219,7 @@ export default function Home() {
         localities={localities}
         handleClick={localityHandleClick}
       />
-      <div className="celebrate-container sec-container mt-3">
+      <div className="celebrate-container sec-container container mt-4">
         <h1 className="h3 text-purple fw-bold display-5 mb-0">Celebrate With Us
           <Image src={DecorationIcon} alt="Entertainment Icon" height={40} width={40} className="service-icon" />
         </h1>

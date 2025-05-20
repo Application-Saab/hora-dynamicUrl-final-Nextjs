@@ -4,7 +4,9 @@
 }
 
 .service-icon{}
-.category-title{}
+.category-title{
+  font-size: 28px;
+}
 .category-description{}
 
 @media (max-width: 380px) {

@@ -7,20 +7,17 @@ import {
 } from "../../../utils/apiconstants";
 import axios from "axios";
 import whatsppicon from "../../../assets/whatsapp-icon.png";
-import { getHomeOrganizationSchema } from "../../../utils/schema";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import Slider from 'react-slick';
-// import "slick-carousel/slick/slick.css";
-// import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../../../assets/decoration_icon.webp';
-import '../../../app/homepage.css';
 import { SEOHead } from "@/app/components/SEOHead";
 import { FoodSection } from "@/app/components/FoodSection";
 import ServiceSection from "@/app/components/ServiceSection";
 import { CategorySection } from "@/app/components/CategorySection";
 import CustomerReview from "@/app/components/CustomerReview";
+import { HeroBanner } from "@/app/components/HeroBanner";
 // remove later
 // import homepage_entertainment1 from '../../../assets/homepage_entertainment1.png';
 // import homepage_entertainment2 from '../../../assets/homepage_entertainment2.png';
@@ -233,13 +230,10 @@ export default function Home() {
   const { locality } = router.query;
 
 
-
-  const openSliderLink = (link, city, locality) => {
-    if (link) {
-      window.location.href = `/${city}/${locality}/${link}`; // Redirects to the provided link
-      //window.location.href = link; // Redirects to the provided link
-    }
+  const openDecorationPage = () => {
+    router.push(`/${city}/${locality}/balloon-decoration`);
   };
+
   const handleTitleClick = (title, link) => {
     // Trigger GTM event when the user clicks on the title
     router.push(`/${city}/${locality}/${link}`);
@@ -249,7 +243,7 @@ export default function Home() {
   return (
     <>
       <SEOHead />
-      <div className="party-services homeslider">
+      {/* <div className="party-services homeslider container">
         <h1 className="party-title">All party services on one platform</h1>
         <div className="home-slider-inner">
           <Slider {...homeslidersettings}>
@@ -271,11 +265,12 @@ export default function Home() {
           </Slider>
         </div>
 
-      </div>
+      </div> */}
+      <HeroBanner openDecorationPage={openDecorationPage} />
       <FoodSection handleTitleClick={handleTitleClick} />
       <ServiceSection />
       <CategorySection />
-      <div className="celebrate-container sec-container">
+      <div className="celebrate-container sec-container container-lg mt-4">
         <h2 className="h3 text-purple fw-bold display-5 mb-0">Celebrate With Us
           <Image src={DecorationIcon} alt="Entertainment Icon" height={40} width={40} className="service-icon" />
         </h2>
