@@ -9,7 +9,7 @@ import Image from "next/image";
 import informationImage from "../../assets/information.webp";
 import dangerImage from "../../assets/danger.webp";
 import Popup from "../../utils/popup";
-import OtpLoginPopup from '../../components/OtpLoginPopup';
+import OtpLoginPopup from "../../components/OtpLoginPopup";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -29,17 +29,15 @@ const Orderlist = () => {
   const [executor, setExecutor] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   useEffect(() => {
     const checkAuth = () => {
-      
-        if (isLoggedIn !== "true") {
-          setIsModalOpen(true);
-        }
-        else {
-          setIsModalOpen(false);
-        }
+      if (isLoggedIn !== "true") {
+        setIsModalOpen(true);
+      } else {
+        setIsModalOpen(false);
+      }
     };
     checkAuth();
     const fetchOrderList = async () => {
@@ -48,15 +46,22 @@ const Orderlist = () => {
         const userId = await localStorage.getItem("userID");
         const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
           method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ page: "1", _id: userId }),
         });
         const data = await response.json();
         if (data?.data?.order) {
-          setOrders(data.data.order.sort((a, b) => new Date(b.order_date) - new Date(a.order_date)));
-      } 
-    } catch (error) {
-      console.error("Error fetching orders:", error);
+          setOrders(
+            data.data.order.sort(
+              (a, b) => new Date(b.order_date) - new Date(a.order_date)
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
       } finally {
         setLoading(false);
       }
@@ -121,7 +126,7 @@ const Orderlist = () => {
   };
 
   const handleRateUs = (order) => {
-    const { } = order;
+    const {} = order;
     window.open(
       "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20decoration%20services",
       "_blank"
@@ -153,11 +158,11 @@ const Orderlist = () => {
 
   const handleViewDetail = (order) => {
     const { _id, order_id, type } = order;
-    const apiOrderId = _id
-    const orderType = type
-    const orderId = order_id
+    const apiOrderId = _id;
+    const orderType = type;
+    const orderId = order_id;
     router.push({
-        pathname:`/order-details`, 
+      pathname: `/order-details`,
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -200,36 +205,34 @@ const Orderlist = () => {
     if (!toId) {
       setPopupMessage({
         img: dangerImage,
-        title:
-          "Order is not accepted Yet",
+        title: "Order is not accepted Yet",
         body: "",
         button: "OK",
       });
       return;
-    }
-    else {
+    } else {
       const apiOrderId = _id;
       const orderType = type;
       const orderId = toId;
-  
+
       try {
         // Fetch executor details from the API
         const response = await fetch(
           `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
         );
-  
+
         console.log(response, "response");
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch user details");
         }
-  
+
         const data = await response.json();
         console.log(data, "dataasss");
-  
+
         const executorName = data.data.name;
         const executorPhone = data.data.phone;
-  
+
         setPopupMessage({
           img: informationImage,
           title: `Executor Name: ${executorName}`,
@@ -245,14 +248,13 @@ const Orderlist = () => {
             }
           },
         });
-  
+
         setIsPopupVisible(true);
       } catch (error) {
         console.error(error.message);
         setIsPopupVisible(true);
       }
     }
-   
   };
 
   const closePopup = () => {
@@ -306,15 +308,15 @@ const Orderlist = () => {
   return (
     <main className="order-list">
       <div className="order-container">
-      {!isLoggedIn ? (
-    // Case 2: User is NOT logged in
-    <div className="no-orders">
-      <h2 className="no-record-heading">Please log in to check all your orders.</h2>
-      <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
-    </div>
-  ):
-
-         orders.length  > 0 ? (
+        {!isLoggedIn ? (
+          // Case 2: User is NOT logged in
+          <div className="no-orders">
+            <h2 className="no-record-heading">
+              Please log in to check all your orders.
+            </h2>
+            <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+          </div>
+        ) : orders.length > 0 ? (
           orders?.map((order) => {
             const orderStatus = getOrderStatus(order?.order_status);
             return (
@@ -363,8 +365,7 @@ const Orderlist = () => {
                       ""
                     ) : (
                       <div>
-
-<Image
+                        <Image
                           className="contact-us-img"
                           src={people}
                           height={20}
@@ -372,15 +373,14 @@ const Orderlist = () => {
                           alt="people"
                         />{" "}
                         <span>{order?.no_of_people} People</span>
-                     
                       </div>
-          )}
+                    )}
                   </div>
                   <div className="right-details">
                     <div className="totalAmount">
                       <strong style={{ color: "#9252AA" }}>
                         Total Amount
-                        <p style={{textAlign: "start" , margin: 0}}>
+                        <p style={{ textAlign: "start", margin: 0 }}>
                           {" "}
                           ₹{order?.payable_amount}
                         </p>
@@ -406,7 +406,7 @@ const Orderlist = () => {
                       </strong> */}
                       <strong style={{ color: "#9252AA" }}>
                         Balance Amount
-                        <p style={{textAlign: "start" , margin: 0}}>
+                        <p style={{ textAlign: "start", margin: 0 }}>
                           {" "}
                           ₹{order?.balance_amount}
                         </p>
@@ -426,8 +426,8 @@ const Orderlist = () => {
                   </div>
                   {order?.type == 2 &&
                     (orderStatus?.status == "Booked" ||
-                      orderStatus?.status == "Accepted" ||
-                      orderStatus?.status == "In-progress" ? (
+                    orderStatus?.status == "Accepted" ||
+                    orderStatus?.status == "In-progress" ? (
                       <div>
                         <WhatsappShareButton
                           url="https://play.google.com/store/apps/details?id=com.hora"
@@ -445,48 +445,48 @@ const Orderlist = () => {
                       </div>
                     ) : null)}
 
-                  {(
-                    (order.type === 1 && orderStatus?.status !== "Expired") || 
-                    (order.type === 8 && orderStatus?.status !== "Expired")
-                  ) && (
+                  {((order.type === 1 && orderStatus?.status !== "Expired") ||
+                    (order.type === 8 &&
+                      orderStatus?.status !== "Expired")) && (
                     <div className="Executor-rate-btn">
-                        <>
-                          <button
-                            className="view-details order-details"
-                            onClick={() => {
-                              if (isWithinFourHourWindow(order.order_time, order.order_date)) {
-                                openSupplierPopup(order);
-                                setIsPopupVisible(true);
-                              } 
-                              else {
-                                setPopupMessage({
-                                  img: dangerImage,
-                                  title:
-                                    "Executor details will be shown 2 hours before your scheduled time to avoid distractions. 🙂",
-                                  body: "",
-                                  button: "OK",
-                                });
-                                console.log(order, "order");
-                                setIsPopupVisible(true);
-                              }
-                            }}
-                            style={{ marginLeft: "10px" }}
-                          >
-                            Executor Details
-                          </button>
-                          {isPopupVisible && (
-                            <Popup
-                              style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-                              onClose={closePopup}
-                              popupMessage={popupMessage}
-                            />
-                          )}
-                        </>
-                   
+                      <>
+                        <button
+                          className="view-details order-details"
+                          onClick={() => {
+                            if (
+                              isWithinFourHourWindow(
+                                order.order_time,
+                                order.order_date
+                              )
+                            ) {
+                              openSupplierPopup(order);
+                              setIsPopupVisible(true);
+                            } else {
+                              setPopupMessage({
+                                img: dangerImage,
+                                title:
+                                  "Executor details will be shown 2 hours before your scheduled time to avoid distractions. 🙂",
+                                body: "",
+                                button: "OK",
+                              });
+                              console.log(order, "order");
+                              setIsPopupVisible(true);
+                            }
+                          }}
+                          style={{ marginLeft: "10px" }}
+                        >
+                          Executor Details
+                        </button>
+                        {isPopupVisible && (
+                          <Popup
+                            style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                            onClose={closePopup}
+                            popupMessage={popupMessage}
+                          />
+                        )}
+                      </>
                     </div>
                   )}
-
-
 
                   {order?.type === 2 && orderStatus?.status == "Completed" ? (
                     <div>
@@ -504,17 +504,17 @@ const Orderlist = () => {
           })
         ) : (
           <div className="no-record-div m-5">
-          <h2 className="no-record-heading">
-            No Orders.. Please continue shopping with Hora
-          </h2>
-          <button className="button-style" onClick={() => router.push("/")}>
-            Continue Shopping
-          </button>
-        </div>
+            <h2 className="no-record-heading">
+              No Orders.. Please continue shopping with Hora
+            </h2>
+            <button className="button-style" onClick={() => router.push("/")}>
+              Continue Shopping
+            </button>
+          </div>
         )}
       </div>
     </main>
   );
-}
+};
 
 export default Orderlist;

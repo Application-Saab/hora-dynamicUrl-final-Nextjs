@@ -1,0 +1,480 @@
+/* Main container styles */
+.invitation-container {
+  max-width: 480px;
+  margin: 0 auto;
+  /* background: linear-gradient(to bottom, #c4b5db, #d8caec, #fde8c8); */
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* background-image: url('../../assets/background_wonderland.png'); */
+}
+
+/* Background starry effects */
+.starry-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+}
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #fef08a;
+  border-radius: 50%;
+}
+
+/* String lights at the top */
+.string-lights {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.light-string {
+  width: 75%;
+  height: 1.5rem;
+  border-top: 2px dashed #fcd34d;
+  display: flex;
+  justify-content: space-around;
+}
+
+.light-bulb {
+  width: 8px;
+  height: 8px;
+  background-color: #fcd34d;
+  border-radius: 50%;
+  margin-top: -4px;
+  box-shadow: 0 0 8px 2px rgba(255, 222, 173, 0.6);
+}
+
+/* Profile image styles */
+.profile-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.profile-image {
+  width: 8rem;
+  height: 8rem;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #fef3c7;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-family: 'Serif', Georgia, serif;
+  font-size: 1.25rem;
+  margin-top: 0.5rem;
+  color: white;
+}
+
+/* Invitation title styles */
+.invitation-title {
+  margin-bottom: 2rem;
+}
+
+.invitation-title h1 {
+  font-family: 'Serif', Georgia, serif;
+  font-size: 2.25rem;
+  line-height: 1.25;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+/* Event details card styles */
+.event-details-card {
+  background-color: #fffbeb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.event-location {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.event-location-text {
+  color: #374151;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.event-time {
+  margin-left: auto;
+  color: #374151;
+}
+
+.event-divider {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.75rem;
+}
+
+.event-description {
+  display: flex;
+  align-items: center;
+}
+
+.event-description-text {
+  color: #374151;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.icon {
+  color: #9ca3af;
+  margin-right: 0.75rem;
+}
+
+/* RSVP button styles */
+.rsvp-button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(to right, #fda4af, #fcd34d);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: white;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.rsvp-button:hover {
+  opacity: 0.9;
+}
+
+.waiting-text {
+  color: #374151;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Additional info grid styles */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.info-card-title {
+  color: #374151;
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.info-card-text {
+  color: #4b5563;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+/* Photo gallery styles */
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-item {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Footer button styles */
+.footer-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.footer-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  color: #374151;
+  border: none;
+  cursor: pointer;
+}
+
+.footer-button:hover {
+  background-color: #f9fafb;
+}
+
+/* Animation for twinkling stars */
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0.2; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+}
+
+/* Font settings */
+@font-face {
+  font-family: 'Serif';
+  src: local('Georgia'), local('Times New Roman');
+}
+
+/* Media query for tablets (768px) */
+@media (max-width: 768px) {
+  .invitation-container {
+    max-width: 440px;
+    padding: 1.25rem;
+  }
+  
+  .profile-image {
+    width: 7rem;
+    height: 7rem;
+  }
+  
+  .invitation-title h1 {
+    font-size: 2rem;
+  }
+  
+  .event-location-text,
+  .event-description-text,
+  .waiting-text,
+  .info-card-title {
+    font-size: 1.125rem;
+  }
+  
+  .rsvp-button {
+    font-size: 1.25rem;
+    padding: 0.875rem;
+  }
+  
+  .photo-gallery {
+    gap: 0.4rem;
+  }
+  
+  .light-string {
+    width: 80%;
+  }
+}
+
+/* Media query for mobile (468px) */
+@media (max-width: 468px) {
+  .invitation-container {
+    max-width: 100%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  .profile-image {
+    width: 6rem;
+    height: 6rem;
+    border-width: 3px;
+  }
+  
+  .profile-name {
+    font-size: 1.125rem;
+  }
+  
+  .invitation-title {
+    margin-bottom: 1.5rem;
+  }
+  
+  .invitation-title h1 {
+    font-size: 1.75rem;
+  }
+  
+  .event-details-card {
+    padding: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .event-location-text,
+  .event-description-text {
+    font-size: 1rem;
+  }
+  
+  .icon {
+    margin-right: 0.5rem;
+  }
+  
+  .rsvp-button {
+    font-size: 1.125rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .waiting-text {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .info-grid {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .info-card {
+    padding: 0.75rem;
+  }
+  
+  .info-card-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .info-card-text {
+    font-size: 0.875rem;
+  }
+  
+  .photo-gallery {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .footer-buttons {
+    gap: 0.5rem;
+  }
+  
+  .footer-button {
+    padding: 0.625rem;
+    font-size: 0.722rem;
+  }
+  
+  .star {
+    width: 3px;
+    height: 3px;
+  }
+  
+  .light-bulb {
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+  }
+  
+  .light-string {
+    width: 90%;
+    height: 1.25rem;
+  }
+}
+
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* Modal Content */
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.close-btn,
+.save-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.close-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.save-btn {
+  background-color: #1976d2;
+  color: white;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

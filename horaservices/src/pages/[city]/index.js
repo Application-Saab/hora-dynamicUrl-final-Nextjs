@@ -13,7 +13,7 @@ import Success from '../../pages/Success';
 import Failure from '../../pages/Failure';
 // import { useNavigate , Link, useLocation } from 'react-router-dom'; // Import useNavigate
 import whatsppicon from "../../assets/whatsapp-icon.png";
-import { getHomeOrganizationSchema } from "@/utils/schema";
+import { getHomeOrganizationSchema } from "../../utils/schema";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";

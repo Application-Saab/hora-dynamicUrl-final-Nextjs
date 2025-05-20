@@ -52,6 +52,9 @@ const SelectDate = ({ history, currentStep }) => {
         selectedCount,
     } = router.query;
 
+    console.log("selectedDishDictionary12", selectedDishDictionary);  
+    console.log("selectedDishPrice12", selectedDishPrice);
+
     if (selectedDishDictionary) {
         try {
             selectedDishDictionary = JSON.parse(selectedDishDictionary);
@@ -64,6 +67,7 @@ const SelectDate = ({ history, currentStep }) => {
     const data = selectedDishDictionary;
     const [dishPrice, setDishPrice] = useState(selectedDishPrice);
     //const [dishPrice, setDishPrice] = useState(Number(selectedDishPrice) + 49);
+    console.log("dishPrice12", dishPrice);
 
     // Container for the whole component
     const MainContainer = styled.div`
@@ -301,6 +305,8 @@ const SelectDate = ({ history, currentStep }) => {
             isDishSelected,
             selectedCount
         };
+
+        console.log("navigateState12", navigateState);
 
         // if (!isLoggedIn) {
         //     router.push({

@@ -3,9 +3,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import whatsppicon from "../assets/whatsapp-new.webp";
 
+import { usePathname, useRouter } from "next/navigation";
+
 const WhatsAppIcon = ({ router }) => {
   const { pathname, query } = router;
   const { catValue, productName } = query;
+  const routerPathname = usePathname();
+  
 
   const handleWhatsAppClick = () => {
     const phoneNumber = '7338584828';
@@ -220,9 +224,15 @@ const WhatsAppIcon = ({ router }) => {
 
 
   const shouldShowWhatsAppIcon = () => {
-    return router.pathname !== '/order-details' && router.pathname !== '/orderlist' && router.pathname !== '/photo-gallery';
+    const isWonderland = routerPathname === "/wonderland" || routerPathname?.startsWith("/wonderland/");
+    return (
+      router.pathname !== "/order-details" &&
+      router.pathname !== "/orderlist" &&
+      router.pathname !== "/photo-gallery" &&
+      !isWonderland
+    );
   };
-
+  
   return (
     <>
       {shouldShowWhatsAppIcon() && (

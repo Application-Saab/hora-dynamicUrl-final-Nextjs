@@ -14,8 +14,15 @@ const PageLayout = ({ children }) => {
 
     const router = useRouter();
     const { catValue } = router.query;
-    const hideHeader = router.pathname === `/testing`;
- 
+    // const hiddenRoutes = ['/lucky-draw', '/wonderland/[orderid]'];
+    // const hideHeader = hiddenRoutes.includes(router.pathname);    
+    const hiddenRoutes = ['/testing', '/dashboard'];
+    const dynamicHiddenPrefix = ['/wonderland/'];
+    
+    const hideHeader =
+      hiddenRoutes.includes(router.pathname) ||
+      dynamicHiddenPrefix.some(path => router.asPath.startsWith(path));
+    
   
   return (
     <div className="page-container container-fluid p-0">

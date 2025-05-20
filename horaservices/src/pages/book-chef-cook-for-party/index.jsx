@@ -507,19 +507,37 @@ const CreateOrder = ({ history, currentStep }) => {
         </div>
     );
 
+    // const addDish = (selectedDishPrice) => {
+    //     router.push({
+    //         pathname: '/book-chef-cook-for-party/order-details',
+    //         query: {
+    //             orderType,
+    //             selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+    //             selectedDishPrice:Number(selectedDishPrice) + 49,
+    //             selectedDishes:JSON.stringify(selectedDishes),
+    //             isDishSelected,
+    //             selectedCount,
+    //         }
+    //     });
+    // };
     const addDish = (selectedDishPrice) => {
+        const queryParams = {
+            orderType,
+            selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+            selectedDishPrice: Number(selectedDishPrice) + 49,
+            selectedDishes: JSON.stringify(selectedDishes),
+            isDishSelected,
+            selectedCount,
+        };
+    
+        console.log("Redirecting with query params:", queryParams);
+    
         router.push({
             pathname: '/book-chef-cook-for-party/order-details',
-            query: {
-                orderType,
-                selectedDishDictionary: JSON.stringify(selectedDishDictionary),
-                selectedDishPrice:Number(selectedDishPrice) + 49,
-                selectedDishes:JSON.stringify(selectedDishes),
-                isDishSelected,
-                selectedCount,
-            }
+            query: queryParams,
         });
     };
+    
     
 
     const closeBottomSheet = () => {

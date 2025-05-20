@@ -55,6 +55,11 @@ const ChefCheckout = () => {
         selectedCount,
         selectedDishes
     } = router.query;
+
+    console.log("selectedDishes", selectedDishes);
+    console.log("selectedDishDictionary", selectedDishDictionary);
+    console.log("selectedDishPrice", selectedDishPrice);
+    console.log("peopleCount", peopleCount);
    
  
     useEffect(() => {
@@ -391,7 +396,9 @@ const ChefCheckout = () => {
     }
 
     const priceForPeople = peopleCount * 49
+    console.log("priceForPeople", priceForPeople);
     let totalPrice = parseInt(selectedDishPrice) + priceForPeople
+    console.log("totalPrice", totalPrice);
     if (Array.isArray(selectedDishes) && selectedDishes.length > 7) {
         totalPrice += 700;
     }
