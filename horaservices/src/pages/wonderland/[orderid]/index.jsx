@@ -9,13 +9,18 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import OtpLoginPopup from "../../../components/OtpLoginPopup";
 import { MapPin, User, Gift, Wand2, Camera } from "lucide-react";
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // add icons
+import { faCamera, faPen, faGift } from '@fortawesome/free-solid-svg-icons';// add icons
+import WanderlandTabSection from "../../../components/WanderlandTabs/WanderlandTabSection";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 const InvitationCard = () => {
   const router = useRouter();
   const { orderid } = router.query;
   const [orderDetails, setOrderDetails] = useState(null);
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+
 
   useEffect(() => {
     if (!orderid) return;
@@ -66,7 +71,9 @@ const InvitationCard = () => {
     // }
   }, []);
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true
+
+  );
   const [formData, setFormData] = useState({
     // image: null,
     name: "",
@@ -95,7 +102,7 @@ const InvitationCard = () => {
       console.log("Image uploaded:", data);
       console.log("Image uploaded2:", data.data);
 
-      setUploadedImage(data.data); 
+      setUploadedImage(data.data);
     } catch (err) {
       console.error("Image upload error:", err);
       alert("Failed to upload image");
@@ -229,6 +236,8 @@ const InvitationCard = () => {
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
 
+
+
   return (
     <>
       {!isLoggedIn ? (
@@ -269,11 +278,11 @@ const InvitationCard = () => {
                 {/* Invitation Title */}
                 <div className="invitation-title">
                   <h1>
-                    You're Invited to a<br />
-                    Celebration of Magic
-                    <br />& Memories!
+                    You're Invited to a <br />
+                    Celebration of Magic & Memories!
                   </h1>
                 </div>
+
 
                 {/* Event Details Card */}
                 <div className="event-details-card">
@@ -290,11 +299,13 @@ const InvitationCard = () => {
                     <div className="event-description">
                       <User className="icon" size={20} />
                       <span className="event-description-text">
-                        Aarav's 1st Birthday
+                        {orderDetails.Name}'s Birthday    {/* add dynamic name */}
                       </span>
                     </div>
                   </div>
                 </div>
+
+
               </>
             ) : (
               <p>Loading...</p>
@@ -307,59 +318,58 @@ const InvitationCard = () => {
 
             {/* Additional Info Grid */}
             <div className="info-grid">
-              {/* Host Note */}
-              <div className="info-card">
-                <h3 className="info-card-title">Host's Personal Note</h3>
-                <p className="info-card-text">
-                  I hope you can join us to celebrate this special day!
-                </p>
-              </div>
 
-              {/* Gift Registry */}
-              <div className="info-card">
-                <div className="info-card-title">
-                  <Gift size={20} style={{ marginRight: "8px" }} />
-                  <h3>Gift Registry</h3>
-                </div>
-              </div>
-
-              {/* Theme Info */}
               <div className="info-card full-width">
                 <div className="info-card-title">
-                  <Wand2 size={20} style={{ marginRight: "8px" }} />
+                  <Wand2 size={20} style={{ marginRight: "2px" }} />
                   <h3>Theme & Dress Code</h3>
                 </div>
                 <p className="info-card-text">Fairy-tale attire</p>
               </div>
             </div>
 
-            {/* Photo Gallery */}
-            <div className="photo-gallery">
-              <div className="gallery-item">
-                <img
-                  src="https://cdn.pixabay.com/photo/2015/11/16/14/43/cat-1045782_640.jpg"
-                  alt="Baby"
-                />
+
+
+            {/* tabs container */}
+            <div className="tabs-container">
+              <div className="tab-box">
+                <div className="icon-and-text">
+                  <FontAwesomeIcon icon={faCamera} size="2x" className="tab-icon" />
+                  <span className="upload-text">Upload Image</span>
+                </div>
+                <div className="tab-text">
+                  <div className="tab-desc">Add photos taken at the party</div>
+                </div>
               </div>
-              <div className="gallery-item">
-                <img
-                  src="https://cdn.pixabay.com/photo/2015/11/16/14/43/cat-1045782_640.jpg"
-                  alt="Family"
-                />
+
+
+              <div className="tab-box">
+                <div className="icon-and-text">
+                  <FontAwesomeIcon icon={faPen} size="2x" className="tab-icon" />
+                  <span className="upload-text">Thank You Note</span>
+                </div>
+                <div className="tab-text">
+                  <div className="tab-desc">Leave a message for the host</div>
+                </div>
               </div>
-              <div className="gallery-item">
-                <img
-                  src="https://cdn.pixabay.com/photo/2015/11/16/14/43/cat-1045782_640.jpg"
-                  alt="Cake"
-                />
-              </div>
-              <div className="gallery-item">
-                <img
-                  src="https://cdn.pixabay.com/photo/2015/11/16/14/43/cat-1045782_640.jpg"
-                  alt="Decoration"
-                />
+
+
+              <div className="tab-box">
+                <div className="icon-and-text">
+                  <FontAwesomeIcon icon={faGift} size="2x" className="tab-icon" />
+                  <span className="upload-text">Try Your Luck!</span>
+                </div>
+                <div className="tab-text">
+                  <div className="tab-desc">Try your luck and win!</div>
+                </div>
               </div>
             </div>
+
+            {/* 
+<WanderlandTabSection /> */}
+
+
+
 
             {/* Footer Buttons */}
             <div className="footer-buttons">
@@ -427,20 +437,22 @@ const InvitationCard = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
+                placeholder="Enter your name"
               />
             </label>
 
-            <label>
+
+            {/* <label>
               Date:
               <input
                 type="date"
                 name="date"
                 value={formData.date}
-                onChange={handleChange}
+            
               />
-            </label>
+            </label> 
 
-            <label>
+             <label>
               Time:
               <input
                 type="time"
@@ -448,7 +460,33 @@ const InvitationCard = () => {
                 value={formData.time}
                 onChange={handleChange}
               />
+            </label> */}
+            <label>
+              Date:
             </label>
+            <DatePicker
+              selected={formData.date}
+              onChange={(date) => setFormData({ ...formData, date })}
+              placeholderText="Select date"
+              dateFormat="yyyy-MM-dd"
+              className="custom-input"
+            />
+
+            <label>
+              Time:
+            </label>
+            <DatePicker
+              selected={formData.time}
+              onChange={(time) => setFormData({ ...formData, time })}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={15}
+              timeCaption="Time"
+              dateFormat="h:mm aa"
+              placeholderText="Select time"
+              className="custom-input"
+            />
+
 
             <label>
               Address:
@@ -457,6 +495,7 @@ const InvitationCard = () => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
+                placeholder="Enter your address"
               />
             </label>
 
