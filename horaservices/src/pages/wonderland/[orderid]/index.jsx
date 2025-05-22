@@ -71,9 +71,7 @@ const InvitationCard = () => {
     // }
   }, []);
 
-  const [showModal, setShowModal] = useState(true
-
-  );
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     // image: null,
     name: "",

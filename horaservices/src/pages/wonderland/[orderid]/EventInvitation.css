@@ -492,9 +492,12 @@
 }
 
 .modal-content h2 {
-  margin-bottom: 15px;
-  font-weight: 600;
-  color: rgb(150, 82, 141);
+   margin-bottom: 14px;
+    font-weight: bolder;
+    color: rgb(150, 82, 141);
+    font-size: 21px;
+    font-style: inherit;
+    letter-spacing: 1px;
 }
 
 .modal-content label {
