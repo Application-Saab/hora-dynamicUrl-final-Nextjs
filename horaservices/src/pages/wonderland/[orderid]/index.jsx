@@ -72,7 +72,6 @@ const InvitationCard = () => {
   }, []);
 
   const [showModal, setShowModal] = useState(true
-
   );
   const [formData, setFormData] = useState({
     // image: null,
@@ -442,13 +441,13 @@ const InvitationCard = () => {
             </label>
 
 
-            {/* <label>
+            <label>
               Date:
               <input
                 type="date"
                 name="date"
                 value={formData.date}
-            
+            onChange={handleChange}
               />
             </label> 
 
@@ -460,34 +459,9 @@ const InvitationCard = () => {
                 value={formData.time}
                 onChange={handleChange}
               />
-            </label> */}
-            <label>
-              Date:
             </label>
-            <DatePicker
-              selected={formData.date}
-              onChange={(date) => setFormData({ ...formData, date })}
-              placeholderText="Select date"
-              dateFormat="yyyy-MM-dd"
-              className="custom-input"
-            />
 
-            <label>
-              Time:
-            </label>
-            <DatePicker
-              selected={formData.time}
-              onChange={(time) => setFormData({ ...formData, time })}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={15}
-              timeCaption="Time"
-              dateFormat="h:mm aa"
-              placeholderText="Select time"
-              className="custom-input"
-            />
-
-
+          
             <label>
               Address:
               <input

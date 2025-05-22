@@ -515,6 +515,10 @@
   background-color: white;
   color:#6c757d;
 }
+.modal-content input::placeholder {
+  color:  rgb(150, 82, 141); 
+  opacity: 1;  
+}
 .custom-input {
  width: 100%;
   padding: 8px;
@@ -525,7 +529,10 @@
   background-color: white;
   color: black;
 }
-
+.custom-input::placeholder {
+  color: rgb(150, 82, 141);
+  opacity: 1;  
+}
 
 .modal-actions {
   display: flex;
@@ -543,8 +550,8 @@
 }
 
 .close-btn {
-  background-color: white;
-  color: rgb(150, 82, 141);
+  background-color: rgb(150, 82, 141);
+  color: white;
   border: 1px solid rgb(150, 82, 141);
   border-radius: 4px;
 }
