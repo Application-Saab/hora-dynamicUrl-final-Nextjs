@@ -20,8 +20,8 @@ const InvitationCard = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
-
-
+  const [showModal, setShowModal] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
   useEffect(() => {
     if (!orderid) return;
 
@@ -63,22 +63,25 @@ const InvitationCard = () => {
     const checkAuth = () => {
       if (isLoggedIn !== "true") {
         setIsModalOpen(true);
+        setShowModal(false);
       } else {
         setIsModalOpen(false);
+        // setShowModal(false);
       }
     };
     checkAuth();
     // }
   }, []);
 
-  const [showModal, setShowModal] = useState(true
-  );
+
   const [formData, setFormData] = useState({
     // image: null,
     name: "",
     date: "",
     time: "",
     address: "",
+    eventType: "",
+    eventTypeSearch: "",
   });
   const [uploadedImage, setUploadedImage] = useState(null);
 
@@ -148,6 +151,8 @@ const InvitationCard = () => {
     params.append("selectedImage", selectedImage || "");
     params.append("image", uploadedImage || "");
     params.append("orderid", orderid);
+    params.append("eventType", formData.eventType);
+
 
     console.log("🚀 Submitting data to Google Sheets:", {
       name: formData.name,
@@ -157,11 +162,13 @@ const InvitationCard = () => {
       selectedImage,
       uploadedImage,
       orderid,
+      eventType: formData.eventType,
+      eventTypeSearch: formData.eventTypeSearch,
     });
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbyzPu0fLxFYhDJiCTJUNrbIUAXeGt-W94K8jh6HrgCIur5wc0lAB0ASSollfMP2X0p7pQ/exec",
+        " https://script.google.com/macros/s/AKfycbyaBqKt-f0yly3fKrzTEG6mJA8DugAUzpXLIS_mFHs85X-nMj-WSwFDqbqAJWmoBxFZJQ/exec",
         {
           method: "POST",
           headers: {
@@ -175,7 +182,7 @@ const InvitationCard = () => {
       window.location.reload();
 
       // Clear form & selections
-      setFormData({ name: "", date: "", time: "", address: "" });
+      setFormData({ name: "", date: "", time: "", address: "", eventType: "", eventTypeSearch: "", });
       setUploadedImage(null);
       setSelectedImage("");
       setShowModal(false);
@@ -234,6 +241,10 @@ const InvitationCard = () => {
       })
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
+
+  const eventOptions = [
+    "Birthday", "Wedding", "Anniversary", "Graduation", "Baby Shower", "Other"
+  ];
 
 
 
@@ -387,102 +398,193 @@ const InvitationCard = () => {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Edit Details</h2>
+          <div
+            className="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modalTitle"
+          >
+            <h2 id="modalTitle">Create Event Invite</h2>
 
-            {/* Image selection area */}
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                marginBottom: "10px",
-                flexWrap: "wrap",
-              }}
-            >
-              {images.map((item) => (
-                <img
-                  key={item.id}
-                  src={`https://horaservices.com/api/uploads/${item.image}`}
-                  alt={`Option ${item.id}`}
-                  style={{
-                    width: "60px",
-                    height: "60px",
-                    border:
-                      selectedImage === item.image
-                        ? "3px solid blue"
-                        : "1px solid #ccc",
-                    cursor: "pointer",
-                    borderRadius: "4px",
-                    objectFit: "cover",
+            <p className="invite-text" style={{ userSelect: "none" }}>
+              🌟 A day of joy, a heart full of cheer, <br />
+              The people we love, we wish to have near.
+            </p>
+
+            <p className="invite-text">
+              So please come join us in celebrating
+              {/* Searchable Dropdown for Event Type */}
+              <div
+                style={{
+                  margin: "10px 0",
+                  position: "relative",
+                  width: "70%",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Event type..."
+                  value={formData.eventTypeSearch || ""}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      eventTypeSearch: e.target.value,
+                    }));
+                    setShowDropdown(true); // show dropdown on typing
                   }}
-                  onClick={() => setSelectedImage(item.image)}
+                  onFocus={() => setShowDropdown(true)} // show dropdown on focus
+                  autoComplete="off"
+                  className="underline-input"
                 />
-              ))}
-            </div>
 
-            <label>
-              Upload Image:
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-            </label>
+                {showDropdown && formData.eventTypeSearch && (
+                  <ul
+                    style={{
+                      position: "absolute",
+                      top: "38px",
+                      left: 0,
+                      right: 0,
+                      maxHeight: "120px",
+                      overflowY: "auto",
+                      background: "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      listStyleType: "none",
+                      margin: 0,
+                      padding: 0,
+                      zIndex: 1000,
+                    }}
+                  >
+                    {eventOptions
+                      .filter((opt) =>
+                        opt.toLowerCase().includes(formData.eventTypeSearch.toLowerCase())
+                      )
+                      .map((opt) => (
+                        <li
+                          key={opt}
+                          style={{
+                            padding: "8px",
+                            cursor: "pointer",
+                            borderBottom: "1px solid #eee",
+                          }}
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              eventType: opt,
+                              eventTypeSearch: opt,
+                            }));
+                            setShowDropdown(false); // hide dropdown on select
+                          }}
+                        >
+                          {opt}
+                        </li>
+                      ))}
 
-            <label>
-              Name:
+                    {eventOptions.filter((opt) =>
+                      opt.toLowerCase().includes(formData.eventTypeSearch.toLowerCase())
+                    ).length === 0 && (
+                        <li style={{ padding: "8px", color: "#888" }}>No results found</li>
+                      )}
+                  </ul>
+                )}
+              </div>
+            </p>
+
+
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginLeft: "70px" }}>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder="Host Name"
+                className="underline-input "
+                style={{ minWidth: "100px", textAlign: "centre", }}
               />
-            </label>
-
-
-            <label>
-              Date:
+              <span>’s</span>
+            </div>
+            <p className="invite-text">
+              on{' '}
               <input
                 type="date"
                 name="date"
                 value={formData.date}
-            onChange={handleChange}
+                onChange={handleChange}
+                className="underline-input date-input"
               />
-            </label> 
-
-             <label>
-              Time:
+              {' '}
+              at{' '}
               <input
                 type="time"
                 name="time"
                 value={formData.time}
                 onChange={handleChange}
-              />
-            </label>
-
-          
-            <label>
-              Address:
+                className="underline-input time-input"
+              />{' '}
+              at{' '}
               <input
                 type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                placeholder="Enter your address"
+                placeholder="Venue"
+                className="underline-input address-input"
               />
-            </label>
-
+            </p>
+            <p className="invite-text" style={{ marginTop: "1rem" }}>
+              because happiness means more when shared with you.
+            </p>
             <div className="modal-actions">
-              <button className="close-btn" onClick={handleClose}>
-                Close
+              <button className="close-btn" onClick={handleClose} type="button">
+                Cancel
               </button>
-              <button className="save-btn" onClick={handleSave}>
+              <button className="save-btn" onClick={handleSave} type="button">
                 Save
               </button>
             </div>
           </div>
         </div>
+
+        // <label>
+        //   Upload Image:
+        //   <input
+        //     type="file"
+        //     accept="image/*"
+        //     onChange={handleImageChange}
+        //   />
+        // </label>
+        //     <div
+        //       style={{
+        //         display: "flex",
+        //         gap: "10px",
+        //         marginBottom: "10px",
+        //         flexWrap: "wrap",
+        //       }}
+        //     >
+        //       {images.map((item) => (
+        //         <img
+        //           key={item.id}
+        //           src={`https://horaservices.com/api/uploads/${item.image}`}
+        //           alt={`Option ${item.id}`}
+        //           style={{
+        //             width: "60px",
+        //             height: "60px",
+        //             border:
+        //               selectedImage === item.image
+        //                 ? "3px solid blue"
+        //                 : "1px solid #ccc",
+        //             cursor: "pointer",
+        //             borderRadius: "4px",
+        //             objectFit: "cover",
+        //           }}
+        //           onClick={() => setSelectedImage(item.image)}
+        //         />
+        //       ))}
+        //     </div>
+
+
       )}
     </>
   );
