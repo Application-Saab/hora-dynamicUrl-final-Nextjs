@@ -1,49 +1,28 @@
-/* Main container styles */
-.invitation-container {
-  max-width: 480px;
-  margin: 0 auto;
-  /* background: linear-gradient(to bottom, #c4b5db, #d8caec, #fde8c8); */
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  /* background-image: url('../../assets/background_wonderland.png'); */
-}
 
 /* Background starry effects */
-.starry-bg {
+/* .starry-bg {
   position: absolute;
   inset: 0;
   opacity: 0.3;
-}
+} */
 
-.star {
+/* .star {
   position: absolute;
   width: 4px;
   height: 4px;
   background-color: #fef08a;
   border-radius: 50%;
-}
+} */
 
-/* String lights at the top */
-.string-lights {
-  position: absolute;
-  top: 1rem;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-}
 
-.light-string {
+
+/* .light-string {
   width: 75%;
   height: 1.5rem;
   border-top: 2px dashed #fcd34d;
   display: flex;
   justify-content: space-around;
-}
+} */
 
 .light-bulb {
   width: 8px;
@@ -54,159 +33,151 @@
   box-shadow: 0 0 8px 2px rgba(255, 222, 173, 0.6);
 }
 
-/* Profile image styles */
+
+/* General Font Setup */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
+
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Overlay Content */
+.overlay-content {
+    background-color: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    max-width: 600px;
+    width: 95%;
+    margin: 5px auto;
+    text-align: center;
+}
+
+/* Profile image */
 .profile-container {
-  position: relative;
+  display: flex;
+  justify-content: center;
   margin-bottom: 1.5rem;
 }
-
 .profile-image {
-  width: 8rem;
-  height: 8rem;
-  margin: 0 auto;
-  border-radius: 50%;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 9999px;
   overflow: hidden;
-  border: 4px solid #fef3c7;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 3px solid #f9a8d4;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   background-color: white;
+  transition: transform 0.3s ease;
 }
-
+.profile-image:hover {
+  transform: scale(1.05);
+}
 .profile-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.profile-name {
-  font-size: 1.25rem;
-  margin-top: 0.5rem;
-  color: white;
+/* Invitation Title */
+.invitation-title
+ {
+    text-align: center;
+    color: #be185d;
+    font-family: 'Amatic SC', cursive;
+    font-size:1.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
 }
 
-/* Invitation title styles */
-.invitation-title {
-  margin-bottom: 2rem;
-  
+/* Subtitle */
+.subtitle {
+    text-align: center;
+    font-family: 'Pacifico', cursive;
+    font-size: 1.2rem;
+    color: black;
+    margin-bottom: 1rem;
+    font-weight: 700;
 }
 
-
-.invitation-title h1 {
-  font-size: 20px;
-  line-height:25px;
-  color: white;
-  margin-bottom: 0.95rem;
+/* Event Info */
+.event-info {
   text-align: center;
-  /* padding: 0 1rem; */
-}
-
-
-/* Event details card styles */
-.event-details-card {
-  background-color: #fffbeb;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.event-location {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.event-location-text {
+  font-size: 1.125rem;
   color: #374151;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.event-time {
-  margin-left: auto;
-  color: #374151;
-}
-
-.event-divider {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 0.75rem;
-}
-
-.event-description {
-  display: flex;
-  align-items: center;
-}
-
-.event-description-text {
-  color: #374151;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.icon {
-  color: #9ca3af;
-  margin-right: 0.75rem;
-}
-
-/* RSVP button styles */
-.rsvp-button {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(to right, #fda4af, #fcd34d);
-  border-radius: 0.75rem;
-  font-weight: 600;
-  color: white;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
-  border: none;
-  cursor: pointer;
+  font-weight: 500;
 }
 
+/* Venue Highlight */
+.venue-highlight {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Theme Card */
+.info-card {
+ 
+  text-align: center;
+background-color: none !important;
+  color: black;
+}
+.info-card-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  gap: 6px;
+}
+    .info-card-text {
+        font-size: 1.2rem;
+    }
+
+/* Final Note */
+.waiting-text {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: black;
+}
+
+/* RSVP Button */
+.rsvp-button {
+  display: block;
+  width: 100%;
+  background: linear-gradient(to right, #f472b6, #facc15);
+  padding: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  margin-top: 1rem;
+}
 .rsvp-button:hover {
   opacity: 0.9;
 }
 
-.waiting-text {
-  color:white ;
-  font-size: 1.25rem;
-  
-}
 
-
-
-.info-grid {
-  /* display: flex; */
-  justify-content: center;
-  align-items: center;
- 
-}
-
-
-
-.info-card-title {
-  color: white;
-  font-size: 1.20rem;
-  font-weight: 600;
-  /* margin-bottom: 0.5rem; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px; /* space between icon and text */
-}
-
-.info-card-text {
-  font-size: 2rem;
-  color: white;
-}
 
 .tabs-container {
   display: flex;
   justify-content: space-between;
   flex-wrap: nowrap; /* NO wrapping */
-  width: 100%;
+  width: 95%;
   box-sizing: border-box;
   margin-bottom: 20px;
-  gap:5px
+  margin-left: 10px;
+  gap:2px;
+  margin-top:20px;
 }
 
 .tab-box {
@@ -236,7 +207,7 @@
 }
 
 .tab-icon {
-  color: #374151;
+  color: palevioletred;
   margin-top: 1px;
   font-size: 16px;
 }
@@ -288,7 +259,10 @@
   height: 100%;
   object-fit: cover;
 }
-
+.object-contain{
+  width: 19px;
+  height: auto;
+}
 /* Footer button styles */
 .footer-buttons {
   display: grid;
@@ -383,7 +357,6 @@
   
   .invitation-title {
     margin-bottom: 1.5rem;
-    margin-top: -15px;
   }
   
   .invitation-title h1 {
@@ -427,10 +400,12 @@
   .info-card-title {
     font-size: 1.rem;
     margin-bottom: 0.25rem;
+
   }
   
   .info-card-text {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin-left: 10px;
   }
   
   .photo-gallery {
@@ -584,7 +559,7 @@
 
 .save-btn {
   background: #9a4d9a;
-  color: white;
+  color: black;
 }
 
 .save-btn:hover {

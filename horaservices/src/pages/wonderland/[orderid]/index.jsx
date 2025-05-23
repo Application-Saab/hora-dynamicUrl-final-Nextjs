@@ -10,17 +10,18 @@ import axios from "axios";
 import OtpLoginPopup from "../../../components/OtpLoginPopup";
 import { MapPin, User, Gift, Wand2, Camera } from "lucide-react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // add icons
-import { faCamera, faPen, faGift } from '@fortawesome/free-solid-svg-icons';// add icons
+import { faCamera, faPen, faGift ,faPersonDress } from '@fortawesome/free-solid-svg-icons';// add icons
 import WanderlandTabSection from "../../../components/WanderlandTabs/WanderlandTabSection";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 const InvitationCard = () => {
   const router = useRouter();
   const { orderid } = router.query;
   const [orderDetails, setOrderDetails] = useState(null);
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   useEffect(() => {
     if (!orderid) return;
@@ -258,144 +259,113 @@ const InvitationCard = () => {
           </h2>
           <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
         </div>
-      ) : (
+      ) : (       
+<>
+  <div
+    className="invitation-container relative min-h-screen flex flex-col items-center justify-center"
+    style={{
+      backgroundImage: orderDetails?.Template
+        ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
+        : `url('/background-image.jpg')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    }}
+  >
+    {showFAB && <FloatingEditButton onClick={handleEdit} />}
+
+    {/* Overlay Container */}
+    <div className="overlay-content bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-4 max-w-2xl w-full text-center">
+   {orderDetails ? (
         <>
-          <div
-            className="invitation-container"
-            style={{
-              backgroundImage: orderDetails?.Template
-                ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
-                : "none",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-            {showFAB && <FloatingEditButton onClick={handleEdit} />}
-            {orderDetails ? (
-              <>
-                {/* Profile Image */}
-                <div className="profile-container">
-                  <div className="profile-image">
-                    <img
-                      src={`https://horaservices.com/api/uploads/${orderDetails.Image}`}
-                      alt="Host"
-                    />
-                  </div>
-                  <h2 className="profile-name">{orderDetails.Name}</h2>
-                </div>
+          <h1 className="invitation-title text-3xl font-bold mb-4">
+            You’re invited to join us for the
+          </h1>
 
-                {/* Invitation Title */}
-                <div className="invitation-title">
-                  <h1>
-                    You're Invited to a <br />
-                    Celebration of Magic & Memories!
-                  </h1>
-                </div>
-
-
-                {/* Event Details Card */}
-                <div className="event-details-card">
-                  <div className="event-location">
-                    <MapPin className="icon" size={20} />
-                    <span className="event-location-text">
-                      {orderDetails.Address}
-                    </span>
-                    <span className="event-time">
-                      {formatDate(orderDetails.Date)} | {orderDetails.Time}
-                    </span>
-                  </div>
-                  <div className="event-divider">
-                    <div className="event-description">
-                      <User className="icon" size={20} />
-                      <span className="event-description-text">
-                        {orderDetails.Name}'s Birthday    {/* add dynamic name */}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-
-              </>
-            ) : (
-              <p>Loading...</p>
-            )}
-
-            {/* RSVP Button */}
-            <button className="rsvp-button">I'm Coming!</button>
-
-            <p className="waiting-text">We can't wait to see you</p>
-
-            {/* Additional Info Grid */}
-            <div className="info-grid">
-
-              <div className="info-card full-width">
-                <div className="info-card-title">
-                  <Wand2 size={20} style={{ marginRight: "2px" }} />
-                  <h3>Theme & Dress Code</h3>
-                </div>
-                <p className="info-card-text">Fairy-tale attire</p>
-              </div>
-            </div>
-
-
-
-            {/* tabs container */}
-            <div className="tabs-container">
-              <div className="tab-box">
-                <div className="icon-and-text">
-                  <FontAwesomeIcon icon={faCamera} size="2x" className="tab-icon" />
-                  <span className="upload-text">Upload Image</span>
-                </div>
-                <div className="tab-text">
-                  <div className="tab-desc">Add photos taken at the party</div>
-                </div>
-              </div>
-
-
-              <div className="tab-box">
-                <div className="icon-and-text">
-                  <FontAwesomeIcon icon={faPen} size="2x" className="tab-icon" />
-                  <span className="upload-text">Thank You Note</span>
-                </div>
-                <div className="tab-text">
-                  <div className="tab-desc">Leave a message for the host</div>
-                </div>
-              </div>
-
-
-              <div className="tab-box">
-                <div className="icon-and-text">
-                  <FontAwesomeIcon icon={faGift} size="2x" className="tab-icon" />
-                  <span className="upload-text">Try Your Luck!</span>
-                </div>
-                <div className="tab-text">
-                  <div className="tab-desc">Try your luck and win!</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 
-<WanderlandTabSection /> */}
-
-
-
-
-            {/* Footer Buttons */}
-            <div className="footer-buttons">
-              <button className="footer-button">
-                <MapPin size={20} style={{ marginRight: "8px" }} />
-                <span>Open in Google Maps</span>
-              </button>
-              <button className="footer-button">
-                <Camera size={20} style={{ marginRight: "8px" }} />
-                <span>Upload Photos</span>
-              </button>
+          <div className="profile-container flex justify-center mb-4">
+            <div className="profile-image w-36 h-36 rounded-full overflow-hidden border-4 border-pink-300 shadow-md">
+              <img
+                src={`https://horaservices.com/api/uploads/${orderDetails.Image}`}
+                alt={orderDetails.Name}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
-        </>
-      )}
 
+          <h2 className="subtitle text-2xl font-semibold text-pink-600 mb-2">
+            {orderDetails["Event Type"] || "Celebration"} Celebration of {orderDetails.Name || "Someone Special"}
+          </h2>
+
+          <p className="event-info text-gray-700 mb-1">
+            📅 {formatDate(orderDetails.Date)} at 🕒 {orderDetails.Time}
+          </p>
+
+          <p className="event-info text-gray-700 mb-4">
+            📍 Venue: <span className="venue-highlight font-medium text-pink-600">{orderDetails.Address || "Venue Details"}</span>
+          </p>
+
+          <div className="info-card">
+  <div className="info-card-title ">
+    <img
+      src="/photo.jpg"
+      alt="Dress Code"
+      className=" object-contain"  
+    />
+    <span className="info-card-text text-sm">Fairy-tale attire</span>
+  </div>
+</div>
+           
+          
+
+          <p className="waiting-text text-gray-600 mb-4">
+            We look forward to celebrating this special day with you!
+          </p>
+
+          <button className="rsvp-button bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition">
+            I'm Coming!
+          </button>
+        </>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+
+    {/* Tabs */}
+    <div className="tabs-container">
+      <div className="tab-box">
+        <div className="icon-and-text">
+          <FontAwesomeIcon icon={faCamera} size="2x" className="tab-icon" />
+          <span className="upload-text">Upload Image</span>
+        </div>
+        <div className="tab-text">
+          <div className="tab-desc">Add photos taken at the party</div>
+        </div>
+      </div>
+
+      <div className="tab-box">
+        <div className="icon-and-text">
+          <FontAwesomeIcon icon={faPen} size="2x" className="tab-icon" />
+          <span className="upload-text">Thank You Note</span>
+        </div>
+        <div className="tab-text">
+          <div className="tab-desc">Leave a message for the host</div>
+        </div>
+      </div>
+
+      <div className="tab-box">
+        <div className="icon-and-text">
+          <FontAwesomeIcon icon={faGift} size="2x" className="tab-icon" />
+          <span className="upload-text">Try Your Luck!</span>
+        </div>
+        <div className="tab-text">
+          <div className="tab-desc">Try your luck and win!</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</>
+      )}
       {showModal && (
         <div className="modal-overlay">
           <div
@@ -533,9 +503,18 @@ const InvitationCard = () => {
                 className="underline-input address-input"
               />
             </p>
+             <label  className="block text-black px-4 ">
+              Upload Image:
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </label>
             <p className="invite-text" style={{ marginTop: "1rem" }}>
               because happiness means more when shared with you.
             </p>
+           
             <div className="modal-actions">
               <button className="close-btn" onClick={handleClose} type="button">
                 Cancel
@@ -544,45 +523,13 @@ const InvitationCard = () => {
                 Save
               </button>
             </div>
+
+
+
+
           </div>
         </div>
 
-        // <label>
-        //   Upload Image:
-        //   <input
-        //     type="file"
-        //     accept="image/*"
-        //     onChange={handleImageChange}
-        //   />
-        // </label>
-        //     <div
-        //       style={{
-        //         display: "flex",
-        //         gap: "10px",
-        //         marginBottom: "10px",
-        //         flexWrap: "wrap",
-        //       }}
-        //     >
-        //       {images.map((item) => (
-        //         <img
-        //           key={item.id}
-        //           src={`https://horaservices.com/api/uploads/${item.image}`}
-        //           alt={`Option ${item.id}`}
-        //           style={{
-        //             width: "60px",
-        //             height: "60px",
-        //             border:
-        //               selectedImage === item.image
-        //                 ? "3px solid blue"
-        //                 : "1px solid #ccc",
-        //             cursor: "pointer",
-        //             borderRadius: "4px",
-        //             objectFit: "cover",
-        //           }}
-        //           onClick={() => setSelectedImage(item.image)}
-        //         />
-        //       ))}
-        //     </div>
 
 
       )}
