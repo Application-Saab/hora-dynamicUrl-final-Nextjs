@@ -4,7 +4,7 @@ import luckyDrawBanner from "../../assets/lucky_draw_banner.png";
 import logo from "../../assets/hora-light-innerpage.png";
 
 import "./FormComponent.css";
-const LuckyDrawForm = () => {
+  const LuckyDrawForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     name: "",
     whatsapp: "",
@@ -79,6 +79,16 @@ const LuckyDrawForm = () => {
         feedback: "",
         image: null,
       });
+
+      // Simulate async success (replace with real API call)
+    setTimeout(() => {
+      console.log('Form submitted:', formData);
+
+      // ✅ Close the popup
+      if (onClose) {
+        onClose();
+      }
+    }, 1000);
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong. Please try again later.");

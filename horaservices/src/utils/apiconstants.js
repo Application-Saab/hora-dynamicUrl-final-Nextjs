@@ -27,6 +27,7 @@ export const GET_FOOD_DELIVERY_DETAILS = "/api/order/order_details_food_delivery
 export const GET_PHOTOGRAPHY_BY_NAME = "/api/photography/searchByTag/66c96b4e22ed47b72117e09a"
 
 
+export const IMAGE_UPLOAD = "/api/image_upload";
 
 
 
