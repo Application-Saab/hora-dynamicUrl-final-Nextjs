@@ -12,7 +12,7 @@ import PlusIcon from '../../../../../assets/plus.png';
 // import { useParams } from "react-router-dom";
 import warningImage from "../../../../../assets/Group.png";
 import Popup from '../../../../../utils/popup';
-import SkeletonLoader from "../../../../../utils/chefSkeleton";
+import SkeletonLoader from "../../../../../component/Placeholder/chefSkeleton";
 import SelectDishes from "../../../../../assets/selectDish.png";
 import SelectDateTime from "../../../../../assets/event.png";
 import SelectConfirmOrder from "../../../../../assets/confirm_order.png";

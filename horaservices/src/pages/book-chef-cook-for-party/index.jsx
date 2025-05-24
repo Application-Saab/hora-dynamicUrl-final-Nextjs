@@ -1,38 +1,33 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import axios from "axios";
-import { Step, Label, Divider } from 'semantic-ui-react'; // Replace with actual library
+import { Step, Label } from 'semantic-ui-react'; // Replace with actual library
 import { ListGroup, ListGroupItem } from "react-bootstrap";
-import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
+import {  Button,  Row, Col,  } from "react-bootstrap";
 import {
     BASE_URL,
     GET_CUISINE_ENDPOINT,
     API_SUCCESS_CODE,
     GET_MEAL_DISH_ENDPOINT,
 } from "../../utils/apiconstants";
-// import { useNavigate } from "react-router-dom";
 import RectanglePurple from "../../assets/Rectanglepurple.png";
 import RectangleWhite from "../../assets/rectanglewhite.png";
 import MinusIcon from "../../assets/minus.png";
 import PlusIcon from "../../assets/plus.png";
 import warningImage from "../../assets/Group.png";
-import SkeletonLoader from "../../utils/chefSkeleton";
+import SkeletonLoader from "../../component/Placeholder/chefSkeleton";
 import '../../css/Toggle.css';
 import '../../css/chefOrder.css';
 import SelectDishes from "../../assets/selectDish.png";
 import SelectDateTime from "../../assets/event.png";
 import SelectConfirmOrder from "../../assets/confirm_order.png";
 import separator from "../../assets/separator.png";
-import styled from 'styled-components';
 import InfoIcon from '../../assets/info.png';
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Popup from '../../utils/popup';
-const orangeColor = '#FF6F61';
-const defaultColor = '#B0BEC5';
 
-const CreateOrder = ({ history, currentStep }) => {
+const BookCheifForParty = ({ history, currentStep }) => {
     const [isMobile, setIsMobile] = useState(false);
-    const viewBottomSheetRef = useRef(null);
     const bottomSheetRef = useRef(null);
     const [orderType, setOrderType] = useState(2);
     const [isDishSelected, setIsDishSelected] = useState(false);
@@ -41,11 +36,9 @@ const CreateOrder = ({ history, currentStep }) => {
     const [selectedCuisines, setSelectedCuisines] = useState([]);
     const [expandedCategories, setExpandedCategories] = useState([]);
     const [mealList, setMealList] = useState([]);
-    const [isSelectedDish, setIsSelectedDish] = useState(false);
     const [dishDetail, setDishDetail] = useState(null);
     const [selectedCount, setSelectedCount] = useState(0);
     const [selectedDishes, setSelectedDishes] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
     const [isViewAllSheetOpen, setIsViewAllSheetOpen] = useState(false);
     const [selectedDishPrice, setSelectedDishPrice] = useState(0);
     const [selectedDishDictionary, setSelectedDishDictionary] = useState({});
@@ -69,10 +62,6 @@ const CreateOrder = ({ history, currentStep }) => {
         setIsVegSelected(prev => !prev); // Toggle 'Only Veg' state
     };
 
-    // Handler for 'Non-Veg' toggle switch
-    const handleNonVegSwitch = () => {
-        setIsNonVegSelected(prev => !prev); // Toggle 'Non-Veg' state
-    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -92,29 +81,6 @@ const CreateOrder = ({ history, currentStep }) => {
     }, []);
     const maxItems = isMobile ? 3 : 7;
 
-    // Filter the cuisines based on selected state
-    const filteredCuisines = cuisines.filter(cuisine => {
-        if (isVegSelected && !isNonVegSelected) {
-            return cuisine.type !== 'veg'; // Show only non-veg items if 'Only Veg' is selected
-        } else if (!isVegSelected && isNonVegSelected) {
-            return cuisine.type !== 'non-veg'; // Show only veg items if 'Non-Veg' is selected
-        } else if (isVegSelected && isNonVegSelected) {
-            return true; // Show all items if both are selected
-        }
-        return false; // Show nothing if neither are selected
-    });
-
-    // Filter the meal list based on selected state
-    const filteredMealList = mealList.filter(meal => {
-        if (isVegSelected && !isNonVegSelected) {
-            return meal.type !== 'veg'; // Show only non-veg items if 'Only Veg' is selected
-        } else if (!isVegSelected && isNonVegSelected) {
-            return meal.type !== 'non-veg'; // Show only veg items if 'Non-Veg' is selected
-        } else if (isVegSelected && isNonVegSelected) {
-            return true; // Show all items if both are selected
-        }
-        return false; // Show nothing if neither are selected
-    });
 
     const router = useRouter();
 
@@ -380,12 +346,6 @@ const CreateOrder = ({ history, currentStep }) => {
                                                 : dish.name}
                                         </p>
                                         <div className="d-flex justify-content-between w-100 px-3 dishPrice">
-                                            {/* <span
-                                                className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
-                                                    }`}
-                                            >
-                                                ₹ {dish.dish_rate}
-                                            </span> */}
                                             <Button
                                                 className="pluBtn"
                                                 onClick={() =>
@@ -467,12 +427,6 @@ const CreateOrder = ({ history, currentStep }) => {
                                                 : dish.name}
                                         </p>
                                         <div className="d-flex justify-content-between w-100 px-3 dishPrice">
-                                            {/* <span
-                                                className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
-                                                    }`}
-                                            >
-                                                ₹ {dish.dish_rate}
-                                            </span> */}
                                             <Button
                                                 className="pluBtn"
                                                 onClick={() =>
@@ -527,55 +481,6 @@ const CreateOrder = ({ history, currentStep }) => {
         bottomSheetRef.current.close();
     };
 
-    const addDishAndCloseBottomSheet = () => {
-        closeBottomSheet();
-    };
-
-    const RenderBottomSheetContent = () => (
-        <div className="bottom-sheet-content">
-            <Image
-                src={`https://horaservices.com/api/uploads/${dishDetail.image}`}
-                alt={dishDetail.name}
-                className="bottom-sheet-image"
-            />
-            <h5 className="bottom-sheet-title">{dishDetail.name}</h5>
-            <hr />
-            <p className="bottom-sheet-description">{dishDetail.description}</p>
-            <div className="bottom-sheet-info">
-                <div className="info-item">
-                    <strong>Per Plate Qty:</strong>{" "}
-                    {dishDetail.per_plate_qty.qty
-                        ? `${dishDetail.per_plate_qty.qty} ${dishDetail.per_plate_qty.unit}`
-                        : "NA"}
-                </div>
-                <div className="info-item">
-                    <strong>Price Per Plate:</strong>{" "}
-                    {dishDetail.dish_rate ? `₹ ${dishDetail.dish_rate}` : "NA"}
-                </div>
-                <div className="info-item">
-                    <strong>Price:</strong>{" "}
-                    {dishDetail.price ? `₹ ${dishDetail.price}` : "NA"}
-                </div>
-            </div>
-            <Button variant="primary" onClick={addDishAndCloseBottomSheet}>
-                Add Dish
-            </Button>
-        </div>
-    );
-
-    const openBottomSheet = (dish, ref) => {
-        setDishDetail(dish);
-        ref.current.open();
-    };
-
-    const closeViewAllSheet = () => {
-        setIsViewAllSheetOpen(false);
-    };
-
-    const openViewAllSheet = (dish, ref) => {
-        setDishDetail(dish);
-        setIsViewAllSheetOpen(true);
-    };
 
     const handleSwitchChange = (value) => {
         setSelected(value);
@@ -600,10 +505,6 @@ const CreateOrder = ({ history, currentStep }) => {
                     ? prevExpanded.filter((id) => id !== categoryId)
                     : [...prevExpanded, categoryId]
         );
-    };
-
-    if (loading) {
-        return <SkeletonLoader loading={true} />;
     };
 
     return (
@@ -680,7 +581,7 @@ const CreateOrder = ({ history, currentStep }) => {
                     </div>
                 </Row>
                 <div className="chef-divider"></div>
-                <Row className="mt-1">
+                {loading?<SkeletonLoader loading={true} />:<Row className="mt-1">
                     <Col>
                         {selectedCuisines.length > 0 && (
                             <ListGroup className="dish-list">
@@ -694,7 +595,7 @@ const CreateOrder = ({ history, currentStep }) => {
                             </ListGroup>
                         )}
                     </Col>
-                </Row>
+                </Row>}
                 <Row>
                     <Col>
                         <div
@@ -766,4 +667,4 @@ const styles = {
     },
 };
 
-export default CreateOrder;
+export default BookCheifForParty;

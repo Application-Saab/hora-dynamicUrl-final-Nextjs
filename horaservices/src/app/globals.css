@@ -1117,14 +1117,14 @@ button.view-details.order-details {
   }
 
   .contact-us-section-div {
-    width: 100%;
+    /* width: 100%; */
     margin-top: 10px;
   }
 
   .contact-us-img {
     border-radius: 5px;
-    width: 17px;
-    height: 17px;
+    width: 100px;
+    height: 100px;
   }
 
   .contact-us-heading {

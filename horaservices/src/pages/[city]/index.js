@@ -21,7 +21,7 @@ import { CategorySection } from "@/app/components/CategorySection";
 import LocalitiesSection from "@/component/LocalitiesSection";
 import CustomerReview from "@/app/components/CustomerReview";
 
-export default function Home() {
+export default function HomeCity() {
   const router = useRouter();
   const [showButton, setShowButton] = useState(false);
   const [city, setCity] = useState(null);

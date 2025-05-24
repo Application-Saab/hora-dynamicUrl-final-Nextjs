@@ -8,7 +8,7 @@ import '../../pages/aboutus/aboutus.css';
 
 const AboutUs = () => {
   return (
-    <div className="aboutUsContainer">
+    <div className="container text-center mt-3">
       <div className="heroSingle" style={{ backgroundImage: `url(${hero_general.src})` }}>
      
           <div className="textContent">
@@ -16,7 +16,6 @@ const AboutUs = () => {
             <p>Planning And Celebrating Events Since 2019!</p>
           </div>
         
-        {/* <div className="frame white"></div> */}
       </div>
 
       <div className="pattern2 sec1">
@@ -56,7 +55,6 @@ const AboutUs = () => {
           <p className="duwnloadbtn"><a className="btn1" target="_blank" href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" 
           role="button">Connect with Us</a></p>
         </div>
-        
         <div className="secRight">
           <div className="boxHow">
             <Image src={how_1} alt='how_1' />
