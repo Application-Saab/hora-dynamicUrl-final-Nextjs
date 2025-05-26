@@ -1,13 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
 import axios from 'axios';
-import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
+import { BASE_URL, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
-import {Form ,Dropdown } from 'react-bootstrap';
 import '../../css/decoration.css';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -15,6 +10,10 @@ import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
+import { contactUsRedirection } from '@/util/contactUsRedirection';
+import { generateTimeSlots } from '@/util/generateTimeSlot';
+import { CustomDatePicker } from '@/component/DatePicker';
+import { CustomTimePicker } from '@/component/TimePicker';
 
 const Checkout = () => {
   const router = useRouter();
@@ -33,7 +32,6 @@ const Checkout = () => {
   const [city, setCity] = useState('');
   const [cityError, setCityError] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [combinedDateTime, setCombinedDateTime] = useState(null);
   const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -125,7 +123,6 @@ useEffect(() => {
       combinedDate.setSeconds(0);
       combinedDate.setMilliseconds(0);
       // console.log(`Final Combined Date: ${combinedDate}`);
-      setCombinedDateTime(combinedDate);
       validateDateTime(combinedDate);
     }
   };
@@ -145,20 +142,6 @@ useEffect(() => {
     }
   };
 
-  const generateTimeSlots = () => {
-    const startTime = 7; // Starting hour
-    const endTime = 22; // Ending hour
-    const interval =  1// Interval in hours
-
-    const timeSlots = [];
-    for (let hour = startTime; hour < endTime; hour += interval) {
-      const startTimeFormatted = hour < 10 ? `0${hour}:00 AM` : `${hour % 12 || 12}:00 ${hour < 12 ? 'AM' : 'PM'}`;
-      const endTimeFormatted = hour + interval < 10 ? `0${hour + interval}:00 AM` : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? 'AM' : 'PM'}`;
-      timeSlots.push(`${startTimeFormatted} - ${endTimeFormatted}`);
-    }
-
-    return timeSlots;
-  };
 
   const handleAddressChange = (e) => {
     setAddress(e.target.value);
@@ -196,10 +179,6 @@ useEffect(() => {
       setCityError(true)
     }
   };
-
-  function getRandomNumber(min, max) {
-    return Math.random() * (max - min) + min;
-  }
 
   const saveAddress = async () => {
     try {
@@ -338,15 +317,7 @@ console.log("redData" , requestData);
   }
   }
 
-  const contactUsRedirection = () => {
-    window.dataLayer = window.dataLayer || [];
-     window.dataLayer.push({
-         event: "photography_checkout_contact_us_click",
-     });
-     window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
-    };
-
-
+ 
 
   useEffect(() => {
     setIsClient(true);
@@ -634,61 +605,3 @@ console.log("redData" , requestData);
 }
 
 export default Checkout;
-
-export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicker, setShowDatePicker, selectedDateError, combinedDateTimeError }) => {
-
-  const toggleDatePicker = () => {
-    setShowDatePicker((prev) => !prev);
-  };
-
-  return (
-    <div className={`d-flex flex-column border  rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
-      <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Booking Date</p>
-      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className='border-none p-0'>
-        <Dropdown.Toggle
-          variant="outline-secondary"
-          className={`w-100 m-0 p-0 d-flex justify-content-between align-items-center text-black ${selectedDateError ? 'border-danger' : ''}`}
-          style={{ cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}        >
-          <span style={{ fontSize: '12px' }} className='m-0 p-0 '>{selectedDate ? selectedDate.toLocaleDateString() : 'Select Date'}</span>
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu
-          show={showDatePicker}
-          className="p-2"
-          style={{ minWidth: 'auto' }}
-        >
-          <DatePicker
-            selected={selectedDate}
-            onChange={handleDateChange}
-            minDate={new Date()}
-            inline // Use inline to show the calendar
-          />
-        </Dropdown.Menu>
-      </Dropdown>
-    </div>
-  );
-};
-
-export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
-  return (
-    <div className={`timepkerSec d-flex flex-column border  ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
-      <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
-      <div>
-        <Form.Control
-          as="select"
-          value={selectedTimeSlot}
-          onChange={handleTimeSlotChange}
-          style={{ fontSize: "14px", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
-          className="timeslot"
-        >
-          <option value="">Arrival Time</option>
-          {generateTimeSlots().map((timeSlot, index) => (
-            <option key={index} value={timeSlot}>
-              {timeSlot}
-            </option>
-          ))}
-        </Form.Control>
-      </div>
-    </div>
-  )
-}

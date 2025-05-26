@@ -12,6 +12,10 @@ import "slick-carousel/slick/slick-theme.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../app/custom.css";
 import Link from "next/link";
+import 'react-datepicker/dist/react-datepicker.css';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
+
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();

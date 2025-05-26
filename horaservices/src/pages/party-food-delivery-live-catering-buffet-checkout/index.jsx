@@ -1,22 +1,23 @@
 // import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
+// import 'react-datepicker/dist/react-datepicker.css';
+// import TimePicker from 'react-time-picker';
+// import 'react-time-picker/dist/TimePicker.css';
+// import 'react-clock/dist/Clock.css';
 import axios from 'axios';
-import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
-import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
-import { Button, Card, Form } from 'react-bootstrap';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { BASE_URL, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
+import { PAYMENT, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import checkImage from '../../assets/check.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from '../../components/OtpLoginPopup';
+import { generateTimeSlots } from '@/util/generateTimeSlot';
+import { contactUsRedirection } from '@/util/contactUsRedirection';
+import { CustomDatePicker } from '@/component/DatePicker';
+import { CustomTimePicker } from '@/component/TimePicker';
 
 const FoodDeliveryCheckout = () => {
 
@@ -30,7 +31,7 @@ const FoodDeliveryCheckout = () => {
     const [addressError, setAddressError] = useState(false);
     const [pinCode, setPinCode] = useState('');
     const [pinCodeError, setPinCodeError] = useState(false);
-    const [picodeReqError, setPicodeReqError] = useState(false);
+    // const [picodeReqError, setPicodeReqError] = useState(false);
     const [city, setCity] = useState('');
     const [cityError, setCityError] = useState(false);
     const router = useRouter();
@@ -39,7 +40,6 @@ const FoodDeliveryCheckout = () => {
     const [packingCost, setpackingCost] = useState(200);
     const [includeDisposable, setIncludeDisposable] = useState(true); // State for checkbox
     const [includeTables, setIncludeTables] = useState(true);
-    const [combinedDateTime, setCombinedDateTime] = useState(null);
     const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -360,7 +360,7 @@ const FoodDeliveryCheckout = () => {
             combinedDate.setMinutes(0);
             combinedDate.setSeconds(0);
             combinedDate.setMilliseconds(0);
-            setCombinedDateTime(combinedDate);
+            // setCombinedDateTime(combinedDate);
             validateDateTime(combinedDate);
         }
     };
@@ -378,19 +378,6 @@ const FoodDeliveryCheckout = () => {
         }
     };
 
-    const generateTimeSlots = () => {
-        const startTime = 7; // Starting hour
-        const endTime = 22; // Ending hour
-        const interval =  1; // Interval in hours
-
-        const timeSlots = [];
-        for (let hour = startTime; hour < endTime; hour += interval) {
-            const startTimeFormatted = hour < 10 ? `0${hour}:00 AM` : `${hour % 12 || 12}:00 ${hour < 12 ? 'AM' : 'PM'}`;
-            const endTimeFormatted = hour + interval < 10 ? `0${hour + interval}:00 AM` : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? 'AM' : 'PM'}`;
-            timeSlots.push(`${startTimeFormatted} - ${endTimeFormatted}`);
-        }
-        return timeSlots;
-    };
 
  
 
@@ -404,11 +391,11 @@ const FoodDeliveryCheckout = () => {
     };
 
     const handlePinCodeChange = (e) => {
-        if (e.target.value) {
-            setPicodeReqError(false)
-        } else {
-            setPicodeReqError(true)
-        }
+        // if (e.target.value) {
+        //     setPicodeReqError(false)
+        // } else {
+        //     setPicodeReqError(true)
+        // }
         setPinCode(e.target.value);
         if (((e.target.value).length) == 6) {
             const validpin = pincodes.some((validPin) => validPin === e.target.value)
@@ -431,13 +418,7 @@ const FoodDeliveryCheckout = () => {
         }
     };
 
-    function getRandomNumber(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    const contactUsRedirection = () => {
-        window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20Catering%20service', '_blank');
-    };
+    
 
     const saveAddress = async () => {
         try {
@@ -561,7 +542,7 @@ const FoodDeliveryCheckout = () => {
                     setCityError(true)
                 }
                 if (!pinCode) {
-                    setPicodeReqError(true)
+                    // setPicodeReqError(true)
                     setPinCodeError(true)
                 }
                 if (!address) {
@@ -1048,59 +1029,3 @@ const FoodDeliveryCheckout = () => {
 };
 
 export default FoodDeliveryCheckout;
-
-export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicker, setShowDatePicker, selectedDateError, combinedDateTimeError }) => {
-
-    const toggleDatePicker = () => {
-        setShowDatePicker((prev) => !prev);
-    };
-
-    return (
-        <div className={`timepkerSec  d-flex flex-column border border-1 rounded-4 p-2  ${combinedDateTimeError ? 'border-danger' : ''} `}>
-            <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Date</p>
-            <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className='border-none p-0'>
-                <Dropdown.Toggle
-                    variant="outline-secondary"
-                    className={`w-100 m-0 p-0 d-flex justify-content-between align-items-center text-black ${selectedDateError ? 'border-danger' : ''}`}
-                    style={{ cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}        >
-                    <span style={{ fontSize: '12px' }} className='m-0 p-0 '>{selectedDate ? selectedDate.toLocaleDateString() : 'Select Date'}</span>
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu
-                    show={showDatePicker}
-                    className="p-2"
-                    style={{ minWidth: 'auto' }}
-                >
-                    <DatePicker
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        minDate={new Date()}
-                        inline // Use inline to show the calendar
-                    />
-                </Dropdown.Menu>
-            </Dropdown>
-        </div>
-    );
-};
-
-export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
-    return (
-        <div className={`timepkerSec d-flex flex-column border border-1 ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 p-2`}>
-            <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
-            <Form.Control
-                as="select"
-                value={selectedTimeSlot}
-                onChange={handleTimeSlotChange}
-                style={{ fontSize: "14px", width: "auto", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
-                className="timeslot"
-            >
-                <option value="">Food Delivery Time</option>
-                {generateTimeSlots().map((timeSlot, index) => (
-                    <option key={index} value={timeSlot}>
-                        {timeSlot}
-                    </option>
-                ))}
-            </Form.Control>
-        </div>
-    )
-}

@@ -1,17 +1,8 @@
 // import { useLocation } from 'react-router-dom';
 import React, { useEffect, useRef, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import TimePicker from 'react-time-picker';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
-import checkOutImage from '../../assets/checkout-problem.png';
 import axios from 'axios';
 import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
-import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
-import { Button, Card, Form } from 'react-bootstrap';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { PAYMENT, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import '../../css/chefOrder.css';
 import SelectDishes from "../../assets/selectDish.png";
 import SelectDateTime from "../../assets/event2.png";
@@ -23,6 +14,10 @@ import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
+import { CustomDatePicker } from '@/component/DatePicker';
+import { CustomTimePicker } from '@/component/TimePicker';
+import { contactUsRedirection } from '@/util/contactUsRedirection';
+import { generateTimeSlots } from '@/util/generateTimeSlot';
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -42,7 +37,6 @@ const ChefCheckout = () => {
     const router = useRouter();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [isClient, setIsClient] = useState(false);
-    const [combinedDateTime, setCombinedDateTime] = useState(null);
     const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false); 
@@ -118,18 +112,7 @@ const ChefCheckout = () => {
       }
     `;
 
-    // const Image = styled.img`
-    //   width: 48px;       // Default size for mobile view
-    //   height: 48px;
-    //   flex-shrink: 0;
-    //   ${(props) => props.active && `border: 2px solid #000;`};
-
-    //   @media (max-width: 600px) {
-    //   width: 32px;     // Smaller width for mobile view
-    //   height: 32px;    // Maintain aspect ratio
-    // }
-    // `;
-
+  
     const Label = styled.div`
       margin-top: 5px;
       text-align: center;
@@ -154,9 +137,7 @@ const ChefCheckout = () => {
         setComment(e.target.value);
     };
 
-    const contactUsRedirection = () => {
-        window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20personal%20chef%20and%20for%20party%20service', '_blank');
-    };
+   
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -186,7 +167,6 @@ const ChefCheckout = () => {
             combinedDate.setMinutes(0);
             combinedDate.setSeconds(0);
             combinedDate.setMilliseconds(0);
-            setCombinedDateTime(combinedDate);
             validateDateTime(combinedDate);
         }
     };
@@ -200,20 +180,6 @@ const ChefCheckout = () => {
         } else {
             setCombinedDateTimeError(false);
         }
-    };
-
-    const generateTimeSlots = () => {
-        const startTime = 7; // Starting hour
-        const endTime = 22; // Ending hour
-        const interval =  1 ; // Interval in hours
-
-        const timeSlots = [];
-        for (let hour = startTime; hour < endTime; hour += interval) {
-            const startTimeFormatted = hour < 10 ? `0${hour}:00 AM` : `${hour % 12 || 12}:00 ${hour < 12 ? 'AM' : 'PM'}`;
-            const endTimeFormatted = hour + interval < 10 ? `0${hour + interval}:00 AM` : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? 'AM' : 'PM'}`;
-            timeSlots.push(`${startTimeFormatted} - ${endTimeFormatted}`);
-        }
-        return timeSlots;
     };
 
 
@@ -253,14 +219,6 @@ const ChefCheckout = () => {
             setCityError(true)
         }
     };
-
-    function getRandomNumber(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    const openWhatsppLink = () => {
-        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20payment%20in%20Decoration%20services", "_blank");
-    }
 
     const saveAddress = async () => {
         try {
@@ -720,61 +678,3 @@ const ChefCheckout = () => {
 }
 
 export default ChefCheckout;
-
-export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicker, setShowDatePicker, selectedDateError, combinedDateTimeError }) => {
-
-    const toggleDatePicker = () => {
-        setShowDatePicker((prev) => !prev);
-    };
-
-    return (
-        <div className={`d-flex flex-column border border-1 rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
-            <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Booking Date</p>
-            <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className='border-none p-0'>
-                <Dropdown.Toggle
-                    variant="outline-secondary"
-                    className={`w-100 m-0 p-0 d-flex justify-content-between align-items-center text-black ${selectedDateError ? 'border-danger' : ''}`}
-                    style={{ cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}        >
-                    <span style={{ fontSize: '12px' }} className='m-0 p-0 '>{selectedDate ? selectedDate.toLocaleDateString() : 'Select Date'}</span>
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu
-                    show={showDatePicker}
-                    className="p-2"
-                    style={{ minWidth: 'auto' }}
-                >
-                    <DatePicker
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        minDate={new Date()}
-                        inline // Use inline to show the calendar
-                    />
-                </Dropdown.Menu>
-            </Dropdown>
-        </div>
-    );
-};
-
-export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
-    return (
-        <div className={`timepkerSec d-flex flex-column border border-1 ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
-            <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
-            <div>
-                <Form.Control
-                    as="select"
-                    value={selectedTimeSlot}
-                    onChange={handleTimeSlotChange}
-                    style={{ fontSize: "14px", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
-                    className="timeslot"
-                >
-                    <option value="">Chef Arrival time</option>
-                    {generateTimeSlots().map((timeSlot, index) => (
-                        <option key={index} value={timeSlot}>
-                            {timeSlot}
-                        </option>
-                    ))}
-                </Form.Control>
-            </div>
-        </div>
-    )
-}
