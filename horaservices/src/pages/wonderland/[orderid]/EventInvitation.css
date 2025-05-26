@@ -369,10 +369,11 @@ background-color: none !important;
 }
 .modal-overlay {
     position: fixed;
-    top: 0;
+    top:0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    min-height: 100vh; /* Ensures full screen height at minimum */
+    min-height: 80vh; /* Ensures full screen height at minimum */
     height: auto; /* Allows it to grow beyond viewport */
     background-image: url('/pastel-purpleBallons.webp');
     background-size: cover;
@@ -385,6 +386,7 @@ background-color: none !important;
     backdrop-filter: blur(2px);
     padding: 40px 10px;
     overflow-y: auto;
+    
 }
 
 
@@ -403,11 +405,13 @@ background-color: none !important;
   backdrop-filter: blur(1.5px); /* glass effect */
   -webkit-backdrop-filter: blur(5px);
   transition: opacity 0.1s ease;
+  /* margin-top: 50%; */
 }
 
 
 .modal-content h2 {
-  margin-bottom: 20px;
+  /* margin-top:2px;
+  margin-bottom: 1px; */
   font-weight: 700;
   font-size: 24px;
   color: #6b21a8;
@@ -417,7 +421,7 @@ background-color: none !important;
 .invite-text {
   font-size: 16px;
   line-height: 1.6;
-  margin: 12px 0;
+  margin: 2px 0;
 }
 
 .underline-input {
@@ -580,12 +584,12 @@ background-color: none !important;
   color: #3a0b59;
 }
 
-.subtitle {
+/* .subtitle {
   margin-top: 6px;
   font-size: 9.5px;
   color: #4c2b5d;
   line-height: 1.3;
-}
+} */
 
 
   

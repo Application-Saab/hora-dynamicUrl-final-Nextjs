@@ -19,6 +19,7 @@ import { faCamera, faPen, faGift, faPersonDress } from '@fortawesome/free-solid-
 import "react-datepicker/dist/react-datepicker.css";
 
 const InvitationCard = () => {
+   const fileInputRef = useRef(null);
   const router = useRouter();
   const { orderid } = router.query;
   const [orderDetails, setOrderDetails] = useState(null);
@@ -48,6 +49,7 @@ const InvitationCard = () => {
   useEffect(() => {
     if (!orderid) return;
 
+    
     const fetchOrderDetails = async () => {
       try {
         const response = await axios.post(
@@ -71,11 +73,12 @@ const InvitationCard = () => {
         setCustomerId(fromId);
         setCustomerPhoneNumber(customerPhoneNo);
 
-        if (fromId && userId && fromId === userId) {
-          setShowFAB(true);
-        } else {
-          setShowFAB(false);
-        }
+     if (fromId && userId && fromId.trim() === userId.trim()) {
+  setShowFAB(true);
+} else {
+  setShowFAB(false);
+}
+
       } catch (error) {
         console.error("API error:", error);
       }
@@ -159,9 +162,13 @@ const InvitationCard = () => {
     }
   };
 
-  const handleEdit = () => {
-    setShowModal(true);
-  };
+  
+
+const handleEdit = () => {
+  setShowModal(true);
+};
+
+
 
   const handleClose = () => {
     setShowModal(false);
@@ -171,12 +178,20 @@ const InvitationCard = () => {
     const { name, value, files } = e.target;
     if (name === "image") {
       setFormData({ ...formData, image: files[0] });
-    } else {
+    }
+     else {
       setFormData({ ...formData, [name]: value });
     }
+    
   };
 
+
+
   const handleSave = async () => {
+    if (!formData.eventType && formData.eventTypeSearch) {
+  formData.eventType = formData.eventTypeSearch;
+}
+
     const formattedDate = new Date(formData.date).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
@@ -197,13 +212,19 @@ const InvitationCard = () => {
     params.append("time", formattedTime);
     params.append("address", formData.address);
     params.append("selectedImage", selectedImage || "");
-    params.append("image", uploadedImage || "");
+     params.append("image", uploadedImage || orderDetails?.Image || "");
+
     params.append("orderid", orderid);
     params.append("eventType", formData.eventType);
 
+   
     params.append("customerId", customerId);
     params.append("customerPhoneNumber", customerPhoneNumber);
-
+ console.log("🚀 Submitting:", {
+    image: uploadedImage,
+    fallbackImage: orderDetails?.Image,
+    finalImage: uploadedImage || orderDetails?.Image || "",
+  });
     console.log("🚀 Submitting data to Google Sheets:", {
       name: formData.name,
       date: formattedDate,
@@ -214,14 +235,13 @@ const InvitationCard = () => {
       orderid,
       eventType: formData.eventType,
       eventTypeSearch: formData.eventTypeSearch,
-
       customerId,
       customerPhoneNumber,
     });
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxAAYrO6O2M-6lPd-Kk6mD6xYIrf_P0cc_YgJ7J0UPnwNwpWlPOnSWZ6ton4YEiyu15IQ/exec",
+        "https://script.google.com/macros/s/AKfycbxFOyIwe8f3B0jSeyeyYnBKRCXmxnMmcAG84yNzXHshet2WOQkDVIL0Aq1cjW9Lj63vbw/exec",
         {
           method: "POST",
           headers: {
@@ -239,15 +259,33 @@ const InvitationCard = () => {
       setUploadedImage(null);
       setSelectedImage("");
       setShowModal(false);
+       window.location.reload();
     } catch (error) {
       console.error("❌ Failed to send to Google Sheets:", error);
     }
   };
+useEffect(() => {
+  if (orderDetails) {
+       const time24h = convertTo24Hour(orderDetails["Time"]);
+    const date = new Date(orderDetails["Date"]);
+    const isoDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
+     let time = orderDetails["Time"];
+    
+    setFormData({
+      name: orderDetails["Name"] || '',
+      date: isoDate,
+      time: time24h || '',
+      address: orderDetails["Address"] || '',
+       eventType: orderDetails["Event Type"] || '',
+    });setUploadedImage(orderDetails.Image || null);
+  }
+}, [orderDetails]);
+
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+const fetchOrderDetails = async () => {
       if (!orderid) return;
-
+    
       try {
         const response = await fetch(
           `https://script.google.com/macros/s/AKfycbyqVoYkcUl-iWAOx1_G16_AkJVXs4_EDQWmwf0z6Q5ZarLsYyjEhrt1IvAepsrckdgqaw/exec?orderid=${orderid}`
@@ -277,7 +315,21 @@ const InvitationCard = () => {
     fetchOrderDetails();
   }, [orderid]);
 
-  // Format date
+ //Format Time
+  function convertTo24Hour(time12h) {
+  if (!time12h) return "";
+  const [time, modifier] = time12h.split(' ');
+  let [hours, minutes] = time.split(':');
+
+  if (hours === '12') {
+    hours = '00';
+  }
+  if (modifier === 'PM') {
+    hours = parseInt(hours, 10) + 12;
+  }
+  return `${hours.toString().padStart(2, '0')}:${minutes}`;
+}
+ // Format date
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     return date.toLocaleDateString("en-US", {
@@ -429,6 +481,7 @@ const InvitationCard = () => {
         <>
           <div
             className="invitation-container relative  flex flex-col items-center justify-center;"
+            
             style={{
               backgroundImage: orderDetails?.Template
                 ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
@@ -439,13 +492,18 @@ const InvitationCard = () => {
               backgroundRepeat: "no-repeat",
             }}
           >
+               <FloatingEditButton onClick={handleEdit}    /> 
             <div className="invite-wrapper">
-              {showFAB && <FloatingEditButton onClick={handleEdit} />}
-
+              
+            
               <div className="overlay-content bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-4 max-w-2xl w-full text-center">
 
+              
+             
                 {orderDetails ? (
                   <>
+                  
+           
                     <h1 className="invitation-title text-3xl font-bold mb-4">
                       You’re invited to join us for the
                     </h1>
@@ -765,21 +823,28 @@ const InvitationCard = () => {
                         marginRight: "auto",
                       }}
                     >
-                      <input
-                        type="text"
-                        placeholder="Event type..."
-                        value={formData.eventTypeSearch || ""}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            eventTypeSearch: e.target.value,
-                          }));
-                          setShowDropdown(true); // show dropdown on typing
-                        }}
-                        onFocus={() => setShowDropdown(true)} // show dropdown on focus
-                        autoComplete="off"
-                        className="underline-input"
-                      />
+
+
+  
+
+                <input
+  type="text"
+  placeholder="Event type..."
+  value={formData.eventTypeSearch ?? formData.eventType ?? ""}
+  onChange={(e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      eventTypeSearch: value,
+      eventType: value, // <-- IMPORTANT: sync both
+    }));
+    setShowDropdown(true);
+  }}
+  onFocus={() => setShowDropdown(true)}
+  autoComplete="off"
+  className="underline-input"
+/>
+
 
                       {showDropdown && formData.eventTypeSearch && (
                         <ul
@@ -832,7 +897,7 @@ const InvitationCard = () => {
                         </ul>
                       )}
                     </div>
-                  </p>
+                       </p>
 
 
                   <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginLeft: "70px" }}>
@@ -875,14 +940,28 @@ const InvitationCard = () => {
                       className="underline-input address-input"
                     />
                   </p>
-                  <label className="block text-black px-4 ">
-                    Upload Image:
+                  <label className="block text-[#4c1d95] text-sm">
+                    {/* Upload Image: */}
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
+                      ref={fileInputRef}
                     />
                   </label>
+      {(uploadedImage || orderDetails?.Image) && (
+      <div>
+      
+        <img
+          src={`https://horaservices.com/api/uploads/${uploadedImage || orderDetails.Image}`}
+          alt="Preview"
+          style={{ width: "100px",height: "100px", borderRadius: "8px", marginTop: "10px" }}
+        />
+      </div>
+    )}
+   
+
+
                   <p className="invite-text" style={{ marginTop: "1rem" }}>
                     because happiness means more when shared with you.
                   </p>
