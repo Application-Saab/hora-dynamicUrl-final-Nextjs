@@ -34,7 +34,6 @@ const InvitationCard = () => {
   const [noteBy, setNoteBy] = useState("");
   const noteRef = useRef(null);
 
-  // const [showPopup, setShowPopup] = useState(false);
   const [showLuckyDrawPopup, setShowLuckyDrawPopup] = useState(false);
 
   useEffect(() => {
@@ -472,7 +471,7 @@ const InvitationCard = () => {
 
               {uploading && <p>Uploading image, please wait...</p>}
 
-              {/* Action Cards */}
+              {/* Action Cards upload image, thank you, lucky draw */}
               <div className="party-actions">
                 {actions.map((action, index) => (
                   <div
@@ -491,6 +490,7 @@ const InvitationCard = () => {
                   </div>
                 ))}
               </div>
+
 
               {/* Popup for Thank You */}
               {showPopup && (
@@ -561,6 +561,7 @@ const InvitationCard = () => {
               `}</style>
             </div>
 
+{/* image showing grid */}
             <div className="event-wall">
               <h1 className="event-heading">Event Wall</h1>
 
@@ -655,6 +656,8 @@ const InvitationCard = () => {
                 </div>
               </div>
             </div>
+
+
 
             {/* Lucky Draw Popup */}
             {showLuckyDrawPopup && (
