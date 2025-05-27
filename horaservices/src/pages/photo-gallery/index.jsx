@@ -42,15 +42,7 @@ const PhotoGallery = () => {
 
   return (
     <div className="photo-container">
-      <div className="photo-galary-header">
-        <h2 className="title">Your Photos</h2>
-        <Image
-          src={shareIcon}
-          alt="Info"
-          style={{ height: 20, width: 20, marginRight: 10, cursor: 'pointer' }}
-          onClick={handleShareicon}
-        />
-      </div>
+  
 
       {/* {isLoggedIn ? (
         folderName && customerId ? (
@@ -61,7 +53,7 @@ const PhotoGallery = () => {
       ) : (
         isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
       )} */}
-                <ThumbnailGallery folderName={folderName} customerId={customerId} />
+                <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={handleShareicon} />
 
     </div>
   );

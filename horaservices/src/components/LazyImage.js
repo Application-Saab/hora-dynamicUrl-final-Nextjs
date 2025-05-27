@@ -1,67 +1,83 @@
-// components/LazyImage.js (create this new file)
+// components/LazyImage.js
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image'; // If you want to use Next/Image for placeholders or even the main image
 
-// A simple placeholder, you can customize this or use a small base64 encoded image
-const Placeholder = ({ style }) => (
-  <div
-    style={{
-      backgroundColor: '#e0e0e0', // Light gray
-      width: '100%',
-      paddingTop: '100%', // Maintains a 1:1 aspect ratio, adjust as needed
-      ...style,
-    }}
-  />
-);
+// Placeholder component is now minimal, mostly for semantic grouping if needed during render.
+// The visual placeholder (background, min-height) is handled by CSS on the wrapper.
+const Placeholder = () => null; // Or <div className="lazy-image-placeholder-visual-cue"></div> if specific styling needed
 
-const LazyImage = ({ src, alt, className, onClick, placeholderStyle }) => {
+const LazyImage = ({
+  src,
+  alt,
+  className, // For the <img> tag
+  wrapperClassName, // For the main div wrapper of this component (.masonry-item)
+  onClick,
+}) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
-  const imgRef = useRef(null);
+  const wrapperRef = useRef(null);
 
   useEffect(() => {
+    const currentRef = wrapperRef.current;
+    if (!currentRef) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          observer.unobserve(entry.target); // Important: unobserve after it's in view
+          // No need to unobserve immediately if we want to show placeholder again if it scrolls out and back in
+          // For simple lazy load, unobserving is fine:
+          if (currentRef) { // Check ref again before unobserving
+            observer.unobserve(currentRef);
+          }
         }
       },
       {
-        rootMargin: '0px 0px 200px 0px', // Load 200px before it enters the viewport
+        rootMargin: '0px 0px 300px 0px', // Start loading 300px before viewport
       }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
+    observer.observe(currentRef);
 
     return () => {
-      if (imgRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        observer.unobserve(imgRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
-
-  const effectiveClassName = `lazy-image ${className || ''} ${isLoaded ? 'loaded' : 'loading'}`;
+  }, []);
 
   return (
-    <div ref={imgRef} className="lazy-image-wrapper" onClick={onClick}>
-      {isInView ? (
+    <div
+      ref={wrapperRef}
+      className={`lazy-image-container-wrapper ${wrapperClassName || ''}`} // This is the .masonry-item
+      onClick={onClick}
+    >
+      {/* Render img tag only when in view to start loading */}
+      {isInView && (
         <img
           src={src}
           alt={alt}
-          className={effectiveClassName}
+          className={`lazy-image-actual-img ${className || ''} ${isLoaded ? 'loaded' : 'loading'}`}
           onLoad={() => setIsLoaded(true)}
+          onError={() => {
+            setIsLoaded(true); // Consider it "handled" to remove spinner
+            console.warn(`Failed to load image: ${src}`);
+            // Optionally, you could set a 'broken-image' class here
+          }}
         />
-      ) : (
-        <Placeholder style={placeholderStyle} />
       )}
+
+      {/* Spinner overlay: shown when in view but image not yet loaded (or failed) */}
+      {isInView && !isLoaded && (
+        <div className="lazy-image-spinner-container">
+          <div className="lazy-image-spinner-animation"></div>
+        </div>
+      )}
+      
+      {/* If not in view, the .masonry-item's min-height and background act as placeholder */}
+      {/* {!isInView && <Placeholder />} */}
     </div>
   );
 };
 
-// Memoize LazyImage to prevent unnecessary re-renders if props haven't changed
 export default React.memo(LazyImage);
