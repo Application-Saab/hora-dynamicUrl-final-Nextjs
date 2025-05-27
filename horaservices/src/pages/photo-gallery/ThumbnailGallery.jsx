@@ -14,9 +14,9 @@ import shareIcon from '../../assets/share-photo-icon.png'
 // import "slick-carousel/slick/slick.css"; 
 // import "slick-carousel/slick/slick-theme.css";
 
-const ITEMS_PER_PAGE = 24; // Increased from 12 for more items per page
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => { // Prop to control internal title
+  // const ITEMS_PER_PAGE = 12; // Increased from 12 for more items per page
   const [allThumbnails, setAllThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,6 +27,23 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     // Debugging: Log when selectedIndex changes
     // console.log("[State Update] selectedIndex:", selectedIndex);
   }, [selectedIndex]);
+const getItemsPerPage = () => {
+  if (typeof window === 'undefined') return 12; // Default for SSR
+  return window.innerWidth >= 768 ? 36 : 12;    // Laptop/tablet vs mobile
+};
+
+const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
+
+useEffect(() => {
+  const handleResize = () => {
+    setItemsPerPage(getItemsPerPage());
+  };
+
+  window.addEventListener('resize', handleResize);
+
+  // Clean up on unmount
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
   useEffect(() => {
     const fetchThumbnails = async () => {
@@ -71,12 +88,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
-    const galleryHeader = document.querySelector('.gallery-header'); // Try to scroll to header
+  setTimeout(() => {
+    const galleryHeader = document.querySelector('.gallery-header');
     if (galleryHeader) {
-      galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }, 100);
   }, []);
 
   const sliderSettings = useMemo(() => ({
@@ -173,8 +192,22 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           </div>
         </div>
       )}
-          {totalPages > 0 && (
-      <div className="gallery-pagination-container m-3">
+      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
+  <div className="gallery-header-content">
+    {showInternalTitle && (
+      <div className="gallery-title-container">
+        {/* <h1 className="gallery-title">Your Photos</h1> */}
+        {/* <Image
+          src={shareIcon}
+          alt="Info"
+          style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
+          onClick={handleShareicon}
+        /> */}
+      </div>
+    )}
+
+    {totalPages > 0 && (
+      <div className="gallery-pagination-container">
         <PaginationControls
           currentPage={currentPage}
           totalPages={totalPages}
@@ -183,6 +216,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         />
       </div>
     )}
+  </div>
+</div>
     </div>
   );
 };

@@ -41,7 +41,7 @@ const PhotoGallery = () => {
   };
 
   return (
-    <div className="photo-container">
+    <div className="photo-container p-3">
   
 
       {/* {isLoggedIn ? (
