@@ -168,7 +168,11 @@ const handleEdit = () => {
   setShowModal(true);
 };
 
-
+const handleClosePopup = () => {
+  setNoteTitle("");   
+  setNoteBy("");      
+  setShowPopup(false);
+};
 
   const handleClose = () => {
     setShowModal(false);
@@ -284,6 +288,8 @@ useEffect(() => {
 
   useEffect(() => {
 const fetchOrderDetails = async () => {
+  console.log(window.location.href);
+
       if (!orderid) return;
     
       try {
@@ -339,6 +345,8 @@ const fetchOrderDetails = async () => {
     });
   };
 
+
+
   // sheet second fetch data Background_templates
   const [images, setImages] = useState([]);
 
@@ -353,9 +361,12 @@ const fetchOrderDetails = async () => {
       })
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
+  
   const eventOptions = [
-    "Birthday", "Wedding", "Anniversary", "Graduation", "Baby Shower", "Engagement", "anniversary", "baby welcome/baby shower", "haldi-mendani", "bachelorette"
+    "Birthday", "Wedding", "Anniversary", "Graduation",  "Engagement", "Baby welcome/Baby shower", "Haldi-mendani", "Bachelorette"
   ];
+
+
   const handleActionClick = (title) => {
     if (title === "Upload &") {
       document.getElementById("imageUploadInput").click();
@@ -589,79 +600,7 @@ const fetchOrderDetails = async () => {
                       {/* Action Cards */}
 
 
-                      {showPopup && <div className="overlay"></div>}
-                      {showPopup && (
-                        <div className="popup">
-                          <h2 style={{ color: " rgb(146, 82, 170)" }}>Leave a Thank You Note</h2>
-                          <input
-                            type="text"
-                            placeholder="Title"
-                            value={noteTitle}
-                            onChange={(e) => setNoteTitle(e.target.value)}
-                          />
-                          <input
-                            type="text"
-                            placeholder="By"
-                            value={noteBy}
-                            onChange={(e) => setNoteBy(e.target.value)}
-                          />
-                          <div className="popup-buttons">
-                            <button onClick={handleDownload}>Save</button>
-                            <button onClick={() => setShowPopup(false)}>Cancel</button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Basic CSS */}
-                      <style jsx>{`
-                
-
-
-
-                  .popup {
-                    position: fixed;
-                    top: 42%;
-                    left: 50%;
-                    transform: translate(-50%, -25%);
-                   background: white;
-                   border: 1px solid #ccc;
-                   padding: 24px;
-                   border-radius: 8px;
-                   z-index: 1000;
-                   box-shadow: 0 0 10px rgba(0, 0, 0, .1);
-                   width: 95%;
-                  // height: 100%;
-                 }
-
-                 .popup input {
-                  display: block;
-                   width: 100%;
-                  padding: 8px;
-                  margin-top: 10px;
-                 margin-bottom: 12px;
-                 border: 1px solid rebeccapurple;
-                 border-radius: 10px;
-                 background-color: white;
-                   }
-
-                .popup-buttons {
-                  display: flex;
-                  justify-content: flex-end;
-                  gap: 10px;
-                }
-
-                .popup button {
-                  padding: 8px 16px;
-                  border: none;
-                  background: rgb(146, 82, 170);
-                  color: white;
-                  border-radius: 4px;
-                  cursor: pointer;
-                }
-
-                .popup button:last-child {
-                  background: #6c757d;}`
-                      }</style>
+                     
                     </div>
 
                   </>
@@ -671,6 +610,166 @@ const fetchOrderDetails = async () => {
               </div>
             </div>
 
+ {showPopup && <div className="overlay"></div>}
+                      {showPopup && (
+                        <div className="popup">
+                           <span className="close-button" onClick={handleClosePopup}>×</span>
+
+      <h1 className="title"> Thank You Note</h1>
+      <h3 className="subtitlePopUp">
+        Celebrate the moment with a few words of gratitude.
+      </h3>
+
+      <div className="form-group">
+        <label className="label">Note Title</label>
+       <textarea
+  rows={5}
+  placeholder="Write your thank you message..."
+  value={noteTitle}
+  onChange={(e) => {
+    const input = e.target.value;
+    const words = input.trim().split(/\s+/).filter(word => word !== "");
+    if (words.length <= 50) {
+      setNoteTitle(input);
+    }
+  }}
+/>
+
+<p className="word-limit">
+  {noteTitle.trim() === ""
+    ? 0
+    : noteTitle.trim().split(/\s+/).filter(word => word !== "").length}
+  /50 words
+</p>
+     </div>
+
+      <div className="form-group">
+        <label className="label">Note By</label>
+        <input
+          type="text"
+          placeholder="Your name"
+          value={noteBy}
+          onChange={(e) => setNoteBy(e.target.value)}
+        />
+      </div>
+
+      <div className="popup-buttons">
+        <button onClick={handleDownload}>Save</button>
+     
+      </div>
+                        </div>
+                      )}
+
+                      {/* Basic CSS */}
+ <style jsx>{`
+        .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  pointer-events: all;
+}
+
+
+        .popup {
+          position: fixed;
+          top: 35%;
+          left: 50%;
+          transform: translate(-50%, -25%);
+          background: white;
+          border: 1px solid #ccc;
+          padding: 24px;
+          border-radius: 12px;
+          z-index: 1500;
+        background-color:rgb(238, 233, 240);
+          width: 95%;
+          max-width: 420px;
+          display: flex;
+          flex-direction: column;
+          height: 80%;
+          border: 2px solid purple;
+        }
+
+        .title {
+        margin-top: 25px;
+          text-align: center;
+          font-size: 28px;
+          font-weight: bold;
+          color: rgb(146, 82, 170);
+          margin-bottom: 24px;
+        }
+
+        .subtitlePopUp {
+          text-align: center;
+          font-size: 20px;
+          color: #444;
+          // margin-top: 12px;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          margin-top: 12px;
+        }
+
+        .label {
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 6px;
+          color: #333;
+        }
+
+        .popup textarea {
+  background: white;
+  color: black;
+  border: 1px solid purple;
+  resize: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+
+        .popup input {
+         background: white;
+         color: black;
+          padding: 10px;
+          border: 1px solid rebeccapurple;
+          border-radius: 8px;
+          font-size: 14px;
+        }
+
+        .word-limit {
+          text-align: right;
+          font-size: 12px;
+          color: #888;
+          margin-top: 4px;
+        }
+
+        .popup-buttons {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin-top: 20px;
+        }
+
+        .popup button {
+          padding: 8px 18px;
+          border: none;
+          background: rgb(146, 82, 170);
+          color: white;
+          border-radius: 6px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+
+       
+      `}</style>
 
             <div className="event-wall">
               <h1 className="event-heading">Event Wall</h1>
@@ -875,6 +974,7 @@ const fetchOrderDetails = async () => {
                                   padding: "8px",
                                   cursor: "pointer",
                                   borderBottom: "1px solid #eee",
+                                     textAlign: "left",
                                 }}
                                 onClick={() => {
                                   setFormData((prev) => ({
