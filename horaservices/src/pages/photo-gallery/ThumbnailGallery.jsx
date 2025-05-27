@@ -1,142 +1,180 @@
+// Your existing ThumbnailGallery.js file
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Slider from "react-slick";
+// Make sure these CSS files are imported if you uncomment them in your original code
 // import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
-import Image from 'next/image';
-import './gallery.css';
-import photogallryIcon from '../../assets/gallry-loading.gif';
-import downloadIcon from '../../assets/download.png';
+import Image from 'next/image'; // Next/Image for icons
+import './gallery.css'; // Ensure this path is correct
+import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure this path is correct
+import downloadIcon from '../../assets/download.png'; // Ensure this path is correct
+import LazyImage from '../../components/LazyImage'; // Import the new component (adjust path if needed)
 
 const ThumbnailGallery = ({ folderName, customerId }) => {
   const [thumbnails, setThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [downloadUrl, setDownloadUrl] = useState(""); // State to store the download URL for the selected image
+  // const [downloadUrl, setDownloadUrl] = useState(""); // Keep if you plan to implement download
 
   useEffect(() => {
     const fetchThumbnails = async () => {
-      console.log('fetch');
+      setLoading(true); // Set loading true at the beginning of fetch
+      setError(null); // Reset error
       try {
         const response = await fetch(
-          `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${folderName}&customerId=${customerId}`
+          `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`
         );
         if (!response.ok) {
-          throw new Error("Failed to fetch thumbnails");
+          throw new Error(`Failed to fetch thumbnails. Status: ${response.status}`);
         }
         const data = await response.json();
         setThumbnails(data.thumbnails || []);
       } catch (error) {
+        console.error("Fetch thumbnails error:", error);
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchThumbnails();
-  }, [folderName, customerId]);
 
- 
+    if (folderName && customerId) { // Only fetch if props are available
+      fetchThumbnails();
+    } else {
+      setThumbnails([]); // Clear thumbnails if props are missing
+      setLoading(false);
+    }
+  }, [folderName, customerId]); // folderName and customerId are dependencies
 
-  const handleImageClick = (index) => {
+  const handleImageClick = useCallback((index) => {
     setSelectedIndex(index);
-    // Set the download URL when an image is clicked (only if the original URL is available)
-    const thumbnailKey = thumbnails[index]?.key;
-  };
+    // If you want to set download URL based on the selected image:
+    // const selectedThumbnail = thumbnails[index];
+    // if (selectedThumbnail && selectedThumbnail.originalUrl) { // Assuming you have an 'originalUrl' or similar
+    //   setDownloadUrl(selectedThumbnail.originalUrl);
+    // } else if (selectedThumbnail && selectedThumbnail.url) {
+    //   setDownloadUrl(selectedThumbnail.url); // Fallback to thumbnail url if no original
+    // }
+  }, []); // No direct dependencies on thumbnails here, selectedIndex is local
 
-  const closePopup = () => {
+  const closePopup = useCallback(() => {
     setSelectedIndex(null);
-  };
+    // setDownloadUrl(""); // Clear download URL when popup closes
+  }, []);
 
-  const sliderSettings = {
+  // Memoize slider settings to prevent re-creation on every render
+  // Note: initialSlide will cause the slider to re-initialize if selectedIndex changes while it's visible.
+  // This is generally fine.
+  const sliderSettings = React.useMemo(() => ({
     dots: false,
-    infinite: true,
+    infinite: thumbnails.length > 1, // Only infinite if more than 1 image
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    initialSlide: selectedIndex,
-  };
+    // initialSlide: selectedIndex, // Set this directly on the Slider component when it's rendered
+    lazyLoad: 'ondemand', // For react-slick internal lazy loading
+    // afterChange: (current) => {
+    //   // If you need to update download URL as slider changes
+    //   const selectedThumbnail = thumbnails[current];
+    //   if (selectedThumbnail && selectedThumbnail.originalUrl) {
+    //     setDownloadUrl(selectedThumbnail.originalUrl);
+    //   } else if (selectedThumbnail && selectedThumbnail.url) {
+    //     setDownloadUrl(selectedThumbnail.url);
+    //   }
+    // }
+  }), [thumbnails.length]);
+
+
+  if (loading) {
+    return (
+      <div className="thumbnail-gallery-status">
+        <Image src={photogallryIcon} alt="Loading..." width={200} height={200} priority />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="thumbnail-gallery-status text-red-500">Error: {error}</div>;
+  }
+
+  if (thumbnails.length === 0) {
+    return <div className="thumbnail-gallery-status">No thumbnails found.</div>;
+  }
 
   return (
     <div className="thumbnail-gallery">
-      {loading && (
-        <p className="loader-photo">
-          <Image src={photogallryIcon} alt="Loading icon" width={200} />
-        </p>
-      )}
-      {error && <p className="text-red-500">Error: {error}</p>}
       <div className="masonryGrid">
-        {thumbnails.length > 0 ? (
-          thumbnails.map((thumbnail, index) => (
-            <img
-              key={index}
-              src={thumbnail.url}
-              alt={`Thumbnail ${index + 1}`}
-              className="thumbnail"
-              onClick={() => handleImageClick(index)}
-            />
-          ))
-        ) : (
-          !loading && <p>No thumbnails found.</p>
-        )}
+        {thumbnails.map((thumbnail, index) => (
+          <LazyImage
+            key={thumbnail.key || thumbnail.url || index} // Prefer a stable key from data
+            src={thumbnail.url}
+            alt={`Thumbnail ${index + 1}`}
+            className="thumbnail" // This class will be applied to the inner <img>
+            onClick={() => handleImageClick(index)}
+            // You can pass a placeholderStyle to LazyImage if needed, e.g. for aspect ratio
+            // placeholderStyle={{ paddingTop: '75%' }} // for a 4:3 aspect ratio placeholder
+          />
+        ))}
       </div>
 
       {selectedIndex !== null && (
         <div className="popupOverlay" onClick={closePopup}>
           <div className="popupContent" onClick={(e) => e.stopPropagation()}>
-            {/* Popup Header */}
             <div className="popupHeader">
-              <button className="closeButton" onClick={closePopup}>
+              <button className="closeButton" onClick={closePopup} aria-label="Close popup">
                 <svg
                   aria-hidden="true"
                   focusable="false"
-                  data-prefix="fas"
-                  data-icon="arrow-left"
                   className="svg-inline--fa fa-arrow-left fa-xl closeEffect"
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 448 512"
                 >
                   <path
-                    fill="#bfbfbf"
-                    d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
-                  ></path>
+                    fill="currentColor" // Use currentColor for better theming
+                    d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H109.2l105.5-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
+                  />
                 </svg>
               </button>
               <p className="image-index">
+                {/* Display current image index in slider if desired */}
                 {/* {selectedIndex + 1} / {thumbnails.length} */}
-                {thumbnails.length} Photos
+                {thumbnails.length} Photo{thumbnails.length === 1 ? '' : 's'}
               </p>
+              {/* Optional: Add a download button for the currently active slide here if needed */}
             </div>
 
-            <Slider {...sliderSettings} initialSlide={selectedIndex}>
+            {/* Conditionally render Slider only when selectedIndex is not null to ensure initialSlide works */}
+            <Slider {...sliderSettings} initialSlide={selectedIndex} key={selectedIndex}>
               {thumbnails.map((thumbnail, index) => (
-                <ul key={index}>
-                  <li>
-                    <img
-                      src={thumbnail.url}
-                      alt="Original"
-                      className="popupImage"
-                    />
-                  </li>
-                </ul>
+                // The div wrapper for react-slick items is common
+                <div key={thumbnail.key || thumbnail.url || index} className="slick-slide-item">
+                  <img
+                    src={thumbnail.url} // Or thumbnail.originalUrl if available for higher quality
+                    alt={`Enlarged ${index + 1}`}
+                    className="popupImage"
+                  />
+                </div>
               ))}
             </Slider>
 
-            {/* Popup Footer */}
-            <div className="popupFooter">
-              {/* Download Button */}
-              {/* {downloadUrl && (
+            {/* Popup Footer - Download button can be reactivated here */}
+            {/* <div className="popupFooter">
+              {downloadUrl && (
                 <a
                   href={downloadUrl}
-                  download
+                  download // This attribute suggests the browser to download the linked URL
                   className="downloadButton"
+                  // For actual S3 or similar, you might need a pre-signed URL for download
+                  // and the 'download' attribute might need the filename.
+                  // download={`image-${selectedIndex + 1}.jpg`} 
                 >
                   <span>Download Image</span>
-                  <Image src={downloadIcon} width={15} height={15} />
+                  <Image src={downloadIcon} alt="Download" width={15} height={15} />
                 </a>
-              )} */}
-            </div>
+              )}
+            </div> */}
           </div>
         </div>
       )}
