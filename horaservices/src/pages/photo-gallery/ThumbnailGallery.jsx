@@ -4,46 +4,68 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Slider from "react-slick";
 import Image from 'next/image';
 
-import './gallery.css';
-import photogallryIcon from '../../assets/gallry-loading.gif';
-import LazyImage from '../../components/LazyImage';
-import PaginationControls from '../../components/PaginationControls';
-import shareIcon from '../../assets/share-photo-icon.png'
-// import './pagination.css';
+import './gallery.css'; // Ensure this path is correct
+import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is correct
+import LazyImage from '../../components/LazyImage';         // Ensure path is correct
+import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
+import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
 
+// If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
 // import "slick-carousel/slick/slick.css"; 
 // import "slick-carousel/slick/slick-theme.css";
 
-
-const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => { // Prop to control internal title
-  // const ITEMS_PER_PAGE = 12; // Increased from 12 for more items per page
+const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isIOSMobile, setIsIOSMobile] = useState(false);
+
+  // iOS Mobile Detection
+  useEffect(() => {
+    const detectIOSMobile = () => {
+      if (typeof navigator !== 'undefined') {
+        // Basic check for iPhone, iPad, iPod.
+        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
+        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
+        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
+        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      }
+      return false;
+    };
+    setIsIOSMobile(detectIOSMobile());
+  }, []);
+
+  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
+  const getItemsPerPage = useCallback(() => {
+    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
+    // For iOS mobile, a smaller number might be better, e.g. 12-15.
+    // For other devices (where pagination is hidden), this number doesn't directly limit display
+    // but affects the `totalPages` calculation if we were to show it.
+    // Let's adjust: more items for wider screens if pagination *were* shown.
+    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
+    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
+    if (isIOSMobile) {
+        return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
+    }
+    return window.innerWidth >= 768 ? 36 : 24; // Fallback for general calculation (though UI is hidden)
+
+  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
+
+
+  const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
 
   useEffect(() => {
-    // Debugging: Log when selectedIndex changes
-    // console.log("[State Update] selectedIndex:", selectedIndex);
-  }, [selectedIndex]);
-const getItemsPerPage = () => {
-  if (typeof window === 'undefined') return 12; // Default for SSR
-  return window.innerWidth >= 768 ? 36 : 12;    // Laptop/tablet vs mobile
-};
+    const handleResize = () => {
+      setItemsPerPage(getItemsPerPage());
+    };
+    if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [isIOSMobile, getItemsPerPage]);
 
-const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
-
-useEffect(() => {
-  const handleResize = () => {
-    setItemsPerPage(getItemsPerPage());
-  };
-
-  window.addEventListener('resize', handleResize);
-
-  // Clean up on unmount
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
 
   useEffect(() => {
     const fetchThumbnails = async () => {
@@ -64,23 +86,32 @@ useEffect(() => {
     fetchThumbnails();
   }, [folderName, customerId]);
 
+  // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
-    const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const currentItems = allThumbnails.slice(startIndex, endIndex);
-    return { currentThumbnailsOnPage: currentItems, totalPages: total };
-  }, [allThumbnails, currentPage]);
+    if (isIOSMobile) {
+      const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const currentItems = allThumbnails.slice(startIndex, endIndex);
+      return { currentThumbnailsOnPage: currentItems, totalPages: total };
+    } else {
+      // Not iOS mobile: show all thumbnails, no pagination UI
+      return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+    }
+  }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
-  const handleImageClick = useCallback((indexOnPage) => {
-    const originalIndex = (currentPage - 1) * ITEMS_PER_PAGE + indexOnPage;
-    // console.log(`[Image Click] indexOnPage=${indexOnPage}, currentPage=${currentPage}, originalIndex=${originalIndex}`);
+  const handleImageClick = useCallback((indexInDisplayedList) => {
+    let originalIndex;
+    if (isIOSMobile) {
+      originalIndex = (currentPage - 1) * ITEMS_PER_PAGE + indexInDisplayedList;
+    } else {
+      originalIndex = indexInDisplayedList; // Index is direct from allThumbnails
+    }
+    
     if (originalIndex >= 0 && originalIndex < allThumbnails.length) {
       setSelectedIndex(originalIndex);
-    } else {
-      // console.warn("[Image Click] Calculated originalIndex is out of bounds:", originalIndex);
     }
-  }, [currentPage, allThumbnails.length]);
+  }, [currentPage, ITEMS_PER_PAGE, allThumbnails.length, isIOSMobile]);
 
   const closePopup = useCallback(() => {
     setSelectedIndex(null);
@@ -88,14 +119,15 @@ useEffect(() => {
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
-  setTimeout(() => {
-    const galleryHeader = document.querySelector('.gallery-header');
-    if (galleryHeader) {
-      galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, 100);
+    // Scroll to top of gallery header after a short delay to allow UI to update
+    setTimeout(() => {
+      const galleryHeader = document.querySelector('.gallery-header');
+      if (galleryHeader) {
+        galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
   }, []);
 
   const sliderSettings = useMemo(() => ({
@@ -120,32 +152,37 @@ useEffect(() => {
 
   return (
     <div className="thumbnail-gallery">
- <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-  <div className="gallery-header-content">
-    {showInternalTitle && (
-      <div className="gallery-title-container">
-        <h1 className="gallery-title">Your Photos</h1>
-        <Image
-          src={shareIcon}
-          alt="Info"
-          style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
-          onClick={handleShareicon}
-        />
-      </div>
-    )}
+      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
+        <div className="gallery-header-content">
+          {showInternalTitle && (
+            <div className="gallery-title-container">
+              <h1 className="gallery-title">Your Photos</h1>
+              {typeof handleShareicon === 'function' && ( // Only show share icon if handler is provided
+                <Image
+                  src={shareIcon}
+                  alt="Share"
+                  className="gallery-share-icon" // Added class for styling
+                  onClick={handleShareicon}
+                  width={22} // Specify width and height for Next/Image
+                  height={22}
+                />
+              )}
+            </div>
+          )}
 
-    {totalPages > 0 && (
-      <div className="gallery-pagination-container">
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          inline={true}
-        />
+          {/* Conditional Pagination Rendering */}
+          {isIOSMobile && totalPages > 1 && (
+            <div className="gallery-pagination-container">
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                inline={true} // Keep compact style
+              />
+            </div>
+          )}
+        </div>
       </div>
-    )}
-  </div>
-</div>
 
       {currentThumbnailsOnPage.length > 0 ? (
         <div className="masonryGrid">
@@ -153,16 +190,19 @@ useEffect(() => {
             <LazyImage
               key={thumbnail.stableKey}
               src={thumbnail.url}
-              alt={`Photo ${(currentPage - 1) * ITEMS_PER_PAGE + indexOnPage + 1}`}
+              alt={`Photo ${isIOSMobile ? ((currentPage - 1) * ITEMS_PER_PAGE + indexOnPage + 1) : (indexOnPage + 1)}`}
               wrapperClassName="masonry-item"
               onClick={() => handleImageClick(indexOnPage)}
             />
           ))}
         </div>
       ) : (
-        totalPages > 0 && <div className="thumbnail-gallery-status">No photos on this page.</div>
+        // Show message if on iOS and current page is empty (shouldn't happen with correct totalPages logic)
+        // Or if allThumbnails is genuinely empty after loading.
+        isIOSMobile && totalPages > 0 && <div className="thumbnail-gallery-status">No photos on this page.</div>
       )}
 
+      {/* Popup/Modal remains the same, using allThumbnails and original selectedIndex */}
       {selectedIndex !== null && allThumbnails[selectedIndex] && (
         <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true" aria-labelledby="popup-title">
           <div className="popupContent" onClick={(e) => e.stopPropagation()}>
