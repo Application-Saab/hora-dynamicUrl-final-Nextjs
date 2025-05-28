@@ -1,0 +1,80 @@
+/* pagination.css */
+.pagination-container.inline { /* Targets the inline version used in the header */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between info and controls block if info is outside controls-main */
+  padding: 0;
+  margin: 0;
+}
+
+.pagination-info {
+  font-size: 0.75rem; /* Smaller info text */
+  color: #6c757d;
+  white-space: nowrap;
+  margin-right: 8px; /* Space if info is to the left of buttons */
+}
+
+.pagination-controls-main {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Gap between prev, numbers-scrollable, next */
+}
+
+.pagination-numbers-scrollable {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  gap: 4px;
+  padding: 0 3px; /* Minimal padding */
+  max-width: 180px; /* Adjust based on number of buttons you want visible before scroll */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+.pagination-numbers-scrollable::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.pagination-arrow,
+.pagination-number {
+  background-color: #fff;
+  border: 1px solid #ced4da; /* Lighter border */
+  color: #495057; /* Dark grey text */
+  padding: 4px 8px; /* More compact padding */
+  font-size: 0.75rem; /* Smaller font */
+  min-width: 30px; /* Smaller min-width */
+  border-radius: 3px; /* Sharper radius */
+  font-weight: 400; /* Normal weight for non-active */
+  /* ... (keep transitions, user-select) ... */
+}
+
+.pagination-arrow:hover:not(:disabled),
+.pagination-number:hover:not(.active) {
+  background-color: #e9ecef; /* Light hover */
+  border-color: #adb5bd;
+  color: #007bff;
+}
+
+.pagination-number.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: 600;
+}
+
+.pagination-arrow:disabled {
+  color: #adb5bd;
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  color: #6c757d;
+  min-width: 20px;
+  font-size: 0.75rem;
+}
