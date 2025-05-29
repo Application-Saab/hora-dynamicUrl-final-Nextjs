@@ -503,7 +503,8 @@ const fetchOrderDetails = async () => {
               backgroundRepeat: "no-repeat",
             }}
           >
-               <FloatingEditButton onClick={handleEdit}    /> 
+              {showFAB && <FloatingEditButton onClick={handleEdit} />}
+               {/* <FloatingEditButton onClick={handleEdit}    />  */}
             <div className="invite-wrapper">
               
             

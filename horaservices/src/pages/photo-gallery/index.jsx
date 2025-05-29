@@ -43,15 +43,16 @@ const PhotoGallery = () => {
   return (
     <div className="photo-container">
       <div className="photo-galary-header">
-        <h2 className="title">Your Photos</h2>
+       
         <Image
           src={shareIcon}
           alt="Info"
-          style={{ height: 20, width: 20, marginRight: 10, cursor: 'pointer' }}
+          style={{ height: 22, width: 22, marginRight: 10, cursor: 'pointer' }}
           onClick={handleShareicon}
         />
+        
       </div>
-
+ <h2 className="title">Photos</h2>
       {/* {isLoggedIn ? (
         folderName && customerId ? (
           <ThumbnailGallery folderName={folderName} customerId={customerId} />

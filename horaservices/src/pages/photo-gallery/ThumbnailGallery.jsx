@@ -112,13 +112,13 @@ const ThumbnailGallery = ({ folderName, customerId }) => {
             <Slider {...sliderSettings} initialSlide={selectedIndex}>
               {thumbnails.map((thumbnail, index) => (
                 <ul key={index}>
-                  <li>
+                  {/* <li> */}
                     <img
                       src={thumbnail.url}
                       alt="Original"
                       className="popupImage"
                     />
-                  </li>
+                  {/* </li> */}
                 </ul>
               ))}
             </Slider>

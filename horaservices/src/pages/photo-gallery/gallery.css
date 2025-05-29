@@ -1,39 +1,68 @@
+.photo-container {
+  padding: 0 10px;
+  /* background-color: black; */
+   /* background: linear-gradient(90deg, #ccebf8, #f1cce9, #e0c7ee); */
+}
 
-  .photo-galary-header {
+.photo-galary-header {
   color: #97538c;
   font-size: 17px;
   padding: 13px 8px 7px 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; 
   align-items: center;
+  position: relative;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+.title {
+ font-family: Arial, sans-serif;
+ font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  /* margin: 5px 0; */
+  letter-spacing: 1px;
+    color: #97538c;
+margin-bottom: 2px;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 300% center;
+  }
+}
+
+
+
+
+
+
 .thumbnail-gallery {
   padding: 0 10px;
 }
+
 img.thumbnail {
-  border-radius: 5px;
+  border-radius: 8px;
 }
+
 .masonryItem {
   width: auto;
 }
+
 .masonryGrid {
-  column-count: 3; /* Adjust this for how many columns you want */
-  column-gap: 8px; /* Space between the columns */
+  column-count: 3; /* Adjust this based on screen size if needed */
+  column-gap: 8px;
 }
+
 .thumbnail {
   width: 100%;
   margin-bottom: 8px;
 }
-.photo-galary-header h2 {
-  margin-bottom: 0;
-}
-.title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 0;
-  text-transform: unset;
-  margin-right: 10px;
-}
+
 p.loader-photo {
   width: 100%;
   height: 100%;
@@ -42,29 +71,33 @@ p.loader-photo {
   align-items: center;
   background-color: #f0f3f521;
 }
-/* Popup Overlay */
+
+
 .popupOverlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 1);
+  background-color: rgba(0, 0, 0, 0.85); /* better dimmed bg */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
+  height: 100%;
 }
+
 
 .popupContent {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: white;
   position: relative;
-  max-width: 98%;
+  max-width: 100%;
   max-height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  border-radius: 12px;
 }
 
-/* Popup Header */
+
 
 .popupHeader h2 {
   margin: 0;
@@ -74,7 +107,7 @@ p.loader-photo {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 /* Popup Footer */
@@ -96,8 +129,11 @@ p.loader-photo {
     margin-left: 10px;
 }
 svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
-  height: 13px !important;
+  /* height: 13px !important; */
+    width: 25px;   
+  height: 25px;
 }
+
 .slick-prev:before, .slick-next:before {
   content: '' !important;
   display: inline-block;
@@ -120,6 +156,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   width: 100%;
   max-height: 500px;
   object-fit: contain;
+  border-radius: 20px;
 }
 .slick-next {
   right: 13px !important;
@@ -132,18 +169,30 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 }
 .slick-initialized .slick-slide {
   display: flex !important;
-    justify-content: center;
-    align-items: center;
-    height: 85vh;
-    padding: 0px;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 50px); /* subtract header height */
+  padding-top: 50px; /* push image below fixed header */
 }
+
+
 .popupHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #bfbfbf;
-  padding: 0px 12px 0;
+  color: #fff;
+  padding: 0 12px;
+  height: 50px;
+  background: linear-gradient(119deg, rgb(103, 48, 178) -20.39%, rgb(238, 116, 100) 80.65%);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
+
 p.image-index {
   margin-bottom: 0;
   color: #bfbfbf;

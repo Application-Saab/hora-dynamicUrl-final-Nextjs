@@ -165,7 +165,11 @@ useEffect(() => {
         return "Live Catering";
       case pathname ===
         "/party-food-delivery-live-catering-buffet-select-date/party-live-buffet-catering":
-        return "Live Catering Order Details";
+         return "Live Catering Order Details";
+        
+         case pathname === "/photo-gallery":
+         return "Your gallery";
+         
       case pathname === "/contactus":
         return "Contact Us";
       case pathname === "/aboutus":
@@ -475,7 +479,16 @@ useEffect(() => {
   );
 }
 
-const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
+const Drawer = ({ folderName,closeDrawer, drawerRef, handleLogout ,openModal}) => {
+ const [customerId, setCustomerId] = useState(null);
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userID");
+    if (storedUserId) setCustomerId(storedUserId);
+  }, []);
+
+  if (!customerId) {
+    return <p>Loading...</p>;  // Or your placeholder before customerId loads
+  }
   const style = {
     drawer: {
       width: "60%",
@@ -547,6 +560,14 @@ const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
       <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={style.drawerLink} onClick={() => { mobileMenuClicked('Live Catering'); closeDrawer(); }}>
         Live Catering
       </Link>
+     {/* <Link href={{ pathname: "/photo-gallery", query: { folderName: folderName, customerId: customerId }, }} style={style.drawerLink} onClick={() => { mobileMenuClicked('Your gallery'); closeDrawer(); }}
+ >
+        Your Gallery
+        </Link> */}
+         <Link href="/photo-gallery?folderName=Candid&customerId=63edb239d680d47d95870fa0" style={style.drawerLink} onClick={() => { mobileMenuClicked('Your gallery'); closeDrawer(); }}
+ >
+        Your Gallery
+        </Link>
       <Link href="/aboutus" style={style.drawerLink} onClick={() => { mobileMenuClicked('About Us'); closeDrawer(); }}>
         About Us
       </Link>
