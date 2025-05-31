@@ -14,12 +14,12 @@ function Tab({ label, isActive, onClick }) {
 }
 
 // Tabs Component
-function Tabs({ tabs, defaultTab }) {
-  const [activeTab, setActiveTab] = useState(defaultTab);
+function Tabs({ tabs, defaultTab ,activeTab, onTabChange}) {
+  // const [activeTab, setActiveTab] = useState(defaultTab);
 
-  const handleClick = (tabId) => {
-    setActiveTab(tabId);
-  };
+  // const handleClick = (tabId) => {
+  //   setActiveTab(tabId);
+  // };
 
   return (
     <div className="tabs-container">
@@ -29,7 +29,7 @@ function Tabs({ tabs, defaultTab }) {
             key={tab.id}
             label={tab.title}
             isActive={activeTab === tab.id}
-            onClick={() => handleClick(tab.id)}
+            onClick={() => onTabChange(tab.id)}
           />
         ))}
       </div>

@@ -17,9 +17,6 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import Tabs from '@/components/Tabs';
 
-
-
-
 const index = () => {
   const [products, setProducts] = useState([]); // State to store product
   const [email, setEmail] = useState("");
@@ -29,70 +26,50 @@ const index = () => {
   const [activeTab, setActiveTab] = useState('intimate');
   const router = useRouter();
 
- const renderProducts = () => (
-    <div className="featured-works">
-      <div className="works-container products">
-        <img
-          src="https://cdn.prod.website-files.com/593008e46c534e61e392e0f2/5938f139d7978c0a4faf1460_Sep.svg"
-          alt=""
-          className="section-separator"
-        />
-        <div className="work-container">
-          {products.map((work, index) => (
-            <div className="work-item" key={index}>
-              <div className="discount-badge">₹ {work.discountDifference.toFixed(0)} off</div>
+
+  const renderProducts = () => (
+  <div className="featured-works">
+    <div className="works-container products">
+      <p className="ProductHeading">
+        For small gatherings under 100 guests. (Birthdays, Anniversaries, etc.)
+      </p>
+
+      <div className="work-container">
+        {products.map((work, index) => (
+          <div className="work-item" key={index}>
+            <div className="work-image-wrapper">
+              <div className="discount-badge">
+                ₹ {work.discountDifference.toFixed(0)} off
+              </div>
+
               <div
                 className="work-image"
                 style={{ backgroundImage: `url("/Banner1.avif")` }}
-              ></div>
-              <div className="work-card-info">
-                <div className="work-details">
-                  <h5 className="work-title">{work.name}</h5>
-                  <p className="Prefred-occ">
-                    <span>₹ {work.price}</span>
-                    <span> ₹{Math.floor(work.discountedPrice.toFixed(2))}</span>
-                  </p>
-                </div>
-                <button onClick={() => sendToCheckoutPage(work)} className="photograpy-ook-now">
-                  Book Now
-                </button>
+              >
+                <h5 className="work-title">{work.name}</h5>
               </div>
             </div>
-          ))}
-        </div>
+
+            <div className="work-card-info">
+              <p className="Prefred-occ">
+                ₹ {Math.floor(work.discountedPrice)}{" "}
+                <span className="original-price">₹ {work.price}</span>
+              </p>
+
+              <button
+                onClick={() => sendToCheckoutPage(work)}
+                className="photograpy-book-now"
+              >
+                View More
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
-  );
-  
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    console.log("Email submitted:", email);
-  }, [email]);
+  </div>
+);
 
-  const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
-    }
-    const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ''); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, ' '); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split('<div>');
-    const inclusionItems = statements.flatMap(statement => statement.split("-").filter(item => item.trim() !== ''));
-    const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        {index + 1}{'.'} {item.trim()}
-      </li>
-    ));
-
-    return (
-      <div>
-        <ul class="work-duration">
-          {inclusionList}
-        </ul>
-      </div>
-
-    );
-  };
 
   const getDiscountedPrice = (price) => {
     let discount;
@@ -111,29 +88,63 @@ const index = () => {
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
 
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
-      );
-      const productData = response.data.data.map(item => {
-        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price); // Destructure the return value
-        return {
-          ...item,
-          discountPercentage: discount, // Add discount percentage
-          discountedPrice: discountedPrice,// Add discounted price
-          discountDifference: discountDifference
-        };
-      });
-      setProducts(productData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setProducts([]); // Set to empty array in case of an error
-    }
-  }, []);
-  useEffect(() => {
-    fetchData(); // Call fetchData when the component mounts
-  }, []);
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
+  //     );
+  //     const productData = response.data.data.map(item => {
+  //       const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price); // Destructure the return value
+  //       return {
+  //         ...item,
+  //         discountPercentage: discount, // Add discount percentage
+  //         discountedPrice: discountedPrice,// Add discounted price
+  //         discountDifference: discountDifference
+  //       };
+  //     });
+  //     setProducts(productData);
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //     setProducts([]); // Set to empty array in case of an error
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   fetchData(); // Call fetchData when the component mounts
+  // }, []);
+
+  const fetchData = useCallback(async (tagId) => {
+  try {
+    const response = await axios.get(
+      `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
+    );
+    const productData = response.data.data.map(item => {
+      const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);
+      return {
+        ...item,
+        discountPercentage: discount,
+        discountedPrice,
+        discountDifference
+      };
+    });
+    setProducts(productData);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    setProducts([]);
+  }
+}, []);
+const handleTabChange = (tabId) => {
+  setActiveTab(tabId);
+  const tagIds = {
+    intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
+    grand: '66c96b5a22ed47b72117e09b',    // Grand tab
+    mega: '66c96b6f22ed47b72117e09c'      // Mega tab
+  };
+  fetchData(tagIds[tabId]);
+};
+useEffect(() => {
+  fetchData('66c96b4e22ed47b72117e09a'); 
+}, []);
+
   const sendToCheckoutPage = (product) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -152,18 +163,29 @@ const index = () => {
   };
 
   const bannerImages = [
-    '/Banner1.avif',
-    '/Banner2.webp',
-    '/Banner3.webp',
-    '/Banner1.webp',
-  ];
+    '/Banner1.jpeg',
+    '/Banner2.jpeg',
+    '/Banner3.svg',
 
-  const tabs = [
-    { id: 'intimate', title: 'Intimate\nMoments', content: renderProducts() },
-    { id: 'grand', title: 'Grand\nCelebrations', content: "working" },
-    { id: 'mega', title: 'Mega\nOccasions', content: "work inpogres" },
   ];
  
+
+
+const images = [
+  { title: "Wedding", image: "/wedding-shoot.jpg" },
+  { title: "Pre-Wedding", image: "/pre-wedding.jpg" },
+  { title: "Corporate", image: "/corporate-shoot.jpg" },
+  { title: "Maternity", image: "/maternity-shoot.jpg" },
+  { title: "Baby Shower", image: "/babyshower-shoot.jpg" },
+  { title: "Birthday", image: "/birthday-shoot.jpg" },
+  {title:"SeeMore" ,image:"/see-more.jpg"}
+];
+ 
+const tabs = [
+  { id: 'intimate', title: 'Intimate\nMoments', content: renderProducts() },
+  { id: 'grand', title: 'Grand\nCelebrations', content: renderProducts() },
+  { id: 'mega', title: 'Mega\nOccasions', content: renderProducts() },
+];
 
   return (
     <>
@@ -187,14 +209,57 @@ const index = () => {
       </div>
 
 
-      <Tabs tabs={tabs} defaultTab="intimate" activeTab={activeTab} onTabChange={setActiveTab} />
-      <div class="suggested-poses">
-        <div class="header">
-          <img src="/suggestion.png" alt="Camera Icon" class="icon" />
-          <h2>Suggested Poses</h2>
-          <p>Perfect for a relaxed and friendly vibe</p>
-        </div>
+      {/* <Tabs tabs={tabs} defaultTab="intimate" activeTab={activeTab} onTabChange={setActiveTab} /> */}
+    <Tabs
+  tabs={tabs}
+  defaultTab="intimate"
+  activeTab={activeTab}
+  onTabChange={handleTabChange}
+/>
 
+
+<h2 className="gallery-heading">
+        <span role="img" aria-label="camera">📸</span> Our Gallery
+      </h2>
+
+<section className="collage-flex-row">
+  <div className="side-img">
+    <img src="/pre-wedding.jpg" alt="Left Vertical" />
+  </div>
+
+  <div className="center-grid">
+    <img src="/corporate-shoot.jpg" alt="Center 1" />
+    <img src="/wedding-shoot.jpg" alt="Center 2" />
+    <img src="/babyshower-shoot.jpg" alt="Center 3" />
+    <img src="/birthday-shoot.jpg" alt="Center 4" />
+  </div>
+
+   <div className="side-img">
+    <img src="/maternity-shoot.jpg" alt="Right Vertical" />
+  </div>
+</section>
+<div className="gallery-see-more">
+        <a href="/gallery" className="see-more-btn">
+          See More <span>➤</span>
+        </a>
+      </div>
+
+
+    
+    <div class="suggested-poses">
+  <div class="suggested-poses-section">
+    <img src="/PhotoBanner.png" alt="Camera Holding" class="suggested-img" />
+    <div class="text-overlay">
+      <h2 class="pose-title"> Suggested Poses</h2>
+      <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
+    </div>
+  </div>
+</div>
+
+      
+
+
+ <div class="poses">
         <div class="pose-grid">
           <a href="#wedding" class="pose-card">
             <img src="/wedding.png" alt="Wedding" />
@@ -262,3 +327,26 @@ const index = () => {
 export default index;
 
 
+{/* <div className="gallery-section">
+      <h2 className="gallery-heading">
+        <span role="img" aria-label="camera">📸</span> Our Gallery
+      </h2>
+
+      <div className="gallery-grid">
+        {galleryItems.map((item, index) => (
+          <div
+            key={index}
+            className="gallery-card"
+            style={{ backgroundImage: `url(${item.image})` }}
+          >
+            <div className="gallery-title">{item.title}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="gallery-see-more">
+        <a href="/gallery" className="see-more-btn">
+          See More <span>➤</span>
+        </a>
+      </div>
+    </div> */}
