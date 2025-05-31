@@ -2,8 +2,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
 import profileImage from "../../../assets/Ahmdabad.png"; // Add your own image
-
-// import pr from "../../../../public/sticky.jpeg";
+import tabIcon1 from "../../../assets/galleryicon.jpg";
+import tabIcon2 from '../../../assets/thankyouicon.png';
+import tabIcon3 from '../../../assets/luckdrawicon.jpg';
+import dressIcon from '../../../assets/dressIcon.jpg';
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../../components/FloatingActionButton/FAB";
@@ -64,7 +66,6 @@ const InvitationCard = () => {
         console.log("API response:", response.data);
 
         const order = response?.data?.data?.order?.[0];
-        console.log(order, "order123");
         const fromId = order?.fromId;
         const userId = localStorage.getItem("userID");
         console.log("From ID:", fromId);
@@ -104,19 +105,19 @@ const InvitationCard = () => {
 
   const actions = [
     {
-      image: "/galleryicon.jpg",
+      image: tabIcon1,
       titleTop: "Upload &",
       titleBottom: "Share Pictures",
       subtitle: "Add photos taken at the party",
     },
     {
-      image: "/thankyouicon.png",
+      image: tabIcon2,
       titleTop: "Thank You",
       titleBottom: "Note",
       subtitle: "Leave a message for the host",
     },
     {
-      image: "/luckdrawicon.jpg",
+      image: tabIcon3,
       titleTop: "Lucky Draw",
       titleBottom: "",
       subtitle: "Try your luck and win!",
@@ -497,7 +498,7 @@ const fetchOrderDetails = async () => {
               backgroundImage: orderDetails?.Template
                 ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
                 // : `url('/background-image.jpg')`,
-                : `url('/pastel-purpleBallons.webp')`,
+                : `url('/assets/pastel-purpleBallons.webp')`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
@@ -544,8 +545,8 @@ const fetchOrderDetails = async () => {
 
                     <div className="info-card">
                       <div className="info-card-title ">
-                        <img
-                          src="/photo.jpg"
+                        <Image
+                          src={dressIcon}
                           alt="Dress Code"
                           className=" object-contain"
                         />
@@ -572,7 +573,7 @@ const fetchOrderDetails = async () => {
                             className="tab-item"
 
                           >
-                            <img
+                            <Image
                               src={action.image}
                               alt={`${action.titleTop} ${action.titleBottom}`}
                               style={{ width: 50, height: 50, borderRadius: 6, objectFit: 'cover' }}
@@ -820,7 +821,7 @@ const fetchOrderDetails = async () => {
               >
                 {/* Render image as actual DOM element */}
                 <img
-                  src={`${window.location.origin}/sticky5.png`}
+                  src={`${window.location.origin}/assets/sticky5.png`}
                   alt="Sticky Note"
                   style={{
                     width: "100%",
