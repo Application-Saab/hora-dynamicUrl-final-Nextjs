@@ -326,27 +326,3 @@ const tabs = [
 
 export default index;
 
-
-{/* <div className="gallery-section">
-      <h2 className="gallery-heading">
-        <span role="img" aria-label="camera">📸</span> Our Gallery
-      </h2>
-
-      <div className="gallery-grid">
-        {galleryItems.map((item, index) => (
-          <div
-            key={index}
-            className="gallery-card"
-            style={{ backgroundImage: `url(${item.image})` }}
-          >
-            <div className="gallery-title">{item.title}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="gallery-see-more">
-        <a href="/gallery" className="see-more-btn">
-          See More <span>➤</span>
-        </a>
-      </div>
-    </div> */}
