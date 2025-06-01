@@ -225,6 +225,7 @@ const tabs = [
 <section className="collage-flex-row">
   <div className="side-img">
     <img src="/pre-wedding.jpg" alt="Left Vertical" />
+    
   </div>
 
   <div className="center-grid">
@@ -238,6 +239,7 @@ const tabs = [
     <img src="/maternity-shoot.jpg" alt="Right Vertical" />
   </div>
 </section>
+
 <div className="gallery-see-more">
         <a href="/gallery" className="see-more-btn">
           See More <span>➤</span>
@@ -288,37 +290,44 @@ const tabs = [
         </div>
       </div>
 
-      <div class="trust-section">
-        <h2>Why People Trust Us 💜</h2>
-        <h3>Ashu Tiwari</h3>
-        <div class="stars">⭐️⭐️⭐️⭐️⭐️</div>
-        <p class="main-review">
-          Food was too good. I mean all dishes were good and quantity was good.
-          Every guest appreciated the taste and love it so much. Will definitely recommend
-          to anyone looking for food services
-        </p>
+      
+  <div class="trust-section">
+    <h2 class="Trust-header">Why People Trust Us 💜</h2>
+    <h3 class="trust-subtitle">Ashu Tiwari</h3>
+    <div class="stars">⭐️⭐️⭐️⭐️⭐️</div>
+    <p class="main-review">
+      Food was too good. I mean all dishes were good and quantity was good.
+      Every guest appreciated the taste and love it so much. Will definitely recommend
+      to anyone looking for food services
+    </p>
 
-        <div class="user-quote">
-          <img src="user.jpg" alt="Tara Sutara" class="profile-img" />
-          <div class="quote">"I absolutely love their work! Highly recommended."</div>
-          <p class="name">Tara sutara</p>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-box">
-            <img src="/google.jpg" alt="Google Icon" class="icon" />
-            <p><strong>4.8</strong><br />Google Rating</p>
-          </div>
-          <div class="stat-box">
-            <p><strong>50L+</strong><br />Photos Delivered</p>
-          </div>
-          <div class="stat-box full">
-            <p><strong>15K+</strong><br /><span class="highlight">Happy Customers</span></p>
-          </div>
-        </div>
-
-
+    <div class="user-quote">
+      <img src="user.jpg" alt="Tara Sutara" class="profile-img" />
+      <div>
+        <div class="quote">"I absolutely love their work! Highly recommended."</div>
+        <p class="name">Tara sutara</p>
       </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+  <div class="rating-row">
+    <img src="google.jpg" alt="Google Icon" class="icon" />
+    <strong>4.8</strong>
+  </div>
+  <p class="Text-google">Google Rating</p>
+</div>
+      
+      <div class="stat-box">
+   <strong>50L+</strong>
+  <div class="photos-title">Photos Delivered</div>
+</div>
+
+      <div class="stat-box full">
+        <p><strong>15K+</strong><span class="highlight"> Happy Customers</span></p>
+      </div>
+    </div>
+  </div>
 
     </>
   );
