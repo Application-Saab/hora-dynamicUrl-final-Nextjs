@@ -221,10 +221,14 @@ const WhatsAppIcon = ({ router }) => {
   };
 
 
-  const shouldShowWhatsAppIcon = () => {
-    return router.pathname !== '/order-details' && router.pathname !== '/orderlist' && router.pathname !== '/photo-gallery';
-  };
-
+const shouldShowWhatsAppIcon = () => {
+  return (
+    !router.asPath.startsWith('/wonderland') &&
+    router.asPath !== '/order-details' &&
+    router.asPath !== '/orderlist' &&
+    router.asPath !== '/photo-gallery'
+  );
+};
   return (
     <>
       {shouldShowWhatsAppIcon() && (

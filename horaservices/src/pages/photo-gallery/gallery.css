@@ -1,47 +1,104 @@
+/* gallery.css */
 
-  .photo-galary-header {
-  color: #97538c;
-  font-size: 17px;
-  padding: 13px 8px 7px 10px;
+/* This is the class passed as wrapperClassName to LazyImage. It's the masonry grid item. */
+.masonry-item { /* Renamed from .lazy-image-container-wrapper for clarity in component use */
+  margin-bottom: 10px; /* Or your preferred gap */
+  break-inside: avoid;
+  border-radius: 4px;  /* Consistent rounding */
+  overflow: hidden;    /* Important for child elements like absolutely positioned spinners or rounded images */
+  background-color: #e9ecef; /* Light grey background, acts as placeholder color */
+  min-height: 120px;   /* CRITICAL: Provides a minimum height before image loads. Adjust this value based on typical smallest image height or desired placeholder size. */
+  position: relative;    /* For positioning spinner overlay */
+  display: block;        /* Ensure it takes block-level layout */
+  transition: background-color 0.3s; /* Smooth transition if needed */
+}
+.masonry-item:hover {
+  /* background-color: #dee2e6; /* Optional: darker placeholder on hover */
+}
+
+
+/* Styles for the <img> tag itself within LazyImage */
+.lazy-image-actual-img {
+  display: block;        /* Remove extra space below image */
+  width: 100%;           /* Take full width of .masonry-item (column) */
+  height: auto;          /* CRITICAL: Allows image to define its own height, maintaining aspect ratio */
+  opacity: 0;            /* Start hidden */
+  transition: opacity 0.5s ease-in-out; /* Fade-in transition */
+  border-radius: inherit; /* Inherit border-radius from parent if you want rounded images too */
+}
+
+.lazy-image-actual-img.loaded {
+  opacity: 1; /* Fade in when loaded */
+}
+
+.lazy-image-actual-img.loading {
+  /* Image is loading, opacity is 0. Spinner should be visible over .masonry-item background. */
+}
+
+
+/* Spinner container and spinner animation */
+.lazy-image-spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Cover the entire area of .masonry-item */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Ensure spinner is above the .masonry-item background */
+  pointer-events: none; /* Allow clicks to pass through to image if it loads under it somehow */
+}
+
+.lazy-image-spinner-animation {
+  width: 28px;   /* Size of the spinner */
+  height: 28px;
+  border: 3px solid rgba(0, 0, 0, 0.2); /* Lighter track for the spinner */
+  border-top-color: #333; /* Spinner active color, ensure contrast with placeholder bg */
+  border-radius: 50%;
+  animation: lazy-image-spin 0.7s linear infinite;
+}
+
+@keyframes lazy-image-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Masonry Grid column setup (ensure these are suitable for your design) */
+.masonryGrid {
+  column-count: 2;
+  column-gap: 10px;
+}
+@media (min-width: 480px) { .masonryGrid { column-count: 3; } }
+@media (min-width: 768px) { .masonryGrid { column-count: 4; } }
+@media (min-width: 1024px) { .masonryGrid { column-count: 5; } }
+@media (min-width: 1280px) { .masonryGrid { column-count: 6; } }
+
+
+.gallery-header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* Optional: wrap on small screens */
+  padding: 10px 0;
 }
-.thumbnail-gallery {
-  padding: 0 10px;
-}
-img.thumbnail {
-  border-radius: 5px;
-}
-.masonryItem {
-  width: auto;
-}
-.masonryGrid {
-  column-count: 3; /* Adjust this for how many columns you want */
-  column-gap: 8px; /* Space between the columns */
-}
-.thumbnail {
-  width: 100%;
-  margin-bottom: 8px;
-}
-.photo-galary-header h2 {
-  margin-bottom: 0;
-}
-.title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 0;
-  text-transform: unset;
-  margin-right: 10px;
-}
-p.loader-photo {
-  width: 100%;
-  height: 100%;
+
+.gallery-title-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #f0f3f521;
 }
+
+.gallery-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.gallery-pagination-container {
+  display: flex;
+  align-items: center;
+}
+
 /* Popup Overlay */
 .popupOverlay {
   position: fixed;
@@ -156,16 +213,4 @@ p.image-index {
     column-count: 2; 
     column-gap: 6px;
   }
-  .thumbnail {
-    margin-bottom: 6px;
-  }
 }
-/* @media (max-width: 481px) {
-.popupImage {
-  width: 100%;
-  max-height: 413px;
-  object-fit: contain;
-}
-} */
-
-

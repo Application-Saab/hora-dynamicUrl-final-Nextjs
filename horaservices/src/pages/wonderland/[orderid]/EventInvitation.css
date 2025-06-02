@@ -1,0 +1,758 @@
+
+/* Background starry effects */
+/* .starry-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+} */
+
+/* .star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #fef08a;
+  border-radius: 50%;
+} */
+
+
+
+/* .light-string {
+  width: 75%;
+  height: 1.5rem;
+  border-top: 2px dashed #fcd34d;
+  display: flex;
+  justify-content: space-around;
+} */
+
+.light-bulb {
+  width: 8px;
+  height: 8px;
+  background-color: #fcd34d;
+  border-radius: 50%;
+  margin-top: -4px;
+  box-shadow: 0 0 8px 2px rgba(255, 222, 173, 0.6);
+}
+
+
+/* General Font Setup */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
+
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Overlay Content */
+
+ .overlay-content {
+  background-color: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  width: 95%;
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Profile image */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.profile-image {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 3px solid #f9a8d4;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  transition: transform 0.3s ease;
+}
+.profile-image:hover {
+  transform: scale(1.05);
+}
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Invitation Title */
+.invitation-title
+ {
+    text-align: center;
+    color: #be185d;
+    font-family: 'Amatic SC', cursive;
+    font-size:1.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+/* Subtitle */
+.subtitle {
+    text-align: center;
+    font-family: 'Pacifico', cursive;
+    font-size: 1.2rem;
+    color: black;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+/* Event Info */
+.event-info {
+  text-align: center;
+  font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+/* Venue Highlight */
+.venue-highlight {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Theme Card */
+.info-card {
+ 
+  text-align: center;
+background-color: none !important;
+  color: black;
+}
+.info-card-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  gap: 6px;
+}
+    .info-card-text {
+        font-size: 1.2rem;
+    }
+
+/* Final Note */
+.waiting-text {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: black;
+}
+
+/* RSVP Button */
+.rsvp-button {
+  display: block;
+  width: 100%;
+  background: linear-gradient(to right, #f472b6, #facc15);
+  padding: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  margin-top: 1rem;
+}
+.rsvp-button:hover {
+  opacity: 0.9;
+}
+
+
+
+
+
+
+
+
+
+
+.full-width {
+  grid-column: span 2;
+}
+
+/* Photo gallery styles */
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-item {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.object-contain{
+  width: 19px;
+  height: auto;
+}
+
+
+/* Animation for twinkling stars */
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0.2; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+}
+
+
+
+/* Media query for tablets (768px) */
+@media (max-width: 768px) {
+  .overlay-content {
+    padding: 1.5rem;
+    max-width: 90%;
+    margin: 20px auto;
+  }
+  .invitation-container {
+    
+     max-width: 600px;
+    padding: 2rem;
+    
+  }
+  
+  .profile-image {
+    width: 7rem;
+    height: 7rem;
+  }
+  
+  .invitation-title h1 {
+    font-size: 2rem;
+  }
+  
+  .event-location-text,
+  .event-description-text,
+  .waiting-text,
+  .info-card-title {
+    font-size: 1.125rem;
+  }
+  
+  .rsvp-button {
+    font-size: 1.25rem;
+    padding: 0.875rem;
+  }
+  
+  .photo-gallery {
+    gap: 0.4rem;
+  }
+  
+  .light-string {
+    width: 80%;
+  }
+}
+
+/* Media query for mobile (468px) */
+@media (max-width: 468px) {
+  .overlay-content {
+    padding: 1rem;
+    max-width: 95%;
+  }
+  .invitation-container {
+    max-width: 100%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  .profile-image {
+    width: 6rem;
+    height: 6rem;
+    border-width: 3px;
+  }
+  
+  .profile-name {
+    font-size: 1.125rem;
+  }
+  
+  .invitation-title {
+    margin-bottom: 1.5rem;
+  }
+  
+  .invitation-title h1 {
+    font-size: 1.2rem;
+  }
+  
+  .event-details-card {
+    padding: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .event-location-text,
+  .event-description-text {
+    font-size: 1rem;
+  }
+  
+  .icon {
+    margin-right: 0.5rem;
+  }
+  
+  .rsvp-button {
+    font-size: 1.125rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .waiting-text {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .info-grid {
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .info-card {
+    padding: 0;
+  }
+  
+  .info-card-title {
+    font-size: 1.rem;
+    margin-bottom: 0.25rem;
+
+  }
+  
+  .info-card-text {
+    font-size: 1rem;
+    margin-left: 10px;
+  }
+  
+  .photo-gallery {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .footer-buttons {
+    gap: 0.5rem;
+  }
+  
+  .footer-button {
+    padding: 0.625rem;
+    font-size: 0.722rem;
+  }
+  
+  .star {
+    width: 3px;
+    height: 3px;
+  }
+  
+  .light-bulb {
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+  }
+  
+  .light-string {
+    width: 90%;
+    height: 1.25rem;
+  }
+}
+.modal-overlay {
+    position: fixed;
+    top:0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    min-height: 80vh; /* Ensures full screen height at minimum */
+    height: auto; /* Allows it to grow beyond viewport */
+    background-image: url('/pastel-purpleBallons.webp');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    padding: 40px 10px;
+    overflow-y: auto;
+    
+}
+
+
+.modal-content {
+  padding: 30px 25px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.4s ease;
+  position: relative;
+  z-index: 2100;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  background-color: rgba(252, 246, 246, 0.6); /* transparent white */
+  backdrop-filter: blur(1.5px); /* glass effect */
+  -webkit-backdrop-filter: blur(5px);
+  transition: opacity 0.1s ease;
+  /* margin-top: 50%; */
+}
+
+
+.modal-content h2 {
+  /* margin-top:2px;
+  margin-bottom: 1px; */
+  font-weight: 700;
+  font-size: 24px;
+  color: #6b21a8;
+   font-family: 'Baloo 2', cursive;
+}
+
+.invite-text {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 2px 0;
+}
+
+.underline-input {
+  border: none;
+  border-bottom: 2px solid #b389db;
+  outline: none;
+  font-weight: 600;
+  font-size: 16px;
+  color: #4c1d95;
+  padding: 4px 6px;
+  margin: 0 6px;
+  background: transparent;
+  width: 130px;
+  text-align: center;
+  transition: border-color 0.3s ease;
+}
+
+.underline-input:focus {
+  border-color: #6b21a8;
+}
+
+
+.date-input {
+  width: 130px;
+  padding-left: 4px;
+  
+}
+
+.time-input {
+  width: 130px;
+  padding-left: 4px;
+}
+
+.address-input {
+  width: 180px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 24px;
+}
+
+.close-btn,
+.save-btn {
+  flex: 1;
+  max-width: 140px;
+  padding: 10px 0;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s ease;
+  color: #111827;
+}
+
+.close-btn {
+  background: #ce82ce;
+}
+
+.close-btn:hover {
+  background: #b45fba;
+  color: white;
+}
+
+.save-btn {
+  background: #9a4d9a;
+  color: black;
+}
+
+.save-btn:hover {
+  background: #6b1d78;
+}
+
+/* fadeIn animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =============================================================================================== */
+
+  
+
+  @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.party-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 2px;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px;
+   height: 110px;
+    width: 100%;
+   
+}
+
+   .tab-item {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8;
+    /* border: 1px solid #ccc; */
+    /* background-color: #fff; */
+    display: flex;
+    flex-Direction: column;
+    align-Items: center;
+    gap: 8;
+    user-Select: none;
+    width: 110;
+    font-Weight: 600;
+    color: #3a0b59;
+    text-Align: center;
+}
+.action-card {
+  width: calc((100% - 8px) / 3); /* 360px - 2 gaps (4px each) = 352, /3 = ~117.3px */
+  background-color:#f6f0ff;
+  border: 1px solid #bb66ff;
+  border-radius: 8px;
+  padding: 8px 6px;
+  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); */
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+.action-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  font-size: 18px;
+  color: #9c27b0;
+}
+
+
+.title-text {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #3a0b59;
+}
+
+/* .subtitle {
+  margin-top: 6px;
+  font-size: 9.5px;
+  color: #4c2b5d;
+  line-height: 1.3;
+} */
+
+
+  
+
+
+
+.event-wall {
+      background-color: rgba(255, 255, 255, 0.85);
+  margin-top: 20px;
+  padding: 16px;
+  font-family: 'Pacifico', cursive;
+  border-radius: 20px;
+  /* min-height: 100vh; */
+}
+
+
+
+.event-heading {
+  Color: rgb(146, 82, 170);
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+/* 2-column layout even on mobile */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.event-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  /* box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); */
+}
+
+.event-text {
+  background-color: #ffe97f;
+  color: #3b3b3b;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 16px;
+  text-align: center;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* min-height: 100px; */
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Disable single column on small devices */
+@media (max-width: 480px) {
+  .event-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+    
+/* Optional: for square thumbnails */
+.event-image {
+  aspect-ratio: 1 / 1;
+}
+
+/* You can remove this section if you ONLY want mobile styling */
+@media (min-width: 600px) {
+  .event-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .event-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+ 
+
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(240, 240, 240, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 999; /* below popup but above main content */
+}
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* luckey draw */
+.popup-luckdraw-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-luckdraw-container {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 650px; /* Small height */
+  overflow-y: auto;   /* Scrollable */
+  padding: 5px;
+  position: relative;
+}
+
+.popup-luckdraw-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.popup-luckdraw-content {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* close button thankyou popup */
+.close-button {
+  position: absolute;
+  top: 4px;
+  right: 16px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  background: none;
+  border: none;
+  z-index: 1001;
+}
+
+.close-button:hover {
+  color: rgb(146, 82, 170);
+}
