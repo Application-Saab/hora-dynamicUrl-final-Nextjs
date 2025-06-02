@@ -2,10 +2,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
 import profileImage from "../../../assets/Ahmdabad.png"; // Add your own image
+
+// import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
 import tabIcon1 from "../../../assets/galleryicon.jpg";
 import tabIcon2 from '../../../assets/thankyouicon.png';
 import tabIcon3 from '../../../assets/luckdrawicon.jpg';
 import dressIcon from '../../../assets/dressIcon.jpg';
+import StickyImage from '../../../assets/sticky5.png';
+import imageBackground from '../../../assets/pastel-purpleBallons.webp';
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../../components/FloatingActionButton/FAB";
@@ -21,7 +25,7 @@ import { faCamera, faPen, faGift, faPersonDress } from '@fortawesome/free-solid-
 import "react-datepicker/dist/react-datepicker.css";
 
 const InvitationCard = () => {
-   const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null);
   const router = useRouter();
   const { orderid } = router.query;
   const [orderDetails, setOrderDetails] = useState(null);
@@ -43,6 +47,7 @@ const InvitationCard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [noteTitle, setNoteTitle] = useState("");
   const [noteBy, setNoteBy] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
 
   // const [showPopup, setShowPopup] = useState(false);
@@ -51,7 +56,7 @@ const InvitationCard = () => {
   useEffect(() => {
     if (!orderid) return;
 
-    
+
     const fetchOrderDetails = async () => {
       try {
         const response = await axios.post(
@@ -66,6 +71,7 @@ const InvitationCard = () => {
         console.log("API response:", response.data);
 
         const order = response?.data?.data?.order?.[0];
+        console.log(order, "order123");
         const fromId = order?.fromId;
         const userId = localStorage.getItem("userID");
         console.log("From ID:", fromId);
@@ -74,11 +80,11 @@ const InvitationCard = () => {
         setCustomerId(fromId);
         setCustomerPhoneNumber(customerPhoneNo);
 
-     if (fromId && userId && fromId.trim() === userId.trim()) {
-  setShowFAB(true);
-} else {
-  setShowFAB(false);
-}
+        if (fromId && userId && fromId.trim() === userId.trim()) {
+          setShowFAB(true);
+        } else {
+          setShowFAB(false);
+        }
 
       } catch (error) {
         console.error("API error:", error);
@@ -163,17 +169,17 @@ const InvitationCard = () => {
     }
   };
 
-  
 
-const handleEdit = () => {
-  setShowModal(true);
-};
 
-const handleClosePopup = () => {
-  setNoteTitle("");   
-  setNoteBy("");      
-  setShowPopup(false);
-};
+  const handleEdit = () => {
+    setShowModal(true);
+  };
+
+  const handleClosePopup = () => {
+    setNoteTitle("");
+    setNoteBy("");
+    setShowPopup(false);
+  };
 
   const handleClose = () => {
     setShowModal(false);
@@ -184,18 +190,18 @@ const handleClosePopup = () => {
     if (name === "image") {
       setFormData({ ...formData, image: files[0] });
     }
-     else {
+    else {
       setFormData({ ...formData, [name]: value });
     }
-    
+
   };
 
 
 
   const handleSave = async () => {
     if (!formData.eventType && formData.eventTypeSearch) {
-  formData.eventType = formData.eventTypeSearch;
-}
+      formData.eventType = formData.eventTypeSearch;
+    }
 
     const formattedDate = new Date(formData.date).toLocaleDateString("en-US", {
       month: "long",
@@ -217,19 +223,19 @@ const handleClosePopup = () => {
     params.append("time", formattedTime);
     params.append("address", formData.address);
     params.append("selectedImage", selectedImage || "");
-     params.append("image", uploadedImage || orderDetails?.Image || "");
+    params.append("image", uploadedImage || orderDetails?.Image || "");
 
     params.append("orderid", orderid);
     params.append("eventType", formData.eventType);
 
-   
+
     params.append("customerId", customerId);
     params.append("customerPhoneNumber", customerPhoneNumber);
- console.log("🚀 Submitting:", {
-    image: uploadedImage,
-    fallbackImage: orderDetails?.Image,
-    finalImage: uploadedImage || orderDetails?.Image || "",
-  });
+    console.log("🚀 Submitting:", {
+      image: uploadedImage,
+      fallbackImage: orderDetails?.Image,
+      finalImage: uploadedImage || orderDetails?.Image || "",
+    });
     console.log("🚀 Submitting data to Google Sheets:", {
       name: formData.name,
       date: formattedDate,
@@ -264,35 +270,35 @@ const handleClosePopup = () => {
       setUploadedImage(null);
       setSelectedImage("");
       setShowModal(false);
-       window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.error("❌ Failed to send to Google Sheets:", error);
     }
   };
-useEffect(() => {
-  if (orderDetails) {
-       const time24h = convertTo24Hour(orderDetails["Time"]);
-    const date = new Date(orderDetails["Date"]);
-    const isoDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
-     let time = orderDetails["Time"];
-    
-    setFormData({
-      name: orderDetails["Name"] || '',
-      date: isoDate,
-      time: time24h || '',
-      address: orderDetails["Address"] || '',
-       eventType: orderDetails["Event Type"] || '',
-    });setUploadedImage(orderDetails.Image || null);
-  }
-}, [orderDetails]);
+  useEffect(() => {
+    if (orderDetails) {
+      const time24h = convertTo24Hour(orderDetails["Time"]);
+      const date = new Date(orderDetails["Date"]);
+      const isoDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
+      let time = orderDetails["Time"];
+
+      setFormData({
+        name: orderDetails["Name"] || '',
+        date: isoDate,
+        time: time24h || '',
+        address: orderDetails["Address"] || '',
+        eventType: orderDetails["Event Type"] || '',
+      }); setUploadedImage(orderDetails.Image || null);
+    }
+  }, [orderDetails]);
 
 
   useEffect(() => {
-const fetchOrderDetails = async () => {
-  console.log(window.location.href);
+    const fetchOrderDetails = async () => {
+      console.log(window.location.href);
 
       if (!orderid) return;
-    
+
       try {
         const response = await fetch(
           `https://script.google.com/macros/s/AKfycbyqVoYkcUl-iWAOx1_G16_AkJVXs4_EDQWmwf0z6Q5ZarLsYyjEhrt1IvAepsrckdgqaw/exec?orderid=${orderid}`
@@ -322,21 +328,21 @@ const fetchOrderDetails = async () => {
     fetchOrderDetails();
   }, [orderid]);
 
- //Format Time
+  //Format Time
   function convertTo24Hour(time12h) {
-  if (!time12h) return "";
-  const [time, modifier] = time12h.split(' ');
-  let [hours, minutes] = time.split(':');
+    if (!time12h) return "";
+    const [time, modifier] = time12h.split(' ');
+    let [hours, minutes] = time.split(':');
 
-  if (hours === '12') {
-    hours = '00';
+    if (hours === '12') {
+      hours = '00';
+    }
+    if (modifier === 'PM') {
+      hours = parseInt(hours, 10) + 12;
+    }
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
   }
-  if (modifier === 'PM') {
-    hours = parseInt(hours, 10) + 12;
-  }
-  return `${hours.toString().padStart(2, '0')}:${minutes}`;
-}
- // Format date
+  // Format date
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     return date.toLocaleDateString("en-US", {
@@ -362,9 +368,9 @@ const fetchOrderDetails = async () => {
       })
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
-  
+
   const eventOptions = [
-    "Birthday", "Wedding", "Anniversary", "Graduation",  "Engagement", "Baby welcome/Baby shower", "Haldi-mendani", "Bachelorette"
+    "Birthday", "Wedding", "Anniversary", "Graduation", "Engagement", "Baby welcome/Baby shower", "Haldi-mendani", "Bachelorette"
   ];
 
 
@@ -380,10 +386,15 @@ const fetchOrderDetails = async () => {
 
   const handleImageUpload = async (e) => {
     setUploading(true);
-    const file = e.target.files[0];
-    if (file) {
+    const files = e.target.files;
+    if (files.length > 0) {
       const formData = new FormData();
-      formData.append("files", file);
+
+      // Append each file
+      for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]); // backend should handle array of files under "files"
+      }
+
       formData.append("customerId", sendCustomerId);
       formData.append("phoneNo", sendCustomerPhoneNumber);
       formData.append("folderName", orderid);
@@ -423,7 +434,7 @@ const fetchOrderDetails = async () => {
             src: item.url,
             alt: item.key,
           }));
-          setEventData(images);
+          setEventData(images.reverse());
         } catch (error) {
           console.error("Error fetching thumbnails:", error);
         } finally {
@@ -438,6 +449,11 @@ const fetchOrderDetails = async () => {
   }, [orderid, customerId]);
 
   const handleDownload = async () => {
+    if (noteTitle.trim() === "" || noteBy.trim() === "") {
+      setErrorMsg("Please fill all required fields.");
+      return;
+    }
+    setErrorMsg("");
     const canvas = await html2canvas(noteRef.current, {
       backgroundColor: null,
       useCORS: true,
@@ -471,12 +487,16 @@ const fetchOrderDetails = async () => {
 
         const result = await response.json();
         console.log("Upload result:", result);
+
         window.location.reload();
       } catch (err) {
         console.error("Upload failed:", err);
       }
     }, "image/png");
   };
+  const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
+
+
 
   return (
     <>
@@ -493,30 +513,26 @@ const fetchOrderDetails = async () => {
         <>
           <div
             className="invitation-container relative  flex flex-col items-center justify-center;"
-            
+
             style={{
               backgroundImage: orderDetails?.Template
                 ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
-                // : `url('/background-image.jpg')`,
-                : `url('/assets/pastel-purpleBallons.webp')`,
-              backgroundSize: "cover",
+                : `url('../../../assets/pastel-purpleBallons.webp')`,
+              backgroundSize: "100%",
               backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
+              // backgroundRepeat: "no-repeat",
             }}
-          >
-               {showFAB && <FloatingEditButton onClick={handleEdit} />}
-              
-            <div className="invite-wrapper">
-              
-            
-              <div className="overlay-content bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-4 max-w-2xl w-full text-center">
+>       
 
-              
-             
+
+            {showFAB && <FloatingEditButton onClick={handleEdit} />}
+
+            <div className="invite-wrapper">
+
+
+              <div className="overlay-content bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-4 max-w-2xl w-full text-center">
                 {orderDetails ? (
                   <>
-                  
-           
                     <h1 className="invitation-title text-3xl font-bold mb-4">
                       You’re invited to join us for the
                     </h1>
@@ -590,19 +606,20 @@ const fetchOrderDetails = async () => {
                       {/* Hidden File Input for Upload */}
                       <input
                         type="file"
+                        multiple
                         accept="image/*"
                         id="imageUploadInput"
                         style={{ display: "none" }}
                         onChange={handleImageUpload}
                         disabled={uploading}
+
                       />
 
                       {uploading && <p>Uploading image, please wait...</p>}
 
-                      {/* Action Cards */}
 
 
-                     
+
                     </div>
 
                   </>
@@ -612,70 +629,107 @@ const fetchOrderDetails = async () => {
               </div>
             </div>
 
- {showPopup && <div className="overlay"></div>}
-                      {showPopup && (
-                        <div className="popup">
-                           <span className="close-button" onClick={handleClosePopup}>×</span>
+            {showPopup && <div className="overlay"></div>}
+            {showPopup && (
+              <div className="popup">
+                <span className="close-button" onClick={handleClosePopup}>×</span>
 
-      <h1 className="title"> Thank You Note</h1>
-      <h3 className="subtitlePopUp">
-        Celebrate the moment with a few words of gratitude.
-      </h3>
+                <h1 className="title"> Thank You Note</h1>
+                <h3 className="subtitlePopUp">
+                  Celebrate the moment with a few words of gratitude.
+                </h3>
 
-      <div className="form-group">
-        <label className="label">Note Title</label>
-       <textarea
-  rows={5}
-  placeholder="Write your thank you message..."
-  value={noteTitle}
-  onChange={(e) => {
-    const input = e.target.value;
-    const words = input.trim().split(/\s+/).filter(word => word !== "");
-    if (words.length <= 50) {
-      setNoteTitle(input);
-    }
-  }}
-/>
+                <div className="form-group">
+                  <label className="label">Note Title</label>
 
-<p className="word-limit">
-  {noteTitle.trim() === ""
-    ? 0
-    : noteTitle.trim().split(/\s+/).filter(word => word !== "").length}
-  /50 words
-</p>
-     </div>
+                  <textarea
+                    rows={5}
+                    placeholder="Write your thank you message..."
+                    value={noteTitle}
+                    required
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      const charsCount = input.replace(/\s/g, "").length;
+                      if (charsCount <= 125) {
+                        setNoteTitle(input);
+                      } else {
+                        // Truncate to max 125 non-space chars
+                        let count = 0;
+                        let truncated = "";
+                        for (const ch of input) {
+                          if (ch !== " ") count++;
+                          if (count > 125) break;
+                          truncated += ch;
+                        }
+                        setNoteTitle(truncated);
+                      }
+                      if (input.trim() !== "" && noteBy.trim() !== "") {
+                        setErrorMsg("");
+                      }
+                    }}
+                  />
+                  <p
+                    className="word-limit"
+                    style={{ color: charsWithoutSpaces >= 125 ? "red" : "black" }}
+                  >
+                    {charsWithoutSpaces >= 125
+                      ? "You have reached the 125 character limit!"
+                      : `${charsWithoutSpaces} / 125 characters`}
+                  </p>
+                </div>
 
-      <div className="form-group">
-        <label className="label">Note By</label>
-        <input
-          type="text"
-          placeholder="Your name"
-          value={noteBy}
-          onChange={(e) => setNoteBy(e.target.value)}
-        />
-      </div>
+                <div className="form-group">
+                  <label className="label">Note By</label>
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={noteBy}
+                    required
+                    onChange={(e) => {
+                      setNoteBy(e.target.value);
+                      if (noteTitle.trim() !== "" && e.target.value.trim() !== "") {
+                        setErrorMsg("");
+                      }
+                    }}
 
-      <div className="popup-buttons">
-        <button onClick={handleDownload}>Save</button>
-     
-      </div>
-                        </div>
-                      )}
+                  />
+                </div>
+                {errorMsg && (
+                  <p
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                      marginBottom: "0px",
+                      fontSize: "14px",
+                      textAlign: "center",
+                      marginTop: "20px",
+                    }}
+                  >
+                    {errorMsg}
+                  </p>
+                )}
+                <div className="popup-buttons">
 
-                      {/* Basic CSS */}
- <style jsx>{`
-        .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 1000;
-  pointer-events: all;
-}
+                  <button onClick={handleDownload}>Save</button>
+
+                </div>
+              </div>
+            )}
+
+            {/* Basic CSS */}
+            <style jsx>{`
+                 .overlay {
+                 position: fixed;
+                 top: 0;
+                 left: 0;
+                 width: 100vw;
+                 height: 100vh;
+                 background-color: rgba(0, 0, 0, 0.2);
+                 backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                 z-index: 1000;
+                pointer-events: all;
+                 }
 
 
         .popup {
@@ -758,6 +812,7 @@ const fetchOrderDetails = async () => {
           justify-content: center;
           gap: 10px;
           margin-top: 20px;
+          
         }
 
         .popup button {
@@ -773,34 +828,37 @@ const fetchOrderDetails = async () => {
        
       `}</style>
 
+
             <div className="event-wall">
-              <h1 className="event-heading">Event Wall</h1>
-
-              {loadingThumbnails ? (
-
-                <div className="loader">Loading thumbnails...</div>
-              ) : (
-                <div className="event-grid">
-                  {eventData.map((item, index) =>
-                    item.type === "image" ? (
-                      <img
-                        key={index}
-                        src={item.src}
-                        alt={item.alt}
-                        className="event-image"
-                      />
+              <h2 className="event-heading">Event Wall</h2>
+              <div className="event-grid">
+                {eventData.map((item, index) => (
+                  <div key={index}>
+                    {item.type === "image" ? (
+                      <>
+                        <img
+                          src={item.src}
+                          alt={item.alt}
+                          className="event-image"
+                          onLoad={e => e.currentTarget.classList.add('loaded')}
+                        />
+                        {item.content && (
+                          <div
+                            className="event-text"
+                            dangerouslySetInnerHTML={{ __html: item.content }}
+                          />
+                        )}
+                      </>
                     ) : (
                       <div
-                        key={index}
                         className="event-text"
                         dangerouslySetInnerHTML={{ __html: item.content }}
                       />
-                    )
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-
 
 
             <div style={{ textAlign: "center", marginTop: 30 }}>
@@ -820,19 +878,18 @@ const fetchOrderDetails = async () => {
                 }}
               >
                 {/* Render image as actual DOM element */}
-                <img
-                  src={`${window.location.origin}/assets/sticky5.png`}
+
+                <Image
+                  src={StickyImage}
                   alt="Sticky Note"
+                  fill
                   style={{
-                    width: "100%",
-                    height: "100%",
                     objectFit: "cover",
                     position: "absolute",
                     top: 0,
                     left: 0,
                     zIndex: 0,
-                    // display: "none",
-                    overflow: "hidden",
+                    borderRadius: "12px",
                   }}
                 />
 
@@ -840,29 +897,39 @@ const fetchOrderDetails = async () => {
                 <div
                   style={{
                     position: "absolute",
-                    top: "45%",
+                    top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    fontWeight: "bold",
-                    fontSize: "35px",
-                    color: "black",
-                    textAlign: "center",
-                    fontFamily: "Arial, sans-serif",
+                    width: "85%",
                     zIndex: 1,
+                    textAlign: "left", // Left aligned
                   }}
                 >
-                  {noteTitle}
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                      color: "black",
+                      fontFamily: "Arial, sans-serif",
+                      wordWrap: "break-word",
+                      whiteSpace: "pre-wrap", // supports multiline
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {noteTitle}
+                  </div>
                 </div>
+
 
                 {/* Bottom right signature */}
                 <div
                   style={{
                     position: "absolute",
-                    bottom: 57,
+                    bottom: 20,
                     right: 70,
                     fontWeight: "bold",
                     fontSize: "20px",
-                    color: "#000",
+                    color: "black",
                     fontFamily: "Arial, sans-serif",
                     zIndex: 1,
                   }}
@@ -926,25 +993,25 @@ const fetchOrderDetails = async () => {
                     >
 
 
-  
 
-                <input
-  type="text"
-  placeholder="Event type..."
-  value={formData.eventTypeSearch ?? formData.eventType ?? ""}
-  onChange={(e) => {
-    const value = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      eventTypeSearch: value,
-      eventType: value, // <-- IMPORTANT: sync both
-    }));
-    setShowDropdown(true);
-  }}
-  onFocus={() => setShowDropdown(true)}
-  autoComplete="off"
-  className="underline-input"
-/>
+
+                      <input
+                        type="text"
+                        placeholder="Event type..."
+                        value={formData.eventTypeSearch ?? formData.eventType ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData((prev) => ({
+                            ...prev,
+                            eventTypeSearch: value,
+                            eventType: value, // <-- IMPORTANT: sync both
+                          }));
+                          setShowDropdown(true);
+                        }}
+                        onFocus={() => setShowDropdown(true)}
+                        autoComplete="off"
+                        className="underline-input"
+                      />
 
 
                       {showDropdown && formData.eventTypeSearch && (
@@ -976,7 +1043,7 @@ const fetchOrderDetails = async () => {
                                   padding: "8px",
                                   cursor: "pointer",
                                   borderBottom: "1px solid #eee",
-                                     textAlign: "left",
+                                  textAlign: "left",
                                 }}
                                 onClick={() => {
                                   setFormData((prev) => ({
@@ -999,7 +1066,7 @@ const fetchOrderDetails = async () => {
                         </ul>
                       )}
                     </div>
-                       </p>
+                  </p>
 
 
                   <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginLeft: "70px" }}>
@@ -1051,17 +1118,17 @@ const fetchOrderDetails = async () => {
                       ref={fileInputRef}
                     />
                   </label>
-      {(uploadedImage || orderDetails?.Image) && (
-      <div>
-      
-        <img
-          src={`https://horaservices.com/api/uploads/${uploadedImage || orderDetails.Image}`}
-          alt="Preview"
-          style={{ width: "100px",height: "100px", borderRadius: "8px", marginTop: "10px" }}
-        />
-      </div>
-    )}
-   
+                  {(uploadedImage || orderDetails?.Image) && (
+                    <div>
+
+                      <img
+                        src={`https://horaservices.com/api/uploads/${uploadedImage || orderDetails.Image}`}
+                        alt="Preview"
+                        style={{ width: "100px", height: "100px", borderRadius: "8px", marginTop: "10px" }}
+                      />
+                    </div>
+                  )}
+
 
 
                   <p className="invite-text" style={{ marginTop: "1rem" }}>

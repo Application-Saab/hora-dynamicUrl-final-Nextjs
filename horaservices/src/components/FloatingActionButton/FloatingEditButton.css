@@ -1,6 +1,6 @@
 .fab-edit-button {
-  position: fixed;
-  top: 92%;
+  position: absolute;
+  top: 10%;
   right: 23px;
   /* background-color: white;  */
   color: blue;
