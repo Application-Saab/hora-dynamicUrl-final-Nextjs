@@ -136,8 +136,8 @@ const handleTabChange = (tabId) => {
   setActiveTab(tabId);
   const tagIds = {
     intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
-    grand: '66c96b5a22ed47b72117e09b',    // Grand tab
-    mega: '66c96b6f22ed47b72117e09c'      // Mega tab
+    grand: '66c96b5922ed47b72117e0a7',    // Grand tab
+    mega: '66c96b6922ed47b72117e0b4'      // Mega tab
   };
   fetchData(tagIds[tabId]);
 };
