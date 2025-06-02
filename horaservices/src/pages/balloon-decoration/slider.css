@@ -61,7 +61,7 @@ a.view-more-slide.slider-item img {
 
 .slider-item h3 {
     font-size: 14px;
-    color: rgb(146, 82, 170);
+    color: rgb(146, 82, 170)!important;
     font-weight: bold;
 }
 

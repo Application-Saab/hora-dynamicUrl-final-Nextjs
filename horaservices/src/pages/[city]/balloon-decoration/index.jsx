@@ -30,7 +30,7 @@ function DecorationCityPage() {
       .replace(/\s+/g, "-")
       .toLowerCase();
     router.push({
-      pathname: `/${city.toLowerCase()}/${formattedLocalityName}`,
+      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/balloon-decoration`,
     });
   };
 

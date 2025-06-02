@@ -1,27 +1,10 @@
 import React from "react";
 import { FaTag, FaMapMarkerAlt, FaDownload } from "react-icons/fa";
 import contactusbanner from "../../assets/contactusbanner.webp";
-import delhi from "../../assets/delhi.webp";
-import mumbai from "../../assets/mumbai.webp";
-import banglore from "../../assets/banglore.webp";
-import pune from "../../assets/Pune.webp";
-import noida from "../../assets/Noida.webp";
-import indore from "../../assets/indore.webp";
-import bhopal from "../../assets/bhopal.webp";
-import ghaziabad from "../../assets/ghaziabad.webp";
-import gurugram from "../../assets/gurugram.webp";
-import faridabad from "../../assets/faridabad.webp";
-import hydrabad from "../../assets/hydrabad.webp";
-import chennai from "../../assets/Chennai.webp";
-import jaipur from "../../assets/jaipur.webp";
-import ahmdabad from "../../assets/Ahmdabad.webp";
-import chandigarh from "../../assets/Chandigarh.webp";
-import kolkata from "../../assets/kolkata.webp";
-import lakhnow from "../../assets/Locknow.webp";
-import kanpur from "../../assets/Kanpur.webp";
-import surat from "../../assets/Kanpur.webp";
-import goa from "../../assets/Goa.webp";
 import Image from "next/image";
+import Link from "next/link";
+import { contactUsCities } from "./contactCities";
+import { WhatappIcon } from "@/component/WhatsappIcon";
 
 const ContactUs = () => {
   return (
@@ -51,11 +34,14 @@ const ContactUs = () => {
             <a href="tel:+917338584828" style={{ color: "#444" }}>
               <FaTag style={styles.icon} />
               <h2
-                style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
+                style={{
+                  fontSize: "1.3125rem",
+                  color: "#444",
+                  margin: "10px 0",
+                }}
               >
                 Call & Whatsapp
               </h2>
-
               +917338584828
             </a>
           </div>
@@ -63,11 +49,14 @@ const ContactUs = () => {
             <a href="mailto:dev@horaservices.com" style={{ color: "#444" }}>
               <FaMapMarkerAlt style={styles.icon} />
               <h2
-                style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
+                style={{
+                  fontSize: "1.3125rem",
+                  color: "#444",
+                  margin: "10px 0",
+                }}
               >
                 Email
               </h2>
-
               dev@horaservices.com
             </a>
           </div>
@@ -80,17 +69,15 @@ const ContactUs = () => {
             >
               <FaDownload style={styles.icon} />
               <h2
-                style={{ fontSize: "1.3125rem", color: "#444", margin: "10px 0" }}
+                style={{
+                  fontSize: "1.3125rem",
+                  color: "#444",
+                  margin: "10px 0",
+                }}
               >
                 Download Application
               </h2>
-              <small>
-                -{" "}
-
-                Click Here
-                {" "}
-                -
-              </small>
+              <small>- Click Here -</small>
             </a>
           </div>
         </div>
@@ -113,7 +100,26 @@ const ContactUs = () => {
               className="contact-us-img-section-1"
               style={styles.cityContact}
             >
-              <div className="contact-us-section-div">
+              {contactUsCities.map((city, index) => (
+                <div
+                  className="contact-us-section-div"
+                  style={{ cursor: "pointer" }}
+                >
+                  <Link href={city.link} passHref>
+                    <Image
+                      className="contact-us-img"
+                      src={city.img}
+                      alt={city.name}
+                    />{" "}
+                  </Link>
+                  <h4 className="contact-us-heading">
+                    <Link href={city.link} passHref style={{textDecoration:'none',textUnderlineOffset:"none"}}>
+                      {city.name}
+                    </Link>
+                  </h4>
+                </div>
+              ))}
+              {/* <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={mumbai} alt="image" />
                 <h4 className="contact-us-heading"><a href="/mumbai">Mumbai</a></h4>
               </div>
@@ -125,7 +131,7 @@ const ContactUs = () => {
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={banglore} alt="image" />
                 <h4 className="contact-us-heading"><a href="/bengaluru">Bengaluru</a></h4>
-              </div>
+              </div> */}
               {/* </div> */}
               {/* <div
                 className="contact-us-img-section-1"
@@ -137,7 +143,7 @@ const ContactUs = () => {
                   gap: "10px",
                 }}
               > */}
-              <div className="contact-us-section-div">
+              {/* <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={banglore} alt="image" />
                 <h4 className="contact-us-heading"><a href="/bangalore">Bangalore</a></h4>
               </div>
@@ -148,7 +154,7 @@ const ContactUs = () => {
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={ghaziabad} alt="image" />
                 <h4 className="contact-us-heading"><a href="/ghaziabad">Gaziabad</a></h4>
-              </div>
+              </div> */}
               {/* </div> */}
               {/* <div
                 className="contact-us-img-section-1"
@@ -160,7 +166,7 @@ const ContactUs = () => {
                   gap: "10px",
                 }}
               > */}
-              <div className="contact-us-section-div">
+              {/* <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={gurugram} alt="image" />
                 <h4 className="contact-us-heading"><a href="/gurugram">Gurugram</a></h4>
               </div>
@@ -171,7 +177,7 @@ const ContactUs = () => {
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={hydrabad} alt="image" />
                 <h4 className="contact-us-heading">< a href="/hyderabad">Hydrabad</a></h4>
-              </div>
+              </div> */}
               {/* </div>
               <div
                 className="contact-us-img-section-1"
@@ -183,10 +189,10 @@ const ContactUs = () => {
                   gap: "10px",
                 }}
               > */}
-              <div className="contact-us-section-div">
+              {/* <a href="/chennai"><div className="contact-us-section-div">
                 <Image className="contact-us-img" src={chennai} alt="image" />
-                <h4 className="contact-us-heading"><a href="/chennai">Chennai</a></h4>
-              </div>
+                <h4 className="contact-us-heading">Chennai</h4>
+              </div></a>
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={kolkata} alt="image" />
                 <h4 className="contact-us-heading"><a href="/kolkata">Kolkata</a></h4>
@@ -194,7 +200,7 @@ const ContactUs = () => {
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={lakhnow} alt="image" />
                 <h4 className="contact-us-heading"><a href="/lucknow">Lucknow</a></h4>
-              </div>
+              </div> */}
               {/* </div>
               <div
                 className="contact-us-img-section-1"
@@ -207,7 +213,7 @@ const ContactUs = () => {
                   gap: "10px",
                 }}
               > */}
-              <div className="contact-us-section-div">
+              {/* <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={kanpur} alt="image" />
                 <h4 className="contact-us-heading"><a href="/kanpur">Kanpur</a></h4>
               </div>
@@ -218,7 +224,7 @@ const ContactUs = () => {
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={surat} alt="image" />
                 <h4 className="contact-us-heading"><a href="/surat">Surat</a></h4>
-              </div>
+              </div> */}
               {/* </div> */}
               {/* <div
                 className="contact-us-img-section-1"
@@ -231,7 +237,7 @@ const ContactUs = () => {
                   gap: "10px",
                 }}
               > */}
-              <div className="contact-us-section-div">
+              {/* <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={bhopal} alt="image" />
                 <h4 className="contact-us-heading"><a href="/bhopal">Bhopal</a></h4>
               </div>
@@ -242,7 +248,7 @@ const ContactUs = () => {
               <div className="contact-us-section-div">
                 <Image className="contact-us-img" src={pune} alt="image" />
                 <h4 className="contact-us-heading"><a href="/pune">Pune</a></h4>
-              </div>
+              </div> */}
               {/* </div> */}
               {/* <div className="our-address">
                 <p style={{ textAlign: "center" }}>Our Registered Address: B27/295, Bhopal, 462030</p>
@@ -251,9 +257,10 @@ const ContactUs = () => {
           </div>
         </div>
       </div>
+      <WhatappIcon />
     </main>
   );
-}
+};
 const styles = {
   aboutUsContainer: {
     width: "100%",

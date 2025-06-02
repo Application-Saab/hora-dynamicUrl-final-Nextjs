@@ -19,6 +19,7 @@ import InfoIcon from '../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../css/chefOrder.css';
+import { WhatappIcon } from '@/component/WhatsappIcon';
 
 const FoodDeliveryCreateOrder = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const FoodDeliveryCreateOrder = () => {
   const [isDishSelected, setIsDishSelected] = useState(false);
   const [selected, setSelected] = useState('veg'); // 'veg' or 'non-veg'
   const [cuisines, setCuisines] = useState([]);
-  const [selectedCuisines, setSelectedCuisines] = useState([]);
+  const [selectedCuisines, setSelectedCuisines] = useState(['65f1b256aaba27208a89865f']);
   const [expandedCategories, setExpandedCategories] = useState([]); // For meal categories
   const [mealList, setMealList] = useState([]);
   const [dishDetail, setDishDetail] = useState(null); // For the modal
@@ -81,28 +82,28 @@ const FoodDeliveryCreateOrder = () => {
     fetchCuisineData();
   }, []);
 
-  useEffect(() => {
-    if (cuisines.length > 0 && selectedCuisines.length === 0) {
-      if(cuisines[0] && cuisines[0][0]) {
-        handleCuisinePress(cuisines[0][0]);
-      }
-    }
-  }, [cuisines]); 
+  // useEffect(() => {
+  //   if (cuisines.length > 0 && selectedCuisines.length === 0) {
+  //     if(cuisines[0] && cuisines[0][0]) {
+  //       handleCuisinePress(cuisines[0][0]);
+  //     }
+  //   }
+  // }, [cuisines]); 
 
-  const renderItem = ({ item }) => {
-    const isSelected = selectedCuisines.includes(item[0]);
-    return (
-      <div className="d-flex align-items-center justify-content-between mb-2">
-        <Button
-          variant={isSelected ? 'primary' : 'outline-primary'}
-          onClick={() => handleCuisinePress(item[0])}
-          className='cusinebtn'
-        >
-          {item[1]}
-        </Button>
-      </div>
-    );
-  };
+  // const renderItem = ({ item }) => {
+  //   const isSelected = selectedCuisines.includes(item[0]);
+  //   return (
+  //     <div className="d-flex align-items-center justify-content-between mb-2">
+  //       <Button
+  //         variant={isSelected ? 'primary' : 'outline-primary'}
+  //         onClick={() => handleCuisinePress(item[0])}
+  //         className='cusinebtn'
+  //       >
+  //         {item[1]}
+  //       </Button>
+  //     </div>
+  //   );
+  // };
 
   const handleIncreaseQuantity = (dish, isCurrentlySelected) => {
     if (selectedDishes.length >= 15 && !isCurrentlySelected) {
@@ -137,25 +138,25 @@ const FoodDeliveryCreateOrder = () => {
     }
   };
 
-  const handleCuisinePress = cuisineId => {
-    if (selectedCuisines.length < 3 || selectedCuisines.includes(cuisineId)) {
-      setSelectedCuisines(prevSelected => {
-        if (prevSelected.includes(cuisineId)) {
-          return prevSelected.filter(item => item !== cuisineId);
-        } else {
-          return [...prevSelected, cuisineId];
-        }
-      });
-    } else {
-      setWarningVisibleForCuisineCount(true);
-      setPopupMessage({
-        img: warningImage,
-        title: "One chef is only expert in 3 cuisines.", // Simplified title
-        body: "Please select a maximum of 3 cuisines to continue.", // Simplified body
-        button: "Continue",
-      });
-    }
-  };
+  // const handleCuisinePress = cuisineId => {
+  //   if (selectedCuisines.length < 3 || selectedCuisines.includes(cuisineId)) {
+  //     setSelectedCuisines(prevSelected => {
+  //       if (prevSelected.includes(cuisineId)) {
+  //         return prevSelected.filter(item => item !== cuisineId);
+  //       } else {
+  //         return [...prevSelected, cuisineId];
+  //       }
+  //     });
+  //   } else {
+  //     setWarningVisibleForCuisineCount(true);
+  //     setPopupMessage({
+  //       img: warningImage,
+  //       title: "One chef is only expert in 3 cuisines.", // Simplified title
+  //       body: "Please select a maximum of 3 cuisines to continue.", // Simplified body
+  //       button: "Continue",
+  //     });
+  //   }
+  // };
 
   const fetchMealBasedOnCuisine = async () => {
     if (selectedCuisines.length === 0) {
@@ -444,13 +445,13 @@ const FoodDeliveryCreateOrder = () => {
         <Row className="mt-1">
           <Col>
             {/* Render Cuisines Selection Buttons */}
-            <div className="cuisine-selection-container my-3 d-flex flex-wrap">
+            {/* <div className="cuisine-selection-container my-3 d-flex flex-wrap">
               {cuisines.map((cuisineItem) => (
                 <div key={cuisineItem[0]} style={{marginRight: '10px', marginBottom: '10px'}}>
                   {renderItem({ item: cuisineItem })}
                 </div>
               ))}
-            </div>
+            </div> */}
 
             {loading? <SkeletonLoader loading={true} />:<>
             {selectedCuisines.length > 0 && mealList.length > 0 && (
@@ -520,6 +521,8 @@ const FoodDeliveryCreateOrder = () => {
       {(isWarningVisibleForCuisineCount || isWarningVisibleForDishCount) && (
         <Popup popupMessage={popupMessage} onClose={handleWarningClose} />
       )}
+              <WhatappIcon/>
+
     </div>
   );
 };

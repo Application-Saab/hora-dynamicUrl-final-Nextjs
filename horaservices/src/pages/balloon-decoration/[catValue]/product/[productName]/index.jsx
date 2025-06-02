@@ -18,6 +18,7 @@ import FAQAccordion from "@/component/FAQs";
 import { decorationFAQData } from "@/util/DecorationMockData/DecorationFAQ";
 import { getDiscountedPrice } from "@/util/getDiscountedPrice";
 import { getDiscountedDifference } from "@/util/getDiscountedDifference";
+import { WhatappIcon } from "@/component/WhatsappIcon";
 
 
 function DecorationCatDetails() {
@@ -525,6 +526,7 @@ function DecorationCatDetails() {
           </div>
         </div>
       </div>
+              <WhatappIcon/>
     </div>
   );
 };

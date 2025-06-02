@@ -4,11 +4,12 @@ import how_1 from '../../assets/how_1.webp';
 import how_2 from '../../assets/how_2.webp';
 import how_3 from "../../assets/how_3.webp";
 import Image from "next/image";
-import '../../pages/aboutus/aboutus.css';
+import './aboutus.css';
+import { WhatappIcon } from "@/component/WhatsappIcon";
 
 const AboutUs = () => {
   return (
-    <div className="container text-center mt-3">
+    <div className=" p-0 text-center">
       <div className="heroSingle" style={{ backgroundImage: `url(${hero_general.src})` }}>
      
           <div className="textContent">
@@ -70,6 +71,7 @@ const AboutUs = () => {
           </div>
         </div>
       </div>
+      <WhatappIcon/>
     </div>
   );
 };

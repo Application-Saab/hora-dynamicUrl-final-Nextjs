@@ -25,6 +25,7 @@ import InfoIcon from '../../assets/info.png';
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Popup from '../../utils/popup';
+import { WhatappIcon } from "@/component/WhatsappIcon";
 
 const BookCheifForParty = ({ history, currentStep }) => {
     const [isMobile, setIsMobile] = useState(false);
@@ -644,6 +645,7 @@ const BookCheifForParty = ({ history, currentStep }) => {
             </div>
             {isWarningVisibleForCuisineCount && (<Popup popupMessage={popupMessage} onClose={handleWarningClose} />)}
             {isWarningVisibleForDishCount && (<Popup popupMessage={popupMessage} onClose={handleWarningClose} />)}
+            <WhatappIcon/>
         </div>
     )
 }

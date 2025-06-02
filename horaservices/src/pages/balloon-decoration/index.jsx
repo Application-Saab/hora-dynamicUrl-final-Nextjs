@@ -10,7 +10,6 @@ import {
 import { setState } from "../../actions/action";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import "./slider.css";
 import CategoryGrid from "./components/CategoryGrid";
 import DecorationSection from "./components/DecorationSection";
 import DecorationGridBlock from "./components/DecorationGridBlock";
@@ -29,6 +28,8 @@ import {
 import DecorationSliderBlock from "./components/DecorationSliderBlock";
 import DecorationSkeletonPage from "@/component/Placeholder/DecorationSkeletonPage";
 import SeoHead from "./components/SeoHead";
+import { WhatappIcon } from "@/component/WhatsappIcon";
+import "./slider.css";
 
 const DecorationPage = ({ city }) => {
   const dispatch = useDispatch();
@@ -196,6 +197,7 @@ const DecorationPage = ({ city }) => {
             )}
           </DecorationSection>
         ))}
+        <WhatappIcon/>
       </div>
     </>
   );

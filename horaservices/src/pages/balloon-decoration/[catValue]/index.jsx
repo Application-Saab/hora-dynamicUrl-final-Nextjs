@@ -14,6 +14,7 @@ import { PriceFilter } from '@/util/DecorationMockData/PriceFilter';
 import { getSubCategory } from '@/util/getSubCategory';
 import { themeFilters } from '@/util/DecorationMockData/ThemeFilter';
 import { getDiscountedPrice } from '@/util/getDiscountedPrice';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 
 const DecorationCatPage = () => {
@@ -23,12 +24,16 @@ const DecorationCatPage = () => {
   const [catValue, setCatValue] = useState('');
   useEffect(() => {
     if (router.isReady) {
-      const { catValue: queryCatValue, city: queryCity } = router.query;
+      const { catValue: queryCatValue, city: queryCity, theme } = router.query;
       if (queryCatValue) {
         setCatValue(queryCatValue);
       }
       if (queryCity) {
         setCity(queryCity);
+      }
+      if(theme){
+        console.log("Theme from query:", theme);
+        setThemeFilter(theme);
       }
     }
     else {
