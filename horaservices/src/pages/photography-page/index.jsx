@@ -26,26 +26,78 @@ const index = () => {
   const [activeTab, setActiveTab] = useState('intimate');
   const router = useRouter();
 
+const imageList = [
+  "/traditionalphoto.jpg",
+  "/Candidphoto.jpg",
+  "/Prophotography.png",
+  "/Videography.jpg"
+];
 
-  const renderProducts = () => (
-    <div className="featured-works">
-      <div className="works-container products">
-        <p className="ProductHeading">
-          For small gatherings under 100 guests. (Birthdays, Anniversaries, etc.)
-        </p>
 
-        <div className="work-container">
-          {products.map((work, index) => (
+
+  // const renderProducts = () => (
+  //   <div className="featured-works">
+  //     <div className="works-container products">
+  //       <p className="ProductHeading">
+  //         For small gatherings under 100 guests. (Birthdays, Anniversaries, etc.)
+  //       </p>
+  //       <div className="work-container">
+  //         {products.map((work, index) => (
+            
+  //           <div className="work-item" key={index}>
+  //             <div className="discount-badge">
+  //               ₹ {work.discountDifference.toFixed(0)} off
+  //             </div>
+  //             <div className="work-image-wrapper">
+  //               <div
+  //                 className="work-image"
+  //                 style={{ backgroundImage: `url("/Banner1.avif")` }}
+                  
+  //               >
+  //                 <h5 className="work-title">{work.name}</h5>
+  //               </div>
+  //             </div>
+
+  //             <div className="work-card-info">
+  //               <p className="Prefred-occ">
+  //                 ₹ {Math.floor(work.discountedPrice)}{" "}
+  //                 <span className="original-price">₹ {work.price}</span>
+  //               </p>
+
+  //               <button
+  //                 onClick={() => sendToCheckoutPage(work)}
+  //                 className="photograpy-book-now"
+  //               >
+  //                 View More
+  //               </button>
+  //             </div>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+
+
+const renderProducts = () => (
+  <div className="featured-works">
+    <div className="works-container products">
+      <p className="ProductHeading">
+        For small gatherings under 100 guests. (Birthdays, Anniversaries, etc.)
+      </p>
+      <div className="work-container">
+        {products.map((work, index) => {
+          const imageUrl = imageList[index % imageList.length]; // ✅ Move inside
+
+          return (
             <div className="work-item" key={index}>
               <div className="discount-badge">
                 ₹ {work.discountDifference.toFixed(0)} off
               </div>
               <div className="work-image-wrapper">
-
-
                 <div
                   className="work-image"
-                  style={{ backgroundImage: `url("/Banner1.avif")` }}
+                  style={{ backgroundImage: `url("${imageUrl}")` }}
                 >
                   <h5 className="work-title">{work.name}</h5>
                 </div>
@@ -65,12 +117,12 @@ const index = () => {
                 </button>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
-  );
-
+  </div>
+);
 
   const getDiscountedPrice = (price) => {
     let discount;
@@ -231,54 +283,39 @@ const index = () => {
         />
         Our Gallery
       </h2>
-      {/* <section className="collage-flex-row">
-        <div className="side-img">
-          <img src="/pre-wedding.jpg" alt="Left Vertical" />
 
-        </div>
-
-        <div className="center-grid">
-          <img src="/corporate-shoot.jpg" alt="Center 1" />
-          <img src="/wedding-shoot.jpg" alt="Center 2" />
-          <img src="/babyshower-shoot.jpg" alt="Center 3" />
-          <img src="/birthday-shoot.jpg" alt="Center 4" />
-        </div>
-
-        <div className="side-img">
-          <img src="/maternity-shoot.jpg" alt="Right Vertical" />
-        </div>
-      </section> */}
+      <div >
 <section className="collage-flex-row">
   <div className="side-img image-box">
-    <img src="/pre-wedding.jpg" alt="Pre-Wedding" />
-    <div className="image-label">Pre-Wedding</div>
+    <img src="/wedding.jpeg" alt="Wedding" />
+    <div className="image-label">Wedding</div>
   </div>
 
   <div className="center-grid">
     <div className="image-box">
-      <img src="/corporate-shoot.jpg" alt="Corporate" />
+      <img src="/pre-wedding.jpeg" alt="pre-Wedding" />
+      <div className="image-label">pre-Wedding</div>
+    </div>
+    <div className="image-box" >
+    <img src="/corporate-shoot.jpeg" alt="Corporate" />
       <div className="image-label">Corporate</div>
     </div>
     <div className="image-box">
-      <img src="/wedding-shoot.jpg" alt="Wedding" />
-      <div className="image-label">Wedding</div>
+        <img src="/maternity-shoot.jpeg" alt="Maternity" />
+      <div className="image-label">Maternity</div>
     </div>
     <div className="image-box">
-      <img src="/babyshower-shoot.jpg" alt="Baby Shower" />
+     <img src="/babyshower-shoot.jpg" alt="baby shower" />
       <div className="image-label">Baby Shower</div>
-    </div>
-    <div className="image-box">
-      <img src="/birthday-shoot.jpg" alt="Birthday" />
-      <div className="image-label">Birthday</div>
     </div>
   </div>
 
   <div className="side-img image-box">
-    <img src="/maternity-shoot.jpg" alt="Maternity" />
-    <div className="image-label">Maternity</div>
+    <img src="/birthday-shoot.jpeg" alt="Maternity" />
+    <div className="image-label">Birthday</div>
   </div>
 </section>
-
+</div>
       <div className="gallery-see-more">
         <a href="/gallery" className="see-more-btn">
           See More <span className="arrow-circle">➤</span>

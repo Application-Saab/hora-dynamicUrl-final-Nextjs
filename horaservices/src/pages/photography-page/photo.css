@@ -213,31 +213,52 @@ justify-content: center;
   justify-content: center;
 }
 
+
 .work-image {
+  position: relative;
   height: 120px;
   width: 95%;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
   border-radius: 15px;
   overflow: hidden;
   margin-top: 2px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: white;
+  z-index: 0;
 }
 
+.work-image::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: inherit; /* Jo bhi background image set hai work-image me */
+  background-size: cover;
+  background-position: center;
+  filter: blur(0.3px);
+  z-index: -1; /* peeche rahe */
+  border-radius: 15px;
+   background-color: rgba(0,0,0,0.6);
+   background-blend-mode: multiply;
+}
 
+/* aapka .work-title normal rahega */
 .work-title {
-  font-family: Mada;
+  position: relative; /* blur ke upar text rahe */
+  font-family: 'Mada', sans-serif !important;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 20px;
   letter-spacing: 0%;
   text-align: center;
-  vertical-align: bottom;
   color: white;
   padding: 6px 12px;
   width: 100%;
+text-shadow:
+    -1px -1px 0 #525151,
+     1px -1px 0 #525151,
+    -1px  1px 0 #525151,
+     1px  1px 0 #525151;
 }
 
 
@@ -412,83 +433,50 @@ justify-content: center;
   font-size: 1.8rem;
 }
 
-/* .collage-flex-row {
-  display: flex;
-  justify-content: center;
-  align-items: stretch; 
-  padding: 16px;
-  gap: 10px;
-  max-width: 100%;
-  box-sizing: border-box;
-  height: 270px; 
-}
 
-
-.side-img {
-  width: 90px;
-  height: 100%; 
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.side-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  
-}
-
-
-.center-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  width: 230px;
-  height: 100%; 
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.center-grid img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  
-} */
 .collage-flex-row {
   display: flex;
   justify-content: center;
   align-items: stretch; 
-  padding: 16px;
+  padding: 12px;
   gap: 10px;
   max-width: 100%;
   box-sizing: border-box;
-  height: 270px; 
+  /* height: 270px;  */
+ 
 }
 
 .side-img, .center-grid img {
   position: relative;
   overflow: hidden;
+  background-color: rgba(0,0,0,0.6);
+   background-blend-mode: multiply;
 }
 
 .side-img {
   width: 90px;
-  height: 100%; 
+  height: 200px;  
   flex-shrink: 0;
+    
 }
 
-.side-img img, .center-grid img {
+.side-img img,
+.center-grid img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center; /* 👈 Center karega */
   display: block;
+
 }
+
 
 .center-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  width: 230px;
+  grid-template-columns: 1.5fr 1.5fr;
+ grid-template-rows: 0.6fr 0.8fr;
+
+  width: 260px;
   height: 100%; 
   gap: 4px;
   flex-shrink: 0;
@@ -496,24 +484,35 @@ justify-content: center;
 
 .image-box {
   position: relative;
+  overflow: hidden;
+}
+.image-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  backdrop-filter: blur(0.3px);     /* 👈 Blur the background */
+  background: rgba(0, 0, 0, 0.3);  /* Optional: darken it */
+  z-index: 1;
 }
 
 .image-label {
   position: absolute;
-  bottom: 6px;
-  left: 6px;
-  background: rgba(0, 0, 0, 0.6);
+  bottom: 1px;
+  left: 2px;
+  z-index: 2;
   color: white;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
   padding: 2px 6px;
   border-radius: 4px;
   font-family: Inter, sans-serif;
+text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 
 .gallery-see-more {
   text-align: center;
+  
 }
 
 .see-more-btn {
@@ -526,7 +525,7 @@ justify-content: center;
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
-
+margin-top: 0px;
 }
 
 
@@ -558,29 +557,24 @@ justify-content: center;
   font-size: 14px;
   transition: margin-left 0.3s;
 }
-.see-more-btn:hover {
-  /* background-color: #444; */
-  transform: translateY(-2px);
-}
 
-.see-more-btn:hover span {
-  margin-left: 10px;
-}
+
+
 
 /* 📱 Mobile Responsive */
 @media (max-width: 480px) {
   .collage-flex-row {
-    height: 250px; 
-  }
+        /* height: 127.21px; */
+    }
 
   .side-img {
     width: 70px;
-    height: 100%;
+     
   }
 
   .center-grid {
     width: 190px;
-    height: 100%;
+     /* height: 185.0px;  */
     gap: 8px;
   }
 }
