@@ -7,7 +7,7 @@
   border-radius: 4px;  /* Consistent rounding */
   overflow: hidden;    /* Important for child elements like absolutely positioned spinners or rounded images */
   background-color: #e9ecef; /* Light grey background, acts as placeholder color */
-  min-height: 120px;   /* CRITICAL: Provides a minimum height before image loads. Adjust this value based on typical smallest image height or desired placeholder size. */
+  min-height: 50px;  /* CRITICAL: Provides a minimum height before image loads. Adjust this value based on typical smallest image height or desired placeholder size. */
   position: relative;    /* For positioning spinner overlay */
   display: block;        /* Ensure it takes block-level layout */
   transition: background-color 0.3s; /* Smooth transition if needed */
