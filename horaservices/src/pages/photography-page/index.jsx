@@ -25,7 +25,7 @@ const index = () => {
   const [discountDifference, setDiscountDifference] = useState(0);
   const [activeTab, setActiveTab] = useState('intimate');
   const router = useRouter();
-
+ const { catvalue } = router.query;
 const imageList = [
   "/traditionalphoto.jpg",
   "/Candidphoto.jpg",
@@ -34,49 +34,6 @@ const imageList = [
 ];
 
 
-
-  // const renderProducts = () => (
-  //   <div className="featured-works">
-  //     <div className="works-container products">
-  //       <p className="ProductHeading">
-  //         For small gatherings under 100 guests. (Birthdays, Anniversaries, etc.)
-  //       </p>
-  //       <div className="work-container">
-  //         {products.map((work, index) => (
-            
-  //           <div className="work-item" key={index}>
-  //             <div className="discount-badge">
-  //               ₹ {work.discountDifference.toFixed(0)} off
-  //             </div>
-  //             <div className="work-image-wrapper">
-  //               <div
-  //                 className="work-image"
-  //                 style={{ backgroundImage: `url("/Banner1.avif")` }}
-                  
-  //               >
-  //                 <h5 className="work-title">{work.name}</h5>
-  //               </div>
-  //             </div>
-
-  //             <div className="work-card-info">
-  //               <p className="Prefred-occ">
-  //                 ₹ {Math.floor(work.discountedPrice)}{" "}
-  //                 <span className="original-price">₹ {work.price}</span>
-  //               </p>
-
-  //               <button
-  //                 onClick={() => sendToCheckoutPage(work)}
-  //                 className="photograpy-book-now"
-  //               >
-  //                 View More
-  //               </button>
-  //             </div>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 
 
 const renderProducts = () => (
@@ -109,12 +66,14 @@ const renderProducts = () => (
                   <span className="original-price">₹ {work.price}</span>
                 </p>
 
-                <button
+                {/* <button
                   onClick={() => sendToCheckoutPage(work)}
                   className="photograpy-book-now"
                 >
                   View More
-                </button>
+                </button> */}
+                <button onClick={() => viewMoreProduct(work)}className="photograpy-book-now">View More</button>
+
               </div>
             </div>
           );
@@ -123,7 +82,13 @@ const renderProducts = () => (
     </div>
   </div>
 );
-
+ 
+const viewMoreProduct = (work) => {
+    router.push({
+      pathname: `/photography-page/product/${work._id}`,  
+      query: { product: JSON.stringify(work) },           
+    });
+  };
   const getDiscountedPrice = (price) => {
     let discount;
 
@@ -140,30 +105,6 @@ const renderProducts = () => (
     const discountDifference = Math.abs(price - discountedPrice);;
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
-
-  // const fetchData = useCallback(async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
-  //     );
-  //     const productData = response.data.data.map(item => {
-  //       const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price); // Destructure the return value
-  //       return {
-  //         ...item,
-  //         discountPercentage: discount, // Add discount percentage
-  //         discountedPrice: discountedPrice,// Add discounted price
-  //         discountDifference: discountDifference
-  //       };
-  //     });
-  //     setProducts(productData);
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //     setProducts([]); // Set to empty array in case of an error
-  //   }
-  // }, []);
-  // useEffect(() => {
-  //   fetchData(); // Call fetchData when the component mounts
-  // }, []);
 
   const fetchData = useCallback(async (tagId) => {
     try {
