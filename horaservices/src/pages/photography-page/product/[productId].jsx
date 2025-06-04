@@ -8,15 +8,21 @@ const ProductDetails = () => {
   const [work, setWork] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const getDiscountedPrice = (price) => {
-    let discount = 0;
-    if (price < 3000) discount = 20;
-    else if (price <= 5000) discount = 27;
-    else discount = 35;
+   const getDiscountedPrice = (price) => {
+    let discount;
 
-    const discountedPrice = price * (1 - discount / 100);
-    const discountDifference = price - discountedPrice;
-    return { discount, discountedPrice, discountDifference };
+    // Determine the discount percentage based on the item price
+    if (price < 3000) {
+      discount = 20; // 20% discount
+    } else if (price >= 3000 && price <= 5000) {
+      discount = 27; // 27% discount
+    } else {
+      discount = 35; // 35% discount for prices above 5000
+    }
+
+    const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
+    const discountDifference = Math.abs(price - discountedPrice);;
+    return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
 
   useEffect(() => {
@@ -67,7 +73,7 @@ const ProductDetails = () => {
     }
   }, [product, productId]);
 
-  if (loading) return <div className="photodetails-loading">Loading...</div>;
+  if (loading) return <div className="photodetails-loading" >Loading...</div>;
   if (!work) return <div className="photodetails-loading">Work not found</div>;
 
   return (
@@ -78,8 +84,9 @@ const ProductDetails = () => {
       </div>
 
       <div className="photodetails-price-section">
-        <span className="photodetails-discounted">₹ {Math.floor(work.discountedPrice)}</span>
-        <span className="photodetails-original">₹ {work.price}</span>
+        <span className="photodetails-discounted">₹ {work.price}</span>
+        <span className="photodetails-original">₹ {Math.floor(work.discountedPrice.toFixed(2))} </span>
+        
         <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
       </div>
 

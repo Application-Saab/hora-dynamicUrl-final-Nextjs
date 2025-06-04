@@ -60,11 +60,12 @@ const renderProducts = () => (
                 </div>
               </div>
 
+ 
               <div className="work-card-info">
                 <p className="Prefred-occ">
-                  ₹ {Math.floor(work.discountedPrice)}{" "}
-                  <span className="original-price">₹ {work.price}</span>
-                </p>
+                    <span >₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>
+                    
+                  </p>
 
                 {/* <button
                   onClick={() => sendToCheckoutPage(work)}
@@ -105,6 +106,16 @@ const viewMoreProduct = (work) => {
     const discountDifference = Math.abs(price - discountedPrice);;
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
+  // const getDiscountedPrice = (price) => {
+  //   let discount = 0;
+  //   if (price < 3000) discount = 20;
+  //   else if (price <= 5000) discount = 27;
+  //   else discount = 35;
+
+  //   const discountedPrice = price * (1 - discount / 100);
+  //   const discountDifference = price - discountedPrice;
+  //   return { discount, discountedPrice, discountDifference };
+  // };
 
   const fetchData = useCallback(async (tagId) => {
     try {
@@ -158,8 +169,8 @@ const viewMoreProduct = (work) => {
 
   const bannerImages = [
     '/Banner1.jpeg',
-    '/Banner2.jpeg',
-    '/Banner3.svg',
+    '/Banner21.jpeg',
+    '/Banner3.jpeg',
 
   ];
 
@@ -259,7 +270,7 @@ const viewMoreProduct = (work) => {
 </div>
       <div className="gallery-see-more">
         <a href="/gallery" className="see-more-btn">
-          See More <span className="arrow-circle">➤</span>
+          See More <span className="arrow-circle">&gt;</span>
         </a>
       </div>
 
@@ -269,7 +280,7 @@ const viewMoreProduct = (work) => {
         <div class="suggested-poses-section">
           <img src="/PhotoBanner.png" alt="Camera Holding" class="suggested-img" />
           <div class="text-overlay">
-            <h2 class="pose-title"> Suggested Poses</h2>
+            <h2 class="pose-title">Suggested Poses</h2>
             <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
           </div>
         </div>
@@ -303,16 +314,20 @@ const viewMoreProduct = (work) => {
           <a href="#babyshower" class="pose-card">
             <img src="/babyshower.png" alt="Baby Shower" />
             
-            <p>Baby shower</p>
+            <p>Baby   shower
+            
+             
+            </p>
+           
           </a>
         </div>
       </div>
 
 
       <div class="trust-section">
-        <h2 class="Trust-header">Why People Trust Us 💜</h2>
+        <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
         <h3 class="trust-subtitle">Ashu Tiwari</h3>
-        <div class="stars">⭐️⭐️⭐️⭐️⭐️</div>
+        <div class="stars"> ★★★★★</div>
         <p class="main-review">
           Food was too good. I mean all dishes were good and quantity was good.
           Every guest appreciated the taste and love it so much. Will definitely recommend
@@ -337,8 +352,10 @@ const viewMoreProduct = (work) => {
           </div>
 
           <div class="stat-box">
-            <strong>50L+</strong>
+            <div class="photoD">
+            <strong >50L+</strong>
             <div class="photos-title">Photos Delivered</div>
+            </div>
           </div>
 
           <div class="stat-box full">
