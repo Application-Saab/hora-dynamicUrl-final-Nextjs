@@ -1,13 +1,24 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-const ProductDetails = () => {
+import photographyAddOns from "../../../utils/photographyAddOns.json"
+const ProductDetails = ({  itemQuantities = {}, handleAddToCart, handleRemoveFromCart }) => {
   const router = useRouter();
   const { productId, product } = router.query;
   const [work, setWork] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [quantities, setQuantities] = useState({});
+  const [addedItems, setAddedItems] = useState([]);
+ 
 
+
+  const handleAdd = (item, index) => {
+    const qty = quantities[index] || 0;
+    if (qty > 0) {
+      const price = item.price || ((item.minPrice + item.maxPrice) / 2);
+      setAddedItems(prev => [...prev, { ...item, qty, total: qty * price }]);
+    }
+  };
    const getDiscountedPrice = (price) => {
     let discount;
 
@@ -104,24 +115,64 @@ const ProductDetails = () => {
             ))}
         </ul>
       </div>
+<h2 className="extra-action-heading">
+    Add Extra Features
+  </h2>
+         <div className="extra-action-section">
+  
 
-      <div className="photodetails-extra-features">
-        <h4>Add Extra Features</h4>
-        <div className="photodetails-scroll-row">
-          <div className="photodetails-feature-card">
-            <img src="/icons/photographer.png" alt="Photographer" />
-            <p>Extra Photographer</p>
-          </div>
-          <div className="photodetails-feature-card">
-            <img src="/icons/video.png" alt="Video" />
-            <p>HD Video</p>
-          </div>
-          <div className="photodetails-feature-card">
-            <img src="/icons/drone.png" alt="Drone" />
-            <p>Drone Shots</p>
+  <div className="extra-action-middle-box">
+    <div className="extra-action-card-container">
+      {photographyAddOns.photographyAddOns.map((item, index) => (
+        <div key={index} className="extra-action-card">
+          <img
+            src={item.image}
+            alt={item.title}
+            className="extra-action-image"
+          />
+          <h3 className="extra-action-title">{item.title}</h3>
+          <p className="extra-action-description">{item.description}</p>
+
+          <div className="extra-action-price-box">
+            <span className="extra-action-price">
+              ₹{' '}
+              {item.minPrice && item.maxPrice
+                ? `${item.minPrice} – ₹${item.maxPrice}`
+                : item.price}
+            </span>
+            {itemQuantities[item.title] ? (
+              <div className="extra-action-quantity-control">
+                <button
+                  onClick={() => handleRemoveFromCart(item)}
+                  className="extra-action-qty-btn"
+                >
+                  -
+                </button>
+                <span>{itemQuantities[item.title]}</span>
+                <button
+                  onClick={() => handleAddToCart(item)}
+                  className="extra-action-qty-btn"
+                >
+                  +
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleAddToCart(item)}
+                className="extra-action-add-btn"
+              >
+                Add
+              </button>
+            )}
           </div>
         </div>
-      </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+  
+
     </div>
   );
 };

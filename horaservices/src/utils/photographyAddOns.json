@@ -1,0 +1,32 @@
+{
+  "photographyAddOns": [
+    {
+      "title": "Extra Photographer",
+      "description": "Add a second photographer for better coverage from multiple angles.",
+      "minPrice": 1000,
+      "maxPrice": 2500,
+      "image": "https://i.ibb.co/Cn2ptX2/birthday-photography.jpg"
+    },
+    {
+      "title": "Cinematic Video Shoot",
+      "description": "Get a beautifully edited cinematic video of your event with slow-motion and effects.",
+      "minPrice": 3000,
+      "maxPrice": 7000,
+      "image": "https://i.ibb.co/mSXqr3t/add-magic.jpg"
+    },
+    {
+      "title": "Birthday Photography Packages",
+      "description": "Unlimited photo clicks, editing, color correction, candid photos and 4 hrs photographer availability.",
+       "minPrice": 5000,
+      "maxPrice": 9000,
+      "image": "https://i.ibb.co/Cn2ptX2/birthday-photography.jpg"
+    },
+    {
+      "title": "Baby Shower Photography Packages",
+      "description": "Unlimited photos, 20 edits, color correction, candid shots, 4 hrs photographer coverage.",
+      "minPrice": 9000,
+      "maxPrice": 15000,
+      "image": "https://i.ibb.co/WFbtQwC/baby-shower-photography.jpg"
+    }
+  ]
+}

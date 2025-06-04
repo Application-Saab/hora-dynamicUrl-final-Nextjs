@@ -1179,3 +1179,116 @@ strong {
   font-size: 16px;
   color: #777;
 }
+
+
+
+/* ============================================================================================================= */
+.extra-action-section {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  max-height: 440px; /* slightly taller if needed */
+  overflow-y: auto;
+  background-color: #fff;
+  max-width: 95%; /* Increased width */
+  margin: auto;
+}
+
+.extra-action-middle-box {
+  display: flex;
+  justify-content: center;
+}
+
+.extra-action-card-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* Yeh waise hi hai */
+  gap: 30px;
+  max-width: 600px; /* ya jitna chahiye us hisaab se */
+  margin: auto;
+}
+
+
+.extra-action-card {
+  position: relative;
+  left: -10px; /* thoda left shift kar sakte ho */
+  width: calc(100% + 20px); /* width 100% se thoda bada */
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+
+
+.extra-action-heading {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #7e22ce;
+  margin-bottom: 1rem;
+}
+
+
+
+
+
+.extra-action-card:hover {
+  transform: translateY(-4px);
+}
+
+.extra-action-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.extra-action-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.extra-action-description {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 8px;
+  min-height: 48px;
+}
+
+.extra-action-price-box {
+  margin-top: 0.5rem;
+}
+
+.extra-action-price {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  color: #111;
+}
+
+.extra-action-quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.extra-action-qty-btn,
+.extra-action-add-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #7e22ce;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.extra-action-qty-btn:hover,
+.extra-action-add-btn:hover {
+  background-color: #5b16a6;
+}
