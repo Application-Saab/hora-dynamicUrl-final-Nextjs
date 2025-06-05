@@ -13,7 +13,7 @@ import Babyshower from "../../assets/babyshower.png"
 import PhotoBanner from "../../assets/PhotoBanner.png"
 import Banner1 from "../../assets/banner1.png"
 import Banner2 from "../../assets/Banner2.jpeg"
-import Banner3 from "../../assets/banner1.png"
+import Banner3 from "../../assets/banner3.png"
 import magician from "../../assets/magician.jpg";
 import triditionalPhoto from "../../assets/triditional-photo.jpg";
 import Slider from 'react-slick';

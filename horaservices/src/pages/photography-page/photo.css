@@ -144,24 +144,6 @@
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
-@media (min-width: 768px) {
-  .tabs {
-
-    height: 120px;
-  }
-
-  .tab {
-    font-weight: 700;
-    font-size: 30px;
-    border-radius: 30px 30px 0 0;
-    height: auto;
-  }
-
-  .tab.active {
-    font-size: 30px;
-
-  }
-}
 
 /* ============================================================================================== */
 /* Main section container */
@@ -212,11 +194,8 @@
   border-radius: 18.26px;
   /* Updated to match your new requirement */
   border: 2px solid #BABABA;
-  overflow: hidden;
-  width: 168px;
-  /* Fixed width */
+  overflow: hidden; 
   height: 224px;
-  /* Fixed height */
   transition: transform 0.3s ease;
 }
 
@@ -383,9 +362,7 @@
   margin-top: 10px;
 }
 
-/* -------------------- */
-/* RESPONSIVE BREAKPOINTS */
-/* -------------------- */
+
 
 /* MOBILE */
 @media (max-width: 480px) {
@@ -406,61 +383,13 @@
 
   }
 
-  /* .ProductHeading {
+   .ProductHeading {
     font-size: 1rem;
-  } */
+  } 
   .original-price {
     font-weight: 500;
     font-size: 50px;
   }
-}
-
-
-/* DESKTOP */
-@media (min-width: 768px) {
-  .work-container {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
-
-  .Prefred-occ {
-    font-size: 30px;
-    gap: 6px;
-  }
-
-  .discount-badge {
-    padding: 6px 10px;
-    font-size: 20px;
-    font-weight: 600;
-    left: 18px;
-  }
-
-  .Prefred-occ span {
-    font-size: 30px;
-  }
-
-  .work-image {
-    height: 300px;
-  }
-
-  .work-item {
-    min-height: 500px;
-    width: 100%;
-  }
-
-  .ProductHeading {
-    font-size: 40px;
-  }
-
-  .work-title {
-    font-size: 30px;
-  }
-
-  .photograpy-book-now {
-    font-size: 20px;
-    width: 200px;
-    ;
-  }
-
 }
 
 
@@ -623,73 +552,6 @@
 
 
 
-/* 📱 Mobile Responsive */
-@media (max-width: 480px) {
-  /* .collage-flex-row {
-        height: 127.21px;
-    } */
-
-  .side-img {
-    width: 83px;
-
-  }
-
-  .center-grid {
-    width: 190px;
-    /* height: 185.0px;  */
-    /* gap: 8px; */
-  }
-}
-
-@media (min-width: 600px) {
-  .collage-flex-row {
-    height: 300px;
-  }
-
-  .side-img {
-    width: 130px;
-    height: 100%;
-  }
-
-  .center-grid {
-    width: 250px;
-    height: 100%;
-    gap: 8px;
-  }
-}
-
-@media (min-width: 768px) {
-  .collage-flex-row {
-    height: 500px;
-  }
-
-  .side-img {
-    width: 250px;
-    height: 100%;
-  }
-
-  .center-grid {
-    width: 400px;
-    height: 100%;
-    gap: 8px;
-  }
-
-  .gallery-heading {
-    font-size: 3rem;
-    font-weight: 600;
-  }
-
-  .see-more-btn {
-    display: inline-block;
-    position: relative;
-    color: black;
-    text-decoration: none;
-    font-size: 1.9rem;
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-  }
-}
-
 /* ============================================================================================== */
 .suggested-poses-section {
   position: relative;
@@ -742,40 +604,6 @@
   margin-top: 10px;
 }
 
-
-
-@media (min-width: 768px) {
-  .suggested-poses-section {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .text-overlay {
-    background-color: white;
-    position: absolute;
-    top: 50%;
-    left: 70%;
-    transform: translate(-50%, -50%);
-    color: #97538c;
-
-    width: 100%;
-  }
-
-  .pose-title {
-    font-family: 'Luckiest Guy', cursive;
-    font-size: 50px;
-    font-weight: 900;
-    margin: 0;
-
-  }
-
-  .pose-subtitle {
-    font-size: 35px;
-    text-align: left;
-
-  }
-}
 
 /* ================================================================================================= */
 .poses {
@@ -838,48 +666,6 @@
   background-color: black;
   /* margin-left: 10px; */
   margin-bottom: 4px;
-}
-
-@media (max-width: 480px) {
-  .poses {
-    max-width: 100%;
-  }
-}
-
-@media (min-width: 900px) {
-  .poses {
-    max-width: 100%;
-    border-radius: 20px;
-    text-align: center;
-    height: auto;
-    gap: 20px;
-  }
-
-  .pose-grid {
-    gap: 0px;
-    margin-left: 90px;
-  }
-
-  .pose-card {
-    width: 60%;
-    height: 70%;
-    border-radius: 20px;
-  }
-
-  .pose-card img {
-    width: 400px;
-    /* height: 400px; */
-    object-fit: contain;
-    margin-bottom: 8px;
-  }
-
-  .pose-card p {
-    font-size: 1.7em;
-    color: black;
-    font-weight: 500;
-    margin-bottom: 50%;
-    text-decoration: none;
-  }
 }
 
 /* =============================================================================================== */
