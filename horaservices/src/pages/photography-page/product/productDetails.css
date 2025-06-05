@@ -1,0 +1,224 @@
+.photodetails-container {
+  font-family: Inter, sans-serif;
+  background: #fff;
+  /* border-radius: 12px; */
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  /* margin: 20px auto; */
+  max-width: 420px;
+}
+
+.photodetails-image-section {
+  position: relative;
+}
+
+.photodetails-image-section img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.photodetails-price-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.photodetails-discounted {
+  color: #000;
+}
+
+.photodetails-original {
+  color: black;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.photodetails-offer {
+  margin-left: 2px;
+  background-color: #ffc107;
+  color: #5a3e00;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.photodetails-inclusions {
+  padding: 0 16px 16px 16px;
+}
+
+.photodetails-inclusions h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: 0;
+  color: #934893;
+}
+
+.inclusionstyle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inclusion-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+}
+
+.inclusion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: #6A6767;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.Duration{
+   margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000000;
+}
+.work-duration {
+  margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000000;
+}
+
+
+
+
+/* ============================================================================================================= */
+.extra-action-section {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  max-height: 440px; /* slightly taller if needed */
+  overflow-y: auto;
+  background-color: #fff;
+  max-width: 95%; /* Increased width */
+  margin: auto;
+}
+
+.extra-action-middle-box {
+  display: flex;
+  justify-content: center;
+}
+
+.extra-action-card-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* Yeh waise hi hai */
+  gap: 30px;
+  max-width: 600px; /* ya jitna chahiye us hisaab se */
+  margin: auto;
+}
+
+
+.extra-action-card {
+  position: relative;
+  left: -10px; /* thoda left shift kar sakte ho */
+  width: calc(100% + 20px); /* width 100% se thoda bada */
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+
+
+.extra-action-heading {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #7e22ce;
+  margin-bottom: 1rem;
+}
+
+
+
+
+
+.extra-action-card:hover {
+  transform: translateY(-4px);
+}
+
+.extra-action-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.extra-action-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.extra-action-description {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 8px;
+  min-height: 48px;
+}
+
+.extra-action-price-box {
+  margin-top: 0.5rem;
+}
+
+.extra-action-price {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  color: #111;
+}
+
+.extra-action-quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.extra-action-qty-btn,
+.extra-action-add-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #7e22ce;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.extra-action-qty-btn:hover,
+.extra-action-add-btn:hover {
+  background-color: #5b16a6;
+}

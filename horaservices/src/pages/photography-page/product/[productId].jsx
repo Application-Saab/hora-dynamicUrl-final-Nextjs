@@ -1,7 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 import photographyAddOns from "../../../utils/photographyAddOns.json"
+import traditionalPhoto from "../../../assets/traditionalPhoto.png";
+import candidPhoto from "../../../assets/candidPhoto.jpg";
+import proPhoto from "../../../assets/Prophoto.jpg";
+import videoPhoto from "../../../assets/videophoto.png";
+import "./productDetails.css";
 const ProductDetails = ({  itemQuantities = {}, handleAddToCart, handleRemoveFromCart }) => {
   const router = useRouter();
   const { productId, product } = router.query;
@@ -11,14 +17,85 @@ const ProductDetails = ({  itemQuantities = {}, handleAddToCart, handleRemoveFro
   const [addedItems, setAddedItems] = useState([]);
  
 
+const productsData = {
+  "6710f33c21847b9ca0554940": {
+    name: "Traditional PhotoGraphy",
+    category: "intimate",
+    images: [traditionalPhoto],
+  },
+  "67c9af0c4bee1b66f0aac35d": {
+    name: "Candid PhotoGraphy",
+    category: "intimate",
+    images: [candidPhoto],
+  },
+  "67c9af224bee1b66f0aac35e": {
+    name: "Pro photoGraphy",
+    category: "intimate",
+    images: [proPhoto],
+  },
+  "67c9b0564bee1b66f0aac35f": {
+    name: "Video Graphy",
+    category: "intimate",
+    images: [videoPhoto],
+  },
+  "683abe22fdfcb315ad5b02b0": {
+    name: "Traditional PhotoGraphy",
+    category: "Grand",
+    images: [traditionalPhoto],
+  },
+ "683abe69fdfcb315ad5b02b1": {
+    name: "Candid PhotoGraphy",
+    category: "intimate",
+    images: [candidPhoto],
+  },
+  "68411d34fdfcb315ad5b02bf": {
+    name: "Pro photoGraphy",
+    category: "intimate",
+    images: [proPhoto],
+  },
+   "68411d61fdfcb315ad5b02c0": {
+    name: "Video Graphy",
+    category: "intimate",
+    images: [videoPhoto],
+  },
+};
+const images = productsData[productId]?.images || [];
 
-  const handleAdd = (item, index) => {
-    const qty = quantities[index] || 0;
-    if (qty > 0) {
-      const price = item.price || ((item.minPrice + item.maxPrice) / 2);
-      setAddedItems(prev => [...prev, { ...item, qty, total: qty * price }]);
-    }
-  };
+  // const handleAdd = (item, index) => {
+  //   const qty = quantities[index] || 0;
+  //   if (qty > 0) {
+  //     const price = item.price || ((item.minPrice + item.maxPrice) / 2);
+  //     setAddedItems(prev => [...prev, { ...item, qty, total: qty * price }]);
+  //   }
+  // };
+const getItemInclusion = (inclusion) => {
+  if (!Array.isArray(inclusion) || inclusion.length === 0) return null;
+
+  const htmlString = inclusion[0];
+  const withoutTags = htmlString.replace(/<[^>]*>/g, '');
+  const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, ' ');
+  const inclusionItems = withoutSpecialChars
+    .split('<div>')
+    .flatMap(statement =>
+      statement
+        .split('-')
+        .map(item => item.trim())
+        .filter(item => item !== '')
+    );
+
+  return (
+    <div className="inclusionstyle">
+      {inclusionItems.map((item, index) => (
+        <div key={index} className="inclusion-line">
+          <span className="inclusion-icon">✔</span>
+          <span>{item}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
    const getDiscountedPrice = (price) => {
     let discount;
 
@@ -90,8 +167,20 @@ const ProductDetails = ({  itemQuantities = {}, handleAddToCart, handleRemoveFro
   return (
     <div className="photodetails-container">
       <div className="photodetails-image-section">
-        {/* <img src={`/uploads/${work.featured_image}`} alt={work.name} /> */}
-        <img src="/traditionalPhoto.png" alt="Traditional Photography" />
+        {images.length > 0 ? (
+        images.map((img, idx) => (
+          <Image
+            key={idx}
+            src={img}
+            alt={`${work?.name || "Product"} image ${idx + 1}`}
+            width={400}
+            height={300}
+          />
+        ))
+      ) : (
+        <p>No images found</p>
+      )}
+        {/* <img src="/traditionalPhoto.png" alt="Traditional Photography" /> */}
       </div>
 
       <div className="photodetails-price-section">
@@ -103,27 +192,22 @@ const ProductDetails = ({  itemQuantities = {}, handleAddToCart, handleRemoveFro
 
       <div className="photodetails-inclusions">
         <h3>Inclusions</h3>
-        <ul>
-          {work.inclusion[0]
-            .replace(/<[^>]*>/g, '')
-            .split('-')
-            .filter((line) => line.trim() !== '')
-            .map((line, idx) => (
-              <li key={idx}>
-                <span className="photodetails-dot">●</span> {line.trim()}
-              </li>
-            ))}
-        </ul>
+         {getItemInclusion(work.inclusion)}
+  <p className="work-duration">
+    <b className="Duration">Duration:</b> 2–4 Hours (After 4 hours, ₹650 extra per hour)
+  </p>
       </div>
-<h2 className="extra-action-heading">
-    Add Extra Features
-  </h2>
-         <div className="extra-action-section">
-  
 
-  <div className="extra-action-middle-box">
-    <div className="extra-action-card-container">
-      {photographyAddOns.photographyAddOns.map((item, index) => (
+
+
+
+        {/* <h2 className="extra-action-heading">
+    Add Extra Features
+        </h2>
+         <div className="extra-action-section">
+         <div className="extra-action-middle-box">
+         <div className="extra-action-card-container">
+       {photographyAddOns.photographyAddOns.map((item, index) => (
         <div key={index} className="extra-action-card">
           <img
             src={item.image}
@@ -169,7 +253,7 @@ const ProductDetails = ({  itemQuantities = {}, handleAddToCart, handleRemoveFro
       ))}
     </div>
   </div>
-</div>
+       </div> */}
 
   
 

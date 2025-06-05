@@ -4,6 +4,16 @@ import Image from 'next/image'
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import photographyBanner from "../../assets/photography-landing.svg";
+import HaldiMehndi from "../../assets/HaldiMehndi.png";
+import wedding from "../../assets/wedding.png";
+import Maternity from "../../assets/maternity.png";
+import Birthday from "../../assets/Sbirthday.png";
+import preWedding from "../../assets/prewedding.png";
+import Babyshower from "../../assets/babyshower.png"
+import PhotoBanner from "../../assets/PhotoBanner.png"
+import Banner1 from "../../assets/banner1.png"
+import Banner2 from "../../assets/Banner2.jpeg"
+import Banner3 from "../../assets/banner1.png"
 import magician from "../../assets/magician.jpg";
 import triditionalPhoto from "../../assets/triditional-photo.jpg";
 import Slider from 'react-slick';
@@ -18,76 +28,77 @@ import 'swiper/css/pagination';
 import Tabs from '@/components/Tabs';
 
 const index = () => {
-  const [products, setProducts] = useState([]); // State to store product
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false); // State to store product
   const [email, setEmail] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
   const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
   const [discountDifference, setDiscountDifference] = useState(0);
   const [activeTab, setActiveTab] = useState('intimate');
   const router = useRouter();
- const { catvalue } = router.query;
-const imageList = [
-  "/traditionalphoto.jpg",
-  "/Candidphoto.jpg",
-  "/Prophotography.png",
-  "/Videography.jpg"
-];
+  const { catvalue } = router.query;
 
+  const imageList = [
+    "/traditionalphoto.jpg",
+    "/Candidphoto.jpg",
+    "/Prophotography.png",
+    "/Videography.jpg"
+  ];
 
+  const renderProducts = (heading) => {
+    if (loading) {
+      return (
+        <div className="loader-container">
+          <div className="spinner"></div>
+        </div>
+      );
+    }
+    return (
+      <div className="featured-works">
+        <div className="works-container products">
+          <p className="ProductHeading">{heading}</p>
+          <div className="work-container">
+            {products.map((work, index) => {
+              const imageUrl = imageList[index % imageList.length]; // ✅ Move inside
 
+              return (
+                <div className="work-item" key={index}>
+                  <div className="discount-badge">
+                    ₹ {work.discountDifference.toFixed(0)} off
+                  </div>
+                  <div className="work-image-wrapper">
+                    <div
+                      className="work-image"
+                      style={{ backgroundImage: `url("${imageUrl}")` }}
+                    >
+                      <h5 className="work-title">{work.name}</h5>
+                    </div>
+                  </div>
 
-const renderProducts = () => (
-  <div className="featured-works">
-    <div className="works-container products">
-      <p className="ProductHeading">
-        For small gatherings under 100 guests. (Birthdays, Anniversaries, etc.)
-      </p>
-      <div className="work-container">
-        {products.map((work, index) => {
-          const imageUrl = imageList[index % imageList.length]; // ✅ Move inside
+                  <div className="work-card-info">
+                    <p className="Prefred-occ">
+                      <span >₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>
 
-          return (
-            <div className="work-item" key={index}>
-              <div className="discount-badge">
-                ₹ {work.discountDifference.toFixed(0)} off
-              </div>
-              <div className="work-image-wrapper">
-                <div
-                  className="work-image"
-                  style={{ backgroundImage: `url("${imageUrl}")` }}
-                >
-                  <h5 className="work-title">{work.name}</h5>
+                    </p>
+                    <button onClick={() => viewMoreProduct(work, activeTab)} className="photograpy-book-now">View More</button>
+
+                  </div>
                 </div>
-              </div>
-
- 
-              <div className="work-card-info">
-                <p className="Prefred-occ">
-                    <span >₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>
-                    
-                  </p>
-
-                {/* <button
-                  onClick={() => sendToCheckoutPage(work)}
-                  className="photograpy-book-now"
-                >
-                  View More
-                </button> */}
-                <button onClick={() => viewMoreProduct(work)}className="photograpy-book-now">View More</button>
-
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-);
- 
-const viewMoreProduct = (work) => {
+
+    );
+  }
+  const viewMoreProduct = (work, activeTab) => {
     router.push({
-      pathname: `/photography-page/product/${work._id}`,  
-      query: { product: JSON.stringify(work) },           
+      pathname: `/photography-page/product/${work._id}`,
+      query: {
+        product: JSON.stringify(work),
+        tagId: tagIds[activeTab],  // now accessible here
+      },
     });
   };
   const getDiscountedPrice = (price) => {
@@ -106,18 +117,10 @@ const viewMoreProduct = (work) => {
     const discountDifference = Math.abs(price - discountedPrice);;
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
-  // const getDiscountedPrice = (price) => {
-  //   let discount = 0;
-  //   if (price < 3000) discount = 20;
-  //   else if (price <= 5000) discount = 27;
-  //   else discount = 35;
 
-  //   const discountedPrice = price * (1 - discount / 100);
-  //   const discountDifference = price - discountedPrice;
-  //   return { discount, discountedPrice, discountDifference };
-  // };
 
   const fetchData = useCallback(async (tagId) => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
@@ -136,14 +139,18 @@ const viewMoreProduct = (work) => {
       console.error('Error fetching data:', error);
       setProducts([]);
     }
+    finally {
+      setLoading(false); // Stop loading
+    }
   }, []);
+
+  const tagIds = {
+    intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
+    grand: '66c96b5922ed47b72117e0a7',    // Grand tab
+    mega: '66c96b6922ed47b72117e0b4'      // Mega tab
+  };
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    const tagIds = {
-      intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
-      grand: '66c96b5922ed47b72117e0a7',    // Grand tab
-      mega: '66c96b6922ed47b72117e0b4'      // Mega tab
-    };
     fetchData(tagIds[tabId]);
   };
   useEffect(() => {
@@ -168,13 +175,11 @@ const viewMoreProduct = (work) => {
   };
 
   const bannerImages = [
-    '/Banner1.jpeg',
-    '/Banner21.jpeg',
-    '/Banner3.jpeg',
+    Banner1,
+    Banner2,
+    Banner3,
 
   ];
-
-
 
   const images = [
     { title: "Wedding", image: "/wedding-shoot.jpg" },
@@ -187,11 +192,35 @@ const viewMoreProduct = (work) => {
   ];
 
   const tabs = [
-    { id: 'intimate', title: 'Intimate\nMoments', content: renderProducts() },
-    { id: 'grand', title: 'Grand\nCelebrations', content: renderProducts() },
-    { id: 'mega', title: 'Mega\nOccasions', content: renderProducts() },
+    { id: 'intimate', title: 'Intimate\nMoments' },
+    { id: 'grand', title: 'Grand\nCelebrations' },
+    { id: 'mega', title: 'Mega\nOccasions' },
   ];
 
+  const heading = {
+    intimate: 'Perfect for intimate events and moments with under 100 guests',
+    grand: 'Specially Designed for all Wedding Rituals',
+    mega: 'For Mega occasions (100-250 guests) needing 2 professional photographers'
+  };
+
+  const reviews = [
+    {
+      text: "Service is very good. We really liked every service. We took decoration photography and food service. Decoration done in 1hr. Photographer reached 20min before. Food delivered 30min before. Everything happened before time and was perfect.",
+      author: "Saravani A"
+    },
+    {
+      text: "All the service provided by HORA including decoration and photography done by Mr. Naveen kumar were up to the mark. Thankyou so much for making our baby shower program memorable. Would definitely recommend for decoration and photography.",
+      author: "Shilpa Raha"
+    },
+    {
+      text: "The Best Services! I never knew or heard about them, just tried to take photography services n booked it. Especially, The photographer Mr. Devendra! Such a down to earth, friendly n professional men. I was so happy about his services n behaviour!! If you wanna try... Close you eyes n book them!! Highly recommend!",
+      author: "Umesh K"
+    },
+    {
+      text: "Hora makes our life easy in simple partying.. it's great I found Hora... Every service team is excellent in doing there jobs. Mr Mitesh photography did his job ",
+      author: "Anusha Battiprolu"
+    }
+  ];
   return (
     <>
       {/* Image Slider */}
@@ -205,29 +234,26 @@ const viewMoreProduct = (work) => {
           >
             {bannerImages.map((img, index) => (
               <SwiperSlide key={index}>
-                <img src={img} alt={`Banner ${index + 1}`} className="banner-image" />
+                <Image src={img} alt={`Banner ${index + 1}`} width={1200}       // adjust as needed
+  height={200}   className="banner-image" />
               </SwiperSlide>
             ))}
           </Swiper>
-
         </div>
       </div>
 
 
-      {/* <Tabs tabs={tabs} defaultTab="intimate" activeTab={activeTab} onTabChange={setActiveTab} /> */}
       <Tabs
         tabs={tabs}
         defaultTab="intimate"
         activeTab={activeTab}
         onTabChange={handleTabChange}
       />
+      <div>{renderProducts(heading[activeTab])}</div>
+
 
 
       {/* <h2 className="gallery-heading">
-        <span role="img" aria-label="camera">📸</span> Our Gallery
-      </h2> */}
-
-      <h2 className="gallery-heading">
         <img
           src="/GalleryImage.jpg"
           alt="camera"
@@ -235,50 +261,49 @@ const viewMoreProduct = (work) => {
         />
         Our Gallery
       </h2>
-
       <div >
-<section className="collage-flex-row">
-  <div className="side-img image-box">
-    <img src="/wedding.jpeg" alt="Wedding" />
-    <div className="image-label">Wedding</div>
-  </div>
+        <section className="collage-flex-row">
+          <div className="side-img image-box">
+            <img src="/wedding.jpeg" alt="Wedding" />
+            <div className="image-label">Wedding</div>
+          </div>
 
-  <div className="center-grid">
-    <div className="image-box">
-      <img src="/pre-wedding.jpeg" alt="pre-Wedding" />
-      <div className="image-label">pre-Wedding</div>
-    </div>
-    <div className="image-box" >
-    <img src="/corporate-shoot.jpeg" alt="Corporate" />
-      <div className="image-label">Corporate</div>
-    </div>
-    <div className="image-box">
-        <img src="/maternity-shoot.jpeg" alt="Maternity" />
-      <div className="image-label">Maternity</div>
-    </div>
-    <div className="image-box">
-     <img src="/babyshower-shoot.jpg" alt="baby shower" />
-      <div className="image-label">Baby Shower</div>
-    </div>
-  </div>
+          <div className="center-grid">
+            <div className="image-box">
+              <img src="/pre-wedding.jpeg" alt="pre-Wedding" />
+              <div className="image-label">pre-Wedding</div>
+            </div>
+            <div className="image-box" >
+              <img src="/corporate-shoot.jpeg" alt="Corporate" />
+              <div className="image-label">Corporate</div>
+            </div>
+            <div className="image-box">
+              <img src="/maternity-shoot.jpeg" alt="Maternity" />
+              <div className="image-label">Maternity</div>
+            </div>
+            <div className="image-box">
+              <img src="/babyshower-shoot.jpg" alt="baby shower" />
+              <div className="image-label">Baby Shower</div>
+            </div>
+          </div>
 
-  <div className="side-img image-box">
-    <img src="/birthday-shoot.jpeg" alt="Maternity" />
-    <div className="image-label">Birthday</div>
-  </div>
-</section>
-</div>
+          <div className="side-img image-box">
+            <img src="/birthday-shoot.jpeg" alt="Maternity" />
+            <div className="image-label">Birthday</div>
+          </div>
+        </section>
+      </div>
       <div className="gallery-see-more">
         <a href="/gallery" className="see-more-btn">
           See More <span className="arrow-circle">&gt;</span>
         </a>
-      </div>
+      </div> */}
 
 
 
       <div class="suggested-poses">
         <div class="suggested-poses-section">
-          <img src="/PhotoBanner.png" alt="Camera Holding" class="suggested-img" />
+          <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
           <div class="text-overlay">
             <h2 class="pose-title">Suggested Poses</h2>
             <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
@@ -291,56 +316,75 @@ const viewMoreProduct = (work) => {
 
       <div class="poses">
         <div class="pose-grid">
-          <a href="#wedding" class="pose-card">
-            <img src="/wedding.png" alt="Wedding" />
+          <a href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+            rel="noopener noreferrer">
+            <Image src={wedding} alt="Wedding" />
             <p>Wedding</p>
           </a>
-          <a href="#maternity" class="pose-card">
-            <img src="/maternity.png" alt="Maternity" />
+          <a href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+            rel="noopener noreferrer">
+            <Image src={Maternity} alt="Maternity" />
             <p>Maternity</p>
           </a>
-          <a href="#birthday" class="pose-card">
-            <img src="/Sbirthday.png" alt="Birthday" />
+          <a href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+            rel="noopener noreferrer">
+            <Image src={Birthday} alt="Birthday" />
             <p>Birthday</p>
           </a>
-          <a href="#prewedding" class="pose-card">
-            <img src="/prewedding.png" alt="Pre-Wedding" />
+          <a href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+            rel="noopener noreferrer">
+            <Image src={preWedding} alt="Pre-Wedding" />
             <p>pre-Wedding</p>
           </a>
-          <a href="#corporate" class="pose-card">
-            <img src="/corporate.png" alt="Corporate" />
-            <p>corporate</p>
+          <a href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+            rel="noopener noreferrer">
+            <Image src={HaldiMehndi} alt="HaldiMehndi" />
+            <p>Haldi/Mehndi</p>
           </a>
-          <a href="#babyshower" class="pose-card">
-            <img src="/babyshower.png" alt="Baby Shower" />
-            
-            <p>Baby   shower
-            
-             
+          <a href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+            rel="noopener noreferrer">
+            <Image src={Babyshower} alt="Baby Shower" />
+
+            <p>Babyshower
+
+
             </p>
-           
+
           </a>
         </div>
       </div>
 
-
       <div class="trust-section">
         <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
-        <h3 class="trust-subtitle">Ashu Tiwari</h3>
-        <div class="stars"> ★★★★★</div>
-        <p class="main-review">
-          Food was too good. I mean all dishes were good and quantity was good.
-          Every guest appreciated the taste and love it so much. Will definitely recommend
-          to anyone looking for food services
-        </p>
+        {/* <h3 class="trust-subtitle">Ashu Tiwari</h3>
+        <div class="stars"> ★★★★★</div> */}
+        <div className="review">
+          <Swiper
+            modules={[Pagination, Autoplay]}
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 4000 }}
+            loop={true}
+            spaceBetween={20}
+            slidesPerView={1}
+          >
+            {reviews.map(({ text, author }, idx) => (
+              <SwiperSlide key={idx}>
+                <p className="trust-subtitle">{author}</p>
+                <p className="review-text">{text}</p>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 
-        <div class="user-quote">
+
+
+        {/* <div class="user-quote">
           <img src="user.jpg" alt="Tara Sutara" class="profile-img" />
           <div>
             <div class="quote">"I absolutely love their work! Highly recommended."</div>
             <p class="name">Tara sutara</p>
           </div>
-        </div>
+        </div> */}
 
         <div class="stats-grid">
           <div class="stat-box">
@@ -353,8 +397,8 @@ const viewMoreProduct = (work) => {
 
           <div class="stat-box">
             <div class="photoD">
-            <strong >50L+</strong>
-            <div class="photos-title">Photos Delivered</div>
+              <strong >50L+</strong>
+              <div class="photos-title">Photos Delivered</div>
             </div>
           </div>
 
