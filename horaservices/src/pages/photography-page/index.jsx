@@ -224,36 +224,41 @@ const index = () => {
   return (
     <>
       {/* Image Slider */}
-      <div className="party-services homeslider">
-        <div className="image-banner-slider">
-          <Swiper
-            modules={[Pagination, Autoplay]}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 3000 }}
-            loop={true}
-          >
-            {bannerImages.map((img, index) => (
-              <SwiperSlide key={index}>
-                <Image src={img} alt={`Banner ${index + 1}`} width={1200}       // adjust as needed
-  height={200}   className="banner-image" />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+      <div>
+        <div className="party-services homeslider">
+          <div className="image-banner-slider">
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3000 }}
+              loop={true}
+            >
+              {bannerImages.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <Image src={img} alt={`Banner ${index + 1}`} layout="responsive"
+                    width={1200}
+                    height={400}
+                    quality={100}
+                    priority
+                    className="banner-image" />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
-      </div>
 
 
-      <Tabs
-        tabs={tabs}
-        defaultTab="intimate"
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      />
-      <div>{renderProducts(heading[activeTab])}</div>
+        <Tabs
+          tabs={tabs}
+          defaultTab="intimate"
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
+        <div>{renderProducts(heading[activeTab])}</div>
 
 
 
-      {/* <h2 className="gallery-heading">
+        {/* <h2 className="gallery-heading">
         <img
           src="/GalleryImage.jpg"
           alt="camera"
@@ -301,84 +306,84 @@ const index = () => {
 
 
 
-      <div class="suggested-poses">
-        <div class="suggested-poses-section">
-          <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
-          <div class="text-overlay">
-            <h2 class="pose-title">Suggested Poses</h2>
-            <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
+        <div class="suggested-poses">
+          <div class="suggested-poses-section">
+            <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
+            <div class="text-overlay">
+              <h2 class="pose-title">Suggested Poses</h2>
+              <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
+            </div>
           </div>
         </div>
-      </div>
 
 
 
 
-      <div class="poses">
-        <div class="pose-grid">
-          <a href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-            rel="noopener noreferrer">
-            <Image src={wedding} alt="Wedding" />
-            <p>Wedding</p>
-          </a>
-          <a href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-            rel="noopener noreferrer">
-            <Image src={Maternity} alt="Maternity" />
-            <p>Maternity</p>
-          </a>
-          <a href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-            rel="noopener noreferrer">
-            <Image src={Birthday} alt="Birthday" />
-            <p>Birthday</p>
-          </a>
-          <a href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-            rel="noopener noreferrer">
-            <Image src={preWedding} alt="Pre-Wedding" />
-            <p>pre-Wedding</p>
-          </a>
-          <a href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-            rel="noopener noreferrer">
-            <Image src={HaldiMehndi} alt="HaldiMehndi" />
-            <p>Haldi/Mehndi</p>
-          </a>
-          <a href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-            rel="noopener noreferrer">
-            <Image src={Babyshower} alt="Baby Shower" />
+        <div class="poses">
+          <div class="pose-grid">
+            <a href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+              rel="noopener noreferrer">
+              <Image src={wedding} alt="Wedding" />
+              <p>Wedding</p>
+            </a>
+            <a href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+              rel="noopener noreferrer">
+              <Image src={Maternity} alt="Maternity" />
+              <p>Maternity</p>
+            </a>
+            <a href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+              rel="noopener noreferrer">
+              <Image src={Birthday} alt="Birthday" />
+              <p>Birthday</p>
+            </a>
+            <a href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+              rel="noopener noreferrer">
+              <Image src={preWedding} alt="Pre-Wedding" />
+              <p>pre-Wedding</p>
+            </a>
+            <a href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+              rel="noopener noreferrer">
+              <Image src={HaldiMehndi} alt="HaldiMehndi" />
+              <p>Haldi/Mehndi</p>
+            </a>
+            <a href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
+              rel="noopener noreferrer">
+              <Image src={Babyshower} alt="Baby Shower" />
 
-            <p>Babyshower
+              <p>Babyshower
 
 
-            </p>
+              </p>
 
-          </a>
+            </a>
+          </div>
         </div>
-      </div>
 
-      <div class="trust-section">
-        <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
-        {/* <h3 class="trust-subtitle">Ashu Tiwari</h3>
+        <div class="trust-section">
+          <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
+          {/* <h3 class="trust-subtitle">Ashu Tiwari</h3>
         <div class="stars"> ★★★★★</div> */}
-        <div className="review">
-          <Swiper
-            modules={[Pagination, Autoplay]}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 4000 }}
-            loop={true}
-            spaceBetween={20}
-            slidesPerView={1}
-          >
-            {reviews.map(({ text, author }, idx) => (
-              <SwiperSlide key={idx}>
-                <p className="trust-subtitle">{author}</p>
-                <p className="review-text">{text}</p>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+          <div className="review">
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 4000 }}
+              loop={true}
+              spaceBetween={20}
+              slidesPerView={1}
+            >
+              {reviews.map(({ text, author }, idx) => (
+                <SwiperSlide key={idx}>
+                  <p className="trust-subtitle">{author}</p>
+                  <p className="review-text">{text}</p>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
 
 
 
-        {/* <div class="user-quote">
+          {/* <div class="user-quote">
           <img src="user.jpg" alt="Tara Sutara" class="profile-img" />
           <div>
             <div class="quote">"I absolutely love their work! Highly recommended."</div>
@@ -386,28 +391,28 @@ const index = () => {
           </div>
         </div> */}
 
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="rating-row">
-              <img src="google.jpg" alt="Google Icon" class="icon" />
-              <strong>4.8</strong>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="rating-row">
+                <img src="google.jpg" alt="Google Icon" class="icon" />
+                <strong>4.8</strong>
+              </div>
+              <p class="Text-google">Google Rating</p>
             </div>
-            <p class="Text-google">Google Rating</p>
-          </div>
 
-          <div class="stat-box">
-            <div class="photoD">
-              <strong >50L+</strong>
-              <div class="photos-title">Photos Delivered</div>
+            <div class="stat-box">
+              <div class="photoD">
+                <strong >50L+</strong>
+                <div class="photos-title">Photos Delivered</div>
+              </div>
             </div>
-          </div>
 
-          <div class="stat-box full">
-            <p><strong>15K+</strong><span class="highlight"> Happy Customers</span></p>
+            <div class="stat-box full">
+              <p><strong>15K+</strong><span class="highlight"> Happy Customers</span></p>
+            </div>
           </div>
         </div>
       </div>
-
     </>
   );
 };

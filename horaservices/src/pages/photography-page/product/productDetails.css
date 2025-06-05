@@ -6,6 +6,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   /* margin: 20px auto; */
   max-width: 420px;
+  
 }
 
 .photodetails-image-section {
@@ -110,6 +111,25 @@
 }
 
 
+.book-now-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1px; /* optional */
+  margin-bottom: 10px;
+}
+
+.book-now-btn {
+  background-color: #97538c;
+  color: white;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  width: 200px;
+  text-align: center;
+}
 
 
 /* ============================================================================================================= */
