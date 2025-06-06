@@ -3,11 +3,16 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import photographyAddOns from "../../../utils/photographyAddOns.json"
+import faqData from '../../../utils/faqData.json'
 import traditionalPhoto from "../../../assets/traditionalPhoto.png";
 import candidPhoto from "../../../assets/candidPhoto.jpg";
 import proPhoto from "../../../assets/Prophoto.jpg";
 import videoPhoto from "../../../assets/videophoto.png";
-import "./productDetails.css";
+import PROFESSIONALPHOTOGRAPHERS from "../../../assets/professionalPhoto.png";
+import SECURESTORAGE from "../../../assets/secureStorage.png";
+import SUPPORT from "../../../assets/support.png";
+ import "./productDetails.css";
+ import { FaQuestionCircle } from "react-icons/fa";
 const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFromCart }) => {
   const router = useRouter();
   const { productId, product } = router.query;
@@ -113,6 +118,7 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
   const sendToCheckoutPage = (product) => {
+    const images = product.images || [];
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "book_now_click",
@@ -124,7 +130,8 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
-        totalAmount: product.discountedPrice, // use discounted price!
+        totalAmount: product.discountedPrice,
+        images: encodeURIComponent(JSON.stringify(images)), // use discounted price!
       }
     });
   };
@@ -179,6 +186,108 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
 
   if (loading) return <div className="photodetails-loading" >Loading...</div>;
   if (!work) return <div className="photodetails-loading">Work not found</div>;
+
+const FAQSection = ({ faqData }) => {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const handleToggle = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  return (
+   <div style={{ marginTop: "40px", padding: "0 16px" }}>
+      <h2
+         style={{
+    color: "#97538c",
+    fontFamily: "Inter, sans-serif",
+    fontWeight: 700,
+    fontSize: "24px",
+    lineHeight: "100%",
+    letterSpacing: "0%",
+    marginBottom: "20px",
+    textAlign: "left",
+  }}
+      >
+        FAQ
+      </h2>
+
+      {faqData.map((item, index) => (
+        <div
+          key={index}
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            padding: "12px 14px",
+            // boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            marginBottom: "12px",
+            border: openIndex === index ? "1.5px solid #97538c" : "1px solid #ddd",
+            transition: "border 0.3s ease",
+          }}
+        >
+          <div
+            onClick={() => handleToggle(index)}
+            style={{
+              cursor: "pointer",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontWeight: 600,
+              fontSize: "15px",
+              color: "#3b3b3b",
+            }}
+          >
+            <span>{item.name}</span>
+
+            {/* Smaller Circle with Arrow */}
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                minWidth: "20px",
+                borderRadius: "50%",
+                backgroundColor: "#97538c",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginLeft: "10px",
+              }}
+            >
+              <span
+                style={{
+                  color: "#fff",
+                  fontSize: "13px",
+                  transform: openIndex === index ? "rotate(90deg)" : "rotate(0deg)",
+                  transition: "transform 0.3s ease",
+                  display: "inline-block",
+                }}
+              >
+                &gt;
+              </span>
+            </div>
+          </div>
+
+          {/* Answer Text */}
+          {openIndex === index && (
+            <div
+              style={{
+                marginTop: "10px",
+                color: "#555",
+                fontSize: "14px",
+                lineHeight: "1.5",
+              }}
+            >
+              {item.acceptedAnswer.text}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
+
+
 
   return (
     <div className="photodetails-container">
@@ -270,8 +379,24 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
               </div>
        </div> */}
 
-
-
+<div className="whyHoraSec">
+   <h2 className="whyHoraHeading">Why Hora Photography</h2>
+      <div className="whyHoraSecInner">
+        <div className="whyHoraSecBox">
+          <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
+          <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
+        </div>
+        <div className="whyHoraSecBox">
+          <Image src={SECURESTORAGE} alt="buy-now" />
+          <p className="whyHoraSubheading">SECURE STORAGE</p>
+        </div>
+        <div className="whyHoraSecBox">
+          <Image src={SUPPORT} alt="buy-now" />
+          <p className="whyHoraSubheading">27/7 SUPPORT</p>
+        </div>
+      </div>
+    </div>
+<FAQSection faqData={faqData} />
     </div>
   );
 };

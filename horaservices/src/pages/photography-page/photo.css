@@ -222,7 +222,7 @@
 
 
 /* Image section */
-.work-image-wrapper {
+/* .work-image-wrapper {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
@@ -253,26 +253,80 @@
   right: 0;
   bottom: 0;
   background-image: inherit;
-  /* Jo bhi background image set hai work-image me */
+ 
   background-size: cover;
   background-position: center;
   filter: blur(0.3px);
   z-index: -1;
-  /* peeche rahe */
+ 
   border-radius: 15px;
   background-color: rgba(0, 0, 0, 0.6);
   background-blend-mode: multiply;
 }
 
-/* aapka .work-title normal rahega */
+
 .work-title {
   position: relative;
-  /* blur ke upar text rahe */
   font-family: 'Mada', sans-serif !important;
   font-weight: 500;
   font-size: 17px;
   line-height: 20px;
   letter-spacing: 0%;
+  text-align: center;
+  color: white;
+  padding: 6px 12px;
+  width: 100%;
+  text-shadow:
+    -1px -1px 0 #525151,
+    1px -1px 0 #525151,
+    -1px 1px 0 #525151,
+    1px 1px 0 #525151;
+} */
+.work-image-wrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.work-image {
+  position: relative;
+  height: 120px;
+  width: 95%;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 2px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: white;
+}
+
+.work-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(0.3px);
+  z-index: 0;
+}
+
+.work-image-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  mix-blend-mode: multiply;
+  z-index: 1;
+}
+
+.work-title {
+  position: relative;
+  z-index: 2;
+  font-family: 'Mada', sans-serif !important;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 20px;
   text-align: center;
   color: white;
   padding: 6px 12px;
@@ -806,12 +860,14 @@
 .Text-google {
   color: #97538C;
   font-size: 17px;
+  font-weight: 520;
 }
 
 .photos-title {
   margin-top: 2px;
   color: #97538C;
   font-size: 17px;
+  font-weight: 520;
 }
 
 .profile-img {

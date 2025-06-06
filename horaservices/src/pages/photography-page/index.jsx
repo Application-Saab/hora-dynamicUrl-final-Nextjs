@@ -15,7 +15,15 @@ import Banner1 from "../../assets/banner1.png"
 import Banner2 from "../../assets/Banner2.jpeg"
 import Banner3 from "../../assets/banner3.png"
 import magician from "../../assets/magician.jpg";
-import triditionalPhoto from "../../assets/triditional-photo.jpg";
+import traditionalImg from "../../assets/traditionalphoto.jpg";
+import candidImg from "../../assets/CandidphotoImg.jpg";
+import proImg from "../../assets/Prophotography.png";
+import videoImg from "../../assets/Videography.jpg";
+import defaultImg from "../../assets/traditionalphoto.jpg"
+import haldiMehendiImg from "../../assets/haldiMehendi.jpg";
+import PreWeddingImg from "../../assets/PreWeddingImg.jpg" ;
+import weddingAffairImg from "../../assets/weddingAffair.jpg";
+import grandWeddingAffairImg from "../../assets/grandWeddingAffair.jpg"
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -38,12 +46,22 @@ const index = () => {
   const router = useRouter();
   const { catvalue } = router.query;
 
-  const imageList = [
-    "/traditionalphoto.jpg",
-    "/Candidphoto.jpg",
-    "/Prophotography.png",
-    "/Videography.jpg"
-  ];
+  const imageMap = {
+  '6710f33c21847b9ca0554940': traditionalImg,
+  '67c9af0c4bee1b66f0aac35d': candidImg,
+  '67c9af224bee1b66f0aac35e': proImg,
+  '67c9b0564bee1b66f0aac35f': videoImg,
+  // Grand 
+  "683abe22fdfcb315ad5b02b0": traditionalImg,
+  "683abe69fdfcb315ad5b02b1": candidImg,
+  "68411d34fdfcb315ad5b02bf": proImg,
+  "68411d61fdfcb315ad5b02c0":videoImg, 
+  //Mega 
+  "683ac1bcfdfcb315ad5b02b4": haldiMehendiImg,
+  "683ac1d1fdfcb315ad5b02b5": PreWeddingImg,
+ "68411cc3fdfcb315ad5b02bd": weddingAffairImg,
+ "68411cd8fdfcb315ad5b02be": grandWeddingAffairImg
+};
 
   const renderProducts = (heading) => {
     if (loading) {
@@ -59,22 +77,32 @@ const index = () => {
           <p className="ProductHeading">{heading}</p>
           <div className="work-container">
             {products.map((work, index) => {
-              const imageUrl = imageList[index % imageList.length]; // ✅ Move inside
-
+              // const imageUrl = imageList[index % imageList.length]; 
+               const imageUrl = imageMap[work._id] || defaultImg;
               return (
                 <div className="work-item" key={index}>
                   <div className="discount-badge">
                     ₹ {work.discountDifference.toFixed(0)} off
                   </div>
-                  <div className="work-image-wrapper">
+                  {/* <div className="work-image-wrapper">
+                    
                     <div
                       className="work-image"
-                      style={{ backgroundImage: `url("${imageUrl}")` }}
+                      // style={{ backgroundImage: `url("${imageUrl}")` }}
+                     
                     >
+                   
                       <h5 className="work-title">{work.name}</h5>
                     </div>
-                  </div>
-
+                  </div> */}
+                  
+<div className="work-image-wrapper">
+  <div className="work-image">
+    <Image src={imageUrl} alt={work.name} className="work-img" />
+    <div className="work-image-overlay" />
+    <h5 className="work-title">{work.name}</h5>
+  </div>
+</div>
                   <div className="work-card-info">
                     <p className="Prefred-occ">
                       <span >₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>

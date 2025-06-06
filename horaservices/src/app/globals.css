@@ -1452,10 +1452,10 @@ button.view-details.order-details {
   }
 
   .rightSeccheckout {
-    width: 95% !important;
-    margin: 0 2%;
+     max-width: 330px;
+        margin: auto;
   }
-
+                         
   .leftSeccheckout {
     padding: 13px 16px !important;
     box-sizing: border-box;
@@ -1468,9 +1468,9 @@ button.view-details.order-details {
   .checkoutInputType {
     flex-direction: column !important;
   }
-
   .checkoutProblemWhatsappButton {
     border-radius: 10px;
+
     width: 77%;
     flex-direction: column;
     padding: 10px 31px 0;
@@ -1550,11 +1550,12 @@ button.view-details.order-details {
     }
 
     .rightSeccheckout {
-      width: 98% !important;
-      margin: 14px 1% 0 3px !important;
+      max-width: 330px !important;
+      margin:auto;
+      /* margin: 14px 1% 0 3px !important;
       border-radius: 13px !important;
       box-shadow: none !important;
-      padding: 7px 21px !important;
+      padding: 7px 21px !important; */
     }
 
    

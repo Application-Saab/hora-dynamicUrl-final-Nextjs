@@ -7,18 +7,18 @@ import 'react-clock/dist/Clock.css';
 import axios from 'axios';
 import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
-import {Form ,Dropdown } from 'react-bootstrap';
+import { Form, Dropdown } from 'react-bootstrap';
 import '../../css/decoration.css';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
-import { pincodes }  from "../../utils/pincodes.js"
+import { pincodes } from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
-
+import "./photographyCheckout.css";
 const Checkout = () => {
   const router = useRouter();
-  let { product , totalAmount ,orderType} = router.query; // Accessing subCategory and itemName safely
+  let { product, totalAmount, orderType } = router.query; // Accessing subCategory and itemName safely
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -38,43 +38,54 @@ const Checkout = () => {
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
-  const phoneNumber =  localStorage.getItem("mobileNumber");
+  const phoneNumber = localStorage.getItem("mobileNumber");
   const [isMobile, setIsMobile] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  if (product) {
-    product = JSON.parse(product)
-  }
-  
 
-useEffect(() => {
-      // Check localStorage or a cookie for login status, or call an API
-      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
-      setIsLoggedIn(loggedInStatus); // Update state based on login status
-      if (!loggedInStatus) {
-        setIsModalOpen(true); // Open modal if not logged in
+  const { images } = router.query;
+  const [imageList, setImageList] = useState([]);
+
+  useEffect(() => {
+    if (images) {
+      try {
+        const decoded = JSON.parse(decodeURIComponent(images));
+        setImageList(decoded); // this will be array of strings (image URLs)
+        console.log("Decoded images:", decoded);
+      } catch (err) {
+        console.error("Invalid image JSON", err);
       }
-      setLoading(false); // Done with loading
-    }, []); // Run once when component mounts
-  
-    useEffect(() => {
-      // If logged in, close the modal
-      if (isLoggedIn) {
-        setIsModalOpen(false);
-      }
-    }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
+    }
+  }, [images]);
+
+  useEffect(() => {
+    // Check localStorage or a cookie for login status, or call an API
+    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+    setIsLoggedIn(loggedInStatus); // Update state based on login status
+    if (!loggedInStatus) {
+      setIsModalOpen(true); // Open modal if not logged in
+    }
+    setLoading(false); // Done with loading
+  }, []); // Run once when component mounts
+
+  useEffect(() => {
+    // If logged in, close the modal
+    if (isLoggedIn) {
+      setIsModalOpen(false);
+    }
+  }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
   useEffect(() => {
     setIsClient(true)
   }, [])
-//   1: "Decoration",
-//       2: "Chef",
-//       3: "Waiter",
-//       4: "Bar Tender",
-//       5: "Cleaner",
-//       6: "Food Delivery",
-//       7: "Live Catering",
-//       8: "Photography",
+  //   1: "Decoration",
+  //       2: "Chef",
+  //       3: "Waiter",
+  //       4: "Bar Tender",
+  //       5: "Cleaner",
+  //       6: "Food Delivery",
+  //       7: "Live Catering",
+  //       8: "Photography",
   const handleComment = (e) => {
     const commentText = e.target.value;
     setComment(commentText);
@@ -85,7 +96,7 @@ useEffect(() => {
     let addOnProductsText = "";
 
     if (selectedAddOnProduct.length > 0) {
-        selectedAddOnProduct.map(item => `${item.title}: ₹${item.price}`).join(" ");
+      selectedAddOnProduct.map(item => `${item.title}: ₹${item.price}`).join(" ");
     }
 
     return comment + addOnProductsText;
@@ -148,7 +159,7 @@ useEffect(() => {
   const generateTimeSlots = () => {
     const startTime = 7; // Starting hour
     const endTime = 22; // Ending hour
-    const interval =  1// Interval in hours
+    const interval = 1// Interval in hours
 
     const timeSlots = [];
     for (let hour = startTime; hour < endTime; hour += interval) {
@@ -243,7 +254,7 @@ useEffect(() => {
     const storedUserID = await localStorage.getItem('userID');
     // const phoneNumber = await localStorage.getItem('mobileNumber')
     let merchantTransactionId;
-    console.log('selectedAddOnProduct' , selectedAddOnProduct , phoneNumber, totalAmount);
+    console.log('selectedAddOnProduct', selectedAddOnProduct, phoneNumber, totalAmount);
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
@@ -256,7 +267,7 @@ useEffect(() => {
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,
-        "type":8,
+        "type": 8,
         "fromId": storedUserID,
         "is_discount": "0",
         "addressId": addressID,
@@ -276,7 +287,7 @@ useEffect(() => {
         "decoration_comments": getFinalComment(),
         "status": 0
       }
-console.log("redData" , requestData);
+      console.log("redData", requestData);
       const token = await localStorage.getItem('token');
       const response = await axios.post(url, requestData, {
         headers: {
@@ -285,11 +296,11 @@ console.log("redData" , requestData);
         },
       });
       merchantTransactionId = response.data.data._id
-      }
-     catch (error) {
+    }
+    catch (error) {
       console.log('Error Confirming Order:', error.message);
     }
-  
+
 
     const requestData2 = {
       user_id: storedUserID,
@@ -335,16 +346,16 @@ console.log("redData" , requestData);
     }
     finally {
       setLoading(false); // Hide loader
-  }
+    }
   }
 
   const contactUsRedirection = () => {
     window.dataLayer = window.dataLayer || [];
-     window.dataLayer.push({
-         event: "photography_checkout_contact_us_click",
-     });
-     window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
-    };
+    window.dataLayer.push({
+      event: "photography_checkout_contact_us_click",
+    });
+    window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
+  };
 
 
 
@@ -368,7 +379,7 @@ console.log("redData" , requestData);
         event: 'photography_checkout_page',
         pageUrl: window.location.href,
         productName: product.name,
-        productPrice: product.price, 
+        productPrice: product.price,
         UserPhoneNumber: phoneNumber
       });
 
@@ -380,9 +391,9 @@ console.log("redData" , requestData);
 
   return (
     <div className="App">
-        {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
-       {loading && <Loader />}
-      {
+      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
+      {loading && <Loader />}
+      {/* {
         isClient && window.innerWidth > 800 ?
           <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>
             <div style={{ display: "flex", alignItems: "start", margin: "0 !important", padding: "10px 0" }} className='checoutSec my-3 gap-3'>
@@ -390,7 +401,7 @@ console.log("redData" , requestData);
                 <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2>
 
                 <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                Photographer will be available for 4 hours after arrival.
+                  Photographer will be available for 4 hours after arrival.
                 </div>
 
                 <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between   align-items-lg-center justify-content-lg-between'>
@@ -438,22 +449,22 @@ console.log("redData" , requestData);
                       <option value="Delhi">Delhi NCR</option>
                       <option value="Mumbai">Mumbai</option>
                       <option value="Hyderabad">Hyderabad</option>
-                      {/* Add more cities as needed */}
+                      
                     </select>
                     {cityError && <p className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}>This field is required!</p>}
                   </div>
                 </div>
                 <button onClick={onContinueClick} className="blue-btn chkeoutBottun">Confirm Order</button>
               </div>
-{/* order summary box============= */}
+              
               <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px", width: "59%" }} >
                 <div className='rightsecdecinner decoration'>
                   <h3 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 11px 0", lineHeight: "35px", width: "100%" }}>Order Summary</h3>
                   <div className='d-flex flex-column flex-lg-row'>
-                  
+
                     <div className='prod-detailsp'>
 
-                    
+
                       <div className='add-on-prices'>
 
                         <div>
@@ -466,7 +477,7 @@ console.log("redData" , requestData);
                                     {item.title}
                                   </div>
                                   <div>
-                                    ₹ {item.price} 
+                                    ₹ {item.price}
 
                                   </div>
                                 </li>
@@ -506,189 +517,245 @@ console.log("redData" , requestData);
               </div>
             </div>
           </div>
-          :
-          <div style={{ padding: "1% 2%", backgroundColor: "#edededc9", position: "relative" }} className='checkoutmobileview'>
-            <div className='checoutSec my-3 gap-3'>
-              <div>
-                {/* <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2> */}
+          : */}
+      <div className="booking-form-card">
+        <div className="booking-form with-bg-shapes">
+          <div className="background-shape top-left" />
+          <div className="background-shape bottom-right" />
 
-                <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center decoratore-note' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                Photographer will be available for 4 hours after arrival.
-                </div>
+          <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
 
-                <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between  align-items-lg-center justify-content-lg-between'>
-                  <CustomDatePicker handleDateChange={handleDateChange} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showDatePicker={showDatePicker} setShowDatePicker={setShowDatePicker} combinedDateTimeError={combinedDateTimeError} selectedDateError={selectedDateError} />
-                  <CustomTimePicker handleTimeSlotChange={handleTimeSlotChange} generateTimeSlots={generateTimeSlots} selectedTimeSlot={selectedTimeSlot} combinedDateTimeError={combinedDateTimeError} selectedTimeSlotError={selectedTimeSlotError} />
-                  {combinedDateTimeError && <p className="text-danger" style={{ fontSize: '12px' }}>The selected date and time must be at least 24 hours from now.</p>}
-                </div>
+          <div className="form-row">
+            <div className="form-half large-input">
+              <label className="form-label">Booking Date</label>
+              <div className="input-wrapper large-input-field">
+                <CustomDatePicker handleDateChange={handleDateChange} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showDatePicker={showDatePicker} setShowDatePicker={setShowDatePicker} combinedDateTimeError={combinedDateTimeError} selectedDateError={selectedDateError} />
 
-                <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px" }} >
-                  <div className='rightcheckoutsec'>
-                    <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "5px 0 5px 0" }}>
-                      <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 700 }}>Product Amount:</label>
-                      <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹  {product?.price}</p>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 10px 0" }}>
-                      <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 700 }}>Advance Amount:</label>
-                      <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalAmount * 0.35)}</p>
-                    </div>
-
-
-
-
-
-
-                    <div style={{ display: "flex", padding: 7, flexDirection: 'row', borderRadius: 5, marginTop: 5, marginBottom: 10, backgroundColor: 'rgba(211, 75, 233, 0.10)', justifyContent: 'flex-start', alignItems: 'top' }}>
-                      <div>
-                        <Image style={{ width: "20px", marginRight: "10px", height: "20px" }} src={InfoIcon} alt='info' />
-                      </div>
-                      <div style={{ fontSize: 9, color: '#9252AA', fontWeight: '400', marginLeft: 4 }}>
-                        Balance payment is to be paid to executor after order completion.
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
-                      <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: "600" }}>Address:</label>
-                      <textarea
-                        type="text"
-                        className=' rounded border  p-1 bg-white text-black'
-                        value={address}
-                        onChange={handleAddressChange}
-                        rows={3}
-                        placeholder="Enter your Address."
-                      />
-                      {addressError && <p className={`p-0 m-0 ${addressError ? "text-danger" : ""}`}>This field is required!</p>}
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
-                      <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>Pin Code:</label>
-                      <input
-                        type="text" className=' rounded border  p-1 bg-white text-black'
-                        value={pinCode}
-                        onChange={handlePinCodeChange}
-                      />
-                      {pinCode && <p className={`p-0 m-0 ${pinCodeError ? "text-danger" : "text-success"}`}>{`Service ${pinCodeError ? 'not' : ''} available in your area!`}</p>}
-                      {pincodeReqError && <p className={`p-0 m-0 ${pincodeReqError ? "text-danger" : ""}`}>This field is required!</p>}
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
-                      <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>City:</label>
-                      <select value={city} className=' rounded border  p-1 bg-white text-black' onChange={handleCityChange}>
-                        <option value="">Select City</option>
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Delhi">Delhi NCR</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Hyderabad">Hyderabad</option>
-                        {/* Add more cities as needed */}
-                      </select>
-                      {cityError && <p className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}>This field is required!</p>}
-                    </div>
-                 
-
-                    <div className='checkoutInputType  rounded-4  my-3' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
-                      <h4 style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marginBottom: "4px" }}>Share your comments (if any)</h4>
-                      <textarea className='rounded border  p-1 bg-white text-black decor-commemnts'
-                        value={comment}
-                        onChange={handleComment}
-                        rows={3}
-                        placeholder="Enter your comment."
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className='d-flex justify-content-center align-items-center mt-3 mb-0'>
-                  <h5 className='fs-6 mt-2'>Need more info?</h5>
-                  <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "0px 12px", fontSize: "13px" }} className=' rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
-                </div>
-
-                <div className='px-1 py-3 border rounded my-2 cancellatiop-policy' style={{
-                  background: "rgb(157, 74,147, 28%)"
-                }}>
-                  <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className=' text-center m-1'>Cancellation and order change policy</p>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>1. If the order is beyong 48 Hours: You are eligible for a 100% refund of the advance payment</p>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>2. If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.</p>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>3. If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.</p>
-                </div>
               </div>
             </div>
-            {isMobile ?
-              <div style={{
-                position: "fixed",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                backgroundColor: "#fff",
-                borderTop: "1px solid #efefef",
-                backgroundColor: "#EDEDED"
-              }}
-              >
-                <button className="blue-btn chkeoutBottun" onClick={onContinueClick}>Confirm Order</button>
+            <div className="form-half large-input">
+              <label className="form-label">Select Time Slot</label>
+              <div className="input-wrapper large-input-field">
+                <CustomTimePicker handleTimeSlotChange={handleTimeSlotChange} generateTimeSlots={generateTimeSlots} selectedTimeSlot={selectedTimeSlot} combinedDateTimeError={combinedDateTimeError} selectedTimeSlotError={selectedTimeSlotError} />
+
               </div>
-              :
-              null
-            }
+            </div>
           </div>
-      }
+
+
+          {combinedDateTimeError && (
+            <p className="error-text">
+              The selected date and time must be at least 24 hours from now.
+            </p>
+          )}
+
+          <div className="form-group">
+            <label className="form-label">Share comments</label>
+            <textarea
+              className="form-control"
+              value={comment}
+              onChange={handleComment}
+              rows={2}
+              placeholder="Enter Your Comments Here..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Address:</label>
+            <textarea
+              className="form-control"
+              value={address}
+              onChange={handleAddressChange}
+              rows={2}
+              placeholder="Enter Your Address Here..."
+            />
+            {addressError && <p className="error-text">This field is required!</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">City:</label>
+            <select
+              value={city}
+              onChange={handleCityChange}
+              className="form-control"
+            >
+              <option value="">Select City</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Delhi">Delhi NCR</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Hyderabad">Hyderabad</option>
+            </select>
+            {cityError && <p className="error-text">This field is required!</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Pin Code:</label>
+            <input
+              type="text"
+              className="form-control"
+              value={pinCode}
+              onChange={handlePinCodeChange}
+              placeholder="Enter Your Pin Code Here..."
+            />
+            {pinCode && (
+              <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
+                Service {pinCodeError ? "not " : ""}available in your area!
+              </p>
+            )}
+            {pincodeReqError && <p className="error-text">This field is required!</p>}
+          </div>
+
+          <div className="form-group">
+            <button
+              className="confirm-button"
+              onClick={onContinueClick}
+              type="button"
+            >
+              Confirm Order
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px", }} >
+        <div className='rightsecdecinner decoration'>
+          <h3 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 11px 0", lineHeight: "35px", width: "100%" }}>Order Summary</h3>
+          <div className='d-flex flex-column flex-lg-row'>
+
+            <div className='prod-detailsp'>
+
+
+              <div className='add-on-prices'>
+
+                <div>
+                  {selectedAddOnProduct.length > 0 && (
+                    <>
+                      <label>Customisations</label>
+                      {selectedAddOnProduct.map((item, index) => (
+                        <li key={index}>
+                          {imageList.length > 0 && (
+                            <Image
+                              src={imageList[0]} // this is string url like "/_next/static/media/..."
+                              alt="Product Preview"
+                              width={400}
+                              height={300}
+                              style={{ borderRadius: '12px' }}
+                            />
+                          )}                          <div>
+                            {item.title}
+                          </div>
+                          <div>
+                            ₹ {item.price}
+
+                          </div>
+                        </li>
+                      ))}
+
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className='detail-item'>
+                <label>Total Amount:</label>
+                <p>₹{totalAmount}</p>
+              </div>
+
+              <div className='detail-item'>
+                <label>Advance Amount:</label>
+                <p>₹ {Math.round(totalAmount * 0.35)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div >
+          <div className='d-flex flex-wrap justify-content-center align-items-center need-more-info-sec'>
+            {/* <h5 className='mt-2'>Need more info?</h5> */}
+            <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "0px 12px" }} className='rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
+          </div>
+          <div className='px-1 py-3 border rounded my-2 cancellatiop-policy' style={{
+            background: "rgb(157, 74,147, 28%)"
+          }}>
+            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className=' text-center m-1'>Cancellation and order change policy</p>
+            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>1. If the order is beyong 48 Hours: You are eligible for a 100% refund of the advance payment</p>
+            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>2. If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.</p>
+            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>3. If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.</p>
+          </div>
+        </div>
+      </div>
+      {/* } */}
     </div>
+
   );
 }
 
 export default Checkout;
 
-export const CustomDatePicker = ({ handleDateChange, selectedDate, showDatePicker, setShowDatePicker, selectedDateError, combinedDateTimeError }) => {
-
+export const CustomDatePicker = ({
+  handleDateChange,
+  selectedDate,
+  showDatePicker,
+  setShowDatePicker,
+  selectedDateError,
+  combinedDateTimeError,
+}) => {
   const toggleDatePicker = () => {
     setShowDatePicker((prev) => !prev);
   };
+  const handleToggle = (isOpen, event, metadata) => {
+    // Agar user ne bahar click kiya ya toggle button pe click kiya
+    // dropdown open/close ka status yaha milega
+    setShowDatePicker(isOpen);
+  };
+
 
   return (
-    <div className={`d-flex flex-column border  rounded-4  timepkerSec ${combinedDateTimeError ? 'border-danger' : ''} `}>
-      <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Booking Date</p>
-      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className='border-none p-0'>
+    <div className={`custom-datepicker-container ${combinedDateTimeError ? 'error' : ''}`}>
+      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className="dropdown-custom">
         <Dropdown.Toggle
           variant="outline-secondary"
-          className={`w-100 m-0 p-0 d-flex justify-content-between align-items-center text-black ${selectedDateError ? 'border-danger' : ''}`}
-          style={{ cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}        >
-          <span style={{ fontSize: '12px' }} className='m-0 p-0 '>{selectedDate ? selectedDate.toLocaleDateString() : 'Select Date'}</span>
+          className={`dropdown-toggle-custom ${selectedDateError ? 'error' : ''}`}
+          style={{ cursor: 'pointer' }}
+        >
+          <span>{selectedDate ? selectedDate.toLocaleDateString() : 'Select Date'}</span>
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          show={showDatePicker}
-          className="p-2"
-          style={{ minWidth: 'auto' }}
-        >
+        <Dropdown.Menu className="dropdown-menu-custom" show={showDatePicker} >
           <DatePicker
             selected={selectedDate}
             onChange={handleDateChange}
             minDate={new Date()}
-            inline // Use inline to show the calendar
+            inline
           />
         </Dropdown.Menu>
       </Dropdown>
     </div>
   );
 };
-
-export const CustomTimePicker = ({ selectedTimeSlot, handleTimeSlotChange, generateTimeSlots, selectedTimeSlotError, combinedDateTimeError }) => {
+export const CustomTimePicker = ({
+  selectedTimeSlot,
+  handleTimeSlotChange,
+  generateTimeSlots,
+  selectedTimeSlotError,
+  combinedDateTimeError,
+}) => {
   return (
-    <div className={`timepkerSec d-flex flex-column border  ${combinedDateTimeError ? 'border-danger' : ''}  ${selectedTimeSlotError ? 'border-danger' : ""} rounded-4 `}>
-      <p style={{ marginBottom: "4px", color: "rgb(146, 82, 170)", fontSize: "12px" }} className='p-0 m-0'>Select Time Slot</p>
-      <div>
-        <Form.Control
-          as="select"
-          value={selectedTimeSlot}
-          onChange={handleTimeSlotChange}
-          style={{ fontSize: "14px", cursor: 'pointer', padding: 0, background: 'none', border: 'none' }}
-          className="timeslot"
-        >
-          <option value="">Arrival Time</option>
-          {generateTimeSlots().map((timeSlot, index) => (
-            <option key={index} value={timeSlot}>
-              {timeSlot}
-            </option>
-          ))}
-        </Form.Control>
-      </div>
+    <div
+      className={`custom-timepicker-container ${combinedDateTimeError || selectedTimeSlotError ? 'error' : ''
+        }`}
+    >
+      <Form.Control
+        as="select"
+        value={selectedTimeSlot}
+        onChange={handleTimeSlotChange}
+        className="timeslot-select"
+      >
+        <option value="">Arrival Time</option>
+        {generateTimeSlots().map((timeSlot, index) => (
+          <option key={index} value={timeSlot}>
+            {timeSlot}
+          </option>
+        ))}
+      </Form.Control>
     </div>
-  )
-}
+  );
+};
