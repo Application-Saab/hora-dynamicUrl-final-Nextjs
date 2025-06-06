@@ -517,7 +517,7 @@ const InvitationCard = () => {
             style={{
               backgroundImage: orderDetails?.Template
                 ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
-                : `url('../../../assets/pastel-purpleBallons.webp')`,
+                :  `url(${imageBackground.src})`,
               backgroundSize: "100%",
               backgroundPosition: "center",
               // backgroundRepeat: "no-repeat",
@@ -965,7 +965,7 @@ const InvitationCard = () => {
             )}
 
             {showModal && (
-              <div className="modal-overlay">
+              <div className="modal-overlay"   style={{backgroundImage: `url(${imageBackground.src})`,}}>
                 <div
                   className="modal-content"
                   role="dialog"
