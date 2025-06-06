@@ -141,8 +141,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }), [allThumbnails.length]);
 
   if (loading) {
-    return <div className="thumbnail-gallery-status"><Image src={photogallryIcon} alt="Loading..." width={70} height={70} priority /></div>;
-  }
+    return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
+ }
   if (error) {
     return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
   }
