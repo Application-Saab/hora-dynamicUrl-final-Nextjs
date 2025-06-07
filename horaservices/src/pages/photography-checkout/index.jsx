@@ -16,9 +16,14 @@ import Loader from '../../components/Loader'
 import { pincodes } from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
 import "./photographyCheckout.css";
+import productsData from '../../utils/photoGraphyImages.js';
+import CommentIcon from "../../assets/commenticon.png";
+import locationIcon from "../../assets/locationIcon.png";
+import CityIcon from "../../assets/CityIcon.png";
+import PinIcon from "../../assets/Pincode.jpeg";
 const Checkout = () => {
   const router = useRouter();
-  let { product, totalAmount, orderType } = router.query; // Accessing subCategory and itemName safely
+  let { product, totalAmount, orderType, Productname } = router.query; // Accessing subCategory and itemName safely
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,21 +47,21 @@ const Checkout = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  const [productImage, setProductImage] = useState(null);
+const [productData, setProductData] = useState(null);
 
-  const { images } = router.query;
-  const [imageList, setImageList] = useState([]);
+useEffect(() => {
+  if (!router.isReady) return; // Wait until the router is ready
 
-  useEffect(() => {
-    if (images) {
-      try {
-        const decoded = JSON.parse(decodeURIComponent(images));
-        setImageList(decoded); // this will be array of strings (image URLs)
-        console.log("Decoded images:", decoded);
-      } catch (err) {
-        console.error("Invalid image JSON", err);
-      }
-    }
-  }, [images]);
+  const { productId } = router.query;
+
+  if (productId && productsData[productId]) {
+    const prod = productsData[productId];
+    setProductData(prod);
+    setProductImage(prod.images?.[0] || null);
+  }
+}, [router.isReady, router.query]);
 
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
@@ -389,6 +394,7 @@ const Checkout = () => {
 
   if (!isClient) return null;
 
+
   return (
     <div className="App">
       {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
@@ -549,37 +555,44 @@ const Checkout = () => {
             </p>
           )}
 
-          <div className="form-group">
+
+
+          <div className="form-group input-with-icon">
             <label className="form-label">Share comments</label>
+            <Image src={CommentIcon} className="input-icon" alt="comment" />
             <textarea
-              className="form-control"
+              className="formcontrol"
               value={comment}
               onChange={handleComment}
               rows={2}
-              placeholder="Enter Your Comments Here..."
+              placeholder="Enter your comments here..."
             />
           </div>
 
-          <div className="form-group">
+
+          <div className="form-group input-with-icon">
             <label className="form-label">Address:</label>
+            <Image src={locationIcon} className="input-icon" alt="location" />
+
             <textarea
-              className="form-control"
+              className="formcontrol"
               value={address}
               onChange={handleAddressChange}
               rows={2}
-              placeholder="Enter Your Address Here..."
+              placeholder="Enter your address here..."
             />
             {addressError && <p className="error-text">This field is required!</p>}
           </div>
 
-          <div className="form-group">
+          <div className="form-group input-with-icon">
             <label className="form-label">City:</label>
+            <Image src={CityIcon} className="input-icon" alt="city" />
             <select
               value={city}
               onChange={handleCityChange}
-              className="form-control"
+              className="formcontrol select-colored"
             >
-              <option value="">Select City</option>
+              <option value="" disabled>Select City</option>
               <option value="Bangalore">Bangalore</option>
               <option value="Delhi">Delhi NCR</option>
               <option value="Mumbai">Mumbai</option>
@@ -588,14 +601,16 @@ const Checkout = () => {
             {cityError && <p className="error-text">This field is required!</p>}
           </div>
 
-          <div className="form-group">
+
+          <div className="form-group input-with-icon">
             <label className="form-label">Pin Code:</label>
+            <Image src={PinIcon } className="input-icon" alt="pincode" />
             <input
               type="text"
-              className="form-control"
+              className="formcontrol"
               value={pinCode}
               onChange={handlePinCodeChange}
-              placeholder="Enter Your Pin Code Here..."
+              placeholder="Enter your pin code here..."
             />
             {pinCode && (
               <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
@@ -604,7 +619,6 @@ const Checkout = () => {
             )}
             {pincodeReqError && <p className="error-text">This field is required!</p>}
           </div>
-
           <div className="form-group">
             <button
               className="confirm-button"
@@ -616,45 +630,24 @@ const Checkout = () => {
           </div>
         </div>
       </div>
-      <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px", }} >
+
+
+      <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px", marginBottom: "20px" }} >
         <div className='rightsecdecinner decoration'>
-          <h3 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 11px 0", lineHeight: "35px", width: "100%" }}>Order Summary</h3>
+          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "0 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className='d-flex flex-column flex-lg-row'>
 
             <div className='prod-detailsp'>
+               {productImage && (
+            <div className='detail-item'>
+              <Image src={productImage} alt={product.name} width={300} height={200} />
+            </div>
+          )}
 
-
-              <div className='add-on-prices'>
-
-                <div>
-                  {selectedAddOnProduct.length > 0 && (
-                    <>
-                      <label>Customisations</label>
-                      {selectedAddOnProduct.map((item, index) => (
-                        <li key={index}>
-                          {imageList.length > 0 && (
-                            <Image
-                              src={imageList[0]} // this is string url like "/_next/static/media/..."
-                              alt="Product Preview"
-                              width={400}
-                              height={300}
-                              style={{ borderRadius: '12px' }}
-                            />
-                          )}                          <div>
-                            {item.title}
-                          </div>
-                          <div>
-                            ₹ {item.price}
-
-                          </div>
-                        </li>
-                      ))}
-
-                    </>
-                  )}
-                </div>
+              <div className='detail-item'>
+                <label>Product Name :</label>
+                <p>{Productname}</p>
               </div>
-
               <div className='detail-item'>
                 <label>Total Amount:</label>
                 <p>₹{totalAmount}</p>
@@ -667,20 +660,24 @@ const Checkout = () => {
             </div>
           </div>
         </div>
-        <div >
-          <div className='d-flex flex-wrap justify-content-center align-items-center need-more-info-sec'>
-            {/* <h5 className='mt-2'>Need more info?</h5> */}
-            <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "0px 12px" }} className='rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
+        <div className="policy-wrapper">
+          <div className="policy-heading">
+            <span className="policy-icon">📍</span>
+            <span className="policy-title">Cancellation and Order Change Policy</span>
           </div>
-          <div className='px-1 py-3 border rounded my-2 cancellatiop-policy' style={{
-            background: "rgb(157, 74,147, 28%)"
-          }}>
-            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className=' text-center m-1'>Cancellation and order change policy</p>
-            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>1. If the order is beyong 48 Hours: You are eligible for a 100% refund of the advance payment</p>
-            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>2. If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.</p>
-            <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>3. If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.</p>
-          </div>
+          <ol className="policy-list">
+            <li>
+              If the order is beyond 48 hours: You are eligible for a 100% refund of the advance payment.
+            </li>
+            <li>
+              If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.
+            </li>
+            <li>
+              If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.
+            </li>
+          </ol>
         </div>
+
       </div>
       {/* } */}
     </div>
@@ -710,13 +707,14 @@ export const CustomDatePicker = ({
 
   return (
     <div className={`custom-datepicker-container ${combinedDateTimeError ? 'error' : ''}`}>
+      
       <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className="dropdown-custom">
         <Dropdown.Toggle
           variant="outline-secondary"
           className={`dropdown-toggle-custom ${selectedDateError ? 'error' : ''}`}
           style={{ cursor: 'pointer' }}
         >
-          <span>{selectedDate ? selectedDate.toLocaleDateString() : 'Select Date'}</span>
+          <span>{selectedDate ? selectedDate.toLocaleDateString() : ' Select Date'}</span>
         </Dropdown.Toggle>
 
         <Dropdown.Menu className="dropdown-menu-custom" show={showDatePicker} >
@@ -749,7 +747,7 @@ export const CustomTimePicker = ({
         onChange={handleTimeSlotChange}
         className="timeslot-select"
       >
-        <option value="">Arrival Time</option>
+        <option value="">🕒 Arrival Time</option>
         {generateTimeSlots().map((timeSlot, index) => (
           <option key={index} value={timeSlot}>
             {timeSlot}

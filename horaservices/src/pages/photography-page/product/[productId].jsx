@@ -2,12 +2,11 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import photographyAddOns from "../../../utils/photographyAddOns.json"
-import faqData from '../../../utils/faqData.json'
-import traditionalPhoto from "../../../assets/traditionalPhoto.png";
-import candidPhoto from "../../../assets/candidPhoto.jpg";
-import proPhoto from "../../../assets/Prophoto.jpg";
-import videoPhoto from "../../../assets/videophoto.png";
+
+import photographyAddOns from "../../../utils/photographyAddOns.json";
+import productsData from '../../../utils/photoGraphyImages.js';
+import {faqData} from '../../../utils/photographyFAQData.js'
+
 import PROFESSIONALPHOTOGRAPHERS from "../../../assets/professionalPhoto.png";
 import SECURESTORAGE from "../../../assets/secureStorage.png";
 import SUPPORT from "../../../assets/support.png";
@@ -21,49 +20,7 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
   const [quantities, setQuantities] = useState({});
   const [addedItems, setAddedItems] = useState([]);
 
-
-  const productsData = {
-    "6710f33c21847b9ca0554940": {
-      name: "Traditional PhotoGraphy",
-      category: "intimate",
-      images: [traditionalPhoto],
-    },
-    "67c9af0c4bee1b66f0aac35d": {
-      name: "Candid PhotoGraphy",
-      category: "intimate",
-      images: [candidPhoto],
-    },
-    "67c9af224bee1b66f0aac35e": {
-      name: "Pro photoGraphy",
-      category: "intimate",
-      images: [proPhoto],
-    },
-    "67c9b0564bee1b66f0aac35f": {
-      name: "Video Graphy",
-      category: "intimate",
-      images: [videoPhoto],
-    },
-    "683abe22fdfcb315ad5b02b0": {
-      name: "Traditional PhotoGraphy",
-      category: "Grand",
-      images: [traditionalPhoto],
-    },
-    "683abe69fdfcb315ad5b02b1": {
-      name: "Candid PhotoGraphy",
-      category: "intimate",
-      images: [candidPhoto],
-    },
-    "68411d34fdfcb315ad5b02bf": {
-      name: "Pro photoGraphy",
-      category: "intimate",
-      images: [proPhoto],
-    },
-    "68411d61fdfcb315ad5b02c0": {
-      name: "Video Graphy",
-      category: "intimate",
-      images: [videoPhoto],
-    },
-  };
+  
   const images = productsData[productId]?.images || [];
 
   // const handleAdd = (item, index) => {
@@ -118,7 +75,7 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
   const sendToCheckoutPage = (product) => {
-    const images = product.images || [];
+
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "book_now_click",
@@ -130,8 +87,9 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
-        totalAmount: product.discountedPrice,
-        images: encodeURIComponent(JSON.stringify(images)), // use discounted price!
+         totalAmount: product.price,
+        Productname: product.name,
+        productId: product._id,
       }
     });
   };
@@ -236,7 +194,7 @@ const FAQSection = ({ faqData }) => {
               color: "#3b3b3b",
             }}
           >
-            <span>{item.name}</span>
+            <span>{item.question}</span>
 
             {/* Smaller Circle with Arrow */}
             <div
@@ -276,7 +234,8 @@ const FAQSection = ({ faqData }) => {
                 lineHeight: "1.5",
               }}
             >
-              {item.acceptedAnswer.text}
+              {item.answer}
+              {/* {item.acceptedAnswer.text} */}
             </div>
           )}
         </div>
