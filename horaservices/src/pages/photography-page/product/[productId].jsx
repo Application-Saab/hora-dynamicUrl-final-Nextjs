@@ -5,13 +5,13 @@ import Image from 'next/image';
 
 import photographyAddOns from "../../../utils/photographyAddOns.json";
 import productsData from '../../../utils/photoGraphyImages.js';
-import {faqData} from '../../../utils/photographyFAQData.js'
-
+import { faqData } from '../../../utils/photographyFAQData.js'
+import cancellation from "../../../assets/Cancellation.svg"
 import PROFESSIONALPHOTOGRAPHERS from "../../../assets/professionalPhoto.png";
 import SECURESTORAGE from "../../../assets/secureStorage.png";
 import SUPPORT from "../../../assets/support.png";
- import "./productDetails.css";
- import { FaQuestionCircle } from "react-icons/fa";
+import "./productDetails.css";
+import { FaQuestionCircle } from "react-icons/fa";
 const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFromCart }) => {
   const router = useRouter();
   const { productId, product } = router.query;
@@ -20,7 +20,7 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
   const [quantities, setQuantities] = useState({});
   const [addedItems, setAddedItems] = useState([]);
 
-  
+
   const images = productsData[productId]?.images || [];
 
   // const handleAdd = (item, index) => {
@@ -87,9 +87,9 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
-         totalAmount: product.price,
-        Productname: product.name,
-        productId: product._id,
+        totalAmount: product.price,
+        // Productname: product.name,
+        // productId: product._id,
       }
     });
   };
@@ -145,104 +145,106 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
   if (loading) return <div className="photodetails-loading" >Loading...</div>;
   if (!work) return <div className="photodetails-loading">Work not found</div>;
 
-const FAQSection = ({ faqData }) => {
-  const [openIndex, setOpenIndex] = useState(null);
+  const FAQSection = ({ faqData }) => {
+    const [openIndex, setOpenIndex] = useState(null);
 
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+    const handleToggle = (index) => {
+      setOpenIndex(openIndex === index ? null : index);
+    };
 
-  return (
-   <div style={{ marginTop: "40px", padding: "0 16px" }}>
-      <h2
-         style={{
-    color: "#97538c",
-    fontFamily: "Inter, sans-serif",
-    fontWeight: 700,
-    fontSize: "24px",
-    lineHeight: "100%",
-    letterSpacing: "0%",
-    marginBottom: "20px",
-    textAlign: "left",
-  }}
-      >
-        FAQ
-      </h2>
+    return (
+      <div style={{ marginTop: "40px", padding: "0 16px" }}>
+       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px",marginLeft:"10px" }}>
+  <Image src={cancellation} alt="FAQ Icon" width={25} height={25} />
+  <h2
+    style={{
+      color: "#97538c",
+      fontFamily: "Inter, sans-serif",
+      fontWeight: 700,
+      fontSize: "24px",
+      lineHeight: "100%",
+      letterSpacing: "0%",
+      margin: 0,
+    }}
+  >
+    FAQ
+  </h2>
+</div>
 
-      {faqData.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            background: "#fff",
-            borderRadius: "10px",
-            padding: "12px 14px",
-            // boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-            marginBottom: "12px",
-            border: openIndex === index ? "1.5px solid #97538c" : "1px solid #ddd",
-            transition: "border 0.3s ease",
-          }}
-        >
+        {faqData.map((item, index) => (
           <div
-            onClick={() => handleToggle(index)}
+            key={index}
             style={{
-              cursor: "pointer",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              fontWeight: 600,
-              fontSize: "15px",
-              color: "#3b3b3b",
+              background: "#fff",
+              borderRadius: "10px",
+              padding: "12px 14px",
+              // boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              marginBottom: "12px",
+              border: openIndex === index ? "1.5px solid #97538c" : "1px solid #ddd",
+              transition: "border 0.3s ease",
             }}
           >
-            <span>{item.question}</span>
-
-            {/* Smaller Circle with Arrow */}
             <div
+              onClick={() => handleToggle(index)}
               style={{
-                width: "20px",
-                height: "20px",
-                minWidth: "20px",
-                borderRadius: "50%",
-                backgroundColor: "#97538c",
+                cursor: "pointer",
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                justifyContent: "center",
-                marginLeft: "10px",
+                fontWeight: 600,
+                fontSize: "15px",
+                color: "#3b3b3b",
               }}
             >
-              <span
+              <span>{item.question}</span>
+
+              {/* Smaller Circle with Arrow */}
+              <div
                 style={{
-                  color: "#fff",
-                  fontSize: "13px",
-                  transform: openIndex === index ? "rotate(90deg)" : "rotate(0deg)",
-                  transition: "transform 0.3s ease",
-                  display: "inline-block",
+                  width: "20px",
+                  height: "20px",
+                  minWidth: "20px",
+                  borderRadius: "50%",
+                  backgroundColor: "#97538c",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginLeft: "10px",
                 }}
               >
-                &gt;
-              </span>
+                <span
+                  style={{
+                    color: "#fff",
+                    fontSize: "13px",
+                    transform: openIndex === index ? "rotate(90deg)" : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                    display: "inline-block",
+                  }}
+                >
+                  &gt;
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Answer Text */}
-          {openIndex === index && (
-            <div
-              style={{
-                marginTop: "10px",
-                color: "#555",
-                fontSize: "14px",
-                lineHeight: "1.5",
-              }}
-            >
-              {item.answer}
-              {/* {item.acceptedAnswer.text} */}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
+            {/* Answer Text */}
+            {openIndex === index && (
+              <div
+                style={{
+                  marginTop: "10px",
+                  color: "#555",
+                  fontSize: "14px",
+                  lineHeight: "1.5",
+                }}
+              >
+                {item.answer}
+                {/* {item.acceptedAnswer.text} */}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
 
 
@@ -338,24 +340,24 @@ const FAQSection = ({ faqData }) => {
               </div>
        </div> */}
 
-<div className="whyHoraSec">
-   <h2 className="whyHoraHeading">Why Hora Photography</h2>
-      <div className="whyHoraSecInner">
-        <div className="whyHoraSecBox">
-          <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
-          <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
-        </div>
-        <div className="whyHoraSecBox">
-          <Image src={SECURESTORAGE} alt="buy-now" />
-          <p className="whyHoraSubheading">SECURE STORAGE</p>
-        </div>
-        <div className="whyHoraSecBox">
-          <Image src={SUPPORT} alt="buy-now" />
-          <p className="whyHoraSubheading">27/7 SUPPORT</p>
+      <div className="whyHoraSec">
+        <h2 className="whyHoraHeading">Why Hora Photography</h2>
+        <div className="whyHoraSecInner">
+          <div className="whyHoraSecBox">
+            <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
+            <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
+          </div>
+          <div className="whyHoraSecBox">
+            <Image src={SECURESTORAGE} alt="buy-now" />
+            <p className="whyHoraSubheading">SECURE STORAGE</p>
+          </div>
+          <div className="whyHoraSecBox">
+            <Image src={SUPPORT} alt="buy-now" />
+            <p className="whyHoraSubheading">27/7 SUPPORT</p>
+          </div>
         </div>
       </div>
-    </div>
-<FAQSection faqData={faqData} />
+      <FAQSection faqData={faqData} />
     </div>
   );
 };

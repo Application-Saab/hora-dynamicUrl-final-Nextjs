@@ -1451,10 +1451,10 @@ button.view-details.order-details {
     flex-direction: column !important;
   }
 
-  .rightSeccheckout {
+  /* .rightSeccheckout {
      max-width: 330px;
         margin: auto;
-  }
+  } */
                          
   .leftSeccheckout {
     padding: 13px 16px !important;

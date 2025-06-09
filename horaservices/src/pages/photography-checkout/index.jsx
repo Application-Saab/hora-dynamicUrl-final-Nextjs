@@ -16,14 +16,18 @@ import Loader from '../../components/Loader'
 import { pincodes } from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
 import "./photographyCheckout.css";
+import BackgroundDetails from "../../assets/BackgroundDetails.svg";
 import productsData from '../../utils/photoGraphyImages.js';
 import CommentIcon from "../../assets/commenticon.png";
 import locationIcon from "../../assets/locationIcon.png";
 import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";
+import cancellation from "../../assets/Cancellation.svg"
+import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 const Checkout = () => {
   const router = useRouter();
-  let { product, totalAmount, orderType, Productname } = router.query; // Accessing subCategory and itemName safely
+  let { product, totalAmount, orderType, } = router.query;
+  console.log(product) // Accessing subCategory and itemName safely
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -47,21 +51,27 @@ const Checkout = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+
   const [productImage, setProductImage] = useState(null);
-const [productData, setProductData] = useState(null);
+  const [productData, setProductData] = useState(null);
 
-useEffect(() => {
-  if (!router.isReady) return; // Wait until the router is ready
-
-  const { productId } = router.query;
-
-  if (productId && productsData[productId]) {
-    const prod = productsData[productId];
-    setProductData(prod);
-    setProductImage(prod.images?.[0] || null);
+  if (product) {
+    product = JSON.parse(product)
   }
-}, [router.isReady, router.query]);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    if (router.query.product) {
+      const parsedProduct = JSON.parse(router.query.product);
+      setProductData(parsedProduct);
+
+      // Product ID se local image set karo
+      if (parsedProduct._id && productsData[parsedProduct._id]) {
+        setProductImage(productsData[parsedProduct._id].images[0]);
+      }
+    }
+  }, [router.isReady, router.query.product]);
 
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
@@ -172,7 +182,6 @@ useEffect(() => {
       const endTimeFormatted = hour + interval < 10 ? `0${hour + interval}:00 AM` : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? 'AM' : 'PM'}`;
       timeSlots.push(`${startTimeFormatted} - ${endTimeFormatted}`);
     }
-
     return timeSlots;
   };
 
@@ -252,6 +261,7 @@ useEffect(() => {
       console.log('Error  Data:', error.message);
     }
   };
+
 
   const onContinueClick = async () => {
     setLoading(true);
@@ -353,6 +363,8 @@ useEffect(() => {
       setLoading(false); // Hide loader
     }
   }
+
+
 
   const contactUsRedirection = () => {
     window.dataLayer = window.dataLayer || [];
@@ -524,8 +536,17 @@ useEffect(() => {
             </div>
           </div>
           : */}
-      <div className="booking-form-card">
-        <div className="booking-form with-bg-shapes">
+      {/* <div className="booking-form-card" >
+         <div
+    className="booking-form-background"
+    style={{
+      backgroundImage: `url(${BackgroundDetails.src})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    }}
+  />
+        <div className="booking-form with-bg-shapes" >
           <div className="background-shape top-left" />
           <div className="background-shape bottom-right" />
 
@@ -629,40 +650,182 @@ useEffect(() => {
             </button>
           </div>
         </div>
+      </div> */}
+
+
+      <div className="booking-form-card" >
+
+
+<div style={{
+
+          backgroundImage: `url(${BackgroundDetails.src})`,
+          backgroundSize: '423px 100%',
+         backgroundPosition:' left 0px top 40%',
+          backgroundRepeat: 'no-repeat',
+            
+        }} >
+        
+        {/* Transparent Foreground Form Layer */}
+        <div className="booking-form with-bg-shapes" >
+          <div className="background-shape top-left" />
+          <div className="background-shape bottom-right" />
+
+          <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
+
+          <div className="form-row">
+            <div className="form-half large-input">
+              <label className="form-label">Booking Date</label>
+              <div className="input-wrapper large-input-field">
+                <CustomDatePicker
+                  handleDateChange={handleDateChange}
+                  setSelectedDate={setSelectedDate}
+                  selectedDate={selectedDate}
+                  showDatePicker={showDatePicker}
+                  setShowDatePicker={setShowDatePicker}
+                  combinedDateTimeError={combinedDateTimeError}
+                  selectedDateError={selectedDateError}
+                />
+              </div>
+            </div>
+
+            <div className="form-half large-input">
+              <label className="form-label">Select Time Slot</label>
+              <div className="input-wrapper large-input-field">
+                <CustomTimePicker
+                  handleTimeSlotChange={handleTimeSlotChange}
+                  generateTimeSlots={generateTimeSlots}
+                  selectedTimeSlot={selectedTimeSlot}
+                  combinedDateTimeError={combinedDateTimeError}
+                  selectedTimeSlotError={selectedTimeSlotError}
+                />
+              </div>
+            </div>
+          </div>
+
+          {combinedDateTimeError && (
+            <p className="error-text">
+              The selected date and time must be at least 24 hours from now.
+            </p>
+          )}
+
+          <div className="form-group input-with-icon">
+            <label className="form-label">Share comments</label>
+            <Image src={CommentIcon} className="input-icon" alt="comment" />
+            <textarea
+              className="formcontrol"
+              value={comment}
+              onChange={handleComment}
+              rows={2}
+              placeholder="Enter your comments here..."
+            />
+          </div>
+
+          <div className="form-group input-with-icon">
+            <label className="form-label">Address:</label>
+            <Image src={locationIcon} className="input-icon" alt="location" />
+            <textarea
+              className="formcontrol"
+              value={address}
+              onChange={handleAddressChange}
+              rows={2}
+              placeholder="Enter your address here..."
+            />
+            {addressError && <p className="error-text">This field is required!</p>}
+          </div>
+
+          <div className="form-group input-with-icon">
+            <label className="form-label">City:</label>
+            <Image src={CityIcon} className="input-icon" alt="city" />
+            <select
+              value={city}
+              onChange={handleCityChange}
+              className="formcontrol select-colored"
+            >
+              <option value="" disabled>Select City</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Delhi">Delhi NCR</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Hyderabad">Hyderabad</option>
+            </select>
+            {cityError && <p className="error-text">This field is required!</p>}
+          </div>
+
+          <div className="form-group input-with-icon">
+            <label className="form-label">Pin Code:</label>
+            <Image src={PinIcon} className="input-icon" alt="pincode" />
+            <input
+              type="text"
+              className="formcontrol"
+              value={pinCode}
+              onChange={handlePinCodeChange}
+              placeholder="Enter your pin code here..."
+            />
+            {pinCode && (
+              <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
+                Service {pinCodeError ? "not " : ""}available in your area!
+              </p>
+            )}
+            {pincodeReqError && <p className="error-text">This field is required!</p>}
+          </div>
+
+          <div className="form-group">
+            <button
+              className="confirm-button"
+              onClick={onContinueClick}
+              type="button"
+            >
+              Confirm Order
+            </button>
+          </div>
+        </div>
+</div>
       </div>
 
 
-      <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px", marginBottom: "20px" }} >
+
+      <div className="rightSeccheckout" >
+        <div className="floating-center-image">
+  <Image
+    src={BackgorundImgDetails}
+    alt="Floating Decoration"
+    className="floating-image"
+  />
+</div>
         <div className='rightsecdecinner decoration'>
-          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "0 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
+          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "20px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className='d-flex flex-column flex-lg-row'>
 
-            <div className='prod-detailsp'>
-               {productImage && (
             <div className='detail-item'>
-              <Image src={productImage} alt={product.name} width={300} height={200} />
+              {/* <label>Product Name :</label> */}
+              <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
-          )}
-
-              <div className='detail-item'>
-                <label>Product Name :</label>
-                <p>{Productname}</p>
-              </div>
+            <div className='prod-detailsp'>
+              {productImage && (
+                <div className='detail-item'>
+                  <Image src={productImage} alt={product.name} className="detailimage" />
+                </div>
+              )}
+            </div>
+            <div className='prod-details'>
               <div className='detail-item'>
                 <label>Total Amount:</label>
                 <p>₹{totalAmount}</p>
               </div>
-
-              <div className='detail-item'>
+               <div className='detail-item'>
                 <label>Advance Amount:</label>
                 <p>₹ {Math.round(totalAmount * 0.35)}</p>
+              </div>
+              <div className='detail-item'>
+                <label>Add-ons: Cake Table: </label>
+                <p> {"N/A"}</p>
               </div>
             </div>
           </div>
         </div>
         <div className="policy-wrapper">
           <div className="policy-heading">
-            <span className="policy-icon">📍</span>
+
+            <Image src={cancellation} className="policy-icon" alt="pincode" />
             <span className="policy-title">Cancellation and Order Change Policy</span>
           </div>
           <ol className="policy-list">
@@ -679,9 +842,13 @@ useEffect(() => {
         </div>
 
       </div>
+
+  
       {/* } */}
+    
     </div>
 
+   
   );
 }
 
@@ -707,7 +874,7 @@ export const CustomDatePicker = ({
 
   return (
     <div className={`custom-datepicker-container ${combinedDateTimeError ? 'error' : ''}`}>
-      
+
       <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className="dropdown-custom">
         <Dropdown.Toggle
           variant="outline-secondary"
