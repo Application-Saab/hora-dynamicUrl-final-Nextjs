@@ -4,6 +4,8 @@ import proPhoto from "../assets/Prophoto.jpg";
 import videoPhoto from "../assets/videophoto.png";
 import WeddingAffair from "../assets/weddingAffairImage.png";
 import PreWeeding from "../assets/PreWeddingImg.png";
+import HaldiMehndi from "../assets/haldiMehndiImg.png";
+import preWedding from "../assets/pre-wed.png"
 const productsData = {
     "6710f33c21847b9ca0554940": {
       name: "Traditional PhotoGraphy",
@@ -48,12 +50,12 @@ const productsData = {
      "683ac1bcfdfcb315ad5b02b4":{
         name: "Haldi Mehnedi Affair",
         category:"Mega",
-        images:[WeddingAffair]
+        images:[HaldiMehndi]
     },
       "683ac1d1fdfcb315ad5b02b5":{
         name: "Pre Wedding Affair",
         category:"Mega",
-        images:[PreWeeding]
+        images:[preWedding]
     },
     "68411cc3fdfcb315ad5b02bd":{
         name: "Wedding Affair",

@@ -180,7 +180,7 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
               padding: "12px 14px",
               // boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
               marginBottom: "12px",
-              border: openIndex === index ? "1.5px solid #97538c" : "1px solid #ddd",
+              border: openIndex === index ? "1.5px solid #97538c" : "2px solid #ddd",
               transition: "border 0.3s ease",
             }}
           >
@@ -215,10 +215,11 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
                 <span
                   style={{
                     color: "#fff",
-                    fontSize: "13px",
-                    transform: openIndex === index ? "rotate(90deg)" : "rotate(0deg)",
+                    fontSize: "14px",
+                    transform: openIndex === index ? "rotate(270deg)" :"rotate(90deg)" ,
                     transition: "transform 0.3s ease",
                     display: "inline-block",
+                   
                   }}
                 >
                   &gt;

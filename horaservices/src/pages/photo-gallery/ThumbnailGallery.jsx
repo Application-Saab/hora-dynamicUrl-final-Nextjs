@@ -47,7 +47,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
     // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
     if (isIOSMobile) {
-        return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
+      return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
     }
     return window.innerWidth >= 768 ? 36 : 24; // Fallback for general calculation (though UI is hidden)
 
@@ -61,8 +61,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       setItemsPerPage(getItemsPerPage());
     };
     if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
     }
   }, [isIOSMobile, getItemsPerPage]);
 
@@ -107,7 +107,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     } else {
       originalIndex = indexInDisplayedList; // Index is direct from allThumbnails
     }
-    
+
     if (originalIndex >= 0 && originalIndex < allThumbnails.length) {
       setSelectedIndex(originalIndex);
     }
@@ -141,7 +141,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }), [allThumbnails.length]);
 
   if (loading) {
-    return <div className="thumbnail-gallery-status"><Image src={photogallryIcon} alt="Loading..." width={70} height={70} priority /></div>;
+    return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
   }
   if (error) {
     return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
@@ -153,22 +153,24 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   return (
     <div className="thumbnail-gallery">
       <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-        <div className="gallery-header-content">
-          {showInternalTitle && (
-            <div className="gallery-title-container">
-              <h1 className="gallery-title">Your Photos</h1>
-              {typeof handleShareicon === 'function' && ( // Only show share icon if handler is provided
+        {/* <div className="gallery-header-content"> */}
+
+
+           <div className="gallery-header">
+            <div className="gallery-header-content">
+              {typeof handleShareicon === 'function' && (
                 <Image
                   src={shareIcon}
                   alt="Share"
-                  className="gallery-share-icon" // Added class for styling
+                  className="gallery-share-icon"
                   onClick={handleShareicon}
-                  width={22} // Specify width and height for Next/Image
+                  width={22}
                   height={22}
                 />
               )}
             </div>
-          )}
+          </div>
+
 
           {/* Conditional Pagination Rendering */}
           {isIOSMobile && totalPages > 1 && (
@@ -181,7 +183,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               />
             </div>
           )}
-        </div>
+        {/* </div> */}
       </div>
 
       {currentThumbnailsOnPage.length > 0 ? (
@@ -233,31 +235,31 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         </div>
       )}
       <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-  <div className="gallery-header-content">
-    {showInternalTitle && (
-      <div className="gallery-title-container">
-        {/* <h1 className="gallery-title">Your Photos</h1> */}
-        {/* <Image
+        <div className="gallery-header-content">
+          {showInternalTitle && (
+            <div className="gallery-title-container">
+              {/* <h1 className="gallery-title">Your Photos</h1> */}
+              {/* <Image
           src={shareIcon}
           alt="Info"
           style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
           onClick={handleShareicon}
         /> */}
-      </div>
-    )}
+            </div>
+          )}
 
-    {totalPages > 0 && (
-      <div className="gallery-pagination-container">
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          inline={true}
-        />
+          {totalPages > 0 && (
+            <div className="gallery-pagination-container">
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                inline={true}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    )}
-  </div>
-</div>
     </div>
   );
 };

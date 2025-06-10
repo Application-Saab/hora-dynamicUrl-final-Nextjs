@@ -209,6 +209,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                       value={mobileNumber}
                       onChange={handleMobileNumberChange}
                       placeholder="Login 10 digit Mobile Number"
+                      style={{ color: "black" }}
                     />
                   </div>
                 </div>
@@ -222,6 +223,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                     onChange={handleOtpChange}
                     placeholder="Enter OTP"
                     className="enterotp-input"
+                    style={{ color: "black" }}
                   />
                 </div>
               )}

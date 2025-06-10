@@ -209,15 +209,15 @@ const index = () => {
 
   ];
 
-  const images = [
-    { title: "Wedding", image: "/wedding-shoot.jpg" },
-    { title: "Pre-Wedding", image: "/pre-wedding.jpg" },
-    { title: "Corporate", image: "/corporate-shoot.jpg" },
-    { title: "Maternity", image: "/maternity-shoot.jpg" },
-    { title: "Baby Shower", image: "/babyshower-shoot.jpg" },
-    { title: "Birthday", image: "/birthday-shoot.jpg" },
-    { title: "SeeMore", image: "/see-more.jpg" }
-  ];
+  // const images = [
+  //   { title: "Wedding", image: "/wedding-shoot.jpg" },
+  //   { title: "Pre-Wedding", image: "/pre-wedding.jpg" },
+  //   { title: "Corporate", image: "/corporate-shoot.jpg" },
+  //   { title: "Maternity", image: "/maternity-shoot.jpg" },
+  //   { title: "Baby Shower", image: "/babyshower-shoot.jpg" },
+  //   { title: "Birthday", image: "/birthday-shoot.jpg" },
+  //   { title: "SeeMore", image: "/see-more.jpg" }
+  // ];
 
   const tabs = [
     { id: 'intimate', title: 'Intimate\nMoments' },

@@ -26,9 +26,10 @@ import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 const Checkout = () => {
   const router = useRouter();
-  let { product, totalAmount, orderType, } = router.query;
-  console.log(product) // Accessing subCategory and itemName safely
-  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
+  let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
+  console.log(product)
+ const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];//  const formattedInclusions = product.inclusion.length > 0 ? parseInclusions(product.inclusion[0]) : [];
+
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDateError, setSelectedDateError] = useState(false);
@@ -228,7 +229,6 @@ const Checkout = () => {
 
   const saveAddress = async () => {
     try {
-      console.log("Inside saveAddress");
       const url = BASE_URL + SAVE_LOCATION_ENDPOINT;
       // Retrieve userID from localStorage
       let userId = localStorage.getItem("userID");
@@ -263,17 +263,17 @@ const Checkout = () => {
   };
 
 
+
   const onContinueClick = async () => {
     setLoading(true);
     const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await localStorage.getItem('userID');
     // const phoneNumber = await localStorage.getItem('mobileNumber')
     let merchantTransactionId;
-    console.log('selectedAddOnProduct', selectedAddOnProduct, phoneNumber, totalAmount);
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
-      const advanceAmount = Math.round(totalAmount * 0.35);
+      const advanceAmount = Math.round(totalAmount * 0.40);
       const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
       const requestData = {
@@ -282,7 +282,7 @@ const Checkout = () => {
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,
-        "type": 8,
+        "type": 1,
         "fromId": storedUserID,
         "is_discount": "0",
         "addressId": addressID,
@@ -302,7 +302,6 @@ const Checkout = () => {
         "decoration_comments": getFinalComment(),
         "status": 0
       }
-      console.log("redData", requestData);
       const token = await localStorage.getItem('token');
       const response = await axios.post(url, requestData, {
         headers: {
@@ -311,15 +310,15 @@ const Checkout = () => {
         },
       });
       merchantTransactionId = response.data.data._id
-    }
-    catch (error) {
+      //}
+    } catch (error) {
       console.log('Error Confirming Order:', error.message);
     }
 
 
     const requestData2 = {
       user_id: storedUserID,
-      price: Math.round(totalAmount * 0.35),
+      price: Math.round(totalAmount * 0.40),
       phone: phoneNumber,
       name: '',
       merchantTransactionId: merchantTransactionId
@@ -363,6 +362,7 @@ const Checkout = () => {
       setLoading(false); // Hide loader
     }
   }
+
 
 
 
@@ -411,391 +411,148 @@ const Checkout = () => {
     <div className="App">
       {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
       {loading && <Loader />}
-      {/* {
-        isClient && window.innerWidth > 800 ?
-          <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>
-            <div style={{ display: "flex", alignItems: "start", margin: "0 !important", padding: "10px 0" }} className='checoutSec my-3 gap-3'>
-              <div style={{ width: "40%", boxShadow: "0 1px 8px rgba(0,0,0,.18)", padding: "20px", backgroundColor: "#fff", borderRadius: "20px" }} className='leftSeccheckout'>
-                <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2>
-
-                <div className='border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center' style={{ color: '#000', fontSize: 12, fontWeight: '500', textAlign: 'left', color: "#9252AA" }}>
-                  Photographer will be available for 4 hours after arrival.
-                </div>
-
-                <div style={{ display: 'flex', margin: "8px 0px 10px", flexDirection: "row" }} className='row align-items-between justify-content-between   align-items-lg-center justify-content-lg-between'>
-                  <CustomDatePicker handleDateChange={handleDateChange} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showDatePicker={showDatePicker} setShowDatePicker={setShowDatePicker} combinedDateTimeError={combinedDateTimeError} selectedDateError={selectedDateError} />
-                  <CustomTimePicker handleTimeSlotChange={handleTimeSlotChange} generateTimeSlots={generateTimeSlots} selectedTimeSlot={selectedTimeSlot} combinedDateTimeError={combinedDateTimeError} selectedTimeSlotError={selectedTimeSlotError} />
-                </div>
-                {combinedDateTimeError && <p className="text-danger" style={{ fontSize: '12px', marginBottom: "0px" }}>The selected date and time must be at least 24 hours from now.</p>}
-                <div className='checkoutInputType  rounded-4  ' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
-                  <h4 style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marginBottom: "4px" }}>Share your comments (if any)</h4>
-                  <textarea className=' rounded border  p-1 bg-white text-black'
-                    value={comment}
-                    onChange={handleComment}
-                    rows={3}
-                    placeholder="Enter your comment."
-                  />
-                </div>
-                <div>
-                  <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
-                    <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", fontWeight: "600" }}>Address:</label>
-                    <textarea
-                      type="text"
-                      className='rounded border  p-1 bg-white text-black'
-                      value={address}
-                      onChange={handleAddressChange}
-                      rows={3}
-                      placeholder="Enter your Address."
-                    />
-                    {addressError && <p className={`p-0 m-0 ${addressError ? "text-danger" : ""}`}>This field is required!</p>}
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
-                    <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>Pin Code:</label>
-                    <input
-                      type="text" className=' rounded border  p-1 bg-white text-black'
-                      value={pinCode}
-                      onChange={handlePinCodeChange}
-                    />
-                    {pinCode && <p className={`p-0 m-0 ${pinCodeError ? "text-danger" : "text-success"}`}>{`Service ${pinCodeError ? 'not' : ''} available in your area!`}</p>}
-                    {pincodeReqError && <p className={`p-0 m-0 ${pincodeReqError ? "text-danger" : ""}`}>This field is required!</p>}
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "center", flexDirection: "column" }} className='checkoutInputType'>
-                    <label style={{ color: "rgb(146, 82, 170)", fontSize: "14px", marigin: "16px 0 6px", fontWeight: 600 }}>City:</label>
-                    <select value={city} className=' rounded border  p-1 bg-white text-black' onChange={handleCityChange}>
-                      <option value="">Select City</option>
-                      <option value="Bangalore">Bangalore</option>
-                      <option value="Delhi">Delhi NCR</option>
-                      <option value="Mumbai">Mumbai</option>
-                      <option value="Hyderabad">Hyderabad</option>
-                      
-                    </select>
-                    {cityError && <p className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}>This field is required!</p>}
-                  </div>
-                </div>
-                <button onClick={onContinueClick} className="blue-btn chkeoutBottun">Confirm Order</button>
-              </div>
-              
-              <div className="rightSeccheckout" style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18) ", padding: "20px", backgroundColor: "#fff", borderRadius: "20px", width: "59%" }} >
-                <div className='rightsecdecinner decoration'>
-                  <h3 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 11px 0", lineHeight: "35px", width: "100%" }}>Order Summary</h3>
-                  <div className='d-flex flex-column flex-lg-row'>
-
-                    <div className='prod-detailsp'>
-
-
-                      <div className='add-on-prices'>
-
-                        <div>
-                          {selectedAddOnProduct.length > 0 && (
-                            <>
-                              <label>Customisations</label>
-                              {selectedAddOnProduct.map((item, index) => (
-                                <li key={index}>
-                                  <div>
-                                    {item.title}
-                                  </div>
-                                  <div>
-                                    ₹ {item.price}
-
-                                  </div>
-                                </li>
-                              ))}
-
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className='detail-item'>
-                        <label>Total Amount:</label>
-                        <p>₹{totalAmount}</p>
-                      </div>
-
-                      <div className='detail-item'>
-                        <label>Advance Amount:</label>
-                        <p>₹ {Math.round(totalAmount * 0.35)}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div >
-                  <div className='d-flex flex-wrap justify-content-center align-items-center need-more-info-sec'>
-                    <h5 className='mt-2'>Need more info?</h5>
-                    <button onClick={contactUsRedirection} style={{ border: "2px solid rgb(157, 74, 147)", color: "rgb(157, 74, 147)", padding: "0px 12px" }} className='rounded-5 ms-1 bg-transparent contactus-redirection'>Contact Us</button>
-                  </div>
-                  <div className='px-1 py-3 border rounded my-2 cancellatiop-policy' style={{
-                    background: "rgb(157, 74,147, 28%)"
-                  }}>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className=' text-center m-1'>Cancellation and order change policy</p>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>1. If the order is beyong 48 Hours: You are eligible for a 100% refund of the advance payment</p>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>2. If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.</p>
-                    <p style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }} className='m-1'>3. If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          : */}
-      {/* <div className="booking-form-card" >
-         <div
-    className="booking-form-background"
-    style={{
-      backgroundImage: `url(${BackgroundDetails.src})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-    }}
-  />
-        <div className="booking-form with-bg-shapes" >
-          <div className="background-shape top-left" />
-          <div className="background-shape bottom-right" />
-
-          <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
-
-          <div className="form-row">
-            <div className="form-half large-input">
-              <label className="form-label">Booking Date</label>
-              <div className="input-wrapper large-input-field">
-                <CustomDatePicker handleDateChange={handleDateChange} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showDatePicker={showDatePicker} setShowDatePicker={setShowDatePicker} combinedDateTimeError={combinedDateTimeError} selectedDateError={selectedDateError} />
-
-              </div>
-            </div>
-            <div className="form-half large-input">
-              <label className="form-label">Select Time Slot</label>
-              <div className="input-wrapper large-input-field">
-                <CustomTimePicker handleTimeSlotChange={handleTimeSlotChange} generateTimeSlots={generateTimeSlots} selectedTimeSlot={selectedTimeSlot} combinedDateTimeError={combinedDateTimeError} selectedTimeSlotError={selectedTimeSlotError} />
-
-              </div>
-            </div>
-          </div>
-
-
-          {combinedDateTimeError && (
-            <p className="error-text">
-              The selected date and time must be at least 24 hours from now.
-            </p>
-          )}
-
-
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">Share comments</label>
-            <Image src={CommentIcon} className="input-icon" alt="comment" />
-            <textarea
-              className="formcontrol"
-              value={comment}
-              onChange={handleComment}
-              rows={2}
-              placeholder="Enter your comments here..."
-            />
-          </div>
-
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">Address:</label>
-            <Image src={locationIcon} className="input-icon" alt="location" />
-
-            <textarea
-              className="formcontrol"
-              value={address}
-              onChange={handleAddressChange}
-              rows={2}
-              placeholder="Enter your address here..."
-            />
-            {addressError && <p className="error-text">This field is required!</p>}
-          </div>
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">City:</label>
-            <Image src={CityIcon} className="input-icon" alt="city" />
-            <select
-              value={city}
-              onChange={handleCityChange}
-              className="formcontrol select-colored"
-            >
-              <option value="" disabled>Select City</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Delhi">Delhi NCR</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Hyderabad">Hyderabad</option>
-            </select>
-            {cityError && <p className="error-text">This field is required!</p>}
-          </div>
-
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">Pin Code:</label>
-            <Image src={PinIcon } className="input-icon" alt="pincode" />
-            <input
-              type="text"
-              className="formcontrol"
-              value={pinCode}
-              onChange={handlePinCodeChange}
-              placeholder="Enter your pin code here..."
-            />
-            {pinCode && (
-              <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
-                Service {pinCodeError ? "not " : ""}available in your area!
-              </p>
-            )}
-            {pincodeReqError && <p className="error-text">This field is required!</p>}
-          </div>
-          <div className="form-group">
-            <button
-              className="confirm-button"
-              onClick={onContinueClick}
-              type="button"
-            >
-              Confirm Order
-            </button>
-          </div>
-        </div>
-      </div> */}
-
 
       <div className="booking-form-card" >
-
-
-<div style={{
+        <div style={{
 
           backgroundImage: `url(${BackgroundDetails.src})`,
           backgroundSize: '423px 100%',
-         backgroundPosition:' left 0px top 40%',
+          backgroundPosition: ' left 0px top 40%',
           backgroundRepeat: 'no-repeat',
-            
+
         }} >
-        
-        {/* Transparent Foreground Form Layer */}
-        <div className="booking-form with-bg-shapes" >
-          <div className="background-shape top-left" />
-          <div className="background-shape bottom-right" />
 
-          <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
+          {/* Transparent Foreground Form Layer */}
+          <div className="booking-form with-bg-shapes" >
+            <div className="background-shape top-left" />
+            <div className="background-shape bottom-right" />
 
-          <div className="form-row">
-            <div className="form-half large-input">
-              <label className="form-label">Booking Date</label>
-              <div className="input-wrapper large-input-field">
-                <CustomDatePicker
-                  handleDateChange={handleDateChange}
-                  setSelectedDate={setSelectedDate}
-                  selectedDate={selectedDate}
-                  showDatePicker={showDatePicker}
-                  setShowDatePicker={setShowDatePicker}
-                  combinedDateTimeError={combinedDateTimeError}
-                  selectedDateError={selectedDateError}
-                />
+            <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
+
+            <div className="form-row">
+              <div className="form-half large-input">
+                <label className="form-label">Booking Date</label>
+                <div className="input-wrapper large-input-field">
+                  <CustomDatePicker
+                    handleDateChange={handleDateChange}
+                    setSelectedDate={setSelectedDate}
+                    selectedDate={selectedDate}
+                    showDatePicker={showDatePicker}
+                    setShowDatePicker={setShowDatePicker}
+                    combinedDateTimeError={combinedDateTimeError}
+                    selectedDateError={selectedDateError}
+                  />
+                </div>
+              </div>
+
+              <div className="form-half large-input">
+                <label className="form-label">Select Time Slot</label>
+                <div className="input-wrapper large-input-field">
+                  <CustomTimePicker
+                    handleTimeSlotChange={handleTimeSlotChange}
+                    generateTimeSlots={generateTimeSlots}
+                    selectedTimeSlot={selectedTimeSlot}
+                    combinedDateTimeError={combinedDateTimeError}
+                    selectedTimeSlotError={selectedTimeSlotError}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="form-half large-input">
-              <label className="form-label">Select Time Slot</label>
-              <div className="input-wrapper large-input-field">
-                <CustomTimePicker
-                  handleTimeSlotChange={handleTimeSlotChange}
-                  generateTimeSlots={generateTimeSlots}
-                  selectedTimeSlot={selectedTimeSlot}
-                  combinedDateTimeError={combinedDateTimeError}
-                  selectedTimeSlotError={selectedTimeSlotError}
-                />
-              </div>
-            </div>
-          </div>
-
-          {combinedDateTimeError && (
-            <p className="error-text">
-              The selected date and time must be at least 24 hours from now.
-            </p>
-          )}
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">Share comments</label>
-            <Image src={CommentIcon} className="input-icon" alt="comment" />
-            <textarea
-              className="formcontrol"
-              value={comment}
-              onChange={handleComment}
-              rows={2}
-              placeholder="Enter your comments here..."
-            />
-          </div>
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">Address:</label>
-            <Image src={locationIcon} className="input-icon" alt="location" />
-            <textarea
-              className="formcontrol"
-              value={address}
-              onChange={handleAddressChange}
-              rows={2}
-              placeholder="Enter your address here..."
-            />
-            {addressError && <p className="error-text">This field is required!</p>}
-          </div>
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">City:</label>
-            <Image src={CityIcon} className="input-icon" alt="city" />
-            <select
-              value={city}
-              onChange={handleCityChange}
-              className="formcontrol select-colored"
-            >
-              <option value="" disabled>Select City</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Delhi">Delhi NCR</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Hyderabad">Hyderabad</option>
-            </select>
-            {cityError && <p className="error-text">This field is required!</p>}
-          </div>
-
-          <div className="form-group input-with-icon">
-            <label className="form-label">Pin Code:</label>
-            <Image src={PinIcon} className="input-icon" alt="pincode" />
-            <input
-              type="text"
-              className="formcontrol"
-              value={pinCode}
-              onChange={handlePinCodeChange}
-              placeholder="Enter your pin code here..."
-            />
-            {pinCode && (
-              <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
-                Service {pinCodeError ? "not " : ""}available in your area!
+            {combinedDateTimeError && (
+              <p className="error-text">
+                The selected date and time must be at least 24 hours from now.
               </p>
             )}
-            {pincodeReqError && <p className="error-text">This field is required!</p>}
-          </div>
 
-          <div className="form-group">
-            <button
-              className="confirm-button"
-              onClick={onContinueClick}
-              type="button"
-            >
-              Confirm Order
-            </button>
+            <div className="form-group input-with-icon">
+              <label className="form-label">Share comments</label>
+              <Image src={CommentIcon} className="input-icon" alt="comment" />
+              <textarea
+                className="formcontrol"
+                value={comment}
+                onChange={handleComment}
+                rows={2}
+                placeholder="Enter your comments here..."
+              />
+            </div>
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">Address:</label>
+              <Image src={locationIcon} className="input-icon" alt="location" />
+              <textarea
+                className="formcontrol"
+                value={address}
+                onChange={handleAddressChange}
+                rows={2}
+                placeholder="Enter your address here..."
+              />
+              {addressError && <p className="error-text">This field is required!</p>}
+            </div>
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">City:</label>
+              <Image src={CityIcon} className="input-icon" alt="city" />
+              <select
+                value={city}
+                onChange={handleCityChange}
+                className="formcontrol select-colored"
+              >
+                <option value="" disabled>Select City</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Delhi">Delhi NCR</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Hyderabad">Hyderabad</option>
+              </select>
+              {cityError && <p className="error-text">This field is required!</p>}
+            </div>
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">Pin Code:</label>
+              <Image src={PinIcon} className="input-icon" alt="pincode" />
+              <input
+                type="text"
+                className="formcontrol"
+                value={pinCode}
+                onChange={handlePinCodeChange}
+                placeholder="Enter your pin code here..."
+              />
+              {pinCode && (
+                <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
+                  Service {pinCodeError ? "not " : ""}available in your area!
+                </p>
+              )}
+              {pincodeReqError && <p className="error-text">This field is required!</p>}
+            </div>
+
+            <div className="form-group">
+              <button
+                className="confirm-button"
+                onClick={onContinueClick}
+                type="button"
+              >
+                Confirm Order
+              </button>
+            </div>
           </div>
         </div>
-</div>
       </div>
 
 
 
       <div className="rightSeccheckout" >
         <div className="floating-center-image">
-  <Image
-    src={BackgorundImgDetails}
-    alt="Floating Decoration"
-    className="floating-image"
-  />
-</div>
+          <Image
+            src={BackgorundImgDetails}
+            alt="Floating Decoration"
+            className="floating-image"
+          />
+        </div>
         <div className='rightsecdecinner decoration'>
           <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "20px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className='d-flex flex-column flex-lg-row'>
 
-            <div className='detail-item'>
+            <div >
               {/* <label>Product Name :</label> */}
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
@@ -806,26 +563,33 @@ const Checkout = () => {
                 </div>
               )}
             </div>
+
             <div className='prod-details'>
-              <div className='detail-item'>
-                <label>Total Amount:</label>
-                <p>₹{totalAmount}</p>
-              </div>
-               <div className='detail-item'>
-                <label>Advance Amount:</label>
-                <p>₹ {Math.round(totalAmount * 0.35)}</p>
-              </div>
               <div className='detail-item'>
                 <label>Add-ons: Cake Table: </label>
                 <p> {"N/A"}</p>
               </div>
+              <div className='detail-item'>
+                <label>Total Amount:</label>
+                <p>₹{totalAmount}</p>
+              </div>
+              <div className='detail-item'>
+                <label>Advance Amount:</label>
+                <p>₹ {Math.round(totalAmount * 0.35)}</p>
+              </div>
+
             </div>
           </div>
         </div>
         <div className="policy-wrapper">
           <div className="policy-heading">
+            <Image
+              src={cancellation}
+              className="policy-icon"
+              height={18}
+              width={16}
+            />
 
-            <Image src={cancellation} className="policy-icon" alt="pincode" />
             <span className="policy-title">Cancellation and Order Change Policy</span>
           </div>
           <ol className="policy-list">
@@ -843,12 +607,12 @@ const Checkout = () => {
 
       </div>
 
-  
-      {/* } */}
-    
+
+
+
     </div>
 
-   
+
   );
 }
 
@@ -865,11 +629,11 @@ export const CustomDatePicker = ({
   const toggleDatePicker = () => {
     setShowDatePicker((prev) => !prev);
   };
-  const handleToggle = (isOpen, event, metadata) => {
-    // Agar user ne bahar click kiya ya toggle button pe click kiya
-    // dropdown open/close ka status yaha milega
-    setShowDatePicker(isOpen);
-  };
+  // const handleToggle = (isOpen, event, metadata) => {
+  //   // Agar user ne bahar click kiya ya toggle button pe click kiya
+  //   // dropdown open/close ka status yaha milega
+  //   setShowDatePicker(isOpen);
+  // };
 
 
   return (
