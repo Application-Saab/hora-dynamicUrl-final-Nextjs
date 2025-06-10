@@ -5,7 +5,8 @@ import Image from "next/image";
 export function HeroBanner({openDecorationPage}) {
   return (
     <div className="container my-2">
-      <h1 className="text-center text-purple fw-bold display-5 position-relative hero-title party-title">
+      <h1 className="text-center  fw-bold display-5 position-relative hero-title party-title" style={{ color: "#97538c", fontWeight: "900" }}>
+        
         All party services on one platform
       </h1>
 

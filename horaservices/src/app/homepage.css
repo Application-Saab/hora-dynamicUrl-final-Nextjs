@@ -57,10 +57,11 @@
   text-align: center;
   position: relative;
   font-size: 2rem;
-  color: #97538c;
+  color: #97538c !important;
   margin: 0 auto;
   width: 84%;
   margin: 12px auto 21px;
+  font-weight: 900 !important;
 }
 
 .party-title::before,
@@ -74,6 +75,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  color: #97538c !important;
 }
 .party-title::before {
   left: 0;
@@ -85,7 +87,7 @@
 
 .party-title {
   font-family: "Montserrat", sans-serif;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-size: 48px;
 }
 
