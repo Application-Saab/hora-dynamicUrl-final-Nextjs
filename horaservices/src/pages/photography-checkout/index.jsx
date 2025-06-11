@@ -27,8 +27,10 @@ import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 const Checkout = () => {
   const router = useRouter();
   let { product, totalAmount, orderType, } = router.query;
-  console.log(product) // Accessing subCategory and itemName safely
+  console.log(product,"product") // Accessing subCategory and itemName safely
+  console.log(product.inclusion,"product.inclusion");
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
+  console.log("selectedAddOnProduct", selectedAddOnProduct);
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDateError, setSelectedDateError] = useState(false);
@@ -55,15 +57,27 @@ const Checkout = () => {
   const [productImage, setProductImage] = useState(null);
   const [productData, setProductData] = useState(null);
 
+  const [sendInclusion, setSendInclusion] = useState(false);
+
   if (product) {
     product = JSON.parse(product)
   }
 
+  const parseInclusions = (htmlString) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
+    const divs = doc.querySelectorAll('div');
+    return Array.from(divs).map(div => div.textContent.trim());
+  };
+  
   useEffect(() => {
     if (!router.isReady) return;
 
     if (router.query.product) {
       const parsedProduct = JSON.parse(router.query.product);
+      const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
+      setSendInclusion(formattedInclusions);
+
       setProductData(parsedProduct);
 
       // Product ID se local image set karo
@@ -278,7 +292,7 @@ const Checkout = () => {
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
       const requestData = {
         "toId": "",
-        "add_on": selectedAddOnProduct,
+        "add_on": sendInclusion,
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,

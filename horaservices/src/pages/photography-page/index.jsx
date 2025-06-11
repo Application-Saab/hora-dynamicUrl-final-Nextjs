@@ -1,39 +1,39 @@
-import { useState, useEffect, useCallback } from 'react'
-import './photo.css'
-import Image from 'next/image'
-import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useState, useEffect, useCallback } from "react";
+import "./photo.css";
+import Image from "next/image";
+import axios from "axios";
+import { useRouter } from "next/router";
 import photographyBanner from "../../assets/photography-landing.svg";
 import HaldiMehndi from "../../assets/HaldiMehndi.png";
 import wedding from "../../assets/wedding.png";
 import Maternity from "../../assets/maternity.png";
 import Birthday from "../../assets/Sbirthday.png";
 import preWedding from "../../assets/prewedding.png";
-import Babyshower from "../../assets/babyshower.png"
-import PhotoBanner from "../../assets/PhotoBanner.png"
-import Banner1 from "../../assets/banner1.png"
-import Banner2 from "../../assets/Banner2.jpeg"
-import Banner3 from "../../assets/banner3.png"
+import Babyshower from "../../assets/babyshower.png";
+import PhotoBanner from "../../assets/PhotoBanner.png";
+import Banner1 from "../../assets/banner1.png";
+import Banner2 from "../../assets/Banner2.jpeg";
+import Banner3 from "../../assets/banner3.png";
 import magician from "../../assets/magician.jpg";
 import traditionalImg from "../../assets/traditionalphoto.jpg";
 import candidImg from "../../assets/CandidphotoImg.jpg";
 import proImg from "../../assets/Prophotography.png";
 import videoImg from "../../assets/Videography.jpg";
-import defaultImg from "../../assets/traditionalphoto.jpg"
+import defaultImg from "../../assets/traditionalphoto.jpg";
 import haldiMehendiImg from "../../assets/haldiMehendi.jpg";
-import PreWeddingImg from "../../assets/PreWeddingImg.jpg" ;
+import PreWeddingImg from "../../assets/PreWeddingImg.jpg";
 import weddingAffairImg from "../../assets/weddingAffair.jpg";
-import grandWeddingAffairImg from "../../assets/grandWeddingAffair.jpg"
-import Slider from 'react-slick';
+import grandWeddingAffairImg from "../../assets/grandWeddingAffair.jpg";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import whatsppicon from "../../assets/whatsapp-new.webp";
-import Link from 'next/link';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import Tabs from '@/components/Tabs';
+import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import Tabs from "@/components/Tabs";
 
 const index = () => {
   const [products, setProducts] = useState([]);
@@ -42,26 +42,26 @@ const index = () => {
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
   const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
   const [discountDifference, setDiscountDifference] = useState(0);
-  const [activeTab, setActiveTab] = useState('intimate');
+  const [activeTab, setActiveTab] = useState("intimate");
   const router = useRouter();
   const { catvalue } = router.query;
 
   const imageMap = {
-  '6710f33c21847b9ca0554940': traditionalImg,
-  '67c9af0c4bee1b66f0aac35d': candidImg,
-  '67c9af224bee1b66f0aac35e': proImg,
-  '67c9b0564bee1b66f0aac35f': videoImg,
-  // Grand 
-  "683abe22fdfcb315ad5b02b0": traditionalImg,
-  "683abe69fdfcb315ad5b02b1": candidImg,
-  "68411d34fdfcb315ad5b02bf": proImg,
-  "68411d61fdfcb315ad5b02c0":videoImg, 
-  //Mega 
-  "683ac1bcfdfcb315ad5b02b4": haldiMehendiImg,
-  "683ac1d1fdfcb315ad5b02b5": PreWeddingImg,
- "68411cc3fdfcb315ad5b02bd": weddingAffairImg,
- "68411cd8fdfcb315ad5b02be": grandWeddingAffairImg
-};
+    "6710f33c21847b9ca0554940": traditionalImg,
+    "67c9af0c4bee1b66f0aac35d": candidImg,
+    "67c9af224bee1b66f0aac35e": proImg,
+    "67c9b0564bee1b66f0aac35f": videoImg,
+    // Grand
+    "683abe22fdfcb315ad5b02b0": traditionalImg,
+    "683abe69fdfcb315ad5b02b1": candidImg,
+    "68411d34fdfcb315ad5b02bf": proImg,
+    "68411d61fdfcb315ad5b02c0": videoImg,
+    //Mega
+    "683ac1bcfdfcb315ad5b02b4": haldiMehendiImg,
+    "683ac1d1fdfcb315ad5b02b5": PreWeddingImg,
+    "68411cc3fdfcb315ad5b02bd": weddingAffairImg,
+    "68411cd8fdfcb315ad5b02be": grandWeddingAffairImg,
+  };
 
   const renderProducts = (heading) => {
     if (loading) {
@@ -77,8 +77,8 @@ const index = () => {
           <p className="ProductHeading">{heading}</p>
           <div className="work-container">
             {products.map((work, index) => {
-              // const imageUrl = imageList[index % imageList.length]; 
-               const imageUrl = imageMap[work._id] || defaultImg;
+              // const imageUrl = imageList[index % imageList.length];
+              const imageUrl = imageMap[work._id] || defaultImg;
               return (
                 <div className="work-item" key={index}>
                   <div className="discount-badge">
@@ -95,21 +95,32 @@ const index = () => {
                       <h5 className="work-title">{work.name}</h5>
                     </div>
                   </div> */}
-                  
-<div className="work-image-wrapper">
-  <div className="work-image">
-    <Image src={imageUrl} alt={work.name} className="work-img" />
-    <div className="work-image-overlay" />
-    <h5 className="work-title">{work.name}</h5>
-  </div>
-</div>
+
+                  <div className="work-image-wrapper">
+                    <div className="work-image">
+                      <Image
+                        src={imageUrl}
+                        alt={work.name}
+                        className="work-img"
+                      />
+                      <div className="work-image-overlay" />
+                      <h5 className="work-title">{work.name}</h5>
+                    </div>
+                  </div>
                   <div className="work-card-info">
                     <p className="Prefred-occ">
-                      <span >₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>
-
+                      <span>₹ {work.price}</span>
+                      <span>
+                        {" "}
+                        ₹{Math.floor(work.discountedPrice.toFixed(2))}{" "}
+                      </span>
                     </p>
-                    <button onClick={() => viewMoreProduct(work, activeTab)} className="photograpy-book-now">View More</button>
-
+                    <button
+                      onClick={() => viewMoreProduct(work, activeTab)}
+                      className="photograpy-book-now"
+                    >
+                      View More
+                    </button>
                   </div>
                 </div>
               );
@@ -117,15 +128,14 @@ const index = () => {
           </div>
         </div>
       </div>
-
     );
-  }
+  };
   const viewMoreProduct = (work, activeTab) => {
     router.push({
       pathname: `/photography-page/product/${work._id}`,
       query: {
         product: JSON.stringify(work),
-        tagId: tagIds[activeTab],  // now accessible here
+        tagId: tagIds[activeTab], // now accessible here
       },
     });
   };
@@ -142,10 +152,9 @@ const index = () => {
     }
 
     const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
-    const discountDifference = Math.abs(price - discountedPrice);;
+    const discountDifference = Math.abs(price - discountedPrice);
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
-
 
   const fetchData = useCallback(async (tagId) => {
     setLoading(true);
@@ -153,36 +162,36 @@ const index = () => {
       const response = await axios.get(
         `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
       );
-      const productData = response.data.data.map(item => {
-        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);
+      const productData = response.data.data.map((item) => {
+        const { discount, discountedPrice, discountDifference } =
+          getDiscountedPrice(item.price);
         return {
           ...item,
           discountPercentage: discount,
           discountedPrice,
-          discountDifference
+          discountDifference,
         };
       });
       setProducts(productData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setProducts([]);
-    }
-    finally {
+    } finally {
       setLoading(false); // Stop loading
     }
   }, []);
 
   const tagIds = {
-    intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
-    grand: '66c96b5922ed47b72117e0a7',    // Grand tab
-    mega: '66c96b6922ed47b72117e0b4'      // Mega tab
+    intimate: "66c96b4e22ed47b72117e09a", // Intimate tab
+    grand: "66c96b5922ed47b72117e0a7", // Grand tab
+    mega: "66c96b6922ed47b72117e0b4", // Mega tab
   };
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     fetchData(tagIds[tabId]);
   };
   useEffect(() => {
-    fetchData('66c96b4e22ed47b72117e09a');
+    fetchData("66c96b4e22ed47b72117e09a");
   }, []);
 
   const sendToCheckoutPage = (product) => {
@@ -193,21 +202,16 @@ const index = () => {
     });
     console.log("Data sent to dataLayer:");
     router.push({
-      pathname: 'photography-checkout',
+      pathname: "photography-checkout",
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
         totalAmount: product.price,
-      }
+      },
     });
   };
 
-  const bannerImages = [
-    Banner1,
-    Banner2,
-    Banner3,
-
-  ];
+  const bannerImages = [Banner1, Banner2, Banner3];
 
   const images = [
     { title: "Wedding", image: "/wedding-shoot.jpg" },
@@ -216,38 +220,38 @@ const index = () => {
     { title: "Maternity", image: "/maternity-shoot.jpg" },
     { title: "Baby Shower", image: "/babyshower-shoot.jpg" },
     { title: "Birthday", image: "/birthday-shoot.jpg" },
-    { title: "SeeMore", image: "/see-more.jpg" }
+    { title: "SeeMore", image: "/see-more.jpg" },
   ];
 
   const tabs = [
-    { id: 'intimate', title: 'Intimate\nMoments' },
-    { id: 'grand', title: 'Grand\nCelebrations' },
-    { id: 'mega', title: 'Mega\nOccasions' },
+    { id: "intimate", title: "Intimate\nMoments" },
+    { id: "grand", title: "Grand\nCelebrations" },
+    { id: "mega", title: "Mega\nOccasions" },
   ];
 
   const heading = {
-    intimate: 'Perfect for intimate events and moments with under 100 guests',
-    grand: 'Specially Designed for all Wedding Rituals',
-    mega: 'For Mega occasions (100-250 guests) needing 2 professional photographers'
+    intimate: "Perfect for intimate events and moments with under 100 guests",
+    grand: "Specially Designed for all Wedding Rituals",
+    mega: "For Mega occasions (100-250 guests) needing 2 professional photographers",
   };
 
   const reviews = [
     {
       text: "Service is very good. We really liked every service. We took decoration photography and food service. Decoration done in 1hr. Photographer reached 20min before. Food delivered 30min before. Everything happened before time and was perfect.",
-      author: "Saravani A"
+      author: "Saravani A",
     },
     {
       text: "All the service provided by HORA including decoration and photography done by Mr. Naveen kumar were up to the mark. Thankyou so much for making our baby shower program memorable. Would definitely recommend for decoration and photography.",
-      author: "Shilpa Raha"
+      author: "Shilpa Raha",
     },
     {
       text: "The Best Services! I never knew or heard about them, just tried to take photography services n booked it. Especially, The photographer Mr. Devendra! Such a down to earth, friendly n professional men. I was so happy about his services n behaviour!! If you wanna try... Close you eyes n book them!! Highly recommend!",
-      author: "Umesh K"
+      author: "Umesh K",
     },
     {
       text: "Hora makes our life easy in simple partying.. it's great I found Hora... Every service team is excellent in doing there jobs. Mr Mitesh photography did his job ",
-      author: "Anusha Battiprolu"
-    }
+      author: "Anusha Battiprolu",
+    },
   ];
   return (
     <>
@@ -263,18 +267,21 @@ const index = () => {
             >
               {bannerImages.map((img, index) => (
                 <SwiperSlide key={index}>
-                  <Image src={img} alt={`Banner ${index + 1}`} layout="responsive"
+                  <Image
+                    src={img}
+                    alt={`Banner ${index + 1}`}
+                    layout="responsive"
                     width={1200}
                     height={400}
                     quality={100}
                     priority
-                    className="banner-image" />
+                    className="banner-image"
+                  />
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
         </div>
-
 
         <Tabs
           tabs={tabs}
@@ -283,8 +290,6 @@ const index = () => {
           onTabChange={handleTabChange}
         />
         <div>{renderProducts(heading[activeTab])}</div>
-
-
 
         {/* <h2 className="gallery-heading">
         <img
@@ -332,63 +337,86 @@ const index = () => {
         </a>
       </div> */}
 
-
-
         <div class="suggested-poses">
           <div class="suggested-poses-section">
-            <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
+            <Image
+              src={PhotoBanner}
+              alt="Camera Holding"
+              class="suggested-img"
+            />
             <div class="text-overlay">
               <h2 class="pose-title">Suggested Poses</h2>
-              <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
+              <p class="pose-subtitle">
+                Perfect for a relaxed and friendly vibe
+              </p>
             </div>
           </div>
         </div>
 
-
-
-
         <div class="poses">
           <div class="pose-grid">
-            <a href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2"
+              class="pose-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Image src={wedding} alt="Wedding" />
               <p>Wedding</p>
             </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2"
+              class="pose-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Image src={Maternity} alt="Maternity" />
               <p>Maternity</p>
             </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2"
+              class="pose-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Image src={Birthday} alt="Birthday" />
               <p>Birthday</p>
             </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2"
+              class="pose-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Image src={preWedding} alt="Pre-Wedding" />
               <p>pre-Wedding</p>
             </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2"
+              class="pose-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Image src={HaldiMehndi} alt="HaldiMehndi" />
               <p>Haldi/Mehndi</p>
             </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              class="pose-card"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Image src={Babyshower} alt="Baby Shower" />
 
-              <p>Babyshower
-
-
-              </p>
-
+              <p>Babyshower</p>
             </a>
           </div>
         </div>
 
         <div class="trust-section">
-          <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
+          <h2 class="Trust-header">
+            Why People Trust Us <span>♥</span>
+          </h2>
           {/* <h3 class="trust-subtitle">Ashu Tiwari</h3>
         <div class="stars"> ★★★★★</div> */}
           <div className="review">
@@ -409,8 +437,6 @@ const index = () => {
             </Swiper>
           </div>
 
-
-
           {/* <div class="user-quote">
           <img src="user.jpg" alt="Tara Sutara" class="profile-img" />
           <div>
@@ -430,13 +456,16 @@ const index = () => {
 
             <div class="stat-box">
               <div class="photoD">
-                <strong >50L+</strong>
+                <strong>50L+</strong>
                 <div class="photos-title">Photos Delivered</div>
               </div>
             </div>
 
             <div class="stat-box full">
-              <p><strong>15K+</strong><span class="highlight"> Happy Customers</span></p>
+              <p>
+                <strong>15K+</strong>
+                <span class="highlight"> Happy Customers</span>
+              </p>
             </div>
           </div>
         </div>
@@ -446,4 +475,3 @@ const index = () => {
 };
 
 export default index;
-
