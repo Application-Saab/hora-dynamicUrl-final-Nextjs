@@ -52,22 +52,31 @@ const Checkout = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-const [productInclusion , setProductInclusion] = useState(null);
+  const [sendInclusion, setSendInclusion] = useState(false);
+
   const [productImage, setProductImage] = useState(null);
   const [productData, setProductData] = useState(null);
 
 
-  useEffect(() => {
-      if (product) {
+   if (product) {
     product = JSON.parse(product)
-   
-    setProductInclusion(product.inclusion)
-   } 
-    if (!router.isReady) return;
+  }
 
+  const parseInclusions = (htmlString) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
+    const divs = doc.querySelectorAll('div');
+    return Array.from(divs).map(div => div.textContent.trim());
+  };
+
+  useEffect(() => {
+    if (!router.isReady) return;
 
     if (router.query.product) {
       const parsedProduct = JSON.parse(router.query.product);
+      const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
+      setSendInclusion(formattedInclusions);
+
       setProductData(parsedProduct);
 
       // Product ID se local image set karo
@@ -76,6 +85,7 @@ const [productInclusion , setProductInclusion] = useState(null);
       }
     }
   }, [router.isReady, router.query.product]);
+
 
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
@@ -276,17 +286,18 @@ const [productInclusion , setProductInclusion] = useState(null);
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
-      const advanceAmount = Math.round(totalAmount * 0.40);
+      const advanceAmount = Math.round(totalAmount * 0.35);
       const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
-      const requestData = {
+     
+          const requestData = {
         "toId": "",
         // "add_on": selectedAddOnProduct,
-        "add_on":productInclusion,
+        "add_on": sendInclusion,
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,
-        "type": 8,
+        "type":8,
         "fromId": storedUserID,
         "is_discount": "0",
         "addressId": addressID,
