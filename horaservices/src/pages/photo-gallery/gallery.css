@@ -76,23 +76,26 @@
 @media (min-width: 1280px) { .masonryGrid { column-count: 6; } }
 
 
+
+
+.gallery-header {
+  width: 100%;
+}
+
 .gallery-header-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; /* pushes icon to right */
   align-items: center;
-  flex-wrap: wrap; /* Optional: wrap on small screens */
-  padding: 10px 0;
+  padding: 10px; /* optional spacing */
 }
 
-.gallery-title-container {
-  display: flex;
-  align-items: center;
+.gallery-share-icon {
+  cursor: pointer;
 }
 
-.gallery-title {
-  margin: 0;
-  font-size: 1.5rem;
-}
+
+
+
 
 .gallery-pagination-container {
   display: flex;

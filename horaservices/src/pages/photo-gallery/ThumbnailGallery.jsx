@@ -153,22 +153,21 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   return (
     <div className="thumbnail-gallery">
       <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-        <div className="gallery-header-content">
-          {showInternalTitle && (
-            <div className="gallery-title-container">
-              <h1 className="gallery-title">Your Photos</h1>
-              {typeof handleShareicon === 'function' && ( // Only show share icon if handler is provided
+         <div className="gallery-header">
+            <div className="gallery-header-content">
+              {typeof handleShareicon === 'function' && (
                 <Image
                   src={shareIcon}
                   alt="Share"
-                  className="gallery-share-icon" // Added class for styling
+                  className="gallery-share-icon"
                   onClick={handleShareicon}
-                  width={22} // Specify width and height for Next/Image
+                  width={22}
                   height={22}
                 />
               )}
             </div>
-          )}
+          </div>
+
 
           {/* Conditional Pagination Rendering */}
           {isIOSMobile && totalPages > 1 && (
@@ -182,7 +181,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             </div>
           )}
         </div>
-      </div>
+    
 
       {currentThumbnailsOnPage.length > 0 ? (
         <div className="masonryGrid">
