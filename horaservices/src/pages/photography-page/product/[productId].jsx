@@ -84,13 +84,22 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
 
     router.push({
       pathname: '/photography-checkout',
+      // query: {
+      //   from: window.location.pathname,
+      //   product: JSON.stringify(product),
+      //   totalAmount: product.price,
+      //   // Productname: product.name,
+      //   // productId: product._id,
+      // }
       query: {
-        from: window.location.pathname,
-        product: JSON.stringify(product),
-        totalAmount: product.price,
-        // Productname: product.name,
-        // productId: product._id,
-      }
+          from: window.location.pathname,
+       
+          product: JSON.stringify(product),
+          
+          // selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+          // itemQuantities: JSON.stringify(itemQuantities),
+          totalAmount: product.price,
+        }
     });
   };
 

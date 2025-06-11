@@ -52,16 +52,19 @@ const Checkout = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+const [productInclusion , setProductInclusion] = useState(null);
   const [productImage, setProductImage] = useState(null);
   const [productData, setProductData] = useState(null);
 
-  if (product) {
-    product = JSON.parse(product)
-  }
 
   useEffect(() => {
+      if (product) {
+    product = JSON.parse(product)
+   
+    setProductInclusion(product.inclusion)
+   } 
     if (!router.isReady) return;
+
 
     if (router.query.product) {
       const parsedProduct = JSON.parse(router.query.product);
@@ -278,11 +281,12 @@ const Checkout = () => {
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
       const requestData = {
         "toId": "",
-        "add_on": selectedAddOnProduct,
+        // "add_on": selectedAddOnProduct,
+        "add_on":productInclusion,
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,
-        "type": 1,
+        "type": 8,
         "fromId": storedUserID,
         "is_discount": "0",
         "addressId": addressID,
@@ -397,7 +401,8 @@ const Checkout = () => {
         pageUrl: window.location.href,
         productName: product.name,
         productPrice: product.price,
-        UserPhoneNumber: phoneNumber
+        UserPhoneNumber: phoneNumber,
+        
       });
 
       setIsEventPushed(true);
