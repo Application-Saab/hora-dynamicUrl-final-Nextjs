@@ -544,15 +544,6 @@ const Checkout = () => {
               {pincodeReqError && <p className="error-text">This field is required!</p>}
             </div>
 
-            <div className="form-group">
-              <button
-                className="confirm-button"
-                onClick={onContinueClick}
-                type="button"
-              >
-                Confirm Order
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -647,6 +638,17 @@ const Checkout = () => {
         </div>
 
       </div>
+     {/* ✅ Floating Confirm Button at bottom */}
+<div className="confirm-button-wrapper">
+  <button
+    className="confirm-button"
+    onClick={onContinueClick}
+    type="button"
+  >
+    Confirm Order
+  </button>
+</div>
+
       </div>
   );
 }
