@@ -709,23 +709,33 @@ background-color: rgb(150, 82, 141)!important ;
   margin-top: 10px;
 }
 
-.pose-card p {
- font-size: 0.9em;
-  color: black;
-  font-weight: 600;
-  margin-bottom: 10px;
-  text-decoration: none;
+
+ .TextBackground {
+  background-color: #97538c;
+  border-radius: 0 0 10px 10px;
+  width: 100%;
+  padding: 6px 0;
+  text-align: center;
+  position: relative;
 }
 
-.pose-card p::after {
+.TextBackground p {
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: white;
+  position: relative;
+}
+.TextBackground p::after {
   content: '';
   display: block;
-  width: 100%;
-  height: 2px;
-  background-color: black;
-  /* margin-left: 10px; */
-  margin-bottom: 4px;
+  width: 60%; 
+  height: 1px;
+  background-color: white;
+  margin: 0 auto 0 auto; 
+  border-radius: 2px;
 }
+
 
 /* =============================================================================================== */
 

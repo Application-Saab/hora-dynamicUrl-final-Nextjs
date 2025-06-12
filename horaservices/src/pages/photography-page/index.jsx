@@ -352,37 +352,35 @@ const index = () => {
             <a href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
               rel="noopener noreferrer">
               <Image src={wedding} alt="Wedding" />
-              <p>Wedding</p>
+             <div className='TextBackground'><p>Wedding</p></div> 
             </a>
             <a href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
               rel="noopener noreferrer">
               <Image src={Maternity} alt="Maternity" />
-              <p>Maternity</p>
+               <div className='TextBackground'> <p>Maternity</p></div>
             </a>
             <a href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
               rel="noopener noreferrer">
               <Image src={Birthday} alt="Birthday" />
-              <p>Birthday</p>
+                <div className='TextBackground'><p>Birthday</p></div> 
             </a>
             <a href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
               rel="noopener noreferrer">
               <Image src={preWedding} alt="Pre-Wedding" />
-              <p>pre-Wedding</p>
+                <div className='TextBackground'> <p>pre-Wedding</p></div>
             </a>
             <a href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
               rel="noopener noreferrer">
               <Image src={HaldiMehndi} alt="HaldiMehndi" />
-              <p>Haldi/Mehndi</p>
+                <div className='TextBackground'> <p>Haldi/Mehndi</p></div> 
             </a>
             <a href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
               rel="noopener noreferrer">
               <Image src={Babyshower} alt="Baby Shower" />
 
-              <p>Babyshower
-
-
+               <div className='TextBackground'><p>Babyshower
               </p>
-
+</div> 
             </a>
           </div>
         </div>

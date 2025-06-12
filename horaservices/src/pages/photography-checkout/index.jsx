@@ -28,7 +28,7 @@ const Checkout = () => {
   const router = useRouter();
   let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
   console.log(product)
- const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];//  const formattedInclusions = product.inclusion.length > 0 ? parseInclusions(product.inclusion[0]) : [];
+  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];//  const formattedInclusions = product.inclusion.length > 0 ? parseInclusions(product.inclusion[0]) : [];
 
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -58,7 +58,7 @@ const Checkout = () => {
   const [productData, setProductData] = useState(null);
 
 
-   if (product) {
+  if (product) {
     product = JSON.parse(product)
   }
 
@@ -289,15 +289,15 @@ const Checkout = () => {
       const advanceAmount = Math.round(totalAmount * 0.35);
       const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
-     
-          const requestData = {
+
+      const requestData = {
         "toId": "",
         // "add_on": selectedAddOnProduct,
         "add_on": sendInclusion,
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,
-        "type":8,
+        "type": 8,
         "fromId": storedUserID,
         "is_discount": "0",
         "addressId": addressID,
@@ -413,7 +413,7 @@ const Checkout = () => {
         productName: product.name,
         productPrice: product.price,
         UserPhoneNumber: phoneNumber,
-        
+
       });
 
       setIsEventPushed(true);
@@ -444,7 +444,10 @@ const Checkout = () => {
             <div className="background-shape bottom-right" />
 
             <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
-
+  <div className="photographer-note">
+  Photographer will be available for 4 hours after arrival.
+  Need more info ? chat on WhatsApp now!
+</div>
             <div className="form-row">
               <div className="form-half large-input">
                 <label className="form-label">Booking Date</label>
@@ -597,8 +600,30 @@ const Checkout = () => {
             </div>
           </div>
         </div>
+       
+        <div className="needmore">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: " center",
+              justifyContent: "space-evenly",
+              // padding: "0px 12px 10px",
+              width: "100%",
+            }}
+          >
+            <p style={{ fontSize: 14, fontWeight: 500, color: "black", marginBottom: 0 }}>
+              Need more info?
+            </p>
+
+            <button className="button-cta whatsapp-cta" onClick={contactUsRedirection}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" className="whatsapp-iconimg"></path></svg>Whatsapp</button>
+
+          </div>
+        </div>
         <div className="policy-wrapper">
           <div className="policy-heading">
+
             <Image
               src={cancellation}
               className="policy-icon"
@@ -622,13 +647,7 @@ const Checkout = () => {
         </div>
 
       </div>
-
-
-
-
-    </div>
-
-
+      </div>
   );
 }
 

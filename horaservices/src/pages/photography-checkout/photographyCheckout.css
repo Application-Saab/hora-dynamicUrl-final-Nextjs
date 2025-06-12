@@ -60,7 +60,7 @@
 
     color: rgb(157, 74, 147) !important;
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     z-index: 1;
     position: relative;
 }
@@ -263,16 +263,23 @@
 }
 
 /* ==================================================================================================================== */
-
-.policy-wrapper {
-  
-  margin-top: 10px;
+.needmore{
+    margin-top: 10px;
   /* margin: 0 auto; */
   padding: 10px;
   text-align: left;
 border-top: 1px solid #00000066
 
 }
+.policy-wrapper {
+    border-radius: 20px;
+    padding: 10px;
+    text-align: left;
+    background-color: #f2eaf0;
+    width: 100%;
+}
+
+
 
 .policy-heading {
   display: flex;
@@ -280,15 +287,17 @@ border-top: 1px solid #00000066
   margin-bottom: 15px;
   font-weight: 600;
   font-size: 14px;
-  gap:5px
+  gap:5px;
+ 
 }
 
 .policy-icon {
-  font-size: 18px;
-  color: rgb(157, 74, 147);
-  margin-left: -8px;
-
+  margin-left: 0px;
+    font-size: 18px;
+    color: rgb(157, 74, 147);
+ 
 }
+
 
 /* .policy-title {
 font-family: 'Poppins', sans-serif;
@@ -316,9 +325,9 @@ font-family: 'Poppins', sans-serif;
 
 
 .policy-list {
-  padding-left: 5px;
   margin: 0;
   color: #4C494A;
+  margin-left: -10px;
 }
 
 .policy-list li {
@@ -326,6 +335,7 @@ font-family: 'Poppins', sans-serif;
   line-height: 1.6;
   margin-bottom: 10px;
   text-align: left;
+  color: rgb(157, 74, 147);
 }
 
 /* ======================================================================================================== */
@@ -403,18 +413,7 @@ select.formcontrol {
   vertical-align: bottom;
   margin-bottom: 12px !important; /* Adjust this value as needed */
 }
-/* .rightSeccheckout {
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 24px 20px;
-  background-color: #fff;
- border: 0.95px solid #929292B2;
-  border-radius: 37.91px;
-  max-width: 330px;
-  margin: 20px auto;
-   overflow: visible;
-  z-index: 3;
-   position: relative;
-} */
+
 
  .rightSeccheckout {
     position: relative;
@@ -464,7 +463,12 @@ margin-bottom: 10px;
     font-size: 18px !important;
     vertical-align: bottom;
 } 
-
+.Needmoresection{
+   position: relative;
+    padding: 24px 20px;
+    width: 100%;
+    margin: auto;
+}
 /* ======================================================================================================== */
 
 .floating-center-image {
@@ -476,9 +480,45 @@ margin-bottom: 10px;
     pointer-events: none;
     left: 19%;
 }
+.photographer-note {
+    color: red;
+    border: 1px solid red;
+    padding: 4px 0px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    text-align: left;
+    /* white-space: nowrap; */
+    overflow: hidden;
+    margin-bottom: 20px;
+    text-align: center;
+    background-color: antiquewhite;
+}
 
 .floating-image {
   width: 120.16px; /* Adjust size */
   height: 127.58px;
   
+}
+
+.whatsapp-cta {
+    border: 2px solid rgb(157, 74, 147);
+    color: rgb(157, 74, 147);
+    background-color: #fff;
+}
+.icon-cta {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-right: 0.2rem;
+}
+.button-cta {
+    padding: 4px 0px;
+    font-weight: bold;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    width: 40% !important;
+    font-size: 12px;
 }

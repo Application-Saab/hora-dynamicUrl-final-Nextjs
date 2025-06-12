@@ -2,10 +2,11 @@ import traditionalPhoto from "../assets/traditionalPhoto.png";
 import candidPhoto from "../assets/candidPhoto.jpg";
 import proPhoto from "../assets/Prophoto.jpg";
 import videoPhoto from "../assets/videophoto.png";
-import WeddingAffair from "../assets/weddingAffairImage.png";
-import PreWeeding from "../assets/PreWeddingImg.png";
-import HaldiMehndi from "../assets/haldiMehndiImg.png";
-import preWedding from "../assets/pre-wed.png";
+import WeddingAffair from "../assets/WeddingAffairImg.jpg";
+import preWedding from "../assets/preWedding.jpg";
+import HaldiMehndi from "../assets/HaldiMehndi.jpg";
+import GrandWeddingAffair from "../assets/GrandWeddingAffairImg.jpg";
+// import preWedding from "../assets/pre-wed.png";
 const productsData = {
     "6710f33c21847b9ca0554940": {
       name: "Traditional PhotoGraphy",
@@ -76,7 +77,7 @@ const productsData = {
     "68411cd8fdfcb315ad5b02be":{
         name: "Grand Wedding Affair",
          category:"Mega",
-        images:[WeddingAffair],
+        images:[GrandWeddingAffair],
         duration:"10 - 15 Hours (₹1300 per extra hour beyond 15 hours)"
     },
   };
