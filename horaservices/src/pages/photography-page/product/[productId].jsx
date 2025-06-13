@@ -6,30 +6,93 @@ import Image from 'next/image';
 import photographyAddOns from "../../../utils/photographyAddOns.json";
 import productsData from '../../../utils/photoGraphyImages.js';
 import { faqData } from '../../../utils/photographyFAQData.js'
+// import addOnProductsData from '../../../utils/addOnProduct.json';
 import cancellation from "../../../assets/Cancellation.svg"
 import PROFESSIONALPHOTOGRAPHERS from "../../../assets/professionalPhoto.png";
 import SECURESTORAGE from "../../../assets/secureStorage.png";
 import SUPPORT from "../../../assets/support.png";
 import "./productDetails.css";
 import { FaQuestionCircle } from "react-icons/fa";
-const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFromCart }) => {
+const ProductDetails = () => {
   const router = useRouter();
   const { productId, product } = router.query;
+  console.log(product)
   const [work, setWork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantities, setQuantities] = useState({});
   const [addedItems, setAddedItems] = useState([]);
-
-
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [itemQuantities, setItemQuantities] = useState({});
+  const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
+  const [totalAmount, setTotalAmount] = useState();
   const images = productsData[productId]?.images || [];
- const duration = productsData[productId]?.duration || "Duration not available";
-  // const handleAdd = (item, index) => {
-  //   const qty = quantities[index] || 0;
-  //   if (qty > 0) {
-  //     const price = item.price || ((item.minPrice + item.maxPrice) / 2);
-  //     setAddedItems(prev => [...prev, { ...item, qty, total: qty * price }]);
-  //   }
-  // };
+  const duration = productsData[productId]?.duration || "Duration not available";
+
+  const parsedProduct = product ? JSON.parse(product) : null;
+  const tagId = parsedProduct?.tag?.[0];
+
+  const calculateTotalPrice = (productPrice) => {
+    let totalPrice = Number(productPrice);
+    selectedAddOnProduct.forEach(item => {
+      totalPrice += item.price * itemQuantities[item.title];
+    });
+    return totalPrice;
+  };
+
+  const handleContinue = () => {
+    setIsModalOpen(false);
+  }
+
+  const handleAddToCart = (item) => {
+    const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
+    const existingItemIndex = updatedSelectedAddOnProduct.findIndex(addonproductItem => addonproductItem.title === item.title);
+
+    if (existingItemIndex !== -1) {
+      updatedSelectedAddOnProduct[existingItemIndex].quantity += 1;
+    } else {
+      updatedSelectedAddOnProduct.push({ ...item, quantity: 1 });
+    }
+
+    setSelectedAddOnProduct(updatedSelectedAddOnProduct);
+    setItemQuantities({
+      ...itemQuantities,
+      [item.title]: (itemQuantities[item.title] || 0) + 1,
+    });
+    updateTotalAmount();
+  };
+
+  const updateTotalAmount = () => {
+    let newTotalAmount = Number(product.price);
+    selectedAddOnProduct.forEach(item => {
+      newTotalAmount += item.price * itemQuantities[item.title];
+    });
+    setTotalAmount(newTotalAmount);
+  };
+
+  const handleRemoveFromCart = (item) => {
+    const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
+    const existingItemIndex = updatedSelectedAddOnProduct.findIndex(addonproductItem => addonproductItem.title === item.title);
+
+    if (existingItemIndex !== -1) {
+      if (updatedSelectedAddOnProduct[existingItemIndex].quantity > 1) {
+        updatedSelectedAddOnProduct[existingItemIndex].quantity -= 1;
+      } else {
+        updatedSelectedAddOnProduct.splice(existingItemIndex, 1);
+      }
+    }
+
+    const updatedQuantities = { ...itemQuantities };
+
+    if (updatedQuantities[item.title] > 1) {
+      updatedQuantities[item.title] -= 1;
+    } else {
+      delete updatedQuantities[item.title];
+    }
+
+    setSelectedAddOnProduct(updatedSelectedAddOnProduct);
+    setItemQuantities(updatedQuantities);
+    updateTotalAmount();
+  };
   const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) return null;
 
@@ -76,7 +139,7 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
     return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
   };
   const sendToCheckoutPage = (product) => {
-
+    const totalPrice = calculateTotalPrice(product.price);
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "book_now_click",
@@ -88,19 +151,19 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
       // query: {
       //   from: window.location.pathname,
       //   product: JSON.stringify(product),
-      //   totalAmount: product.price,
+      //  ProductPrice: product.price,
       //   // Productname: product.name,
       //   // productId: product._id,
       // }
       query: {
-          from: window.location.pathname,
-       
-          product: JSON.stringify(product),
-          
-          // selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-          // itemQuantities: JSON.stringify(itemQuantities),
-          totalAmount: product.price,
-        }
+        from: window.location.pathname,
+
+        product: JSON.stringify(product),
+        ProductPrice: product.price,
+        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+        itemQuantities: JSON.stringify(itemQuantities),
+        totalAmount: totalPrice,
+      }
     });
   };
 
@@ -164,22 +227,22 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
 
     return (
       <div style={{ marginTop: "40px", padding: "0 16px" }}>
-       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px",marginLeft:"10px" }}>
-  <Image src={cancellation} alt="FAQ Icon" width={25} height={25} />
-  <h2
-    style={{
-      color: "#97538c",
-      fontFamily: "Inter, sans-serif",
-      fontWeight: 700,
-      fontSize: "24px",
-      lineHeight: "100%",
-      letterSpacing: "0%",
-      margin: 0,
-    }}
-  >
-    FAQ
-  </h2>
-</div>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", marginLeft: "10px" }}>
+          <Image src={cancellation} alt="FAQ Icon" width={25} height={25} />
+          <h2
+            style={{
+              color: "#97538c",
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 700,
+              fontSize: "24px",
+              lineHeight: "100%",
+              letterSpacing: "0%",
+              margin: 0,
+            }}
+          >
+            FAQ
+          </h2>
+        </div>
 
         {faqData.map((item, index) => (
           <div
@@ -226,10 +289,10 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
                   style={{
                     color: "#fff",
                     fontSize: "14px",
-                    transform: openIndex === index ? "rotate(270deg)" :"rotate(90deg)" ,
+                    transform: openIndex === index ? "rotate(270deg)" : "rotate(90deg)",
                     transition: "transform 0.3s ease",
                     display: "inline-block",
-                   
+
                   }}
                 >
                   &gt;
@@ -286,72 +349,90 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
 
         <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
       </div>
+ <div className='add-on-prices'>
 
+                        <div>
+                          {selectedAddOnProduct.length > 0 && (
+                            <>
+                              <label>Customisations</label>
+                              {selectedAddOnProduct.map((item, index) => (
+                                <li key={index}>
+                                  <div>
+                                    {item.title}
+                                  </div>
+                                  <div>
+                                    ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+
+                                  </div>
+                                </li>
+                              ))}
+
+                            </>
+                          )}
+                        </div>
+                      </div>
       <div className="photodetails-inclusions">
         <h3>Inclusions</h3>
         {getItemInclusion(work.inclusion)}
         {getItemInclusion(work.inclusion)}
-    <p className="work-duration">
-      <b className="Duration">Duration:</b> {duration}
-    </p>
+        <p className="work-duration">
+          <b className="Duration">Duration:</b> {duration}
+        </p>
       </div>
-      <div className="book-now-wrapper">
-        <button onClick={() => sendToCheckoutPage(work)} class="book-now-btn">Book Now</button>
-      </div>
-      {/* <h2 className="extra-action-heading">
-       Add Extra Features
-        </h2>
-         <div className="extra-action-section">
-         <div className="extra-action-middle-box">
-         <div className="extra-action-card-container">
-          {photographyAddOns.photographyAddOns.map((item, index) => (
-        <div key={index} className="extra-action-card">
-          <img
-            src={item.image}
-            alt={item.title}
-            className="extra-action-image"
-          />
-          <h3 className="extra-action-title">{item.title}</h3>
-          <p className="extra-action-description">{item.description}</p>
 
-          <div className="extra-action-price-box">
-            <span className="extra-action-price">
-              ₹{' '}
-              {item.minPrice && item.maxPrice
-                ? `${item.minPrice} – ₹${item.maxPrice}`
-                : item.price}
-            </span>
-            {itemQuantities[item.title] ? (
-              <div className="extra-action-quantity-control">
-                <button
-                  onClick={() => handleRemoveFromCart(item)}
-                  className="extra-action-qty-btn"
-                >
-                  -
-                </button>
-                <span>{itemQuantities[item.title]}</span>
-                <button
-                  onClick={() => handleAddToCart(item)}
-                  className="extra-action-qty-btn"
-                >
-                  +
-                </button>
+ <div className="modal-top-box11">
+                <h2 style={{ fontSize: 16, fontWeight: 600 }} className="select-heading-sec">Add Extra Features</h2>
               </div>
-            ) : (
-              <button
-                onClick={() => handleAddToCart(item)}
-                className="extra-action-add-btn"
-              >
-                Add
-              </button>
-            )}
+      <div className="addon-sec">
+        {isModalOpen && (
+          
+          <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "600px", overflowY: "scroll" ,padding:"10px"}}>
+            <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
+              {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
+             
+              <div className="modal-middle-box 11">
+                <div className="modal-card-container">
+
+                  {photographyAddOns?.addOnProductsById?.[tagId]?.map((item, index) => (
+                    <div key={index} className="modal-card">
+                      <img
+                        style={{ width: "120px", height: "120px" }}
+                        src={item.image}
+                        alt={item.title}
+                        className="model-image"
+                      />
+                      <h3>{item.title}</h3>
+                      <p>{item.description}</p>
+
+                      <div className="price-container">
+                        <span className="price">
+                          {typeof item.price === "number" ? `₹ ${item.price}` : "Included"}
+                        </span>
+
+                        {typeof item.price === "number" && (
+                          itemQuantities[item.title] ? (
+                            <div>
+                              <button onClick={() => handleRemoveFromCart(item)} className="quantity-button">-</button>
+                              <span className='qunatity-title'>{itemQuantities[item.title]}</span>
+                              <button onClick={() => handleAddToCart(item)} className="quantity-button">+</button>
+                            </div>
+                          ) : (
+                            <button onClick={() => handleAddToCart(item)} className="add-button">Add</button>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
-      ))}
-              </div>
-              </div>
-       </div> */}
-
+        )}
+      </div>
+      
       <div className="whyHoraSec">
         <h2 className="whyHoraHeading">Why Hora Photography</h2>
         <div className="whyHoraSecInner">
@@ -370,6 +451,14 @@ const ProductDetails = ({ itemQuantities = {}, handleAddToCart, handleRemoveFrom
         </div>
       </div>
       <FAQSection faqData={faqData} />
+      <div className="confirm-button-wrapper">
+      {/* <div className="modal-bottom-box"> */}
+
+        <p>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
+
+        <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
+      {/* </div> */}
+    </div>
     </div>
   );
 };

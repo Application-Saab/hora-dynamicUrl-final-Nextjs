@@ -1,32 +1,209 @@
+
 {
-  "photographyAddOns": [
-    {
-      "title": "Extra Photographer",
-      "description": "Add a second photographer for better coverage from multiple angles.",
-      "minPrice": 1000,
-      "maxPrice": 2500,
-      "image": "https://i.ibb.co/Cn2ptX2/birthday-photography.jpg"
-    },
-    {
-      "title": "Cinematic Video Shoot",
-      "description": "Get a beautifully edited cinematic video of your event with slow-motion and effects.",
-      "minPrice": 3000,
-      "maxPrice": 7000,
-      "image": "https://i.ibb.co/mSXqr3t/add-magic.jpg"
-    },
-    {
-      "title": "Birthday Photography Packages",
-      "description": "Unlimited photo clicks, editing, color correction, candid photos and 4 hrs photographer availability.",
-       "minPrice": 5000,
-      "maxPrice": 9000,
-      "image": "https://i.ibb.co/Cn2ptX2/birthday-photography.jpg"
-    },
-    {
-      "title": "Baby Shower Photography Packages",
-      "description": "Unlimited photos, 20 edits, color correction, candid shots, 4 hrs photographer coverage.",
-      "minPrice": 9000,
-      "maxPrice": 15000,
-      "image": "https://i.ibb.co/WFbtQwC/baby-shower-photography.jpg"
-    }
-  ]
+  "addOnProductsById": {
+    "66c96b4e22ed47b72117e09a": [
+      {
+        "title": "20 Edited Pictures",
+        "price": 750,
+        "description": "20 professionally edited photos delivered.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "50 Edited Pictures",
+        "price": 1500,
+        "description": "50 professionally edited photos delivered.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Birthday Props",
+        "price": 300,
+        "description": "Colorful props to enhance birthday photography.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Maternity Props",
+        "price": 300,
+        "description": "Special props for maternity photoshoots.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Baby Shower Props",
+        "price": 300,
+        "description": "Charming props for baby shower shoots.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Engagement Props",
+        "price": null,
+        "description": "Custom props for engagement celebrations.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Bride To be Props",
+        "price": null,
+        "description": "Props for the bride-to-be photoshoot.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Groom To be Props",
+        "price": null,
+        "description": "Props for the groom-to-be moments.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "House Warming Props",
+        "price": null,
+        "description": "Celebrate your new home with themed props.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Additional Umbrella Light",
+        "price": 400,
+        "description": "Extra lighting for better photo clarity.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Hair and Makeup",
+        "price": null,
+        "description": "Professional hair and makeup for the shoot.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "New Born Baby Prop 1 (Basket)",
+        "price": null,
+        "description": "A cute basket prop for newborn photography.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "New Born Baby Prop 2 (Wrapping Cloth)",
+        "price": null,
+        "description": "Soft cloth to wrap newborns comfortably.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "New Born Baby Prop 3 (White Cushion)",
+        "price": null,
+        "description": "Fluffy white cushion for cozy baby photos.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      }
+    ],
+    "66c96b5922ed47b72117e0a7": [
+      {
+        "title": "20 Edited Pictures",
+        "price": 750,
+        "description": "20 professionally edited photos delivered.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "50 Edited Pictures",
+        "price": 1500,
+        "description": "50 professionally edited photos delivered.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Birthday Props",
+        "price": 300,
+        "description": "Colorful props to enhance birthday photography.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Maternity Props",
+        "price": 300,
+        "description": "Special props for maternity photoshoots.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Baby Shower Props",
+        "price": 300,
+        "description": "Charming props for baby shower shoots.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Engagement Props",
+        "price": null,
+        "description": "Custom props for engagement celebrations.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Bride To Be Props",
+        "price": null,
+        "description": "Props for the bride-to-be photoshoot.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Groom To Be Props",
+        "price": null,
+        "description": "Props for the groom-to-be moments.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "House Warming Props",
+        "price": null,
+        "description": "Celebrate your new home with themed props.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Additional Umbrella Light",
+        "price": 400,
+        "description": "Extra lighting for better photo clarity.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Album (50 Pages)",
+        "price": null,
+        "description": "A 50-page premium printed album.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Hair and Makeup",
+        "price": null,
+        "description": "Professional hair and makeup for the shoot.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "New Born Baby Prop 1 (Basket)",
+        "price": null,
+        "description": "A cute basket prop for newborn photography.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "New Born Baby Prop 2 (Wrapping Cloth)",
+        "price": null,
+        "description": "Soft cloth to wrap newborns comfortably.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "New Born Baby Prop 3 (White Cushion)",
+        "price": null,
+        "description": "Fluffy white cushion for cozy baby photos.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      }
+    ],
+    "66c96b6922ed47b72117e0b4": [
+      {
+        "title": "20 Edited Pictures",
+        "price": 750,
+        "description": "20 professionally edited photos delivered.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "50 Edited Pictures",
+        "price": 1500,
+        "description": "50 professionally edited photos delivered.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Drone Photography",
+        "price": 2000,
+        "description": "Capture stunning aerial shots of your event with a drone.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      },
+      {
+        "title": "Album (50 Pages)",
+        "price": 3500,
+        "description": "Beautiful 50-page printed album to preserve your memories.",
+        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+      }
+    ]
+  }
 }

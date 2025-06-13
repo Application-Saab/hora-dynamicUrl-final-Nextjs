@@ -29,7 +29,7 @@ const Checkout = () => {
   let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
   console.log(product)
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];//  const formattedInclusions = product.inclusion.length > 0 ? parseInclusions(product.inclusion[0]) : [];
-
+ const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDateError, setSelectedDateError] = useState(false);
@@ -53,7 +53,7 @@ const Checkout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sendInclusion, setSendInclusion] = useState(false);
-
+  const [productPrice, setProductPrice] = useState(null);
   const [productImage, setProductImage] = useState(null);
   const [productData, setProductData] = useState(null);
 
@@ -74,9 +74,10 @@ const Checkout = () => {
 
     if (router.query.product) {
       const parsedProduct = JSON.parse(router.query.product);
+    
       const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
       setSendInclusion(formattedInclusions);
-
+      setProductPrice(product.price);
       setProductData(parsedProduct);
 
       // Product ID se local image set karo
@@ -579,6 +580,32 @@ const Checkout = () => {
                 <label>Add-ons: Cake Table: </label>
                 <p> {"N/A"}</p>
               </div> */}
+              <div className='detail-item'>
+                <label>Product Amount:</label>
+                <p>₹{productPrice}</p>
+              </div>
+              <div className='add-on-prices'>
+
+                        <div>
+                          {selectedAddOnProduct.length > 0 && (
+                            <>
+                              <label>Customisations</label>
+                              {selectedAddOnProduct.map((item, index) => (
+                                <li key={index}>
+                                  <div>
+                                    {item.title}
+                                  </div>
+                                  <div>
+                                    ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+
+                                  </div>
+                                </li>
+                              ))}
+
+                            </>
+                          )}
+                        </div>
+                      </div>
               <div className='detail-item'>
                 <label>Total Amount:</label>
                 <p>₹{totalAmount}</p>
