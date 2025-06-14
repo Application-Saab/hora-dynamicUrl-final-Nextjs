@@ -10,12 +10,12 @@ import Maternity from "../../assets/maternity.png";
 import Birthday from "../../assets/Sbirthday.png";
 import preWedding from "../../assets/prewedding.png";
 import Babyshower from "../../assets/babyshower.png"
-import PhotoBanner from "../../assets/PhotoBanner.png"
-import Banner1 from "../../assets/banner1.png"
-import Banner2 from "../../assets/Banner2.jpeg"
-import Banner3 from "../../assets/banner3.jpg"
+import PhotoBanner from "../../assets/PhotoBanner.webp"
+import Banner1 from "../../assets/banner1.webp"
+import Banner2 from "../../assets/Banner2.webp"
+import Banner3 from "../../assets/banner3.webp"
 import magician from "../../assets/magician.jpg";
-import traditionalImg from "../../assets/traditionalphoto.jpg";
+import traditionalImg from "../../assets/traditionalphoto.webp";
 import candidImg from "../../assets/CandidphotoImg.jpg";
 import proImg from "../../assets/Prophotography.png";
 import videoImg from "../../assets/Videography.jpg";
@@ -267,7 +267,7 @@ const index = () => {
                     width={1200}
                     height={400}
                     quality={100}
-                    priority
+                     loading="eager"
                     className="banner-image" />
                 </SwiperSlide>
               ))}

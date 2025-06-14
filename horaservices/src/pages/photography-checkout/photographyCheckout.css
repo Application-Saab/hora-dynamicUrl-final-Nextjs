@@ -130,19 +130,24 @@
   margin: 30px auto 0 auto;
 } */
 
-.confirm-button-wrapper {
+.confirmbutton-wrapper {
   position: fixed;
   bottom: 1px;
   left: 0;
   width: 100%;
   display: flex;
-  /* justify-content: center; */
   z-index: 1000;
   pointer-events: none;
- 
+   display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.confirm-button {
+
+.confirmbutton{
   background-color: rgb(157, 74, 147); /* Purple button background */
   color: white;
   font-size: 16px;
@@ -484,7 +489,21 @@ border:1px solid #7e7c7c ;
   gap: 8px;         /* Label aur <p> ke beech gap chahiye toh */
      line-height: 0.5;
 }
+.addon-item{
+ display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;        /* Margin hatao bilkul */
+  padding: 0;       /* Padding hatao */
+  gap: 8px;         /* Label aur <p> ke beech gap chahiye toh */
+     line-height: 2;
 
+}
+.add-on-prices {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 10px 0 !important;
+}
 .detail-item p {
     margin: 0;
     /* margin-left: 10px; */

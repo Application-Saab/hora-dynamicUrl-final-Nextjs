@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 
@@ -25,12 +25,14 @@ const ProductDetails = () => {
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
   const [totalAmount, setTotalAmount] = useState();
+  const [isArrowDown, setIsArrowDown] = useState(true);
   const images = productsData[productId]?.images || [];
   const duration = productsData[productId]?.duration || "Duration not available";
 
   const parsedProduct = product ? JSON.parse(product) : null;
   const tagId = parsedProduct?.tag?.[0];
-
+  const addonRef = useRef(null);      // Scroll target inside modal
+  const customizationRef = useRef(null);
   const calculateTotalPrice = (productPrice) => {
     let totalPrice = Number(productPrice);
     selectedAddOnProduct.forEach(item => {
@@ -42,7 +44,23 @@ const ProductDetails = () => {
   const handleContinue = () => {
     setIsModalOpen(false);
   }
+  const showAddOnmodal = () => {
+    setIsModalOpen((prev) => !prev);
+    setIsArrowDown((prev) => !prev);
 
+    setTimeout(() => {
+      addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+  const handleAddToCartAndScrollBack = (item) => {
+    handleAddToCart(item);  // You already have this function
+
+    setIsModalOpen(false);
+
+    setTimeout(() => {
+      customizationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  };
   const handleAddToCart = (item) => {
     const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
     const existingItemIndex = updatedSelectedAddOnProduct.findIndex(addonproductItem => addonproductItem.title === item.title);
@@ -349,54 +367,53 @@ const ProductDetails = () => {
 
         <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
       </div>
- <div className='add-on-prices'>
+      <div className='add-on-prices' ref={customizationRef}>
 
-                        <div>
-                          {selectedAddOnProduct.length > 0 && (
-                            <>
-                              <label>Customisations</label>
-                              {selectedAddOnProduct.map((item, index) => (
-                                <li key={index}>
-                                  <div>
-                                    {item.title}
-                                  </div>
-                                  <div>
-                                    ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+        <div className="photodetails-inclusions">
+          {selectedAddOnProduct.length > 0 && (
+            <>
+              <label>Customisations</label>
+              <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
+                < svg stroke="currentColor" fill="currentColor"   stroke-width="0" viewBox="0 0 576 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" style={{ color:"rgb(146, 82, 170)" ,marginBottom:"20px"}}></path></svg>
+              </span>
+              {selectedAddOnProduct.map((item, index) => (
+                <li key={index}>
+                  <div>
+                    {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+                
+                  </div>
+                  
+                </li>
+              ))}
 
-                                  </div>
-                                </li>
-                              ))}
-
-                            </>
-                          )}
-                        </div>
-                      </div>
+            </>
+          )}
+        </div>
+      </div>
       <div className="photodetails-inclusions">
         <h3>Inclusions</h3>
-        {getItemInclusion(work.inclusion)}
         {getItemInclusion(work.inclusion)}
         <p className="work-duration">
           <b className="Duration">Duration:</b> {duration}
         </p>
       </div>
 
- <div className="modal-top-box11">
-                <h2 style={{ fontSize: 16, fontWeight: 600 }} className="select-heading-sec">Add Extra Features</h2>
-              </div>
+      <div className="modal-top-box11" ref={addonRef}>
+        <h2 className="select-heading-sec">Add Extra Features</h2>
+      </div>
       <div className="addon-sec">
-        {isModalOpen && (
-          
-          <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "600px", overflowY: "scroll" ,padding:"10px"}}>
+
+          <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "600px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0" }}>
             <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
               {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
-             
+
               <div className="modal-middle-box 11">
                 <div className="modal-card-container">
 
                   {photographyAddOns?.addOnProductsById?.[tagId]?.map((item, index) => (
                     <div key={index} className="modal-card">
                       <img
-                        style={{ width: "120px", height: "120px" }}
+                        // style={{ width: "120px", height: "120px" }}
                         src={item.image}
                         alt={item.title}
                         className="model-image"
@@ -406,21 +423,23 @@ const ProductDetails = () => {
 
                       <div className="price-container">
                         <span className="price">
-                          {typeof item.price === "number" ? `₹ ${item.price}` : "Included"}
+                          {typeof item.price === "number" ? `₹${item.price}` : "Included"}
                         </span>
-
                         {typeof item.price === "number" && (
                           itemQuantities[item.title] ? (
-                            <div>
+                            <div className="quantity-controls">
                               <button onClick={() => handleRemoveFromCart(item)} className="quantity-button">-</button>
-                              <span className='qunatity-title'>{itemQuantities[item.title]}</span>
+                              <span className="qunatity-title">{itemQuantities[item.title]}</span>
                               <button onClick={() => handleAddToCart(item)} className="quantity-button">+</button>
                             </div>
                           ) : (
-                            <button onClick={() => handleAddToCart(item)} className="add-button">Add</button>
+                            // <button onClick={() => handleAddToCart(item)} className="addbutton">Add</button>
+                            <button onClick={() => handleAddToCartAndScrollBack(item)} className="addbutton">Add</button>
+
                           )
                         )}
                       </div>
+
                     </div>
                   ))}
 
@@ -430,9 +449,8 @@ const ProductDetails = () => {
 
             </div>
           </div>
-        )}
       </div>
-      
+
       <div className="whyHoraSec">
         <h2 className="whyHoraHeading">Why Hora Photography</h2>
         <div className="whyHoraSecInner">
@@ -452,13 +470,13 @@ const ProductDetails = () => {
       </div>
       <FAQSection faqData={faqData} />
       <div className="confirm-button-wrapper">
-      {/* <div className="modal-bottom-box"> */}
+        {/* <div className="modal-bottom-box"> */}
 
-        <p>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
+        <p style={{ fontWeight:"bold"}}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
 
         <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
-      {/* </div> */}
-    </div>
+        {/* </div> */}
+      </div>
     </div>
   );
 };

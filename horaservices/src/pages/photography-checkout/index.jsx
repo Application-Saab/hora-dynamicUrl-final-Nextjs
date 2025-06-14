@@ -586,18 +586,20 @@ const Checkout = () => {
               </div>
               <div className='add-on-prices'>
 
-                        <div>
+                        <div >
                           {selectedAddOnProduct.length > 0 && (
                             <>
-                              <label>Customisations</label>
+                              <label>Add-Ons :</label>
                               {selectedAddOnProduct.map((item, index) => (
                                 <li key={index}>
-                                  <div>
-                                    {item.title}
+                                  <div className='addon-item'>
+                                  <div >
+                                  {index + 1}.  {item.title}
                                   </div>
                                   <div>
-                                    ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+                                     ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
 
+                                  </div>
                                   </div>
                                 </li>
                               ))}
@@ -666,9 +668,9 @@ const Checkout = () => {
 
       </div>
      {/* ✅ Floating Confirm Button at bottom */}
-<div className="confirm-button-wrapper">
+<div className="confirmbutton-wrapper">
   <button
-    className="confirm-button"
+    className="confirmbutton"
     onClick={onContinueClick}
     type="button"
   >
