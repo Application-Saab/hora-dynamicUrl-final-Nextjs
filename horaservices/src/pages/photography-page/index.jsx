@@ -16,14 +16,14 @@ import Banner2 from "../../assets/Banner2.webp"
 import Banner3 from "../../assets/banner3.webp"
 import magician from "../../assets/magician.jpg";
 import traditionalImg from "../../assets/traditionalphoto.webp";
-import candidImg from "../../assets/CandidphotoImg.jpg";
-import proImg from "../../assets/Prophotography.png";
-import videoImg from "../../assets/Videography.jpg";
-import defaultImg from "../../assets/traditionalphoto.jpg"
-import haldiMehendiImg from "../../assets/haldiMehendi.jpg";
-import PreWeddingImg from "../../assets/PreWeddingImg.jpg" ;
-import weddingAffairImg from "../../assets/weddingAffair.jpg";
-import grandWeddingAffairImg from "../../assets/grandWeddingAffair.jpg"
+import candidImg from "../../assets/CandidphotoImg.webp";
+import proImg from "../../assets/Prophotography.webp";
+import videoImg from "../../assets/Videography.webp";
+import defaultImg from "../../assets/traditionalphoto.webp"
+import haldiMehendiImg from "../../assets/haldiMehendi.webp";
+import PreWeddingImg from "../../assets/PreWeddingImg.webp" ;
+import weddingAffairImg from "../../assets/weddingAffair.webp";
+import grandWeddingAffairImg from "../../assets/grandWeddingAffair.webp"
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
