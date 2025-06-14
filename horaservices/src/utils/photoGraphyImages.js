@@ -1,10 +1,10 @@
-import traditionalPhoto from "../assets/traditionalPhoto.png";
-import candidPhoto from "../assets/candidPhoto.jpg";
-import proPhoto from "../assets/Prophoto.jpg";
-import videoPhoto from "../assets/videophoto.png";
+import traditionalPhoto from "../assets/traditionalPhotos.webp";
+import candidPhoto from "../assets/candidPhoto.webp";
+import proPhoto from "../assets/Prophoto.webp";
+import videoPhoto from "../assets/videophoto.webp";
 import WeddingAffair from "../assets/WeddingAffairImg.svg";
-import preWedding from "../assets/preWedding.svg";
-import HaldiMehndi from "../assets/HaldiMehndi.svg";
+import preWedding from "../assets/preWedding.webp";
+import HaldiMehndi from "../assets/HaldiMehndi.webp";
 import GrandWeddingAffair from "../assets/GrandWeddingAffairImg.svg";
 // import preWedding from "../assets/pre-wed.png";
 const productsData = {
