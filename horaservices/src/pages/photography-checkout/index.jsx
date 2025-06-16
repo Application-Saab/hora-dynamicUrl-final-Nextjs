@@ -26,9 +26,11 @@ import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 const Checkout = () => {
   const router = useRouter();
+   
   let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
   console.log(product)
-  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];//  const formattedInclusions = product.inclusion.length > 0 ? parseInclusions(product.inclusion[0]) : [];
+  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];// 
+console.log(selectedAddOnProduct)
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -55,8 +57,8 @@ const Checkout = () => {
   const [sendInclusion, setSendInclusion] = useState(false);
   const [productPrice, setProductPrice] = useState(null);
   const [productImage, setProductImage] = useState(null);
+  const [productDuration, setProductDuration] = useState(null);
   const [productData, setProductData] = useState(null);
-
 
   if (product) {
     product = JSON.parse(product)
@@ -83,6 +85,7 @@ const Checkout = () => {
       // Product ID se local image set karo
       if (parsedProduct._id && productsData[parsedProduct._id]) {
         setProductImage(productsData[parsedProduct._id].images[0]);
+        setProductDuration(productsData[parsedProduct._id].durationMaxslot);
       }
     }
   }, [router.isReady, router.query.product]);
@@ -293,8 +296,8 @@ const Checkout = () => {
 
       const requestData = {
         "toId": "",
-        // "add_on": selectedAddOnProduct,
-        "add_on": sendInclusion,
+        "add_on": selectedAddOnProduct,
+        // "add_on": sendInclusion,
         "order_time": selectedTimeSlot,
         "phone_no": phoneNumber,
         "no_of_people": 0,
@@ -446,8 +449,8 @@ const Checkout = () => {
 
             <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
   <div className="photographer-note">
-  Photographer will be available for 4 hours after arrival.
-  Need more info ? chat on WhatsApp now!
+       Photographer will be available for {productDuration} after arrival.
+  {/* Need more info ? chat on WhatsApp now! */}
 </div>
             <div className="form-row">
               <div className="form-half large-input">
@@ -559,7 +562,7 @@ const Checkout = () => {
             className="floating-image"
           />
         </div>
-        <div className='rightsecdecinner decoration'>
+        <div className='rightsecdecinner photography'>
           <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "20px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className='d-flex flex-column flex-lg-row'>
 
@@ -567,24 +570,21 @@ const Checkout = () => {
               {/* <label>Product Name :</label> */}
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
-            <div className='prod-detailsp'>
+            {/* <div className='prod-detailsp'>
               {productImage && (
                 <div className='detail-item'>
                   <Image src={productImage} alt={product.name} className="detailimage" />
                 </div>
               )}
-            </div>
+            </div> */}
 
             <div className='prod-details'>
-              {/* <div className='detail-item'>
-                <label>Add-ons: Cake Table: </label>
-                <p> {"N/A"}</p>
-              </div> */}
-              <div className='detail-item'>
+         
+              <div className='detailitem'>
                 <label>Product Amount:</label>
                 <p>₹{productPrice}</p>
               </div>
-              <div className='add-on-prices'>
+              <div className='addon-prices'>
 
                         <div >
                           {selectedAddOnProduct.length > 0 && (
@@ -593,10 +593,10 @@ const Checkout = () => {
                               {selectedAddOnProduct.map((item, index) => (
                                 <li key={index}>
                                   <div className='addon-item'>
-                                  <div >
+                                  <div className="item-line">
                                   {index + 1}.  {item.title}
                                   </div>
-                                  <div>
+                                  <div className="item-line">
                                      ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
 
                                   </div>
@@ -608,11 +608,11 @@ const Checkout = () => {
                           )}
                         </div>
                       </div>
-              <div className='detail-item'>
-                <label>Total Amount:</label>
+              <div className='detailitem'>
+                <label style={{ color: "rgb(157, 74, 147)"}}>Total Amount:</label>
                 <p>₹{totalAmount}</p>
               </div>
-              <div className='detail-item'>
+              <div className='detailitem'>
                 <label>Advance Amount:</label>
                 <p>₹ {Math.round(totalAmount * 0.35)}</p>
               </div>
@@ -667,7 +667,7 @@ const Checkout = () => {
         </div>
 
       </div>
-     {/* ✅ Floating Confirm Button at bottom */}
+    
 <div className="confirmbutton-wrapper">
   <button
     className="confirmbutton"

@@ -367,18 +367,18 @@ const ProductDetails = () => {
 
         <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
       </div>
-      <div className='add-on-prices' ref={customizationRef}>
+      <div className='addon-prices' ref={customizationRef}>
 
         <div className="photodetails-inclusions">
           {selectedAddOnProduct.length > 0 && (
             <>
               <label>Customisations</label>
               <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
-                < svg stroke="currentColor" fill="currentColor"   stroke-width="0" viewBox="0 0 576 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" style={{ color:"rgb(146, 82, 170)" ,marginBottom:"20px"}}></path></svg>
+                < svg stroke="currentColor" fill="currentColor"   stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg"  style={{color: "rgb(146, 82, 170)",verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
               </span>
               {selectedAddOnProduct.map((item, index) => (
                 <li key={index}>
-                  <div>
+                  <div className="item-line">
                     {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
                 
                   </div>
@@ -408,10 +408,10 @@ const ProductDetails = () => {
               {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
 
               <div className="modal-middle-box 11">
-                <div className="modal-card-container">
+                <div className="modalcard-container">
 
                   {photographyAddOns?.addOnProductsById?.[tagId]?.map((item, index) => (
-                    <div key={index} className="modal-card">
+                    <div key={index} className="modalcard">
                       <img
                         // style={{ width: "120px", height: "120px" }}
                         src={item.image}
@@ -419,7 +419,7 @@ const ProductDetails = () => {
                         className="model-image"
                       />
                       <h3>{item.title}</h3>
-                      <p>{item.description}</p>
+                      {/* <p>{item.description}</p> */}
 
                       <div className="price-container">
                         <span className="price">
@@ -427,10 +427,10 @@ const ProductDetails = () => {
                         </span>
                         {typeof item.price === "number" && (
                           itemQuantities[item.title] ? (
-                            <div className="quantity-controls">
-                              <button onClick={() => handleRemoveFromCart(item)} className="quantity-button">-</button>
+                            <div className="quantitycontrols">
+                              <button onClick={() => handleRemoveFromCart(item)} className="quantitybutton">-</button>
                               <span className="qunatity-title">{itemQuantities[item.title]}</span>
-                              <button onClick={() => handleAddToCart(item)} className="quantity-button">+</button>
+                              <button onClick={() => handleAddToCart(item)} className="quantitybutton">+</button>
                             </div>
                           ) : (
                             // <button onClick={() => handleAddToCart(item)} className="addbutton">Add</button>
@@ -472,7 +472,7 @@ const ProductDetails = () => {
       <div className="confirm-button-wrapper">
         {/* <div className="modal-bottom-box"> */}
 
-        <p style={{ fontWeight:"bold"}}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
+        <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black"}}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
 
         <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
         {/* </div> */}

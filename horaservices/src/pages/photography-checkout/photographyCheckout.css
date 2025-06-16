@@ -457,6 +457,56 @@ select.formcontrol {
   margin-bottom: 12px !important; /* Adjust this value as needed */
 }
 
+.rightsecdecinner.photography{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 10px;
+     font-family: 'Inter', sans-serif;
+}
+
+
+
+.productTitle {
+  font-weight: 500;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.prod-details {
+  margin-top: 10px;
+}
+
+.detailitem {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+.detailitem label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.addon-prices {
+  margin-top: 10px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+.addon-prices li {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 6px;
+}
+
+
+.total-amount {
+  font-weight: 600;
+  font-size: 14px;
+  color: rgb(146, 82, 170);
+  margin-top: 15px;
+}
 
  .rightSeccheckout {
     position: relative;
@@ -480,7 +530,7 @@ border:1px solid #7e7c7c ;
   padding: 0;
 }
 
-.detail-item {
+.detailitem {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -488,6 +538,12 @@ border:1px solid #7e7c7c ;
   padding: 0;       /* Padding hatao */
   gap: 8px;         /* Label aur <p> ke beech gap chahiye toh */
      line-height: 0.5;
+}
+.detailitem label {
+  color: black;
+  font-size: 16px;
+  margin: 16px 0 6px;
+  font-weight: 600;
 }
 .addon-item{
  display: flex;
@@ -498,27 +554,42 @@ border:1px solid #7e7c7c ;
   gap: 8px;         /* Label aur <p> ke beech gap chahiye toh */
      line-height: 2;
 
+
 }
-.add-on-prices {
+.item-line {
+font-family: 'Inter', sans-serif;
+ font-weight: 500;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: black;
+}
+.addon-prices label {
+  color: black !important;
+  font-size: 16px;
+  margin: 16px 0 6px;
+  font-weight: 600;
+  display: inline-block;
+}
+.addon-prices {
     display: flex;
     flex-direction: column;
     margin: 0 0 10px 0 !important;
 }
-.detail-item p {
+.detailitem p {
     margin: 0;
     /* margin-left: 10px; */
-    font-size: 14px !important;
+    font-size: 16px !important;
     margin-top: 10px !important;
 }
 
 
 .productTitle{
  margin: 0 !important;
-    /* margin-left: 10px !important; */
-   margin-bottom: 10px !important;
+   color:black;
     font-family: 'Mada', sans-serif !important;
     font-weight: 500 !important;
-    font-size: 18px !important;
+    font-size: 16px !important;
     vertical-align: bottom;
 } 
 .Needmoresection{

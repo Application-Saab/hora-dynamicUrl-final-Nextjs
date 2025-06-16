@@ -124,7 +124,7 @@
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
-  padding: 6px !important;
+  padding: 10px !important;
   cursor: pointer;
   box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.05);
   height: 57px !important;
@@ -632,7 +632,7 @@ background-color: rgb(150, 82, 141)!important ;
   background-color: white;
   position: absolute;
   top: 50%;
-  left: 58%;
+  left: 54%;
   transform: translate(-50%, -50%);
   color: #97538c;
   text-align: left;
@@ -651,7 +651,7 @@ background-color: rgb(150, 82, 141)!important ;
 }
 
 .pose-subtitle {
-  font-family: 'Londrina Solid', cursive;
+  /* font-family: 'Londrina Solid', cursive; */
   font-weight: 1000;
   font-size: 17px;
   line-height: 25px;
@@ -755,7 +755,7 @@ background-color: rgb(150, 82, 141)!important ;
 
 
 .Trust-header {
-  color: #973aa8;
+  color: rgb(150, 82, 141) !important;
   font-weight: 800;
   font-size: 19px;
   margin-bottom: 6px;
@@ -763,7 +763,7 @@ background-color: rgb(150, 82, 141)!important ;
 
 .Trust-header span {
   font-size: 27px;
-  color: #973aa8;
+  color: rgb(150, 82, 141) !important;
 }
 
 

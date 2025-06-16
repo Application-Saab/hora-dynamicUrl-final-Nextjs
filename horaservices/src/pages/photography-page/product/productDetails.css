@@ -317,7 +317,7 @@ margin-top: 0 !important;
     justify-content: space-between;
     padding: 0px 0px 17px;
 }
-.add-on-prices li{
+.addon-prices li{
   list-style: none;
   display: flex;
   justify-content: space-between;
@@ -329,16 +329,16 @@ ul.decoration-addons {
   padding: 13px !important;
   background-color: #fff;
 }
-.add-on-prices.mobile {
+.addon-prices.mobile {
   margin: 0;
   padding: 0;
 }
-.add-on-prices.mobile label {
+.addon-prices.mobile label {
   padding: 0;
   margin: 0 0 9px 0;
   font-size: 14px;
 }
-.add-on-prices.mobile li {
+.addon-prices.mobile li {
   padding: 0;
   margin: 0 0 10px 0;
   font-size: 12px;
@@ -355,13 +355,13 @@ ul.decoration-addons {
   background-color: #FFFAF0;
 }
 
-.modal-card-container {
+.modalcard-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
 
-.modal-card {
+.modalcard {
   border: 2px solid #ddd;
   border-radius: 8px;
   padding: 0px !important;
@@ -369,15 +369,23 @@ ul.decoration-addons {
   background: #fff;
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
+.item-line {
+font-family: 'Inter', sans-serif;
 
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: black;
+}
 
-.modal-card img {
+.modalcard img {
     width: 100%;
     height: auto;
     border-radius: 8px 8px 0px 0px;
 }
 
-.modal-card h3 {
+.modalcard h3 {
     font-size: 14px;
     color: #222;
     min-height: 0px !important;
@@ -386,7 +394,7 @@ ul.decoration-addons {
     text-align: left;
     margin-top: 10px;
 }
-.modal-card p {
+.modalcard p {
     font-size: 14px;
     color: #555;
     min-height: 80px;
@@ -396,15 +404,17 @@ ul.decoration-addons {
     text-align: left;
     margin-top: 10px;
 }
-.quantity-controls {
+.quantitycontrols {
   display: flex;
   align-items: center;
   gap: 8px; /* Adjust space between buttons and number */
   justify-content: center;
 }
-
+  li.addon-sec , p.addon-sec , .addon-sec{
+        padding: 1px 10px 1px !important;
+}
 .addbutton,
-.quantity-button {
+.quantitybutton {
   background-color: rgb(157, 74, 147) !important;
   color: #fff;
   border: none;
@@ -414,17 +424,19 @@ ul.decoration-addons {
   display: inline-block;
   cursor: pointer;
 }
-.add-on-prices {
+.addon-prices {
   display: flex;
   flex-direction: column;
   margin: 0 0 20px 0;
 }
 
-.add-on-prices label {
-  color: rgb(146, 82, 170);
-  font-size: 14px;
-  margin: 16px 0 6px;
-  font-weight: 700;
+.addon-prices label {
+
+      font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-top: 0;
+    color:  rgb(146, 82, 170) !important;
 }
 
 .add-on-prices p {
