@@ -476,6 +476,96 @@ Housewarming & Corporate Events" />
             </div>
           </div>
         </div>
+
+
+
+        <div className="keywords-box">
+  <h3>Keywords:</h3>
+  <p className="keyword-text">
+    {[
+      "couple photoshoot",
+      "romantic photoshoot for couples",
+      "pre wedding photoshoot",
+      "pre wedding photography",
+      "couple pre wedding photography",
+      "candid pre wedding shoot",
+      "pre bridal photography",
+      "pre wedding shoot price",
+      "pre wedding shoot in bangalore",
+      "couples photography",
+      "maternity photoshoot",
+      "maternity photoshoot near me",
+      "maternity photo sessions",
+      "maternity photoshoot in bangalore",
+      "maternity couple photoshoot",
+      "mother to be photoshoot",
+      "maternity shoot near me",
+      "pregnancy photoshoot near me",
+      "pregnancy photo shoot",
+      "photography in pregnancy",
+      "pregnant women photoshoot",
+      "motherhood photoshoot",
+      "pregnant ladies photoshoot",
+      "couple pregnancy photoshoot",
+      "seemantham photoshoot",
+      "pregnancy photoshoot in bangalore",
+      "newborn photography",
+      "infant photography",
+      "baby photography near me",
+      "newborn photography near me",
+      "newborn photoshoot",
+      "infant photographers near me",
+      "newborn portraits near me",
+      "newborn family photoshoot",
+      "family photography with newborn",
+      "cake smash photoshoot",
+      "first birthday cake smash photoshoot",
+      "engagement photo shoot",
+      "engagement photoshoot",
+      "engagement couple photography",
+      "engagement photography",
+      "wedding photographer",
+      "wedding photographer near me",
+      "wedding photoshoot",
+      "photographer wedding",
+      "candid wedding photography",
+      "marriage photoshoot",
+      "post wedding photoshoot",
+      "bridal photoshoot",
+      "traditional photography",
+      "wedding photographers in bangalore",
+      "marriage photographers in bangalore",
+      "birthday photoshoot",
+      "first birthday photoshoot",
+      "pre birthday photoshoot",
+      "birthday celebration photoshoot",
+      "birthday photo session",
+      "18th photoshoot",
+      "birthday party photographer",
+      "event photography",
+      "photoshoot for wedding anniversary",
+      "anniversary photoshoot",
+      "candid photography",
+      "cinematic photography",
+      "fashion photography",
+      "model photography",
+      "black and white photography",
+      "landscape photography",
+      "portrait photography",
+      "photographers near me",
+      "professional photographer near me",
+      "professional photographer",
+      "freelance photographer",
+      "best photographers near me",
+      "photoshoot near me",
+      "photographer in bangalore",
+      "photography in bangalore",
+      "bangalore photoshoot",
+      "photography services"
+    ].join(", ")}
+  </p>
+</div>
+
       </div>
     </>
   );
