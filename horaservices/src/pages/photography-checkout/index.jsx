@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
+import Head from "next/head";
 import axios from 'axios';
 import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
@@ -16,6 +17,7 @@ import Loader from '../../components/Loader'
 import { pincodes } from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
 import "./photographyCheckout.css";
+import { getPhotographyOrganizationSchema } from "../../utils/schema";
 import BackgroundDetails from "../../assets/BackgroundDetails.svg";
 import productsData from '../../utils/photoGraphyImages.js';
 import CommentIcon from "../../assets/commenticon.png";
@@ -26,7 +28,8 @@ import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 const Checkout = () => {
   const router = useRouter();
-   
+   const schemaOrg = getPhotographyOrganizationSchema();
+   const scriptTag = JSON.stringify(schemaOrg);
   let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
   console.log(product)
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];// 
@@ -429,6 +432,40 @@ console.log(selectedAddOnProduct)
 
   return (
     <div className="App">
+       <Head>
+        <title>HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500</title>
+        <meta
+          name="description"
+          content="📸 Capture Every Moment, Forever! ✨
+       Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
+      Weddings 👰‍♀️🤵
+      Maternity & Baby Shoots 🤰👼
+      Birthdays & Anniversaries 🎂❤️
+      Housewarming & Corporate Events" />
+         <meta
+          name="keywords"
+          content="couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, 
+          couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, 
+          pregnancy photo shoot, photography in pregnancy, pregnant women photoshoot, motherhood photoshoot, pregnant ladies photoshoot, couple pregnancy photoshoot, seemantham photoshoot, pregnancy photoshoot in bangalore, newborn photography, infant photography,
+           baby photography near me, newborn photography near me, newborn photoshoot, infant photographers near me, newborn portraits near me, newborn family photoshoot, family photography with newborn, cake smash photoshoot, first birthday cake smash photoshoot, 
+           engagement photo shoot, engagement photoshoot, engagement couple photography, engagement photography, wedding photographer, wedding photographer near me, wedding photoshoot, photographer wedding, candid wedding photography, marriage photoshoot, post wedding photoshoot, 
+           bridal photoshoot, traditional photography, wedding photographers in bangalore, marriage photographers in bangalore, birthday photoshoot, first birthday photoshoot, pre birthday photoshoot, birthday celebration photoshoot, birthday photo session, 18th photoshoot, 
+           birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, 
+           photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
+        />
+        <meta property="og:title" content="HORA Photography : Professional photography for all events" />
+        <meta
+          property="og:description"
+          content="Professional event photography for weddings, birthdays, baby showers, and more. Book today for stunning, affordable memories — starting at just ₹3500!"
+        />
+        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+        <meta property="og:url" content="https://horaservices.com/photography" />
+        <meta property="og:type" content="website" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Hora Services" />
+        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+        <script type="application/ld+json">{scriptTag}</script>
+      </Head>
       {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
       {loading && <Loader />}
 
@@ -563,7 +600,7 @@ console.log(selectedAddOnProduct)
           />
         </div>
         <div className='rightsecdecinner photography'>
-          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "20px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
+          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className='d-flex flex-column flex-lg-row'>
 
             <div >
@@ -587,34 +624,30 @@ console.log(selectedAddOnProduct)
               <div className='addon-prices'>
 
                         <div >
-                          {selectedAddOnProduct.length > 0 && (
-                            <>
-                              <label>Add-Ons :</label>
-                              {selectedAddOnProduct.map((item, index) => (
-                                <li key={index}>
-                                  <div className='addon-item'>
-                                  <div className="item-line">
-                                  {index + 1}.  {item.title}
-                                  </div>
-                                  <div className="item-line">
-                                     ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+                         {selectedAddOnProduct.length > 0 && (
+  <>
+    <label>Add-Ons :</label>
+    <ul className="addon-list">
+      {selectedAddOnProduct.map((item, index) => (
+        <li key={index} className="addon-item">
+          <span className="addon-title">{index + 1}. {item.title}</span>
+          <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
+        </li>
+      ))}
+    </ul>
+  </>
+)}
 
-                                  </div>
-                                  </div>
-                                </li>
-                              ))}
-
-                            </>
-                          )}
                         </div>
                       </div>
+                     
               <div className='detailitem'>
                 <label style={{ color: "rgb(157, 74, 147)"}}>Total Amount:</label>
-                <p>₹{totalAmount}</p>
+                <p style={{ color: "rgb(157, 74, 147)"}}>₹{totalAmount}</p>
               </div>
-              <div className='detailitem'>
-                <label>Advance Amount:</label>
-                <p>₹ {Math.round(totalAmount * 0.35)}</p>
+               <div className='detailitem'>
+                <label style={{ color: "rgb(157, 74, 147)"}}>Advance Amount:</label>
+                <p style={{ color: "rgb(157, 74, 147)"}}>₹ {Math.round(totalAmount * 0.35)}</p>
               </div>
 
             </div>

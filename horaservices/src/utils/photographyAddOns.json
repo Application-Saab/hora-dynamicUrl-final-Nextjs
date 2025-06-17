@@ -6,38 +6,22 @@
         "title": "20 Edited Pictures",
         "price": 750,
         "description": "20 professionally edited photos delivered.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "image": "https://horaservices.com/api/uploads/compressed_webp/20Edit.webp"
       },
-      {
-        "title": "50 Edited Pictures",
-        "price": 1500,
-        "description": "50 professionally edited photos delivered.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
-      {
-        "title": "Birthday Props",
+     
+    {
+        "title": "Theme props",
         "price": 300,
-        "description": "Colorful props to enhance birthday photography.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "description": ".",
+        "image": "https://horaservices.com/api/uploads/compressed_webp/themeprops.webp"
       },
-      {
-        "title": "Maternity Props",
-        "price": 300,
-        "description": "Special props for maternity photoshoots.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
-      {
-        "title": "Baby Shower Props",
-        "price": 300,
-        "description": "Charming props for baby shower shoots.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
+     
      
       {
         "title": "Additional Umbrella Light",
         "price": 400,
         "description": "Extra lighting for better photo clarity.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "image": "https://horaservices.com/api/uploads/compressed_webp/Umbrellalight.webp"
       }
      
     ],
@@ -46,38 +30,22 @@
         "title": "20 Edited Pictures",
         "price": 750,
         "description": "20 professionally edited photos delivered.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "image": "https://horaservices.com/api/uploads/compressed_webp/20Edit.webp"
       },
-      {
-        "title": "50 Edited Pictures",
-        "price": 1500,
-        "description": "50 professionally edited photos delivered.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
-      {
-        "title": "Birthday Props",
+     
+    {
+        "title": "Theme props",
         "price": 300,
-        "description": "Colorful props to enhance birthday photography.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "description": ".",
+        "image": "https://horaservices.com/api/uploads/compressed_webp/themeprops.webp"
       },
-      {
-        "title": "Maternity Props",
-        "price": 300,
-        "description": "Special props for maternity photoshoots.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
-      {
-        "title": "Baby Shower Props",
-        "price": 300,
-        "description": "Charming props for baby shower shoots.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
+     
      
       {
         "title": "Additional Umbrella Light",
         "price": 400,
         "description": "Extra lighting for better photo clarity.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "image": "https://horaservices.com/api/uploads/compressed_webp/Umbrellalight.webp"
       }
     
     ],
@@ -86,25 +54,22 @@
         "title": "20 Edited Pictures",
         "price": 750,
         "description": "20 professionally edited photos delivered.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "image": "https://horaservices.com/api/uploads/compressed_webp/20Edit.webp"
       },
-      {
-        "title": "50 Edited Pictures",
-        "price": 1500,
-        "description": "50 professionally edited photos delivered.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+     
+    {
+        "title": "Theme props",
+        "price": 300,
+        "description": ".",
+        "image": "https://horaservices.com/api/uploads/compressed_webp/themeprops.webp"
       },
+     
+     
       {
-        "title": "Drone Photography",
-        "price": 2000,
-        "description": "Capture stunning aerial shots of your event with a drone.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
-      },
-      {
-        "title": "Album (50 Pages)",
-        "price": 3500,
-        "description": "Beautiful 50-page printed album to preserve your memories.",
-        "image": "https://horaservices.com/api/uploads/borad-stand.jpg"
+        "title": "Additional Umbrella Light",
+        "price": 400,
+        "description": "Extra lighting for better photo clarity.",
+        "image": "https://horaservices.com/api/uploads/compressed_webp/Umbrellalight.webp"
       }
     ]
   }

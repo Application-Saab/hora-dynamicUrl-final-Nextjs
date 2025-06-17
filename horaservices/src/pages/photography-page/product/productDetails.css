@@ -4,7 +4,7 @@
   /* border-radius: 12px; */
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin: 20px auto !important;
+  margin: 0px auto !important;
   max-width: 420px;
   
 }
@@ -316,6 +316,11 @@ margin-top: 0 !important;
     display: flex;
     justify-content: space-between;
     padding: 0px 0px 17px;
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFAF0;
+   
 }
 .addon-prices li{
   list-style: none;
@@ -347,83 +352,80 @@ ul.decoration-addons {
     justify-content: space-between;
 }
 
-
-.modal-middle-box {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0px !important;
-  background-color: #FFFAF0;
-}
-
 .modalcard-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 12px;
+  background-color: #FFFAF0;
+  margin: auto;
 }
 
 .modalcard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   border: 2px solid #ddd;
   border-radius: 8px;
-  padding: 0px !important;
-  text-align: center;
   background: #fff;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-}
-.item-line {
-font-family: 'Inter', sans-serif;
-
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 100%;
-  letter-spacing: 0%;
-  color: black;
+  overflow: hidden;
+  min-height: 250px; /* 👈 force equal height */
 }
 
 .modalcard img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px 8px 0px 0px;
+   width: 100%;
+  height: 160px;         /* 👈 Natural height */
+  object-fit: contain;      /* 👈 Image pura dikhega */
+  background-color: #fff;
+  padding: 5px;               /* 👈 Optional: gap from top/bottom */
+  border-radius: 8px 8px 0 0;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .modalcard h3 {
-    font-size: 14px;
-    color: #222;
-    min-height: 0px !important;
-    padding: 0px 0px 0px 5px;
-    margin: 0;
-    text-align: left;
-    margin-top: 10px;
+  font-size: 14px;
+  color: #222;
+  padding: 8px 10px 0 10px;
+  margin: 0;
+  text-align: left;
+  min-height: 38px; /* 👈 to align even if title is short */
+  font-weight: 600;
 }
-.modalcard p {
-    font-size: 14px;
-    color: #555;
-    min-height: 80px;
-    padding: 0px 0px 0 5px;
-    margin: 0;
-    max-width: 500px;
-    text-align: left;
-    margin-top: 10px;
+
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px 10px 10px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+
+.price {
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+}
+
 .quantitycontrols {
   display: flex;
   align-items: center;
-  gap: 8px; /* Adjust space between buttons and number */
+  gap: 8px;
   justify-content: center;
 }
-  li.addon-sec , p.addon-sec , .addon-sec{
-        padding: 1px 10px 1px !important;
-}
+
 .addbutton,
 .quantitybutton {
   background-color: rgb(157, 74, 147) !important;
   color: #fff;
   border: none;
-  padding: 1px 10px 1px !important;
-  border-radius: 10px !important;
-  cursor: pointer;
-  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
+
 .addon-prices {
   display: flex;
   flex-direction: column;

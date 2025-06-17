@@ -1,4 +1,33 @@
 // src/utils/schema.js
+export const getPhotographyOrganizationSchema = () => ({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Hora Photography",
+  "alternateName": "Hora Services",
+  "url": "https://horaservices.com/photography",
+   "keywords":
+    "couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, pregnancy photo shoot, photography in pregnancy, pregnant women photoshoot, motherhood photoshoot, pregnant ladies photoshoot, couple pregnancy photoshoot, seemantham photoshoot, pregnancy photoshoot in bangalore, newborn photography, infant photography, baby photography near me, newborn photography near me, newborn photoshoot, infant photographers near me, newborn portraits near me, newborn family photoshoot, family photography with newborn, cake smash photoshoot, first birthday cake smash photoshoot, engagement photo shoot, engagement photoshoot, engagement couple photography, engagement photography, wedding photographer, wedding photographer near me, wedding photoshoot, photographer wedding, candid wedding photography, marriage photoshoot, post wedding photoshoot, bridal photoshoot, traditional photography, wedding photographers in bangalore, marriage photographers in bangalore, birthday photoshoot, first birthday photoshoot, pre birthday photoshoot, birthday celebration photoshoot, birthday photo session, 18th photoshoot, birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services",
+ "description":
+    "📸 Professional photography services for weddings, baby showers, birthday parties, anniversaries, corporate events, and more — starting from just ₹3500! Book instantly online with Hora.",
+  "logo": "https://horaservices.com/api/uploads/logo-icon.png",
+  "priceRange": "3500-25000",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "4566"
+  },
+   "sameAs": [
+      "https://www.facebook.com/people/Hora/61550111701616/",
+      "https://www.instagram.com/horaservices/?fbclid=IwAR0PktJ-rl5rKC6YGSZ8BSw3m8o9qMfLpJchO17FCEZuCXKxvASZWRymifA",
+      "https://www.youtube.com/channel/UCj5gMUjptHut0aGYHxCbE5g",
+      "https://horaservices.com"
+    ],
+    "image": [
+      "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+      "https://horaservices.com/api/uploads/attachment-1711520474508.png",
+      "https://horaservices.com/api/uploads/attachment-1706459457063.png"
+    ]
+});
 
 export const getDecorationOrganizationSchema = () => ({
     "@context": "https://schema.org",
