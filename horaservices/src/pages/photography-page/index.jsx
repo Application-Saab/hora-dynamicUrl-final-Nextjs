@@ -480,7 +480,7 @@ Housewarming & Corporate Events" />
 
 
         <div className="keywords-box">
-  <h3>Keywords:</h3>
+ 
   <p className="keyword-text">
     {[
       "couple photoshoot",
