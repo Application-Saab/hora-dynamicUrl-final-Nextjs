@@ -12,7 +12,13 @@ const DecorationSection = ({handleItemClick, title, category, handleViewMore, vi
         </h2>
         <div >
           <span
-            className="text-purple"
+            className="text-purple" 
+             style={{
+    cursor: "pointer",
+    fontWeight: "600",
+    textDecoration: "underline",
+    fontSize: "17px"
+  }}
             onClick={() => handleViewMore(viewLink || category)}
           >
             view more
