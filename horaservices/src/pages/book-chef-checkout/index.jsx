@@ -304,7 +304,7 @@ const ChefCheckout = () => {
         try {
             const addressID = await saveAddress();
             const storedUserID = await localStorage.getItem('userID');
-            const advanceAmount = Math.round(totalPrice / 5);
+            const advanceAmount = Math.round(totalPrice * 0.25);
             const balanceAmount = totalPrice - advanceAmount;
             const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
             const requestData = {
@@ -503,7 +503,7 @@ const ChefCheckout = () => {
                                         </div>
                                         <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 5px 0" }}>
                                             <label style={{ color: "rgb(146, 82, 170)", fontSize: "16px", marigin: "16px 0 6px", fontWeight: 700 }}>Advance Amount:</label>
-                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice / 5)}</p>
+                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice * 0.25)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -605,7 +605,7 @@ const ChefCheckout = () => {
                                     </div>
                                     <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 5px 0" }}>
                                         <label style={{ color: "rgb(146, 82, 170)", fontSize: "16px", marigin: "16px 0 6px", fontWeight: 700 }}>Advance Amount:</label>
-                                        <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice / 5)}</p>
+                                        <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice * 0.25)}</p>
                                     </div>
 
                                     <div style={{ display: "flex", padding: 7, flexDirection: 'row', borderRadius: 5, marginTop: 5, marginBottom: 10, backgroundColor: 'rgba(211, 75, 233, 0.10)', justifyContent: 'flex-start', alignItems: 'top' }}>

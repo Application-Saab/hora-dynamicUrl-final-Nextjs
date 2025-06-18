@@ -76,7 +76,7 @@ const productsData = {
         name: "Pre Wedding Affair",
         category:"Mega",
         images:[preWedding],
-        duration:"6 - 8 Hours (₹2000 per extra hour beyond 10 hours)",
+        duration:" 7 - 8 Hours (₹1300 per extra hour beyond 8 hours)",
           durationMaxslot:"8 Hours"
     },
     "68411cc3fdfcb315ad5b02bd":{
@@ -90,7 +90,7 @@ const productsData = {
         name: "Grand Wedding Affair",
          category:"Mega",
         images:[GrandWeddingAffair],
-        duration:"10 - 15 Hours (₹1300 per extra hour beyond 15 hours)",
+        duration:"10 - 15 Hours (₹2000 per extra hour beyond 15 hours)",
           durationMaxslot:"15 Hours"
     },
   };

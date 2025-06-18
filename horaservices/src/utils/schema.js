@@ -106,28 +106,29 @@ export const getDecorationOrganizationSchema = () => ({
     }
   }
 
-  export const getDecorationCatOrganizationSchema = (categoryName) => ({
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "brand": "Hora Services",
-    "name": `${categoryName}`,
-    "keywords": PageTitle(categoryName),
-    "description": getPageMetaDescription(categoryName),
-    "url": `https://horaservices.com/balloon-decoration/${categoryName}`,
-    "image": [
-      "https://horaservices.com/api/uploads/attachment-1706520980436.png",
-      "https://horaservices.com/api/uploads/attachment-1711520474508.png",
-      "https://horaservices.com/api/uploads/attachment-1706459457063.png"
-    ],
-    "brand": "Horservices.com",
-    "sku": `${categoryName?.toLowerCase().replace(/\s/g, '-')}`,
-    "priceRange": "999-39999",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.5",
-      "reviewCount": "1388"
-    }
-  });
+ 
+ export const getDecorationCatOrganizationSchema = (catValue) => ({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "brand": "Hora Services",
+  "name": catValue,
+  "description": getPageMetaDescription(catValue),
+  "url": `https://horaservices.com/balloon-decoration/${catValue}`,
+  "image": [
+    "https://horaservices.com/api/uploads/attachment-1706520980436.png",
+    "https://horaservices.com/api/uploads/attachment-1711520474508.png",
+    "https://horaservices.com/api/uploads/attachment-1706459457063.png"
+  ],
+  "sku": catValue?.toLowerCase().replace(/\s/g, '-'),
+  "priceRange": "999-39999",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.5",
+    "reviewCount": "1388"
+  }
+});
+
+
 
 export const getDecorationProductOrganizationSchema = (product) => ({
     "@context": "https://schema.org",

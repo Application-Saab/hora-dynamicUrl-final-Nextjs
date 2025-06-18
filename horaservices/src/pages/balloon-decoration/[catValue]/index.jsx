@@ -44,8 +44,7 @@ const DecorationCatPage = () => {
       const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
       const parts = path.split('/'); // Split by '/'
       const dynamicValue = parts[2];
-
-      setCatValue(dynamicValue);
+       setCatValue(dynamicValue);
 
     }
   }, [router.isReady, router.query]);
@@ -367,80 +366,60 @@ const DecorationCatPage = () => {
     }
     return text;
   }
-
-  const PageTitle = (e) =>{
-    if(catValue === "kids-birthday-decoration"){
-      return "Kids' Birthday Balloon Decoration by Professionals Decorators, Starting at ₹1199"
-    }
-    else if(catValue === "birthday-decoration"){
-      return "Birthday Balloon Decoration at Home by Professionals  Decorators, Starting at ₹1199";
-    }
-    else if(catValue === "anniversary-decoration"){
-      return "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199"
-    }
-    else if(catValue === "first-night-decoration"){
-      return "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199"
-    }
-    else if(catValue === "baby-shower-decoration") {
-      return "Baby Shower with Latest Designs by Professionals  Decorators Starting at ₹1199"
-    }
-    else if (catValue === "welcome-baby-decoration"){
-      return "Baby Welcome Decoration at home by Professionals  Decorators, Starting at ₹1199"
-    }
-    else if (catValue === "haldi-mehendi-decoration"){
-      return "Haldi Decoration with Latest Designs starting at ₹3000"
-    }
-    else{
-     return("Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199")
-    }
+const normalizeCatValue = (val) => {
+  return val
+    ?.replace(/([a-z])([A-Z])/g, "$1-$2")
+    .toLowerCase();
+};
+const normalizedCat = normalizeCatValue(catValue);
+ const PageTitle = (cat) => {
+  if (cat === "kids-birthday" || cat === "kids-birthday-decoration") {
+    return "Kids' Birthday Balloon Decoration by Professionals Decorators, Starting at ₹1199";
+  } else if (cat === "birthday-decoration" || cat === "birthday") {
+    return "Birthday Balloon Decoration at Home by Professionals Decorators, Starting at ₹1199";
+  } else if (cat === "anniversary-decoration" || cat === "anniversary") {
+    return "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
+  } else if (cat === "first-night-decoration" || cat === "first-night") {
+    return "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
+  } else if (cat === "baby-shower-decoration" || cat === "baby-shower") {
+    return "Baby Shower with Latest Designs by Professionals Decorators Starting at ₹1199";
+  } else if (cat === "welcome-baby-decoration" || cat === "WelcomeBaby") {
+    return "Baby Welcome Decoration at home by Professionals Decorators, Starting at ₹1199";
+  } else if (cat === "haldi-mehendi-decoration" || cat === "haldi-mehandi") {
+    return "Haldi Decoration with Latest Designs starting at ₹3000";
+  }else if (cat === "bachelorette" || cat === "bachelorette") {
+    return "Bachelorette Decoration with Latest Designs starting at ₹3000";
   }
-
-  const getPageMetaDescription = () =>{
-    if(catValue === "kids-birthday-decoration"){
-      return "At Hora, 🎉Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠, under the sea 🌊, Baby Boss 👔, Barbie 💖, and cars 🚗. Explore detailed pricing and inclusions, and let our professional team bring your chosen design to life. Book your perfect party decor today! 🎈✨"
-    }
-    else if(catValue === "birthday-decoration"){
-      return "At Hora, 🎈 Explore our wide range of balloon and flower decorations for birthday parties, featuring ring, sequin, wall, and room designs. Discover pricing and inclusions for every balloon color and variety. Customise your celebration and make it unforgettable with our stunning decor. Book your perfect party setup today! 🎉🌟";
-    }
-    else if(catValue === "anniversary-decoration"){
-      return "🎉 Explore top-notch anniversary decoration designs and book directly from our website 💖. Find elegant and customizable decor options for your special event. Browse our selection to choose the perfect theme and make your anniversary memorable with seamless online booking. ✨"
-    }
-    else if(catValue === "first-night-decoration"){
-      return "🌟 Explore our selection of elegant decoration designs for your first night event 💖. Choose from a variety of styles and themes, and book your perfect decor directly through our website. Make your special night unforgettable with seamless online booking and beautiful, personalised decorations. ✨"
-    }
-    else if (catValue === "haldi-mehendi-decoration"){
-      return "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups, featuring traditional elements, colorful floral arrangements, and custom designs to make your event unforgettable. 🌸💛"
-    }
-    else{
-     return("Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199")
-    }
+  else if (cat === "premium-decoration" || cat === "premium-decoration") {
+    return "Premium-Decoration with Latest Designs starting at ₹3000";
   }
+   else {
+    return "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+  }
+};
 
-  //  // Set themeFilter based on query parameter when component mounts or query changes
-  //  useEffect(() => {
-  //   console.log("useEffect7")
-  //   if (router.isReady) {
-  //     const theme = router.query.theme || "all";
-  //     setThemeFilter(theme);
-  //   }
-  // }, [router.isReady, router.query.theme]);
 
-  // // Update URL whenever the themeFilter changes
-  // useEffect(() => {
-  //   console.log("useEffect8")
-  //   if (themeFilter !== "all") {
-  //     router.push(
-  //       {
-  //         pathname: router.pathname, // Current page path
-  //         query: { ...router.query, theme: themeFilter }, // Add or update the theme in the query
-  //       },
-  //       undefined,
-  //       { shallow: true } // Prevents full page reload
-  //     );
-  //   }
-  // }, [themeFilter]);
+ const getPageMetaDescription = (cat) => {
+  if (cat === "kids-birthday" || cat === "kids-birthday-decoration") {
+    return "At Hora, 🎉Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠, under the sea 🌊, Baby Boss 👔, Barbie 💖, and cars 🚗. Explore detailed pricing and inclusions, and let our professional team bring your chosen design to life. Book your perfect party decor today! 🎈✨";
+  }else if (cat === "birthday-decoration" || cat === "birthday") {
+    return "At Hora, 🎈 Explore our wide range of balloon and flower decorations for birthday parties, featuring ring, sequin, wall, and room designs. Discover pricing and inclusions for every balloon color and variety. Customise your celebration and make it unforgettable with our stunning decor. Book your perfect party setup today! 🎉🌟";
+  } else if (cat === "anniversary-decoration" || cat === "anniversary") {
+    return "🎉 Explore top-notch anniversary decoration designs and book directly from our website 💖. Find elegant and customizable decor options for your special event. Browse our selection to choose the perfect theme and make your anniversary memorable with seamless online booking. ✨";
+  } else if (cat === "first-night-decoration" || cat === "first-night") {
+    return "🌟 Explore our selection of elegant decoration designs for your first night event 💖. Choose from a variety of styles and themes, and book your perfect decor directly through our website. Make your special night unforgettable with seamless online booking and beautiful, personalised decorations. ✨";
+  } else if (cat === "baby-shower-decoration" || cat === "baby-shower") {
+    return "Celebrate the joy of motherhood with our beautiful Baby Shower decoration setups! 👶💐 Explore unique themes, elegant backdrops, and customizable balloon designs. Book online for professional setup and an unforgettable experience. 🌸🎈";
+  } else if (cat === "welcome-baby-decoration" || cat === "WelcomeBaby") {
+    return "Welcome your newborn with adorable and heartwarming balloon decorations! 🍼🎉 Explore our curated designs perfect for celebrating the arrival of your little one. Book your baby welcome decor with ease and joy. 💖👶";
+  } else if (cat === "haldi-mehendi-decoration" || cat === "haldi-mehandi")  {
+    return "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups, featuring traditional elements, colorful floral arrangements, and custom designs to make your event unforgettable. 🌸💛";
+  } else {
+    return "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199. Book online for themed decorations with flowers, lights, backdrops & more. Available across major cities. 🎈💐";
+  }
+};
 
-  
+
   
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
@@ -448,20 +427,22 @@ const DecorationCatPage = () => {
   
   return (
     <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
-      <Head>
-        <title>{PageTitle(catValue)}</title>
-        <meta name="description" content={getPageMetaDescription()} />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
-        <meta property="og:title" content={PageTitle(catValue)} />
-        <meta property="og:description" content={getPageMetaDescription()} />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <script type="application/ld+json">{scriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-        <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${catValue}`} />
-        <meta property="og:type" content="website" />
-      </Head>
+     
+    <Head>
+  <title>{PageTitle(normalizedCat)}</title>
+  <meta name="description" content={getPageMetaDescription(normalizedCat)} />
+  <meta name="keywords" content="Balloon and Flower Decoration @999" />
+  <meta property="og:title" content={PageTitle(normalizedCat)} />
+  <meta property="og:description" content={getPageMetaDescription(normalizedCat)} />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
+  <meta property="og:type" content="website" />
+</Head>
+
       <>
         <div style={{ textAlign: "center", justifyContent: "center", alignItems: "center" }}>
           <div style={{ marginTop: "0px" }}>
