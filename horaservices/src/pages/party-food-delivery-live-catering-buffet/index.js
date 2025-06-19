@@ -238,7 +238,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image1.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg1.jpg"),
     },
     {
       id: 2,
@@ -246,7 +246,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image2.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg2.jpg"),
     },
     {
       id: 3,
@@ -254,7 +254,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image3.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg3.jpg"),
     },
     {
       id: 4,
@@ -262,26 +262,19 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image4.svg"),
+      imgSrc: require("../../assets/fooddelivery/veg4.jpg"),
     },
-    {
-      id: 5,
-      title: "ASIAN PARTY 2",
-      description: "3 Starters + 5 Mains + 1 Dessert",
-      price: "₹ 3,599/-",
-      details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/veg_image5.svg"),
-    },
+    
   ];
 
   const menuItemsNonVegCaterning = [
-    {
+     {
       id: 1,
       title: "ASIAN PARTY 1",
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image5.svg"),
+      imgSrc: require("../../assets/fooddelivery/Nonveg1.jpg"),
     },
     {
       id: 2,
@@ -289,7 +282,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image6.svg"),
+      imgSrc: require("../../assets/fooddelivery/Nonveg2.jpg"),
     },
     {
       id: 3,
@@ -297,7 +290,7 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image7.svg"),
+      imgSrc: require("../../assets/fooddelivery/Nonveg3.jpg"),
     },
     {
       id: 4,
@@ -305,8 +298,10 @@ const FoodDelivery = () => {
       description: "3 Starters + 5 Mains + 1 Dessert",
       price: "₹ 3,599/-",
       details: "(For 10 Guests)",
-      imgSrc: require("../../assets/fooddelivery/nonveg_image8.svg"),
+      imgSrc: require("../../assets/fooddelivery/Nonveg4.jpg"),
     },
+    
+   
   ];
 
   const steps = [
