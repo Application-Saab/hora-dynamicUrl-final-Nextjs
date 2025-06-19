@@ -516,7 +516,10 @@ const FoodDeliveryCheckout = () => {
                 "order_type": true,
                 "order_pincode": pinCode,
                 "items": Object.keys(selectedDishesFoodDelivery),
-                "status": 0
+                "status": 0,
+                "decoration_comments": selectedDeliveryOption === 'party-live-buffet-catering' && includeTables
+            ? "You have successfully booked an online order, including a serving table with a cloth for ₹1200."
+            : ""
             }
 
             const token = await localStorage.getItem('token');

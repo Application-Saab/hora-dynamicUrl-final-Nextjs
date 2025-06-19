@@ -30,6 +30,11 @@ const OrderDetailTab = ({
   const [tab, setTab] = useState("Menu");
   const [name, setname] = useState();
 
+  console.log(orderDetail, "orderdetaillive");
+  const comments = orderDetail.decoration_comments
+    ? orderDetail.decoration_comments.split('\n').map(comment => comment.trim()).filter(Boolean)
+    : [];
+
   const [orderStatus, setOrderStatus] = useState(orderDetail?.order_status);
 
   const getItemInclusion = (inclusion) => {
@@ -263,14 +268,44 @@ const OrderDetailTab = ({
               <li>✔️ Water Can (Bisleri)(20 litres)</li>
               <li>✔️ Hand gloves</li>
             </ul>
-            <div class="live-catering-title">Exclusion:</div>
+            {/* <div class="live-catering-title">Exclusion:</div>
             <ul class="live-catering-exclusions">
               <li>
                 ❌ Buffet table/kitchen table is in client scope (can be
                 provided at additional cost)
               </li>
-            </ul>
+            </ul> */}
           </div>
+           {/* Additional Comments */}
+                  <div
+                    style={{
+                      boxShadow: "0 1px 8px rgba(0,0,0,.18)",
+                      padding: "10px",
+                      marginBottom: "12px",
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "21px",
+                        borderBottom: "1px solid #e7eff9",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Additional Comments
+                    </div>
+<ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+  {comments.map((comment, index) => (
+    <li key={index}>{comment.replace(/^- /, '')}</li>
+  ))}
+</ul>
+
+                    {decorationComments && (
+                      <div className="comment-container">
+                        <p className="comments-text">{decorationComments}</p>
+                      </div>
+                    )}
+                  </div>
         </>
       ) : orderType === 1 ? (
         <div className="decoration-container orderdetails">
