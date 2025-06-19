@@ -449,7 +449,7 @@ const normalizedCat = normalizeCatValue(catValue);
             <h1 style={{ fontSize: "16px", color: "#000", padding: "14px 0 0", color: '#9252AA' }}>{selCat} {'Balloon Decoration'} </h1>
             <div className="filterdropdown d-flex flex-row flex-lg-row align-items-center justify-content-center gap-3">
   <select value={priceFilter} onChange={(e) => setPriceFilter(e.target.value)}
-    style={{ fontSize: "16px", color: 'rgb(157, 74, 147)', padding: "7px 10px", borderWidth: 1, borderColor: "rgb(157, 74, 147)", borderRadius: "5px", marginLeft: "5px" }}>
+    style={{ fontSize: "16px", color: 'rgb(157, 74, 147)', padding: "7px 10px", borderWidth: 1, borderColor: "rgb(157, 74, 147)", borderRadius: "5px", marginLeft: "5px" ,backgroundColor: "#fff "}}>
     <option value="all">Sort By: Price</option>
     <option value="lowToHigh">Price: Low to High</option>
     <option value="highToLow">Price: High to Low</option>
@@ -462,7 +462,7 @@ const normalizedCat = normalizeCatValue(catValue);
   {/* Theme filter */}
   {(selCat === "Kids Birthday" || selCat === "Kidsbirthday") ? (
     <select value={themeFilter} onChange={(e) => setThemeFilter(e.target.value)}
-      style={{ fontSize: "16px", color: 'rgb(157, 74, 147)', padding: "7px 10px", borderWidth: 1, borderColor: "rgb(157, 74, 147)", borderRadius: "5px", marginLeft: "5px" }}>
+      style={{ fontSize: "16px", color: 'rgb(157, 74, 147)', padding: "7px 10px", borderWidth: 1, borderColor: "rgb(157, 74, 147)", borderRadius: "5px", marginLeft: "5px" ,backgroundColor: "#fff" }}>
       {themeFilters.map((filter) => (
         <option key={filter.value} value={filter.value}>{filter.label}</option>
       ))}
