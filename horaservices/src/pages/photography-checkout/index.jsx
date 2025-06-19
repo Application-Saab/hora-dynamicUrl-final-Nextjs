@@ -293,7 +293,9 @@ console.log(selectedAddOnProduct)
     try {
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
-      const advanceAmount = Math.round(totalAmount * 0.35);
+      // const advanceAmount = Math.round(totalAmount * 0.35);
+      const advanceAmount = advanceAmountData[productData?.name] || Math.round(totalAmount * 0.35);
+
       const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
 
@@ -428,6 +430,26 @@ console.log(selectedAddOnProduct)
   }, [product, isEventPushed])
 
   if (!isClient) return null;
+const advanceAmountData = {
+  // Initmate
+  "Traditional Photography": 1260,
+  "Candid Photography": 1660,
+  "Pro Photography": 2660,
+  "VideoGraphy": 2450,
+
+  // Mega
+  "Mega Traditional Photography": 3200,
+  "Mega Candid Photography": 4700,
+  "Mega Pro Photography": 7200,
+  "Mega VideoGraphy": 7200,
+
+  // Grand
+  "Haldi & Mehandi": 6000,
+  "Pre-wedding shoot and videography": 9600,
+  "Wedding Affair": 10000,
+  "Grand Wedding Affair": 26000,
+};
+const advanceAmount = advanceAmountData[productData?.name] || Math.round(totalAmount * 0.35);
 
 
   return (
@@ -645,11 +667,14 @@ console.log(selectedAddOnProduct)
                 <label style={{ color: "rgb(157, 74, 147)"}}>Total Amount:</label>
                 <p style={{ color: "rgb(157, 74, 147)"}}>₹{totalAmount}</p>
               </div>
-               <div className='detailitem'>
+               {/* <div className='detailitem'>
                 <label style={{ color: "rgb(157, 74, 147)"}}>Advance Amount:</label>
                 <p style={{ color: "rgb(157, 74, 147)"}}>₹ {Math.round(totalAmount * 0.35)}</p>
-              </div>
-
+              </div> */}
+<div className='detailitem'>
+  <label style={{ color: "rgb(157, 74, 147)" }}>Advance Amount:</label>
+  <p style={{ color: "rgb(157, 74, 147)" }}>₹ {advanceAmount}</p>
+</div>
             </div>
           </div>
         </div>
