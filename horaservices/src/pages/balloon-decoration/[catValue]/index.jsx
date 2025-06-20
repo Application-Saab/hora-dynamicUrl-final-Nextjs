@@ -180,7 +180,6 @@ const DecorationCatPage = () => {
 
       let newPriceFilter = priceFilter;
       let newSortFilter = 'asc';
-
       if (priceFilter === 'lowToHigh') {
         newPriceFilter = '';
         newSortFilter = 'asc';

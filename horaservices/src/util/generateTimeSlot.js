@@ -1,7 +1,7 @@
 export const generateTimeSlots = () => {
   const startTime = 7; // Starting hour
   const endTime = 22; // Ending hour
-  const interval =  3; // Interval in hours
+  const interval =  1; // Interval in hours
 
   const timeSlots = [];
   for (let hour = startTime; hour < endTime; hour += interval) {
@@ -12,3 +12,6 @@ export const generateTimeSlots = () => {
 
   return timeSlots;
 };
+
+
+ 
