@@ -231,7 +231,7 @@ export default function HomeCity() {
                 <a href={category.link} rel="noopener noreferrer">
                   <Image src={category.imageUrl} alt={category.title} className="categories-image" />
                 </a>
-                <p className="categories-title">{category.title}</p>
+                <p className="categories-title" style={{marginLeft: "30px"}}>{category.title}</p>
               </div>
             ))}
           </Slider>

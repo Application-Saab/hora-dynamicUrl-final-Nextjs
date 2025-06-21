@@ -18,7 +18,7 @@ import { CustomDatePicker } from '@/component/DatePicker';
 import { CustomTimePicker } from '@/component/TimePicker';
 import { contactUsRedirection } from '@/util/contactUsRedirection';
 import { generateTimeSlots } from '@/util/generateTimeSlot';
-
+import { WhatappIcon } from "@/component/WhatsappIcon";
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
     // const { subCategory, product } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -673,6 +673,7 @@ const ChefCheckout = () => {
                     }
                 </div>
             }
+             <WhatappIcon/>
         </div>
     );
 }

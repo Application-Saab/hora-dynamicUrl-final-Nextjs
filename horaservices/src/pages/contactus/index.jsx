@@ -270,12 +270,13 @@ const styles = {
     backgroundColor: "#fff",
   },
   cityContact: {
-    display: "flex",
+    display: "grid",
     justifyContent: "center",
     flexWrap: "wrap",
     alignItems: "center",
     marginBottom: "30px",
     gap: "10px",
+     gridTemplateColumns: "repeat(3, 1fr)",
   },
   heroSingle: {
     position: "relative",
@@ -308,7 +309,7 @@ const styles = {
   //   margin: "27px auto 51px",
   // },
   secRight1: {
-    width: "75%",
+    width: "90%",
     justifyContent: "space-between",
     alignItems: "center",
     margin: "0 auto 20px",
