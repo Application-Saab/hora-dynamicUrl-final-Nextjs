@@ -32,6 +32,7 @@
     "react-share": "^5.1.0",
     "react-slick": "^0.30.2",
     "react-time-picker": "^7.0.0",
+    "recharts": "^2.15.3",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
     "semantic-ui-react": "^2.1.5",
