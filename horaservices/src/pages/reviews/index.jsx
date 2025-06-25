@@ -218,7 +218,7 @@ const CustomersReviews = () => {
             booking: "Booked Chef in Mumbai",
             date: "19 Mar 2024",
             rating: 5,
-            avatar: "https://play-lh.googleusercontent.com/a-/ALV-UjU_D6MAIAmJm4BrWTwjmEUcdUPXGbQOutY3YUmEfozjR0EDCDlbfQ=s32-rw",
+            avatar:"https://img.freepik.com/free-photo/medium-shot-smiley-man-posing_23-2149915892.jpg",
             indicators: {
                 Taste: true,
                 Behaviour: true,
@@ -250,7 +250,7 @@ const CustomersReviews = () => {
             "booking": "Booked Decor Service for Party",
             "date": "10 Jan 24",
             "rating": 4,
-            "avatar": "data:image/jpeg;base64,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",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSa0F4GYEzj2SD3l-ILtMKSL1NArnPj-9UsYA&s",
             "indicators": {
                 "Taste": false,
                 "Behaviour": true,
@@ -336,7 +336,7 @@ const CustomersReviews = () => {
             booking: "Booked Cook in Mumbai",
             date: "28 Aug 2023",
             rating: 5,
-            avatar: "https://play-lh.googleusercontent.com/a-/ALV-UjXind0jrmxF4pkdsh_ywls3oMCOIX34mvEP4JHDenRA_QDYP6ij=s32-rw",
+            avatar: "data:image/jpeg;base64,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",
             indicators: {
                 Taste: true,
                 Behaviour: true,
@@ -349,28 +349,11 @@ const CustomersReviews = () => {
         },
 
         {
-            name: "Vijeta Sunda",
-            booking: "Booked Stall in Mumbai",
-            date: "25 Dec 2023",
-            rating: 4,
-            avatar: "https://play-lh.googleusercontent.com/a-/ALV-UjVFRB3pRXxtJgvV6QWB7tLW9JFDG-QiY8oHr22n_pQIQJaN_WD87w=s32-rw",
-            indicators: {
-                Taste: false,
-                Behaviour: true,
-                Presentation: true,
-                Quantity: false,
-                Hygiene: false,
-                Punctuality: true,
-            },
-            text: "What a delightful experience we had..I'm so grateful for sending me the best Chef Vipin Kumar Arya who was so so experienced and skilled and dedicated...we had a party of 25people and he made it so easy for me..Thank you to the waiter Tara who was really very helpful..they are really so experienced...Thank you once again.my guests loved the lip smacking food..",
-        },
-
-        {
             name: "Emily",
             booking: "Booked Chef in Mumbai",
             date: "25 Dec 2023",
             rating: 5,
-            avatar: "https://play-lh.googleusercontent.com/a-/ALV-UjWYlq3OV6In6sCw_X91EexqX7q9FdazSyOJ-ROxRw63-BEbUnuB_A=s32-rw",
+            avatar: "https://i.pinimg.com/736x/d2/38/de/d238deeadabed399debaed1a2aa1a650.jpg",
             indicators: {
                 Taste: false,
                 Behaviour: true,
@@ -477,7 +460,7 @@ const CustomersReviews = () => {
                 "booking": "Booked Party Planning",
                 "date": "22 Feb 24",
                 "rating": 3,
-                "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQw-LgCtrI4A6tR4seUyLctAtgrTbzOLKHQg0wP1CdrCmc_rUUnK0hG8r6-w&s",
+                "avatar": "https://randomuser.me/api/portraits/women/4.jpg",
                 "indicators": {
                     "Taste": false,
                     "Behaviour": true,
@@ -573,7 +556,7 @@ const CustomersReviews = () => {
             "booking": "Booked Balloon Decoration for Engagement",
             "date": "05 June 24",
             "rating": 5,
-            "avatar": "https://randomuser.me/api/portraits/men/3.jpg",
+            "avatar": "https://media.istockphoto.com/id/613557584/photo/portrait-of-a-beautifull-smiling-man.jpg?s=612x612&w=0&k=20&c=hkCg5CrmTKOApePbPOyo1U9GexEfIJOJqoLXJIvcN8E=",
             "indicators": {
                 "Taste": true,
                 "Behaviour": true,
@@ -589,7 +572,7 @@ const CustomersReviews = () => {
             "booking": "Booked Decoration for Baby Shower",
             "date": "15 May 24",
             "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/women/4.jpg",
+            "avatar": "https://photosrush.net/wp-content/uploads/simple-cute-girl-pic-caption-1.jpg",
             "indicators": {
                 "Taste": false,
                 "Behaviour": true,
@@ -733,7 +716,7 @@ const CustomersReviews = () => {
             "booking": "Booked Balloon Decoration and Live Catering",
             "date": "08 July 24",
             "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/men/13.jpg",
+            "avatar": "https://thumbs.dreamstime.com/b/young-indian-man-happy-outdoors-looking-camera-39595562.jpg",
             "indicators": {
                 "Taste": true,
                 "Behaviour": true,
@@ -749,7 +732,7 @@ const CustomersReviews = () => {
             "booking": "Booked Chef for Anniversary Party",
             "date": "21 June 24",
             "rating": 5,
-            "avatar": "https://randomuser.me/api/portraits/women/14.jpg",
+            "avatar": "https://images.pexels.com/photos/4307692/pexels-photo-4307692.jpeg?cs=srgb&dl=pexels-ketut-subiyanto-4307692.jpg&fm=jpg",
             "indicators": {
                 "Taste": true,
                 "Behaviour": true,
@@ -765,7 +748,7 @@ const CustomersReviews = () => {
             "booking": "Booked Balloon Decoration for Office Party",
             "date": "27 May 24",
             "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/men/15.jpg",
+            "avatar": "https://t3.ftcdn.net/jpg/01/31/93/60/360_F_131936042_7mqbuFNDSTlCEImH4GCkIiAuI66swziu.jpg",
             "indicators": {
                 "Taste": false,
                 "Behaviour": true,
@@ -781,7 +764,7 @@ const CustomersReviews = () => {
             "booking": "Booked Live Catering for Family Reunion",
             "date": "15 June 24",
             "rating": 5,
-            "avatar": "https://randomuser.me/api/portraits/women/16.jpg",
+            "avatar": "https://img.freepik.com/premium-photo/indian-woman-thinking-happy-college-scholarship-opportunity-campus-learning-university-student-smile-gen-z-class-schedule-idea-memory-decision-education_590464-381315.jpg?semt=ais_hybrid&w=740",
             "indicators": {
                 "Taste": true,
                 "Behaviour": true,
@@ -845,7 +828,7 @@ const CustomersReviews = () => {
             "booking": "Booked Balloon Decoration",
             "date": "01 July 24",
             "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/women/20.jpg",
+            "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXrjzld1vMgJ9I5-HhB2lbcyLEYovuPu_lng&s",
             "indicators": {
                 "Taste": false,
                 "Behaviour": true,
@@ -925,7 +908,7 @@ const CustomersReviews = () => {
             "booking": "Booked Balloon Decoration for Baby Shower",
             "date": "23 June 24",
             "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/men/24.jpg",
+            "avatar": "https://img.freepik.com/free-photo/successful-businessman_1098-18155.jpg",
             "indicators": {
                 "Taste": false,
                 "Behaviour": true,
@@ -941,7 +924,7 @@ const CustomersReviews = () => {
             "booking": "Booked Live Catering for Wedding Reception",
             "date": "12 April 24",
             "rating": 5,
-            "avatar": "https://randomuser.me/api/portraits/women/25.jpg",
+            "avatar": "https://media.istockphoto.com/id/1395880805/photo/indoor-close-up-portrait-of-beauty-asian-indian-serene-young-woman-sitting-near-the-window.jpg?s=612x612&w=0&k=20&c=HFFaDToYEashf-L8YCZh3y6mlTaOVHvkBqDsKN4mro0=",
             "indicators": {
                 "Taste": true,
                 "Behaviour": true,
@@ -957,7 +940,7 @@ const CustomersReviews = () => {
             "booking": "Booked Balloon Decoration for Anniversary Party",
             "date": "29 May 24",
             "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/men/25.jpg",
+            "avatar": "https://english.cdn.zeenews.com/sites/default/files/2017/11/17/639329-indian-men.jpg?",
             "indicators": {
                 "Taste": false,
                 "Behaviour": true,
