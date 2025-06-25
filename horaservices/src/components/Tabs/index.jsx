@@ -53,7 +53,7 @@ function Tab({ label, isActive, onClick }) {
       onClick={onClick}
       style={{
         cursor: 'pointer',
-        padding: '10px 16px',
+        padding: '5px 30px',
         borderBottom: isActive ? '2px solid #9252AA' : '2px solid transparent',
         fontWeight: isActive ? '600' : '400',
         color: isActive ? '#9252AA' : '#333',

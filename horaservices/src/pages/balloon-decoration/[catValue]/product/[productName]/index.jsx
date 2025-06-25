@@ -296,7 +296,7 @@ function DecorationCatDetails() {
 
     try {
       const res = await axios.post(
-        "https://8078-2409-40c4-36-8476-1067-4169-cce5-ef9b.ngrok-free.app/get-similar",
+        "http://fcaf-2409-40c4-274-21e9-e555-8915-6bd1-14ae.ngrok-free.app/get-similar",
         {
           product_id: product._id,
           themeFilterId: passCategoryId,

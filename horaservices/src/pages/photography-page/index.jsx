@@ -49,7 +49,7 @@ const scriptTag = JSON.stringify(schemaOrg);
   const [activeTab, setActiveTab] = useState('grand');
   const router = useRouter();
   const { catvalue } = router.query;
-
+ let { city } = router.query;
   const imageMap = {
   '6710f33c21847b9ca0554940': traditionalImg,
   '67c9af0c4bee1b66f0aac35d': candidImg,
@@ -226,7 +226,8 @@ const scriptTag = JSON.stringify(schemaOrg);
   const tabs = [
     // { id: 'intimate', title: 'Intimate\nMoments' },
     { id: 'grand', title: 'Grand\nCelebrations' },
-    { id: 'mega', title: 'Mega\nOccasions' },
+{ id: 'mega', title: 'Mega\nOccasions' },
+
   ];
 
   const heading = {
@@ -258,15 +259,19 @@ const scriptTag = JSON.stringify(schemaOrg);
       {/* Image Slider */}
       <div>
         <Head>
-  <title>HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500</title>
-  <meta
+  <title>
+    {city
+      ? `HORA Photography in ${city} | Professional Event Photography – Birthdays, Weddings & More – Starting at ₹3500`
+      : 'HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500'}
+  </title>
+    <meta
     name="description"
-    content="📸 Capture Every Moment, Forever! ✨
- Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
-Weddings 👰‍♀️🤵
-Maternity & Baby Shoots 🤰👼
-Birthdays & Anniversaries 🎂❤️
-Housewarming & Corporate Events" />
+    content={
+      city
+        ? `📸 Capture Every Moment in ${city}! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉 in ${city}, our professional photographers are here to make your moments look as magical as they felt.`
+        : `📸 Capture Every Moment, Forever! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt.`
+    }
+  />
    <meta
     name="keywords"
     content="couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, 
