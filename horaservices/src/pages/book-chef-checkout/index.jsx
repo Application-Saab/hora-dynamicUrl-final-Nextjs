@@ -443,12 +443,12 @@ const ChefCheckout = () => {
                                     <div>
                                         <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "column", border: "1px solid #efefef", borderRadius: "3px", margin: "0 0 10px 0", textAlign: "left", padding: "3px 8px" }}>
                                             <label style={{ color: "rgb(146, 82, 170)", fontSize: "12px", marigin: "16px 0 6px", fontWeight: 500 }}>Total Dishes</label>
-                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 200 }}> {selectedCount}</p>
+                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 500 }}> {selectedCount}</p>
                                         </div>
                                         {peopleCount >= 0 ?
                                             <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "column", fontWeight: 500, border: "1px solid #efefef", borderRadius: "3px", margin: "0 0 10px 0", textAlign: "left", padding: "3px 8px" }}>
                                                 <label style={{ color: "rgb(146, 82, 170)", fontSize: "12px", marigin: "16px 0 6px", fontWeight: 500 }}>Number of people</label>
-                                                <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 200 }}>{peopleCount}</p>
+                                                <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 500 }}>{peopleCount}</p>
                                             </div>
                                             :
                                             null
@@ -543,12 +543,12 @@ const ChefCheckout = () => {
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexDirection: "row" }}>
                                         <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "column", border: "1px solid #efefef", borderRadius: "3px", margin: "0 0 10px 0", textAlign: "left", padding: "3px 8px" }}>
                                             <label style={{ color: "rgb(146, 82, 170)", fontSize: "12px", marigin: "16px 0 6px", fontWeight: 500 }}>Total Dishes</label>
-                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 200 }}> {selectedCount}</p>
+                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 500 }}> {selectedCount}</p>
                                         </div>
                                         {peopleCount >= 0 ?
                                             <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "column", fontWeight: 500, border: "1px solid #efefef", borderRadius: "3px", margin: "0 0 10px 0", textAlign: "left", padding: "3px 8px" }}>
                                                 <label style={{ color: "rgb(146, 82, 170)", fontSize: "12px", marigin: "16px 0 6px", fontWeight: 500 }}>Number of people</label>
-                                                <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 200 }}>{peopleCount}</p>
+                                                <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "12px", fontWeight: 500 }}>{peopleCount}</p>
                                             </div>
                                             :
                                             null
@@ -613,20 +613,47 @@ const ChefCheckout = () => {
                                             Dishes Selected
                                         </h1>
                                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", flexFlow: "wrap" }}>
-                                            {Object.values(selectedDishDictionary).map((item) => {
-                                                return (
-                                                    <div style={{ width: "48%", border: "1px solid rgb(149 142 142 / 73%)", flexDirection: "row", display: "flex", borderRadius: "10px", padding: "6px 10px", boxSizing: "border-box" }} className='dishes-checkout-page'>
-                                                        <div style={{ marginRight: 2, width: "90%" }}>
-                                                            <Image className='checkoutRightImg chef' src={`https://horaservices.com/api/uploads/${item.image}`} style={{ width: "100%", height: "auto" }} width={300} height={300} />
-                                                        </div>
-                                                        <div style={{ color: "rgb(146, 82, 170)", fontWeight: "500", fontSize: "12px" }}>
-                                                            <p style={{ margin: "0 0 0 0", padding: "0" }}>{item.name}</p>
-                                                            {/* <p style={{ margin: "0 0 0 0", padding: "0" }}>{item.price}</p> */}
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                            }
+                                          {selectedDishDictionary && typeof selectedDishDictionary === "object" ? (
+  Object.values(selectedDishDictionary).map((item) => (
+    <div
+      key={item._id} // add a key if possible
+      style={{
+        width: "48%",
+        border: "1px solid rgb(149 142 142 / 73%)",
+        flexDirection: "row",
+        display: "flex",
+        borderRadius: "10px",
+        padding: "6px 10px",
+        boxSizing: "border-box"
+      }}
+      className="dishes-checkout-page"
+    >
+      <div style={{ marginRight: 2, width: "90%" }}>
+        <Image
+          className="checkoutRightImg chef"
+          src={`https://horaservices.com/api/uploads/${item.image}`}
+          style={{ width: "100%", height: "auto" }}
+          width={300}
+          height={300}
+          alt={item.name}
+        />
+      </div>
+      <div
+        style={{
+          color: "rgb(146, 82, 170)",
+          fontWeight: "500",
+          fontSize: "12px"
+        }}
+      >
+        <p style={{ margin: 0, padding: 0 }}>{item.name}</p>
+        <p style={{ margin: 0, padding: 0 }}>{item.price}</p>
+      </div>
+    </div>
+  ))
+) : (
+  <p>No dishes selected.</p>
+)}
+
                                         </div>
                                     </div>
                                     <div className='checkoutInputType border-1 rounded-4  my-3' style={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
