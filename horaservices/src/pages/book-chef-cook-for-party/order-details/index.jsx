@@ -27,8 +27,7 @@ const SelectDate = ({ history, currentStep }) => {
     const [selectedTime, setSelectedTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
-    const [peopleCount, setPeopleCount] = useState(1);
-    const [activeTab, setActiveTab] = useState('right');
+     const [activeTab, setActiveTab] = useState('right');
     const [showAll, setShowAll] = useState(false);
     const [burnerCount, setBurnerCount] = useState(0)
     const [isWarningVisible, setWarningVisible] = useState(false);
@@ -40,30 +39,119 @@ const SelectDate = ({ history, currentStep }) => {
     const [showCookingTime, setShowCookingTime] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedTab, setSelectedTab] = useState('Appliances');
+      const [isMobile, setIsMobile] = useState(false);
+ const [peopleCount, setPeopleCount] = useState(1);
+    const [selectedDishes, setSelectedDishes] = useState([]);
+    const [selectedDishDictionary, setSelectedDishDictionary] = useState({});
+    const [dishBasePrice, setDishBasePrice] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [selectedCount, setSelectedCount] = useState(0);
+    const [isDishSelected, setIsDishSelected] = useState(false);
+    const [orderType, setOrderType] = useState('');
+    
     const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
 
-    let {
-        orderType,
-        selectedDishDictionary,
-        selectedDishPrice,
-        selectedDishes,
-        isDishSelected,
-        selectedCount,
-    } = router.query;
+    // ✅ GET DATA FROM ROUTER QUERY
+    useEffect(() => {
+        if (router.query) {
+            let {
+                orderType,
+                selectedDishDictionary,
+                selectedDishPrice,
+                selectedDishes,
+                isDishSelected,
+                selectedCount,
+                peopleCount
+            } = router.query;
 
-    if (selectedDishDictionary) {
-        try {
-            selectedDishDictionary = JSON.parse(selectedDishDictionary);
-            selectedDishes = JSON.parse(selectedDishes);
-        } catch (error) {
-            console.error('Error parsing selectedDishDictionary:', error);
+            setOrderType(orderType);
+            setIsDishSelected(isDishSelected === "true" || isDishSelected);
+            setSelectedCount(Number(selectedCount) || 0);
+            setPeopleCount(Number(peopleCount) || 1);
+
+            try {
+                setSelectedDishDictionary(JSON.parse(selectedDishDictionary || "{}"));
+                setSelectedDishes(JSON.parse(selectedDishes || "[]"));
+            } catch (err) {
+                console.error("Parsing Error:", err);
+            }
+
+            setDishBasePrice(Number(selectedDishPrice) || 0);
         }
-    }
+    }, [router.query]);
 
+    // ✅ FINAL PRICE CALCULATION (People + Safe charge)
+   useEffect(() => {
+    const numericPeopleCount = Number(peopleCount) || 1;
+
+    // ✅ Charge ₹49 per extra person (beyond 1st)
+    const peopleCharge = numericPeopleCount > 1 ? (numericPeopleCount - 1) * 49 : 0;
+
+    const safeCharge = selectedCount >= 7 ? 700 : 0;   // ✅ 7 or more dishes → 700
+
+    const total = dishBasePrice + peopleCharge + safeCharge;
+    setTotalAmount(total);
+
+    console.log({
+        dishBasePrice,
+        peopleCharge,
+        safeCharge,
+        total
+    });
+}, [peopleCount, selectedCount, dishBasePrice]);
+
+
+    // ✅ INCREASE / DECREASE PEOPLE COUNT
+    const increasePeopleCount = () => {
+        if (peopleCount >= 35) {
+            alert("You cannot select more than 35 people.");
+        } else {
+            setPeopleCount(peopleCount + 1);
+        }
+    };
+
+    const decreasePeopleCount = () => {
+        if (peopleCount > 1) {
+            setPeopleCount(peopleCount - 1);
+        }
+    };
+
+    // ✅ WARNING CLOSE
+    const handleWarningClose = () => {
+        setWarningVisibleForTotalAmount(false);
+    };
+
+    // ✅ CONTINUE BUTTON CLICK
+    const onContinueClick = () => {
+        if (totalAmount < 700) {
+            setWarningVisibleForTotalAmount(true);
+            setPopupMessage({
+                img: orderWarning,
+                title: "Total Order Amount is less than ₹700",
+                body: "Total Order amount cannot be less than ₹700. Add more to continue.",
+                button: "Add More",
+            });
+            return;
+        }
+
+        const navigateState = {
+            from: window.location.pathname,
+            peopleCount,
+            selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+            selectedDishPrice: dishBasePrice,
+            selectedDishes: JSON.stringify(selectedDishes),
+            orderType,
+            isDishSelected,
+            selectedCount,
+            totalAmount
+        };
+
+        router.push({
+            pathname: '/book-chef-checkout',
+            query: navigateState
+        });
+    };
     const data = selectedDishDictionary;
-    const [dishPrice, setDishPrice] = useState(selectedDishPrice);
-    //const [dishPrice, setDishPrice] = useState(Number(selectedDishPrice) + 49);
 
     // Container for the whole component
     const MainContainer = styled.div`
@@ -242,21 +330,7 @@ const SelectDate = ({ history, currentStep }) => {
     const maxPeopleCount = 35
     const step = 1;
 
-    const increasePeopleCount = () => {
-        if (peopleCount >= 35) {
-            alert("You cannot select more than 35 people.");
-        } else {
-            setPeopleCount(peopleCount + 1);
-            setDishPrice(parseInt(dishPrice) + 49);
-        }
-    }
-
-    const decreasePeopleCount = () => {
-        if (peopleCount != 1) {
-            setPeopleCount(peopleCount - 1)
-            setDishPrice(dishPrice - 49)
-        }
-    }
+ 
     // // old handelRange
     // const handleRangeChange = (e) => {
     //     // console.log(e.target.value)
@@ -275,45 +349,12 @@ const SelectDate = ({ history, currentStep }) => {
     
    
 
-    const handleWarningClose = () => {
-        setWarningVisibleForTotalAmount(false);
-    };
-    const onContinueClick = () => {
-        if (dishPrice < 700) {
-            setWarningVisibleForTotalAmount(true);
-            setPopupMessage({
-                img: orderWarning,
-                title: "Total Order Amount is less than ₹700",
-                body: "Total Order amount can not be less than ₹700, Add more to continue",
-                button: "Add More",
-            });
-            return; // Stop further execution if dishPrice is less than 400
-        }
 
-        const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-        const navigateState = {
-            from: window.location.pathname,
-            peopleCount,
-            selectedDishDictionary: JSON.stringify(selectedDishDictionary),
-            selectedDishPrice,
-            selectedDishes: JSON.stringify(selectedDishes),
-            orderType,
-            isDishSelected,
-            selectedCount
-        };
+   
 
-        // if (!isLoggedIn) {
-        //     router.push({
-        //         pathname: '/login',
-        //         query: navigateState
-        //     });
-        // } else {
-            router.push({
-                pathname: '/book-chef-checkout',
-                query: navigateState
-            });
-        // }
-    };
+       
+
+   
 
     const getTotalBurnerCount = () => {
         let totalBurnerCount = 0;
@@ -757,8 +798,8 @@ const SelectDate = ({ history, currentStep }) => {
                                     className: "continueButtonRightText",
                                     color: isDishSelected ? 'white' : '#343333',
                                 }}
-                            >
-                                {selectedCount} Items | ₹ {dishPrice}
+                            >   {selectedCount} Items | ₹ {totalAmount}
+
                                 {/* New Price */}
                             </div>
                         </Button>

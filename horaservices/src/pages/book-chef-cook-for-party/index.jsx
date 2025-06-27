@@ -507,20 +507,32 @@ const CreateOrder = ({ history, currentStep }) => {
         </div>
     );
 
-    const addDish = (selectedDishPrice) => {
-        router.push({
-            pathname: '/book-chef-cook-for-party/order-details',
-            query: {
-                orderType,
-                selectedDishDictionary: JSON.stringify(selectedDishDictionary),
-                selectedDishPrice:Number(selectedDishPrice) + 49,
-                selectedDishes:JSON.stringify(selectedDishes),
-                isDishSelected,
-                selectedCount,
-            }
-        });
-    };
-    
+ const addDish = (selectedDishPrice) => {
+    let totalDishPrice = 0;
+
+    // ✅ Only calculate base dish price (NO 700 here)
+    selectedDishes.forEach((dishId) => {
+        const dish = selectedDishDictionary[dishId];
+        if (dish) {
+            totalDishPrice += Number(dish.dish_rate) || 0;
+        }
+    });
+
+    console.log("✅ Total Dish Base Price Before Routing (without 700):", totalDishPrice);
+
+    router.push({
+        pathname: '/book-chef-cook-for-party/order-details',
+        query: {
+            orderType,
+            selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+            selectedDishPrice: totalDishPrice,
+            selectedDishes: JSON.stringify(selectedDishes),
+            isDishSelected,
+            selectedCount,
+        }
+    });
+};
+
 
     const closeBottomSheet = () => {
         setDishDetail(null);

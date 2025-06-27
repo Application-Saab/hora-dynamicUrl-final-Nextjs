@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 // import { useLocation } from 'react-router-dom';
 // import { Link } from 'react-router-dom';
 // import { useParams } from "react-router-dom";
+import CreateOrder from "../book-chef-cook-for-party"
 import bannerSvgImage from '../../../../public/assets/banner-home-bg.svg';
 import bannerDecorationImage from '../../../assets/service-decoration.png';
 import bannerChefImage from '../../../assets/chef-home-banner.png';
@@ -39,7 +40,7 @@ const ChefCitypage = () => {
     }, []);
 
     const cityData = {
-        Delhi: {
+        delhi: {
             bannerImage: "OIP1.jpg",
             cityLocalitiesList:
                 [
@@ -126,7 +127,7 @@ const ChefCitypage = () => {
 
                 ]
         },
-        Gurugram: {
+        gurugram: {
             bannerImage: "OIP1.jpg",
             cityLocalitiesList: [
                 { name: "Ardee city" },
@@ -866,76 +867,8 @@ const ChefCitypage = () => {
 
     return (
         <div>
-            <div style={styles.homebanner} className="homebanner citypage">
-                <div style={{ ...styles.bgImg, backgroundImage: `url(${bannerSvgImage.src})` }} className="bgImg">
-                    <div style={styles.pageWidth}>
-                        <div style={styles.textContainer} className="textContainerhome">
-                            <h1 style={{ fontSize: "40px", fontWeight: "500", margin: "0" }}>{"Simplifying and Enhancing celebrations."}</h1>
-                            <h2 style={{ fontSize: "72px", fontWeight: "900", margin: "0 0 10px", lineHeight: "77px", margin: "0px 0 10px", padding: "3px 14% 5px 14%", textTransform: "uppercase" }}>{"ALL PARTY SERVICES IN YOUR "}{city}</h2>
-                        </div>
-                    </div>
-                    <div style={styles.bannerBottomSec} className="bannerBottomSec">
-                        <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
-                            <Link href={`/${city}/balloon-decoration`} style={{ textDecoration: "none" }}>
-                                <Image src={bannerDecorationImage} alt="Decoration Near me" style={{ height: "auto" }} />
-                                <h2 style={{ fontSize: "16px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Decoration</h2>
-                            </Link>
-                        </div>
-                        <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
-                            <Link href={`/${city}/book-chef-cook-for-party`} style={{ textDecoration: "none" }}>
-                                <Image src={bannerChefImage} alt="Chef Near me" style={{ height: "auto" }} />
-                                <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Hire Chef</h2>
-                            </Link>
-                        </div>
-                      
-                     
-                        <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
-                            <Link href="/" style={{ textDecoration: "none" }}>
-                                <Image src={bannerFoodDeliveryImage} alt="Food Delivery Near me" style={{ height: "auto" }} />
-                                <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Food Delivery</h2>
-                            </Link>
-                        </div>
-                        <div style={styles.bannerDecorationImage} className="bannerDecorationImage">
-                            <Link href="/" style={{ textDecoration: "none" }}>
-                                <Image src={liveCateringImage} alt="Live Catering" style={{ height: "85%" }} />
-                                <h2 style={{ fontSize: "18px", fontWeight: "normal", color: "#fff", textAlign: "center" }}>Live Catering</h2>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style={styles.celebrateWithUs} className="celebrateWithUs">
-                <div style={{ padding: "0 6%" }}>
-                    <h3 style={{ fontSize: "70px", fontWeight: "bold", color: "#E6756B", margin: "35px 0 20px", textAlign: "center" }}>CELEBRATE WITH US</h3>
-                    <div style={styles.celebrateBottomSec} className="celebrateBottomSec">
-                        <div style={styles.celebrateBox} className="celebrateBox">
-                            <Image src={Celebrate1Image} alt="Birthday and Anniversary" style={styles.celebrateDecorationImage} className="celebrateDecorationImage" />
-                            <h3 style={{ fontSize: "16px", color: "#0f0f0f", fontWeight: "600", textAlign: "center", margin: "7px 0 20px 0" }}>{'Birthday and Anniversary'}</h3>
-                        </div>
-                        <div style={styles.celebrateBox} className="celebrateBox">
-                            <Image src={Celebrate2Image} alt="House Parties" style={styles.celebrateDecorationImage} className="celebrateDecorationImage" />
-                            <h3 style={{ fontSize: "16px", color: "#0f0f0f", fontWeight: "600", textAlign: "center", margin: "7px 0 20px 0" }}>{'House Parties'}</h3>
-                        </div>
-                        <div style={styles.celebrateBox} className="celebrateBox">
-                            <Image src={Celebrate3Image} alt="Corporate Events" style={styles.celebrateDecorationImage} className="celebrateDecorationImage" />
-                            <h3 style={{ fontSize: "16px", color: "#0f0f0f", fontWeight: "600", textAlign: "center", margin: "7px 0 20px 0" }}>{'Corporate Events'}</h3>
-                        </div>
-                        <div style={styles.celebrateBox} className="celebrateBox">
-                            <Image src={Celebrate4Image} alt="Wedding Events" style={styles.celebrateDecorationImage} className="celebrateDecorationImage" />
-                            <h3 style={{ fontSize: "16px", color: "#0f0f0f", fontWeight: "600", textAlign: "center", margin: "7px 0 20px 0" }}>{'Wedding Events'}</h3>
-                        </div>
-                        <div style={styles.celebrateBox} className="celebrateBox">
-                            <Image src={Celebrate5Image} alt="Gatherings" style={styles.celebrateDecorationImage} className="celebrateDecorationImage" />
-                            <h3 style={{ fontSize: "16px", color: "#0f0f0f", fontWeight: "600", textAlign: "center", margin: "7px 0 20px 0" }}>{'Gatherings'}</h3>
-                        </div>
-                        <div style={styles.celebrateBox} className="celebrateBox">
-                            <Image src={Celebrate6Image} alt="Kids Events" style={styles.celebrateDecorationImage} className="celebrateDecorationImage" />
-                            <h3 style={{ fontSize: "16px", color: "#0f0f0f", fontWeight: "600", textAlign: "center", margin: "7px 0 20px 0" }}>{'Kids Events'}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <CreateOrder/>
+                   
             <section id="section6" class="sectionidsec">
                 <div style={styles.pageWidth}>
                     <div id="faqQ">
@@ -1046,15 +979,26 @@ const ChefCitypage = () => {
                     </div>
                     <p id="city-area-title" style={{ fontSize: "70px", textTransform: "uppercase", fontWeight: "bold", color: "#E6756B", margin: "35px 0 2px", textAlign: "center" }}>Serving all Areas in {city}</p>
                     <p style={{ fontSize: "10px", fontWeight: "bold", color: "#E6756B", margin: "2px 0 2px", textAlign: "center" }}>All localities are here</p>
-                    <div id="city-area-list">
-                        <ul style={{ listStyle: "none", padding: "20px 0" }}>
-                            {cityData[city]?.cityLocalitiesList.map((item) => {
-                                return (
-                                    <li style={{ padding: "0 10px", display: "inline-block" }}><a href="/">{item.name}</a></li>
-                                )
-                            })}
-                        </ul>
-                    </div>
+                    <div id="city-area-list" style={{ width: "150px",alignItems: "center", margin: "auto"}}>
+  <ul style={{ listStyle: "none", padding: "20px 0", textAlign: "center" }}>
+   
+    {cityData[city]?.cityLocalitiesList?.length > 0 ? (
+      cityData[city].cityLocalitiesList.map((item, index) => (
+        <li
+          key={index}
+          style={{
+            padding: "0 10px",
+            display: "inline-block",
+          }}
+        >
+          <a href="/">{item.name}</a>
+        </li>
+      ))
+    ) : (
+      <li>No localities found for {city}</li>
+    )}
+  </ul>
+</div>
                 </div>
             </section>
             <section id="section7" class="sectionidsec">

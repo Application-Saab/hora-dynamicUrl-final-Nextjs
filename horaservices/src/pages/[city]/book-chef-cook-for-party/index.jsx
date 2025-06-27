@@ -378,12 +378,13 @@ const CreateOrder = ({ history, currentStep }) => {
                                                 : dish.name}
                                         </p>
                                         <div className="d-flex justify-content-between w-100 px-3 dishPrice">
-                                            <span
+                                        <span
                                                 className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
                                                     }`}
                                             >
                                                 ₹ {dish.dish_rate}
                                             </span>
+                                        
                                             <Button
                                                 className="pluBtn"
                                                 onClick={() =>
@@ -464,12 +465,12 @@ const CreateOrder = ({ history, currentStep }) => {
                                                 : dish.name}
                                         </p>
                                         <div className="d-flex justify-content-between w-100 px-3 dishPrice">
-                                            <span
+                                            {/* <span
                                                 className={`dish-price ${selectedDishes.includes(dish._id) ? "selected" : ""
                                                     }`}
                                             >
                                                 ₹ {dish.dish_rate}
-                                            </span>
+                                            </span> */}
                                             <Button
                                                 className="pluBtn"
                                                 onClick={() =>
@@ -503,19 +504,33 @@ const CreateOrder = ({ history, currentStep }) => {
         </div>
     );
 
-    const addDish = (selectedDishPrice) => {
-        router.push({
-            pathname: '/book-chef-cook-for-party/order-details',
-            query: {
-                orderType,
-                selectedDishDictionary: JSON.stringify(selectedDishDictionary),
-                selectedDishPrice:Number(selectedDishPrice) + 49,
-                selectedDishes: JSON.stringify(selectedDishes),
-                isDishSelected,
-                selectedCount,
-            }
-        });
-    };
+  const addDish = (selectedDishPrice) => {
+    let totalDishPrice = 0;
+
+    // ✅ Only calculate base dish price (NO 700 here)
+    selectedDishes.forEach((dishId) => {
+        const dish = selectedDishDictionary[dishId];
+        if (dish) {
+            totalDishPrice += Number(dish.dish_rate) || 0;
+        }
+    });
+
+    console.log("✅ Total Dish Base Price Before Routing (without 700):", totalDishPrice);
+
+    router.push({
+        pathname: '/book-chef-cook-for-party/order-details',
+        query: {
+            orderType,
+            selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+            selectedDishPrice: totalDishPrice,
+            selectedDishes: JSON.stringify(selectedDishes),
+            isDishSelected,
+            selectedCount,
+        }
+    });
+};
+
+
 
     const closeBottomSheet = () => {
         setDishDetail(null);

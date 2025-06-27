@@ -282,7 +282,7 @@ const CustomersReviews = () => {
             booking: "Booked Chef in Mumbai",
             date: "10 Jul 2024",
             rating: 5,
-            avatar: "https://upload.wikimedia.org/wikipedia/en/b/bd/Doraemon_character.png",
+            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6IxbIZQ-7xwGQI6QiWFt03C1pwLI7RcL9zQ&s",
             indicators: {
                 Taste: true,
                 Behaviour: true,

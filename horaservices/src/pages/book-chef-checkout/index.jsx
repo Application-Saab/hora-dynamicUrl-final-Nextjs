@@ -56,7 +56,13 @@ const ChefCheckout = () => {
         selectedDishes
     } = router.query;
    
- 
+ const numericPeopleCount = Number(peopleCount) || 1;
+const dishBasePrice = Number(selectedDishPrice) || 0;
+
+
+const safeCharge = Array.isArray(selectedDishes) && selectedDishes.length > 7 ? 700 : 0;
+
+
     useEffect(() => {
         // Check localStorage or a cookie for login status, or call an API
         const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
@@ -304,7 +310,7 @@ const ChefCheckout = () => {
         try {
             const addressID = await saveAddress();
             const storedUserID = await localStorage.getItem('userID');
-            const advanceAmount = Math.round(totalPrice * 0.25);
+            const advanceAmount = Math.round(totalPrice * 0.35);
             const balanceAmount = totalPrice - advanceAmount;
             const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
             const requestData = {
@@ -390,8 +396,9 @@ const ChefCheckout = () => {
         }
     }
 
-    const priceForPeople = peopleCount * 49
-    let totalPrice = parseInt(selectedDishPrice) + priceForPeople
+  const priceForPeople = numericPeopleCount > 1 ? (numericPeopleCount - 1) * 49 : 0;
+    let totalPrice = dishBasePrice + priceForPeople + safeCharge;
+   
     if (Array.isArray(selectedDishes) && selectedDishes.length > 7) {
         totalPrice += 700;
     }
@@ -503,7 +510,7 @@ const ChefCheckout = () => {
                                         </div>
                                         <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 5px 0" }}>
                                             <label style={{ color: "rgb(146, 82, 170)", fontSize: "16px", marigin: "16px 0 6px", fontWeight: 700 }}>Advance Amount:</label>
-                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice * 0.25)}</p>
+                                            <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice * 0.35)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -605,7 +612,7 @@ const ChefCheckout = () => {
                                     </div>
                                     <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", margin: "0 0 5px 0" }}>
                                         <label style={{ color: "rgb(146, 82, 170)", fontSize: "16px", marigin: "16px 0 6px", fontWeight: 700 }}>Advance Amount:</label>
-                                        <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice * 0.25)}</p>
+                                        <p style={{ margin: 0, windth: "100%", color: "rgb(146, 82, 170)", fontSize: "16px", fontWeight: 700 }}>₹ {Math.round(totalPrice * 0.35)}</p>
                                     </div>
 
                                     <div style={{ display: "flex", padding: 7, flexDirection: 'row', borderRadius: 5, marginTop: 5, marginBottom: 10, backgroundColor: 'rgba(211, 75, 233, 0.10)', justifyContent: 'flex-start', alignItems: 'top' }}>

@@ -356,6 +356,11 @@ useEffect(() => {
                       Decoration
                     </Link>
                   </li>
+                   <li>
+                    <Link href="/photography-page" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'photography')}>
+                      photography
+                    </Link>
+                  </li>
                   <li>
                     <Link href="/book-chef-cook-for-party" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Chef For Party')}>
                       Chef for Party
