@@ -1213,8 +1213,8 @@ function DecorationCatDetails() {
                 )}
               </div>
             </div>
-  <div style={{ padding: "20px", textAlign: "left" }}>
-      {/* 🔵 Section 1: Top 5 Similar Products */}
+  {/* <div style={{ padding: "20px", textAlign: "left" }}>
+     
       <div style={sectionHeadingStyle}>
         <span style={badgeStyle("#52c41a")}>Top 5</span>
         <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Similar Products</h2>
@@ -1227,7 +1227,7 @@ function DecorationCatDetails() {
         ))}
       </div>
 
-      {/* 🔴 Section 2: Products Above ₹800 */}
+    
       <div style={sectionHeadingStyle}>
         <span style={badgeStyle("#ff4d4f")}>₹800+</span>
         <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Premium Products</h2>
@@ -1240,7 +1240,7 @@ function DecorationCatDetails() {
         ))}
       </div>
 
-      {/* 🟡 Section 3: Kids Extra Products */}
+      
       <div style={sectionHeadingStyle}>
         <span style={badgeStyle("#faad14")}>Extra</span>
         <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Kids Add-Ons</h2>
@@ -1252,7 +1252,7 @@ function DecorationCatDetails() {
           </div>
         ))}
       </div>
-    </div>
+    </div> */}
 
             <div className="tab-section-details-productpage">
               <Tabs tabs={tabs} defaultTab="faq" className="faqtabs" />
