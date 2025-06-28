@@ -1,0 +1,9 @@
+.banner-slider-container {
+  width: 100%;
+  position: relative;
+}
+
+.banner-image {
+  border-radius: 10px;
+  object-fit: cover;
+}

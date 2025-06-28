@@ -1,0 +1,135 @@
+
+
+.dec-landing-page {
+  margin: auto;
+}
+
+/* ================================================================== */
+/* SEE MORE BUTTON */
+.see-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.see-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #8a2b8e; /* Purple text */
+  background: linear-gradient(white, #f9f9f9);
+  border: 2px solid #8a2b8e;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(138, 43, 142, 0.4);
+  margin-bottom: 10px;
+}
+
+.see-more-btn:hover {
+  background-color: #f0e4f5;
+  box-shadow: 0 4px 10px rgba(138, 43, 142, 0.5);
+}
+
+.arrow-icon {
+  background-color: #8a2b8e;
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon img {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .see-more-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  .arrow-icon {
+    padding: 3px;
+  }
+}
+
+
+/* ================================================================== */
+/* WHY PEOPLE LOVE US - STATS SECTION */
+.why-people-love-us {
+  text-align: center;
+  background-color: white;
+  padding: 40px 20px;
+}
+
+.why-people-love-us h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #7e3f98;
+  margin-bottom: 30px;
+}
+
+.stats-line-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: auto;
+  gap: 20px;
+  position: relative; /* Needed for dashed line effect if enabled */
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1; /* Equal width for all stats */
+}
+
+.stat-item img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 8px;
+}
+
+.stat-item h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.stat-item p {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+}
+
+/* Optional: Horizontal Dashed Line Behind All Stats */
+.stats-line-container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed #d1d1d1;
+  z-index: 0;
+  display: none; /* Change to block if you want to enable line */
+}
+
+/* Optional Responsive */
+@media (max-width: 768px) {
+  .stats-line-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .stats-line-container::before {
+    display: none;
+  }
+}
