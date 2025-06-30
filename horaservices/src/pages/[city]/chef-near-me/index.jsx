@@ -16,6 +16,7 @@ import Celebrate4Image from '../../../assets/wedding-event.png';
 import Celebrate5Image from '../../../assets/gathering.png';
 import Celebrate6Image from '../../../assets/kids-event.png';
 import liveCateringImage from '../../../assets/live-buffet-service.png'
+import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
@@ -867,8 +868,11 @@ const ChefCitypage = () => {
 
     return (
         <div>
+           
             <CreateOrder/>
-                   
+           
+
+          
             <section id="section6" class="sectionidsec">
                 <div style={styles.pageWidth}>
                     <div id="faqQ">
@@ -979,26 +983,26 @@ const ChefCitypage = () => {
                     </div>
                     <p id="city-area-title" style={{ fontSize: "70px", textTransform: "uppercase", fontWeight: "bold", color: "#E6756B", margin: "35px 0 2px", textAlign: "center" }}>Serving all Areas in {city}</p>
                     <p style={{ fontSize: "10px", fontWeight: "bold", color: "#E6756B", margin: "2px 0 2px", textAlign: "center" }}>All localities are here</p>
-                    <div id="city-area-list" style={{ width: "150px",alignItems: "center", margin: "auto"}}>
-  <ul style={{ listStyle: "none", padding: "20px 0", textAlign: "center" }}>
-   
-    {cityData[city]?.cityLocalitiesList?.length > 0 ? (
-      cityData[city].cityLocalitiesList.map((item, index) => (
-        <li
-          key={index}
-          style={{
-            padding: "0 10px",
-            display: "inline-block",
-          }}
-        >
-          <a href="/">{item.name}</a>
-        </li>
-      ))
-    ) : (
-      <li>No localities found for {city}</li>
-    )}
-  </ul>
-</div>
+                    <div id="city-area-list" style={{ width: "150px", alignItems: "center", margin: "auto" }}>
+                        <ul style={{ listStyle: "none", padding: "20px 0", textAlign: "center" }}>
+
+                            {cityData[city]?.cityLocalitiesList?.length > 0 ? (
+                                cityData[city].cityLocalitiesList.map((item, index) => (
+                                    <li
+                                        key={index}
+                                        style={{
+                                            padding: "0 10px",
+                                            display: "inline-block",
+                                        }}
+                                    >
+                                        <a href="/">{item.name}</a>
+                                    </li>
+                                ))
+                            ) : (
+                                <li>No localities found for {city}</li>
+                            )}
+                        </ul>
+                    </div>
                 </div>
             </section>
             <section id="section7" class="sectionidsec">

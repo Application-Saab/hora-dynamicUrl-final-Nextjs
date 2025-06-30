@@ -230,22 +230,6 @@ const CustomersReviews = () => {
             text: "HORA have experienced and trained staff. Despite the tight timeline, they effortlessly executed my event with grace. The food was not only delicious but also elegantly presented, leaving my guests raving about the taste and variety. I couldn't have asked for a better partner in planning my special day!",
         },
         {
-            "name": "Neha Patel",
-            "booking": "Booked Chef and Balloon Decoration",
-            "date": "12 May 24",
-            "rating": 4,
-            "avatar": "https://randomuser.me/api/portraits/women/10.jpg",
-            "indicators": {
-                "Taste": true,
-                "Behaviour": true,
-                "Presentation": true,
-                "Quantity": true,
-                "Hygiene": true,
-                "Punctuality": true
-            },
-            "text": "Hora Services completely transformed our venue with their gorgeous balloon decorations! The colors were vibrant, and the designs were flawless. They really went above and beyond to meet our vision. Highly recommend for any event!"
-        },
-        {
             "name": "Harikrishna Thakur",
             "booking": "Booked Decor Service for Party",
             "date": "10 Jan 24",

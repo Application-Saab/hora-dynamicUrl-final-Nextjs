@@ -46,7 +46,7 @@ const scriptTag = JSON.stringify(schemaOrg);
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
   const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
   const [discountDifference, setDiscountDifference] = useState(0);
-  const [activeTab, setActiveTab] = useState('grand');
+  const [activeTab, setActiveTab] = useState('intimate');
   const router = useRouter();
   const { catvalue } = router.query;
  let { city } = router.query;
@@ -177,9 +177,9 @@ const scriptTag = JSON.stringify(schemaOrg);
   }, []);
 
   const tagIds = {
-    // intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
+    intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
     grand: '66c96b6922ed47b72117e0b4',    // Grand tab
-    mega: '66c96b5922ed47b72117e0a7'      // Mega tab
+    // mega: '66c96b5922ed47b72117e0a7'      // Mega tab
   };
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
@@ -224,16 +224,16 @@ const scriptTag = JSON.stringify(schemaOrg);
   // ];
 
   const tabs = [
-    // { id: 'intimate', title: 'Intimate\nMoments' },
+    { id: 'intimate', title: 'Intimate\nGathering' },
     { id: 'grand', title: 'Grand\nCelebrations' },
-{ id: 'mega', title: 'Mega\nOccasions' },
+// { id: 'mega', title: 'Mega\nOccasions' },
 
   ];
 
   const heading = {
-    intimate: 'Perfect for intimate events and moments with under 100 guests',
+    intimate: 'Perfect for intimate events and moments with under 100 - 150 guests',
     grand: 'Specially Designed for all Wedding Rituals',
-    mega: 'For Mega occasions (100-250 guests) needing 2 professional photographers'
+    // mega: 'For Mega occasions (100-250 guests) needing 2 professional photographers'
   };
 
   const reviews = [
@@ -321,7 +321,7 @@ const scriptTag = JSON.stringify(schemaOrg);
 
         <Tabs
           tabs={tabs}
-          defaultTab="grand"
+          defaultTab="intimate"
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />

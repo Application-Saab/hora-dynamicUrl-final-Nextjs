@@ -9,6 +9,7 @@ import {
     API_SUCCESS_CODE,
     GET_MEAL_DISH_ENDPOINT,
 } from "../../utils/apiconstants";
+import Head from "next/head";
 // import { useNavigate } from "react-router-dom";
 import RectanglePurple from "../../assets/Rectanglepurple.png";
 import RectangleWhite from "../../assets/rectanglewhite.png";
@@ -525,7 +526,7 @@ const CreateOrder = ({ history, currentStep }) => {
         query: {
             orderType,
             selectedDishDictionary: JSON.stringify(selectedDishDictionary),
-            selectedDishPrice: totalDishPrice,
+            selectedDishPrice: totalDishPrice + 49,
             selectedDishes: JSON.stringify(selectedDishes),
             isDishSelected,
             selectedCount,
@@ -620,6 +621,41 @@ const CreateOrder = ({ history, currentStep }) => {
 
     return (
         <div className="chef-create-order">
+              <Head>
+            <title>HORA book-chef-cook-for-party</title>
+            <meta 
+              name="description" 
+              content="🎉 Explore a wide range of stunning decoration designs for every event and party, including 🎂 birthdays, 🧸 kids' parties, 💍 anniversaries, 💃 bachelorette parties, 👶 baby showers, 🍼 naming ceremonies, and 🌙 first nights. Choose your ideal design and book directly through our website for a seamless experience. Need help? Reach out to us at 7338584828 for friendly support and personalised assistance. 😊" 
+            />
+            <meta 
+              name="keywords" 
+              content="balloon decoration, birthday decoration, anniversary decoration, haldi mehendi decoration, baby shower decoration, welcome baby decor, room decoration, party decoration" 
+            />
+            <meta 
+              property="og:title" 
+              content="HORA Decorations : Professional Balloons & Flowers Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199" 
+            />
+            <meta 
+              property="og:description" 
+              content="🎉 Explore a wide range of stunning decoration designs for every event and party, including 🎂 birthdays, 🧸 kids' parties, 💍 anniversaries, 💃 bachelorette parties, 👶 baby showers, 🍼 naming ceremonies, and 🌙 first nights. Choose your ideal design and book directly through our website for a seamless experience. Need help? Reach out to us at 7338584828 for friendly support and personalised assistance. 😊" 
+            />
+            <meta 
+              property="og:image" 
+              content="https://horaservices.com/api/uploads/attachment-1706520980436.png" 
+            />
+            <meta name="robots" content="index, follow" />
+            <meta name="author" content="Hora Services" />
+            <link 
+              rel="icon" 
+              href="https://horaservices.com/api/uploads/logo-icon.png" 
+              type="image/x-icon" 
+            />
+            <meta 
+              property="og:url" 
+              content="https://horaservices.com/book-chef-cook-for-party" 
+            />
+            <meta property="og:type" content="website" />
+          </Head>
             <div className="order-container chef">
                 <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.23)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
                     <Image style={{ width: "20px", height: "20px", marginRight: "10px" }} src={InfoIcon} alt="info" />

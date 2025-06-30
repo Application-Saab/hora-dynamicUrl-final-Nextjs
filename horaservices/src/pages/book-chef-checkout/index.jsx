@@ -60,8 +60,7 @@ const ChefCheckout = () => {
 const dishBasePrice = Number(selectedDishPrice) || 0;
 
 
-const safeCharge = Array.isArray(selectedDishes) && selectedDishes.length > 7 ? 700 : 0;
-
+   const safeCharge = selectedCount >= 7 ? 700 : 0; 
 
     useEffect(() => {
         // Check localStorage or a cookie for login status, or call an API
@@ -398,7 +397,7 @@ const safeCharge = Array.isArray(selectedDishes) && selectedDishes.length > 7 ? 
 
   const priceForPeople = numericPeopleCount > 1 ? (numericPeopleCount - 1) * 49 : 0;
     let totalPrice = dishBasePrice + priceForPeople + safeCharge;
-   
+   console.log (safeCharge)
     if (Array.isArray(selectedDishes) && selectedDishes.length > 7) {
         totalPrice += 700;
     }
