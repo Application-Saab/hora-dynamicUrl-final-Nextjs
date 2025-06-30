@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import "./CategoryGrid.css";
@@ -12,14 +11,17 @@ const CategoryGrid = ({ cardsData }) => {
           key={index}
           className={`category-grid__card ${card.sizeClass} ${card.extraClass || ""}`}
         >
+      
           <div className="category-grid__image-wrapper">
             <Image
               src={card.image}
               alt={card.title}
-              fill
-              style={{ objectFit: "cover" }}
+              width={300}
+              height={200}
+              style={{ objectFit: "cover", width: "100%", height: "auto" }}
             />
           </div>
+
           <div className="category-grid__content">
             <h3>{card.title}</h3>
             {card.subtitle && <p>{card.subtitle}</p>}

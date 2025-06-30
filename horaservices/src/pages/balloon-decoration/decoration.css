@@ -61,75 +61,92 @@
 
 
 /* ================================================================== */
-/* WHY PEOPLE LOVE US - STATS SECTION */
 .why-people-love-us {
   text-align: center;
   background-color: white;
-  padding: 40px 20px;
+  overflow-x: hidden;
 }
 
 .why-people-love-us h2 {
   font-size: 24px;
   font-weight: bold;
-  color: #7e3f98;
-  margin-bottom: 30px;
+  color: #97538C;
+  margin-top: 10px;
 }
 
 .stats-line-container {
+
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: auto;
-  gap: 20px;
-  position: relative; /* Needed for dashed line effect if enabled */
+}
+.stat-item {
+  width: 80px;
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1; /* Equal width for all stats */
-}
 
 .stat-item img {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 8px;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  
 }
 
 .stat-item h3 {
   font-size: 20px;
   font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.stat-item p {
-  font-size: 14px;
-  color: #555;
   margin: 0;
 }
 
-/* Optional: Horizontal Dashed Line Behind All Stats */
-.stats-line-container::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  border-top: 2px dashed #d1d1d1;
-  z-index: 0;
-  display: none; /* Change to block if you want to enable line */
+.stat-item p {
+  font-size: 7px;
+  color: #000;
+  margin-top: 4px;
+}
+/* ================================================================================================== */
+.small-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+ 
 }
 
-/* Optional Responsive */
-@media (max-width: 768px) {
-  .stats-line-container {
-    flex-direction: column;
-    gap: 30px;
-  }
+.small-card-wrapper {
+  text-align: center;
+}
 
-  .stats-line-container::before {
-    display: none;
-  }
+.small-card {
+  background-color: #ffd7b5;
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.small-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #fff2dd;
+}
+
+.small-card-name {
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+}
+ 
+/* ============================================================================================================ */
+.why-choose-hora {
+  display: flex;
+  justify-content: center;
+}
+
+.why-choose-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  
+  object-fit: cover;
 }
