@@ -6,23 +6,23 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import './BannerSlider.css';
 
-const BannerSlider = ({ images = [], height = 400, autoplayDelay = 3000 }) => {
+const BannerSlider = ({ images = [] }) => {
   return (
     <div className="banner-slider-container">
+     
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}
-        autoplay={{ delay: autoplayDelay }}
-        loop={true}
+        autoplay={false}
+        loop={false}
       >
         {images.map((img, index) => (
           <SwiperSlide key={index}>
             <Image
               src={img}
               alt={`Banner ${index + 1}`}
-              width={1200}
-              height={height}
-              layout="responsive"
+              width={1500}
+              height={180}
               quality={100}
               loading="eager"
               className="banner-image"
@@ -30,7 +30,8 @@ const BannerSlider = ({ images = [], height = 400, autoplayDelay = 3000 }) => {
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+      </div>
+
   );
 };
 
