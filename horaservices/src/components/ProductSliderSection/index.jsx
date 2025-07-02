@@ -77,9 +77,12 @@ const ProductSliderSection = ({ title, data, handleViewMore, viewLink }) => (
                 src={item.Image}
                 alt={item.title}
                 className="product-section-image"
-                width={200}
-                height={250}
+                
+ layout="responsive" // ✅ Responsive layout
+  width={700}          // ✅ Original image width (in px)
+  height={475}  
               />
+             
               <div className="product-section-watermark">
                 <Image src={logo} alt="hora watermark" width={70} height={80} className="product-section-watermark-img" />
               </div>

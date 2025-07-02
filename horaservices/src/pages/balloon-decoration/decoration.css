@@ -282,3 +282,74 @@
   height: auto;
   
 }
+
+/* ======================================================================================================== */
+.decorationBanner-outer{
+  margin-bottom: 10px;
+}
+.decorationCollageBanner{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.collage-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  text-align: center;
+  color: #97538C;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 80px 10px 80px;
+}
+
+.decorationCollageBanner-image {
+  width: 100%;
+  height: auto;
+}
+/* =========================================================================================================== */
+.brandBanner {
+  text-align: center;
+}
+
+.brandBanner-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: #7a3e8e;
+  margin-top: 20px;
+}
+
+.brandBanner-grid {
+    display: flex;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.brandBanner-card {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+  transition: transform 0.3s ease;
+}
+
+.brandBanner-card:hover {
+  transform: translateY(-4px);
+}
+
+.brandBanner-bold {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.brandBanner-sub {
+  font-size: 10px;
+  color: #555;
+  margin-bottom: 0 !important;
+}

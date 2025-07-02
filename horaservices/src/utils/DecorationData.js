@@ -6,13 +6,7 @@
       rating: 4.7,
       link: "/balloon-decoration/birthday-decoration/product/Blushing-Celebration-Birthday-Decor",
     },
-    {
-      Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1711727911194.png',
-      title: 'Delightful White & Golden Decoration',
-      price: '₹5441',
-      rating: 4.6,
-      link: "/balloon-decoration/birthday-decoration/product/Delightful-White-&-Golden-Decoration",
-    },
+    
     {
       Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1725181762865.png',
       title: 'Maroon White Birthday Decor',
@@ -181,14 +175,7 @@
       rating: 4.8,
       link: "/balloon-decoration/anniversary-decoration/product/Golden-n-White-Petals-Balloon-decor",
     },
-    {
-      Image: 'https://horaservices.com/api/uploads/compressed_images/wahtsapp-decoration-redirection.jpeg',
-      title: '',
-      price: '',
-      rating: '',
-      link: "/balloon-decoration/kids-birthday-decoration/product/Mermaid-Sea-Shell-Shore-Decor",
-      isViewMore: true,
-    },
+   
 
   ];
 

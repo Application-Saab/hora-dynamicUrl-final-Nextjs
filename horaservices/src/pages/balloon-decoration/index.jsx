@@ -31,6 +31,7 @@ import DecorGrid from "@/components/DecorGrid";
 import ProductSliderSection from "@/components/ProductSliderSection"
 import WhyHoraIMG from "../../assets/WhyHoraIMG.png";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.jpg"
+import decorCollageIMG from "../../assets/decorCollageIMG.jpg";
 import whatApp from "../../assets/WhatAppBanner.png";
 import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.png";
 import BabyShowerImg from "../../assets/BabyShowerIMG.png";
@@ -42,7 +43,12 @@ import HaldiMehandiImg from "../../assets/HaldiMehandiIMG.png";
 import FirstNightImg from "../../assets/FirstNightIMG.png";
 import AnniversaryImg from "../../assets/AnniversaryDecorIMG.png";
 import DecorSlider from "@/components/DecorSlider";
-
+import BabyShowerBannerIMG from "../../assets/BabyShowerBannerIMG.jpg";
+import BrandBannerIMG from "../../assets/BrandBannerIMG.png"
+import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg"
+import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png" 
+import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png"
+import TopBrandIMg from "../../assets/TpBrandsIMG.png"
 import {
   birthdayData,
   haldiAndMehndiData,
@@ -336,7 +342,94 @@ const Decoration = () => {
         data={birthdayData}
         viewLink="/balloon-decoration/birthday-decoration"
       />
-      {/* </div> */}
+
+      <div className="decorationBanner-outer">
+        <div className="collage-heading">Capturing Elegance in Every Celebration</div>
+        <div className="page-width">
+          <section className="decorationCollageBanner">
+            <Image
+              src={decorCollageIMG}
+              alt="Decoration-Banner"
+              width={"100%"}
+              height={"auto"}
+              className="decorationCollageBanner-image"
+              priority
+            />
+          </section>
+        </div>
+      </div>
+
+        <DecorSlider
+        title="Anniversary Decoration"
+        viewAllLink="/balloon-decoration/premium-decoration"
+        data={AnniversaryData}
+        showDiscount={true}
+        discountAmount={972}
+        imageSize={{ width: 120, height: 120 }}
+      />
+
+      <section className="BabyShowerBanner">
+        <Image
+          src={BabyShowerBannerIMG}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+
+        <ProductSliderSection
+        title="Babyshower Decoration"
+        data={BabyShowerData}
+        viewLink="/balloon-decoration/birthday-decoration"
+      />
+<section className="BabyShowerBanner">
+        <Image
+          src={BrandBannerIMG}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section> 
+
+
+
+       <div className="brandBanner">
+      <h2 className="brandBanner-heading">Excellence Backed by Happy Customers</h2>
+
+      <div className="brandBanner-grid">
+        {/* Card 1 */}
+        <div className="brandBanner-card">
+          <Image src= {HappyCustomerIMG} alt="Happy Customers" width={40} height={40} />
+          <p className="brandBanner-bold">1L+ HAPPY</p>
+          <p className="brandBanner-sub">CUSTOMERS</p>
+        </div>
+
+        {/* Card 2 */}
+        <div className="brandBanner-card">
+          <Image src= {GoogleRatingIMG} alt="Google Rating" width={40} height={40} />
+          <p className="brandBanner-bold">4.8+ GOOGLE</p>
+          <p className="brandBanner-sub">RATING</p>
+        </div>
+
+        {/* Card 3 */}
+        <div className="brandBanner-card">
+          <Image src={SocialMediaIMG} alt="Social Media" width={40} height={40} />
+          <p className="brandBanner-bold">OUR</p>
+          <p className="brandBanner-sub">SOCIAL MEDIA</p>
+        </div>
+
+        {/* Card 4 */}
+        <div className="brandBanner-card">
+          <Image src={TopBrandIMg} alt="Top Brands" width={40} height={40} />
+          <p className="brandBanner-bold">TOP BRANDS</p>
+          <p className="brandBanner-sub">PARTNERED</p>
+        </div>
+      </div>
+    </div>
     </div>
   );
 
