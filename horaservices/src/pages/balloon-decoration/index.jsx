@@ -49,6 +49,7 @@ import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg"
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png" 
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png"
 import TopBrandIMg from "../../assets/TpBrandsIMG.png"
+import smallcardBackground from "../../assets/small-cardBackground.jpg"
 import {
   birthdayData,
   haldiAndMehndiData,
@@ -250,6 +251,7 @@ const Decoration = () => {
       </div>
 
 
+
       {/* SEE MORE BUTTON */}
       <div className="see-more-container">
         <button className="see-more-btn" onClick={openWahtsappRedirection}>
@@ -289,10 +291,17 @@ const Decoration = () => {
       </section>
       <div className="small-card-grid-outer">
         <div className="page-width">
-          <div className="small-card-grid">
+          <div className="small-card-grid" >
             {categories.map((item, index) => (
               <div key={index} className="small-card-wrapper">
-                <div className="small-card">
+                <div className="small-card"  style={{
+             backgroundImage: `url(${smallcardBackground.src})`,
+                   backgroundSize: 'cover',
+             backgroundPosition: 'center',
+            
+             backgroundRepeat: 'no-repeat',
+   
+  }}>
                   <Image
                     src={item.image}
                     alt={item.name}
@@ -398,36 +407,38 @@ const Decoration = () => {
 
 
        <div className="brandBanner">
+        <div className="page-width">
       <h2 className="brandBanner-heading">Excellence Backed by Happy Customers</h2>
 
       <div className="brandBanner-grid">
         {/* Card 1 */}
         <div className="brandBanner-card">
-          <Image src= {HappyCustomerIMG} alt="Happy Customers" width={40} height={40} />
+          <Image src= {HappyCustomerIMG} alt="Happy Customers" width={60} height={60} />
           <p className="brandBanner-bold">1L+ HAPPY</p>
           <p className="brandBanner-sub">CUSTOMERS</p>
         </div>
 
         {/* Card 2 */}
         <div className="brandBanner-card">
-          <Image src= {GoogleRatingIMG} alt="Google Rating" width={40} height={40} />
+          <Image src= {GoogleRatingIMG} alt="Google Rating" width={60} height={60} />
           <p className="brandBanner-bold">4.8+ GOOGLE</p>
           <p className="brandBanner-sub">RATING</p>
         </div>
 
         {/* Card 3 */}
         <div className="brandBanner-card">
-          <Image src={SocialMediaIMG} alt="Social Media" width={40} height={40} />
+          <Image src={SocialMediaIMG} alt="Social Media" width={60} height={60} />
           <p className="brandBanner-bold">OUR</p>
           <p className="brandBanner-sub">SOCIAL MEDIA</p>
         </div>
 
         {/* Card 4 */}
         <div className="brandBanner-card">
-          <Image src={TopBrandIMg} alt="Top Brands" width={40} height={40} />
+          <Image src={TopBrandIMg} alt="Top Brands" width={60} height={60} />
           <p className="brandBanner-bold">TOP BRANDS</p>
           <p className="brandBanner-sub">PARTNERED</p>
         </div>
+      </div>
       </div>
     </div>
     </div>

@@ -21,7 +21,11 @@
   cursor: pointer;
     margin-top: 10px;
 }
-
+.product-section-header a {
+  font-weight: 600;
+  color: #9347a9;
+  text-decoration: underline;
+}
 .product-section-view-btn {
   font-size: 14px;
   font-weight: 600;
@@ -76,16 +80,16 @@
 }
 
 .product-section-watermark-img {
-  opacity: 0.25;
-  width: 55px;
-  height: auto;
-  object-fit: contain;
+    opacity: 1;
+    width: 40px;
+    height: auto;
+    object-fit: contain;
 }
 
 .product-section-discount-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0px;
+  right: 0px;
   background-color: #f59e0b;
   color: #fff;
   font-size: 13px;

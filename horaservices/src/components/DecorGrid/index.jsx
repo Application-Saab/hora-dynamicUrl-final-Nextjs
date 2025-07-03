@@ -76,7 +76,7 @@ const DecorGrid = ({ largeCard, smallCards }) => {
       <div className="decor-card-grid">
 
         {/* Large Card */}
-        <div className="decor-large-card">
+        {/* <div className="decor-large-card">
           <div className="decor-large-image-box">
             <Image
               src={largeCard.image}
@@ -97,24 +97,51 @@ const DecorGrid = ({ largeCard, smallCards }) => {
               </Link>
             )}
           </div>
-        </div>
+        </div> */}
+<div className="decor-large-card">
+  <div className="decor-large-image-box">
+    <Image
+      src={largeCard.image}
+      alt={largeCard.title}
+      width={150}
+      height={160}
+      className="decor-large-img"
+    />
+  </div>
+
+  <div className="decor-large-content">
+    <h3 className="decor-large-title">{largeCard.title}</h3>
+    <p className="decor-large-subtitle">{largeCard.description}</p>
+
+    {largeCard.link && (
+      <Link href={largeCard.link}>
+        <button className="decor-view-btn">View more</button>
+      </Link>
+    )}
+  </div>
+</div>
 
         {/* Small Cards */}
-        <div className="decor-small-cards-container">
-          {smallCards.map((card, index) => (
-            <div key={index} className="decor-small-card">
-              <div className="decor-small-img-box">
-                <Image
-                  src={card.image}
-                  alt={card.title}
-                  width={400}
-                  height={100}
-                />
-              </div>
-              <h4 className="decor-small-label">{card.title}</h4>
-            </div>
-          ))}
+      <div className="decor-small-cards-container">
+  {smallCards.map((card, index) => (
+    <div key={index} className="decor-small-card-wrapper">
+      <div className="decor-small-card">
+        <div className="decor-small-img-box">
+          <Image
+            src={card.image}
+            alt={card.title}
+            width={400}
+            height={100}
+            className="decor-small-img"
+          />
         </div>
+      </div>
+      <h4 className="decor-small-label">{card.title}</h4> {/* ✅ outside the card */}
+    </div>
+  ))}
+</div>
+
+
 
       </div>
     </div>

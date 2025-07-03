@@ -16,8 +16,8 @@ const CategoryTabs = ({ data, onSelect }) => {
             <Image
               src={cat.image}
               alt={cat.imgAlt || cat.name}
-              width={60}
-              height={60}
+              width={82}
+              height={82}
               className="category-tabs__icon"
             />
           ) : (

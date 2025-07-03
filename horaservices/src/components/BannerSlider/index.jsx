@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/pagination';
+// import 'swiper/css/pagination';
 import './BannerSlider.css';
 
 const BannerSlider = ({ images = [] }) => {
@@ -13,8 +13,8 @@ const BannerSlider = ({ images = [] }) => {
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}
-        autoplay={false}
-        loop={false}
+        autoplay={true}
+        loop={true}
       >
         {images.map((img, index) => (
           <SwiperSlide key={index}>
@@ -22,8 +22,6 @@ const BannerSlider = ({ images = [] }) => {
               src={img}
               alt={`Banner ${index + 1}`}
               width={1500}
-              height={180}
-              quality={100}
               loading="eager"
               className="banner-image"
             />

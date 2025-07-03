@@ -5,5 +5,28 @@
 
 .banner-image {
   border-radius: 10px;
-  
+   height:auto
 }
+
+.swiper-pagination {
+  position: static;
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* Pagination bullet styling */
+.swiper-pagination-bullet {
+  width: 5px;
+  height: 5px;
+  background: #999;
+  opacity: 1;
+  margin: 0 5px;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+  background: black;
+  transform: scale(1.2);
+}
+

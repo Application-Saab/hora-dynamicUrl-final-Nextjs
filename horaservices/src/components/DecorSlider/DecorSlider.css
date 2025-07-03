@@ -1,0 +1,95 @@
+.premium-slide-decor {
+  background: #fbe6d3;
+  padding: 2rem 1rem;
+
+}
+
+.premium-slide-decor-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.premium-slide-decor-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #9347a9;
+}
+
+.premium-slide-decor-header a {
+  font-weight: 600;
+  color: #9347a9;
+  text-decoration: underline;
+}
+
+.premium-scroll-wrapper {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+}
+
+.premium-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.premium-img-wrapper {
+  position: relative;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.premium-img {
+  border-radius: 10px;
+}
+
+.premium-discount {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ffa600;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.premium-content {
+  padding: 0.5rem 0.75rem;
+}
+
+.premium-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: #5e2372;
+    margin-bottom: 0.4rem;
+    width: 100px;
+}
+
+.premium-price-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 20px;
+}
+
+.premium-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+}
+
+.premium-original {
+  font-size: 0.9rem;
+  color: #888;
+  text-decoration: line-through;
+}

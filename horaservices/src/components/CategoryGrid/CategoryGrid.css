@@ -22,11 +22,16 @@
 
 
 .category-grid__content h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 19.62px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #4B4A4A;
   margin-bottom: 0.5rem;
-  color: #222;
-} 
+}
+
 
 .category-grid__image-wrapper {
   position: relative; /* NOT absolute */
@@ -50,7 +55,13 @@
 
 
 .category-grid__content p {
-  font-size: 0.9rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 13.07px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
   color: #555;
   margin-bottom: 0.5rem;
 }
@@ -83,14 +94,14 @@
   .category-grid__content {
     padding: 0.7rem;
   }
-
+/* 
   .category-grid__content h3 {
     font-size: 1rem;
-  }
+  } */
 
-  .category-grid__content p {
+  /* .category-grid__content p {
     font-size: 0.8rem;
-  }
+  } */
 
   .category-grid__button {
     padding: 6px 12px;

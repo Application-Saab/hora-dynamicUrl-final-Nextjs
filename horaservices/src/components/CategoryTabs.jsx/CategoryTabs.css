@@ -36,8 +36,8 @@
 /* CATEGORY ICON (Image Circle) */
 .category-tabs__icon,
 .category-tabs__no-image {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #9252aa;
@@ -71,13 +71,7 @@
 @media (max-width: 768px) {
   .category-tabs {
     gap: 8px;
-    padding: 8px 0;
-  }
-
-  .category-tabs__icon,
-  .category-tabs__no-image {
-    width: 50px;
-    height: 50px;
+    padding: 5px 5px 5px 5px;
   }
 
   .category-tabs__label {
