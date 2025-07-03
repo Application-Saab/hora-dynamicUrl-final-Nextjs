@@ -2,15 +2,30 @@
 
 import Image from "next/image";
 import "./CategoryTabs.css";
+import { useDecorationEvents } from "@/utils/decorationEvents"; // correct path
 
-const CategoryTabs = ({ data, onSelect }) => {
+const CategoryTabs = ({ data, onSelect, city, hasCityPageParam, decCat }) => {
+  const { handleItemClick } = useDecorationEvents(city, hasCityPageParam, decCat);
+
+  const handleClick = (cat) => {
+    handleItemClick({
+      title: cat.name,
+      categoryName: cat.name,
+      subCategory: cat.subCategory,
+      catValue: cat.catValue,
+      imgAlt: cat.imgAlt
+    });
+
+    onSelect(cat);
+  };
+
   return (
     <div className="category-tabs">
       {data.map((cat) => (
         <button
           key={cat.id}
           className="category-tabs__button"
-          onClick={() => onSelect(cat)}
+          onClick={() => handleClick(cat)}
         >
           {cat.image ? (
             <Image

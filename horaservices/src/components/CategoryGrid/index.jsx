@@ -2,8 +2,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import "./CategoryGrid.css";
+import { useDecorationEvents } from "../../utils/decorationEvents.js"; 
 
-const CategoryGrid = ({ cardsData }) => {
+const CategoryGrid = ({cardsData, city, hasCityPageParam, }) => {
+    const { handleSliderViewMore } = useDecorationEvents(city, hasCityPageParam,);
   return (
     <div className="category-grid">
       {cardsData.map((card, index) => (
@@ -26,9 +28,12 @@ const CategoryGrid = ({ cardsData }) => {
             <h3>{card.title}</h3>
             {card.subtitle && <p>{card.subtitle}</p>}
             {card.link && (
-              <Link href={card.link}>
-                <button className="category-grid__button">View More</button>
-              </Link>
+                  <button
+                className="category-grid__button"
+                onClick={() => handleSliderViewMore(card.link)}
+              >
+                View More
+              </button>
             )}
           </div>
         </div>

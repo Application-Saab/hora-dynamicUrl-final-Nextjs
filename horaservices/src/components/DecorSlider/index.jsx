@@ -1,6 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-import "./DecorSlider.css"
+import "./DecorSlider.css";
+import { decCat } from "@/utils/decorationCategories";
+const handleViewMore = (category) => {
+    const categoryItem = decCat.find(cat => cat.subCategory === category);
+    console.log('Category Item:', categoryItem);
+    if (categoryItem) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "title_and_viewmore_decoration_page_clicked",
+        categoryName: categoryItem.name,
+        subCategory: categoryItem.subCategory,
+        catValue: categoryItem.catValue,
+        imgAlt: categoryItem.imgAlt,
+      });
+      openCatItems(categoryItem);
+    } else {
+      console.log('No matching category item found.');
+    }
+  };
   const getDiscountedDifference = (price) => {
     // Trim and remove currency symbol
     price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
@@ -37,7 +55,9 @@ const DecorSlider = ({
     <section className="premium-slide-decor">
       <div className="premium-slide-decor-header">
         <h2>{title}</h2>
-        <Link href={viewAllLink}>View All</Link>
+        {/* <Link href={viewAllLink}>View All</Link> */}
+        <Link href={viewAllLink} onClick={() => handleViewMore(title)}>View All</Link>
+
       </div>
 
       <div className="premium-scroll-wrapper">
