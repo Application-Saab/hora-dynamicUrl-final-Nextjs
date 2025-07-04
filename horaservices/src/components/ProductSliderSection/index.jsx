@@ -3,56 +3,56 @@ import logo from '../../assets/new_logo_light.png'
 import Link from "next/link";
 import "./ProductSliderSection.css"
 const getDiscountedPrice = (price) => {
-    // Trim and remove currency symbol
-    price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
+  // Trim and remove currency symbol
+  price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
 
-    // Check if the price is a valid number
-    if (isNaN(price) || price < 0) {
-      return { error: "Please enter a valid price." };
-    }
+  // Check if the price is a valid number
+  if (isNaN(price) || price < 0) {
+    return { error: "Please enter a valid price." };
+  }
 
-    let discount;
+  let discount;
 
-    // Determine the discount percentage based on the item price
-    if (price < 3000) {
-      discount = 20; // 20% discount
-    } else if (price >= 3000 && price <= 5000) {
-      discount = 27; // 27% discount
-    } else {
-      discount = 35; // 35% discount for prices above 5000
-    }
+  // Determine the discount percentage based on the item price
+  if (price < 3000) {
+    discount = 20; // 20% discount
+  } else if (price >= 3000 && price <= 5000) {
+    discount = 27; // 27% discount
+  } else {
+    discount = 35; // 35% discount for prices above 5000
+  }
 
-    const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
-    const discountDifference = price - discountedPrice; // Difference in original and discounted price
+  const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
+  const discountDifference = price - discountedPrice; // Difference in original and discounted price
 
-    return Math.floor(discountedPrice); // Return both discount percentage and discounted price
-  };
+  return Math.floor(discountedPrice); // Return both discount percentage and discounted price
+};
 
 
-  const getDiscountedDifference = (price) => {
-    // Trim and remove currency symbol
-    price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
+const getDiscountedDifference = (price) => {
+  // Trim and remove currency symbol
+  price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
 
-    // Check if the price is a valid number
-    if (isNaN(price) || price < 0) {
-      return { error: "Please enter a valid price." };
-    }
+  // Check if the price is a valid number
+  if (isNaN(price) || price < 0) {
+    return { error: "Please enter a valid price." };
+  }
 
-    let discount;
+  let discount;
 
-    // Determine the discount percentage based on the item price
-    if (price < 3000) {
-      discount = 20; // 20% discount
-    } else if (price >= 3000 && price <= 5000) {
-      discount = 27; // 27% discount
-    } else {
-      discount = 35; // 35% discount for prices above 5000
-    }
-    const discountedPrice = Math.floor(price * (1 - discount / 100)); // Calculate the discounted price and round down
-    const discountDifference = Math.floor(price - discountedPrice); // Difference in original and discounted price, rounded down
+  // Determine the discount percentage based on the item price
+  if (price < 3000) {
+    discount = 20; // 20% discount
+  } else if (price >= 3000 && price <= 5000) {
+    discount = 27; // 27% discount
+  } else {
+    discount = 35; // 35% discount for prices above 5000
+  }
+  const discountedPrice = Math.floor(price * (1 - discount / 100)); // Calculate the discounted price and round down
+  const discountDifference = Math.floor(price - discountedPrice); // Difference in original and discounted price, rounded down
 
-    return discountDifference; // Return both discount percentage and discounted price
-  };
+  return discountDifference; // Return both discount percentage and discounted price
+};
 
 
 
@@ -62,7 +62,7 @@ const ProductSliderSection = ({ title, data, handleViewMore, viewLink }) => (
     {/* === Header === */}
     <div className="product-section-header">
       <h2 onClick={() => handleViewMore(viewLink)}>{title}</h2>
-     <Link href={viewLink}>View All</Link>
+      <Link href={viewLink}>View All</Link>
     </div>
 
     {/* === Cards === */}
@@ -77,12 +77,12 @@ const ProductSliderSection = ({ title, data, handleViewMore, viewLink }) => (
                 src={item.Image}
                 alt={item.title}
                 className="product-section-image"
-                
- layout="responsive" // ✅ Responsive layout
-  width={700}          // ✅ Original image width (in px)
-  height={475}  
+
+                layout="responsive" // ✅ Responsive layout
+                width={700}
+                height={475}
               />
-             
+
               <div className="product-section-watermark">
                 <Image src={logo} alt="hora watermark" width={70} height={80} className="product-section-watermark-img" />
               </div>

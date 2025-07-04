@@ -1,22 +1,21 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import "./DecorGrid.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 
 const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) => {
+  const router = useRouter();
   const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat);
 
-  // Helper to normalize strings for better matching
-  const normalize = (str) => str?.toLowerCase().replace(/[\s\-]+/g, "").trim();
+  
+  const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
   const handleClick = (card) => {
-    const matched = decCat.find((cat) =>
-      normalize(cat.name) === normalize(card.title) ||
-      normalize(cat.subCategory) === normalize(card.title) ||
-      normalize(cat.catValue) === normalize(card.link) ||
-      normalize(card.title).includes(normalize(cat.name)) ||
-      normalize(cat.name).includes(normalize(card.title))
+   
+    const matched = decCat.find(
+      (cat) => normalize(cat.catValue) === normalize(card.catValue)
     );
 
     if (!matched) {
@@ -34,12 +33,17 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
 
     handleItemClick(eventData);
     openCatItems(matched);
+
+    // Optional navigation
+    if (card.link) {
+      router.push(`/${card.link}`);
+    }
   };
 
   return (
     <div className="decor-grid-wrapper">
       <div className="decor-card-grid">
-        {/* Large Card */}
+        {/* 🔶 Large Card */}
         <div className="decor-large-card">
           <div className="decor-large-image-box">
             <Image
@@ -59,7 +63,7 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
           </div>
         </div>
 
-        {/* Small Cards */}
+        {/* 🔹 Small Cards */}
         <div className="decor-small-cards-container">
           {smallCards.map((card, index) => (
             <div

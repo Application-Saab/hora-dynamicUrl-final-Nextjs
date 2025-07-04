@@ -94,14 +94,24 @@ const largeCard = {
 const smallCards = [
   {
     image: "/decorationhaldi-Mhendi.png",
-    title: "Haldi Mhendi",
+    title: "Haldi-Mhendi",
     link: "balloon-decoration/haldi-mehendi-decoration",
+    categoryName: "Haldi Mhendi",
+    subCategory: "haldi",
+    catValue: "haldi-mehendi-decoration",
+    imgAlt: "Haldi Mehendi Decoration",
   },
   {
     image: "/decorationBride-tobe.png",
     title: "Bride To-be",
+    link: "balloon-decoration/bride-to-be",
+    categoryName: "Bride To-be",
+    subCategory: "bride",
+    catValue: "bride-to-be",
+    imgAlt: "Bride to be Decoration",
   },
 ];
+
 const stats = [
   {
     icon: whypeople1,
@@ -296,7 +306,7 @@ const Decoration = () => {
         viewAllLink="/balloon-decoration/anniversary-decoration"
         data={AnniversaryData}
         showDiscount={true}
-        discountAmount={972}
+        // discountAmount={972}
         imageSize={{ width: 120, height: 120 }}
       />
 
