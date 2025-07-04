@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
-// import 'swiper/css/pagination';
+import 'swiper/css/pagination';
 import './BannerSlider.css';
 
 const BannerSlider = ({ images = [] }) => {

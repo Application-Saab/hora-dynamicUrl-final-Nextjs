@@ -82,8 +82,9 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
                     className="decor-small-img"
                   />
                 </div>
-                <h4 className="decor-small-label">{card.title}</h4>
+               
               </div>
+               <h4 className="decor-small-label">{card.title}</h4>
             </div>
           ))}
         </div>

@@ -13,24 +13,26 @@ import whypeople1 from "../../assets/whypeople1.jpg"
 import whypeople2 from '../../assets/whypeople2.jpg';
 import whypeople3 from '../../assets/whypeople3.jpg';
 import whypeople4 from '../../assets/whypeople4.jpg';
-import Banner1 from "../../assets/decBanner1.png"
-import Banner2 from "../../assets/decBanner1.png"
-import Banner3 from "../../assets/decBanner1.png"
+import Banner1 from "../../assets/decbanner3.webp"
+import Banner2 from "../../assets/decbanner2.webp"
+import Banner3 from "../../assets/decbanner1.webp"
 import Kidsbirthday from "../../assets/kidsBirthdayIMG.jpg"
 import BabyWelcome from "../../assets/BabyWelcomeIMG.png"
 import Anniversary from "../../assets/AnniversaryIMG.png"
 import arrowIcon from "../../assets/arrow-down.png";
 import decCatTab from "../../utils/categoriesTabData.json"
 import CategoryTabs from "../../components/CategoryTabs.jsx"
+import ReviewSection from "@/components/ReviewSection";
+import allReviewsData from "@/utils/ReviewsData";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import BannerSlider from "@/components/BannerSlider";
 import DecorGrid from "@/components/DecorGrid";
 import ProductSliderSection from "@/components/ProductSliderSection"
-import WhyHoraIMG from "../../assets/WhyHoraIMG.png";
+import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.jpg"
 import decorCollageIMG from "../../assets/decorCollageIMG.jpg";
-import whatApp from "../../assets/WhatAppBanner.png";
+import whatApp from "../../assets/WhatAppBanner.webp";
 import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.png";
 import BabyShowerImg from "../../assets/BabyShowerIMG.png";
 import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
@@ -375,6 +377,7 @@ const Decoration = () => {
           </div>
         </div>
       </div>
+      <ReviewSection allReviewsData={allReviewsData} />
     </div>
   );
 

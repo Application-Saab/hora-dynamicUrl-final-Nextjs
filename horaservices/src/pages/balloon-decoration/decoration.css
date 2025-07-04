@@ -2,6 +2,8 @@
 
 .dec-landing-page {
     margin-top: 10px;
+    max-width:600px;
+    margin:auto;
 }
 
 /* ================================================================== */
