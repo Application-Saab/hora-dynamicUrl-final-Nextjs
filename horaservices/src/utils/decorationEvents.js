@@ -5,6 +5,8 @@ export const useDecorationEvents = (city, hasCityPageParam, decCat) => {
   const router = useRouter();
 
   const openCatItems = (item) => {
+    console.log("Opening Category Items:", item);
+    console.log(item.catValue, "catValue2");
     if (hasCityPageParam) {
       router.push(`/${city}/balloon-decoration/${item.catValue}`);
     } else {

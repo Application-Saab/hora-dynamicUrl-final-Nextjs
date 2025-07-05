@@ -5,7 +5,11 @@ import "./CategoryTabs.css";
 import { useDecorationEvents } from "@/utils/decorationEvents"; // correct path
 
 const CategoryTabs = ({ data, onSelect, city, hasCityPageParam, decCat }) => {
-  const { handleItemClick } = useDecorationEvents(city, hasCityPageParam, decCat);
+  const { handleItemClick } = useDecorationEvents(
+    city,
+    hasCityPageParam,
+    decCat
+  );
 
   const handleClick = (cat) => {
     handleItemClick({
@@ -13,7 +17,7 @@ const CategoryTabs = ({ data, onSelect, city, hasCityPageParam, decCat }) => {
       categoryName: cat.name,
       subCategory: cat.subCategory,
       catValue: cat.catValue,
-      imgAlt: cat.imgAlt
+      imgAlt: cat.imgAlt,
     });
 
     onSelect(cat);
