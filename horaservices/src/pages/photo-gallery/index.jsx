@@ -18,6 +18,43 @@ const PhotoGallery = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);  // State for login status
   const router = useRouter();
 
+  console.log(folderName, "foldrenmae");
+  console.log(customerId, "customerId");
+
+  useEffect(() => {
+  if (!folderName || !customerId) return;
+
+  const start = Date.now();
+
+  // 1️⃣ Push visit event (no userId)
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "photo_gallery_visit",
+    folderName,
+    customerId,
+    timestamp: new Date().toISOString(),
+  });
+
+  console.log(window.dataLayer, "dataLayer");
+
+  // 2️⃣ Push time spent event
+  const handleUnload = () => {
+    const duration = Math.floor((Date.now() - start) / 1000);
+    window.dataLayer.push({
+      event: "photo_gallery_time_spent",
+      folderName,
+      customerId,
+      duration,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  console.log(window.dataLayer, "dataLayer on unload");
+
+  window.addEventListener("beforeunload", handleUnload);
+  return () => window.removeEventListener("beforeunload", handleUnload);
+}, [folderName, customerId]);
+
   
 
   const handleShareicon = async () => {
