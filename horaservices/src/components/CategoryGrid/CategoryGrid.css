@@ -1,6 +1,6 @@
-.category-grid {
+/* .category-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr; /* Make right side a bit wider */
+  grid-template-columns: 1.5fr 1fr; 
   gap: 1rem;
 }
 
@@ -25,7 +25,6 @@
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 19.62px;
-  line-height: 100%;
   letter-spacing: 0;
   text-align: center;
   color: #4B4A4A;
@@ -34,7 +33,7 @@
 
 
 .category-grid__image-wrapper {
-  position: relative; /* NOT absolute */
+  position: relative;
   width: 100%;
   height: auto;
   overflow: hidden;
@@ -49,7 +48,7 @@
 
 .category-grid__content {
   padding: 1rem;
-  background-color: #fff; /* Optional: or keep transparent */
+  background-color: #fff; 
   text-align: center;
 }
 
@@ -68,7 +67,7 @@
 
 .category-grid__button {
   background: transparent;
-  color: #97538C; /* purple */
+
   border: none;
   padding: 0;
   cursor: pointer;
@@ -86,24 +85,83 @@
 
 
 
+ */
 
-/* ✅ Mobile view: Keep same grid but reduce padding/font for space */
-@media (max-width: 600px) {
- 
-
-  .category-grid__content {
-    padding: 0.7rem;
-  }
-/* 
-  .category-grid__content h3 {
-    font-size: 1rem;
-  } */
-
-  /* .category-grid__content p {
-    font-size: 0.8rem;
-  } */
-
-  .category-grid__button {
-    padding: 6px 12px;
-  }
+ .category-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr; /* Desktop default */
+  gap: 1rem;
 }
+
+.category-grid__card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.category-grid__card--tall {
+  grid-row: span 2;
+}
+
+.category-grid__image-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.category-grid__image-wrapper img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.category-grid__content {
+  margin: 10px 10px 10px 10px;
+  background-color: #fff;
+  text-align: center;
+}
+
+.category-grid__content h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 15.62px;
+  text-align: center;
+  color: #4B4A4A;
+      margin: 10px 0px 2px 0px;
+}
+
+
+
+.category-grid__content p {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    /* line-height: 100%; */
+    text-align: center;
+    text-transform: uppercase;
+    color: #555;
+    margin: 2px 0px 2px 0px;
+}
+
+.category-grid__button {
+  background: transparent;
+  color: #97538C;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: underline;
+  text-decoration-color: #97538C;
+  text-underline-offset: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.category-grid__button:hover {
+  opacity: 0.7;
+}
+
+/* ================== RESPONSIVE STYLES ================== */

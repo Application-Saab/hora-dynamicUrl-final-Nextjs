@@ -27,6 +27,8 @@
   overflow-x: auto;
   padding-bottom: 0.5rem;
   scroll-snap-type: x mandatory;
+   scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none; 
 }
 
 .premium-card {
@@ -73,6 +75,7 @@
     color: #5e2372;
     margin-bottom: 0.4rem;
     width: 100px;
+    height: 80px;
 }
 
 .premium-price-wrapper {
@@ -80,6 +83,7 @@
   align-items: center;
   gap: 0.5rem;
   width: 20px;
+ 
 }
 
 .premium-price {

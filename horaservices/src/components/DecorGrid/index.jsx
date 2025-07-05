@@ -9,11 +9,11 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
   const router = useRouter();
   const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat);
 
-  
+
   const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
   const handleClick = (card) => {
-   
+
     const matched = decCat.find(
       (cat) => normalize(cat.catValue) === normalize(card.catValue)
     );
@@ -82,9 +82,9 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
                     className="decor-small-img"
                   />
                 </div>
-               
+
               </div>
-               <h4 className="decor-small-label">{card.title}</h4>
+              <h4 className="decor-small-label">{card.title}</h4>
             </div>
           ))}
         </div>

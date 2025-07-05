@@ -20,7 +20,6 @@ import Kidsbirthday from "../../assets/kidsBirthdayIMG.jpg"
 import BabyWelcome from "../../assets/BabyWelcomeIMG.png"
 import Anniversary from "../../assets/AnniversaryIMG.png"
 import arrowIcon from "../../assets/arrow-down.png";
-import decCatTab from "../../utils/categoriesTabData.json"
 import CategoryTabs from "../../components/CategoryTabs.jsx"
 import ReviewSection from "@/components/ReviewSection";
 import allReviewsData from "@/utils/ReviewsData";
@@ -90,9 +89,10 @@ const largeCard = {
   image: "/decorationwedding.png",
   title: "Wedding",
   description: "DECORATIONS",
-
-  link: "/wedding-decor",
+  link: "balloon-decoration/wedding-decoration",
+  catValue: "Wedding", 
 };
+
 const smallCards = [
   {
     image: "/decorationhaldi-Mhendi.png",
@@ -104,14 +104,14 @@ const smallCards = [
     imgAlt: "Haldi Mehendi Decoration",
   },
   {
-    image: "/decorationBride-tobe.png",
-    title: "Bride To-be",
-    link: "balloon-decoration/bride-to-be",
-    categoryName: "Bride To-be",
-    subCategory: "bride",
-    catValue: "bride-to-be",
-    imgAlt: "Bride to be Decoration",
-  },
+  image: "/decorationBride-tobe.png",
+  title: "Bride To-be",
+  link: "balloon-decoration/bachelorette-decoration",
+  categoryName: "Bride To-be",
+  subCategory: "bachelorette",
+  catValue: "bachelorette-decoration",
+  imgAlt: "Bride to be Decoration"
+}
 ];
 
 const stats = [
@@ -187,13 +187,13 @@ const Decoration = () => {
     <div className="dec-landing-page">
       {/* <div className="page-width"> */}
       <div className="top-slider">
-        <div className="page-width">
+       
           <BannerSlider images={bannerImages} />
-        </div>
+    
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs">
-        <CategoryTabs data={decCatTab.decCatTabdata} onSelect={openCatItems} />
+          <CategoryTabs data={decCat} onSelect={openCatItems} />
       </div>
 
       <div className="CategoryGrid-outer">
@@ -205,14 +205,15 @@ const Decoration = () => {
 
 
       {/* SEE MORE BUTTON */}
-      <div className="see-more-container">
-        <button className="see-more-btn" onClick={openWahtsappRedirection}>
-          <span>SEE MORE</span>
-          <span className="arrow-icon">
-            <Image src={arrowIcon} alt="Arrow Down" width={16} height={16} />
-          </span>
-        </button>
-      </div>
+    <div className="see-more-container">
+  <button className="see-more-btn" onClick={openWahtsappRedirection}>
+    <span>SEE MORE</span>
+    <span className="arrow-icondecoration">
+      <Image src={arrowIcon} alt="Arrow Down" width={20} height={20} />
+    </span>
+  </button>
+</div>
+
 
       <DecorGrid largeCard={largeCard} smallCards={smallCards} city={city}
         hasCityPageParam={hasCityPageParam} decCat={decCat}

@@ -22,33 +22,46 @@
   padding: 10px 20px;
   font-size: 16px;
   font-weight: 600;
-  color: #8a2b8e; /* Purple text */
+  color: #97538C;
   background: linear-gradient(white, #f9f9f9);
-  border: 2px solid #8a2b8e;
+  border: 2px solid #97538C;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 6px rgba(138, 43, 142, 0.4);
   margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
 .see-more-btn:hover {
   background-color: #f0e4f5;
   box-shadow: 0 4px 10px rgba(138, 43, 142, 0.5);
+  transform: scale(1.03);
 }
 
-.arrow-icon {
-  background-color: #8a2b8e;
-  border-radius: 50%;
+.arrow-icondecoration {
+ 
   padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease;
 }
 
-.arrow-icon img {
-  display: block;
+/* Arrow slides slightly on hover */
+.see-more-btn:hover .arrow-icondecoration {
+  transform: translateX(4px);
 }
+
+.see-more-btn span:first-child {
+  transition: color 0.3s ease;
+}
+
+.see-more-btn:hover span:first-child {
+  color: #6c1f75;
+}
+
 
 @media (max-width: 768px) {
   .see-more-btn {
@@ -180,7 +193,7 @@
 .brandBanner-heading {
   font-size: 24px;
   font-weight: 600;
-  color: #7a3e8e;
+  color: #97538C;
   margin-top: 20px;
 }
 
@@ -195,12 +208,12 @@
 }
 
 .brandBanner-card {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-  transition: transform 0.3s ease;
-  margin: auto;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #6c757d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin: auto;
 }
 
 .brandBanner-card:hover {
@@ -218,4 +231,63 @@
  font-size: 8px;
   font-weight: bold;
   margin-bottom: 0 !important;
+}
+
+
+
+
+@media (max-width: 359px) {
+  /* SEE MORE button tweaks */
+  .see-more-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    gap: 4px;
+  }
+
+  .arrow-icon {
+    padding: 2px;
+  }
+
+  /* Heading sizes */
+  .why-people-love-us h2,
+  .brandBanner-heading {
+    font-size: 18px;
+  }
+
+  /* Collage title spacing */
+  .collage-heading {
+    font-size: 16px !important;
+    padding: 10px 20px;
+  }
+
+  /* Stat section adjustments */
+  .stat-item h3 {
+    font-size: 16px;
+  }
+
+  .stat-item p {
+    font-size: 6px;
+  }
+
+  /* Brand grid responsiveness */
+  .brandBanner-grid {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .brandBanner-card {
+    flex: 0 0 45%;
+    padding: 8px;
+  }
+
+  .brandBanner-bold,
+  .brandBanner-sub {
+    font-size: 7px;
+  }
+
+  /* Optional: Ensure inner container doesn't overflow */
+  .dec-landing-page .page-width {
+    width: 95% !important;
+  }
 }

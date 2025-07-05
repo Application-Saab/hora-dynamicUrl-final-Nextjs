@@ -326,6 +326,7 @@ const DecorationCatPage = () => {
       const response = await axios.get(apiUrl);
   
       if (response.status === API_SUCCESS_CODE) {
+       
         const decoratedData = response.data.data.map((item) => {
           const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);
           return {
@@ -337,7 +338,7 @@ const DecorationCatPage = () => {
             discountDifference,
           };
         });
-  
+   console.log(decoratedData)
         setCatalogueData((prevData) => page === 1 ? decoratedData : [...prevData, ...decoratedData]);
         setHasMore(page < response.data.pagination.totalPages);
       }

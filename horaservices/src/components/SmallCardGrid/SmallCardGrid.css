@@ -1,19 +1,24 @@
- .small-card-grid-outer{
+.small-card-grid-outer {
   margin-bottom: 20px;
- }
-.small-card-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Force 3 columns always */
-  gap: 10px;
-  
 }
 
+.small-card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Cards take up 3 per row by default (33.33% - gap adjustment) */
 .small-card-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 0 0 calc(33.33% - 10px);
+  max-width: 100px;
 }
 
+/* Card Styling */
 .small-card {
   border-radius: 16px;
   overflow: hidden;
@@ -40,4 +45,11 @@
   color: #000;
   text-align: center;
 }
+@media (max-width: 339px) {
+  .small-card-wrapper {
+    flex: 0 0 calc(50% - 10px); /* 2 per row on extra small screens */
+  }
+}
+
+
 

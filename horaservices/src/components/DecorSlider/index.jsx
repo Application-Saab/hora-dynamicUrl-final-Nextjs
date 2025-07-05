@@ -22,21 +22,20 @@ const handleViewMore = (category) => {
   const getDiscountedDifference = (price) => {
     // Trim and remove currency symbol
     price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
-
     // Check if the price is a valid number
     if (isNaN(price) || price < 0) {
       return { error: "Please enter a valid price." };
     }
-
     let discount;
 
     // Determine the discount percentage based on the item price
+  
     if (price < 3000) {
-      discount = 20; // 20% discount
+      discount = 20;
     } else if (price >= 3000 && price <= 5000) {
-      discount = 27; // 27% discount
+      discount = 27;
     } else {
-      discount = 35; // 35% discount for prices above 5000
+      discount = 35;
     }
     const discountedPrice = Math.floor(price * (1 - discount / 100)); // Calculate the discounted price and round down
     const discountDifference = Math.floor(price - discountedPrice); // Difference in original and discounted price, rounded down
@@ -48,7 +47,6 @@ const DecorSlider = ({
   viewAllLink,
   data,
   showDiscount = false,
-  discountAmount = 0,
   imageSize = { width: 120, height: 120 },
 }) => {
   return (
