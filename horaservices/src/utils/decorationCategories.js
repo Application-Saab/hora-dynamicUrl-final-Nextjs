@@ -1,73 +1,77 @@
 export const decCat = [
   {
-    id: "2",
+    id: "1",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/Birthday_dec_cat.webp",
-    name: "Happy Birthday",
+      "https://horaservices.com/api/uploads/compressed_webp/Birthdaydecoration.webp",
+    name: "Birthday",
     subCategory: "Birthday",
     catValue: "birthday-decoration",
     imgAlt: "A Gorgeous Candy Birthday Decoration Surprise!",
   },
-  {
-    id: "3",
+    {
+    id: "2",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/first_night_cat_dec.webp",
-    name: "First Night",
-    subCategory: "FirstNight",
-    catValue: "first-night-decoration",
-    imgAlt:
-      "Add extra happiness quotient to your wedding night with our exclusive décor package",
-  },
-  {
-    id: "4",
-    image:
-      "https://horaservices.com/api/uploads/compressed_images/aniversary_Cat_Dec.webp",
-    name: "Anniversary",
-    subCategory: "Anniversary",
-    catValue: "anniversary-decoration",
-    imgAlt:
-      "Immerse yourself in a world of romance with our mesmerizing anniversary decorations.",
-  },
-  {
-    id: "5",
-    image:
-      "https://horaservices.com/api/uploads/compressed_images/kids_birthday_decoration.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/KIdsbirthday.webp",
     name: "Kids Birthday",
     subCategory: "KidsBirthday",
     catValue: "kids-birthday-decoration",
     imgAlt:
       "Flutter into a world of whimsy with our exclusive Whimsical Flutter-themed Welcome Baby Decorations.",
   },
-  {
-    id: "6",
+    {
+    id: "3",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/baby-shower-dec-cat.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/primumdecoration.webp	",
+    name: "Premium Decor",
+    subCategory: "PremiumDecoration",
+    catValue: "premium-decoration",
+    imgAlt: "Birthday party decoration ideas for adults",
+  },
+  {
+    id: "4",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Babyshower.webp",
     name: "Baby Shower",
     subCategory: "BabyShower",
     catValue: "baby-shower-decoration",
     imgAlt:
       "Celebrate the transformation into motherhood with Our Gilded Baby Shower Decorations.",
   },
-  {
-    id: "7",
+    {
+    id: "5",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/welcome_baby_dec.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/welcomeBaby.webp",
     name: "Welcome Baby",
     subCategory: "WelcomeBaby",
     catValue: "welcome-baby-decoration",
     imgAlt: "A Pastel Theme Oh Baby Decor for your Baby Shower Celebrations!",
   },
+
   {
-    id: "8",
+    id: "6",
     image:
-      "https://horaservices.com/api/uploads/compressed_images/preminumdecor.webp	",
-    name: "premium Decoration",
-    subCategory: "PremiumDecoration",
-    catValue: "premium-decoration",
-    imgAlt: "Birthday party decoration ideas for adults",
+      "https://horaservices.com/api/uploads/compressed_webp/Anniversary.webp",
+    name: "Anniversary Decor",
+    subCategory: "Anniversary",
+    catValue: "anniversary-decoration",
+    imgAlt:
+      "Immerse yourself in a world of romance with our mesmerizing anniversary decorations.",
   },
   {
-    id: "9",
+    id: "7",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Firstnight.webp",
+    name: "First Night Decor",
+    subCategory: "FirstNight",
+    catValue: "first-night-decoration",
+    imgAlt:
+      "Add extra happiness quotient to your wedding night with our exclusive décor package",
+  },
+  
+
+
+  {
+    id: "8",
     image: "https://horaservices.com/api/uploads/Balloon-B-new.webp",
     name: "Ballon Bouquets",
     subCategory: "BallonBouquets",
@@ -75,7 +79,7 @@ export const decCat = [
     imgAlt: "Balloon Bouquet",
   },
   {
-    id: "10",
+    id: "9",
     Image: "",
     name: "Haldi Mehandi",
     subCategory: "Haldi-Mehandi",
@@ -83,7 +87,7 @@ export const decCat = [
     imgAlt: "Haldi Event",
   },
   {
-    id: "11",
+    id: "10",
     image: "/decorationwedding.png",
     name: "Wedding",
     subCategory: "Wedding",
@@ -92,7 +96,7 @@ export const decCat = [
   },
 
   {
-    id: "12",
+    id: "11",
     Image: "",
     name: "Bachelorette",
     subCategory: "bachelorette",
@@ -100,7 +104,7 @@ export const decCat = [
     imgAlt: "Bachelorette",
   },
   {
-    id: "13",
+    id: "12",
     Image: "",
     name: "proposal decorations",
     subCategory: "Proposal-Decoration",

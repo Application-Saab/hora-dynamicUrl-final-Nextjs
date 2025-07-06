@@ -10,14 +10,14 @@
 }
 
 .premium-slide-decor-header h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  color: #9347a9;
+  color: #97538C;
 }
 
 .premium-slide-decor-header a {
   font-weight: 600;
-  color: #9347a9;
+  color: #97538C;
   text-decoration: underline;
 }
 
@@ -72,7 +72,7 @@
 .premium-title {
     font-size: 12px;
     font-weight: 600;
-    color: #5e2372;
+    color: #97538C;
     margin-bottom: 0.4rem;
     width: 100px;
     height: 80px;
@@ -89,12 +89,12 @@
 .premium-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #000;
+  color: #97538C;
 }
 
 .premium-original {
   font-size: 0.9rem;
-  color: #888;
+  color: #000;
   text-decoration: line-through;
 }
 

@@ -14,7 +14,7 @@
 }
 
 .product-section-header h2 {
-  color: #9347a9;
+  color: #97538C;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -23,13 +23,13 @@
 }
 .product-section-header a {
   font-weight: 600;
-  color: #9347a9;
+  color: #97538C;
   text-decoration: underline;
 }
 .product-section-view-btn {
   font-size: 14px;
   font-weight: 600;
-  color: #6b207b;
+  color: #97538C;
   background: none;
   border: none;
   cursor: pointer;
@@ -109,7 +109,7 @@
 .product-section-details h3 {
   font-size: 14px;
   font-weight: 700;
-  color: #6b207b;
+  color: #97538C;
   margin: 0 0 8px 0;
   text-align: left;
   line-height: 1.4;
@@ -123,7 +123,7 @@
 
 .product-section-price-current {
   font-size: 15px;
-  color: #9252aa;
+  color: #97538C;
   font-weight: 700;
   margin-bottom: 4px;
   text-align: left;
