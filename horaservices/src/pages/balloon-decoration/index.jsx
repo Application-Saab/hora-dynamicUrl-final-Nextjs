@@ -48,6 +48,9 @@ import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
+import decorationwedding from "../../assets/decorationwedding.png"
+import decorationBridetobe from "../../assets/decorationBride-tobe.png"
+import decorationhaldiMhendi from "../../assets/decorationhaldi-Mhendi.png"
 import smallcardBackground from "../../assets/small-cardBackground.jpg";
 import {
   birthdayData,
@@ -84,7 +87,7 @@ const cardsData = [
 ];
 
 const largeCard = {
-  image: "/decorationwedding.png",
+  image: decorationwedding,
   title: "Wedding",
   description: "DECORATIONS",
   link: "balloon-decoration/wedding-decoration",
@@ -93,7 +96,7 @@ const largeCard = {
 
 const smallCards = [
   {
-    image: "/decorationhaldi-Mhendi.png",
+    image: decorationhaldiMhendi,
     title: "Haldi-Mhendi",
     link: "balloon-decoration/haldi-mehendi-decoration",
     categoryName: "Haldi Mhendi",
@@ -102,7 +105,7 @@ const smallCards = [
     imgAlt: "Haldi Mehendi Decoration",
   },
   {
-    image: "/decorationBride-tobe.png",
+    image: decorationBridetobe,
     title: "Bride To-be",
     link: "balloon-decoration/bachelorette-decoration",
     categoryName: "Bride To-be",
