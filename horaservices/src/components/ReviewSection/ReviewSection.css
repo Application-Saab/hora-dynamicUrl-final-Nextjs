@@ -1,0 +1,71 @@
+.review-section {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.review-heading {
+  font-size: 1.8rem;
+  color: #97538C;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+.final-card {
+  background: #fff;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.avatar-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.top-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.review-name-mono {
+  font-size: 1.1rem;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.review-stars {
+  font-size: 1.4rem;
+}
+
+.star {
+  margin: 0 1px;
+}
+
+.filled {
+  color: #ffa500;
+}
+
+.blank {
+  color: #ccc;
+}
+
+.review-text-block {
+  font-size: 12px;
+  color: #444;
+  line-height: 1.5;
+  text-align: justify;
+}

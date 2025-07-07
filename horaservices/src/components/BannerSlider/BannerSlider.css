@@ -1,0 +1,32 @@
+.banner-slider-container {
+  width: 100%;
+  position: relative;
+  margin-top: 10px;
+}
+
+.banner-image {
+   height:auto
+}
+
+.swiper-pagination {
+  position: static;
+  margin-top: 0px;
+  text-align: center;
+}
+
+/* Pagination bullet styling */
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgb(159, 158, 158);
+  opacity: 1;
+  margin: 0 3px;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+  background:#9f6695;
+  transform: scale(1.2);
+}
+
