@@ -491,7 +491,12 @@ const normalizedCat = normalizeCatValue(catValue);
           >
             <div style={{ position: "relative" }}>
               <Image
-                src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image.split('.')[0]}.webp`}
+               src={
+  item?.featured_image?.split
+    ? `https://horaservices.com/api/uploads/compressed_webp/${item.featured_image.split('.')[0]}.webp`
+    : '/fallback-image.webp'
+}
+
                 alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`}
                 style={styles.decCatimage}
                 width={300}
