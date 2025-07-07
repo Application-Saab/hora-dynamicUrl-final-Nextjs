@@ -22,9 +22,9 @@ import whypeople4 from "../../assets/whypeople4.jpg";
 import Banner1 from "../../assets/decbanner3.webp";
 import Banner2 from "../../assets/decbanner2.webp";
 import Banner3 from "../../assets/decbanner1.webp";
-import Kidsbirthday from "../../assets/kidsBirthdayIMG.jpg";
-import BabyWelcome from "../../assets/BabyWelcomeIMG.png";
-import Anniversary from "../../assets/AnniversaryIMG.png";
+import Kidsbirthday from "../../assets/kidsBirthdayIMG.webp";
+import BabyWelcome from "../../assets/BabyWelcomeIMG.webp";
+import Anniversary from "../../assets/AnniversaryIMG.webp";
 import arrowIcon from "../../assets/arrow-down.png";
 import CategoryTabs from "../../components/CategoryTabs.jsx";
 import ReviewSection from "@/components/ReviewSection";
@@ -35,17 +35,17 @@ import BannerSlider from "@/components/BannerSlider";
 import DecorGrid from "@/components/DecorGrid";
 import ProductSliderSection from "@/components/ProductSliderSection";
 import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
-import DecorationBannerIMG from "../../assets/DecorationBannerIMG.png";
+import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.jpg";
 import whatApp from "../../assets/WhatAppBanner.webp";
-import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.png";
-import BabyShowerImg from "../../assets/BabyShowerIMG.png";
-import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
-import BabyWelcomeImg from "../../assets/WelcomBabyIMG.png";
-import PremiumDecorImg from "../../assets/PremiumDecorIMG.png";
+import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.webp";
+import BabyShowerImg from "../../assets/BabyShowerIMG.webp";
+import kidsBirthdayImg from "../../assets/kidsbirthimg.webp";
+import BabyWelcomeImg from "../../assets/WelcomBabyIMG.webp";
+import PremiumDecorImg from "../../assets/PremiumDecorIMG.webp";
 import BacheloretteImg from "../../assets/BacheloretteIMG.png";
-import HaldiMehandiImg from "../../assets/HaldiMehandiIMG.png";
-import FirstNightImg from "../../assets/FirstNightIMG.png";
+import HaldiMehandiImg from "../../assets/HaldiMehandiIMG.webp";
+import FirstNightImg from "../../assets/FirstNightIMG.webp";
 import AnniversaryImg from "../../assets/AnniversaryDecorIMG.png";
 import DecorSlider from "@/components/DecorSlider";
 import BabyShowerBannerIMG from "../../assets/BabyShowerBannerIMG.jpg";
@@ -54,10 +54,10 @@ import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
-import decorationwedding from "../../assets/decorationwedding.png"
-import decorationBridetobe from "../../assets/decorationBride-tobe.png"
-import decorationhaldiMhendi from "../../assets/decorationhaldi-Mhendi.png"
-import smallcardBackground from "../../assets/small-cardBackground.jpg";
+import decorationwedding from "../../assets/decorationwedding.webp"
+import decorationBridetobe from "../../assets/decorationBride-tobe.webp"
+import decorationhaldiMhendi from "../../assets/decorationhaldi-Mhendi.webp"
+
 import {
   birthdayData,
   haldiAndMehndiData,
