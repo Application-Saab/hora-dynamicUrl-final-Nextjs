@@ -1,3 +1,9 @@
+
+
+
+
+
+
 import React, { useState } from "react";
 import Head from "next/head";
 import { useParams } from "react-router-dom";
@@ -90,7 +96,7 @@ const largeCard = {
   image: decorationwedding,
   title: "Wedding",
   description: "DECORATIONS",
-  link: "balloon-decoration/wedding-decoration",
+  link: "balloon-decoration/Wedding",
   catValue: "Wedding",
 };
 
@@ -167,11 +173,11 @@ const Decoration = () => {
   const bannerImages = [Banner1, Banner2, Banner3];
 
   const categories = [
-    { name: "Happy Birthday", image: HappyBirthdayImg },
+    { name: "Birthday", image: HappyBirthdayImg },
     { name: "Baby Shower", image: BabyShowerImg },
     { name: "Kids Birthday", image: kidsBirthdayImg },
     { name: "Welcome Baby", image: BabyWelcomeImg },
-    { name: "premium Decoration", image: PremiumDecorImg },
+    { name: "premium Decor", image: PremiumDecorImg },
     { name: "Bachelorette", image: BacheloretteImg },
     { name: "Haldi & Mehandi", image: HaldiMehandiImg },
     { name: "First Night", image: FirstNightImg },
