@@ -12,33 +12,28 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
 
   const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
-  const handleClick = (card) => {
+ const handleClick = (card) => {
+  const matched = decCat.find(
+    (cat) => normalize(cat.catValue) === normalize(card.catValue)
+  );
 
-    const matched = decCat.find(
-      (cat) => normalize(cat.catValue) === normalize(card.catValue)
-    );
+  if (!matched) {
+    console.warn("No matching category in decCat for:", card.title);
+    return;
+  }
 
-    if (!matched) {
-      console.warn("No matching category in decCat for:", card.title);
-      return;
-    }
-
-    const eventData = {
-      title: card.title,
-      categoryName: matched.name || "N/A",
-      subCategory: matched.subCategory || "N/A",
-      catValue: matched.catValue || "N/A",
-      imgAlt: matched.imgAlt || "N/A",
-    };
-
-    handleItemClick(eventData);
-    openCatItems(matched);
-
-    // Optional navigation
-    if (card.link) {
-      router.push(`/${card.link}`);
-    }
+  const eventData = {
+    title: card.title,
+    categoryName: matched.name || "N/A",
+    subCategory: matched.subCategory || "N/A",
+    catValue: matched.catValue || "N/A",
+    imgAlt: matched.imgAlt || "N/A",
   };
+
+  handleItemClick(eventData);      // ✅ Push GTM event
+  openCatItems(matched);           // ✅ Correct dynamic routing
+};
+
 
   return (
     <div className="decor-grid-wrapper">

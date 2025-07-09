@@ -135,23 +135,21 @@ const stats = [
   },
 ];
 
-const Decoration = () => {
+const Decoration =({ city }) => {
   // const dispatch = useDispatch();
 
   const router = useRouter();
   // const navigate = useNavigate();
   const schemaOrg = getDecorationOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
-  let { city } = useParams();
+  // let { city } = useParams();
   const hasCityPageParam = city ? true : false;
 
-  const openCatItems = (item) => {
-    // dispatch(setState(item.subCategory, item.imgAlt));
-    if (hasCityPageParam) {
-      router.push(`/${city}/balloon-decoration/${item.catValue}`);
-    } else {
-      router.push(`/balloon-decoration/${item.catValue}`);
-    }
+ const openCatItems = (item) => {
+    const path = hasCityPageParam
+      ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
+      : `/balloon-decoration/${item.catValue}`;
+    router.push(path);
   };
 
   const openWahtsappRedirection = (catTitle) => {
