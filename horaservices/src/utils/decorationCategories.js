@@ -51,7 +51,7 @@ export const decCat = [
     id: "6",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Anniversary.webp",
-    name: "Anniversary Decor",
+    name: "Anniversary",
     subCategory: "Anniversary",
     catValue: "anniversary-decoration",
     imgAlt:

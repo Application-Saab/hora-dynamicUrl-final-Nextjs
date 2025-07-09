@@ -1,5 +1,5 @@
 export const decorationServices = [
-    { name: "Birthday Decoration" },
+    { name: "Birthday" },
     { name: "Baby Shower Decoration" },
     { name: "Baby Welcome Decoration" },
     { name: "First Night Decoration" },
@@ -12,7 +12,7 @@ export const decorationServices = [
     { name: "Proposal Decoration" },
     { name: "Bride-to-be Decoration" },
     { name: "Cabana Decoration" },
-    { name: "Haldi Decoration" },
+    { name: "Haldi Mehand" },
     { name: "Balloon Decoration" },
     { name: "Office Decoration" },
     { name: "Engagement Ring Platter" }

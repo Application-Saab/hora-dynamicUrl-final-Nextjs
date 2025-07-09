@@ -94,10 +94,10 @@ const largeCard = {
 const smallCards = [
   {
     image: "/decorationhaldi-Mhendi.png",
-    title: "Haldi-Mhendi",
+    title: "Haldi-Mehandi",
     link: "balloon-decoration/haldi-mehendi-decoration",
     categoryName: "Haldi Mhendi",
-    subCategory: "haldi",
+    subCategory: "Haldi-Mehandi",
     catValue: "haldi-mehendi-decoration",
     imgAlt: "Haldi Mehendi Decoration",
   },
@@ -105,7 +105,7 @@ const smallCards = [
     image: "/decorationBride-tobe.png",
     title: "Bride To-be",
     link: "balloon-decoration/bachelorette-decoration",
-    categoryName: "Bride To-be",
+    categoryName: "bachelorette",
     subCategory: "bachelorette",
     catValue: "bachelorette-decoration",
     imgAlt: "Bride to be Decoration",
@@ -136,13 +136,13 @@ const stats = [
 ];
 
 const Decoration =({ city }) => {
-  // const dispatch = useDispatch();
+ 
 
   const router = useRouter();
-  // const navigate = useNavigate();
+  
   const schemaOrg = getDecorationOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
-  // let { city } = useParams();
+
   const hasCityPageParam = city ? true : false;
 
  const openCatItems = (item) => {
@@ -162,13 +162,13 @@ const Decoration =({ city }) => {
   const bannerImages = [Banner1, Banner2, Banner3];
 
   const categories = [
-    { name: "Happy Birthday", image: HappyBirthdayImg },
+    { name: "Birthday", image: HappyBirthdayImg },
     { name: "Baby Shower", image: BabyShowerImg },
     { name: "Kids Birthday", image: kidsBirthdayImg },
     { name: "Welcome Baby", image: BabyWelcomeImg },
-    { name: "premium Decoration", image: PremiumDecorImg },
+    { name: "premium Decor", image: PremiumDecorImg },
     { name: "Bachelorette", image: BacheloretteImg },
-    { name: "Haldi & Mehandi", image: HaldiMehandiImg },
+    { name: "Haldi Mehandi", image: HaldiMehandiImg },
     { name: "First Night", image: FirstNightImg },
     { name: "Anniversary", image: AnniversaryImg },
   ];
@@ -186,7 +186,7 @@ const Decoration =({ city }) => {
 
       <div className="CategoryGrid-outer">
         <div className="page-width">
-          <CategoryGrid cardsData={cardsData} />
+          <CategoryGrid cardsData={cardsData} city={city} />
         </div>
       </div>
 

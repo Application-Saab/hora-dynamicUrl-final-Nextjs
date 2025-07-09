@@ -6,6 +6,7 @@ import { decorationServices } from "@/utils/DecorationCategory";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
+import { decCat } from "@/utils/decorationCategories"
 import cityData from "@/utils/cityData";
 import { useRouter } from "next/router";
 import React from "react";
@@ -16,10 +17,11 @@ function DecorationCityPage() {
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
   }
+  
 
   const cityDecorationFAQ = decorationCityFAQData(city);
   const cityDescription = decorationCityDescription(city);
-  const decorationCategory = decorationServices.map((item) => ({
+  const decorationCategory = decCat.map((item) => ({
     name: `${item.name} in ${city}`,
   }));
   const localities =

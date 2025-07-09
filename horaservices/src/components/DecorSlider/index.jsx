@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import "./DecorSlider.css";
 import { decCat } from "@/utils/decorationCategories";
+
 const handleViewMore = (category) => {
     const categoryItem = decCat.find(cat => cat.subCategory === category);
     console.log('Category Item:', categoryItem);
@@ -54,7 +55,7 @@ const DecorSlider = ({
       <div className="premium-slide-decor-header">
         <h2>{title}</h2>
         {/* <Link href={viewAllLink}>View All</Link> */}
-        <Link href={viewAllLink} onClick={() => handleViewMore(title)}>View All</Link>
+        <Link href={viewAllLink}   onClick={() => handleViewMore(title)}>View All</Link>
 
       </div>
 
