@@ -10,9 +10,10 @@ export const useDecorationEvents = (
   const router = useRouter();
 
   const formatPath = (path) => {
-    const cityPath = city ? `/${city.toLowerCase()}` : "";
-    const localityPath = locality ? `/${locality.toLowerCase()}` : "";
-    return `${cityPath}${localityPath}${path}`;
+    let basePath = "";
+    if (city) basePath += `/${city.toLowerCase()}`;
+    if (locality) basePath += `/${locality.toLowerCase()}`;
+    return `${basePath}${path}`;
   };
 
   const openCatItems = (item) => {
@@ -29,6 +30,7 @@ export const useDecorationEvents = (
       const eventName = hasCityPageParam
         ? "title_and_viewmore_decoration_citypage_clicked"
         : "title_and_viewmore_decoration_page_clicked";
+
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: eventName,
@@ -39,6 +41,7 @@ export const useDecorationEvents = (
         city: city || "default",
         locality: locality || "default",
       });
+
       openCatItems(categoryItem);
     }
   };
@@ -67,13 +70,20 @@ export const useDecorationEvents = (
       event: "decoration_item_clicked",
       event_category: "SliderSection",
       event_label: item.title,
-      categoryName: item.categoryName,
-      subCategory: item.subCategory,
-      catValue: item.catValue,
-      imgAlt: item.imgAlt,
+      categoryName: item.categoryName || item.title,
+      subCategory: item.subCategory || "unknown",
+      catValue: item.catValue || "unknown",
+      imgAlt: item.imgAlt || "",
       city: city || "default",
       locality: locality || "default",
     });
+
+    if (item?.link) {
+      const path = formatPath(item.link);
+      router.push(path);
+    } else if (item?.catValue) {
+      openCatItems(item);
+    }
   };
 
   return {

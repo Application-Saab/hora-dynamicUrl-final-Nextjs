@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import "./CategoryTabs.css";
-import { useDecorationEvents } from "@/utils/decorationEvents"; // correct path
+import { useDecorationEvents } from "@/utils/decorationEvents";
 
-const CategoryTabs = ({ data, onSelect, city, hasCityPageParam, decCat }) => {
-  const { handleItemClick } = useDecorationEvents(
+const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality }) => {
+  const { handleItemClick, openCatItems } = useDecorationEvents(
     city,
     hasCityPageParam,
-    decCat
+    decCat,
+    locality
   );
 
   const handleClick = (cat) => {
@@ -20,55 +21,29 @@ const CategoryTabs = ({ data, onSelect, city, hasCityPageParam, decCat }) => {
       imgAlt: cat.imgAlt,
     });
 
-    onSelect(cat);
+    openCatItems(cat);
   };
 
   return (
-    // <div className="category-tabs">
-    //   {data.map((cat) => (
-    //     <button
-    //       key={cat.id}
-    //       className="category-tabs__button"
-    //       onClick={() => handleClick(cat)}
-    //     >
-    //       {cat.image ? (
-    //         <Image
-    //           src={cat.image}
-    //           alt={cat.imgAlt || cat.name}
-    //           width={50}
-    //           height={50}
-    //           className="category-tabs__icon"
-    //         />
-    //       ) : (
-    //         <div className="category-tabs__no-image">No Image</div>
-    //       )}
-    //       <span className="category-tabs__label">{cat.name}</span>
-    //     </button>
-    //   ))}
-    // </div>
-<div className="category-tabs">
-  {data
-    .filter((cat) => cat.image && cat.image.trim() !== "")
-    .slice(0, 7)
-    .map((cat) => (
-      <button
-        key={cat.id}
-        className="category-tabs__button"
-        onClick={() => handleClick(cat)}
-      >
-        <div
-          className="category-tabs__circle"
-          style={{ backgroundImage: `url(${cat.image})` }}
-        >
-          <span className="category-tabs__circle-label">{cat.name}</span>
-        </div>
-      </button>
-    ))}
-</div>
-
-
-
-
+    <div className="category-tabs">
+      {data
+        .filter((cat) => cat.image && cat.image.trim() !== "")
+        .slice(0, 7)
+        .map((cat) => (
+          <button
+            key={cat.id}
+            className="category-tabs__button"
+            onClick={() => handleClick(cat)}
+          >
+            <div
+              className="category-tabs__circle"
+              style={{ backgroundImage: `url(${cat.image})` }}
+            >
+              <span className="category-tabs__circle-label">{cat.name}</span>
+            </div>
+          </button>
+        ))}
+    </div>
   );
 };
 

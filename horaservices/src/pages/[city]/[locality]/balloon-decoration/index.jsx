@@ -2,11 +2,11 @@ import SectionDescription from "@/components/Description";
 import FAQAccordion from "@/components/FAQs";
 import LocalitiesSection from "@/components/LocalitiesSection";
 import Decoration from "@/pages/balloon-decoration";
-import { decorationServices } from "@/utils/DecorationCategory";
 import { decorationCityFAQData } from "@/utils//DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils//DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
 import { useRouter } from "next/router";
+import { decCat } from "@/utils/decorationCategories";
 
 function DecorationLocalityPage() {
   const router = useRouter();
@@ -17,7 +17,7 @@ function DecorationLocalityPage() {
 
   const cityDecorationFAQ = decorationCityFAQData(city);
   const cityDescription = decorationCityDescription(city);
-  const decorationCategory = decorationServices.map((item) => ({
+  const decorationCategory = decCat.map((item) => ({
     name: `${item.name} in ${city}`,
   }));
 

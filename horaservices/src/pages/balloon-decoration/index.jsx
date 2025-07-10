@@ -78,8 +78,9 @@ const cardsData = [
   {
     image: Anniversary,
     title: "Anniversary",
-    link: "balloon-decoration/anniversary",
+    link: "balloon-decoration/anniversary-decoration",
     sizeClass: "category-grid__card--small",
+      catValue: "Anniversary",
   },
 ];
 
@@ -190,7 +191,7 @@ const Decoration =({ city , locality}) => {
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs">
-        <CategoryTabs data={decCat} onSelect={openCatItems} city={city} locality={locality}/>
+        <CategoryTabs data={decCat} onSelect={openCatItems} city={city}  hasCityPageParam={hasCityPageParam} locality={locality}/>
       </div>
 
       <div className="CategoryGrid-outer">
@@ -210,14 +211,17 @@ const Decoration =({ city , locality}) => {
 </div>
 
 
-      <DecorGrid
-        largeCard={largeCard}
-        smallCards={smallCards}
-        city={city}
-        hasCityPageParam={hasCityPageParam}
-        decCat={decCat}
-        locality={locality}
-      />
+ 
+    <DecorGrid
+      largeCard={largeCard}
+      smallCards={smallCards}
+      city={city}
+      hasCityPageParam={hasCityPageParam}
+      decCat={decCat}
+      locality={locality}
+    />
+
+
 
       <section className="why-people-love-us">
         <div className="page-width">
@@ -251,12 +255,7 @@ const Decoration =({ city , locality}) => {
         />
       </section>
 
-      {/* <SmallCardGrid
-        city={city}
-        hasCityPageParam={hasCityPageParam}
-        decCat={decCat}
-        categories={categories}
-      /> */}
+  
      <div ref={smallCardRef}>
   <SmallCardGrid
     city={city}
@@ -283,7 +282,6 @@ const Decoration =({ city , locality}) => {
         viewAllLink="/balloon-decoration/premium-decoration"
         data={PremiumData}
         showDiscount={true}
-        discountAmount={972}
         imageSize={{ width: 120, height: 120 }}
         city={city}                         
          hasCityPageParam={hasCityPageParam}

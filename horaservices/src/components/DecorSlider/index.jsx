@@ -1,11 +1,12 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import "./DecorSlider.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 
 const getDiscountedDifference = (price) => {
-  price = parseFloat(price.replace(/[^0-9.-]+/g, ''));
+  price = parseFloat(price.replace(/[^0-9.-]+/g, ""));
   if (isNaN(price) || price < 0) return 0;
 
   let discount;
@@ -23,23 +24,24 @@ const DecorSlider = ({
   data,
   showDiscount = false,
   imageSize = { width: 120, height: 120 },
-  city,
-  hasCityPageParam,
-  decCat,
+  city = "",
+  hasCityPageParam = false,
+  decCat = [],
+  locality = "",
 }) => {
   const { handleSliderViewMore, handleItemClick } = useDecorationEvents(
     city,
     hasCityPageParam,
-    decCat
+    decCat,
+    locality
   );
 
-  // Helper to build city-aware link
   const buildCityLink = (link) => {
     if (!link) return "#";
-    if (hasCityPageParam && city) {
-      return `/${city.toLowerCase()}${link.startsWith("/") ? link : `/${link}`}`;
-    }
-    return link;
+    const base = link.startsWith("/") ? link : `/${link}`;
+    if (city && locality) return `/${city.toLowerCase()}/${locality.toLowerCase()}${base}`;
+    if (city && hasCityPageParam) return `/${city.toLowerCase()}${base}`;
+    return base;
   };
 
   return (

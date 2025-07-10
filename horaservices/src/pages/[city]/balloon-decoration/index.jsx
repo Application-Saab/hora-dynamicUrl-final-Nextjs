@@ -2,7 +2,7 @@ import SectionDescription from "@/components/Description";
 import FAQAccordion from "@/components/FAQs";
 import LocalitiesSection from "@/components/LocalitiesSection";
 import Decoration from "@/pages/balloon-decoration";
-import { decorationServices } from "@/utils/DecorationCategory";
+// import { decorationServices } from "@/utils/DecorationCategory";
 import { decorationCityFAQData } from "@/utils/DecorationCityFAQ";
 import { decorationCityDescription } from "@/utils/DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
@@ -55,11 +55,11 @@ function DecorationCityPage() {
         <FAQAccordion faqData={cityDecorationFAQ} />
       </div>
       <SectionDescription paragraphs={cityDescription} />
-      {/* <LocalitiesSection
+      <LocalitiesSection
         title={`Explore Other Decoration Category In ${city}`}
         localities={decorationCategory}
         handleClick={decorationCategoryClick}
-      /> */}
+      />
       <div className="my-4 container">
         <DecorationSEOKeywords city={city} />
       </div>
