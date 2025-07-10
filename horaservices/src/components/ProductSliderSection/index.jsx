@@ -1,112 +1,107 @@
-import Image from "next/image";
-import logo from '../../assets/new_logo_light.png'
-import Link from "next/link";
-import "./ProductSliderSection.css"
-const getDiscountedPrice = (price) => {
-  // Trim and remove currency symbol
-  price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
+"use client";
 
-  // Check if the price is a valid number
-  if (isNaN(price) || price < 0) {
-    return { error: "Please enter a valid price." };
-  }
+import Image from "next/image";
+import Link from "next/link";
+import logo from "../../assets/new_logo_light.png";
+import "./ProductSliderSection.css";
+import { useDecorationEvents } from "@/utils/decorationEvents";
+import { decCat } from "@/utils/decorationCategories";
+
+const getDiscountedPrice = (price) => {
+  price = parseFloat(price.replace(/[^0-9.-]+/g, ''));
+  if (isNaN(price) || price < 0) return 0;
 
   let discount;
+  if (price < 3000) discount = 20;
+  else if (price <= 5000) discount = 27;
+  else discount = 35;
 
-  // Determine the discount percentage based on the item price
-  if (price < 3000) {
-    discount = 20; // 20% discount
-  } else if (price >= 3000 && price <= 5000) {
-    discount = 27; // 27% discount
-  } else {
-    discount = 35; // 35% discount for prices above 5000
-  }
-
-  const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
-  const discountDifference = price - discountedPrice; // Difference in original and discounted price
-
-  return Math.floor(discountedPrice); // Return both discount percentage and discounted price
+  return Math.floor(price * (1 + discount / 100));
 };
-
 
 const getDiscountedDifference = (price) => {
-  // Trim and remove currency symbol
-  price = parseFloat(price.replace(/[^0-9.-]+/g, '')); // Removes non-numeric characters
-
-  // Check if the price is a valid number
-  if (isNaN(price) || price < 0) {
-    return { error: "Please enter a valid price." };
-  }
+  price = parseFloat(price.replace(/[^0-9.-]+/g, ''));
+  if (isNaN(price) || price < 0) return 0;
 
   let discount;
+  if (price < 3000) discount = 20;
+  else if (price <= 5000) discount = 27;
+  else discount = 35;
 
-  // Determine the discount percentage based on the item price
-  if (price < 3000) {
-    discount = 20; // 20% discount
-  } else if (price >= 3000 && price <= 5000) {
-    discount = 27; // 27% discount
-  } else {
-    discount = 35; // 35% discount for prices above 5000
-  }
-  const discountedPrice = Math.floor(price * (1 - discount / 100)); // Calculate the discounted price and round down
-  const discountDifference = Math.floor(price - discountedPrice); // Difference in original and discounted price, rounded down
-
-  return discountDifference; // Return both discount percentage and discounted price
+  const discountedPrice = Math.floor(price * (1 - discount / 100));
+  return Math.floor(price - discountedPrice);
 };
 
+const ProductSliderSection = ({ title, data, viewLink, city, hasCityPageParam }) => {
+  const { handleSliderViewMore, handleItemClick } = useDecorationEvents(city, hasCityPageParam, decCat);
 
+  const buildCityLink = (link) => {
+    if (!link) return "#";
+    if (hasCityPageParam && city) {
+      return `/${city.toLowerCase()}${link.startsWith("/") ? link : `/${link}`}`;
+    }
+    return link;
+  };
 
+  return (
+    <div className="product-section-container">
+      {/* === Header === */}
+      <div className="product-section-header">
+        <h2 onClick={() => handleSliderViewMore(viewLink, title)}>{title}</h2>
+        <Link href={buildCityLink(viewLink)}>View All</Link>
+      </div>
 
-const ProductSliderSection = ({ title, data, handleViewMore, viewLink }) => (
-  <div className="product-section-container">
-    {/* === Header === */}
-    <div className="product-section-header">
-      <h2 onClick={() => handleViewMore(viewLink)}>{title}</h2>
-      <Link href={viewLink}>View All</Link>
-    </div>
-
-    {/* === Cards === */}
-    <div className="product-section-grid">
-      {data.map((item, index) =>
-        item.isViewMore ? (
-          <a key={index} className="product-section-view-more-card"></a>
-        ) : (
-          <a key={index} className="product-section-card" href={item.link} onClick={() => handleViewMore(viewLink)}>
-            <div className="product-section-image-wrapper">
-              <Image
-                src={item.Image}
-                alt={item.title}
-                className="product-section-image"
-
-                layout="responsive" // ✅ Responsive layout
-                width={700}
-                height={475}
-              />
-
-              <div className="product-section-watermark">
-                <Image src={logo} alt="hora watermark" width={70} height={80} className="product-section-watermark-img" />
+      {/* === Cards === */}
+      <div className="product-section-grid">
+        {data.map((item, index) =>
+          item.isViewMore ? (
+            <a key={index} className="product-section-view-more-card"></a>
+          ) : (
+            <a
+              key={index}
+              className="product-section-card"
+              href={buildCityLink(item.link)}
+              onClick={() => handleItemClick(item)}
+            >
+              <div className="product-section-image-wrapper">
+                <Image
+                  src={item.Image}
+                  alt={item.title}
+                  className="product-section-image"
+                  layout="responsive"
+                  width={700}
+                  height={475}
+                />
+                <div className="product-section-watermark">
+                  <Image
+                    src={logo}
+                    alt="hora watermark"
+                    width={70}
+                    height={80}
+                    className="product-section-watermark-img"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="product-section-discount-badge">
-              ₹{getDiscountedDifference(item.price)} off
-            </div>
-
-            <div className="product-section-details">
-              <h3>{item.title}</h3>
-              <div className="product-section-price">
-                <p className="product-section-price-current">{item.price}</p>
-                <p className="product-section-price-original">₹{getDiscountedPrice(item.price)}</p>
+              <div className="product-section-discount-badge">
+                ₹{getDiscountedDifference(item.price)} off
               </div>
-            </div>
-          </a>
-        )
-      )}
+
+              <div className="product-section-details">
+                <h3>{item.title}</h3>
+                <div className="product-section-price">
+                  <p className="product-section-price-current">{item.price}</p>
+                  <p className="product-section-price-original">
+                    ₹{getDiscountedPrice(item.price)}
+                  </p>
+                </div>
+              </div>
+            </a>
+          )
+        )}
+      </div>
     </div>
-  </div>
-);
-
-
-
+  );
+};
 
 export default ProductSliderSection;

@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import "./DecorGrid.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 
-const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) => {
+const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat ,locality}) => {
   const router = useRouter();
-  const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat);
+  const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat ,locality);
 
 
   const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();

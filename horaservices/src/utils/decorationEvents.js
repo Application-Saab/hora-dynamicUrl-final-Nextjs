@@ -1,66 +1,65 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-export const useDecorationEvents = (city, hasCityPageParam, decCat) => {
+export const useDecorationEvents = (
+  city,
+  hasCityPageParam = false,
+  decCat = [],
+  locality = ""
+) => {
   const router = useRouter();
 
+  const formatPath = (path) => {
+    const cityPath = city ? `/${city.toLowerCase()}` : "";
+    const localityPath = locality ? `/${locality.toLowerCase()}` : "";
+    return `${cityPath}${localityPath}${path}`;
+  };
+
   const openCatItems = (item) => {
-    console.log("Opening Category Items:", item);
-    console.log(item.catValue, "catValue2");
-    if (hasCityPageParam) {
-      router.push(`/${city}/balloon-decoration/${item.catValue}`);
-    } else {
-      router.push(`/balloon-decoration/${item.catValue}`);
+    if (!item?.catValue) return;
+    const path = formatPath(`/balloon-decoration/${item.catValue}`);
+    router.push(path);
+  };
+
+  const handleViewMore = (categoryTitle) => {
+    const categoryItem = decCat.find(
+      (cat) => cat.subCategory === categoryTitle || cat.name === categoryTitle
+    );
+    if (categoryItem) {
+      const eventName = hasCityPageParam
+        ? "title_and_viewmore_decoration_citypage_clicked"
+        : "title_and_viewmore_decoration_page_clicked";
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: eventName,
+        categoryName: categoryItem.name,
+        subCategory: categoryItem.subCategory,
+        catValue: categoryItem.catValue,
+        imgAlt: categoryItem.imgAlt,
+        city: city || "default",
+        locality: locality || "default",
+      });
+      openCatItems(categoryItem);
     }
   };
 
-  
-const handleViewMore = (category) => {
-  const categoryItem = decCat.find((cat) => cat.subCategory === category);
-
-  if (categoryItem) {
-    const eventName = hasCityPageParam
-      ? "title_and_viewmore_decoration_citypage_clicked"
-      : "title_and_viewmore_decoration_page_clicked";
+  const handleSliderViewMore = (link, title) => {
+    const normalizedLink = link.startsWith("/") ? link : `/${link}`;
+    const path = formatPath(normalizedLink);
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: eventName,
-      categoryName: categoryItem.name,
-      subCategory: categoryItem.subCategory,
-      catValue: categoryItem.catValue,
-      imgAlt: categoryItem.imgAlt,
+      event: hasCityPageParam
+        ? "slider_view_all_citypage_clicked"
+        : "slider_view_all_clicked",
+      viewAllTitle: title,
+      viewAllLink: path,
+      city: city || "default",
+      locality: locality || "default",
     });
 
-    openCatItems(categoryItem);
-  } else {
-    console.log("No matching category item found.");
-  }
-};
-
-
-const handleSliderViewMore = (link, title) => {
-  const normalizedLink = link.startsWith("/") ? link : `/${link}`;
-  const normalizedCity = city?.toLowerCase();
-  const isCityPage = hasCityPageParam && normalizedCity;
-
-  const path = isCityPage
-    ? `/${normalizedCity}${normalizedLink}` // ✅ /delhi/balloon-decoration/...
-    : normalizedLink;                      // ✅ /balloon-decoration/...
-
-  // ✅ GTM Tracking
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: isCityPage
-      ? "slider_view_all_citypage_clicked"
-      : "slider_view_all_clicked",
-    viewAllTitle: title,
-    viewAllLink: path,
-  });
-
-  router.push(path); // ✅ Navigate
-};
-
+    router.push(path);
+  };
 
   const handleItemClick = (item) => {
     window.dataLayer = window.dataLayer || [];
@@ -72,9 +71,9 @@ const handleSliderViewMore = (link, title) => {
       subCategory: item.subCategory,
       catValue: item.catValue,
       imgAlt: item.imgAlt,
+      city: city || "default",
+      locality: locality || "default",
     });
-
-    console.log("Last Event:", window.dataLayer[window.dataLayer.length - 1]);
   };
 
   return {

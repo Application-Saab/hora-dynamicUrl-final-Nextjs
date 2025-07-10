@@ -10,7 +10,7 @@ import { decCat } from "@/utils/decorationCategories"
 import cityData from "@/utils/cityData";
 import { useRouter } from "next/router";
 import React from "react";
-
+import "../../../css/decoration.css"
 function DecorationCityPage() {
   const router = useRouter();
   let { city } = router.query;
@@ -55,11 +55,11 @@ function DecorationCityPage() {
         <FAQAccordion faqData={cityDecorationFAQ} />
       </div>
       <SectionDescription paragraphs={cityDescription} />
-      <LocalitiesSection
+      {/* <LocalitiesSection
         title={`Explore Other Decoration Category In ${city}`}
         localities={decorationCategory}
         handleClick={decorationCategoryClick}
-      />
+      /> */}
       <div className="my-4 container">
         <DecorationSEOKeywords city={city} />
       </div>

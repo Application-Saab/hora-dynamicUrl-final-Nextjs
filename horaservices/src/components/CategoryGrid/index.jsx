@@ -5,9 +5,10 @@ import "./CategoryGrid.css";
 import { useDecorationEvents } from "../../utils/decorationEvents";
 import { decCat } from "@/utils/decorationCategories";
 
-const CategoryGrid = ({ cardsData, city }) => {
+const CategoryGrid = ({ cardsData, city ,locality}) => {
   const hasCityPageParam = !!city;
-  const { handleSliderViewMore } = useDecorationEvents(city, hasCityPageParam, decCat);
+  const { handleSliderViewMore } = useDecorationEvents(city, hasCityPageParam, decCat,locality);
+
 
   return (
     <div className="category-grid">

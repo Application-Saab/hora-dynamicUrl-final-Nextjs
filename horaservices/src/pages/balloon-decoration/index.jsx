@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef} from "react";
 import Head from "next/head";
 import { useParams } from "react-router-dom";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
@@ -135,8 +135,10 @@ const stats = [
   },
 ];
 
-const Decoration =({ city }) => {
+const Decoration =({ city , locality}) => {
  
+ const [showMoreCards, setShowMoreCards] = useState(false);
+  const smallCardRef = useRef(null); // 👈 ref for SmallCardGrid
 
   const router = useRouter();
   
@@ -145,6 +147,13 @@ const Decoration =({ city }) => {
 
   const hasCityPageParam = city ? true : false;
 
+ 
+  const handleSeeMoreClick = () => {
+    setShowMoreCards(true); // optional if hiding initially
+    setTimeout(() => {
+      smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100); // small delay ensures it's rendered first
+  };
  const openCatItems = (item) => {
     const path = hasCityPageParam
       ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
@@ -181,24 +190,25 @@ const Decoration =({ city }) => {
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs">
-        <CategoryTabs data={decCat} onSelect={openCatItems} />
+        <CategoryTabs data={decCat} onSelect={openCatItems} city={city} locality={locality}/>
       </div>
 
       <div className="CategoryGrid-outer">
         <div className="page-width">
-          <CategoryGrid cardsData={cardsData} city={city} />
+          <CategoryGrid cardsData={cardsData} city={city} locality={locality} />
         </div>
       </div>
 
       {/* SEE MORE BUTTON */}
-      <div className="see-more-container">
-        <button className="see-more-btn" onClick={openWahtsappRedirection}>
-          <span>SEE MORE</span>
-          <span className="arrow-icondecoration">
-            <Image src={arrowIcon} alt="Arrow Down" width={20} height={20} />
-          </span>
-        </button>
-      </div>
+    <div className="see-more-container">
+  <button className="see-more-btn" onClick={handleSeeMoreClick}>
+    <span>SEE MORE</span>
+    <span className="arrow-icondecoration">
+      <Image src={arrowIcon} alt="Arrow Down" width={20} height={20} />
+    </span>
+  </button>
+</div>
+
 
       <DecorGrid
         largeCard={largeCard}
@@ -206,6 +216,7 @@ const Decoration =({ city }) => {
         city={city}
         hasCityPageParam={hasCityPageParam}
         decCat={decCat}
+        locality={locality}
       />
 
       <section className="why-people-love-us">
@@ -240,12 +251,22 @@ const Decoration =({ city }) => {
         />
       </section>
 
-      <SmallCardGrid
+      {/* <SmallCardGrid
         city={city}
         hasCityPageParam={hasCityPageParam}
         decCat={decCat}
         categories={categories}
-      />
+      /> */}
+     <div ref={smallCardRef}>
+  <SmallCardGrid
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    decCat={decCat}
+    categories={categories}
+    locality={locality}
+  />
+</div>
+
       <section className="why-choose-hora">
         <Image
           src={WhyHoraIMG}
@@ -264,6 +285,10 @@ const Decoration =({ city }) => {
         showDiscount={true}
         discountAmount={972}
         imageSize={{ width: 120, height: 120 }}
+        city={city}                         
+         hasCityPageParam={hasCityPageParam}
+         decCat={decCat}  
+         locality={locality}
       />
 
       <section className="decorationBanner">
@@ -277,11 +302,15 @@ const Decoration =({ city }) => {
         />
       </section>
 
-      <ProductSliderSection
-        title="Birthday Decoration"
-        data={birthdayData}
-        viewLink="/balloon-decoration/birthday-decoration"
-      />
+     <ProductSliderSection
+  title="Birthday Decoration"
+  data={birthdayData}
+  viewLink="/balloon-decoration/birthday-decoration"
+  city={city}
+  hasCityPageParam={hasCityPageParam}
+  locality={locality}
+/>
+
 
       <div className="decorationBanner-outer">
         <div className="collage-heading">
@@ -308,6 +337,9 @@ const Decoration =({ city }) => {
         showDiscount={true}
         // discountAmount={972}
         imageSize={{ width: 120, height: 120 }}
+        city={city}
+        locality={locality}
+        hasCityPageParam={hasCityPageParam}
       />
 
       <section className="BabyShowerBanner">
@@ -325,6 +357,7 @@ const Decoration =({ city }) => {
         title="Babyshower Decoration"
         data={BabyShowerData}
         viewLink="/balloon-decoration/baby-shower-decoration"
+        locality={locality}
       />
 
       <section className="BabyShowerBanner">
