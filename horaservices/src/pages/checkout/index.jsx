@@ -28,6 +28,7 @@ import InfoIcon from "../../assets/info.png";
 import Loader from "../../components/Loader";
 import { pincodes } from "../../utils/pincodes.js";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
+import BackgroundBase from "../../assets/BackgroundBase.jpg";
 import BackgroundDetails from "../../assets/BackgroundDetails.svg";
 import productsData from '../../utils/photoGraphyImages.js';
 import CommentIcon from "../../assets/commenticon.png";
@@ -35,8 +36,10 @@ import locationIcon from "../../assets/locationIcon.png";
 import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";
 import cancellation from "../../assets/Cancellation.svg"
-import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
+import BackgorundImgDetails from "../../assets/DecorBackgorundImgDetails.png"
+import Infoicon from "../../assets/info-icon.png"
 import "./checkout.css"
+
 const Checkout = () => {
   const router = useRouter();
   const {
@@ -186,9 +189,8 @@ const Checkout = () => {
       const endTimeFormatted =
         hour + interval < 10
           ? `0${hour + interval}:00 AM`
-          : `${(hour + interval) % 12 || 12}:00 ${
-              hour + interval < 12 ? "AM" : "PM"
-            }`;
+          : `${(hour + interval) % 12 || 12}:00 ${hour + interval < 12 ? "AM" : "PM"
+          }`;
       timeSlots.push(`${startTimeFormatted} - ${endTimeFormatted}`);
     }
 
@@ -415,7 +417,7 @@ const Checkout = () => {
 
   if (!isClient) return null;
 
-    return (
+  return (
     <div className="App">
 
       {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
@@ -431,17 +433,21 @@ const Checkout = () => {
 
         }} >
 
+
           {/* Transparent Foreground Form Layer */}
           <div className="booking-form with-bg-shapes" >
             <div className="background-shape top-left" />
             <div className="background-shape bottom-right" />
 
             <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
-  <div className="photographer-note">
-The decorator requires approximately 40-90 minutes to fulfill the Services
-  
-  {/* Need more info ? chat on WhatsApp now! */}
-</div>
+            <div className="photographer-note">
+              <Image
+                src={Infoicon}
+                alt="info icon"
+                className="info-icon"
+              />
+              The decorator requires approximately 40–90 minutes to fulfill the service.
+            </div>
             <div className="form-row">
               <div className="form-half large-input">
                 <label className="form-label">Booking Date</label>
@@ -478,12 +484,12 @@ The decorator requires approximately 40-90 minutes to fulfill the Services
               </p>
             )}
 
-       <div className="support-box">
-  <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
-  <button className="support-button" onClick={() => window.open("https://wa.me/917338584828", "_blank")}>
-    Contact Support
-  </button>
-</div>
+            <div className="support-box">
+              <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
+              <button className="support-button" onClick={contactUsRedirection}>
+                Contact Support
+              </button>
+            </div>
 
 
 
@@ -564,73 +570,73 @@ The decorator requires approximately 40-90 minutes to fulfill the Services
         <div className='rightsecdecinner photography'>
           <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className=''>
-<Image
-  className="checkoutRightImg"
-  src={
-    product?.featured_image
-      ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
-      : "/default-image.webp"
-  }
-  alt="image"
-  width={300}
-  height={300}
-/>
+            <Image
+              className="checkoutRightImg"
+              src={
+                product?.featured_image
+                  ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
+                  : "/default-image.webp"
+              }
+              alt="image"
+              width={300}
+              height={300}
+            />
 
 
             <div >
               {/* <label>Product Name :</label> */}
-              <p className='productTitle'>{product?.name|| "N/A"}</p>
+              <p className='productTitle'>{product?.name || "N/A"}</p>
             </div>
-            {/* <div className='prod-detailsp'>
-              {productImage && (
-                <div className='detail-item'>
-                  <Image src={productImage} alt={product.name} className="detailimage" />
-                </div>
-              )}
-            </div> */}
 
             <div className='prod-details'>
-         
+
               <div className='detailitem'>
                 <label>Product Amount:</label>
                 <p>₹{product?.price}</p>
               </div>
+              <div className='detailitem'>
+                <label >Advance Amount:</label>
+                {/* style={{ color: "rgb(157, 74, 147)" }} */}
+                <p >₹ {Math.round(totalAmount * 0.4)}</p>
+              </div>
               <div className='addon-prices'>
 
-                        <div >
-                         {selectedAddOnProduct.length > 0 && (
-  <>
-    <label>Add-Ons :</label>
-    <ul className="addon-list">
-      {selectedAddOnProduct.map((item, index) => (
-        <li key={index} className="addon-item">
-          <span className="addon-title">{index + 1}. {item.title}</span>
-          <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
-        </li>
-      ))}
-    </ul>
-  </>
-)}
+                <div >
+                  {selectedAddOnProduct.length > 0 && (
+                    <>
+                      <label>Add-Ons :</label>
+                      <ul className="addon-list">
+                        {selectedAddOnProduct.map((item, index) => (
+                          <li key={index} className="addon-item">
+                            <span className="addon-title">{index + 1}. {item.title}</span>
+                            <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
 
-                        </div>
-                      </div>
-                     
-              <div className='detailitem'>
-                <label style={{ color: "rgb(157, 74, 147)"}}>Total Amount:</label>
-                <p style={{ color: "rgb(157, 74, 147)"}}>₹{totalAmount}</p>
+                </div>
               </div>
-               {/* <div className='detailitem'>
-                <label style={{ color: "rgb(157, 74, 147)"}}>Advance Amount:</label>
-                <p style={{ color: "rgb(157, 74, 147)"}}>₹ {Math.round(totalAmount * 0.35)}</p>
-              </div> */}
-<div className='detailitem'>
-  <label style={{ color: "rgb(157, 74, 147)" }}>Advance Amount:</label>
-  <p style={{ color: "rgb(157, 74, 147)" }}>₹ {Math.round(totalAmount * 0.4)}</p>
-</div>
+
+              <div className='detailitem'>
+                <label style={{ color: "rgb(157, 74, 147)" }}>Total Amount:</label>
+                <p style={{ color: "rgb(157, 74, 147)" }}>₹{totalAmount}</p>
+              </div>
+
+              <div className="payment-note">
+                <Image src={Infoicon} alt="info icon" className="info-icon" />
+                <div className="note-text">
+                  Balance payment is to be paid <br />
+                  to executor after order completion.
+                </div>
+              </div>
+
+
             </div>
           </div>
         </div>
-       
+
         <div className="needmore">
           <div
             style={{
@@ -677,18 +683,18 @@ The decorator requires approximately 40-90 minutes to fulfill the Services
         </div>
 
       </div>
-    
-<div className="confirmbutton-wrapper">
-  <button
-    className="confirmbutton"
-    onClick={onContinueClick}
-    type="button"
-  >
-    Confirm Order
-  </button>
-</div>
 
+      <div className="confirmbutton-wrapper">
+        <button
+          className="confirmbutton"
+          onClick={onContinueClick}
+          type="button"
+        >
+          Confirm Order
+        </button>
       </div>
+
+    </div>
   );
 };
 
