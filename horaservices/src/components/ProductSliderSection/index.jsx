@@ -32,15 +32,20 @@ const getDiscountedDifference = (price) => {
   return Math.floor(price - discountedPrice);
 };
 
-const ProductSliderSection = ({ title, data, viewLink, city, hasCityPageParam }) => {
-  const { handleSliderViewMore, handleItemClick } = useDecorationEvents(city, hasCityPageParam, decCat);
+const ProductSliderSection = ({ title, data, viewLink, city, hasCityPageParam, locality }) => {
+  const { handleSliderViewMore, handleItemClick } = useDecorationEvents(
+    city,
+    hasCityPageParam,
+    decCat,
+    locality
+  );
 
   const buildCityLink = (link) => {
     if (!link) return "#";
-    if (hasCityPageParam && city) {
-      return `/${city.toLowerCase()}${link.startsWith("/") ? link : `/${link}`}`;
-    }
-    return link;
+    const base = link.startsWith("/") ? link : `/${link}`;
+    if (city && locality) return `/${city.toLowerCase()}/${locality.toLowerCase()}${base}`;
+    if (city && hasCityPageParam) return `/${city.toLowerCase()}${base}`;
+    return base;
   };
 
   return (

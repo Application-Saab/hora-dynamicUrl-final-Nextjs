@@ -624,19 +624,20 @@ const Checkout = () => {
                 <p style={{ color: "rgb(157, 74, 147)" }}>₹{totalAmount}</p>
               </div>
 
-              <div className="payment-note">
+              
+
+
+            </div>
+          
+          </div>
+        </div>
+  <div className="payment-note">
                 <Image src={Infoicon} alt="info icon" className="info-icon" />
                 <div className="note-text">
                   Balance payment is to be paid <br />
                   to executor after order completion.
                 </div>
               </div>
-
-
-            </div>
-          </div>
-        </div>
-
         <div className="needmore">
           <div
             style={{
