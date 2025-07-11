@@ -28,7 +28,15 @@ import InfoIcon from "../../assets/info.png";
 import Loader from "../../components/Loader";
 import { pincodes } from "../../utils/pincodes.js";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
-
+import BackgroundDetails from "../../assets/BackgroundDetails.svg";
+import productsData from '../../utils/photoGraphyImages.js';
+import CommentIcon from "../../assets/commenticon.png";
+import locationIcon from "../../assets/locationIcon.png";
+import CityIcon from "../../assets/CityIcon.png";
+import PinIcon from "../../assets/Pincode.jpeg";
+import cancellation from "../../assets/Cancellation.svg"
+import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
+import "./checkout.css"
 const Checkout = () => {
   const router = useRouter();
   const {
@@ -407,895 +415,278 @@ const Checkout = () => {
 
   if (!isClient) return null;
 
-  return (
+    return (
     <div className="App">
-      {!isLoggedIn && isModalOpen && (
-        <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
-      )}
+
+      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
       {loading && <Loader />}
-      {isClient && window.innerWidth > 800 ? (
-        <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>
+
+      <div className="booking-form-card" >
+        <div style={{
+
+          backgroundImage: `url(${BackgroundDetails.src})`,
+          backgroundSize: '423px 100%',
+          backgroundPosition: ' left 0px top 40%',
+          backgroundRepeat: 'no-repeat',
+
+        }} >
+
+          {/* Transparent Foreground Form Layer */}
+          <div className="booking-form with-bg-shapes" >
+            <div className="background-shape top-left" />
+            <div className="background-shape bottom-right" />
+
+            <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
+  <div className="photographer-note">
+The decorator requires approximately 40-90 minutes to fulfill the Services
+  
+  {/* Need more info ? chat on WhatsApp now! */}
+</div>
+            <div className="form-row">
+              <div className="form-half large-input">
+                <label className="form-label">Booking Date</label>
+                <div className="input-wrapper large-input-field">
+                  <CustomDatePicker
+                    handleDateChange={handleDateChange}
+                    setSelectedDate={setSelectedDate}
+                    selectedDate={selectedDate}
+                    showDatePicker={showDatePicker}
+                    setShowDatePicker={setShowDatePicker}
+                    combinedDateTimeError={combinedDateTimeError}
+                    selectedDateError={selectedDateError}
+                  />
+                </div>
+              </div>
+
+              <div className="form-half large-input">
+                <label className="form-label">Select Time Slot</label>
+                <div className="input-wrapper large-input-field">
+                  <CustomTimePicker
+                    handleTimeSlotChange={handleTimeSlotChange}
+                    generateTimeSlots={generateTimeSlots}
+                    selectedTimeSlot={selectedTimeSlot}
+                    combinedDateTimeError={combinedDateTimeError}
+                    selectedTimeSlotError={selectedTimeSlotError}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {combinedDateTimeError && (
+              <p className="error-text">
+                The selected date and time must be at least 24 hours from now.
+              </p>
+            )}
+
+       <div className="support-box">
+  <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
+  <button className="support-button" onClick={() => window.open("https://wa.me/917338584828", "_blank")}>
+    Contact Support
+  </button>
+</div>
+
+
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">Share comments</label>
+              <Image src={CommentIcon} className="input-icon" alt="comment" />
+              <textarea
+                className="formcontrol"
+                value={comment}
+                onChange={handleComment}
+                rows={4}
+                placeholder="No Extra charges for customizing ballon color or replacing tags(Happy Birthday / Anniversary). Chages wil be applied for additional items"
+              />
+            </div>
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">Address:</label>
+              <Image src={locationIcon} className="input-icon" alt="location" />
+              <textarea
+                className="formcontrol"
+                value={address}
+                onChange={handleAddressChange}
+                rows={2}
+                placeholder="Enter your address here..."
+              />
+              {addressError && <p className="error-text">This field is required!</p>}
+            </div>
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">City:</label>
+              <Image src={CityIcon} className="input-icon" alt="city" />
+              <select
+                value={city}
+                onChange={handleCityChange}
+                className="formcontrol select-colored"
+              >
+                <option value="" disabled>Select City</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Delhi">Delhi NCR</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Hyderabad">Hyderabad</option>
+              </select>
+              {cityError && <p className="error-text">This field is required!</p>}
+            </div>
+
+            <div className="form-group input-with-icon">
+              <label className="form-label">Pin Code:</label>
+              <Image src={PinIcon} className="input-icon" alt="pincode" />
+              <input
+                type="text"
+                className="formcontrol"
+                value={pinCode}
+                onChange={handlePinCodeChange}
+                placeholder="Enter your pin code here..."
+              />
+              {pinCode && (
+                <p className={`info-text ${pinCodeError ? "error-text" : "success-text"}`}>
+                  Service {pinCodeError ? "not " : ""}available in your area!
+                </p>
+              )}
+              {pincodeReqError && <p className="error-text">This field is required!</p>}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+
+      <div className="rightSeccheckout" >
+        <div className="floating-center-image">
+          <Image
+            src={BackgorundImgDetails}
+            alt="Floating Decoration"
+            className="floating-image"
+          />
+        </div>
+        <div className='rightsecdecinner photography'>
+          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
+          <div className=''>
+<Image
+  className="checkoutRightImg"
+  src={`https://horaservices.com/api/uploads/compressed_webp/${
+    product.featured_image.split(".")[0]
+  }.webp`}
+  alt="image"
+  // style={{ width: "100%", height: "auto" }}
+  width={300}
+  height={300}
+/>
+
+            <div >
+              {/* <label>Product Name :</label> */}
+              <p className='productTitle'>{product?.name|| "N/A"}</p>
+            </div>
+            {/* <div className='prod-detailsp'>
+              {productImage && (
+                <div className='detail-item'>
+                  <Image src={productImage} alt={product.name} className="detailimage" />
+                </div>
+              )}
+            </div> */}
+
+            <div className='prod-details'>
+         
+              <div className='detailitem'>
+                <label>Product Amount:</label>
+                <p>₹{product?.price}</p>
+              </div>
+              <div className='addon-prices'>
+
+                        <div >
+                         {selectedAddOnProduct.length > 0 && (
+  <>
+    <label>Add-Ons :</label>
+    <ul className="addon-list">
+      {selectedAddOnProduct.map((item, index) => (
+        <li key={index} className="addon-item">
+          <span className="addon-title">{index + 1}. {item.title}</span>
+          <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
+        </li>
+      ))}
+    </ul>
+  </>
+)}
+
+                        </div>
+                      </div>
+                     
+              <div className='detailitem'>
+                <label style={{ color: "rgb(157, 74, 147)"}}>Total Amount:</label>
+                <p style={{ color: "rgb(157, 74, 147)"}}>₹{totalAmount}</p>
+              </div>
+               {/* <div className='detailitem'>
+                <label style={{ color: "rgb(157, 74, 147)"}}>Advance Amount:</label>
+                <p style={{ color: "rgb(157, 74, 147)"}}>₹ {Math.round(totalAmount * 0.35)}</p>
+              </div> */}
+<div className='detailitem'>
+  <label style={{ color: "rgb(157, 74, 147)" }}>Advance Amount:</label>
+  <p style={{ color: "rgb(157, 74, 147)" }}>₹ {Math.round(totalAmount * 0.4)}</p>
+</div>
+            </div>
+          </div>
+        </div>
+       
+        <div className="needmore">
           <div
             style={{
               display: "flex",
-              alignItems: "start",
-              margin: "0 !important",
-              padding: "10px 0",
+              flexDirection: "row",
+              alignItems: " center",
+              justifyContent: "space-evenly",
+              // padding: "0px 12px 10px",
+              width: "100%",
             }}
-            className="checoutSec my-3 gap-3"
           >
-            <div
-              style={{
-                width: "40%",
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-                padding: "20px",
-                backgroundColor: "#fff",
-                borderRadius: "20px",
-              }}
-              className="leftSeccheckout"
-            >
-              <h2
-                style={{
-                  fontSize: "22px",
-                  fontWeight: "400",
-                  color: "#222",
-                  borderBottom: "1px solid #f0f0f0",
-                  margin: "0 0 8px 0",
-                  lineHeight: "35px",
-                }}
-              >
-                Booking Details
-              </h2>
+            <p style={{ fontSize: 14, fontWeight: 500, color: "black", marginBottom: 0 }}>
+              Need more info?
+            </p>
 
-              <div
-                className="border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center"
-                style={{
-                  color: "#000",
-                  fontSize: 12,
-                  fontWeight: "500",
-                  textAlign: "left",
-                  color: "#9252AA",
-                }}
-              >
-                The decorator requires approximately 40-90 minutes to fulfill
-                the service.
-              </div>
+            <button className="button-cta whatsapp-cta" onClick={contactUsRedirection}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" className="whatsapp-iconimg"></path></svg>Whatsapp</button>
 
-              <div
-                style={{
-                  display: "flex",
-                  margin: "8px 0px 10px",
-                  flexDirection: "row",
-                }}
-                className="row align-items-between justify-content-between   align-items-lg-center justify-content-lg-between"
-              >
-                <CustomDatePicker
-                  handleDateChange={handleDateChange}
-                  setSelectedDate={setSelectedDate}
-                  selectedDate={selectedDate}
-                  showDatePicker={showDatePicker}
-                  setShowDatePicker={setShowDatePicker}
-                  combinedDateTimeError={combinedDateTimeError}
-                  selectedDateError={selectedDateError}
-                />
-                <CustomTimePicker
-                  handleTimeSlotChange={handleTimeSlotChange}
-                  generateTimeSlots={generateTimeSlots}
-                  selectedTimeSlot={selectedTimeSlot}
-                  combinedDateTimeError={combinedDateTimeError}
-                  selectedTimeSlotError={selectedTimeSlotError}
-                />
-              </div>
-              {combinedDateTimeError && (
-                <p
-                  className="text-danger"
-                  style={{ fontSize: "12px", marginBottom: "0px" }}
-                >
-                  The selected date and time must be at least 24 hours from now.
-                </p>
-              )}
-              <div
-                className="checkoutInputType border-1 rounded-4  "
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
-              >
-                <h4
-                  style={{
-                    color: "rgb(146, 82, 170)",
-                    fontSize: "14px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  Share your comments (if any)
-                </h4>
-                <textarea
-                  className=" rounded border border-1 p-1 bg-white text-black"
-                  value={comment}
-                  onChange={handleComment}
-                  rows={3}
-                  placeholder="Enter your comment."
-                />
-              </div>
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                  className="checkoutInputType"
-                >
-                  <label
-                    style={{
-                      color: "rgb(146, 82, 170)",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Address:
-                  </label>
-                  <textarea
-                    type="text"
-                    className="rounded border border-1 p-1 bg-white text-black"
-                    value={address}
-                    onChange={handleAddressChange}
-                    rows={3}
-                    placeholder="Enter your Address."
-                  />
-                  {addressError && (
-                    <p
-                      className={`p-0 m-0 ${addressError ? "text-danger" : ""}`}
-                    >
-                      This field is required!
-                    </p>
-                  )}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                  className="checkoutInputType"
-                >
-                  <label
-                    style={{
-                      color: "rgb(146, 82, 170)",
-                      fontSize: "14px",
-                      marigin: "16px 0 6px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Pin Code:
-                  </label>
-                  <input
-                    type="text"
-                    className=" rounded border border-1 p-1 bg-white text-black"
-                    value={pinCode}
-                    onChange={handlePinCodeChange}
-                  />
-                  {pinCode && (
-                    <p
-                      className={`p-0 m-0 ${
-                        pinCodeError ? "text-danger" : "text-success"
-                      }`}
-                    >{`Service ${
-                      pinCodeError ? "not" : ""
-                    } available in your area!`}</p>
-                  )}
-                  {pincodeReqError && (
-                    <p
-                      className={`p-0 m-0 ${
-                        pincodeReqError ? "text-danger" : ""
-                      }`}
-                    >
-                      This field is required!
-                    </p>
-                  )}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                  className="checkoutInputType"
-                >
-                  <label
-                    style={{
-                      color: "rgb(146, 82, 170)",
-                      fontSize: "14px",
-                      marigin: "16px 0 6px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    City:
-                  </label>
-                  <select
-                    value={city}
-                    className=" rounded border border-1 p-1 bg-white text-black"
-                    onChange={handleCityChange}
-                  >
-                    <option value="">Select City</option>
-                    <option value="Bangalore">Bangalore</option>
-                    <option value="Delhi">Delhi NCR</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Hyderabad">Hyderabad</option>
-                    {/* Add more cities as needed */}
-                  </select>
-                  {cityError && (
-                    <p className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}>
-                      This field is required!
-                    </p>
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={onContinueClick}
-                className="blue-btn chkeoutBottun"
-              >
-                Confirm Order
-              </button>
-            </div>
-
-            <div
-              className="rightSeccheckout"
-              style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18) ",
-                padding: "20px",
-                backgroundColor: "#fff",
-                borderRadius: "20px",
-                width: "59%",
-              }}
-            >
-              <div className="rightsecdecinner decoration">
-                <h3
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: "400",
-                    color: "#222",
-                    borderBottom: "1px solid #f0f0f0",
-                    margin: "0 0 11px 0",
-                    lineHeight: "35px",
-                    width: "100%",
-                  }}
-                >
-                  Order Summary
-                </h3>
-                <div className="d-flex flex-column flex-lg-row">
-                  <div>
-                    <Image
-                      className="checkoutRightImg"
-                      src={`https://horaservices.com/api/uploads/compressed_webp/${
-                        product.featured_image.split(".")[0]
-                      }.webp`}
-                      alt="image"
-                      style={{ width: "100%", height: "auto" }}
-                      width={300}
-                      height={300}
-                    />
-                  </div>
-                  <div className="prod-detailsp">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                        margin: "10px 0 20px 0",
-                      }}
-                    >
-                      <label
-                        style={{
-                          color: "rgb(146, 82, 170)",
-                          fontSize: "14px",
-                          marigin: "16px 0 6px",
-                          fontWeight: 700,
-                        }}
-                      >
-                        Product Name:
-                      </label>
-                      <p style={{ margin: 0, windth: "100%" }}>
-                        {product?.name}
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "column",
-                        margin: "0",
-                      }}
-                    >
-                      <label
-                        style={{
-                          color: "rgb(146, 82, 170)",
-                          fontSize: "14px",
-                          marigin: "16px 0 6px",
-                          fontWeight: 700,
-                        }}
-                      >
-                        Product Price:
-                      </label>
-                      <p style={{ margin: 0, windth: "100%" }}>
-                        {product?.price}
-                      </p>
-                    </div>
-                    <div className="add-on-prices">
-                      <div>
-                        {selectedAddOnProduct.length > 0 && (
-                          <>
-                            <label>Customisations</label>
-                            {selectedAddOnProduct.map((item, index) => (
-                              <li key={index}>
-                                <div>{item.title}</div>
-                                <div>
-                                  ₹ {item.price} x {itemQuantities[item.title]}{" "}
-                                  = ₹ {item.price * itemQuantities[item.title]}
-                                </div>
-                              </li>
-                            ))}
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="detail-item">
-                      <label>Total Amount:</label>
-                      <p>₹{totalAmount}</p>
-                    </div>
-
-                    <div className="detail-item">
-                      <label>Advance Amount:</label>
-                      <p>₹ {Math.round(totalAmount * 0.4)}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="d-flex flex-wrap justify-content-center align-items-center need-more-info-sec">
-                  <h5 className="mt-2">Need more info?</h5>
-                  <button
-                    onClick={contactUsRedirection}
-                    style={{
-                      border: "2px solid rgb(157, 74, 147)",
-                      color: "rgb(157, 74, 147)",
-                      padding: "3px 3px",
-                    }}
-                    className="rounded-5 ms-1 bg-transparent contactus-redirection"
-                  >
-                    Contact Us
-                  </button>
-                </div>
-                <div
-                  className="px-1 py-3 border rounded my-2 cancellatiop-policy"
-                  style={{
-                    background: "rgb(157, 74,147, 28%)",
-                  }}
-                >
-                  <p
-                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                    className=" text-center m-1"
-                  >
-                    Cancellation and order change policy
-                  </p>
-                  <p
-                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                    className="m-1"
-                  >
-                    1. If the order is beyong 48 Hours: You are eligible for a
-                    100% refund of the advance payment
-                  </p>
-                  <p
-                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                    className="m-1"
-                  >
-                    2. If the order is cancelled more than 24 hours before the
-                    scheduled delivery: You will not receive refund of the
-                    advance payment.
-                  </p>
-                  <p
-                    style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                    className="m-1"
-                  >
-                    3. If the order is cancelled within 24 hours: The full
-                    advance amount will be non-refundable, and 100% of the
-                    payment for decoration has to be paid by customer.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
-      ) : (
-        <div
-          style={{
-            padding: "1% 2%",
-            backgroundColor: "#edededc9",
-            position: "relative",
-          }}
-          className="checkoutmobileview"
-        >
-          <div className="checoutSec my-3 gap-3">
-            <div>
-              {/* <h2 style={{ fontSize: "22px", fontWeight: "400", color: "#222", borderBottom: "1px solid #f0f0f0", margin: "0 0 8px 0", lineHeight: "35px" }}>Booking Details</h2> */}
+        <div className="policy-wrapper">
+          <div className="policy-heading">
 
-              <div
-                className="border border-danger p-1 px-3 rounded bg-danger-subtle text-black text-center decoratore-note"
-                style={{
-                  color: "#000",
-                  fontSize: 12,
-                  fontWeight: "500",
-                  textAlign: "left",
-                  color: "#9252AA",
-                }}
-              >
-                The decorator requires approximately 40-90 minutes to fulfill
-                the service.
-              </div>
+            <Image
+              src={cancellation}
+              className="policy-icon"
+              height={18}
+              width={16}
+            />
 
-              <div
-                style={{
-                  display: "flex",
-                  margin: "8px 0px 10px",
-                  flexDirection: "row",
-                }}
-                className="row align-items-between justify-content-between  align-items-lg-center justify-content-lg-between"
-              >
-                <CustomDatePicker
-                  handleDateChange={handleDateChange}
-                  setSelectedDate={setSelectedDate}
-                  selectedDate={selectedDate}
-                  showDatePicker={showDatePicker}
-                  setShowDatePicker={setShowDatePicker}
-                  combinedDateTimeError={combinedDateTimeError}
-                  selectedDateError={selectedDateError}
-                />
-                <CustomTimePicker
-                  handleTimeSlotChange={handleTimeSlotChange}
-                  generateTimeSlots={generateTimeSlots}
-                  selectedTimeSlot={selectedTimeSlot}
-                  combinedDateTimeError={combinedDateTimeError}
-                  selectedTimeSlotError={selectedTimeSlotError}
-                />
-                {combinedDateTimeError && (
-                  <p className="text-danger" style={{ fontSize: "12px" }}>
-                    The selected date and time must be at least 24 hours from
-                    now.
-                  </p>
-                )}
-              </div>
-
-              <div
-                className="rightSeccheckout"
-                style={{
-                  boxShadow: "0 1px 8px rgba(0,0,0,.18) ",
-                  padding: "20px",
-                  backgroundColor: "#fff",
-                  borderRadius: "20px",
-                }}
-              >
-                <div className="rightcheckoutsec">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexDirection: "row",
-                      margin: "5px 0 5px 0",
-                    }}
-                  >
-                    <label
-                      style={{
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        marigin: "16px 0 6px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      Product Amount:
-                    </label>
-                    <p
-                      style={{
-                        margin: 0,
-                        windth: "100%",
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      ₹ {product?.price}
-                    </p>
-                  </div>
-                  <div className="add-on-prices mobile">
-                    <div>
-                      {selectedAddOnProduct.length > 0 && (
-                        <>
-                          <label>Customisations</label>
-                          {selectedAddOnProduct.map((item, index) => (
-                            <li key={index}>
-                              <div>{item.title}</div>
-                              <div>
-                                ₹ {item.price} x {itemQuantities[item.title]} =
-                                ₹ {item.price * itemQuantities[item.title]}
-                              </div>
-                            </li>
-                          ))}
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              flexDirection: "row",
-                              margin: "0",
-                            }}
-                          >
-                            <label
-                              style={{
-                                color: "rgb(146, 82, 170)",
-                                fontSize: "14px",
-                                marigin: "16px 0 6px",
-                                fontWeight: 700,
-                              }}
-                            >
-                              Total Amount:
-                            </label>
-                            <p
-                              style={{
-                                margin: 0,
-                                windth: "100%",
-                                color: "rgb(146, 82, 170)",
-                                fontSize: "14px",
-                                fontWeight: 700,
-                              }}
-                            >
-                              ₹ {totalAmount}
-                            </p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexDirection: "row",
-                      margin: "0 0 10px 0",
-                    }}
-                  >
-                    <label
-                      style={{
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        marigin: "16px 0 6px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      Advance Amount:
-                    </label>
-                    <p
-                      style={{
-                        margin: 0,
-                        windth: "100%",
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "16px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      ₹ {Math.round(totalAmount * 0.4)}
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      padding: 7,
-                      flexDirection: "row",
-                      borderRadius: 5,
-                      marginTop: 5,
-                      marginBottom: 10,
-                      backgroundColor: "rgba(211, 75, 233, 0.10)",
-                      justifyContent: "flex-start",
-                      alignItems: "top",
-                    }}
-                  >
-                    <div>
-                      <Image
-                        style={{
-                          width: "20px",
-                          marginRight: "10px",
-                          height: "20px",
-                        }}
-                        src={InfoIcon}
-                        alt="info"
-                      />
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 9,
-                        color: "#9252AA",
-                        fontWeight: "400",
-                        marginLeft: 4,
-                      }}
-                    >
-                      Balance payment is to be paid to executor after order
-                      completion.
-                    </div>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                    }}
-                    className="checkoutInputType"
-                  >
-                    <label
-                      style={{
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      Address:
-                    </label>
-                    <textarea
-                      type="text"
-                      className=" rounded border border-1 p-1 bg-white text-black"
-                      value={address}
-                      onChange={handleAddressChange}
-                      rows={3}
-                      placeholder="Enter your Address."
-                    />
-                    {addressError && (
-                      <p
-                        className={`p-0 m-0 ${
-                          addressError ? "text-danger" : ""
-                        }`}
-                      >
-                        This field is required!
-                      </p>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                    }}
-                    className="checkoutInputType"
-                  >
-                    <label
-                      style={{
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        marigin: "16px 0 6px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Pin Code:
-                    </label>
-                    <input
-                      type="text"
-                      className=" rounded border border-1 p-1 bg-white text-black"
-                      value={pinCode}
-                      onChange={handlePinCodeChange}
-                    />
-                    {pinCode && (
-                      <p
-                        className={`p-0 m-0 ${
-                          pinCodeError ? "text-danger" : "text-success"
-                        }`}
-                      >{`Service ${
-                        pinCodeError ? "not" : ""
-                      } available in your area!`}</p>
-                    )}
-                    {pincodeReqError && (
-                      <p
-                        className={`p-0 m-0 ${
-                          pincodeReqError ? "text-danger" : ""
-                        }`}
-                      >
-                        This field is required!
-                      </p>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                    }}
-                    className="checkoutInputType"
-                  >
-                    <label
-                      style={{
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        marigin: "16px 0 6px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      City:
-                    </label>
-                    <select
-                      value={city}
-                      className=" rounded border border-1 p-1 bg-white text-black"
-                      onChange={handleCityChange}
-                    >
-                      <option value="">Select City</option>
-                      <option value="Bangalore">Bangalore</option>
-                      <option value="Delhi">Delhi NCR</option>
-                      <option value="Mumbai">Mumbai</option>
-                      <option value="Hyderabad">Hyderabad</option>
-                      {/* Add more cities as needed */}
-                    </select>
-                    {cityError && (
-                      <p
-                        className={`p-0 m-0 ${cityError ? "text-danger" : ""}`}
-                      >
-                        This field is required!
-                      </p>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "flex-start",
-                      margin: "20px 0 0",
-                    }}
-                  >
-                    <div style={{ width: "50%" }}>
-                      <Image
-                        className="checkoutRightImg"
-                        src={`https://horaservices.com/api/uploads/${product?.featured_image}`}
-                        alt="decoration-image"
-                        style={{ width: "100%", height: "auto" }}
-                        width={300}
-                        height={300}
-                      />
-                    </div>
-                    <div style={{ width: "50%", paddingLeft: "10px" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          margin: "20px 0 20px 0",
-                        }}
-                      >
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "12px",
-                            fontWeight: "600",
-                            color: "#222",
-                          }}
-                        >
-                          {product?.name}
-                        </p>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "12px",
-                            fontWeight: "600",
-                            color: "#222",
-                          }}
-                        >
-                          ₹ {product?.price}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    className="checkoutInputType border-1 rounded-4  my-3"
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <h4
-                      style={{
-                        color: "rgb(146, 82, 170)",
-                        fontSize: "14px",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      Share your comments (if any)
-                    </h4>
-                    <textarea
-                      className="rounded border border-1 p-1 bg-white text-black decor-commemnts"
-                      value={comment}
-                      onChange={handleComment}
-                      rows={3}
-                      placeholder="No Extra charges for customizing ballon color or replacing tags(Happy Birthday / Anniversary). Chages wil be applied for additional items"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-center align-items-center mt-3 mb-0">
-                <h5 className="fs-6 mt-2">Need more info?</h5>
-                <button
-                  onClick={contactUsRedirection}
-                  style={{
-                    border: "2px solid rgb(157, 74, 147)",
-                    color: "rgb(157, 74, 147)",
-                    padding: "3px 3px",
-                    fontSize: "13px",
-                  }}
-                  className=" rounded-5 ms-1 bg-transparent contactus-redirection"
-                >
-                  Contact Us
-                </button>
-              </div>
-
-              <div
-                className="px-1 py-3 border rounded my-2 cancellatiop-policy"
-                style={{
-                  background: "rgb(157, 74,147, 28%)",
-                }}
-              >
-                <p
-                  style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                  className=" text-center m-1"
-                >
-                  Cancellation and order change policy
-                </p>
-                <p
-                  style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                  className="m-1"
-                >
-                  1. If the order is beyong 48 Hours: You are eligible for a
-                  100% refund of the advance payment
-                </p>
-                <p
-                  style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                  className="m-1"
-                >
-                  2. If the order is cancelled more than 24 hours before the
-                  scheduled delivery: You will not receive refund of the advance
-                  payment.
-                </p>
-                <p
-                  style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-                  className="m-1"
-                >
-                  3. If the order is cancelled within 24 hours: The full advance
-                  amount will be non-refundable, and 100% of the payment for
-                  decoration has to be paid by customer.
-                </p>
-              </div>
-            </div>
+            <span className="policy-title">Cancellation and Order Change Policy</span>
           </div>
-          {isMobile ? (
-            <div
-              style={{
-                position: "fixed",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                backgroundColor: "#fff",
-                borderTop: "1px solid #efefef",
-                backgroundColor: "#EDEDED",
-              }}
-            >
-              <button
-                className="blue-btn chkeoutBottun"
-                onClick={onContinueClick}
-              >
-                Confirm Order
-              </button>
-            </div>
-          ) : null}
+          <ol className="policy-list">
+            <li>
+              If the order is beyond 48 hours: You are eligible for a 100% refund of the advance payment.
+            </li>
+            <li>
+              If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.
+            </li>
+            <li>
+              If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.
+            </li>
+          </ol>
         </div>
-      )}
-    </div>
+
+      </div>
+    
+<div className="confirmbutton-wrapper">
+  <button
+    className="confirmbutton"
+    onClick={onContinueClick}
+    type="button"
+  >
+    Confirm Order
+  </button>
+</div>
+
+      </div>
   );
 };
 
@@ -1312,62 +703,37 @@ export const CustomDatePicker = ({
   const toggleDatePicker = () => {
     setShowDatePicker((prev) => !prev);
   };
+  // const handleToggle = (isOpen, event, metadata) => {
+  //   // Agar user ne bahar click kiya ya toggle button pe click kiya
+  //   // dropdown open/close ka status yaha milega
+  //   setShowDatePicker(isOpen);
+  // };
+
 
   return (
-    <div
-      className={`d-flex flex-column border border-1 rounded-4  timepkerSec ${
-        combinedDateTimeError ? "border-danger" : ""
-      } `}
-    >
-      <p
-        style={{
-          marginBottom: "4px",
-          color: "rgb(146, 82, 170)",
-          fontSize: "12px",
-        }}
-        className="p-0 m-0"
-      >
-        Booking Date
-      </p>
-      <Dropdown
-        show={showDatePicker}
-        onToggle={toggleDatePicker}
-        className="border-none p-0"
-      >
+    <div className={`custom-datepicker-container ${combinedDateTimeError ? 'error' : ''}`}>
+
+      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className="dropdown-custom">
         <Dropdown.Toggle
           variant="outline-secondary"
-          className={`w-100 m-0 p-0 d-flex justify-content-between align-items-center text-black ${
-            selectedDateError ? "border-danger" : ""
-          }`}
-          style={{
-            cursor: "pointer",
-            padding: 0,
-            background: "none",
-            border: "none",
-          }}
+          className={`dropdown-toggle-custom ${selectedDateError ? 'error' : ''}`}
+          style={{ cursor: 'pointer' }}
         >
-          <span style={{ fontSize: "12px" }} className="m-0 p-0 ">
-            {selectedDate ? selectedDate.toLocaleDateString() : "Select Date"}
-          </span>
+          <span>{selectedDate ? selectedDate.toLocaleDateString() : ' Select Date'}</span>
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          show={showDatePicker}
-          className="p-2"
-          style={{ minWidth: "auto" }}
-        >
+        <Dropdown.Menu className="dropdown-menu-custom" show={showDatePicker} >
           <DatePicker
             selected={selectedDate}
             onChange={handleDateChange}
             minDate={new Date()}
-            inline // Use inline to show the calendar
+            inline
           />
         </Dropdown.Menu>
       </Dropdown>
     </div>
   );
 };
-
 export const CustomTimePicker = ({
   selectedTimeSlot,
   handleTimeSlotChange,
@@ -1377,42 +743,22 @@ export const CustomTimePicker = ({
 }) => {
   return (
     <div
-      className={`timepkerSec d-flex flex-column border border-1 ${
-        combinedDateTimeError ? "border-danger" : ""
-      }  ${selectedTimeSlotError ? "border-danger" : ""} rounded-4 `}
+      className={`custom-timepicker-container ${combinedDateTimeError || selectedTimeSlotError ? 'error' : ''
+        }`}
     >
-      <p
-        style={{
-          marginBottom: "4px",
-          color: "rgb(146, 82, 170)",
-          fontSize: "12px",
-        }}
-        className="p-0 m-0"
+      <Form.Control
+        as="select"
+        value={selectedTimeSlot}
+        onChange={handleTimeSlotChange}
+        className="timeslot-select"
       >
-        Select Time Slot
-      </p>
-      <div>
-        <Form.Control
-          as="select"
-          value={selectedTimeSlot}
-          onChange={handleTimeSlotChange}
-          style={{
-            fontSize: "14px",
-            cursor: "pointer",
-            padding: 0,
-            background: "none",
-            border: "none",
-          }}
-          className="timeslot"
-        >
-          <option value="">Executor Arrival Time</option>
-          {generateTimeSlots().map((timeSlot, index) => (
-            <option key={index} value={timeSlot}>
-              {timeSlot}
-            </option>
-          ))}
-        </Form.Control>
-      </div>
+        <option value="">🕒 Arrival Time</option>
+        {generateTimeSlots().map((timeSlot, index) => (
+          <option key={index} value={timeSlot}>
+            {timeSlot}
+          </option>
+        ))}
+      </Form.Control>
     </div>
   );
 };
