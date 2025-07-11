@@ -566,14 +566,16 @@ The decorator requires approximately 40-90 minutes to fulfill the Services
           <div className=''>
 <Image
   className="checkoutRightImg"
-  src={`https://horaservices.com/api/uploads/compressed_webp/${
-    product.featured_image.split(".")[0]
-  }.webp`}
+  src={
+    product?.featured_image
+      ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
+      : "/default-image.webp"
+  }
   alt="image"
-  // style={{ width: "100%", height: "auto" }}
   width={300}
   height={300}
 />
+
 
             <div >
               {/* <label>Product Name :</label> */}
