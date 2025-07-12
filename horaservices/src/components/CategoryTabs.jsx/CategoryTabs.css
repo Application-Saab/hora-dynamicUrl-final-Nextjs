@@ -29,21 +29,23 @@
 }
 
 .category-tabs__circle {
-  width: 95px;
-  height: 95px;
-  border-radius: 50%;
+  width: 93.35px;
+  height: 93.35px;
+  border-radius: 72.71px;
   background-size: cover;
   background-position: center;
-  border: 1.5px solid #9347a9;
+  border: 1.14px solid #97538C;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  padding: 5.36px 10.71px;
+  box-shadow: 0px 4.55px 5.69px 0px #0000003D;
   overflow: hidden;
+  gap: 10.71px;
 }
+
 
 .category-tabs__circle::after {
   content: '';

@@ -1,4 +1,4 @@
-import React, { useState, useRef} from "react";
+import React, { useState, useRef } from "react";
 import Head from "next/head";
 import { useParams } from "react-router-dom";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
@@ -80,7 +80,7 @@ const cardsData = [
     title: "Anniversary",
     link: "balloon-decoration/anniversary-decoration",
     sizeClass: "category-grid__card--small",
-      catValue: "Anniversary",
+    catValue: "Anniversary",
   },
 ];
 
@@ -136,26 +136,26 @@ const stats = [
   },
 ];
 
-const Decoration =({ city , locality}) => {
- 
- const [showMoreCards, setShowMoreCards] = useState(false);
+const Decoration = ({ city, locality }) => {
+
+  const [showMoreCards, setShowMoreCards] = useState(false);
   const smallCardRef = useRef(null); // 👈 ref for SmallCardGrid
 
   const router = useRouter();
-  
+
   const schemaOrg = getDecorationOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
 
   const hasCityPageParam = city ? true : false;
 
- 
+
   const handleSeeMoreClick = () => {
     setShowMoreCards(true); // optional if hiding initially
     setTimeout(() => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100); // small delay ensures it's rendered first
   };
- const openCatItems = (item) => {
+  const openCatItems = (item) => {
     const path = hasCityPageParam
       ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
       : `/balloon-decoration/${item.catValue}`;
@@ -191,7 +191,7 @@ const Decoration =({ city , locality}) => {
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs-outer">
-        <CategoryTabs data={decCat} onSelect={openCatItems} city={city}  hasCityPageParam={hasCityPageParam} locality={locality}/>
+        <CategoryTabs data={decCat} onSelect={openCatItems} city={city} hasCityPageParam={hasCityPageParam} locality={locality} />
       </div>
 
       <div className="CategoryGrid-outer">
@@ -201,25 +201,25 @@ const Decoration =({ city , locality}) => {
       </div>
 
       {/* SEE MORE BUTTON */}
-    <div className="see-more-container">
-  <button className="see-more-btn" onClick={handleSeeMoreClick}>
-    <span>SEE MORE</span>
-    <span className="arrow-icondecoration">
-      <Image src={arrowIcon} alt="Arrow Down" width={20} height={20} />
-    </span>
-  </button>
-</div>
+      <div className="see-more-container">
+        <button className="see-more-btn" onClick={handleSeeMoreClick}>
+          <span>SEE MORE</span>
+          <span className="arrow-icondecoration">
+            <Image src={arrowIcon} alt="Arrow Down" width={20} height={20} />
+          </span>
+        </button>
+      </div>
 
 
- 
-    <DecorGrid
-      largeCard={largeCard}
-      smallCards={smallCards}
-      city={city}
-      hasCityPageParam={hasCityPageParam}
-      decCat={decCat}
-      locality={locality}
-    />
+
+      <DecorGrid
+        largeCard={largeCard}
+        smallCards={smallCards}
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        decCat={decCat}
+        locality={locality}
+      />
 
 
 
@@ -255,16 +255,16 @@ const Decoration =({ city , locality}) => {
         />
       </section>
 
-  
-     <div ref={smallCardRef}>
-  <SmallCardGrid
-    city={city}
-    hasCityPageParam={hasCityPageParam}
-    decCat={decCat}
-    categories={categories}
-    locality={locality}
-  />
-</div>
+
+      <div ref={smallCardRef}>
+        <SmallCardGrid
+          city={city}
+          hasCityPageParam={hasCityPageParam}
+          decCat={decCat}
+          categories={categories}
+          locality={locality}
+        />
+      </div>
 
       <section className="why-choose-hora">
         <Image
@@ -283,10 +283,10 @@ const Decoration =({ city , locality}) => {
         data={PremiumData}
         showDiscount={true}
         imageSize={{ width: 120, height: 120 }}
-        city={city}                         
-         hasCityPageParam={hasCityPageParam}
-         decCat={decCat}  
-         locality={locality}
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        decCat={decCat}
+        locality={locality}
       />
 
       <section className="decorationBanner">
@@ -300,14 +300,14 @@ const Decoration =({ city , locality}) => {
         />
       </section>
 
-     <ProductSliderSection
-  title="Birthday Decoration"
-  data={birthdayData}
-  viewLink="/balloon-decoration/birthday-decoration"
-  city={city}
-  hasCityPageParam={hasCityPageParam}
-  locality={locality}
-/>
+      <ProductSliderSection
+        title="Birthday Decoration"
+        data={birthdayData}
+        viewLink="/balloon-decoration/birthday-decoration"
+        city={city}
+        hasCityPageParam={hasCityPageParam}
+        locality={locality}
+      />
 
 
       <div className="decorationBanner-outer">
