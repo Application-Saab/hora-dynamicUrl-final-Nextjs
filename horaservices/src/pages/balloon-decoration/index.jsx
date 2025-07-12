@@ -43,7 +43,7 @@ import FirstNightImg from "../../assets/FirstNightIMG.png";
 import AnniversaryImg from "../../assets/AnniversaryDecorIMG.png";
 import DecorSlider from "@/components/DecorSlider";
 import BabyShowerBannerIMG from "../../assets/BabyShowerBannerIMG.jpg";
-import BrandBannerIMG from "../../assets/BrandBannerIMG.png";
+import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
@@ -190,7 +190,7 @@ const Decoration =({ city , locality}) => {
         <BannerSlider images={bannerImages} />
       </div>
       {/* CIRCLE TABS */}
-      <div className="category-tabs">
+      <div className="category-tabs-outer">
         <CategoryTabs data={decCat} onSelect={openCatItems} city={city}  hasCityPageParam={hasCityPageParam} locality={locality}/>
       </div>
 

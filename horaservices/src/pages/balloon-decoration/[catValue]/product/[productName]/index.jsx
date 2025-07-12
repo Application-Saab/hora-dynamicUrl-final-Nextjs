@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useRef} from "react";
 // import { useParams } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 import { MessageCircle, Plus, ArrowDown, ArrowUp } from "lucide-react";
@@ -6,6 +6,7 @@ import buynowImage from "../../../../../assets/experts.png";
 import buynowImage1 from "../../../../../assets/secured.png";
 import buynowImage2 from "../../../../../assets/service.png";
 import checkImage from "../../../../../assets/tick.jpeg";
+import "./Decorproduct.css"
 import {
   getDecorationProductOrganizationSchema,
   getProductFAQSchemaProductDetails,
@@ -21,9 +22,11 @@ import {
   GET_DECORATION_CAT_ID,
 } from "@/utils/apiconstants";
 import axios from "axios";
-import faqData from "../../../../../utils/faqData.json";
+import FAQSection from "@/components/FAQSection";
+import faqData from "../../../../../utils/FaqData.json";
 import Tabs from "../../../../../components/Tabs";
 import addOnProductsData from "../../../../../utils/addOnProduct.json";
+import CustomizeDecorBanner from "../../../../../assets/CustomizeDecorBanner.png"
 // Skeleton Loader Component
 const SkeletonLoader = () => {
   return (
@@ -184,7 +187,8 @@ function DecorationCatDetails() {
   const [discountInfo, setDiscountInfo] = useState(null);
   const [isArrowDown, setIsArrowDown] = useState(true);
   const [loading, setLoading] = useState(true); // Add a loading state
-
+ const customizationRef = useRef(null);
+   const addonRef = useRef(null); 
   const [similar, setSimilar] = useState([]);
   const [expensive, setExpensive] = useState([]);
   const [loadingSP, setLoadingSP] = useState(false);
@@ -350,11 +354,14 @@ function DecorationCatDetails() {
   const faqScriptTag = JSON.stringify(faqSchema);
   const [isClient, setIsClient] = useState(false);
 
-  const showAddOnmodal = () => {
-    setIsModalOpen((prevState) => !prevState);
-    setIsArrowDown(!isArrowDown);
-  };
+ const showAddOnmodal = () => {
+    setIsModalOpen((prev) => !prev);
+    setIsArrowDown((prev) => !prev);
 
+    setTimeout(() => {
+      addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
   const updateTotalAmount = () => {
     let newTotalAmount = Number(product.price);
     selectedAddOnProduct.forEach((item) => {
@@ -439,176 +446,72 @@ function DecorationCatDetails() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const FAQSection = ({ faqData }) => {
-    const [openIndex, setOpenIndex] = useState(null);
+  
 
-    const handleToggle = (index) => {
-      setOpenIndex(openIndex === index ? null : index);
-    };
+ 
+  const handleAddToCartAndScrollBack = (item) => {
+    handleAddToCart(item);  // You already have this function
 
-    return (
-      <div className="faqSection">
-        {faqData.map((item, index) => (
-          <div key={index} className="faqItem">
-            <div
-              onClick={() => handleToggle(index)}
-              style={{ cursor: "pointer" }}
-            >
-              <h3>{item.name}</h3>
-              <span>{openIndex === index ? "-" : "+"}</span>
-            </div>
-            {openIndex === index && (
-              <div>
-                <p>{item.acceptedAnswer.text}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
+    setIsModalOpen(false);
+
+    setTimeout(() => {
+      customizationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
   };
+//   const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
+//     const stateData = {
+//       from: window.location.pathname,
+//       subCategory,
+//       product: JSON.stringify(product),
+//       orderType,
+//       catValue,
+//       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+//       itemQuantities: JSON.stringify(itemQuantities),
+//       totalAmount: totalAmount,
+//     };
 
-  const tabs = [
-    {
-      id: "faq",
-      title: "FAQ",
-      content: <FAQSection faqData={faqData} />,
-    },
-    {
-      id: "whyHora",
-      title: "Why Hora",
-      content: (
-        <div className="whyHoraSec">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-            className="whyHoraSecInner"
-          >
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                Experts Decorations
-              </p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage1}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                Secured Transactions
-              </p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage2}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                100% Service Guaranteed
-              </p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "cancellationPolicy",
-      title: "Cancellation Policy",
-      content: (
-        <div className="canceltionPolicy">
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className=" text-left m-1"
-          >
-            Cancellation and order change policy
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            1. If the order is beyong 48 Hours: You are eligible for a 100%
-            refund of the advance payment
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            2. If the order is cancelled more than 24 hours before the scheduled
-            delivery: You will not receive refund of the advance payment.
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            3. If the order is cancelled within 24 hours: The full advance
-            amount will be non-refundable, and 100% of the payment for
-            decoration has to be paid by customer.
-          </p>
-        </div>
-      ),
-    },
-  ];
+//   router.push({
+//     pathname: "/checkout",
+//     query: {
+//       from: window.location.pathname,
+//       subCategory,
+//       product: JSON.stringify(product),
+//       orderType: "decoration",
+//       catValue,
+//       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+//       itemQuantities: JSON.stringify(itemQuantities),
+//       totalAmount: totalPrice,
+//     },
+//   });
+// };
 
-  const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
-    const stateData = {
+   
+
+const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
+  const totalPrice = calculateTotalPrice(product.price); // ✅ Calculate total
+
+  // ✅ Fire GTM event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "book_now_click",
+    product_name: product.name,
+  });
+
+  // ✅ Redirect to /checkout with query params
+  router.push({
+    pathname: "/checkout",
+    query: {
       from: window.location.pathname,
       subCategory,
       product: JSON.stringify(product),
-      orderType,
+      orderType: "decoration",
       catValue,
       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
       itemQuantities: JSON.stringify(itemQuantities),
-      totalAmount: totalAmount,
-    };
-
-    // if (localStorage.getItem("isLoggedIn") !== "true") {
-    //   router.push({
-    //     pathname: '/login',
-    //     query: {
-    //       from: window.location.pathname,
-    //       subCategory,
-    //       product: JSON.stringify(product),
-    //       orderType,
-    //       catValue,
-    //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-    //       itemQuantities: JSON.stringify(itemQuantities),
-    //       totalAmount: totalAmount,
-    //     }
-    //   });
-    // } else {
-    router.push({
-      pathname: "/checkout",
-      query: {
-        from: window.location.pathname,
-        subCategory,
-        product: JSON.stringify(product),
-        orderType,
-        catValue,
-        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-        itemQuantities: JSON.stringify(itemQuantities),
-        totalAmount: totalAmount,
-      },
-    });
-  };
+      totalAmount: totalPrice,
+    },
+  });
+};
 
   function addSpaces(subCategory) {
     let result = "";
@@ -734,27 +637,13 @@ function DecorationCatDetails() {
       </Head>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            paddingTop: "10px",
-            position: "relative",
-          }}
           className="decDetails"
         >
           <div
-            style={{ width: "50%", textAlign: "center" }}
-            className="decDetailsLeft"
+               className="decDetailsLeft"
           >
             <div
-              style={{
-                width: "80%",
-                boxShadow: "0 1px 8px rgba(0,0,0,.1)",
-                padding: "10px",
-                margin: "0 auto",
-                position: "relative",
-              }}
+            
               className="decDetailsImage"
             >
               <div>
@@ -771,7 +660,6 @@ function DecorationCatDetails() {
   width={300}
   height={300}
 />
-
 
                 <div
                   style={{
@@ -798,7 +686,7 @@ function DecorationCatDetails() {
               </div>
             </div>
             <div
-              style={{
+           style={{
                 border: "1px solid rgb(220, 53, 69)",
                 backgroundColor: "rgb(248, 215, 218)",
                 margin: "13px auto 7px",
@@ -806,8 +694,8 @@ function DecorationCatDetails() {
                 borderRadius: 10,
                 width: "80%",
                 textAlign: "left",
-              }}
-              className="inclusiton-details desktop-view"
+              }}     
+                       className="inclusiton-details desktop-view"
             >
               <p
                 style={{ marginBottom: "0", fontWeight: "bold", fontSize: 12 }}
@@ -857,8 +745,7 @@ function DecorationCatDetails() {
             
           </div>
           <div
-            style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
-            className="decDetailsRight"
+                 className="decDetailsRight"
           >
             <div
               style={{
@@ -931,100 +818,34 @@ function DecorationCatDetails() {
                 </div>
               </div>
 
-              {selectedAddOnProduct.length == 0 && (
-                <button
-                  style={styles.Buttonstyle}
-                  id="continueButton"
-                  className="dec-continueButton"
-                  onClick={() => handleButtonClick(subCategory, product)}
-                >
-                  Continue
-                </button>
-              )}
+              <div className='addon-prices' ref={customizationRef}>
 
-              {/* <div className="d-flex align-items-center pro-rating-sec">
-              <p className="m-0 p-0 pe-3 pro-rating-sec1" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color:"#9252AA" }}>{getRandomRating()}<span className='px-1 m-0 py-0 img-fluid' style={{ color: '#FFBF00' }}><FontAwesomeIcon style={{ margin: 0 }} icon={faStar} /></span></p>
-              <p className="m-0 p-0" style={{ color: '#9252AA', fontWeight: '500', fontSize: 17, margin: "0px", padding: "0 0 0 10px" }}>({getRandomNumber(20, 500)})</p>
-            </div> */}
+        <div className="photodetails-inclusions">
+          {selectedAddOnProduct.length > 0 && (
+            <>
+              <label>Customisations</label>
+              <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
+                < svg stroke="currentColor" fill="currentColor"   stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg"  style={{color: "rgb(146, 82, 170)",verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
+              </span>
+              {selectedAddOnProduct.map((item, index) => (
+                <li key={index}>
+                  <div className="itemline">
+                    {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+                
+                  </div>
+                  
+                </li>
+              ))}
+
+            </>
+          )}
+        </div>
+      </div>
+     
+
             </div>
 
-            {selectedAddOnProduct.length > 0 && (
-              <ul className="decoration-addons">
-                <>
-                  <div className="addon-sec">
-                    <h1
-                      style={{
-                        color: "#222",
-                        fontSize: "16px",
-                        fontWeight: "#222",
-                      }}
-                    >
-                      {product.name} :{" "}
-                    </h1>
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        color: "#222",
-                        fontWeight: "600",
-                      }}
-                    >
-                      {" "}
-                      ₹ {product.price}
-                    </div>
-                  </div>
-                  <h6>
-                    Customisations
-                    <span
-                      onClick={showAddOnmodal}
-                      style={{ marginLeft: "6px", cursor: "pointer" }}
-                    >
-                      <svg
-                        stroke="currentColor"
-                        fill="currentColor"
-                        stroke-width="0"
-                        viewBox="0 0 576 512"
-                        height="1em"
-                        width="1em"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"></path>
-                      </svg>
-                    </span>
-                  </h6>
-                  {selectedAddOnProduct.map((item, index) => (
-                    <li key={index} className="addon-sec">
-                      <div>{item.title} :</div>
-                      <div>
-                        ₹ {item.price} x {itemQuantities[item.title]} = ₹{" "}
-                        {item.price * itemQuantities[item.title]}
-                      </div>
-                    </li>
-                  ))}
-                  <p
-                    style={{
-                      fontSize: "18px",
-                      color: "#9252AA",
-                      fontWeight: "600",
-                    }}
-                    className="addon-sec"
-                  >
-                    <div>Total:</div>
-                    <div>₹ {totalAmount}</div>
-                  </p>
-
-                  <button
-                    style={styles.Buttonstyle}
-                    id="continueButton"
-                    className="dec-continueButton"
-                    onClick={() =>
-                      handleCheckout(subCategory, product, selectedAddOnProduct)
-                    }
-                  >
-                    Continue
-                  </button>
-                </>
-              </ul>
-            )}
+           
 
             <div
               style={{
@@ -1037,17 +858,17 @@ function DecorationCatDetails() {
               {getItemInclusion(product.inclusion)}
 
               <div
-                style={{
-                  border: "1px solid rgb(220, 53, 69)",
-                  backgroundColor: "rgb(248, 215, 218)",
+               
+  style={{
+                  border: "1px solid rgb(157, 74, 147)",
+                  backgroundColor: "rgb(239, 208, 235)",
                   margin: "13px 2px 7px",
                   padding: "7px 7px",
                   borderRadius: 10,
                   textAlign: "left",
                   margin: "10px auto",
                   width: "100%",
-                }}
-                className="inclusiton-details mobile-view"
+                }}                className="inclusiton-details mobile-view"
               >
                 <p
                   style={{
@@ -1099,171 +920,107 @@ function DecorationCatDetails() {
               </div>
             </div>
 
-            <div className="card-container-cta">
-              <div className="header-section-cta">
-                <div className="addon-section-buttons">
-                  <div className="icon-wrapper-cta">
-                    <span className="user-icon-cta">👤</span>
-                  </div>
-                  <p className="header-text-cta">
-                    Want to <span className="highlight-cta">customize</span>{" "}
-                    this decoration?
-                    {/* <p className="subtext-cta">Talk with our Experts!</p> */}
-                  </p>
-                </div>
-              </div>
+  
+ 
+             <div className="modal-top-box11" ref={addonRef}>
+                   <h2 className="select-heading-sec">Add Extra Features</h2>
+                 </div>
+                 
+           
+                     <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "600px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
+                       <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
+                         {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
+           
+                         <div className="modal-middle-box 11">
+                           <div className="modalcard-container">
+          
+                            {addOnProductsData?.addOnProducts?.map((item, index) => (
+                               <div key={index} className="modalcard">
+                                 <img
+                                   // style={{ width: "120px", height: "120px" }}
+                                   src={item.image}
+                                   alt={item.title}
+                                   className="model-image"
+                                 />
+                                 <h3>{item.title}</h3>
+                                 <p className="Addon-description">{item.description}</p>
+           
+                                 <div className="price-container">
+                                   <span className="price">
+                                     {typeof item.price === "number" ? `₹${item.price}` : "Included"}
+                                   </span>
+                                   {typeof item.price === "number" && (
+                                     itemQuantities[item.title] ? (
+                                       <div className="quantitycontrols">
+                                         <button onClick={() => handleRemoveFromCart(item)} className="quantitybutton">-</button>
+                                         <span className="qunatity-title">{itemQuantities[item.title]}</span>
+                                         <button onClick={() => handleAddToCart(item)} className="quantitybutton">+</button>
+                                       </div>
+                                     ) : (
+                                       // <button onClick={() => handleAddToCart(item)} className="addbutton">Add</button>
+                                       <button onClick={() => handleAddToCartAndScrollBack(item)} className="addbutton">Add</button>
+           
+                                     )
+                                   )}
+                                 </div>
+           
+                               </div>
+                             ))}
+           
+           
+                           </div>
+                         </div>
+           
+                       </div>
+                     </div>
+                     <div className="decorke-celebrate-banner">
+  <Image
+    src={CustomizeDecorBanner}
+    alt="Customize Your Celebration"
+    className="decorke-banner-img"
+  />
+</div>
+{/* <div className="decorke-why-section">
+  <h2 className="decorke-why-title">Why Hora Decoration</h2>
 
-              <div className="button-group-cta">
-                <button
-                  onClick={showAddOnmodal}
-                  className="button-cta call-cta"
-                >
-                  {isArrowDown ? (
-                    <ArrowDown className="icon-cta down-icon" />
-                  ) : (
-                    <ArrowUp className="icon-cta up-icon" />
-                  )}
-                  Decor Upgrade's
-                </button>
-                <button
-                  onClick={handleWhatsApp}
-                  className="button-cta whatsapp-cta"
-                >
-                  <MessageCircle className="icon-cta" />
-                  Whatsapp
-                </button>
-              </div>
-              <div className="addon-sec">
-                {isModalOpen && (
-                  <div
-                    className="modal-overlay11"
-                    onClick={() => setIsModalOpen(false)}
-                    style={{ maxHeight: "500px", overflowY: "scroll" }}
-                  >
-                    <div
-                      className="modal-content`11"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ marginTop: "10px" }}
-                    >
-                      {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
-                      <div className="modal-top-box11">
-                        <h2
-                          style={{ fontSize: 16, fontWeight: 600 }}
-                          className="select-heading-sec"
-                        >
-                          Please select here to add in your decoration
-                        </h2>
-                      </div>
-                      <div className="modal-middle-box 11">
-                        <div className="modal-card-container">
-                          {addOnProductsData.addOnProducts.map(
-                            (item, index) => (
-                              <div key={index} className="modal-card">
-                                <img
-                                  style={{ width: "120px", height: "120px" }}
-                                  src={item.image}
-                                  alt={item.title}
-                                  className="model-image"
-                                />
-                                <h3>{item.title}</h3>
-                                <p>{item.description}</p>
-
-                                <div className="price-container">
-                                  <span className="price">₹ {item.price}</span>
-                                  {itemQuantities[item.title] ? (
-                                    <div>
-                                      <button
-                                        onClick={() =>
-                                          handleRemoveFromCart(item)
-                                        }
-                                        className="quantity-button"
-                                      >
-                                        -
-                                      </button>
-                                      <span>{itemQuantities[item.title]}</span>
-                                      <button
-                                        onClick={() => handleAddToCart(item)}
-                                        className="quantity-button"
-                                      >
-                                        +
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={() => handleAddToCart(item)}
-                                      className="add-button"
-                                    >
-                                      Add
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </div>
-                      <div className="modal-bottom-box">
-                        <p>
-                          Total: ₹ {calculateTotalPrice(Number(product.price))}
-                        </p>
-                        <button
-                          className="book-now-button"
-                          onClick={handleContinue}
-                        >
-                          Continue
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-  <div style={{ padding: "20px", textAlign: "left" }}>
-      {/* 🔵 Section 1: Top 5 Similar Products */}
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#52c41a")}>Top 5</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Similar Products</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {similar.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
-
-      {/* 🔴 Section 2: Products Above ₹800 */}
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#ff4d4f")}>₹800+</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Premium Products</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {expensive.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
-
-      {/* 🟡 Section 3: Kids Extra Products */}
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#faad14")}>Extra</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Kids Add-Ons</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {extraProduct.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
+  <div className="decorke-why-features">
+    <div className="decorke-why-item">
+      <Image  alt="Experts Decoration" className="decorke-why-icon" />
+      <p className="decorke-why-text">EXPERTS<br />DECORATION</p>
     </div>
+    <div className="decorke-why-item">
+      <Image  alt="Secure Transactions" className="decorke-why-icon" />
+      <p className="decorke-why-text">SECURE<br />TRANSACTIONS</p>
+    </div>
+    <div className="decorke-why-item">
+      <Image  alt="Service Guarantee" className="decorke-why-icon" />
+      <p className="decorke-why-text">100% SERVICE<br />GUARANTEED</p>
+    </div>
+  </div>
+</div> */}
 
             <div className="tab-section-details-productpage">
-              <Tabs tabs={tabs} defaultTab="faq" className="faqtabs" />
+              <FAQSection faqData={faqData} />
             </div>
           </div>
         </div>
+
+        
+   <div className="confirm-button-wrapper">
+  <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black" }}>
+    Total: ₹ {calculateTotalPrice(Number(product?.price))}
+  </p>
+  <button
+    className="confirm-button"
+    onClick={() => handleCheckout(subCategory, product, selectedAddOnProduct)}
+  >
+    Continue
+  </button>
+</div>
+
+
+
+      
       </div>
     </div>
   );

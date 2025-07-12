@@ -1,7 +1,6 @@
 .banner-slider-container {
   width: 100%;
   position: relative;
-  margin-top: 10px;
 }
 
 .banner-image {
@@ -16,8 +15,8 @@
 
 /* Pagination bullet styling */
 .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: rgb(159, 158, 158);
   opacity: 1;
   margin: 0 3px;

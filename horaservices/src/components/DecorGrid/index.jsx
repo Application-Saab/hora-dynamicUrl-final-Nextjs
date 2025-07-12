@@ -38,6 +38,8 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat ,loca
   return (
     <div className="decor-grid-wrapper">
       <div className="decor-card-grid">
+      <h4 className="decorke-wedding-heading">Your Dream Wedding Starts Here</h4>
+
         {/* 🔶 Large Card */}
         <div className="decor-large-card">
           <div className="decor-large-image-box">

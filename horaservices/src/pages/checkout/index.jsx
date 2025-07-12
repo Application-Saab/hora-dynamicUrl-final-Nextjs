@@ -29,7 +29,7 @@ import Loader from "../../components/Loader";
 import { pincodes } from "../../utils/pincodes.js";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
 import BackgroundBase from "../../assets/BackgroundBase.jpg";
-import BackgroundDetails from "../../assets/BackgroundDetails.svg";
+import BackgroundDetails from "../../assets/BackgroundDetails2.jpg";
 import productsData from '../../utils/photoGraphyImages.js';
 import CommentIcon from "../../assets/commenticon.png";
 import locationIcon from "../../assets/locationIcon.png";
@@ -425,15 +425,13 @@ const Checkout = () => {
 
       <div className="booking-form-card" >
         <div style={{
-
           backgroundImage: `url(${BackgroundDetails.src})`,
-          backgroundSize: '423px 100%',
-          backgroundPosition: ' left 0px top 40%',
+          backgroundSize: '600px 500px',
+          backgroundPosition: ' left -160px top 100px',
           backgroundRepeat: 'no-repeat',
-
         }} >
-
-
+  
+  
           {/* Transparent Foreground Form Layer */}
           <div className="booking-form with-bg-shapes" >
             <div className="background-shape top-left" />
@@ -479,17 +477,15 @@ const Checkout = () => {
             </div>
 
             {combinedDateTimeError && (
-              <p className="error-text">
-                The selected date and time must be at least 24 hours from now.
-              </p>
-            )}
-
-            <div className="support-box">
+               <div className="support-box">
               <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
               <button className="support-button" onClick={contactUsRedirection}>
                 Contact Support
               </button>
             </div>
+            )}
+
+          
 
 
 
@@ -568,7 +564,7 @@ const Checkout = () => {
           />
         </div>
         <div className='rightsecdecinner photography'>
-          <h3 style={{ fontSize: "22px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0 11px 0", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
+          <h3 style={{ fontSize: "18px", fontWeight: "600", color: "rgb(157, 74, 147)",     margin: "33px 0px 15px 15px", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className=''>
             <Image
               className="checkoutRightImg"
@@ -634,7 +630,7 @@ const Checkout = () => {
   <div className="payment-note">
                 <Image src={Infoicon} alt="info icon" className="info-icon" />
                 <div className="note-text">
-                  Balance payment is to be paid <br />
+                  Balance payment is to be paid 
                   to executor after order completion.
                 </div>
               </div>
@@ -722,7 +718,7 @@ export const CustomDatePicker = ({
   return (
     <div className={`custom-datepicker-container ${combinedDateTimeError ? 'error' : ''}`}>
 
-      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} className="dropdown-custom">
+      <Dropdown show={showDatePicker} onToggle={toggleDatePicker} >
         <Dropdown.Toggle
           variant="outline-secondary"
           className={`dropdown-toggle-custom ${selectedDateError ? 'error' : ''}`}

@@ -81,13 +81,14 @@ const DecorSlider = ({
               </div>
               <div className="premium-content">
                 <p className="premium-title">{item.title}</p>
-                <div className="premium-price-wrapper">
+               
+              </div>
+               <div className="premium-price-wrapper">
                   <span className="premium-price">{item.price}</span>
                   {showDiscount && (
                     <span className="premium-original">₹{originalPrice}</span>
                   )}
                 </div>
-              </div>
             </Link>
           );
         })}

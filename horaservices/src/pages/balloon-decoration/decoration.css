@@ -7,11 +7,13 @@
 }
 
 /* ================================================================== */
+
+
 /* SEE MORE BUTTON */
-.see-more-container {
+/* .see-more-container {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+ margin:10px
 
 }
 
@@ -23,22 +25,22 @@
   font-size: 16px;
   font-weight: 600;
   color: #97538C;
-  background: linear-gradient(white, #f9f9f9);
-  border: 2px solid #97538C;
+  background-color: #FFFFFF;
+  border: 1.14px solid #97538C;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(138, 43, 142, 0.4);
-  margin-bottom: 10px;
   position: relative;
   overflow: hidden;
+
+
+  box-shadow:
+    0px 4.55px 3.42px 0px #00000040,          
+    inset 0px 7.97px 7.97px 0px #00000026;     
 }
 
-.see-more-btn:hover {
-  background-color: #f0e4f5;
-  box-shadow: 0 4px 10px rgba(138, 43, 142, 0.5);
-  transform: scale(1.03);
-}
+
+
 
 .arrow-icondecoration {
  
@@ -49,17 +51,55 @@
   transition: transform 0.3s ease;
 }
 
-/* Arrow slides slightly on hover */
+
 .see-more-btn:hover .arrow-icondecoration {
   transform: translateX(4px);
 }
+ */
 
-.see-more-btn span:first-child {
-  transition: color 0.3s ease;
+/* Keyframes for continuous bounce */
+@keyframes bounceLoop {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(3px);
+  }
 }
 
-.see-more-btn:hover span:first-child {
-  color: #6c1f75;
+/* Button container */
+.see-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 15px;
+}
+
+/* Button styling + continuous bounce */
+.see-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #97538C;
+  background-color: #FFFFFF;
+  border: 1.14px solid #97538C;
+  border-radius: 50px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  /* Drop shadow */
+  box-shadow:
+    0px 4.55px 3.42px 0px #00000040,
+    inset 0px 7.97px 7.97px 0px #00000026;
+
+  /* Continuous bounce animation */
+  animation: bounceLoop 2s infinite ease-in-out;
 }
 
 
@@ -116,6 +156,7 @@
   font-size: 7px;
   color: #000;
   margin-top: 4px;
+  margin-bottom: 0px !important;
 }
 /* ================================================================================================== */
 .whatApp {

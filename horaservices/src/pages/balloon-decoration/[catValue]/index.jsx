@@ -60,6 +60,7 @@ const DecorationCatPage = () => {
   const [currentCategoryContent, setCurrentCategoryContent] = useState(
     DecorationCatDescriptionData[catValue]
   );
+  const { theme } = router.query;
   const [loading, setLoading] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
   const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
@@ -153,7 +154,13 @@ const DecorationCatPage = () => {
   const getRandomRating = () => {
     return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
   };
-
+useEffect(() => {
+  if (theme) {
+    setThemeFilter(theme); // This sets the theme dropdown based on URL
+  } else {
+    setThemeFilter("all");
+  }
+}, [theme]);
   useEffect(() => {
     //console.log("useEffect1")
     addSpaces(subCategory);
@@ -311,7 +318,7 @@ const DecorationCatPage = () => {
     if (catId) {
       getSubCatItems(1);
     }
-  }, [catId]);
+  }, [catId,themeFilter, priceFilter]);
 
   console.log("catId22", catId);
   const getSubCatItems = async (page) => {
@@ -512,26 +519,60 @@ const DecorationCatPage = () => {
 
               {/* Theme filter */}
               {selCat === "Kids Birthday" || selCat === "Kidsbirthday" ? (
+                // <select
+                //   value={themeFilter}
+                //   onChange={(e) => setThemeFilter(e.target.value)}
+                //   style={{
+                //     fontSize: "16px",
+                //     color: "rgb(157, 74, 147)",
+                //     padding: "7px 10px",
+                //     borderWidth: 1,
+                //     borderColor: "rgb(157, 74, 147)",
+                //     borderRadius: "5px",
+                //     marginLeft: "5px",
+                //     backgroundColor: "#fff",
+                //   }}
+                // >
+                //   {themeFilters.map((filter) => (
+                //     <option key={filter.value} value={filter.value}>
+                //       {filter.label}
+                //     </option>
+                //   ))}
+                // </select>
                 <select
-                  value={themeFilter}
-                  onChange={(e) => setThemeFilter(e.target.value)}
-                  style={{
-                    fontSize: "16px",
-                    color: "rgb(157, 74, 147)",
-                    padding: "7px 10px",
-                    borderWidth: 1,
-                    borderColor: "rgb(157, 74, 147)",
-                    borderRadius: "5px",
-                    marginLeft: "5px",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  {themeFilters.map((filter) => (
-                    <option key={filter.value} value={filter.value}>
-                      {filter.label}
-                    </option>
-                  ))}
-                </select>
+  value={themeFilter}
+  onChange={(e) => {
+    const selected = e.target.value;
+    setThemeFilter(selected);
+
+    // Push updated URL with selected theme
+    if (selected === "all") {
+      router.push(`/balloon-decoration/${catValue}`);
+    } else {
+      router.push({
+        pathname: `/balloon-decoration/${catValue}`,
+        query: { theme: selected }
+      });
+    }
+  }}
+  style={{
+    fontSize: "16px",
+    color: "rgb(157, 74, 147)",
+    padding: "7px 10px",
+    borderWidth: 1,
+    borderColor: "rgb(157, 74, 147)",
+    borderRadius: "5px",
+    marginLeft: "5px",
+    backgroundColor: "#fff",
+  }}
+>
+  {themeFilters.map((filter) => (
+    <option key={filter.value} value={filter.value}>
+      {filter.label}
+    </option>
+  ))}
+</select>
+
               ) : null}
             </div>
           </div>

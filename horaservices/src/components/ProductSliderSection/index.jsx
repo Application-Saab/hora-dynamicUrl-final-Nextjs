@@ -73,9 +73,9 @@ const ProductSliderSection = ({ title, data, viewLink, city, hasCityPageParam, l
                   src={item.Image}
                   alt={item.title}
                   className="product-section-image"
-                  layout="responsive"
+                  // layout="responsive"
                   width={700}
-                  height={475}
+                  height={250}
                 />
                 <div className="product-section-watermark">
                   <Image
