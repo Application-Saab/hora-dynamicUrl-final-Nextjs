@@ -79,26 +79,26 @@ useEffect(() => {
   }, []);
 
   // ✅ Disable image dragging & text selection
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      * {
-        -webkit-user-select: none !important;
-        -moz-user-select: none !important;
-        -ms-user-select: none !important;
-        user-select: none !important;
-        -webkit-touch-callout: none !important;
-      }
-      img {
-        pointer-events: none !important;
-        -webkit-user-drag: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const style = document.createElement('style');
+  //   style.innerHTML = `
+  //     * {
+  //       -webkit-user-select: none !important;
+  //       -moz-user-select: none !important;
+  //       -ms-user-select: none !important;
+  //       user-select: none !important;
+  //       -webkit-touch-callout: none !important;
+  //     }
+  //     img {
+  //       pointer-events: none !important;
+  //       -webkit-user-drag: none !important;
+  //     }
+  //   `;
+  //   document.head.appendChild(style);
+  //   return () => {
+  //     document.head.removeChild(style);
+  //   };
+  // }, []);
 
 useEffect(() => {
   // Google Tag Manager script for GTM
