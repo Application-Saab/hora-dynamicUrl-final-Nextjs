@@ -102,6 +102,7 @@
   justify-content: center;
   flex-wrap: nowrap;
   margin: 10px;
+   
 }
 
 .decor-small-card-wrapper {
@@ -109,6 +110,10 @@
   flex-direction: column;
   align-items: center;
   width: 180px;
+    background-color: #fff4d3;
+  border: 1px solid #f1d7aa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
 }
 
 .decor-small-card {
@@ -117,7 +122,8 @@
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   transition: 0.3s ease;
-  width: 100%;
+  border-radius: 16px;
+
 }
 
 .decor-small-img-box img,
@@ -127,8 +133,8 @@
 }
 
 .decor-small-label {
-  margin-top: 8px;
-  font-size: 1rem;
+  margin: 10px;
+  font-size:15px;
   font-weight: 700;
   color: #333;
   text-align: center;

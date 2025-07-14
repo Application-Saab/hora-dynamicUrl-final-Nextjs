@@ -75,7 +75,7 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat ,loca
                     src={card.image}
                     alt={card.title}
                     width={400}
-                    height={100}
+                    height={120}
                     className="decor-small-img"
                   />
                 </div>

@@ -187,11 +187,11 @@ const Decoration = ({ city, locality }) => {
     <div className="dec-landing-page">
       {/* <div className="page-width"> */}
       <div className="top-slider">
-        <BannerSlider images={bannerImages} />
+        <BannerSlider images={bannerImages}  showSeeMore={true} />
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs-outer">
-        <CategoryTabs data={decCat} onSelect={openCatItems} city={city} hasCityPageParam={hasCityPageParam} locality={locality} />
+        <CategoryTabs data={decCat} onSelect={openCatItems} city={city} hasCityPageParam={hasCityPageParam} locality={locality} variant="circle" />
       </div>
 
       <div className="CategoryGrid-outer">
@@ -232,8 +232,8 @@ const Decoration = ({ city, locality }) => {
                 <Image
                   src={item.icon}
                   alt={item.label}
-                  width={70}
-                  height={"auto"}
+                  width={80}
+                  height={60}
                 />{" "}
                 {/* ✅ IMAGE */}
                 <h3>{item.number}</h3>

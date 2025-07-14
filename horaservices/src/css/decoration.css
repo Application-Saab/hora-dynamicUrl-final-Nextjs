@@ -489,12 +489,12 @@ ul.decoration-addons {
   margin:0;
 }
 
-.price-container {
+/* .price-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
-}
+} */
 
 .description {
   font-size: 14px;
@@ -512,12 +512,12 @@ ul.decoration-addons {
   display: inline-block;
   margin-left: 5px;
 }
-.price-container {
+/* .price-container {
 display: flex;
 justify-content: space-between;
 align-items: center;
 margin-top: 10px;
-}
+} */
 
 .price {
   font-size: 16px;

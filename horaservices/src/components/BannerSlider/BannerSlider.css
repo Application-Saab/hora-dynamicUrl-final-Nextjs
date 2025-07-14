@@ -29,3 +29,25 @@
   transform: scale(1.2);
 }
 
+.banner-slide-wrapper {
+  position: relative;
+}
+.see-button {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: transparent;
+  color: #97538C;
+  border: 2px solid #97538C;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.see-more-button:hover {
+  background-color: #97538C;
+  color: white;
+}

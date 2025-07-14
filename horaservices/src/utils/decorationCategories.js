@@ -61,7 +61,7 @@ export const decCat = [
     id: "7",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Firstnight.webp",
-    name: "First Night Decor",
+    name: "First Night",
     subCategory: "FirstNight",
     catValue: "first-night-decoration",
     imgAlt:

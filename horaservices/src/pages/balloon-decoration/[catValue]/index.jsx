@@ -75,7 +75,7 @@ const DecorationCatPage = () => {
   const [sortFilter, setSortFilter] = useState("asc");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
-  const themeFilters = [
+   const themeFilters = [
     { label: "Select Theme", value: "all" },
     { label: "Astronaut space theme", value: "Astronaut-space" },
     { label: "Avengers theme", value: "Avengers" },
@@ -519,33 +519,46 @@ useEffect(() => {
 
               {/* Theme filter */}
               {selCat === "Kids Birthday" || selCat === "Kidsbirthday" ? (
-                // <select
-                //   value={themeFilter}
-                //   onChange={(e) => setThemeFilter(e.target.value)}
-                //   style={{
-                //     fontSize: "16px",
-                //     color: "rgb(157, 74, 147)",
-                //     padding: "7px 10px",
-                //     borderWidth: 1,
-                //     borderColor: "rgb(157, 74, 147)",
-                //     borderRadius: "5px",
-                //     marginLeft: "5px",
-                //     backgroundColor: "#fff",
-                //   }}
-                // >
-                //   {themeFilters.map((filter) => (
-                //     <option key={filter.value} value={filter.value}>
-                //       {filter.label}
-                //     </option>
-                //   ))}
-                // </select>
-                <select
+                
+//                 <select
+//   value={themeFilter}
+//   onChange={(e) => {
+//     const selected = e.target.value;
+//     setThemeFilter(selected);
+
+   
+//     if (selected === "all") {
+//       router.push(`/balloon-decoration/${catValue}`);
+//     } else {
+//       router.push({
+//         pathname: `/balloon-decoration/${catValue}`,
+//         query: { theme: selected }
+//       });
+//     }
+//   }}
+//   style={{
+//     fontSize: "16px",
+//     color: "rgb(157, 74, 147)",
+//     padding: "7px 10px",
+//     borderWidth: 1,
+//     borderColor: "rgb(157, 74, 147)",
+//     borderRadius: "5px",
+//     marginLeft: "5px",
+//     backgroundColor: "#fff",
+//   }}
+// >
+//   {themeFilters.map((filter) => (
+//     <option key={filter.value} value={filter.value}>
+//       {filter.label}
+//     </option>
+//   ))}
+// </select>
+<select
   value={themeFilter}
   onChange={(e) => {
     const selected = e.target.value;
     setThemeFilter(selected);
 
-    // Push updated URL with selected theme
     if (selected === "all") {
       router.push(`/balloon-decoration/${catValue}`);
     } else {
@@ -554,8 +567,7 @@ useEffect(() => {
         query: { theme: selected }
       });
     }
-  }}
-  style={{
+  }} style={{
     fontSize: "16px",
     color: "rgb(157, 74, 147)",
     padding: "7px 10px",
@@ -572,6 +584,7 @@ useEffect(() => {
     </option>
   ))}
 </select>
+
 
               ) : null}
             </div>

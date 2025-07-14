@@ -4,7 +4,7 @@ import Image from "next/image";
 import "./CategoryTabs.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 
-const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality }) => {
+const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant = "grid" }) => {
   const { handleItemClick, openCatItems } = useDecorationEvents(
     city,
     hasCityPageParam,
@@ -20,11 +20,30 @@ const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality }) => {
       catValue: cat.catValue,
       imgAlt: cat.imgAlt,
     });
-
     openCatItems(cat);
   };
 
-  return (
+  return variant === "grid" ? (
+
+    <div className="category-tabs-grid">
+    {data
+      .filter((cat) => cat.image && cat.image.trim() !== "")
+      .map((cat) => (
+        <button
+          key={cat.id}
+          className="category-tabs-card"
+          onClick={() => handleClick(cat)}
+        >
+          <div
+            className="category-tabs-circle"
+            style={{ backgroundImage: `url(${cat.image})` }}
+          ></div>
+          <span className="category-tabs-title">{cat.name}</span>
+        </button>
+      ))}
+  </div>
+  ) : (
+    // ✅ Circle with Label inside Variant (for Product Page)
     <div className="category-tabs">
       {data
         .filter((cat) => cat.image && cat.image.trim() !== "")
