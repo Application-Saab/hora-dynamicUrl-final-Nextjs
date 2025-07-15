@@ -106,13 +106,10 @@
 }
 
 .decor-small-card-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 180px;
-    background-color: #fff4d3;
-  border: 1px solid #f1d7aa;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 180px;
     border-radius: 16px;
 }
 
@@ -126,10 +123,14 @@
 
 }
 
-.decor-small-img-box img,
+.decor-small-img-box img, 
 .decor-small-img {
-  display: block;
-  object-fit: cover;
+    display: block;
+    object-fit: cover;
+    /* background-color: #fff4d3; */
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-radius: 20px;
 }
 
 .decor-small-label {

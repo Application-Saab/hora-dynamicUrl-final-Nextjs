@@ -93,7 +93,8 @@ const ProductSliderSection = ({ title, data, viewLink, city, hasCityPageParam, l
               </div>
 
               <div className="product-section-details">
-                <h3>{item.title}</h3>
+              <h3>{item.title.length > 15 ? `${item.title.slice(0, 15)}...` : item.title}</h3>
+
                 <div className="product-section-price">
                   <p className="product-section-price-current">{item.price}</p>
                   <p className="product-section-price-original">

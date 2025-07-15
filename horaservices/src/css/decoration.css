@@ -705,10 +705,7 @@ margin-top: 10px;
 .desktop-view{
   display: block;
   }
-  .mobile-view{
-    display: none;
-    }
-
+ 
 .button-whatspp-decoration-cta{
     background-color: #25d366;
     padding: 21px 0;
@@ -770,9 +767,7 @@ button.button-sec svg{
   .desktop-view{
   display: none;
   }
-  .mobile-view{
-    display: block;
-    }
+
   .slick-prev:before, .slick-next:before {
     font-size: 25px !important;
 }

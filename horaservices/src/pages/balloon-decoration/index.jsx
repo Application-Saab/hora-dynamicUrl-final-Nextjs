@@ -48,6 +48,10 @@ import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
+import BrandBanner from "@/components/BrandBanner";
+
+
+
 import smallcardBackground from "../../assets/small-cardBackground.jpg";
 import {
   birthdayData,
@@ -91,7 +95,12 @@ const largeCard = {
   link: "balloon-decoration/wedding-decoration",
   catValue: "Wedding",
 };
-
+const brandItems = [
+  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
+  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+  { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+];
 const smallCards = [
   {
     image: "/decorationhaldi-Mhendi.png",
@@ -148,7 +157,11 @@ const Decoration = ({ city, locality }) => {
 
   const hasCityPageParam = city ? true : false;
 
-
+ const handleWhatsApp = () => {
+    const phoneNumber = "7338584828";
+    const message = encodeURIComponent("I want to customize a decoration");
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  };
   const handleSeeMoreClick = () => {
     setShowMoreCards(true); // optional if hiding initially
     setTimeout(() => {
@@ -205,7 +218,7 @@ const Decoration = ({ city, locality }) => {
         <button className="see-more-btn" onClick={handleSeeMoreClick}>
           <span>SEE MORE</span>
           <span className="arrow-icondecoration">
-            <Image src={arrowIcon} alt="Arrow Down" width={20} height={20} />
+            <Image src={arrowIcon} alt="Arrow Down" width={30} height={30} />
           </span>
         </button>
       </div>
@@ -232,8 +245,8 @@ const Decoration = ({ city, locality }) => {
                 <Image
                   src={item.icon}
                   alt={item.label}
-                  width={80}
-                  height={60}
+                  width={70}
+                  height={50}
                 />{" "}
                 {/* ✅ IMAGE */}
                 <h3>{item.number}</h3>
@@ -244,16 +257,17 @@ const Decoration = ({ city, locality }) => {
         </div>
       </section>
 
-      <section className="whatApp">
-        <Image
-          src={whatApp}
-          alt="WhatsApp-Banner"
-          width={1200}
-          height={400}
-          className="whatsAppImage"
-          priority
-        />
-      </section>
+     
+<div class="whatsapp-support-box">
+  <ul class="whatsapp-feature-list">
+    <li> Easy Customize</li>
+    <li>Customer Support</li>
+  </ul>
+<button onClick={handleWhatsApp} className="whatsapp-btn">
+  <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" alt="WhatsApp" />
+  Chat Now <br /> On Whatsapp
+</button>
+</div>
 
 
       <div ref={smallCardRef}>
@@ -368,64 +382,8 @@ const Decoration = ({ city, locality }) => {
           priority
         />
       </section>
+ <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
-      <div className="brandBanner">
-        <div className="page-width">
-          <h2 className="brandBanner-heading">
-            Excellence Backed by Happy Customers
-          </h2>
-
-          <div className="brandBanner-grid">
-            {/* Card 1 */}
-            <div className="brandBanner-card">
-              <Image
-                src={HappyCustomerIMG}
-                alt="Happy Customers"
-                width={60}
-                height={60}
-              />
-              <p className="brandBanner-bold">1L+ HAPPY</p>
-              <p className="brandBanner-sub">CUSTOMERS</p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="brandBanner-card">
-              <Image
-                src={GoogleRatingIMG}
-                alt="Google Rating"
-                width={60}
-                height={60}
-              />
-              <p className="brandBanner-bold">4.8+ GOOGLE</p>
-              <p className="brandBanner-sub">RATING</p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="brandBanner-card">
-              <Image
-                src={SocialMediaIMG}
-                alt="Social Media"
-                width={60}
-                height={60}
-              />
-              <p className="brandBanner-bold">OUR</p>
-              <p className="brandBanner-sub">SOCIAL MEDIA</p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="brandBanner-card">
-              <Image
-                src={TopBrandIMg}
-                alt="Top Brands"
-                width={60}
-                height={60}
-              />
-              <p className="brandBanner-bold">TOP BRANDS</p>
-              <p className="brandBanner-sub">PARTNERED</p>
-            </div>
-          </div>
-        </div>
-      </div>
       <ReviewSection allReviewsData={allReviewsData} />
     </div>
   );

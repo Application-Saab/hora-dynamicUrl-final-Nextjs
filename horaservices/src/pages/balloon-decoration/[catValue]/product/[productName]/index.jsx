@@ -27,6 +27,8 @@ import faqData from "../../../../../utils/FaqData.json";
 import Tabs from "../../../../../components/Tabs";
 import addOnProductsData from "../../../../../utils/addOnProduct.json";
 import CustomizeDecorBanner from "../../../../../assets/CustomizeDecorBanner.png"
+import HowitWork from "../../../../../assets/howitwork.jpg"
+import Brand from "../../../../../assets/Brand.png"
 import ExpertsDecoration from "../../../../../assets/ExpertsDecoration.png";
 import SecureTransactions from "../../../../../assets/SecureTransactions.png";
 import ServiceGuarantee from "../../../../../assets/ServiceGuarantee.png";
@@ -36,14 +38,20 @@ import CategoryTabs from "../../../../../components/CategoryTabs.jsx";
 import { decCat } from "@/utils/decorationCategories";
 import "../../../../../components/CategoryTabs.jsx/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
-
+import ReviewSection from "@/components/ReviewSection";
+import allReviewsData from "@/utils/ReviewsData";
+import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
+import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG.png";
+import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
+import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
+import BrandBanner from "@/components/BrandBanner";
 // Skeleton Loader Component
 
 const SkeletonLoader = () => {
   return (
     <div
       className="skeleton-loader"
-      style={{ maxWidth: "1200px", margin: "0 auto" }}
+      style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "white" }}
     >
       <div
         style={{
@@ -213,7 +221,12 @@ function DecorationCatDetails({ city, locality }) {
   const hasCityPageParam = city ? true : false;
 
 
-
+const brandItems = [
+  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
+  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+  { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+];
 
   // Use useEffect to handle router query
   useEffect(() => {
@@ -706,61 +719,7 @@ function DecorationCatDetails({ city, locality }) {
                 </div>
               </div>
             </div>
-            <div
-              style={{
-                border: "1px solid rgb(220, 53, 69)",
-                backgroundColor: "rgb(248, 215, 218)",
-                margin: "13px auto 7px",
-                padding: "10px 10px 11px 16px",
-                borderRadius: 10,
-                textAlign: "left",
-              }}
-              className="inclusiton-details desktop-view"
-            >
-              <p
-                style={{ marginBottom: "0", fontWeight: "bold", fontSize: 12 }}
-              >
-                Note:
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Balloons color can be changed as per your choice.*
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Neon lights can be changed for the event (if included in the
-                design).*
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Age numbers and name are customizable (if included in the
-                design).*
-              </p>
-            </div>
+            
 
 
           </div>
@@ -894,19 +853,21 @@ function DecorationCatDetails({ city, locality }) {
                   style={{
                     marginBottom: "0",
                     fontWeight: "bold",
-                    fontSize: 12,
+                    fontSize: 18,
+                    color:"rgb(157, 74, 147)"
                   }}
                 >
-                  Note:
+                Customize As You Like 
                 </p>
                 <p
                   style={{
                     margin: "4px 0 0 0",
                     padding: 0,
                     fontWeight: "700",
-                    fontSize: 12,
+                    fontSize: 14,
                     color: "#444",
                     fontWeight: 700,
+                    color:"rgb(157, 74, 147)"
                   }}
                 >
                   *Balloons color can be changed as per your choice.*
@@ -916,9 +877,10 @@ function DecorationCatDetails({ city, locality }) {
                     margin: "4px 0 0 0",
                     padding: 0,
                     fontWeight: "700",
-                    fontSize: 12,
+                    fontSize: 14,
                     color: "#444",
                     fontWeight: 700,
+                    color:"rgb(157, 74, 147)"
                   }}
                 >
                   *Neon lights can be changed for the event (if included in the
@@ -929,9 +891,10 @@ function DecorationCatDetails({ city, locality }) {
                     margin: "4px 0 0 0",
                     padding: 0,
                     fontWeight: "700",
-                    fontSize: 12,
+                    fontSize: 14,
                     color: "#444",
                     fontWeight: 700,
+                    color:"rgb(157, 74, 147)"
                   }}
                 >
                   *Age numbers and name are customizable (if included in the
@@ -1045,12 +1008,70 @@ function DecorationCatDetails({ city, locality }) {
   variant="grid"
 />
 
-
-
+{/* <div style={{ padding: "20px", textAlign: "left" }}>
+     
+      <div style={sectionHeadingStyle}>
+        <span style={badgeStyle("#52c41a")}>Top 5</span>
+        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Similar Products</h2>
       </div>
+      <div style={scrollContainerStyle}>
+        {similar.map((item) => (
+          <div style={productCardWrapperStyle} key={item._id}>
+            <ProductCard item={item} openProductUrl={openProductUrl} />
+          </div>
+        ))}
+      </div>
+
+    
+      <div style={sectionHeadingStyle}>
+        <span style={badgeStyle("#ff4d4f")}>₹800+</span>
+        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Premium Products</h2>
+      </div>
+      <div style={scrollContainerStyle}>
+        {expensive.map((item) => (
+          <div style={productCardWrapperStyle} key={item._id}>
+            <ProductCard item={item} openProductUrl={openProductUrl} />
+          </div>
+        ))}
+      </div>
+
+      
+      <div style={sectionHeadingStyle}>
+        <span style={badgeStyle("#faad14")}>Extra</span>
+        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Kids Add-Ons</h2>
+      </div>
+      <div style={scrollContainerStyle}>
+        {extraProduct.map((item) => (
+          <div style={productCardWrapperStyle} key={item._id}>
+            <ProductCard item={item} openProductUrl={openProductUrl} />
+          </div>
+        ))}
+      </div>
+    </div>  */}
+     <div className="decorke-celebrate-banner">
+  <Image
+    src={HowitWork}
+    alt="Customize Your Celebration"
+    className="decorke-banner-img"
+  />
+</div>
+<div className="decorke-celebrate-banner">
+  <Image
+    src={Brand}
+    alt="Customize Your Celebration"
+    className="decorke-banner-img"
+  />
+</div>
+      </div>
+   
+        <ReviewSection allReviewsData={allReviewsData} />
+    <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+
             <div className="tab-section-details-productpage">
               <FAQSection faqData={faqData} />
             </div>
+
+            
           </div>
         </div>
 
@@ -1072,65 +1093,65 @@ function DecorationCatDetails({ city, locality }) {
   );
 }
 
-// function ProductCard({ item, openProductUrl }) {
-//   const formattedName = item.name
-//     .trim()
-//     .replace(/\s+/g, "-")
-//     .replace(/[^a-zA-Z0-9\-]/g, "")
-//     .replace(/-+/g, "-");
+function ProductCard({ item, openProductUrl }) {
+  const formattedName = item.name
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9\-]/g, "")
+    .replace(/-+/g, "-");
 
-//   const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
+  const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
 
-//   return (
-//     <a
-//       href={productUrl}
-//       target="_blank"
-//       rel="noopener noreferrer"
-//       style={{ textDecoration: "none", color: "inherit" }}
-//     >
-//       <div
-//         style={{
-//           width: "180px",          // ✅ Same width
-//           height: "270px",         // ✅ Same height
-//           border: "1px solid #ddd",
-//           borderRadius: "10px",
-//           background: "#fff",
-//           padding: "10px",
-//           boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-//           display: "flex",
-//           flexDirection: "column",
-//           justifyContent: "space-between",
-//           transition: "transform 0.2s ease",
-//           cursor: "pointer",
-//         }}
-//       >
-//         <img
-//           src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image?.split(".")[0]
-//             }.webp`}
-//           alt={item.name}
-//           style={{
-//             width: "100%",
-//             height: "140px",
-//             objectFit: "cover",
-//             borderRadius: "6px"
-//           }}
-//         />
-//         <h3
-//           style={{
-//             fontSize: "0.9rem",
-//             marginTop: "10px",
-//             marginBottom: "6px",
-//             height: "2.5em", // force uniform text area height
-//             overflow: "hidden"
-//           }}
-//         >
-//           {item.name}
-//         </h3>
-//         <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
-//       </div>
-//     </a>
-//   );
-// }
+  return (
+    <a
+      href={productUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
+      <div
+        style={{
+          width: "180px",          // ✅ Same width
+          height: "270px",         // ✅ Same height
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          background: "#fff",
+          padding: "10px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          transition: "transform 0.2s ease",
+          cursor: "pointer",
+        }}
+      >
+        <img
+          src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image?.split(".")[0]
+            }.webp`}
+          alt={item.name}
+          style={{
+            width: "100%",
+            height: "140px",
+            objectFit: "cover",
+            borderRadius: "6px"
+          }}
+        />
+        <h3
+          style={{
+            fontSize: "0.9rem",
+            marginTop: "10px",
+            marginBottom: "6px",
+            height: "2.5em", // force uniform text area height
+            overflow: "hidden"
+          }}
+        >
+          {item.name}
+        </h3>
+        <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
+      </div>
+    </a>
+  );
+}
 
 const styles = {
   Buttonstyle: {

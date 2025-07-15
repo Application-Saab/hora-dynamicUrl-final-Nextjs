@@ -79,10 +79,15 @@ const DecorSlider = ({
                   <div className="premium-discount">₹{discountDifference} off</div>
                 )}
               </div>
-              <div className="premium-content">
+              {/* <div className="premium-content">
                 <p className="premium-title">{item.title}</p>
                
-              </div>
+              </div> */}
+              <div className="premium-content">
+  <p className="premium-title">
+    {item.title.length > 20 ? `${item.title.slice(0, 20)}...` : item.title}
+  </p>
+</div>
                <div className="premium-price-wrapper">
                   <span className="premium-price">{item.price}</span>
                   {showDiscount && (

@@ -8,55 +8,6 @@
 
 /* ================================================================== */
 
-
-/* SEE MORE BUTTON */
-/* .see-more-container {
-  display: flex;
-  justify-content: center;
- margin:10px
-
-}
-
-.see-more-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #97538C;
-  background-color: #FFFFFF;
-  border: 1.14px solid #97538C;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-
-
-  box-shadow:
-    0px 4.55px 3.42px 0px #00000040,          
-    inset 0px 7.97px 7.97px 0px #00000026;     
-}
-
-
-
-
-.arrow-icondecoration {
- 
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
-
-.see-more-btn:hover .arrow-icondecoration {
-  transform: translateX(4px);
-}
- */
-
 /* Keyframes for continuous bounce */
 @keyframes bounceLoop {
   0%, 100% {
@@ -74,7 +25,7 @@
 .see-more-container {
   display: flex;
   justify-content: center;
-  margin: 15px;
+      margin: 25px;
 }
 
 /* Button styling + continuous bounce */
@@ -85,8 +36,8 @@
   padding: 10px 20px;
   font-size: 16px;
   font-weight: 600;
-  color: #97538C;
-  background-color: #FFFFFF;
+  color: #FFFFFF;
+  background-color: #97538C;
   border: 1.14px solid #97538C;
   border-radius: 50px;
   cursor: pointer;
@@ -160,17 +111,49 @@
   margin-bottom: 0px !important;
 }
 /* ================================================================================================== */
-.whatApp {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
+.whatsapp-support-box {
+  background: #c4ff6c;
+  padding: 20px;
+  text-align: center;
+  margin: 20px 0px 20px 0px;
 }
 
-.whatsAppImage {
-  width: 100%;
-  height: auto;
+.whatsapp-feature-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 15px;
+  font-weight: bold;
+  color: #000;
+  font-size: 18px;
 }
+
+.whatsapp-feature-list li {
+  margin-bottom: 8px;
+}
+
+
+.whatsapp-btn {
+    background: linear-gradient(to right, #25d366, #128c7e);
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.whatsapp-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+
+
 
 /* ================================================================================================== */
 
@@ -211,7 +194,7 @@
   display: flex;
   justify-content: center;
 }
-.collage-heading {
+/* .collage-heading {
   font-family: 'Inter', sans-serif;
   font-weight: 700 !important;
   font-size: 20px !important;
@@ -221,62 +204,40 @@
   justify-content: center;
   align-items: center;
   padding: 10px 80px 10px 80px;
-}
+} */
 
 .decorationCollageBanner-image {
   width: 100%;
   height: auto;
 }
-/* =========================================================================================================== */
-.brandBanner {
+.collage-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
   text-align: center;
-}
-
-.brandBanner-heading {
-  font-size: 24px;
-  font-weight: 600;
   color: #97538C;
-  margin-top: 20px;
-}
-
-.brandBanner-grid {
-    display: flex;
-    grid-template-columns: repeat(4, 1fr);
-    justify-items: center;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 20px;
-
-}
-
-.brandBanner-card {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #6c757d;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    margin: auto;
-}
-
-.brandBanner-card:hover {
-  transform: translateY(-4px);
-}
-
-.brandBanner-bold {
-  font-size: 8px;
-  font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 0 !important;
-}
-
-.brandBanner-sub {
- font-size: 8px;
-  font-weight: bold;
-  margin-bottom: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.3;
+  padding: 10px 20px;
+  max-width: 320px;  /* ✅ Force narrow width to make it break into 2 lines */
+  margin: 0 auto;
+  white-space: normal;
+  word-break: break-word;
 }
 
 
 
+/* Optional: Reduce font size slightly on very small screens */
+@media (max-width: 375px) {
+  .collage-heading {
+    font-size: 18px;
+  }
+}
+
+
+/* =========================================================================================================== */
 
 @media (max-width: 359px) {
   /* SEE MORE button tweaks */
@@ -296,11 +257,6 @@
     font-size: 18px;
   }
 
-  /* Collage title spacing */
-  .collage-heading {
-    font-size: 16px !important;
-    padding: 10px 20px;
-  }
 
   /* Stat section adjustments */
   .stat-item h3 {
@@ -311,22 +267,7 @@
     font-size: 6px;
   }
 
-  /* Brand grid responsiveness */
-  .brandBanner-grid {
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
 
-  .brandBanner-card {
-    flex: 0 0 45%;
-    padding: 8px;
-  }
-
-  .brandBanner-bold,
-  .brandBanner-sub {
-    font-size: 13px;
-  }
 
   /* Optional: Ensure inner container doesn't overflow */
   .dec-landing-page .page-width {

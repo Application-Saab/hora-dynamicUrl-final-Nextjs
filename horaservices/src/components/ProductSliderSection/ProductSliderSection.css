@@ -1,6 +1,6 @@
-.product-section-container {
+/* .product-section-container {
   padding: 0 10px;
-  /* margin-bottom: 22px; */
+
   background: linear-gradient(to bottom, #fbe3d3, #fff2dd);
 
 }
@@ -66,7 +66,7 @@
 }
 
 .product-section-image {
-  /* object-fit: cover; */
+ 
   border-radius: 12px 12px 0 0;
   min-height: 200px;
   max-height: 250px;
@@ -108,14 +108,7 @@
   flex-direction: column;
 }
 
-/* .product-section-details h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: #97538C;
-  margin: 0 0 8px 0;
-  text-align: left;
-  line-height: 1.4;
-} */
+
  .product-section-details h3 {
   font-size: 12px;
   font-weight: 600;
@@ -151,3 +144,210 @@
   text-align: left;
   margin-bottom: 0px !important;
 }
+
+ */
+
+
+ .product-section-container {
+  padding: 0 10px;
+  background: linear-gradient(to bottom, #fbe3d3, #fff2dd);
+}
+
+.product-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 4px 0;
+}
+
+.product-section-header h2 {
+  color: #97538C;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.product-section-header a {
+  font-weight: 600;
+  color: #97538C;
+  text-decoration: underline;
+  font-size: 16px;
+}
+
+.product-section-view-btn {
+  font-size: 14px;
+  font-weight: 600;
+  color: #97538C;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  margin-top: 10px;
+}
+
+/* === Grid === */
+.product-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 10px 4px 20px;
+}
+
+/* === Card === */
+.product-section-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.product-section-card:hover {
+  transform: translateY(-4px);
+}
+
+/* === Image Wrapper with Responsive Container === */
+.product-section-image-wrapper {
+  position: relative;
+}
+
+.product-section-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px 12px 0 0;
+  object-fit: cover;
+  display: block;
+}
+
+/* === Watermark === */
+.product-section-watermark {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.product-section-watermark-img {
+  opacity: 1;
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* === Discount Badge === */
+.product-section-discount-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: #f59e0b;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 8px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* === Card Details === */
+.product-section-details {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-section-details h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #97538C;
+  margin: 0 0 6px 0;
+  text-align: left;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+ 
+}
+
+.product-section-price {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.product-section-price-current {
+  font-size: 15px;
+  color: #97538C;
+  font-weight: 700;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.product-section-price-original {
+  font-size: 14px;
+  color: #444;
+  font-weight: 700;
+  text-decoration: line-through;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+
+/* Mobile (up to 375px) — 1 card per row */
+@media (max-width: 375px) {
+  .product-section-grid {
+  grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .product-section-details h3 {
+    font-size: 12px;
+  }
+
+  .product-section-price-current {
+    font-size: 14px;
+  }
+
+  .product-section-price-original {
+    font-size: 12px;
+  }
+
+  .product-section-image {
+    min-height: 160px;
+    max-height: 180px;
+  }
+}
+
+/* Small Tablets (376px - 480px) — 2 cards per row */
+@media (min-width: 376px) and (max-width: 480px) {
+  .product-section-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .product-section-image {
+    min-height: 180px;
+    max-height: 200px;
+  }
+}
+
+/* Tablets (481px - 768px) — 2 cards per row */
+@media (min-width: 481px) and (max-width: 768px) {
+  .product-section-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .product-section-image {
+    min-height: 200px;
+    max-height: 220px;
+  }
+}
+
+/* Desktop (769px and above) — Default Grid */

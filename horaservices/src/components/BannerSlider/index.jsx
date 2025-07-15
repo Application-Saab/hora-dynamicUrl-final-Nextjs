@@ -70,7 +70,7 @@ const BannerSlider = ({ images = [], showSeeMore = false }) => {
                 className="banner-image"
               />
               {index === 0 && showSeeMore && (
-                <button className="see-button"  onClick={handleSeeMoreClick}>See More</button>
+                <button className="see-button"  onClick={handleSeeMoreClick}>EXPLORE MORE</button>
               )}
             </div>
           </SwiperSlide>

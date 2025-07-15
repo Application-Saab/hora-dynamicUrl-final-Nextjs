@@ -1,5 +1,6 @@
+
 .small-card-grid-outer {
-  margin-bottom: 20px;
+  margin: 20px;
 }
 
 .small-card-grid {
@@ -9,7 +10,7 @@
   gap: 10px;
 }
 
-/* Cards take up 3 per row by default (33.33% - gap adjustment) */
+/* Default — 3 per row */
 .small-card-wrapper {
   display: flex;
   flex-direction: column;
@@ -45,11 +46,17 @@
   color: #000;
   text-align: center;
 }
-@media (max-width: 339px) {
+
+/* For screens up to 375px — Keep 3 per row, reduce card size */
+@media (max-width: 375px) {
   .small-card-wrapper {
-    flex: 0 0 calc(50% - 10px); /* 2 per row on extra small screens */
+    flex: 0 0 calc(33.33% - 10px);
+  }
+  .small-card {
+    width: 80px;
+    height: 80px;
+  }
+  .small-card-name {
+    font-size: 10px;
   }
 }
-
-
-
