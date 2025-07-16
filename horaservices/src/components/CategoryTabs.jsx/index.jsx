@@ -3,15 +3,22 @@
 import Image from "next/image";
 import "./CategoryTabs.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
+import { useRouter } from "next/navigation";
 
-const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant = "grid" }) => {
+const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant = "grid",catValue }) => {
+ const router = useRouter();
   const { handleItemClick, openCatItems } = useDecorationEvents(
     city,
     hasCityPageParam,
     decCat,
     locality
   );
-
+  
+const GridhandleClick = (cat) => {
+    router.push(
+      `/balloon-decoration/${catValue}?theme=${encodeURIComponent(cat.value)}`
+    );
+  };
   const handleClick = (cat) => {
     handleItemClick({
       title: cat.name,
@@ -24,23 +31,25 @@ const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant 
   };
 
   return variant === "grid" ? (
-
+        <div>
+          <h3 className="category-outer">Other Popular Themes</h3>
     <div className="category-tabs-grid">
+      
     {data
-      .filter((cat) => cat.image && cat.image.trim() !== "")
+      .filter((cat) => cat.image)
       .map((cat) => (
         <button
           key={cat.id}
           className="category-tabs-card"
-          onClick={() => handleClick(cat)}
+          onClick={() => GridhandleClick(cat)}
         >
-          <div
-            className="category-tabs-circle"
-            style={{ backgroundImage: `url(${cat.image})` }}
-          ></div>
+       
+   <Image className="category-tabs-circle" src={cat.image} alt={cat.name} width={80} height={80} />
+
           <span className="category-tabs-title">{cat.name}</span>
         </button>
       ))}
+  </div>
   </div>
   ) : (
     // ✅ Circle with Label inside Variant (for Product Page)

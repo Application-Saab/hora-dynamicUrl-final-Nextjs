@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import cancellation from "../../assets/Cancellation.svg"; // Adjust path if needed
-
+import Arrow from "../../assets/arrow.png"
 const FAQSection = ({ faqData, heading = "FAQ" }) => {
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -84,14 +84,14 @@ const FAQSection = ({ faqData, heading = "FAQ" }) => {
               <span
                 style={{
                   color: "#fff",
-                  fontSize: "14px",
+                  fontSize: "10px",
                   transform:
-                    openIndex === index ? "rotate(270deg)" : "rotate(90deg)",
+                    openIndex === index ? "rotate(180deg)" : "rotate(0deg)",
                   transition: "transform 0.3s ease",
                   display: "inline-block",
                 }}
               >
-                &gt;
+                <Image src={Arrow} width={10} height={13}/>
               </span>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 // import { useParams } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 import { MessageCircle, Plus, ArrowDown, ArrowUp } from "lucide-react";
@@ -28,24 +29,31 @@ import Tabs from "../../../../../components/Tabs";
 import addOnProductsData from "../../../../../utils/addOnProduct.json";
 import CustomizeDecorBanner from "../../../../../assets/CustomizeDecorBanner.png"
 import HowitWork from "../../../../../assets/howitwork.jpg"
+import { useParams } from "next/navigation";
 import Brand from "../../../../../assets/Brand.png"
 import ExpertsDecoration from "../../../../../assets/ExpertsDecoration.png";
 import SecureTransactions from "../../../../../assets/SecureTransactions.png";
 import ServiceGuarantee from "../../../../../assets/ServiceGuarantee.png";
 import { PremiumData } from "@/utils/DecorationData";
-import DecorSlider from "@/components/DecorSlider";
 import CategoryTabs from "../../../../../components/CategoryTabs.jsx";
 import { decCat } from "@/utils/decorationCategories";
 import "../../../../../components/CategoryTabs.jsx/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
+import Candle from "../../../../../assets/candle.png";
+
+import HappyBithday from "../../../../../assets/HappyBirthDay.png"
+import Ballons from "../../../../../assets/Ballons.png"
 import ReviewSection from "@/components/ReviewSection";
+import AddonModal from "@/components/AddonModal";
 import allReviewsData from "@/utils/ReviewsData";
+import AdditionalServices from "../../../../../assets/AdditionalServices.jpg"
 import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
-// Skeleton Loader Component
+import UniversalDecorSlider from "@/components/UniversalDecorSlider";
+
 
 const SkeletonLoader = () => {
   return (
@@ -196,173 +204,188 @@ function DecorationCatDetails({ city, locality }) {
   const [itemQuantities, setItemQuantities] = useState({});
   const [totalAmount, setTotalAmount] = useState();
   const [buttonClickCount, setButtonClickCount] = useState(0);
-  const router = useRouter();
   const [product, setProduct] = useState("");
   const [apiProduct, setApiProduct] = useState("");
   const [isFetched, setIsFetched] = useState(false);
   const [subCategory, setSubCategory] = useState("");
   const [catValue, setCatValue] = useState("");
-  const altTagCatValue = catValue.replace(/-/g, " ");
   const [discountInfo, setDiscountInfo] = useState(null);
   const [isArrowDown, setIsArrowDown] = useState(true);
-  const [loading, setLoading] = useState(true); // Add a loading state
-  const customizationRef = useRef(null);
-  const addonRef = useRef(null);
+  const [loading, setLoading] = useState(true);
   const [similar, setSimilar] = useState([]);
-  const [expensive, setExpensive] = useState([]);
   const [loadingSP, setLoadingSP] = useState(false);
   const [sendCategoryId, setSendCategoryId] = useState("");
   const [passCategoryId, setPassCategoryId] = useState("");
-
   const [openProductUrl, setOpenProductUrl] = useState("");
-
   const [extraProduct, setExtraProduct] = useState([]);
+  const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
+  const searchParams = useSearchParams();
 
+  const router = useRouter();
+  const params = useParams();
+  const customizationRef = useRef(null);
+  const addonRef = useRef(null);
+  const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
 
+  const brandItems = [
+    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+    { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
+    { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+    { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+  ];
+  console.log("Slider Data =>", similar);
+ // 1️⃣ Set CatValue if coming from params (optional case)
+useEffect(() => {
+  if (params?.catValue) {
+    setCatValue(params.catValue);
+  }
+}, [params]);
 
-const brandItems = [
-  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
-  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
-  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
-  { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
-];
+// 2️⃣ Get URL params when router is ready
+useEffect(() => {
+  if (router.isReady) {
+    const { subCategory, catValue: urlCatValue, productName } = router.query;
 
-  // Use useEffect to handle router query
-  useEffect(() => {
-    if (router.isReady) {
-      console.log("router.query:", router.query);
-      const {
-        subCategory: urlSubCategory,
-        catValue: urlCatValue,
-        productName,
-      } = router.query;
-      console.log("urlCatValue:", urlCatValue);
-      setSendCategoryId(urlCatValue);
-      const formattedProduct = productName
-        ? productName.replace(/-/g, " ")
-        : "";
-      setApiProduct(formattedProduct);
-      setSubCategory(urlSubCategory || "");
-      setCatValue(urlCatValue || "");
+    setSubCategory(subCategory || "");
+    setCatValue(urlCatValue || "");
+    setSendCategoryId(urlCatValue || "");   // ✅ Send for SubCatId
+
+    if (productName) {
+      const formattedProduct = productName.replace(/-/g, " ");
+      setApiProduct(formattedProduct);  // ✅ Send for Product Fetch
     }
-  }, [router.isReady, router.query]);
+  }
+}, [router.isReady, router.query]);
 
-  useEffect(() => {
-    if (sendCategoryId) {
-      getSubCatId(sendCategoryId);
+
+useEffect(() => {
+  if (apiProduct) {
+    fetchDecorationDetails();
+  }
+}, [apiProduct]);
+
+const fetchDecorationDetails = async () => {
+  try {
+    const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
+    const response = await axios.get(url);
+    const fetchedProduct = response.data.data[0];
+    setProduct(fetchedProduct);
+    setIsFetched(true);
+
+    if (fetchedProduct?.price) {
+      const discountDetails = getDiscountedPrice(fetchedProduct.price);
+      setDiscountInfo(discountDetails);
     }
-  }, [sendCategoryId]);
- const openCatItems = (item) => {
-    const path = hasCityPageParam
-      ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
-      : `/balloon-decoration/${item.catValue}`;
-    router.push(path);
+
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching product details:", error.message);
+    setLoading(false);
+  }
+};
+
+
+
+// useEffect(() => {
+//   if (router.isReady && router.query.catValue) {
+//     const mappedCat = getMappedCatValue(router.query.catValue);
+//     setCatValue(mappedCat);   
+//     setSendCategoryId(mappedCat);  
+//   }
+// }, [router.isReady, router.query.catValue]);
+
+useEffect(() => {
+  if (router.isReady && router.query.catValue) {
+    const rawCatValue = router.query.catValue;
+    setCatValue(rawCatValue); // For UI
+    setSendCategoryId(rawCatValue); // For API calls
+  }
+}, [router.isReady, router.query.catValue]);
+
+useEffect(() => {
+  if (product?.categoryId) {
+    getCategoryProducts(product.categoryId);
+  } else if (catValue) {
+    getSubCatId(catValue);   
+  }
+}, [product, catValue]);
+
+
+useEffect(() => {
+  if (passCategoryId) {
+    getCategoryProducts(passCategoryId);
+  }
+}, [passCategoryId]);
+
+
+const getCategoryProducts = async (categoryId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all`
+    );
+    setSimilar(response.data.data || []);
+  } catch (error) {
+    console.error("Error fetching category products:", error.message);
+  }
+};
+useEffect(() => {
+  if (router.isReady && router.query.catValue) {
+    const rawCatValue = router.query.catValue;
+    // Map raw URL slug to API slug if needed
+    
+  const catMap = {
+    "birthday-decoration": "Birthday",
+    "anniversary-decoration": "Anniversary",
+    "haldi-mehendi-decoration": "Haldi-Mehandi",
+    "first-night-decoration": "FirstNight",
+    "baby-shower-decoration": "BabyShower",
+    "welcome-baby-decoration": "WelcomeBaby",
+    "premium-decoration": "PremiumDecoration",
+    "bachelorette-decoration": "bachelorette",
   };
+ 
+    const apiSlug = catMap[rawCatValue] || rawCatValue;
+
+    setCatValue(rawCatValue); 
+    setSendCategoryId(apiSlug); 
+  }
+}, [router.isReady, router.query.catValue]);
 
 
 
+useEffect(() => {
+  if (sendCategoryId) {
+    getSubCatId(sendCategoryId);
+  }
+}, [sendCategoryId]);
 
-  const getSubCatId = async (sendCategoryId) => {
-    console.log(sendCategoryId, "sendCategoryId");
-    try {
-      const response = await axios.get(
-        BASE_URL + GET_DECORATION_CAT_ID + sendCategoryId
-      );
-      console.log(response, "cafdsklfjds respones");
-      console.log(response.data.data.name, "name response");
-      setOpenProductUrl(response.data.data.name);
-      const categoryId = response.data.data?._id;
-      console.log("Category ID:", categoryId);
-      setPassCategoryId(categoryId);
-    } catch (error) {
-      console.log("Error:", error.message);
+const getSubCatId = async (catSlug) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
+    const categoryData = response.data.data;
+    if (categoryData) {
+      setPassCategoryId(categoryData._id);
+      setOpenProductUrl(categoryData.name);
+    } else {
+      console.warn(`Sub Category Not Found for: ${catSlug}`);
     }
-  };
+  } catch (error) {
+    console.error("Error getting SubCat ID:", error.message);
+  }
+};
 
-  const handleWhatsApp = () => {
-    const phoneNumber = "7338584828";
-    const message = encodeURIComponent("I want to customize a decoration");
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-  };
 
-  useEffect(() => {
-    if (apiProduct && !isFetched) {
-      const fetchDecorationDetails = async () => {
-        try {
-          const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
-          const response = await axios.get(url);
-          console.log("API Response:", response.data);
 
-          // Assuming the product has a price property
-          const fetchedProduct = response.data.data[0];
-          setProduct(fetchedProduct);
-          setSubCategory(getSubCategory(catValue || ""));
-          console.log(fetchedProduct, "fetchedProduct");
+// 6️⃣ Category Navigation Click (Same as before)
+const openCatItems = (item) => {
+  const path = hasCityPageParam
+    ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
+    : `/balloon-decoration/${item.catValue}`;
+  router.push(path);
+};
 
-          // Calculate discount info if price is available
-          if (fetchedProduct && fetchedProduct.price) {
-            const price = fetchedProduct.price;
 
-            const discountDetails = getDiscountedPrice(price);
-            setDiscountInfo(discountDetails);
-          } else {
-            console.error("Price is not available in the fetched product.");
-          }
-
-          setLoading(false); // Stop loading when data is fetched
-        } catch (error) {
-          console.error("Error:", error.message);
-          setLoading(false); // Stop loading even if there is an error
-        }
-      };
-
-      fetchDecorationDetails();
-    }
-  }, [apiProduct, catValue, isFetched]);
-
-  console.log(product._id, "fetchedProductfetchedProduct");
-
-  // similar product function
-  const fetchSimilar = async () => {
-    if (!product?._id || !passCategoryId) {
-      console.log("Missing product ID or category ID");
-      return;
-    }
-
-    if (loadingSP) return;
-    setLoadingSP(true);
-
-    try {
-      const res = await axios.post(
-        "http://fcaf-2409-40c4-274-21e9-e555-8915-6bd1-14ae.ngrok-free.app/get-similar",
-        {
-          product_id: product._id,
-          themeFilterId: passCategoryId,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      console.log("Similar Products:", res.data.similar_products);
-      console.log("Expensive Products:", res.data.expensive_products);
-      console.log("extra product", res.data.extra_products);
-      setSimilar(res.data.similar_products);
-      setExpensive(res.data.expensive_products);
-      setExtraProduct(res.data.extra_products);
-    } catch (err) {
-      console.error("Error fetching similar products:", err);
-    }
-
-    setLoadingSP(false);
-  };
-
-  useEffect(() => {
-    if (product?._id && passCategoryId) {
-      fetchSimilar();
-    }
-  }, [product?._id, passCategoryId]);
 
   const getDiscountedPrice = (price) => {
     let discount;
@@ -463,25 +486,19 @@ const brandItems = [
     });
     return totalPrice;
   };
-
-  const handleContinue = () => {
-    setIsModalOpen(false);
+const getMappedCatValue = (catValue) => {
+  const catMap = {
+    "birthday-decoration": "Birthday",
+    "anniversary-decoration": "Anniversary",
+    "haldi-mehendi-decoration": "Haldi-Mehandi",
+    "first-night-decoration": "FirstNight",
+    "baby-shower-decoration": "BabyShower",
+    "welcome-baby-decoration": "WelcomeBaby",
+    "premium-decoration": "PremiumDecoration",
+    "bachelorette-decoration": "bachelorette",
   };
-
-  const handleButtonClick = (subCategory, product) => {
-    handleCheckout(subCategory, product);
-
-    setButtonClickCount(buttonClickCount + 1);
-  };
-  const handleAddOnClick = (subCategory, product) => {
-    showAddOnmodal(subCategory, product);
-  };
-
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-
+  return catMap[catValue] || "";
+};
 
 
   const handleAddToCartAndScrollBack = (item) => {
@@ -493,33 +510,6 @@ const brandItems = [
       customizationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 300);
   };
-  //   const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
-  //     const stateData = {
-  //       from: window.location.pathname,
-  //       subCategory,
-  //       product: JSON.stringify(product),
-  //       orderType,
-  //       catValue,
-  //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-  //       itemQuantities: JSON.stringify(itemQuantities),
-  //       totalAmount: totalAmount,
-  //     };
-
-  //   router.push({
-  //     pathname: "/checkout",
-  //     query: {
-  //       from: window.location.pathname,
-  //       subCategory,
-  //       product: JSON.stringify(product),
-  //       orderType: "decoration",
-  //       catValue,
-  //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-  //       itemQuantities: JSON.stringify(itemQuantities),
-  //       totalAmount: totalPrice,
-  //     },
-  //   });
-  // };
-
 
 
   const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
@@ -635,7 +625,7 @@ const brandItems = [
   }
 
   return (
-    <div className="App" style={{ backgroundColor: "#EDEDED" }}>
+    <div className="App" style={{ backgroundColor: "white" }}>
       <Head>
         <title>Balloon and Flower Decoration @999</title>
         <meta
@@ -719,7 +709,7 @@ const brandItems = [
                 </div>
               </div>
             </div>
-            
+
 
 
           </div>
@@ -836,133 +826,42 @@ const brandItems = [
             >
               {getItemInclusion(product.inclusion)}
 
-              <div
+              <div className="customisation-box">
+                <p className="customisation-heading">Customize As You Like</p>
 
-                style={{
-                  border: "1px solid rgb(157, 74, 147)",
-                  backgroundColor: "rgb(239, 208, 235)",
-                  margin: "13px 2px 7px",
-                  padding: "7px 7px",
-                  borderRadius: 10,
-                  textAlign: "left",
-                  margin: "10px auto",
-                  width: "100%",
-                }} className="inclusiton-details mobile-view"
-              >
-                <p
-                  style={{
-                    marginBottom: "0",
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    color:"rgb(157, 74, 147)"
-                  }}
-                >
-                Customize As You Like 
-                </p>
-                <p
-                  style={{
-                    margin: "4px 0 0 0",
-                    padding: 0,
-                    fontWeight: "700",
-                    fontSize: 14,
-                    color: "#444",
-                    fontWeight: 700,
-                    color:"rgb(157, 74, 147)"
-                  }}
-                >
-                  *Balloons color can be changed as per your choice.*
-                </p>
-                <p
-                  style={{
-                    margin: "4px 0 0 0",
-                    padding: 0,
-                    fontWeight: "700",
-                    fontSize: 14,
-                    color: "#444",
-                    fontWeight: 700,
-                    color:"rgb(157, 74, 147)"
-                  }}
-                >
-                  *Neon lights can be changed for the event (if included in the
-                  design).*
-                </p>
-                <p
-                  style={{
-                    margin: "4px 0 0 0",
-                    padding: 0,
-                    fontWeight: "700",
-                    fontSize: 14,
-                    color: "#444",
-                    fontWeight: 700,
-                    color:"rgb(157, 74, 147)"
-                  }}
-                >
-                  *Age numbers and name are customizable (if included in the
-                  design).*
-                </p>
-              </div>
-            </div>
-
-
-
-            <div className="modal-top-box11" ref={addonRef}>
-              <h2 className="select-heading-sec">Add Extra Features</h2>
-            </div>
-
-
-            <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "400px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
-              <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
-                {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
-
-                <div className="modal-middle-box 11">
-                  <div className="modalcard-container">
-
-                    {addOnProductsData?.addOnProducts?.map((item, index) => (
-                      <div key={index} className="modalcard">
-                        <img
-                          // style={{ width: "120px", height: "120px" }}
-                          src={item.image}
-                          alt={item.title}
-                          className="model-image"
-                        />
-                        <h3>{item.title}</h3>
-                        <p className="Addon-description">{item.description}</p>
-
-                        <div className="price-container">
-                          <span className="price">
-                            {typeof item.price === "number" ? `₹${item.price}` : "Included"}
-                          </span>
-                          {typeof item.price === "number" && (
-                            itemQuantities[item.title] ? (
-                              <div className="quantitycontrols">
-                                <button onClick={() => handleRemoveFromCart(item)} className="quantitybutton">-</button>
-                                <span className="qunatity-title">{itemQuantities[item.title]}</span>
-                                <button onClick={() => handleAddToCart(item)} className="quantitybutton">+</button>
-                              </div>
-                            ) : (
-                              // <button onClick={() => handleAddToCart(item)} className="addbutton">Add</button>
-                              <button onClick={() => handleAddToCartAndScrollBack(item)} className="addbutton">Add</button>
-
-                            )
-                          )}
-                        </div>
-
-                      </div>
-                    ))}
-
-
-                  </div>
+                <div className="customisation-item">
+                  <Image src={Ballons} alt="Balloons" className="customisation-icon" />
+                  <span>Balloons color can be changed as per your choice.</span>
                 </div>
 
+                <div className="customisation-item">
+                  <Image src={HappyBithday} alt="Neon Lights" className="customisation-icon" />
+                  <span>Neon lights can be changed for the event (if included in the design).</span>
+                </div>
+
+                <div className="customisation-item">
+                  <Image src={Candle} alt="Age Numbers" className="customisation-icon" />
+                  <span>Age numbers and name are customizable (if included in the design).</span>
+                </div>
+
+                <div className="customisation-button-wrap">
+                  <button className="customisation-button">CUSTOMISATION SUPPORT</button>
+                </div>
               </div>
+
             </div>
-            {/* <div className="decorke-celebrate-banner">
-  <Image
-    src={CustomizeDecorBanner}
-    alt="Customize Your Celebration"
-    className="decorke-banner-img"
-  />
-</div> */}
+
+
+
+            <AddonModal
+              isOpen={isModalOpen}
+              setIsOpen={setIsModalOpen}
+              addOnProducts={addOnProductsData.addOnProducts}
+              itemQuantities={itemQuantities}
+              onAdd={handleAddToCartAndScrollBack}
+              onRemove={handleRemoveFromCart}
+            />
+
             <div className="decorke-why-section">
               <h2 className="decorke-why-title">Why Hora Decoration</h2>
 
@@ -981,97 +880,72 @@ const brandItems = [
                 </div>
               </div>
             </div>
- <DecorSlider
-        title="Premium Decoration"
-        viewAllLink="/balloon-decoration/premium-decoration"
-        data={PremiumData}
-        showDiscount={true}
-        imageSize={{ width: 120, height: 120 }}
-        city={city}
-        hasCityPageParam={hasCityPageParam}
-        // decCat={decCat}
-        locality={locality}
-      />
+            <UniversalDecorSlider
+              title="Similar Decorations"
+              data={similar}   // ✅ Fetched data pass karo
+              showDiscount={true}
+              imageSize={{ width: 120, height: 120 }}
+              city={city}
+              hasCityPageParam={hasCityPageParam}
+              locality={locality}
+              catValue={getMappedCatValue(router.query.catValue)}  // ✅ Use your map function here
+ 
+            />
 
-  <div className="category-tabs-outer">
-<CategoryTabs
-  data={themeFilters.map((item) => ({
-    id: item.value,
-    name: item.label,
-    image: `/themes/${item.value}.jpg`,
-    catValue: "KidsBirthday",   // Always navigate to KidsBirthday with theme
-  }))}
-  onSelect={(item) => openCatItems(item, themeFilter)}
-  city={city}
-  hasCityPageParam={hasCityPageParam}
-  locality={locality}
-  variant="grid"
-/>
 
-{/* <div style={{ padding: "20px", textAlign: "left" }}>
-     
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#52c41a")}>Top 5</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Similar Products</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {similar.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
 
-    
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#ff4d4f")}>₹800+</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Premium Products</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {expensive.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
+            {catValue?.toLowerCase() === "kidsbirthday" && (
+              <div className="category-tabs-outer">
+                <CategoryTabs
+                  data={themeFilters.map((item) => ({
+                    id: item.value,
+                    name: item.label,
+                    image: item.image,
+                    value: item.value,
+                    catValue: "KidsBirthday",
+                  }))}
+                  onSelect={(item) => openCatItems(item, themeFilter)}
+                  city={city}
+                  hasCityPageParam={hasCityPageParam}
+                  locality={locality}
+                  variant="grid"
+                  catValue="KidsBirthday"
+                />
+              </div>
+            )}
 
-      
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#faad14")}>Extra</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Kids Add-Ons</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {extraProduct.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
-    </div>  */}
-     <div className="decorke-celebrate-banner">
-  <Image
-    src={HowitWork}
-    alt="Customize Your Celebration"
-    className="decorke-banner-img"
-  />
-</div>
-<div className="decorke-celebrate-banner">
-  <Image
-    src={Brand}
-    alt="Customize Your Celebration"
-    className="decorke-banner-img"
-  />
-</div>
-      </div>
-   
-        <ReviewSection allReviewsData={allReviewsData} />
-    <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+            <div className="decorke-celebrate-banner">
+              <Image
+                src={HowitWork}
+                alt="Customize Your Celebration"
+                className="decorke-banner-img"
+              />
+            </div>
 
+            <div className="media-section">
+              <h2 className="media-heading">Hora in Media</h2>
+              <div className="media-logos">
+                <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
+              </div>
+            </div>
+
+
+
+
+            <ReviewSection allReviewsData={allReviewsData} />
+            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+            <div className="decorke-celebrate-banner">
+              <Image
+                src={AdditionalServices}
+                alt="Customize Your Celebration"
+                className="decorke-banner-img"
+              />
+            </div>
             <div className="tab-section-details-productpage">
               <FAQSection faqData={faqData} />
             </div>
 
-            
+
           </div>
         </div>
 
@@ -1152,47 +1026,6 @@ function ProductCard({ item, openProductUrl }) {
     </a>
   );
 }
-
-const styles = {
-  Buttonstyle: {
-    border: "2px solid rgb(157, 74, 147)",
-    backgroundColor: "rgb(157, 74, 147)",
-    color: "#fff",
-    fontSize: "16px",
-    padding: "10px",
-    borderRadius: "5px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    // margin: "23px auto 14px",
-    width: "93%",
-  },
-};
-
-
-
-const scrollContainerStyle = {
-  display: "flex",
-  overflowX: "auto",
-  gap: "16px",
-  // paddingBottom: "12px",
-  scrollSnapType: "x mandatory"
-};
-
-const productCardWrapperStyle = {
-  flex: "0 0 auto",
-  scrollSnapAlign: "start"
-};
-
-const sectionHeadingStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  marginTop: "3rem",
-  // marginBottom: "1rem",
-  // paddingBottom: "0.5rem",
-  borderBottom: "2px solid #eee"
-};
 
 const badgeStyle = (color = "#1890ff") => ({
   backgroundColor: color,

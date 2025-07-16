@@ -1,0 +1,123 @@
+
+.modal-top-box11 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFFAF0;
+  height: 50px;
+  margin-bottom: 0;
+}
+
+.select-heading-sec {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  vertical-align: middle;
+  color: rgb(157, 74, 147);
+  margin: 0;
+}
+
+.modalcard-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background-color: #FFFAF0;
+  margin: auto;
+  padding: 10px;
+}
+
+.modal-middle-box {
+  flex: 1 1;
+  overflow-y: auto;
+  padding: 0px !important;
+  background-color: #FFFAF0;
+}
+
+.modalcard {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    /* min-height: 250px; */
+}
+
+.modalcard img {
+  max-height: 140px;
+  min-height: 140px;
+  background-color: #fff;
+  border-radius: 8px 8px 0 0;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.modalcard h3 {
+    font-size: 12px;
+    color: #222;
+    padding: 8px 10px 0 10px;
+    margin: 0;
+    text-align: left;
+    font-weight: 500;
+}
+
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px 10px 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+}
+
+.Addon-description {
+  padding: 12px;
+  font-size: 10px;
+  margin-bottom: 0px;
+}
+
+.quantitycontrols {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: center;
+}
+
+.addbutton,
+.quantitybutton {
+  background-color: rgb(157, 74, 147) !important;
+  color: #fff;
+  border: none;
+  padding: 3px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.addon-prices {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 20px 0;
+}
+
+.addon-prices label {
+
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: 0;
+  color: rgb(146, 82, 170) !important;
+}
+
+.add-on-prices p {
+  margin: 0;
+}
