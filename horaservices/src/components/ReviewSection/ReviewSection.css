@@ -4,7 +4,7 @@
 }
 
 .review-heading {
-  font-size: 1.8rem;
+  font-size: 20px;
   color: #97538C;
   margin-bottom: 1.5rem;
   font-weight: bold;
@@ -13,18 +13,19 @@
 .final-card {
   background: #fff;
   margin: 0 auto;
-  padding: 10px;
+  padding: 16px;
   border-radius: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #e0e0e0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-align: left;
+  max-width: 500px;
 }
 
 .top-row {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
 .avatar-circle {
@@ -32,40 +33,53 @@
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #97538C;
 }
 
 .top-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 4px;
 }
 
 .review-name-mono {
   font-size: 1.1rem;
-  font-weight: bold;
-
+  font-weight: 600;
+  color: #333;
 }
 
 .review-stars {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  display: flex;
 }
 
 .star {
-  margin: 0 1px;
+  margin: 0 2px;
 }
 
 .filled {
-  color: #ffa500;
+  color: #FFA500;
 }
 
 .blank {
-  color: #ccc;
+  color: #ddd;
+}
+
+.review-booking {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: #999;
 }
 
 .review-text-block {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: #444;
   line-height: 1.5;
   text-align: justify;
+  margin-top: 0.8rem;
 }

@@ -239,3 +239,21 @@ ul.decoration-addons {
   max-width: 100%;
   height: auto;
 }
+
+
+
+.custom-banner-section {
+  width: 100%;
+  padding: 0;
+  margin: 10px 0px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.custom-banner-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}

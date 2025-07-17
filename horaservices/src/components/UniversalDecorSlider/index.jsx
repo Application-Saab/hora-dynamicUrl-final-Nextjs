@@ -14,7 +14,7 @@ const getDiscountedDifference = (price) => {
 };
 
 const UniversalDecorSlider = ({
-  title = "Our Decorations",
+  title = "",
   viewAllLink = "",
   data = [],
   showDiscount = false,
@@ -62,9 +62,14 @@ const UniversalDecorSlider = ({
 
 
   return (
-    <section className="premium-slide-decor">
+    <section  style={{
+    padding: '10px',
+     background: "#fbe6d3",
+    // borderRadius: '12px',
+    // boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+  }}>
       <div className="premium-slide-decor-header">
-        <h2>{title}</h2>
+      {title && <h2>{title}</h2>}
         {viewAllLink && (
           <span onClick={() => handleSliderViewMore(viewAllLink, title)}>
             <span style={{ cursor: "pointer", color: "#0070f3" }}>View All</span>

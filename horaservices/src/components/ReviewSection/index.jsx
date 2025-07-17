@@ -1,20 +1,8 @@
-// import React, { useEffect, useRef } from 'react';
-// import allReviewsData from '@/utils/ReviewsData';
-// import './ReviewSection.css';
-
-
-
-
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
- import allReviewsData from '@/utils/ReviewsData';
-import './ReviewSection.css';
-
-
-
 import "swiper/css";
-
+import "./ReviewSection.css";
 
 const getStars = (rating) => {
   const filled = Array(rating).fill(<span className="star filled">★</span>);
@@ -22,10 +10,12 @@ const getStars = (rating) => {
   return [...filled, ...blank];
 };
 
-const ReviewSlider = () => {
+const ReviewSlider = ({ reviews = [], title = "Customer Reviews" }) => {
+  if (!reviews.length) return null;
+
   return (
     <div className="review-section">
-      <h2 className="review-heading">Customer Review</h2>
+      <h2 className="review-heading">{title}</h2>
 
       <Swiper
         modules={[Autoplay]}
@@ -34,17 +24,25 @@ const ReviewSlider = () => {
         spaceBetween={30}
         slidesPerView={1}
       >
-        {allReviewsData.map((review, idx) => (
+        {reviews.map((review, idx) => (
           <SwiperSlide key={idx}>
             <div className="review-card final-card">
               <div className="top-row">
-                <img src={review.avatar} className="avatar-circle" alt={review.name} />
+                <img
+                  src={review.avatar}
+                  className="avatar-circle"
+                  alt={review.name}
+                />
                 <div className="top-info">
                   <div className="review-name-mono">{review.name}</div>
                   <div className="review-stars">{getStars(review.rating)}</div>
+                  <div className="review-booking">{review.booking}</div>
+                  <div className="review-date">{review.date}</div>
                 </div>
               </div>
-              <div className="review-text-block">{review.text}</div>
+              {review.text && (
+                <div className="review-text-block">{review.text}</div>
+              )}
             </div>
           </SwiperSlide>
         ))}

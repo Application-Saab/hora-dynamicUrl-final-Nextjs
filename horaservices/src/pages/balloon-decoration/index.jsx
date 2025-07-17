@@ -21,8 +21,8 @@ import BabyWelcome from "../../assets/BabyWelcomeIMG.png";
 import Anniversary from "../../assets/AnniversaryIMG.png";
 import arrowIcon from "../../assets/arrow-down.png";
 import CategoryTabs from "../../components/CategoryTabs.jsx";
-import ReviewSection from "@/components/ReviewSection";
-import allReviewsData from "@/utils/ReviewsData";
+import ReviewSlider from "@/components/ReviewSection";
+import { ballonReview } from "@/utils/ReviewsData";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import BannerSlider from "@/components/BannerSlider";
@@ -384,7 +384,8 @@ const Decoration = ({ city, locality }) => {
       </section>
  <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
-      <ReviewSection allReviewsData={allReviewsData} />
+
+<ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
     </div>
   );
 };

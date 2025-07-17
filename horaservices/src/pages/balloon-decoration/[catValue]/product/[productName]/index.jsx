@@ -40,20 +40,23 @@ import { decCat } from "@/utils/decorationCategories";
 import "../../../../../components/CategoryTabs.jsx/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
 import Candle from "../../../../../assets/candle.png";
-
 import HappyBithday from "../../../../../assets/HappyBirthDay.png"
 import Ballons from "../../../../../assets/Ballons.png"
-import ReviewSection from "@/components/ReviewSection";
+import { ballonReview } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
-import allReviewsData from "@/utils/ReviewsData";
-import AdditionalServices from "../../../../../assets/AdditionalServices.jpg"
+
+import AdditionalServices from "@/components/AdditionalServices";
+
+import BannerImage from "../../../../../assets/customised.webp";
 import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
 import UniversalDecorSlider from "@/components/UniversalDecorSlider";
-
+import ReviewSlider from "@/components/ReviewSection";
+import VideoTestimonial from "@/components/VideoTestimonial";
+import VideoClint from "@/assets/ourclientvideo.mp4"
 
 const SkeletonLoader = () => {
   return (
@@ -265,23 +268,23 @@ const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
   setSimilarByPrice(filtered);
 };
 
+
 const filterSimilarByName = (product, productsArray = [], excludeId) => {
   if (!product?.name || !productsArray.length) return;
 
-  const nameKeywords = product.name.toLowerCase().split(/\s+/).filter(Boolean);
+  const firstWord = product.name.toLowerCase().split(/\s+/)[0];  // ✅ सिर्फ पहला word
 
   const filtered = productsArray.filter(item => {
     if (item._id === excludeId) return false;
 
     const itemName = item.name?.toLowerCase() || "";
 
-    return nameKeywords.some(keyword => itemName.includes(keyword));
+    return itemName.includes(firstWord);
   });
 
   console.log("Filtered by Name =>", filtered);
   setSimilarByName(filtered);
 };
-
 
 useEffect(() => {
   if (router.isReady) {
@@ -464,6 +467,7 @@ const openCatItems = (item) => {
       addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
+  
   const updateTotalAmount = () => {
     let newTotalAmount = Number(product.price);
     selectedAddOnProduct.forEach((item) => {
@@ -642,15 +646,7 @@ const openCatItems = (item) => {
     );
   };
 
-  // Function to generate a random number between min and max (inclusive)
-  const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  // Function to generate a random rating between 4.1 to 4.8
-  const getRandomRating = () => {
-    return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
-  };
+ 
 
   if (loading) {
     return <SkeletonLoader />; // Show skeleton loader while loading
@@ -750,10 +746,7 @@ const openCatItems = (item) => {
           >
             <div
               style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
                 padding: "10px",
-                marginBottom: "12px",
-                backgroundColor: "#fff",
               }}
             >
               <h2
@@ -850,36 +843,14 @@ const openCatItems = (item) => {
 
             <div
               style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
                 padding: "10px",
-                marginBottom: "12px",
-                backgroundColor: "#fff",
               }}
             >
               {getItemInclusion(product.inclusion)}
 
-              <div className="customisation-box">
-                <p className="customisation-heading">Customize As You Like</p>
-
-                <div className="customisation-item">
-                  <Image src={Ballons} alt="Balloons" className="customisation-icon" />
-                  <span>Balloons color can be changed as per your choice.</span>
-                </div>
-
-                <div className="customisation-item">
-                  <Image src={HappyBithday} alt="Neon Lights" className="customisation-icon" />
-                  <span>Neon lights can be changed for the event (if included in the design).</span>
-                </div>
-
-                <div className="customisation-item">
-                  <Image src={Candle} alt="Age Numbers" className="customisation-icon" />
-                  <span>Age numbers and name are customizable (if included in the design).</span>
-                </div>
-
-                <div className="customisation-button-wrap">
-                  <button className="customisation-button">CUSTOMISATION SUPPORT</button>
-                </div>
-              </div>
+              <section className="custom-banner-section">
+      <Image src={BannerImage} alt="Change Something Banner" className="custom-banner-image" />
+    </section>
 
             </div>
 
@@ -957,7 +928,6 @@ const openCatItems = (item) => {
 
 {similarByName.length > 0 && (
   <UniversalDecorSlider
-    title="Recommended for You"
     data={similarByName}
     showDiscount={true}
     city={city}
@@ -986,16 +956,19 @@ const openCatItems = (item) => {
 
 
 
+      <VideoTestimonial videoSrc={VideoClint} />
 
-            <ReviewSection allReviewsData={allReviewsData} />
+<ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
+
+
+
+
+          
             <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
-            <div className="decorke-celebrate-banner">
-              <Image
-                src={AdditionalServices}
-                alt="Customize Your Celebration"
-                className="decorke-banner-img"
-              />
-            </div>
+          
+           
+               <AdditionalServices/>
+
             <div className="tab-section-details-productpage">
               <FAQSection faqData={faqData} />
             </div>

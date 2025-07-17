@@ -1,3 +1,72 @@
+ export const ballonReview=[
+  {
+    "name": "Vivaan Gupta",
+    "booking": "Booked Balloon Decoration for Engagement",
+    "date": "05 June 24",
+    "rating": 5,
+    "avatar": "https://media.istockphoto.com/id/613557584/photo/portrait-of-a-beautifull-smiling-man.jpg?s=612x612&w=0&k=20&c=hkCg5CrmTKOApePbPOyo1U9GexEfIJOJqoLXJIvcN8E=",
+    "indicators": {
+      "Taste": true,
+      "Behaviour": true,
+      "Presentation": true,
+      "Quantity": true,
+      "Hygiene": true,
+      "Punctuality": true
+    }
+  },
+  {
+    "name": "Isha Mehta",
+    "booking": "Booked Decoration for Baby Shower",
+    "date": "15 May 24",
+    "rating": 4,
+    "avatar": "https://photosrush.net/wp-content/uploads/simple-cute-girl-pic-caption-1.jpg",
+    "indicators": {
+      "Taste": false,
+      "Behaviour": true,
+      "Presentation": true,
+      "Quantity": true,
+      "Hygiene": false,
+      "Punctuality": true
+    },
+    // "text": "I couldn't be happier with the balloon decorations provided by Hora Services for my baby shower! They really listened to my vision and turned it into reality with the most creative and stunning arrangements. The balloons were vibrant, and they even incorporated cute little details to match the baby theme. Highly recommend for anyone planning a special event!"
+  },
+  {
+    "name": "Riya Gupta",
+    "booking": "Booked Balloon Decoration for Baby Shower",
+    "date": "05 June 24",
+    "rating": 4,
+    "avatar": "https://randomuser.me/api/portraits/women/18.jpg",
+    "indicators": {
+      "Taste": true,
+      "Behaviour": true,
+      "Presentation": true,
+      "Quantity": true,
+      "Hygiene": true,
+      "Punctuality": true
+    },
+    // "text": "The balloon decorations and catering for our baby shower were excellent. The food was delicious, and the decorations were beautiful. great service."
+  },
+  {
+    "name": "Ankit Singh",
+    "booking": "Booked Balloon Decoration for Anniversary Party",
+    "date": "29 May 24",
+    "rating": 4,
+    "avatar": "https://english.cdn.zeenews.com/sites/default/files/2017/11/17/639329-indian-men.jpg?",
+    "indicators": {
+      "Taste": false,
+      "Behaviour": true,
+      "Presentation": true,
+      "Quantity": true,
+      "Hygiene": true,
+      "Punctuality": true
+    },
+    // "text": "Hora Services made our anniversary celebration unforgettable. The decorations were elegant and romantic, with every detail thoughtfully arranged. It felt like a dream come true. Thank you for making our special day even more beautiful!"
+  }
+]
+
+ 
+ 
+ 
  const allReviewsData = [
         {
             name: "hemant singh",
@@ -658,7 +727,7 @@
             "text": "Hora Services’ live catering was the highlight of our engagement party! Watching the chef prepare incredible dishes right in front of us was so fun, and the food was absolutely delicious. Our guests couldn’t stop talking about the experience!"
         },
         {
-            "name": "Ishaan Kapoor",
+            "name": "Ishaan jain",
             "booking": "Booked Balloon Decoration for Corporate Event",
             "date": "02 June 24",
             "rating": 3,
@@ -674,7 +743,7 @@
             "text": "I booked Hora Services for our corporate event, and they did an outstanding job with the decorations! The venue looked elegant and professional, with tasteful designs that matched our branding perfectly. The team was punctual and worked efficiently to ensure everything was set up seamlessly. I highly recommend them for any corporate function!"
         },
         {
-            "name": "Meera Desai",
+            "name": "Meera singh",
             "booking": "Booked Chef and Balloon Decoration for Birthday Party",
             "date": "09 May 24",
             "rating": 5,
