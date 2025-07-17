@@ -49,7 +49,7 @@ import AdditionalServices from "@/components/AdditionalServices";
 
 import BannerImage from "../../../../../assets/customised.webp";
 import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
-import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG.png";
+import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
