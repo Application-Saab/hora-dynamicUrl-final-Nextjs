@@ -220,6 +220,8 @@ function DecorationCatDetails({ city, locality }) {
   const [extraProduct, setExtraProduct] = useState([]);
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
   const searchParams = useSearchParams();
+const [similarByPrice, setSimilarByPrice] = useState([]);
+const [similarByName, setSimilarByName] = useState([]);
 
   const router = useRouter();
   const params = useParams();
@@ -243,6 +245,42 @@ useEffect(() => {
 }, [params]);
 
 // 2️⃣ Get URL params when router is ready
+
+const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
+  if (!price || !productsArray.length) return;
+
+  const min = Math.floor(price / 1000) * 1000;
+  const max = Math.ceil(price / 1000) * 1000 + 1000;
+
+  const filtered = productsArray.filter(item => {
+    const itemPrice = Number(item.price);
+    return (
+      itemPrice >= min &&
+      itemPrice <= max &&
+      item._id !== excludeId
+    );
+  });
+
+  console.log(`Filtered by Rounded Range ${min} - ${max}:`, filtered);
+  setSimilarByPrice(filtered);
+};
+
+const filterSimilarByName = (product, productsArray = [], excludeId) => {
+  if (!product?.name || !productsArray.length) return;
+
+  const nameKeywords = product.name.toLowerCase().split(/\s+/).filter(Boolean);
+
+  const filtered = productsArray.filter(item => {
+    if (item._id === excludeId) return false;
+
+    const itemName = item.name?.toLowerCase() || "";
+
+    return nameKeywords.some(keyword => itemName.includes(keyword));
+  });
+
+  console.log("Filtered by Name =>", filtered);
+  setSimilarByName(filtered);
+};
 
 
 useEffect(() => {
@@ -313,11 +351,18 @@ useEffect(() => {
 useEffect(() => {
   if (product?.categoryId) {
     getCategoryProducts(product.categoryId);
+    
   } else if (catValue) {
     getSubCatId(catValue);   
   }
 }, [product, catValue]);
 
+useEffect(() => {
+  if (product?.price && similar.length > 0) {
+    filterSimilarByPrice(product.price, similar, product._id);
+       filterSimilarByName(product, similar, product._id);
+  }
+}, [product, similar]);
 
 useEffect(() => {
   if (passCategoryId) {
@@ -329,7 +374,7 @@ useEffect(() => {
 const getCategoryProducts = async (categoryId) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all`
+      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
     );
     setSimilar(response.data.data || []);
   } catch (error) {
@@ -878,10 +923,7 @@ const openCatItems = (item) => {
               catValue={getMappedCatValue(router.query.catValue)}  // ✅ Use your map function here
  
             />
-
-
-
-            {catValue?.toLowerCase() === "kidsbirthday" && (
+             {catValue?.toLowerCase() === "kidsbirthday" && (
               <div className="category-tabs-outer">
                 <CategoryTabs
                   data={themeFilters.map((item) => ({
@@ -900,6 +942,32 @@ const openCatItems = (item) => {
                 />
               </div>
             )}
+
+{similarByPrice.length > 0 && (
+  <UniversalDecorSlider
+    title="You May Also Like"
+    data={similarByPrice}
+    showDiscount={true}
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    locality={locality}
+    catValue={getMappedCatValue(router.query.catValue)}
+  />
+)}
+
+{similarByName.length > 0 && (
+  <UniversalDecorSlider
+    title="Recommended for You"
+    data={similarByName}
+    showDiscount={true}
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    locality={locality}
+    catValue={getMappedCatValue(router.query.catValue)}
+  />
+)}
+
+           
 
             <div className="decorke-celebrate-banner">
               <Image
