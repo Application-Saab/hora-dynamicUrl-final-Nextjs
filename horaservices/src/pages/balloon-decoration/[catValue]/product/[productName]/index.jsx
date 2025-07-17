@@ -243,6 +243,8 @@ useEffect(() => {
 }, [params]);
 
 // 2️⃣ Get URL params when router is ready
+
+
 useEffect(() => {
   if (router.isReady) {
     const { subCategory, catValue: urlCatValue, productName } = router.query;
@@ -287,20 +289,25 @@ const fetchDecorationDetails = async () => {
 
 
 
-// useEffect(() => {
-//   if (router.isReady && router.query.catValue) {
-//     const mappedCat = getMappedCatValue(router.query.catValue);
-//     setCatValue(mappedCat);   
-//     setSendCategoryId(mappedCat);  
-//   }
-// }, [router.isReady, router.query.catValue]);
-
 useEffect(() => {
   if (router.isReady && router.query.catValue) {
     const rawCatValue = router.query.catValue;
     setCatValue(rawCatValue); // For UI
     setSendCategoryId(rawCatValue); // For API calls
   }
+}, [router.isReady, router.query.catValue]);
+
+
+useEffect(() => {
+  if (!router.isReady || !router.query.catValue) return;
+
+  const rawCatValue = router.query.catValue;
+  
+  const mappedCat = getMappedCatValue(rawCatValue);  // ✅ Your map function
+  
+  setCatValue(rawCatValue);      // For showing on UI — can be slug like 'birthday-decoration'
+  setSendCategoryId(mappedCat);  // For API calls — mapped to your DB slug
+
 }, [router.isReady, router.query.catValue]);
 
 useEffect(() => {
@@ -329,12 +336,9 @@ const getCategoryProducts = async (categoryId) => {
     console.error("Error fetching category products:", error.message);
   }
 };
-useEffect(() => {
-  if (router.isReady && router.query.catValue) {
-    const rawCatValue = router.query.catValue;
-    // Map raw URL slug to API slug if needed
-    
-  const catMap = {
+
+const getMappedCatValue = (slug) => {
+  const map = {
     "birthday-decoration": "Birthday",
     "anniversary-decoration": "Anniversary",
     "haldi-mehendi-decoration": "Haldi-Mehandi",
@@ -344,13 +348,8 @@ useEffect(() => {
     "premium-decoration": "PremiumDecoration",
     "bachelorette-decoration": "bachelorette",
   };
- 
-    const apiSlug = catMap[rawCatValue] || rawCatValue;
-
-    setCatValue(rawCatValue); 
-    setSendCategoryId(apiSlug); 
-  }
-}, [router.isReady, router.query.catValue]);
+  return map[slug] || slug;  // If not mapped, return the same slug
+};
 
 
 
@@ -486,19 +485,7 @@ const openCatItems = (item) => {
     });
     return totalPrice;
   };
-const getMappedCatValue = (catValue) => {
-  const catMap = {
-    "birthday-decoration": "Birthday",
-    "anniversary-decoration": "Anniversary",
-    "haldi-mehendi-decoration": "Haldi-Mehandi",
-    "first-night-decoration": "FirstNight",
-    "baby-shower-decoration": "BabyShower",
-    "welcome-baby-decoration": "WelcomeBaby",
-    "premium-decoration": "PremiumDecoration",
-    "bachelorette-decoration": "bachelorette",
-  };
-  return catMap[catValue] || "";
-};
+
 
 
   const handleAddToCartAndScrollBack = (item) => {
