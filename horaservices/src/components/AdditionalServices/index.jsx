@@ -5,13 +5,14 @@ import Image from "next/image";
 import PHOTOGRAPHY from "../../assets/PHOTOGRAPHY.png";
 import CATERING from "../../assets/CATERING.png";
 import ENTERTAINMENT from "../../assets/ENTERTAINMENT.png";
+import Link from "next/link"; 
 const services = [
   {
     title: "PHOTOGRAPHY",
     description: "CAPTURE EVERY SPECIAL MOMENT.",
     color: "#F4629A",
     img: PHOTOGRAPHY,
-    link: "#"
+    link: "/photography-page"
   },
   {
     title: "FOOD&CATERING",
@@ -51,9 +52,9 @@ const AdditionalServices = () => {
             <ul>
               <li>{item.description}</li>
             </ul>
-            <div className="view-more" style={{ color: item.color }}>
+           <Link href={item.link} className="view-more" style={{ color: item.color }}>
               VIEW MORE
-            </div>
+            </Link>
           </div>
         ))}
       </div>

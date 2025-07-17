@@ -45,7 +45,7 @@ import DecorSlider from "@/components/DecorSlider";
 import BabyShowerBannerIMG from "../../assets/BabyShowerBannerIMG.jpg";
 import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
-import GoogleRatingIMG from "../../assets/GoogleRatingIMG.png";
+import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
