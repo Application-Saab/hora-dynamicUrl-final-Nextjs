@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { CardSkeleton } from "../../../components/CardSkeleton";
 import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
-import "../../../css/decoration.css";
+// import "../../../css/decoration.css";
 import { setState } from "../../../actions/action";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
@@ -22,7 +22,15 @@ import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { AiOutlineConsoleSql } from "react-icons/ai";
-
+import { themeFilters } from "@/utils/themeFilters";
+import "./catvaluedecor.css"
+import ProductGrid from "@/components/productGrid";
+import FilterBar from "@/components/FilterBar";
+import customize from "../../../assets/customize.jpg";
+import DidyouKnow from "../../../assets/didyouknow.jpg";
+import makeItMemorable from "../../../assets/makeitmemorable.png";
+import steps from "../../../assets/steps.jpg";
+import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.jpg";
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -75,35 +83,8 @@ const DecorationCatPage = () => {
   const [sortFilter, setSortFilter] = useState("asc");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
-   const themeFilters = [
-    { label: "Select Theme", value: "all" },
-    { label: "Astronaut space theme", value: "Astronaut-space" },
-    { label: "Avengers theme", value: "Avengers" },
-    { label: "Boss baby theme", value: "Boss" },
-    { label: "Baby shark theme", value: "shark" },
-    { label: "Barbie theme", value: "Barbie" },
-    { label: "Cocomelon Theme", value: "Cocomelon" },
-    { label: "Car Theme", value: "car" },
-    { label: "Circus Theme", value: "Circus" },
-    { label: "Dinosaur Theme", value: "Dinosaur" },
-    { label: "Elsa Theme", value: "Elsa" },
-    { label: "Flamingo Theme", value: "Flamingo" },
-    { label: "Jungle Theme", value: "Jungle" },
-    { label: "Kitty Theme", value: "Kitty" },
-    { label: "Lion King", value: "Lion" },
-    { label: "Mickey Mouse Theme", value: "Mickey-Mouse" },
-    { label: "Mickey and Minnie Theme", value: "Mickey-Minnie" },
-    { label: "Minecraft Theme", value: "Minecraft" },
-    { label: "Mermaid Theme", value: "Mermaid" },
-    { label: "Pokemon and Pikachu theme", value: "Pikachu-Pokemon" },
-    { label: "Princess Theme", value: "Princess" },
-    { label: "Panda Theme", value: "Panda" },
-    { label: "Traffic Theme", value: "Traffic" },
-    { label: "Super dogs theme", value: "dogs" },
-    { label: "Super Hero theme", value: "Hero" },
-    { label: "Sport Football theme", value: "Football" },
-    { label: "Unicorn Theme", value: "Unicorn" },
-  ];
+
+
   function getSubCategory(catValue) {
     if (!catValue) {
       const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
@@ -154,13 +135,13 @@ const DecorationCatPage = () => {
   const getRandomRating = () => {
     return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
   };
-useEffect(() => {
-  if (theme) {
-    setThemeFilter(theme); // This sets the theme dropdown based on URL
-  } else {
-    setThemeFilter("all");
-  }
-}, [theme]);
+  useEffect(() => {
+    if (theme) {
+      setThemeFilter(theme); // This sets the theme dropdown based on URL
+    } else {
+      setThemeFilter("all");
+    }
+  }, [theme]);
   useEffect(() => {
     //console.log("useEffect1")
     addSpaces(subCategory);
@@ -180,33 +161,7 @@ useEffect(() => {
     return () => window.removeEventListener("scroll", handleStickyScroll);
   }, []);
 
-  // useEffect(() => {
-  //   let debounceTimeout;
 
-  //   const handleScroll = () => {
-  //     if (loading || !hasMore || !containerRef.current) return;
-
-  //     clearTimeout(debounceTimeout);
-  //     debounceTimeout = setTimeout(() => {
-  //       const container = containerRef.current;
-  //       const { top, bottom } = container.getBoundingClientRect();
-  //       const windowHeight = window.innerHeight;
-
-  //       // Check if any part of the container is visible in the viewport
-  //       const isPartiallyVisible = bottom > 0 && top < windowHeight;
-
-  //       if (isPartiallyVisible) {
-  //         setCurrentPage(prevPage => prevPage + 1);
-  //       }
-  //     }, 200);
-  //   };
-
-  //   window.addEventListener('scroll', handleScroll);
-  //   return () => {
-  //     window.removeEventListener('scroll', handleScroll);
-  //     clearTimeout(debounceTimeout);
-  //   };
-  // }, [loading, hasMore]);
 
   const sentinelRef = useRef(null);
 
@@ -249,12 +204,7 @@ useEffect(() => {
     }
   }, [currentPage]);
 
-  // useEffect(() => {
-  //   console.log("useEffect5")
-  //   if (catValue && currentPage && !loading) {
-  //     getSubCatItems(currentPage);
-  //   }
-  // }, [catValue, currentPage]);
+
 
   // Filter change
   useEffect(() => {
@@ -318,7 +268,7 @@ useEffect(() => {
     if (catId) {
       getSubCatItems(1);
     }
-  }, [catId,themeFilter, priceFilter]);
+  }, [catId, themeFilter, priceFilter]);
 
   console.log("catId22", catId);
   const getSubCatItems = async (page) => {
@@ -339,10 +289,9 @@ useEffect(() => {
         newSortFilter = "desc";
       }
 
-      const apiUrl = `${
-        BASE_URL + GET_DECORATION_CAT_ITEM
-      }v2/${catId}?page=${page}&priceFilter=${newPriceFilter}&sortBy=${newSortFilter}&theme=${themeFilter}`;
-      console.log("Calling API:", apiUrl);
+      const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM
+        }v2/${catId}?limit=1000&priceFilter=${newPriceFilter}&sortBy=${newSortFilter}&theme=${themeFilter}`;
+
 
       const response = await axios.get(apiUrl);
 
@@ -443,425 +392,104 @@ useEffect(() => {
   };
 
   return (
-    <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
+    <div className="decCatPage">
       <Head>
         <title>{PageTitle(normalizedCat)}</title>
-        <meta
-          name="description"
-          content={getPageMetaDescription(normalizedCat)}
-        />
+        <meta name="description" content={getPageMetaDescription(normalizedCat)} />
         <meta name="keywords" content="Balloon and Flower Decoration @999" />
         <meta property="og:title" content={PageTitle(normalizedCat)} />
-        <meta
-          property="og:description"
-          content={getPageMetaDescription(normalizedCat)}
-        />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
+        <meta property="og:description" content={getPageMetaDescription(normalizedCat)} />
+        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
         <script type="application/ld+json">{scriptTag}</script>
         <meta name="robots" content="index, follow" />
         <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${normalizedCat}`}
-        />
+        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+        <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
         <meta property="og:type" content="website" />
       </Head>
 
-      <>
-        <div
-          style={{
-            textAlign: "center",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ marginTop: "0px" }}>
-            <h1
-              style={{
-                fontSize: "16px",
-                color: "#000",
-                padding: "14px 0 0",
-                color: "#9252AA",
-              }}
-            >
-              {selCat} {"Balloon Decoration"}{" "}
-            </h1>
-            <div className="filterdropdown d-flex flex-row flex-lg-row align-items-center justify-content-center gap-3">
-              <select
-                value={priceFilter}
-                onChange={(e) => setPriceFilter(e.target.value)}
-                style={{
-                  fontSize: "16px",
-                  color: "rgb(157, 74, 147)",
-                  padding: "7px 10px",
-                  borderWidth: 1,
-                  borderColor: "rgb(157, 74, 147)",
-                  borderRadius: "5px",
-                  marginLeft: "5px",
-                  backgroundColor: "#fff ",
-                }}
-              >
-                <option value="all">Sort By: Price</option>
-                <option value="lowToHigh">Price: Low to High</option>
-                <option value="highToLow">Price: High to Low</option>
-                <option value="under2000">Under ₹ 2000</option>
-                <option value="2000to5000">₹ 2000 - ₹ 5000</option>
-                <option value="above5000">Above ₹ 5000</option>
-              </select>
+      <ProductGrid data={catalogueData.slice(0, 4)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+      <FilterBar
+        selCat={selCat}
+        catValue={catValue}
+        priceFilter={priceFilter}
+        setPriceFilter={setPriceFilter}
+        themeFilter={themeFilter}
+        setThemeFilter={setThemeFilter}
+        themeFilters={themeFilters}
+      />
+      <section className="decorationBanner">
+        <Image
+          src={customize}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+      <ProductGrid data={catalogueData.slice(4, 10)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+      <section className="decorationBanner">
+        <Image
+          src={DidyouKnow}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+      <ProductGrid data={catalogueData.slice(10, 14)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+      <section className="decorationBanner">
+        <Image
+          src={makeItMemorable}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+       <ProductGrid data={catalogueData.slice(14, 20)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+ <section className="decorationBanner">
+        <Image
+          src={steps}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+        <ProductGrid data={catalogueData.slice(20, 26)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+ <section className="decorationBanner">
+        <Image
+          src={makeitmemorablebanner}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+       <ProductGrid data={catalogueData.slice(26, 32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+     <section className="decorationBanner">
+        <Image
+          src={steps}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+        <ProductGrid data={catalogueData.slice(32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
 
-              {/* Theme filter */}
-              {selCat === "Kids Birthday" || selCat === "Kidsbirthday" ? (
-                
-//                 <select
-//   value={themeFilter}
-//   onChange={(e) => {
-//     const selected = e.target.value;
-//     setThemeFilter(selected);
-
-   
-//     if (selected === "all") {
-//       router.push(`/balloon-decoration/${catValue}`);
-//     } else {
-//       router.push({
-//         pathname: `/balloon-decoration/${catValue}`,
-//         query: { theme: selected }
-//       });
-//     }
-//   }}
-//   style={{
-//     fontSize: "16px",
-//     color: "rgb(157, 74, 147)",
-//     padding: "7px 10px",
-//     borderWidth: 1,
-//     borderColor: "rgb(157, 74, 147)",
-//     borderRadius: "5px",
-//     marginLeft: "5px",
-//     backgroundColor: "#fff",
-//   }}
-// >
-//   {themeFilters.map((filter) => (
-//     <option key={filter.value} value={filter.value}>
-//       {filter.label}
-//     </option>
-//   ))}
-// </select>
-<select
-  value={themeFilter}
-  onChange={(e) => {
-    const selected = e.target.value;
-    setThemeFilter(selected);
-
-    if (selected === "all") {
-      router.push(`/balloon-decoration/${catValue}`);
-    } else {
-      router.push({
-        pathname: `/balloon-decoration/${catValue}`,
-        query: { theme: selected }
-      });
-    }
-  }} style={{
-    fontSize: "16px",
-    color: "rgb(157, 74, 147)",
-    padding: "7px 10px",
-    borderWidth: 1,
-    borderColor: "rgb(157, 74, 147)",
-    borderRadius: "5px",
-    marginLeft: "5px",
-    backgroundColor: "#fff",
-  }}
->
-  {themeFilters.map((filter) => (
-    <option key={filter.value} value={filter.value}>
-      {filter.label}
-    </option>
-  ))}
-</select>
-
-
-              ) : null}
-            </div>
-          </div>
-        </div>
-        <div
-          style={styles.decContainer}
-          className="decContainer"
-          ref={containerRef}
-        >
-          {catalogueData.length > 0 ? (
-            <>
-              {catalogueData.map((item, index) => (
-                <div
-                  key={item._id}
-                  style={{
-                    ...styles.imageContainer,
-                    cursor: "pointer",
-                    ...(hoveredIndex === index && styles.zoomedContainer),
-                  }}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  onClick={() => handleViewDetails(subCategory, catValue, item)}
-                  className="decimagecontainer"
-                >
-                  <div style={{ position: "relative" }}>
-                    <Image
-                      src={`https://horaservices.com/api/uploads/compressed_webp/${
-                        item.featured_image?.split(".")[0]
-                      }.webp`}
-                      alt={`balloon decoration ${altTagCatValue} ${item.name} ${item.price}`}
-                      style={styles.decCatimage}
-                      width={300}
-                      height={300}
-                    />
-                    {/* Watermark */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 3,
-                        right: 3,
-                        borderRadius: "50%",
-                        padding: 10,
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "rgba(157, 74, 147, 0.6)",
-                          fontWeight: "600",
-                        }}
-                      >
-                        <Image
-                          src={logo}
-                          style={{ width: "70px", height: "80px" }}
-                          className="hora-watermark-image"
-                        />
-                      </span>
-                    </div>
-                    <div className="decorationdiscount">
-                      ₹ {item.discountDifference.toFixed(0)} off
-                    </div>
-                  </div>
-                  <div className="px-2 py-2">
-                    <p
-                      style={{
-                        marginHorizontal: 3,
-                        textAlign: "left",
-                        fontWeight: "600",
-                        fontSize: "16px",
-                        marginTop: "4px",
-                        color: "#9252AA",
-                        lineHeight: "18px",
-                        marginBottom: "0px",
-                        textAlign: "left",
-                      }}
-                      className="pro_name"
-                    >
-                      {item.name}
-                    </p>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "top",
-                      }}
-                      className="pri_details"
-                    >
-                      <div
-                        style={{
-                          alignItems: "left",
-                          justifyContent: "space-between",
-                          display: "flex",
-                        }}
-                        className="pro_price"
-                      >
-                        <p
-                          style={{
-                            fontWeight: "700",
-                            fontSize: 15,
-                            color: "#9252AA",
-                            textAlign: "left",
-                            margin: "10px 10px 7px 0",
-                          }}
-                        >
-                          ₹{item.price}
-                        </p>
-                        <p
-                          style={{
-                            color: "#444",
-                            fontWeight: "700",
-                            fontSize: 15,
-                            textAlign: "left",
-                            margin: "10px 0px 7px",
-                            textDecoration: "line-through",
-                          }}
-                        >
-                          ₹{Math.floor(item.discountedPrice.toFixed(2))}
-                        </p>
-                      </div>
-                      <div className="d-flex align-items-center rating-sec">
-                        <p
-                          className="m-0 p-0"
-                          style={{
-                            fontWeight: "500",
-                            fontSize: 17,
-                            margin: "0px",
-                            color: "#9252AA",
-                          }}
-                        >
-                          {item.rating}
-                          <span
-                            className="px-1 m-0 py-0 img-fluid"
-                            style={{ color: "#ffc107" }}
-                          >
-                            <FontAwesomeIcon
-                              style={{ margin: 0, height: "14px" }}
-                              icon={faStar}
-                            />
-                          </span>
-                        </p>
-                        <p
-                          style={{
-                            color: "#9252AA",
-                            fontWeight: "600",
-                            fontSize: 17,
-                            margin: "0px",
-                            padding: "0 0 0 2px",
-                          }}
-                        >
-                          ({item.userCount})
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <div ref={sentinelRef} style={{ height: "1px" }} />{" "}
-              {/* Sentinel at the end */}
-              {/* Show bottom skeletons when paginating */}
-              {loading &&
-                currentPage > 1 &&
-                [1, 2, 3, 4].map((index) => (
-                  <div
-                    className="decimagecontainer"
-                    key={`skeleton-${index}`}
-                    style={styles.imageContainer}
-                  >
-                    <CardSkeleton />
-                  </div>
-                ))}
-            </>
-          ) : loading ? (
-            // Show full skeletons on initial load
-            [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-              <div
-                className="decimagecontainer"
-                key={index}
-                style={styles.imageContainer}
-              >
-                <CardSkeleton />
-              </div>
-            ))
-          ) : (
-            // No items + not loading
-            <div
-              style={{ textAlign: "center", width: "100%", padding: "20px 0" }}
-            >
-              <span>Reach out to our support team for this</span>
-              <span style={{ marginLeft: "10px" }}>
-                <Link
-                  className="conactus"
-                  href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services"
-                  target="_blank"
-                >
-                  Click here
-                </Link>
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="category-content">
-          {currentCategoryContent && currentCategoryContent.length > 0 ? (
-            currentCategoryContent
-              .slice(0, showAll ? currentCategoryContent.length : 2)
-              .map((item, index) => (
-                <div key={index} className="category-item">
-                  <h1>{item.title}</h1>
-                  <div
-                    className="item-content"
-                    dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-                  />
-                </div>
-              ))
-          ) : (
-            <p className="no-content-message">
-              No content available for this category.
-            </p>
-          )}
-          {currentCategoryContent && currentCategoryContent.length > 2 && (
-            <button onClick={toggleShowAll} className="toggle-btn">
-              {showAll ? "See Less" : "See More"}
-            </button>
-          )}
-        </div>
-      </>
     </div>
   );
+
 };
 
-const styles = {
-  decContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    // alignItems: 'center',
-    display: "inline-flex",
-    flexWrap: "wrap",
-    padding: "1% 1% 0",
-  },
-  decCatimage: {
-    width: "100%",
-    height: "300px",
-    borderRadius: "5px",
-    objectFit: "cover",
-  },
-  imageContainer: {
-    position: "relative",
-    width: "270px",
-    backgroundColor: "#fff",
-    marginBottom: 40,
-    boxShadow: "0 6px 16px 0 rgba(0,0,0,.14)",
-    borderRadius: "5px",
-    transition: "transform 0.3s ease-in-out", // Smooth transition effect for zoom
-    margin: "10px 12px 20px",
-    padding: "4px 4px 10px",
-  },
-  zoomedContainer: {
-    transform: "scale(1.1)", // Scale the container by 10% on hover
-  },
-  itemName: {
-    textAlign: "center",
-    fontSize: "16px",
-    fontWeight: "500",
-    color: "#444",
-    padding: "10px",
-  },
-  priceContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  price: {
-    fontSize: "17px",
-    fontWeight: "500",
-    color: "#444",
-    margin: "0",
-  },
-};
+
 
 export default DecorationCatPage;
