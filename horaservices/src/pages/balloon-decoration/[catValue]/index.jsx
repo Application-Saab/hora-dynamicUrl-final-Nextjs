@@ -31,6 +31,9 @@ import DidyouKnow from "../../../assets/didyouknow.jpg";
 import makeItMemorable from "../../../assets/makeitmemorable.png";
 import steps from "../../../assets/steps.jpg";
 import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.jpg";
+import googleRating from "../../../assets/goglerating.png";
+import Gurantee from "../../../assets/gurantee.jpg";
+import ontime from "../../../assets/ontime.png"
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -473,18 +476,24 @@ const DecorationCatPage = () => {
         />
       </section>
        <ProductGrid data={catalogueData.slice(26, 32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-     <section className="decorationBanner">
-        <Image
-          src={steps}
-          alt="Decoration-Banner"
-          width={1200}
-          height={400}
-          className="decorationBanner-image"
-          priority
-        />
-      </section>
+    <div className="highlight-wrapper">
+      <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
+      <div className="highlight-cards">
+        <div className="highlight-card">
+          <Image src={googleRating} alt="Google Rating" width={60} height={60} />
+          <p>4.7+ GOOGLE RATING</p>
+        </div>
+        <div className="highlight-card">
+          <Image src={ontime} alt="On Time Completion" width={60} height={60} />
+          <p>ON TIME COMPLETION</p>
+        </div>
+        <div className="highlight-card">
+          <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
+          <p>100% FULL FILL GUARANTEE</p>
+        </div>
+      </div>
+    </div>
         <ProductGrid data={catalogueData.slice(32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
     </div>
   );
 

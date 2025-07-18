@@ -203,6 +203,46 @@ min-height: 140px;
   height: auto;
   
 }
+.highlight-wrapper {
+  text-align: center;
+  padding: 30px 10px;
+  background: #fff;
+}
+
+.highlight-title {
+  font-size: 20px;
+  color: #8a3f98;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.highlight-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.highlight-card {
+  background: #f9f9f9;
+  padding: 15px 10px;
+  border-radius: 10px;
+  width: 140px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.highlight-card:hover {
+  transform: scale(1.05);
+}
+
+.highlight-card p {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 10px;
+}
+
 /* === Force Always 2 Column Grid Shrinking === */
 @media (max-width: 768px) {
   .decContainer {
