@@ -43,7 +43,7 @@ const GridhandleClick = (cat) => {
         <button
           key={cat.id}
           className="category-tabs-card"
-          onClick={() => onSelect(cat)}
+          onClick={() => GridhandleClick(cat)}
         >
           <Image
             className="category-tabs-circle"
@@ -57,8 +57,6 @@ const GridhandleClick = (cat) => {
       ))}
   </div>
 </div>
-
-
   ) : (
     // ✅ Circle with Label inside Variant (for Product Page)
     <div className="category-tabs">

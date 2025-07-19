@@ -22,19 +22,25 @@ const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => 
                   height={300}
                 />
                 <div className="watermark">
-                  <Image src={logo} alt="logo" width={70} height={70} />
+                  <Image src={logo} alt="logo" width={40} height={40} />
                 </div>
                 <div className="discountLabel">
                   ₹ {item.discountDifference.toFixed(0)} off
                 </div>
               </div>
               <div className="cardContent">
-                <p className="productName">{item.name}</p>
+              
+                <p className="premium-title">
+    {item.name.length > 20 ? `${item.name.slice(0, 20)}...` :item.name}
+  </p>
                 <div className="priceRatingRow">
                   <div className="priceBlock">
                     <p className="price">₹{item.price}</p>
                     <p className="discountedPrice">₹{Math.floor(item.discountedPrice)}</p>
+                   
                   </div>
+                     <p className="customization">Customization Available</p>
+                    <p className="viewMore">View More</p>
                 </div>
               </div>
             </div>

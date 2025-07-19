@@ -11,7 +11,7 @@ const FilterBar = ({
   const router = useRouter();
 
   return (
-    <div className="filterBarContainer d-flex flex-wrap gap-3 align-items-center justify-content-center mb-4">
+    <div className="filterBarContainer ">
       {/* === Price Filter === */}
       <select
         className="filterSelect"

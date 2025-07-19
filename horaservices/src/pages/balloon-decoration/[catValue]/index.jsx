@@ -35,6 +35,13 @@ import googleRating from "../../../assets/goglerating.png";
 import Gurantee from "../../../assets/gurantee.jpg";
 import ontime from "../../../assets/ontime.png"
 import CategoryTabs from "@/components/CategoryTabs.jsx";
+import birthdayBanner from "@/assets/categories/BIRTHDAY.webp";
+import premiumBanner from "@/assets/categories/PREMIUMDECORATION.webp";
+import kidsBanner from "@/assets/categories/KIDSDECORATION.Webp"
+import welcomeBanner from "@/assets/categories/WELCOMEBABY.webp"
+import babyshowerBanner from "@/assets/categories/BABYSHOWWER.webp"
+import anniversaryBanner from "@/assets/categories/ANNVERSARY.webp"
+import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp"
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -237,21 +244,22 @@ const DecorationCatPage = ({ locality }) => {
   }
 
   console.log(subCategory, "subCategory");
-  const getSubCatId = async (subCategory) => {
-    try {
-      const response = await axios.get(
-        BASE_URL + GET_DECORATION_CAT_ID + subCategory
-      );
-      const categoryId = response.data.data?._id;
-      console.log("Category ID:", categoryId);
-      if (categoryId) {
-        setCatId(categoryId);
-        setCatValue(subCategory); // triggers the filter effect
-      }
-    } catch (error) {
-      console.log("Error:", error.message);
+ const getSubCatId = async (subCategory) => {
+  try {
+    const response = await axios.get(
+      BASE_URL + GET_DECORATION_CAT_ID + subCategory
+    );
+    const categoryId = response.data.data?._id;
+    console.log("Category ID:", categoryId);
+    if (categoryId) {
+      setCatId(categoryId); // ✅ only this
+      // remove setCatValue(subCategory)
     }
-  };
+  } catch (error) {
+    console.log("Error:", error.message);
+  }
+};
+
 
   const getDiscountedPrice = (price) => {
     let discount;
@@ -336,17 +344,35 @@ const DecorationCatPage = ({ locality }) => {
       router.push(`/balloon-decoration/${catValue}/product/${productName}`);
     }
   };
-
+const categoryBannerMap = {
+  "birthday-decoration": birthdayBanner,
+  "premium-decoration": premiumBanner,
+  // "haldi-decoration": haldiBanner,
+  // "mehndi-decoration": haldiBanner,
+  "kids-birthday-decoration": kidsBanner,
+  "welcome-baby-decoration":welcomeBanner,
+  "baby-shower-decoration":babyshowerBanner,
+  "anniversary-decoration":anniversaryBanner,
+  "first-night-decoration":firstNightBanner,
+  // fallback/default
+  // default: customize,
+};
   function trimText(text) {
     if (text.length > 60) {
       return text.slice(0, 60) + "...";
     }
     return text;
   }
+  // const normalizeCatValue = (val) => {
+  //   return val?.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+  // };
   const normalizeCatValue = (val) => {
-    return val?.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-  };
+  return val?.toLowerCase().replace(/ /g, "-");
+};
+
+
   const normalizedCat = normalizeCatValue(catValue);
+  const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
   const PageTitle = (cat) => {
     if (cat === "kids-birthday" || cat === "kids-birthday-decoration") {
       return "Kids' Birthday Balloon Decoration by Professionals Decorators, Starting at ₹1199";
@@ -411,7 +437,17 @@ const DecorationCatPage = ({ locality }) => {
         <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
         <meta property="og:type" content="website" />
       </Head>
-        {catValue?.toLowerCase() === "kidsbirthday" && (
+      <section className="decorationBanner">
+  <Image
+    src={bannerToShow}
+    alt="Decoration Banner"
+    width={1200}
+    height={400}
+    className="decorationBanner-image"
+    priority
+  />
+</section>
+        {catValue?.toLowerCase() === "kids-birthday-decoration" && (
                     <div className="category-tabs-outer">
                       <CategoryTabs
                         data={themeFilters.map((item) => ({
@@ -435,7 +471,6 @@ const DecorationCatPage = ({ locality }) => {
       <FilterBar
         priceFilter={priceFilter}
         setPriceFilter={setPriceFilter}
-        
       />
       <section className="decorationBanner">
         <Image

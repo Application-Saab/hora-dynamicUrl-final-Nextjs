@@ -395,6 +395,7 @@ const getMappedCatValue = (slug) => {
     "welcome-baby-decoration": "WelcomeBaby",
     "premium-decoration": "PremiumDecoration",
     "bachelorette-decoration": "bachelorette",
+    "kids-birthday-decoration":"KidsBirthday"
   };
   return map[slug] || slug;  // If not mapped, return the same slug
 };
