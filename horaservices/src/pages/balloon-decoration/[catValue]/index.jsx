@@ -34,7 +34,8 @@ import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.jpg";
 import googleRating from "../../../assets/goglerating.png";
 import Gurantee from "../../../assets/gurantee.jpg";
 import ontime from "../../../assets/ontime.png"
-const DecorationCatPage = () => {
+import CategoryTabs from "@/components/CategoryTabs.jsx";
+const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   //   let { city } = useParams();
@@ -273,9 +274,9 @@ const DecorationCatPage = () => {
     }
   }, [catId, themeFilter, priceFilter]);
 
-  console.log("catId22", catId);
+  // console.log("catId22", catId);
   const getSubCatItems = async (page) => {
-    console.log("catId11", catId);
+    // console.log("catId11", catId);
     if (!catId) return;
 
     try {
@@ -410,16 +411,31 @@ const DecorationCatPage = () => {
         <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
         <meta property="og:type" content="website" />
       </Head>
-
+        {catValue?.toLowerCase() === "kidsbirthday" && (
+                    <div className="category-tabs-outer">
+                      <CategoryTabs
+                        data={themeFilters.map((item) => ({
+                          id: item.value,
+                          name: item.label,
+                          image: item.image,
+                          value: item.value,
+                          catValue: "KidsBirthday",
+                        }))}
+                        onSelect={(item) => openCatItems(item, themeFilter)}
+                        city={city}
+                        hasCityPageParam={hasCityPageParam}
+                        locality={locality}
+                        variant="grid"
+                        catValue="KidsBirthday"
+                        
+                      />
+                    </div>
+                  )}
       <ProductGrid data={catalogueData.slice(0, 4)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
       <FilterBar
-        selCat={selCat}
-        catValue={catValue}
         priceFilter={priceFilter}
         setPriceFilter={setPriceFilter}
-        themeFilter={themeFilter}
-        setThemeFilter={setThemeFilter}
-        themeFilters={themeFilters}
+        
       />
       <section className="decorationBanner">
         <Image

@@ -204,8 +204,15 @@ const Decoration = ({ city, locality }) => {
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs-outer">
-        <CategoryTabs data={decCat} onSelect={openCatItems} city={city} hasCityPageParam={hasCityPageParam} locality={locality} variant="circle" />
-      </div>
+      <CategoryTabs 
+  data={decCat} 
+  onSelect={openCatItems} 
+  city={city} 
+  hasCityPageParam={hasCityPageParam} 
+  locality={locality} 
+  variant="circle" 
+/>
+   </div>
 
       <div className="CategoryGrid-outer">
         <div className="page-width">

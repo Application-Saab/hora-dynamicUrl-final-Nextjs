@@ -910,6 +910,8 @@ const openCatItems = (item) => {
                   locality={locality}
                   variant="grid"
                   catValue="KidsBirthday"
+                   heading="Other Popular Themes"
+  hasBg={true}
                 />
               </div>
             )}

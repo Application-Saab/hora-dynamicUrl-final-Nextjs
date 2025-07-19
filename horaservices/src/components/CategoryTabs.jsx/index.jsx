@@ -5,7 +5,7 @@ import "./CategoryTabs.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 import { useRouter } from "next/navigation";
 
-const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant = "grid",catValue }) => {
+const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant = "grid",catValue ,heading, hasBg = false}) => {
  const router = useRouter();
   const { handleItemClick, openCatItems } = useDecorationEvents(
     city,
@@ -31,31 +31,40 @@ const GridhandleClick = (cat) => {
   };
 
   return variant === "grid" ? (
-        <div>
-          <h3 className="category-outer">Other Popular Themes</h3>
-    <div className="category-tabs-grid">
-      
+     <div className={`category-tabs-outer ${hasBg ? "has-bg" : ""}`}>
+  {heading && (
+    <h3 className="category-tabs-heading">{heading}</h3>
+  )}
+
+  <div className="category-tabs-grid">
     {data
       .filter((cat) => cat.image)
       .map((cat) => (
         <button
           key={cat.id}
           className="category-tabs-card"
-          onClick={() => GridhandleClick(cat)}
+          onClick={() => onSelect(cat)}
         >
-       
-   <Image className="category-tabs-circle" src={cat.image} alt={cat.name} width={80} height={80} />
-
+          <Image
+            className="category-tabs-circle"
+            src={cat.image}
+            alt={cat.name}
+            width={80}
+            height={80}
+          />
           <span className="category-tabs-title">{cat.name}</span>
         </button>
       ))}
   </div>
-  </div>
+</div>
+
+
   ) : (
     // ✅ Circle with Label inside Variant (for Product Page)
     <div className="category-tabs">
       {data
-        .filter((cat) => cat.image && cat.image.trim() !== "")
+        // .filter((cat) => cat.image && cat.image.trim() !== "")
+          .filter((cat) => cat.image)
         .slice(0, 7)
         .map((cat) => (
           <button

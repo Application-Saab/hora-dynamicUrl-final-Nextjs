@@ -4,13 +4,9 @@ import { useRouter } from "next/navigation";
 import "./FilterBar.css"; // optional for custom styling
 
 const FilterBar = ({
-  selCat,
-  catValue,
   priceFilter,
   setPriceFilter,
-  themeFilter,
-  setThemeFilter,
-  themeFilters = [],
+
 }) => {
   const router = useRouter();
 
@@ -30,31 +26,7 @@ const FilterBar = ({
         <option value="above5000">Above ₹ 5000</option>
       </select>
 
-      {/* === Theme Filter (Only for Kids Birthday) === */}
-      {(selCat === "Kids Birthday" || selCat === "Kidsbirthday") && (
-        <select
-          className="filterSelect"
-          value={themeFilter}
-          onChange={(e) => {
-            const selected = e.target.value;
-            setThemeFilter(selected);
-            if (selected === "all") {
-              router.push(`/balloon-decoration/${catValue}`);
-            } else {
-              router.push({
-                pathname: `/balloon-decoration/${catValue}`,
-                query: { theme: selected },
-              });
-            }
-          }}
-        >
-          {themeFilters.map((filter) => (
-            <option key={filter.value} value={filter.value}>
-              {filter.label}
-            </option>
-          ))}
-        </select>
-      )}
+    
     </div>
   );
 };

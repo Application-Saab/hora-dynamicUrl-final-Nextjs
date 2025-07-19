@@ -95,18 +95,21 @@
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
+.category-tabs-outer.has-bg {
+  background-color: #fbe6d3;
+  padding: 16px;
+  border-radius: 12px;
+}
 .category-tabs-grid {
   display: flex;
-  gap: 16px;
+  gap: 10px;
   overflow-x: auto;
   padding: 10px 0;
-  scrollbar-width: thin; /* For Firefox */
-  background-color: #fbe6d3;
-;
+  scrollbar-width: thin; 
 }
 
 .category-tabs-grid::-webkit-scrollbar {
-  height: 6px;
+  height: 1px;
 }
 
 .category-tabs-grid::-webkit-scrollbar-thumb {
@@ -123,12 +126,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100px;
+  /* width: 100px; */
 }
 
 .category-tabs-circle {
-  width: 93px;
-  height: 93px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
@@ -138,11 +141,11 @@
 }
 
 .category-tabs-title {
-  color: #6b2477;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.2;
-  text-align: center;
-  max-width: 100px;
-  white-space: normal;
+    color: #6b2477;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    max-width: 80px;
+    /* white-space: normal; */
 }
