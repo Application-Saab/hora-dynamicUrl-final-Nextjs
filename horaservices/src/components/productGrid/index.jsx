@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
+import { CardSkeleton } from "../CardSkeleton";
 
 const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => {
   return (
@@ -49,7 +50,8 @@ const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => 
       ) : loading ? (
         Array.from({ length: skeletonCount }).map((_, index) => (
           <div key={index} className="imageContainer">
-            <div className="cardSkeleton" /> {/* Or import <CardSkeleton /> */}
+            <div className="cardSkeleton" />
+               <CardSkeleton />
           </div>
         ))
       ) : (

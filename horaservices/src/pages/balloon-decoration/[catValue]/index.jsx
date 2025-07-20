@@ -449,7 +449,8 @@ const categoryBannerMap = {
   />
 </section>
       )}
-    
+         {!loading && (
+    <div>
         {catValue?.toLowerCase() === "kids-birthday-decoration" && (
                     <div className="category-tabs-outer">
                       <CategoryTabs
@@ -470,7 +471,8 @@ const categoryBannerMap = {
                       />
                     </div>
                   )}
-                
+                </div>
+         )}
       <ProductGrid data={catalogueData.slice(0, 4)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
       {!loading && (
       <FilterBar
