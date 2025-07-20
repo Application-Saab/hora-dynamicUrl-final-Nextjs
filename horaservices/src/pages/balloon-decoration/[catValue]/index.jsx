@@ -437,6 +437,7 @@ const categoryBannerMap = {
         <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
         <meta property="og:type" content="website" />
       </Head>
+      {!loading && (
       <section className="decorationBanner">
   <Image
     src={bannerToShow}
@@ -447,6 +448,8 @@ const categoryBannerMap = {
     priority
   />
 </section>
+      )}
+    
         {catValue?.toLowerCase() === "kids-birthday-decoration" && (
                     <div className="category-tabs-outer">
                       <CategoryTabs
@@ -467,11 +470,15 @@ const categoryBannerMap = {
                       />
                     </div>
                   )}
+                
       <ProductGrid data={catalogueData.slice(0, 4)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+      {!loading && (
       <FilterBar
         priceFilter={priceFilter}
         setPriceFilter={setPriceFilter}
       />
+      )}
+      {!loading && (
       <section className="decorationBanner">
         <Image
           src={customize}
@@ -482,7 +489,9 @@ const categoryBannerMap = {
           priority
         />
       </section>
+)}
       <ProductGrid data={catalogueData.slice(4, 10)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+     {!loading && (
       <section className="decorationBanner">
         <Image
           src={DidyouKnow}
@@ -493,7 +502,9 @@ const categoryBannerMap = {
           priority
         />
       </section>
+     )}
       <ProductGrid data={catalogueData.slice(10, 14)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+      {!loading && (
       <section className="decorationBanner">
         <Image
           src={makeItMemorable}
@@ -504,7 +515,9 @@ const categoryBannerMap = {
           priority
         />
       </section>
+      )}
        <ProductGrid data={catalogueData.slice(14, 20)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+ {!loading && (
  <section className="decorationBanner">
         <Image
           src={steps}
@@ -515,7 +528,9 @@ const categoryBannerMap = {
           priority
         />
       </section>
+ )}
         <ProductGrid data={catalogueData.slice(20, 26)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+ {!loading && (
  <section className="decorationBanner">
         <Image
           src={makeitmemorablebanner}
@@ -526,7 +541,9 @@ const categoryBannerMap = {
           priority
         />
       </section>
+ )}
        <ProductGrid data={catalogueData.slice(26, 32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+  {!loading && (
     <div className="highlight-wrapper">
       <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
       <div className="highlight-cards">
@@ -544,6 +561,7 @@ const categoryBannerMap = {
         </div>
       </div>
     </div>
+  )}
         <ProductGrid data={catalogueData.slice(32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
     </div>
   );
