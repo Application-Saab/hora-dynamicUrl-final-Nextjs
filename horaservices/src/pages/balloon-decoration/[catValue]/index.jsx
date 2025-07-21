@@ -74,9 +74,9 @@ const DecorationCatPage = ({ locality }) => {
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [currentCategoryContent, setCurrentCategoryContent] = useState(
-    DecorationCatDescriptionData[catValue]
-  );
+ const [currentCategoryContent, setCurrentCategoryContent] = useState(
+  DecorationCatDescriptionData[catValue] || []
+);
   const { theme } = router.query;
   const [loading, setLoading] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
@@ -220,17 +220,20 @@ const DecorationCatPage = ({ locality }) => {
 
   // Filter change
   useEffect(() => {
-    console.log(DecorationCatDescriptionData[catValue]);
-    //console.log("useEffect6")
-    if (catValue) {
-      setCatalogueData([]);
-      setCurrentPage(1);
-      getSubCatItems(1); // explicitly fetch again
-      if (!currentCategoryContent) {
-        setCurrentCategoryContent(DecorationCatDescriptionData[catValue]);
-      }
-    }
-  }, [catValue, priceFilter, themeFilter]);
+  if (catValue) {
+    setCatalogueData([]);
+    setCurrentPage(1);
+    getSubCatItems(1);
+  }
+}, [catValue, priceFilter, themeFilter]);
+
+useEffect(() => {
+  if (catValue) {
+    const content = DecorationCatDescriptionData[catValue] || [];
+    console.log("Setting category content for", catValue, content);
+    setCurrentCategoryContent(content);
+  }
+}, [catValue]);
 
   function addSpaces(subCategory) {
     let result = "";
@@ -538,6 +541,31 @@ const categoryBannerMap = {
         loading={loading}
         onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
       />
+     <div className="category-content">
+  {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 ? (
+    <>
+      {currentCategoryContent
+        .slice(0, showAll ? currentCategoryContent.length : 2)
+        .map((item, index) => (
+          <div key={index} className="category-item">
+            <h1>{item.title}</h1>
+            <div
+              className="item-content"
+              dangerouslySetInnerHTML={{ __html: item.htmlContent }}
+            />
+          </div>
+        ))}
+      {currentCategoryContent.length > 2 && (
+        <button onClick={toggleShowAll} className="toggle-btn">
+          {showAll ? 'See Less' : 'See More'}
+        </button>
+      )}
+    </>
+  ) : (
+    <p className="no-content-message">No content available for this category.</p>
+  )}
+</div>
+
     </div>
   );
 
