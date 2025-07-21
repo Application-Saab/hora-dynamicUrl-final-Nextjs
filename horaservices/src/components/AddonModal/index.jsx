@@ -42,7 +42,7 @@ const AddonModal = ({
                   {/* <p className="Addon-description">{item.description}</p> */}
 
                   <div className="price-container">
-                    <span className="price">
+                    <span className="prices">
                       {typeof item.price === "number" ? `₹${item.price}` : "Included"}
                     </span>
 

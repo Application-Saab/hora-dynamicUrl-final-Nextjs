@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
 import { CardSkeleton } from "../CardSkeleton";
-
+import "./productGrid.css";
 const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => {
   return (
     <div className="decContainer">
@@ -31,12 +31,12 @@ const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => 
               </div>
               <div className="cardContent">
               
-                <p className="premium-title">
-    {item.name.length > 20 ? `${item.name.slice(0, 20)}...` :item.name}
+                <p className="productName">
+    {item.name.length > 10 ? `${item.name.slice(0, 15)}...` :item.name}
   </p>
                 <div className="priceRatingRow">
                   <div className="priceBlock">
-                    <p className="price">₹{item.price}</p>
+                    <p className="PRice">₹{item.price}</p>
                     <p className="discountedPrice">₹{Math.floor(item.discountedPrice)}</p>
                    
                   </div>
