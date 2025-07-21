@@ -58,16 +58,16 @@ min-height: 140px;
 
 /* === Discount Badge === */
 .discountLabel {
-  position: absolute;
-  top: 0px;
+    position: absolute;
+    top: 0px;
     left: 0px;
-  background-color: #f99e1f;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 14px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    background-color: #f99e1f;
+    color: white;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 10px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 /* === Card Content === */

@@ -38,7 +38,8 @@ import kidsBanner from "@/assets/categories/KIDSDECORATION.Webp"
 import welcomeBanner from "@/assets/categories/WELCOMEBABY.webp"
 import babyshowerBanner from "@/assets/categories/BABYSHOWWER.webp"
 import anniversaryBanner from "@/assets/categories/ANNVERSARY.webp"
-import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp"
+import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp";
+import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp"
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -354,6 +355,7 @@ const categoryBannerMap = {
   "baby-shower-decoration":babyshowerBanner,
   "anniversary-decoration":anniversaryBanner,
   "first-night-decoration":firstNightBanner,
+  "haldi-mehendi-decoration":haldimehndiBanner,
   // fallback/default
   // default: customize,
 };

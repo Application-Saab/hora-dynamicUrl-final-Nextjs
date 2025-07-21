@@ -15,7 +15,7 @@
   gap: 12px;
   padding: 10px 0;
   scrollbar-width: none;
-  ;
+
 }
 
 .category-tabs::-webkit-scrollbar {
@@ -80,7 +80,11 @@
     white-space: normal;
     z-index: 2;
 }
-
+.category-tabs-heading{
+  font-size: 18px;
+    font-weight: 700;
+    color: #97538C;
+}
 
 .category-tabs__no-image {
   width: 100px;
@@ -100,14 +104,15 @@
 .category-tabs-outer.has-bg {
   background-color: #fbe6d3;
   padding: 16px;
-  border-radius: 12px;
+ 
 }
 .category-tabs-grid {
   display: flex;
   gap: 10px;
   overflow-x: auto;
   padding: 10px 0;
-  scrollbar-width: thin; 
+ scrollbar-width: none;          /* ✅ Firefox */
+  -ms-overflow-style: none; 
 }
 
 .category-tabs-grid::-webkit-scrollbar {
