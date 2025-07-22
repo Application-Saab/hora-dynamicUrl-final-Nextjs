@@ -250,6 +250,7 @@ const DecorationCatCITYPage = () => {
     }
   };
 
+
   const handleViewDetails = (subCategory, catValue, product) => {
     const productName = product.name.replace(/ /g, "-");
     dispatch(setState(subCategory, orderType, catValue, product));
