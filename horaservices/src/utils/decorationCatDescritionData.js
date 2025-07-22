@@ -202,8 +202,8 @@ const DecorationCatDescriptionData = {
       "title": "What are the Major Cities where you provide the Kids Birthday Party Decoration Delivery Service?",
       "htmlContent": `
         <p>What are the Major Cities where you provide the Kids Birthday Party Decoration Delivery Service?</p>
-        <ul style="list-style-type: none; padding: 0; margin: 0; display: flex;">
-          <li style="margin-right: 15px;">
+    <ul style="list-style: none; display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 0;">
+      <li style="margin-right: 15px;">
             <a href='https://horaservices.com/Delhi/balloon-decoration/kids-birthday-decoration' style='color: rgb(150, 82, 141); font-weight: bold; text-decoration: underline;'>Delhi</a>
           </li>
           <li style="margin-right: 15px;">
