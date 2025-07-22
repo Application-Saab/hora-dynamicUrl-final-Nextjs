@@ -47,7 +47,14 @@ min-height: 140px;
   object-fit: cover;
   border-radius: 6px;
 }
-
+@media screen and (min-width: 768px) {
+  .decImage,
+  .decCatimage {
+    height: auto;
+    max-height: none;
+    min-height: unset;
+    aspect-ratio: 4 / 3; /* optional for consistency */
+  }}
 .watermark {
   position: absolute;
   bottom: 15px;

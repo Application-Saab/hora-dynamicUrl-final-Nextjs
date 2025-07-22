@@ -22,6 +22,8 @@ const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => 
                   width={300}
                   height={300}
                 />
+                
+ 
                 <div className="watermark">
                   <Image src={logo} alt="logo" width={40} height={40} />
                 </div>
