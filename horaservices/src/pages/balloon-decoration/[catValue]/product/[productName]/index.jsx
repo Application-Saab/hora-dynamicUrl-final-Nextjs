@@ -998,73 +998,73 @@ const openCatItems = (item) => {
   );
 }
 
-function ProductCard({ item, openProductUrl }) {
-  const formattedName = item.name
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9\-]/g, "")
-    .replace(/-+/g, "-");
+// function ProductCard({ item, openProductUrl }) {
+//   const formattedName = item.name
+//     .trim()
+//     .replace(/\s+/g, "-")
+//     .replace(/[^a-zA-Z0-9\-]/g, "")
+//     .replace(/-+/g, "-");
 
-  const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
+//   const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
 
-  return (
-    <a
-      href={productUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ textDecoration: "none", color: "inherit" }}
-    >
-      <div
-        style={{
-          width: "180px",          // ✅ Same width
-          height: "270px",         // ✅ Same height
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          background: "#fff",
-          padding: "10px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          transition: "transform 0.2s ease",
-          cursor: "pointer",
-        }}
-      >
-        <img
-          src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image?.split(".")[0]
-            }.webp`}
-          alt={item.name}
-          style={{
-            width: "100%",
-            height: "140px",
-            objectFit: "cover",
-            borderRadius: "6px"
-          }}
-        />
-        <h3
-          style={{
-            fontSize: "0.9rem",
-            marginTop: "10px",
-            marginBottom: "6px",
-            height: "2.5em", // force uniform text area height
-            overflow: "hidden"
-          }}
-        >
-          {item.name}
-        </h3>
-        <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
-      </div>
-    </a>
-  );
-}
+//   return (
+//     <a
+//       href={productUrl}
+//       target="_blank"
+//       rel="noopener noreferrer"
+//       style={{ textDecoration: "none", color: "inherit" }}
+//     >
+//       <div
+//         style={{
+//           width: "180px",          // ✅ Same width
+//           height: "270px",         // ✅ Same height
+//           border: "1px solid #ddd",
+//           borderRadius: "10px",
+//           background: "#fff",
+//           padding: "10px",
+//           boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+//           display: "flex",
+//           flexDirection: "column",
+//           justifyContent: "space-between",
+//           transition: "transform 0.2s ease",
+//           cursor: "pointer",
+//         }}
+//       >
+//         <img
+//           src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image?.split(".")[0]
+//             }.webp`}
+//           alt={item.name}
+//           style={{
+//             width: "100%",
+//             height: "140px",
+//             objectFit: "cover",
+//             borderRadius: "6px"
+//           }}
+//         />
+//         <h3
+//           style={{
+//             fontSize: "0.9rem",
+//             marginTop: "10px",
+//             marginBottom: "6px",
+//             height: "2.5em", // force uniform text area height
+//             overflow: "hidden"
+//           }}
+//         >
+//           {item.name}
+//         </h3>
+//         <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
+//       </div>
+//     </a>
+//   );
+// }
 
-const badgeStyle = (color = "#1890ff") => ({
-  backgroundColor: color,
-  color: "#fff",
-  fontSize: "0.8rem",
-  padding: "4px 12px",
-  borderRadius: "20px",
-  fontWeight: "bold"
-});
+// const badgeStyle = (color = "#1890ff") => ({
+//   backgroundColor: color,
+//   color: "#fff",
+//   fontSize: "0.8rem",
+//   padding: "4px 12px",
+//   borderRadius: "20px",
+//   fontWeight: "bold"
+// });
 
 export default DecorationCatDetails;

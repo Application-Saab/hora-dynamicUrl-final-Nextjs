@@ -42,6 +42,8 @@ import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp";
 import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp";
 import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp"
+import { useDecorationEvents } from "@/utils/decorationEvents";
+import { decCat } from "@/utils/decorationCategories";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -97,6 +99,7 @@ const DecorationCatPage = ({ locality }) => {
  const searchParams = useSearchParams();
   const selectedTheme = searchParams.get("theme");
   const isThemePage = !!selectedTheme; // true if theme param exists
+const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat, locality,orderType);
 
 
   function getSubCategory(catValue) {
@@ -339,17 +342,17 @@ useEffect(() => {
     }
   };
 
-  const handleViewDetails = (subCategory, catValue, product) => {
-    const productName = product.name.replace(/ /g, "-");
-    dispatch(setState(subCategory, orderType, catValue, product));
-    if (hasCityPageParam) {
-      router.push(
-        `/${city}/balloon-decoration/${catValue}/product/${productName}`
-      );
-    } else {
-      router.push(`/balloon-decoration/${catValue}/product/${productName}`);
-    }
-  };
+  // const handleViewDetails = (subCategory, catValue, product) => {
+  //   const productName = product.name.replace(/ /g, "-");
+  //   dispatch(setState(subCategory, orderType, catValue, product));
+  //   if (hasCityPageParam) {
+  //     router.push(
+  //       `/${city}/balloon-decoration/${catValue}/product/${productName}`
+  //     );
+  //   } else {
+  //     router.push(`/balloon-decoration/${catValue}/product/${productName}`);
+  //   }
+  // };
 const categoryBannerMap = {
   "birthday-decoration": birthdayBanner,
   "premium-decoration": premiumBanner,
@@ -370,16 +373,29 @@ const categoryBannerMap = {
     }
     return text;
   }
-  // const normalizeCatValue = (val) => {
-  //   return val?.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-  // };
-  const normalizeCatValue = (val) => {
-  return val?.toLowerCase().replace(/ /g, "-");
-};
 
+//   const normalizeCatValue = (val) => {
+//   return val?.toLowerCase().replace(/ /g, "-");
+// };
+
+const normalizeCatValue = (val) => {
+  if (!val) return "";
+
+  // Check if exact match (case-sensitive) exists in the map
+  const exactMatch = Object.keys(categoryBannerMap).find(
+    (key) => key.toLowerCase() === val.toLowerCase()
+  );
+
+  return exactMatch || val.toLowerCase().replace(/ /g, "-");
+};
 
   const normalizedCat = normalizeCatValue(catValue);
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
+  
+const shouldHideBanner = (name) => {
+  const hideFor = ["Wedding", "haldi-mehendi-decoration"]; // jinke liye hide karna hai
+  return hideFor.includes(normalizedCat) && ["makeItMemorable" ,"DidyouKnow","makeitmemorablebanner"].includes(name);
+};
   const PageTitle = (cat) => {
     if (cat === "kids-birthday" || cat === "kids-birthday-decoration") {
       return "Kids' Birthday Balloon Decoration by Professionals Decorators, Starting at ₹1199";
@@ -427,6 +443,7 @@ const categoryBannerMap = {
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
+
 
   return (
    <div className="decCatPage">
@@ -492,17 +509,17 @@ const categoryBannerMap = {
           </section>
 
           <ProductGrid data={catalogueData.slice(4, 10)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
+{!shouldHideBanner("DidyouKnow") && (
           <section className="decorationBanner">
             <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
           </section>
-
+)}
           <ProductGrid data={catalogueData.slice(10, 14)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
+{!shouldHideBanner("makeItMemorable") && (
           <section className="decorationBanner">
             <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
           </section>
-
+)}
           <ProductGrid data={catalogueData.slice(14, 20)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
 
           <section className="decorationBanner">
@@ -510,11 +527,11 @@ const categoryBannerMap = {
           </section>
 
           <ProductGrid data={catalogueData.slice(20, 26)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
+{!shouldHideBanner("makeitmemorablebanner") && (
           <section className="decorationBanner">
             <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
           </section>
-
+)}
           <ProductGrid data={catalogueData.slice(26, 32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
 
           <div className="highlight-wrapper">
