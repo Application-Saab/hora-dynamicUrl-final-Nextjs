@@ -15,11 +15,24 @@ const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant 
   );
   
 const GridhandleClick = (cat) => {
+    window.dataLayer.push({
+    event: "theme_circle_clicked",
+    themeName: cat.name,
+    themeValue: cat.value,
+    catValue: catValue,
+  });
     router.push(
       `/balloon-decoration/${catValue}?theme=${encodeURIComponent(cat.value)}`
     );
   };
   const handleClick = (cat) => {
+    window.dataLayer.push({
+   event: "circle_tabs_clicked",
+    categoryName: cat.name,
+    subCategory: cat.subCategory || "",
+    catValue: cat.catValue || "",
+    imgAlt: cat.imgAlt || "",
+  });
     handleItemClick({
       title: cat.name,
       categoryName: cat.name,
