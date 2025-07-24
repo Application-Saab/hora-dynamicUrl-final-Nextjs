@@ -1,15 +1,15 @@
 
 .customization {
-  font-size: 10px;
+  font-size: 11px;
   color: #343a40;
   margin-bottom: 4px;
   text-align: center;
 }
 
 .viewMore {
-  font-weight: 600;
-  color: #8a3f98;
-  font-size: 12px;
+  font-weight: 500;
+  color: #97538C;
+  font-size: 14px;
   text-decoration: underline;
   text-align: center;
   margin-bottom: 0px;
@@ -83,11 +83,11 @@ min-height: 140px;
 }
 
 .productName {
-  font-size: 13px;
-  font-weight: 400;
-  color: #97538C;
-  margin-bottom: 1px;
-  font-family: 'Rubik', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #97538C;
+    font-family: 'Rubik', sans-serif;
+    margin: 1px 0px 1px 0px;
 }
 
 .priceRatingRow {
@@ -97,11 +97,11 @@ min-height: 140px;
 }
 
 .priceBlock {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 3px 0px 3px 0px;
 }
-
 .PRice {
   font-weight: 400;
   font-size: 14px;

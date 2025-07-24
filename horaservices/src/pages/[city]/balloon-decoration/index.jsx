@@ -11,6 +11,7 @@ import cityData from "@/utils/cityData";
 import { useRouter } from "next/router";
 import React from "react";
 import "../../../css/decoration.css"
+import FAQSection from "@/components/FAQSection";
 function DecorationCityPage() {
   const router = useRouter();
   let { city } = router.query;
@@ -51,9 +52,11 @@ function DecorationCityPage() {
         localities={localities}
         handleClick={localityHandleClick}
       />
-      <div className="mt-5">
-        <FAQAccordion faqData={cityDecorationFAQ} />
-      </div>
+     
+    
+     <div className="tab-section-details-productpage">
+              <FAQSection faqData={cityDecorationFAQ} />
+            </div>
       <SectionDescription paragraphs={cityDescription} />
       <LocalitiesSection
         title={`Explore Other Decoration Category In ${city}`}

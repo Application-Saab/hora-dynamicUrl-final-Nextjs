@@ -34,7 +34,7 @@ const ProductGrid = ({ data = [], onCardClick, loading, skeletonCount = 4 }) => 
               <div className="cardContent">
               
                 <p className="productName">
-    {item.name.length > 10 ? `${item.name.slice(0, 15)}...` :item.name}
+    {item.name.length > 20 ? `${item.name.slice(0, 20)}...` :item.name}
   </p>
                 <div className="priceRatingRow">
                   <div className="priceBlock">
