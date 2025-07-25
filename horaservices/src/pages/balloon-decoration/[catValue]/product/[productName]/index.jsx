@@ -269,22 +269,69 @@ const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
 };
 
 
+// const filterSimilarByName = (product, productsArray = [], excludeId) => {
+//   if (!product?.name || !productsArray.length) return;
+
+//   const firstWord = product.name.toLowerCase().split(/\s+/)[0];  // ✅ सिर्फ पहला word
+
+//   const filtered = productsArray.filter(item => {
+//     if (item._id === excludeId) return false;
+
+//     const itemName = item.name?.toLowerCase() || "";
+
+//     return itemName.includes(firstWord);
+//   });
+
+//   console.log("Filtered by Name =>", filtered);
+//   setSimilarByName(filtered);
+// };
 const filterSimilarByName = (product, productsArray = [], excludeId) => {
   if (!product?.name || !productsArray.length) return;
 
-  const firstWord = product.name.toLowerCase().split(/\s+/)[0];  // ✅ सिर्फ पहला word
+  const mainWords = product.name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '') // Remove special chars
+    .split(/\s+/)
+    .filter(Boolean);
 
-  const filtered = productsArray.filter(item => {
-    if (item._id === excludeId) return false;
+  const filtered = productsArray
+    .filter(item => item._id !== excludeId)
+    .map(item => {
+      const itemName = (item.name || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '');
 
-    const itemName = item.name?.toLowerCase() || "";
+      const itemWords = itemName.split(/\s+/).filter(Boolean);
 
-    return itemName.includes(firstWord);
-  });
+      // Count how many words match
+      const matchCount = mainWords.filter(word => itemWords.includes(word)).length;
+
+      // Is it a strong match? (both words exist)
+      const isStrongMatch = mainWords.every(word => itemWords.includes(word));
+
+      // Optional: Order match
+      const isExactPhrase = itemName.includes(mainWords.join(' '));
+
+      return {
+        ...item,
+        matchCount,
+        isStrongMatch,
+        isExactPhrase
+      };
+    })
+    // Sort by exact phrase > strong match > matchCount
+    .sort((a, b) => {
+      if (b.isExactPhrase !== a.isExactPhrase) return b.isExactPhrase - a.isExactPhrase;
+      if (b.isStrongMatch !== a.isStrongMatch) return b.isStrongMatch - a.isStrongMatch;
+      return b.matchCount - a.matchCount;
+    });
 
   console.log("Filtered by Name =>", filtered);
   setSimilarByName(filtered);
 };
+
+
+
 
 useEffect(() => {
   if (router.isReady) {
@@ -292,11 +339,11 @@ useEffect(() => {
 
     setSubCategory(subCategory || "");
     setCatValue(urlCatValue || "");
-    setSendCategoryId(urlCatValue || "");   // ✅ Send for SubCatId
+    setSendCategoryId(urlCatValue || "");  
 
     if (productName) {
       const formattedProduct = productName.replace(/-/g, " ");
-      setApiProduct(formattedProduct);  // ✅ Send for Product Fetch
+      setApiProduct(formattedProduct);  
     }
   }
 }, [router.isReady, router.query]);

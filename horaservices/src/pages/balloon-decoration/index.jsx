@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef ,useEffect} from "react";
 import Head from "next/head";
 import { useParams } from "react-router-dom";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
@@ -49,8 +49,12 @@ import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
+// import { Player } from "@lottiefiles/react-lottie-player";
 
-
+import uploadAnim from "@/assets/cloudstorage.mp4";
+import thankyouAnim from "@/assets/WritePaper.mp4";
+import giftAnim from "@/assets/Referralgift.mp4";
+import click from "@/assets/Handtap.mp4"
 
 import smallcardBackground from "../../assets/small-cardBackground.jpg";
 import {
@@ -64,6 +68,8 @@ import {
   PremiumData,
   BallonBData,
 } from "../../utils/DecorationData.js";
+import FeatureAnimation from "@/components/AnimationCard";
+
 
 const cardsData = [
   {
@@ -156,7 +162,16 @@ const Decoration = ({ city, locality }) => {
   const scriptTag = JSON.stringify(schemaOrg);
 
   const hasCityPageParam = city ? true : false;
+const buttonRefs = useRef([]);
+const [handStep, setHandStep] = useState(0);
+useEffect(() => {
+  const steps = features.length;
+  const interval = setInterval(() => {
+    setHandStep((prev) => (prev + 1) % steps);
+  }, 2000); // change every 2s
 
+  return () => clearInterval(interval);
+}, []);
  const handleWhatsApp = () => {
     const phoneNumber = "7338584828";
     const message = encodeURIComponent("I want to customize a decoration");
@@ -195,6 +210,29 @@ const Decoration = ({ city, locality }) => {
     { name: "First Night", image: FirstNightImg },
     { name: "Anniversary", image: AnniversaryImg },
   ];
+ const features = [
+  {
+    anim: uploadAnim,
+    title: "Upload Image",
+    btn: "Upload Now",
+    bg: "bgPurple",
+    btnBg: "btnPurple",
+  },
+  {
+    anim: thankyouAnim,
+    title: "Thank You Note",
+    btn: "Write Note",
+    bg: "bgGreen",
+    btnBg: "btnGreen",
+  },
+  {
+    anim: giftAnim,
+    title: "Lucky Draw",
+    btn: "Spin Now",
+    bg: "bgPink",
+    btnBg: "btnPink",
+  },
+];
 
   return (
     <div className="dec-landing-page">
@@ -309,6 +347,30 @@ const Decoration = ({ city, locality }) => {
         decCat={decCat}
         locality={locality}
       />
+ 
+<FeatureAnimation features={features} clickAnim={click} />
+
+
+
+{/* Floating Hand */}
+{buttonRefs.current[handStep] && (
+  <video
+    src="/hand-click.webm" // replace with your hand animation
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="floating-hand"
+    style={{
+      position: 'absolute',
+      top: buttonRefs.current[handStep].getBoundingClientRect().top + window.scrollY - 20,
+      left: buttonRefs.current[handStep].getBoundingClientRect().left + window.scrollX + 40,
+      width: '40px',
+      zIndex: 1000,
+      pointerEvents: 'none',
+    }}
+  />
+)}
 
       <section className="decorationBanner">
         <Image

@@ -1,0 +1,116 @@
+.animationwrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2.5rem;
+  margin-bottom: 40px;
+}
+
+.card {
+  width: 9rem;
+  height: 9rem;
+  border-radius: 1rem; /* ✅ Soft corners instead of full circle */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.3s ease;
+  text-align: center;
+  background-color: white;
+}
+
+
+.video {
+    width: 80px;
+    height: 80px;
+    border-radius: 9999px;
+    object-fit: cover;
+        border: 1px solid rgb(176, 155, 251)
+}
+
+.title {
+  margin-top: 0.5rem;   /* Slightly smaller spacing */
+  font-size: 0.85rem;   /* ↓ from 0.95rem */
+}
+
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+
+
+
+
+.button {
+  /* position: absolute; */
+  bottom: -16px;
+  padding: 0.25rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: white;
+  border: none;
+}
+
+/* Background colors */
+.bgPurple {
+  background-color: #f3e8ff;
+}
+.bgGreen {
+  background-color: #d1fae5;
+}
+.bgPink {
+  background-color: #ffe4e6;
+}
+
+/* Button colors */
+.btnPurple {
+  background-color: #7c3aed;
+}
+.btnGreen {
+  background-color: #10b981;
+}
+.btnPink {
+  background-color: #f43f5e;
+}
+
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 3rem;
+}
+
+.contentArea {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.clickHand {
+  position: absolute;
+  bottom: -28px; /* Adjust based on size */
+  width: 50px;
+  height: auto;
+  pointer-events: none;
+  animation: pulseHand 1.4s infinite ease-in-out;
+   mix-blend-mode: multiply;
+  opacity: 0.8;
+}
+
+@keyframes pulseHand {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 0.75;
+  }
+}
