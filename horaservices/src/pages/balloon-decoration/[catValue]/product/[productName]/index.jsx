@@ -1,18 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
-// import { useParams } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Plus, ArrowDown, ArrowUp } from "lucide-react";
-import buynowImage from "../../../../../assets/experts.png";
-import buynowImage1 from "../../../../../assets/secured.png";
-import buynowImage2 from "../../../../../assets/service.png";
 import checkImage from "../../../../../assets/tick.jpeg";
 import "./Decorproduct.css"
 import {
   getDecorationProductOrganizationSchema,
   getProductFAQSchemaProductDetails,
 } from "../../../../../utils/schema";
-import "../../../../../css/decoration.css";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -25,7 +18,6 @@ import {
 import axios from "axios";
 import FAQSection from "@/components/FAQSection";
 import faqData from "../../../../../utils/FaqData.json";
-import Tabs from "../../../../../components/Tabs";
 import addOnProductsData from "../../../../../utils/addOnProduct.json";
 import CustomizeDecorBanner from "../../../../../assets/CustomizeDecorBanner.png"
 import HowitWork from "../../../../../assets/howitwork.jpg"
