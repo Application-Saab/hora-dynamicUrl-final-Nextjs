@@ -2,8 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
 import profileImage from "../../assets/Ahmdabad.png"; // Add your own image
-
-// import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
 import tabIcon1 from "../../assets/galleryicon.jpg";
 import tabIcon2 from '../../assets/thankyouicon.png';
 import tabIcon3 from '../../assets/luckdrawicon.jpg';
