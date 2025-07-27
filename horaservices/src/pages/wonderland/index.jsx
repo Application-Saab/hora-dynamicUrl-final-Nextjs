@@ -1,15 +1,15 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
-import profileImage from "../../../assets/Ahmdabad.png"; // Add your own image
+import profileImage from "../../assets/Ahmdabad.png"; // Add your own image
 
 // import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
-import tabIcon1 from "../../../assets/galleryicon.jpg";
-import tabIcon2 from '../../../assets/thankyouicon.png';
-import tabIcon3 from '../../../assets/luckdrawicon.jpg';
-import dressIcon from '../../../assets/dressIcon.jpg';
-import StickyImage from '../../../assets/sticky5.png';
-import imageBackground from '../../../assets/pastel-purpleBallons.webp';
+import tabIcon1 from "../../assets/galleryicon.jpg";
+import tabIcon2 from '../../assets/thankyouicon.png';
+import tabIcon3 from '../../assets/luckdrawicon.jpg';
+import dressIcon from '../../assets/dressIcon.jpg';
+import StickyImage from '../../assets/sticky5.png';
+import imageBackground from '../../assets/pastel-purpleBallons.webp';
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";

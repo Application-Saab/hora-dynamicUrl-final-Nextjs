@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
+import cameraIcon from '@/assets/background.png'; // optional: use a real camera icon
+import background from '@/assets/background.png';
 import './create-event-invite.css';
 
 const CreateEventInvite = () => {
@@ -9,17 +11,20 @@ const CreateEventInvite = () => {
     eventName: '',
     hostName: '',
     eventDate: '',
-    eventTime: '',
+    arrivalTime: '',
     venue: '',
     photo: null,
   });
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === 'photo') {
-      setFormData((prev) => ({ ...prev, photo: files[0] }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, photo: URL.createObjectURL(file) });
     }
   };
 
@@ -29,60 +34,106 @@ const CreateEventInvite = () => {
       eventType: 'birthday',
       hostName: formData.hostName,
       eventDate: new Date(formData.eventDate).toISOString(),
-      eventTime: formData.eventTime,
+      eventTime: formData.arrivalTime,
       location: formData.venue,
       eventTimeLines: [
         {
-          time: formData.eventTime,
+          time: formData.arrivalTime,
           activityName: 'Welcome music start',
         },
         {
-          time: '10.50',
+          time: '10:50',
           activityName: 'Start magic show',
         },
       ],
     };
 
-    const res = await fetch('http://localhost:3000/api/customer/event/create-event-invite', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch('http://localhost:3000/api/customer/event/create-event-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
-    console.log('API response:', data);
-    alert(data.message || 'Invite created!');
+      const data = await res.json();
+      console.log('API response:', data);
+      alert(data.message || 'Invite created!');
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert('Something went wrong!');
+    }
   };
 
   return (
-    <div className="invite-container">
-      <h2 className="invite-title">Create Event Invite</h2>
-      <p className="invite-subtitle">
-        🌟 A DAY OF JOY, A HEART FULL OF CHEER, THE PEOPLE WE LOVE, WE WISH TO HAVE NEAR.<br />
-        SO COME JOIN US AND MAKE MEMORIES DEAR.
-      </p>
+    <div
+      className="invite-bg-wrapper"
+      style={{ backgroundImage: `url(${background.src})` }}
+    >
+      <div className="invite-container">
+        <h2 className="invite-title">Create Event Invite</h2>
+        <p className="invite-subtitle">
+          🌟 A DAY OF JOY, A HEART FULL OF CHEER, THE PEOPLE WE LOVE, WE WISH TO HAVE NEAR. SO COME JOIN US AND MAKE MEMORIES DEAR.
+        </p>
 
-      <input name="eventName" placeholder="Event Name" value={formData.eventName} onChange={handleChange} />
-      <input name="hostName" placeholder="Host Name" value={formData.hostName} onChange={handleChange} />
+        <input
+          type="text"
+          placeholder="Event Name"
+          name="eventName"
+          value={formData.eventName}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          placeholder="Host Name"
+          name="hostName"
+          value={formData.hostName}
+          onChange={handleInputChange}
+        />
 
-      <div className="row">
-        <input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} />
-        <input type="time" name="eventTime" value={formData.eventTime} onChange={handleChange} />
-      </div>
-
-      <input name="venue" placeholder="Venue" value={formData.venue} onChange={handleChange} />
-
-      <label className="photo-upload">
-        <input type="file" name="photo" accept="image/*" onChange={handleChange} hidden />
-        <div className="upload-box">
-          <Image src="/camera-icon.png" alt="Upload" width={40} height={40} />
-          <p>UPLOAD PHOTO</p>
+        <div className="row">
+          <div className="input-group">
+            <label className='date-time-label'>Event Date</label>
+            <input
+              type="date"
+              name="eventDate"
+              value={formData.eventDate}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="input-group">
+            <label className='date-time-label'>Arrival Time</label>
+            <input
+              type="time"
+              name="arrivalTime"
+              value={formData.arrivalTime}
+              onChange={handleInputChange}
+            />
+          </div>
         </div>
-      </label>
 
-      <div className="btn-group">
-        <button className="cancel-btn" type="button">Cancel</button>
-        <button className="save-btn" onClick={handleSubmit}>Save</button>
+        <input
+          type="text"
+          placeholder="Venue"
+          name="venue"
+          value={formData.venue}
+          onChange={handleInputChange}
+        />
+
+        <label className="upload-box">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            style={{ display: 'none' }}
+          />
+          <Image src={formData.photo || cameraIcon} alt="Upload" width={36} height={36} />
+          <p>UPLOAD PHOTO</p>
+        </label>
+
+        <div className="btn-group">
+          <button className="cancel-btn" onClick={() => window.location.reload()}>CANCEL</button>
+          <button className="save-btn" onClick={handleSubmit}>SAVE</button>
+        </div>
       </div>
     </div>
   );
