@@ -126,11 +126,7 @@ align-items: center;
     border-top: 1px solid #efefef;
     padding: 17px 0 1px;
 }
-.checkoutRightImg {
-    height: 270px !important;
-      border-radius: 10px;
-      box-shadow: rgba(0, 0, 0, 0.18) 0px 1px 2px;
-  }
+
   /* faq product detail page */
    /* FAQ */
    .tab-section-details-productpage .tab-content {
@@ -771,12 +767,7 @@ button.button-sec svg{
   .slick-prev:before, .slick-next:before {
     font-size: 25px !important;
 }
-.checkoutRightImg {
-  height: auto !important;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.18) 0px 1px 2px;
-  width: 170px !important;
-}
+
 li.addon-sec, p.addon-sec, .addon-sec {
   padding: 1px 0px 4px !important;
   font-size: 12px !important;

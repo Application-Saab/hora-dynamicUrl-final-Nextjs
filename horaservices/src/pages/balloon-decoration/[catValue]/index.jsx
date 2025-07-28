@@ -44,6 +44,7 @@ import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp"
 import { useDecorationEvents } from "@/utils/decorationEvents";
 import { decCat } from "@/utils/decorationCategories";
+import CardSkeleton from "@/components/CardSkeleton";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -445,150 +446,163 @@ const shouldHideBanner = (name) => {
   };
 
 
-  return (
-   <div className="decCatPage">
-      <Head>
-        <title>{PageTitle(normalizedCat)}</title>
-        <meta name="description" content={getPageMetaDescription(normalizedCat)} />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
-        <meta property="og:title" content={PageTitle(normalizedCat)} />
-        <meta property="og:description" content={getPageMetaDescription(normalizedCat)} />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <script type="application/ld+json">{scriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-        <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
-        <meta property="og:type" content="website" />
-      </Head>
+return (
+  <div className="decCatPage">
+    <Head>
+      <title>{PageTitle(normalizedCat)}</title>
+      <meta name="description" content={getPageMetaDescription(normalizedCat)} />
+      <meta name="keywords" content="Balloon and Flower Decoration @999" />
+      <meta property="og:title" content={PageTitle(normalizedCat)} />
+      <meta property="og:description" content={getPageMetaDescription(normalizedCat)} />
+      <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+      <script type="application/ld+json">{scriptTag}</script>
+      <meta name="robots" content="index, follow" />
+      <meta name="author" content="Hora Services" />
+      <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+      <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
+      <meta property="og:type" content="website" />
+    </Head>
 
-      {/* ✅ Only show full layout if not theme page */}
-      {!isThemePage && !loading && (
-        <>
-          <section className="decorationBanner">
-            <Image
-              src={bannerToShow}
-              alt="Decoration Banner"
-              width={1200}
-              height={400}
-              className="decorationBanner-image"
-              priority
-            />
-          </section>
-
-          {catValue?.toLowerCase() === "kids-birthday-decoration" && (
-            <div className="category-tabs-outer">
-              <CategoryTabs
-                data={themeFilters.map((item) => ({
-                  id: item.value,
-                  name: item.label,
-                  image: item.image,
-                  value: item.value,
-                  catValue: "KidsBirthday",
-                }))}
-                onSelect={(item) => openCatItems(item, themeFilter)}
-                city={city}
-                hasCityPageParam={hasCityPageParam}
-                locality={locality}
-                variant="grid"
-                catValue="KidsBirthday"
-              />
-            </div>
-          )}
-
-          <ProductGrid
-            data={catalogueData.slice(0, 4)}
-            loading={loading}
-            onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-          />
-
-          <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
-
-          <section className="decorationBanner">
-            <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-          </section>
-
-          <ProductGrid data={catalogueData.slice(4, 10)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-{!shouldHideBanner("DidyouKnow") && (
-          <section className="decorationBanner">
-            <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-          </section>
-)}
-          <ProductGrid data={catalogueData.slice(10, 14)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-{!shouldHideBanner("makeItMemorable") && (
-          <section className="decorationBanner">
-            <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-          </section>
-)}
-          <ProductGrid data={catalogueData.slice(14, 20)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-          <section className="decorationBanner">
-            <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-          </section>
-
-          <ProductGrid data={catalogueData.slice(20, 26)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-{!shouldHideBanner("makeitmemorablebanner") && (
-          <section className="decorationBanner">
-            <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-          </section>
-)}
-          <ProductGrid data={catalogueData.slice(26, 32)} loading={loading} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-          <div className="highlight-wrapper">
-            <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
-            <div className="highlight-cards">
-              <div className="highlight-card">
-                <Image src={googleRating} alt="Google Rating" width={60} height={60} />
-                <p>4.7+ GOOGLE RATING</p>
-              </div>
-              <div className="highlight-card">
-                <Image src={ontime} alt="On Time Completion" width={60} height={60} />
-                <p>ON TIME COMPLETION</p>
-              </div>
-              <div className="highlight-card">
-                <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
-                <p>100% FULL FILL GUARANTEE</p>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* ✅ Always show product grid */}
-      <ProductGrid
-        data={catalogueData.slice(isThemePage ? 0 : 32)}
-        loading={loading}
-        onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-      />
-     <div className="category-content">
-  {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 ? (
-    <>
-      {currentCategoryContent
-        .slice(0, showAll ? currentCategoryContent.length : 2)
-        .map((item, index) => (
-          <div key={index} className="category-item">
-            <h1>{item.title}</h1>
-            <div
-              className="item-content"
-              dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-            />
-          </div>
+    {/* ✅ Show 6 card skeletons while loading */}
+    {loading ? (
+      <div className="product-grid-wrapper">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <CardSkeleton key={index} />
         ))}
-      {currentCategoryContent.length > 2 && (
-        <button onClick={toggleShowAll} className="toggle-btn">
-          {showAll ? 'See Less' : 'See More'}
-        </button>
-      )}
-    </>
-  ) : (
-    <p className="no-content-message">No content available for this category.</p>
-  )}
-</div>
+      </div>
+    ) : (
+      <>
+        {!isThemePage && (
+          <>
+            <section className="decorationBanner">
+              <Image
+                src={bannerToShow}
+                alt="Decoration Banner"
+                width={1200}
+                height={400}
+                className="decorationBanner-image"
+                priority
+              />
+            </section>
 
-    </div>
-  );
+            {catValue?.toLowerCase() === "kids-birthday-decoration" && (
+              <div className="category-tabs-outer">
+                <CategoryTabs
+                  data={themeFilters.map((item) => ({
+                    id: item.value,
+                    name: item.label,
+                    image: item.image,
+                    value: item.value,
+                    catValue: "KidsBirthday",
+                  }))}
+                  onSelect={(item) => openCatItems(item, themeFilter)}
+                  city={city}
+                  hasCityPageParam={hasCityPageParam}
+                  locality={locality}
+                  variant="grid"
+                  catValue="KidsBirthday"
+                />
+              </div>
+            )}
 
-};
+            <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+
+            <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
+
+            <section className="decorationBanner">
+              <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+            </section>
+
+            <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+
+            {!shouldHideBanner("DidyouKnow") && (
+              <section className="decorationBanner">
+                <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+              </section>
+            )}
+
+            <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+
+            {!shouldHideBanner("makeItMemorable") && (
+              <section className="decorationBanner">
+                <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+              </section>
+            )}
+
+            <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+
+            <section className="decorationBanner">
+              <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+            </section>
+
+            <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+
+            {!shouldHideBanner("makeitmemorablebanner") && (
+              <section className="decorationBanner">
+                <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+              </section>
+            )}
+
+            <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+
+            <div className="highlight-wrapper">
+              <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
+              <div className="highlight-cards">
+                <div className="highlight-card">
+                  <Image src={googleRating} alt="Google Rating" width={60} height={60} />
+                  <p>4.7+ GOOGLE RATING</p>
+                </div>
+                <div className="highlight-card">
+                  <Image src={ontime} alt="On Time Completion" width={60} height={60} />
+                  <p>ON TIME COMPLETION</p>
+                </div>
+                <div className="highlight-card">
+                  <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
+                  <p>100% FULL FILL GUARANTEE</p>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ✅ Infinite scroll grid */}
+        <ProductGrid
+          data={catalogueData.slice(isThemePage ? 0 : 32)}
+          onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+        />
+
+        {/* ✅ Category Description Section */}
+        <div className="category-content">
+          {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 ? (
+            <>
+              {currentCategoryContent
+                .slice(0, showAll ? currentCategoryContent.length : 2)
+                .map((item, index) => (
+                  <div key={index} className="category-item">
+                    <h1>{item.title}</h1>
+                    <div
+                      className="item-content"
+                      dangerouslySetInnerHTML={{ __html: item.htmlContent }}
+                    />
+                  </div>
+                ))}
+              {currentCategoryContent.length > 2 && (
+                <button onClick={toggleShowAll} className="toggle-btn">
+                  {showAll ? 'See Less' : 'See More'}
+                </button>
+              )}
+            </>
+          ) : (
+            <p className="no-content-message">No content available for this category.</p>
+          )}
+        </div>
+      </>
+    )}
+  </div>
+);
+
+
+}
 
 
 

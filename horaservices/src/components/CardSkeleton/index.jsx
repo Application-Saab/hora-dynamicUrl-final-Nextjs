@@ -1,20 +1,33 @@
-// import Button from 'react-bootstrap/Button';
+// components/CardSkeleton.js
 import { Card, Placeholder } from 'react-bootstrap';
+import Image from 'next/image';
 import dummyImage from '../../assets/dummyPlaceholder.webp';
-import Image from "next/image";
-export const CardSkeleton = ({ ...props }) => {
-    return (
-        <Card style={{ width: '18rem' }} className='w-100' {...props}>
-            <Image variant="top" className='glow' src={dummyImage} alt='loading' height={150} width={300}/>
-            <Card.Body>
-                <Placeholder as={Card.Title} animation="glow">
-                    <Placeholder xs={10} />
-                </Placeholder>
-                <Placeholder as={Card.Text} animation="glow">
-                    <Placeholder xs={4} />
-                    <Placeholder xs={6} /> <Placeholder xs={8} />
-                </Placeholder>
-            </Card.Body>
-        </Card>
-    )
-}
+import './CardSkeleton.css';
+
+const CardSkeleton = () => {
+  return (
+    <Card className="card-skeleton">
+      <div className="skeleton-image-wrapper">
+        <Image
+          className="skeleton-image"
+          src={dummyImage}
+          alt="loading"
+          height={150}
+          width={300}
+        />
+      </div>
+      <Card.Body>
+        <Placeholder as={Card.Title} animation="glow">
+          <Placeholder xs={10} />
+        </Placeholder>
+        <Placeholder as={Card.Text} animation="glow">
+          <Placeholder xs={5} /> <br />
+          <Placeholder xs={6} /> <br />
+          <Placeholder xs={8} />
+        </Placeholder>
+      </Card.Body>
+    </Card>
+  );
+};
+
+export default CardSkeleton;

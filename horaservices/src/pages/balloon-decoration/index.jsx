@@ -310,7 +310,7 @@ useEffect(() => {
   </ul>
 <button onClick={handleWhatsApp} className="whatsapp-btn">
   <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" alt="WhatsApp" />
-  Chat Now <br /> On Whatsapp
+  Chat Now  On Whatsapp
 </button>
 </div>
 
@@ -348,11 +348,7 @@ useEffect(() => {
         locality={locality}
       />
  
-<FeatureAnimation features={features} clickAnim={click} />
-
-
-
-{/* Floating Hand */}
+{/* <FeatureAnimation features={features} clickAnim={click} />
 {buttonRefs.current[handStep] && (
   <video
     src="/hand-click.webm" // replace with your hand animation
@@ -370,7 +366,7 @@ useEffect(() => {
       pointerEvents: 'none',
     }}
   />
-)}
+)} */}
 
       <section className="decorationBanner">
         <Image
