@@ -132,32 +132,29 @@
 }
 
 
+
 .whatsapp-btn {
-    background: linear-gradient(to right, #25d366, #128c7e);
-    color: #fff;
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+  background: linear-gradient(to right, #25d366, #128c7e);
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 13px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
 }
 
 .whatsapp-btn img {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
-
-
-
-/* ================================================================================================== */
-
- 
 /* ============================================================================================================ */
 .why-choose-hora {
   width: 100%;

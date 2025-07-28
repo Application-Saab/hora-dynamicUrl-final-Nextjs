@@ -213,32 +213,13 @@
 .toggle-btn:active {
   transform: scale(0.95);
 }
-/* ================================================================================================= */
-
-/* 
-
-@media (max-width: 768px) {
-  .decContainer {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 12px;
-  }
-
-  .decImage,
-  .decCatimage {
-    height: 150px;
-  }
 
 
+.skeleton-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ 2 per row */
+  gap: 20px;
+  justify-items: center;
+  padding: 10px 20px;
+}
 
-  .productName {
-    font-size: 13px;
-  }
-
-  .price,
-  .discountedPrice,
-  .rating {
-    font-size: 12px;
-    color: #9252aa;
-  }
-} */

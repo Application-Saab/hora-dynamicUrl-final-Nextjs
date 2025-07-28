@@ -465,9 +465,9 @@ return (
 
     {/* ✅ Show 6 card skeletons while loading */}
     {loading ? (
-      <div className="product-grid-wrapper">
+      <div className="skeleton-wrapper">
         {Array.from({ length: 6 }).map((_, index) => (
-          <CardSkeleton key={index} />
+          <CardSkeleton key={index}  />
         ))}
       </div>
     ) : (
@@ -493,14 +493,14 @@ return (
                     name: item.label,
                     image: item.image,
                     value: item.value,
-                    catValue: "KidsBirthday",
+                    catValue: "kids-birthday-decoration",
                   }))}
                   onSelect={(item) => openCatItems(item, themeFilter)}
                   city={city}
                   hasCityPageParam={hasCityPageParam}
                   locality={locality}
                   variant="grid"
-                  catValue="KidsBirthday"
+                  catValue="kids-birthday-decoration"
                 />
               </div>
             )}

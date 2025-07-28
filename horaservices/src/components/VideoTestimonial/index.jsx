@@ -6,7 +6,10 @@ const VideoTestimonial = ({ title = "What Our Clients Say", videoSrc }) => {
     <div className="testimonial-container">
       <h3 className="testimonial-title">{title}</h3>
       <div className="testimonial-video-wrapper">
-        <video className="testimonial-video" controls>
+        <video className="testimonial-video" controls
+          autoPlay
+          muted
+           playsInline >
           <source src={videoSrc} type="video/mp4" />
           Your browser does not support the video tag.
         </video>

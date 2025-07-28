@@ -21,7 +21,8 @@ const FAQSection = ({ faqData, heading = "FAQ" }) => {
           display: "flex",
           alignItems: "center",
           gap: "10px",
-          marginBottom: "20px",
+          marginTop:"10px",
+          marginBottom: "10px",
           marginLeft: "10px",
         }}
       >

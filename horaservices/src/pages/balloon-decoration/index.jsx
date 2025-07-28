@@ -303,16 +303,20 @@ useEffect(() => {
       </section>
 
      
-<div class="whatsapp-support-box">
-  <ul class="whatsapp-feature-list">
-    <li> Easy Customize</li>
-    <li>Customer Support</li>
-  </ul>
-<button onClick={handleWhatsApp} className="whatsapp-btn">
-  <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" alt="WhatsApp" />
-  Chat Now  On Whatsapp
-</button>
-</div>
+ <div className="whatsapp-support-box">
+      <ul className="whatsapp-feature-list">
+       <li> 🛠️  Easy Customize</li>
+        <li>💬 Customer Support</li>
+      </ul>
+      <button onClick={handleWhatsApp} className="whatsapp-btn">
+        <img
+          src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
+          alt="WhatsApp"
+        />
+        Chat Now on WhatsApp
+      </button>
+    </div>
+  
 
 
       <div ref={smallCardRef}>
