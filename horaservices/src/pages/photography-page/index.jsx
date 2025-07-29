@@ -124,14 +124,17 @@ const scriptTag = JSON.stringify(schemaOrg);
 
     );
   }
-  const viewMoreProduct = (work, activeTab) => {
-    router.push({
-      pathname: `/photography-page/product/${work._id}`,
-      query: {
-        product: JSON.stringify(work),
-        tagId: tagIds[activeTab],  // now accessible here
-      },
-    });
+ const viewMoreProduct = (work, activeTab) => {
+  // GTM Event Fire
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'photography_view_more_click',
+    eventCategory: 'photography',
+    eventAction: 'view_more_click',
+    eventLabel: work?.title || work?.name || 'Unknown Product',
+    productId: work?._id,
+    tabName: activeTab,
+  });
   };
   const getDiscountedPrice = (price) => {
     let discount;
