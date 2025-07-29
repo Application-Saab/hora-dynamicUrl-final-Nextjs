@@ -1,0 +1,124 @@
+.invite-bg-wrapper {
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.invite-container {
+ background: linear-gradient(180deg, #A8E3FE 0%, #FED7F3 53.58%, #FEDFD7 88.89%, #FFDACE 100%);
+ 
+  border-radius: 20px;
+  padding: 25px 20px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+}
+
+.invite-title {
+  color: #97538C;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px !important;
+}
+
+.invite-subtitle {
+  font-size: 11px;
+  color: #444;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+input[type='text'],
+input[type='date'],
+input[type='time'] {
+  background-color: #ffffff;
+  color: #222;
+  border: 1px solid #97538C;
+  border-radius: 10px !important;
+  padding: 12px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+input::placeholder {
+  color: #5B5555;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.row .input-group {
+  flex: 1;
+  min-width: 0;
+  display:block;
+}
+
+.row .input-group input {
+  width: 100%;
+}
+.date-time-label{
+  font-size: 12px;
+}
+.upload-box {
+  background: #fff;
+border: 1px solid #97538C;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.upload-box:hover {
+  background: #f7e9ff;
+}
+
+.upload-box p {
+  margin: 8px 0 0;
+  color: #000;
+  font-weight: bold;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.cancel-btn,
+.save-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #FF9CAD;
+  color:#fff ;
+}
+
+.save-btn {
+  background: #97538C;
+  color: #fff;
+}
