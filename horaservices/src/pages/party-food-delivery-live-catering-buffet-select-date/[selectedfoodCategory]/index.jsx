@@ -368,11 +368,23 @@ console.log(dishCount)
     setWarningVisibleForTotalAmount(false);
   };
 
-  const contactUsRedirection = () => {
-    window.open(
-      "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20catering%20service"
-    );
-  };
+const contactUsRedirection = () => {
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'food&livecateringselectdatepage_need_more_info_whatsapp_click',
+    eventCategory: 'whatsapp_click',
+    eventAction: 'click',
+    eventLabel: 'need_more_info_section',
+  });
+
+  
+  window.open(
+    "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20food%20delivery%20and%20live%20catering%20service",
+    "_blank"
+  );
+};
+
 
   const pushToGTM = () => {
     if (selectedMealList.length > 0 && selectedOption && !isEventPushed) {

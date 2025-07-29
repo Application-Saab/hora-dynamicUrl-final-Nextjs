@@ -185,13 +185,51 @@ const FoodDelivery = () => {
     },
   ];
 
+  // const contactUsRedirection = (value) => {
+  //   console.log('value', value);
+  //   const message = `Hello I have some queries for ${value} and for party service`;
+  //   const encodedMessage = encodeURIComponent(message);
+  //   const url = `https://wa.me/917338584828?text=${encodedMessage}`;
+  //   window.open(url, '_blank');
+  // };
   const contactUsRedirection = (value) => {
-    console.log('value', value);
-    const message = `Hello I have some queries for ${value} and for party service`;
-    const encodedMessage = encodeURIComponent(message);
-    const url = `https://wa.me/917338584828?text=${encodedMessage}`;
-    window.open(url, '_blank');
-  };
+  let eventName = '';
+  let productNameEvent = '';
+
+  switch (value) {
+    case 'food-delivery':
+      eventName = 'bulkfood_whatsapp_click';
+      productNameEvent = 'bulkfood_whatsapp_click';
+      break;
+    case 'live-catering':
+      eventName = 'livecateringCards_whatsapp_click';
+      productNameEvent = 'livecatering_whatsapp_click';
+      break;
+         case 'chef for party':
+      eventName = 'chefforpartyCards_whatsapp_click';
+      productNameEvent = 'chefforpartyCards_whatsapp_click';
+      break;
+    default:
+      eventName = 'generic_whatsapp_click';
+      productNameEvent = 'generic_whatsapp_click';
+  }
+
+  // GTM Push
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    eventCategory: 'whatsapp_click',
+    eventAction: 'click',
+    eventLabel: productNameEvent,
+  });
+
+  // WhatsApp Redirection
+  const message = `Hello I have some queries for ${value} and for party service`;
+  const encodedMessage = encodeURIComponent(message);
+  const url = `https://wa.me/917338584828?text=${encodedMessage}`;
+  window.open(url, '_blank');
+};
+
 
   const [isVegOnly, setIsVegOnly] = useState(false);
 
@@ -465,8 +503,10 @@ const FoodDelivery = () => {
             <a className="btn create-package-btn" href="https://horaservices.com/party-food-delivery-live-catering-buffet/party-food-delivery">
               Create your Package
             </a>
-            <button className="btn whatsapp-btn" onClick={() => contactUsRedirection('food-delivery')}>Whatsapp</button>
-          </div>
+           <button className="btn whatsapp-btn" onClick={() => contactUsRedirection('food-delivery')}>
+  Whatsapp
+</button>
+      </div>
         </div>
         </div>
    </div>
@@ -563,9 +603,10 @@ const FoodDelivery = () => {
             <a className="btn create-package-btn" href="https://horaservices.com/party-food-delivery-live-catering-buffet/party-live-buffet-catering">
               Create your Package
             </a>
-            <button className="btn whatsapp-btn" onClick={() => contactUsRedirection('live Catering')}>
+           <button className="btn whatsapp-btn" onClick={() => contactUsRedirection('live-catering')}>
   Whatsapp
 </button>
+
           </div>
         </div>
         </div>

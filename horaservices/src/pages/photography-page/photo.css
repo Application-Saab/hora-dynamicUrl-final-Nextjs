@@ -721,7 +721,7 @@ background-color: rgb(150, 82, 141)!important ;
 
 .TextBackground p {
   margin: 0;
-  font-size: 0.9em;
+   font-size: 13px;
   font-weight: 600;
   color: white;
   position: relative;

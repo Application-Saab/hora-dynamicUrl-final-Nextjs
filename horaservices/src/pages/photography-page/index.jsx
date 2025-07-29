@@ -205,6 +205,15 @@ const scriptTag = JSON.stringify(schemaOrg);
       }
     });
   };
+const firePoseClickEvent = (eventName) => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    eventCategory: "pose_click",
+    eventAction: "click",
+    eventLabel: eventName,
+  });
+};
 
   const bannerImages = [
     Banner1,
@@ -392,39 +401,72 @@ const scriptTag = JSON.stringify(schemaOrg);
 
         <div class="poses">
           <div class="pose-grid">
-            <a href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
-              <Image src={wedding} alt="Wedding" />
-             <div className='TextBackground'><p>Wedding</p></div> 
-            </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
-              <Image src={Maternity} alt="Maternity" />
-               <div className='TextBackground'> <p>Maternity</p></div>
-            </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
-              <Image src={Birthday} alt="Birthday" />
-                <div className='TextBackground'><p>Birthday</p></div> 
-            </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
-              <Image src={preWedding} alt="Pre-Wedding" />
-                <div className='TextBackground'> <p>pre-Wedding</p></div>
-            </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
-              <Image src={HaldiMehndi} alt="HaldiMehndi" />
-                <div className='TextBackground'> <p>Haldi/Mehndi</p></div> 
-            </a>
-            <a href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2" class="pose-card" target="_blank"
-              rel="noopener noreferrer">
-              <Image src={Babyshower} alt="Baby Shower" />
+           <a
+  href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("wedding_pose_click")}
+>
+  <Image src={wedding} alt="Wedding" />
+  <div className="TextBackground"><p>Wedding</p></div>
+</a>
 
-               <div className='TextBackground'><p>Babyshower
-              </p>
-</div> 
-            </a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=maternity%20poses&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("maternity_pose_click")}
+>
+  <Image src={Maternity} alt="Maternity" />
+  <div className="TextBackground"><p>Maternity</p></div>
+</a>
+
+<a
+  href="https://horaservices.com/photo-gallery?folderName=birthday%20poses&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("birthday_pose_click")}
+>
+  <Image src={Birthday} alt="Birthday" />
+  <div className="TextBackground"><p>Birthday</p></div>
+</a>
+
+<a
+  href="https://horaservices.com/photo-gallery?folderName=pre%20wedding&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("prewedding_pose_click")}
+>
+  <Image src={preWedding} alt="Pre-Wedding" />
+  <div className="TextBackground"><p>Pre-Wedding</p></div>
+</a>
+
+<a
+  href="https://horaservices.com/photo-gallery?folderName=HaldiandMehendi&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("haldi_mehendi_pose_click")}
+>
+  <Image src={HaldiMehndi} alt="HaldiMehndi" />
+  <div className="TextBackground"><p>Haldi/Mehndi</p></div>
+</a>
+
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("babyshower_pose_click")}
+>
+  <Image src={Babyshower} alt="Baby Shower" />
+  <div className="TextBackground"><p>Babyshower</p></div>
+</a>
+
           </div>
         </div>
 
