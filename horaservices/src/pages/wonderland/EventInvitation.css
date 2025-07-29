@@ -565,27 +565,12 @@ background-color: none !important;
 
 
 
-.event-wall {
-  background-color: rgba(255, 255, 255, 0.85);
-  margin-top: 20px;
-  padding: 16px;
-  font-family: 'Pacifico', cursive;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.event-heading {
-  color: rgb(146, 82, 170);
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
 
 /* Masonry style using columns */
 .event-grid {
   column-count: 2;
   column-gap: 12px;
+  margin:10px
 }
 
 /* Responsive breakpoints */

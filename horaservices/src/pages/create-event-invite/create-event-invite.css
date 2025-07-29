@@ -122,3 +122,86 @@ border: 1px solid #97538C;
   background: #97538C;
   color: #fff;
 }
+
+
+.dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+
+
+.dropdown-input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  color: #222;
+  width: 100%;
+  border: 1px solid #97538C;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+input::-webkit-datalist-popup {
+  background: white !important;
+  color: black !important;
+}
+
+input:focus {
+  outline: 2px solid #007bff;
+}
+
+.time-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: sans-serif;
+  max-width: 300px;
+}
+
+.time-label {
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.time-input-container {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.time-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+}
+
+.ampm-select {
+  padding: 12px 10px;
+  border: none;
+  border-left: 1px solid #ddd;
+  font-size: 16px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  min-width: 60px;
+  text-align: center;
+}
+
+.final-value {
+  margin-top: 6px;
+  color: #555;
+  font-size: 14px;
+}
+

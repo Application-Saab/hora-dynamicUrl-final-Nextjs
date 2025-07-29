@@ -32,6 +32,7 @@ import {
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
 
+
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
   const router = useRouter();
@@ -144,22 +145,17 @@ const InvitationCard = () => {
   const actions = [
     {
       image: tabIcon1,
-      titleTop: "Upload &",
-      titleBottom: "Share Pictures",
-      subtitle: "Add photos taken at the party",
+      title: "Upload Pictures",
     },
     {
       image: tabIcon2,
-      titleTop: "Thank You",
-      titleBottom: "Note",
-      subtitle: "Leave a message for the host",
+      title: "Thank You Note",
     },
-    {
-      image: tabIcon3,
-      titleTop: "Lucky Draw",
-      titleBottom: "",
-      subtitle: "Try your luck and win!",
-    },
+    // {
+    //   image: tabIcon3,
+    //   title: "Lucky Draw",
+
+    // },
   ];
 
   const [formData, setFormData] = useState({
@@ -442,15 +438,17 @@ const InvitationCard = () => {
     "Bachelorette",
   ];
 
+
   const handleActionClick = (title) => {
-    if (title === "Upload &") {
-      document.getElementById("imageUploadInput").click();
-    } else if (title === "Thank You") {
-      setShowPopup(true);
-    } else if (title === "Lucky Draw") {
-      setShowLuckyDrawPopup(true);
-    }
-  };
+  if (title === "Upload Pictures") {
+    document.getElementById("imageUploadInput").click();
+  } else if (title === "Thank You Note") {
+    setShowPopup(true);
+  } else if (title === "Lucky Draw") {
+    setShowLuckyDrawPopup(true);
+  }
+};
+
 
   const handleImageUpload = async (e) => {
     setUploading(true);
@@ -515,52 +513,62 @@ const InvitationCard = () => {
     return () => clearTimeout(timer);
   }, [id, sendCustomerId]);
 
-  const handleDownload = async () => {
-    if (noteTitle.trim() === "" || noteBy.trim() === "") {
-      setErrorMsg("Please fill all required fields.");
-      return;
-    }
-    setErrorMsg("");
-    const canvas = await html2canvas(noteRef.current, {
-      backgroundColor: null,
-      useCORS: true,
+ const handleDownload = async () => {
+  if (noteTitle.trim() === "" || noteBy.trim() === "") {
+    setErrorMsg("Please fill all required fields.");
+    return;
+  }
+  setErrorMsg("");
+
+  const canvas = await html2canvas(noteRef.current, {
+    backgroundColor: null,
+    useCORS: true,
+  });
+
+  canvas.toBlob(async (blob) => {
+    if (!blob) return;
+
+    const file = new File([blob], "sticky-note.png", {
+      type: "image/png",
+      lastModified: new Date().getTime(),
     });
 
-    // Convert canvas to Blob instead of DataURL
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
+    const formData = new FormData();
+    formData.append("files", file);
+    formData.append("customerId", sendCustomerId);
+    formData.append("phoneNo", sendCustomerPhoneNumber);
+    formData.append("folderName", id);
 
-      // Convert Blob to File 👇
-      const file = new File([blob], "sticky-note.png", {
-        type: "image/png",
-        lastModified: new Date().getTime(),
-      });
+    try {
+      const response = await fetch(
+        "https://horaservices.com:3000/api/photo/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-      // Create FormData and append File
-      const formData = new FormData();
-      formData.append("files", file); // matches your upload key: "files"
-      formData.append("customerId", sendCustomerId);
-      formData.append("phoneNo", sendCustomerPhoneNumber);
-      formData.append("folderName", id);
+      const result = await response.json();
 
-      try {
-        const response = await fetch(
-          "https://horaservices.com:3000/api/photo/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        const result = await response.json();
-        console.log("Upload result:", result);
-
-        // window.location.reload();
-      } catch (err) {
-        console.error("Upload failed:", err);
+      if (result.success && result.uploaded && result.uploaded[0]?.url) {
+        // ✅ Add the uploaded image to eventData so it shows in the UI
+        const newImage = {
+          type: "image",
+          src: result.uploaded[0].url,
+          alt: "Thank You Note",
+        };
+        setEventData((prev) => [newImage, ...prev]);
       }
-    }, "image/png");
-  };
+
+      setShowPopup(false);
+      setNoteTitle("");
+      setNoteBy("");
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  }, "image/png");
+};
+
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
   useEffect(() => {
@@ -759,10 +767,10 @@ const InvitationCard = () => {
                           </div>
                         </div>
                       ))}
-                    </div> */}
+                    </div>  */}
 
-                    <div>
-                      {/* Hidden File Input for Upload */}
+                  {/* <div>
+                    
                       <input
                         type="file"
                         multiple
@@ -774,13 +782,14 @@ const InvitationCard = () => {
                       />
 
                       {uploading && <p>Uploading image, please wait...</p>}
-                    </div>
+                    </div> */}
                   </>
+
                 ) : (
                   <p>Loading...</p>
                 )}
               </div>
-            </div>
+            </div> 
  
 
          <div style={styles.cardWrapper}>
@@ -815,95 +824,160 @@ const InvitationCard = () => {
 </div>
         </div>          
             {showPopup && <div className="overlay"></div>}
-            {showPopup && (
-              <div className="popup">
-                <span className="close-button" onClick={handleClosePopup}>
-                  ×
-                </span>
+           {showPopup && (
+  <div className="popup">
+    <span className="close-button" onClick={handleClosePopup}>×</span>
 
-                <h1 className="title"> Thank You Note</h1>
-                <h3 className="subtitlePopUp">
-                  Celebrate the moment with a few words of gratitude.
-                </h3>
+    <h1 className="title"> Thank You Note</h1>
+    <h3 className="subtitlePopUp">
+      Celebrate the moment with a few words of gratitude.
+    </h3>
 
-                <div className="form-group">
-                  <label className="label">Note Title</label>
+    <div className="form-group">
+      <label className="label">Note Title</label>
+      <textarea
+        rows={5}
+        placeholder="Write your thank you message..."
+        value={noteTitle}
+        required
+        onChange={(e) => {
+          const input = e.target.value;
+          const charsCount = input.replace(/\s/g, "").length;
+          if (charsCount <= 125) {
+            setNoteTitle(input);
+          } else {
+            let count = 0;
+            let truncated = "";
+            for (const ch of input) {
+              if (ch !== " ") count++;
+              if (count > 125) break;
+              truncated += ch;
+            }
+            setNoteTitle(truncated);
+          }
+          if (input.trim() !== "" && noteBy.trim() !== "") {
+            setErrorMsg("");
+          }
+        }}
+      />
+      <p
+        className="word-limit"
+        style={{ color: charsWithoutSpaces >= 125 ? "red" : "black" }}
+      >
+        {charsWithoutSpaces >= 125
+          ? "You have reached the 125 character limit!"
+          : `${charsWithoutSpaces} / 125 characters`}
+      </p>
+    </div>
 
-                  <textarea
-                    rows={5}
-                    placeholder="Write your thank you message..."
-                    value={noteTitle}
-                    required
-                    onChange={(e) => {
-                      const input = e.target.value;
-                      const charsCount = input.replace(/\s/g, "").length;
-                      if (charsCount <= 125) {
-                        setNoteTitle(input);
-                      } else {
-                        // Truncate to max 125 non-space chars
-                        let count = 0;
-                        let truncated = "";
-                        for (const ch of input) {
-                          if (ch !== " ") count++;
-                          if (count > 125) break;
-                          truncated += ch;
-                        }
-                        setNoteTitle(truncated);
-                      }
-                      if (input.trim() !== "" && noteBy.trim() !== "") {
-                        setErrorMsg("");
-                      }
-                    }}
-                  />
-                  <p
-                    className="word-limit"
-                    style={{
-                      color: charsWithoutSpaces >= 125 ? "red" : "black",
-                    }}
-                  >
-                    {charsWithoutSpaces >= 125
-                      ? "You have reached the 125 character limit!"
-                      : `${charsWithoutSpaces} / 125 characters`}
-                  </p>
-                </div>
+    <div className="form-group">
+      <label className="label">Note By</label>
+      <input
+        type="text"
+        placeholder="Your name"
+        value={noteBy}
+        required
+        onChange={(e) => {
+          setNoteBy(e.target.value);
+          if (noteTitle.trim() !== "" && e.target.value.trim() !== "") {
+            setErrorMsg("");
+          }
+        }}
+      />
+    </div>
 
-                <div className="form-group">
-                  <label className="label">Note By</label>
-                  <input
-                    type="text"
-                    placeholder="Your name"
-                    value={noteBy}
-                    required
-                    onChange={(e) => {
-                      setNoteBy(e.target.value);
-                      if (
-                        noteTitle.trim() !== "" &&
-                        e.target.value.trim() !== ""
-                      ) {
-                        setErrorMsg("");
-                      }
-                    }}
-                  />
-                </div>
-                {errorMsg && (
-                  <p
-                    style={{
-                      color: "red",
-                      fontWeight: "bold",
-                      marginBottom: "0px",
-                      fontSize: "14px",
-                      textAlign: "center",
-                      marginTop: "20px",
-                    }}
-                  >
-                    {errorMsg}
-                  </p>
-                )}
-                <div className="popup-buttons">
-                  <button onClick={handleDownload}>Save</button>
-                </div>
-              </div>
-            )}
+    {errorMsg && (
+      <p
+        style={{
+          color: "red",
+          fontWeight: "bold",
+          marginBottom: "0px",
+          fontSize: "14px",
+          textAlign: "center",
+          marginTop: "20px",
+        }}
+      >
+        {errorMsg}
+      </p>
+    )}
+
+    <div className="popup-buttons">
+      <button onClick={handleDownload}>Save</button>
+    </div>
+
+    {/* Yeh hidden div jisko html2canvas capture karega */}
+    <div
+      ref={noteRef}
+      style={{
+        width: "300px",
+        height: "300px",
+        position: "absolute",
+        left: "-9999px",
+        top: "-9999px",
+        backgroundColor: "white",
+        borderRadius: "12px",
+        overflow: "hidden",
+        padding: "15px",
+        boxSizing: "border-box",
+      }}
+    >
+      <Image
+        src={StickyImage}
+        alt="Sticky Note"
+        fill
+        style={{
+          objectFit: "cover",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 0,
+          borderRadius: "12px",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "85%",
+          zIndex: 1,
+          textAlign: "left",
+        }}
+      >
+        <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "20px",
+            color: "black",
+            fontFamily: "Arial, sans-serif",
+            wordWrap: "break-word",
+            whiteSpace: "pre-wrap",
+            lineHeight: 1.1,
+          }}
+        >
+          {noteTitle}
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: 20,
+          right: 70,
+          fontWeight: "bold",
+          fontSize: "20px",
+          color: "black",
+          fontFamily: "Arial, sans-serif",
+          zIndex: 1,
+        }}
+      >
+        - {noteBy}
+      </div>
+    </div>
+  </div>
+)}
+
 
             {/* Basic CSS */}
             <style jsx>{`
@@ -1018,38 +1092,75 @@ const InvitationCard = () => {
         A wall filled with your party’s happiest moments and heartfelt messages.
       </p>
 
-      <div style={styles.buttonRow}>
-        <button style={styles.button} onClick={openFileInput}>
-          <FaUpload style={{ marginRight: 6 }} /> Upload Pictures
-        </button>
-        <button style={styles.button}>
-          <FaStickyNote style={{ marginRight: 6 }} /> Thank You Note
-        </button>
-      </div>
+ 
 
-      <input
-        type="file"
-        id="imageUploadInput"
-        accept="image/*"
-        multiple
-        style={{ display: 'none' }}
-        onChange={handleImageUpload}
-        disabled={uploading}
+{/* Hidden file input */}
+<input
+  type="file"
+  id="imageUploadInput"
+  multiple
+  accept="image/*"
+  style={{ display: "none" }}
+  onChange={handleImageUpload}
+/>
+
+{/* Buttons */}
+<div className="tabs-container" style={styles.tabsContainer}>
+  {actions.map((action, index) => (
+    <button
+      key={index}
+      onClick={() => {
+        if (action.title === "Upload Pictures") {
+          document.getElementById("imageUploadInput").click();
+        } else {
+          handleActionClick(action.title);
+        }
+      }}
+      style={styles.actionButton}
+    >
+      <Image
+        src={action.image}
+        alt={action.title}
+        style={styles.iconStyle}
       />
+      <span style={styles.buttonLabel}>{action.title}</span>
+    </button>
+  ))}
+</div>
+              <div className="event-grid">
+                {eventData.map((item, index) => (
+                  <div key={index}>
+                    {item.type === "image" ? (
+                      <>
+                        <img
+                          src={item.src}
+                          alt={item.alt}
+                          className="event-image"
+                          onLoad={(e) =>
+                            e.currentTarget.classList.add("loaded")
+                          }
+                        />
+                        {item.content && (
+                          <div
+                            className="event-text"
+                            dangerouslySetInnerHTML={{ __html: item.content }}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <div
+                        className="event-text"
+                        dangerouslySetInnerHTML={{ __html: item.content }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
 
-      {uploading && <p style={styles.uploading}>Uploading image, please wait...</p>}
-      {loadingThumbnails ? (
-        <p style={styles.loading}>Loading photos...</p>
-      ) : (
-        <div style={styles.gallery}>
-          {eventData.map((item, idx) => (
-            <div key={idx} style={styles.imageBox}>
-              <img src={item.src} alt={item.alt} style={styles.image} />
+
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+      
+
             {/* <div className="event-wall">
               <h2 className="event-heading">Event Wall</h2>
               <div className="event-grid">
@@ -1158,7 +1269,7 @@ const InvitationCard = () => {
                   - {noteBy}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {showLuckyDrawPopup && (
               <div
@@ -1182,7 +1293,7 @@ const InvitationCard = () => {
                   </div>
                 </div>
               </div>
-            )} */}
+            )} 
 
          
             {showModal && (
@@ -1456,35 +1567,7 @@ const InvitationCard = () => {
         </div>
       )}
 
-      {/* showpop for guest list */}
-      {/* {showPopupGuest && (
-        <>
-          <div
-            style={styles.backdrop}
-            onClick={() => setShowPopupGuest(false)}
-          />
-          <div style={styles.popup}>
-            <h2 style={styles.popupTitle}>Guest Details</h2>
-            <p style={styles.countText}>
-              Total Guests: <strong>{guestList.length}</strong>
-            </p>
-            <ul style={styles.list}>
-              {guestList.map((guest, index) => (
-                <li key={index} style={styles.listItem}>
-                  {guest.name}{" "}
-                  <span style={styles.status}>({guest.status})</span>
-                </li>
-              ))}
-            </ul>
-            <button
-              style={styles.closeButton}
-              onClick={() => setShowPopupGuest(false)}
-            >
-              Close
-            </button>
-          </div>
-        </>
-      )} */}
+   
    {showPopupGuest && (
   <>
     <div style={styles.backdrop} onClick={() => setShowPopupGuest(false)} />
@@ -1631,12 +1714,7 @@ const styles = {
     justifyContent: "center",
     padding: "40px",
   },
-  heading: {
-    fontSize: "32px",
-    color: "#333",
-    marginBottom: "20px",
-    fontWeight: "bold",
-  },
+
   button: {
     backgroundColor: "#6b21a8",
     color: "#fff",
@@ -1729,11 +1807,13 @@ backdrop: {
     fontWeight: 'bold',
     marginBottom: 8,
     color: '#a8328e',
+       textAlign: 'center',
   },
   subheading: {
     fontSize: 14,
     marginBottom: 20,
     color: '#555',
+       textAlign: 'center',
   },
   buttonRow: {
     display: 'flex',
@@ -1777,6 +1857,43 @@ backdrop: {
     width: '100%',
     height: 'auto',
     objectFit: 'cover',
-    display: 'block',}
+    display: 'block',
+  },
+
+    tabsContainer: {
+    display: "flex",
+    justifyContent: "center",
+    gap: 16,
+    flexWrap: "wrap",
+    marginTop: 20,
+  },
+
+  actionButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    background: "linear-gradient(to right, #6b21a8, #9333ea)",
+    color: "#fff",
+    border: "none",
+    borderRadius: 12,
+    padding: "10px 20px",
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+    minWidth: 160,
+    justifyContent: "center",
+  },
+
+  iconStyle: {
+    width: 20,
+    height: 20,
+    objectFit: "contain",
+  },
+
+  buttonLabel: {
+    lineHeight: 1.2,
+    textAlign: "left",
+  },
 };
 export default InvitationCard;
