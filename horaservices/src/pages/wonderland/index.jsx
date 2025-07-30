@@ -31,6 +31,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons"; // add icons
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
+import InvitationModal from "@/components/InvitationModal";
+import FinalInviteDisplay from "@/components/FinalInviteDisplay";
+import GuestListPreview from "@/components/GuestListPreview";
+import ThankYouNotePopup from "@/components/ThankYouNotePopup";
+import RSVPPopup from "@/components/RSVPPopup";
 
 
 const InvitationCard = () => {
@@ -71,7 +76,7 @@ const InvitationCard = () => {
   const [showPopupGuest, setShowPopupGuest] = useState(false);
   const [guestList, setGuestList] = useState([]);
   const [loading, setLoading] = useState(false);
-
+const [wallUploading, setWallUploading] = useState(false);
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyU06csCT5OIJzO3F9VGTjCIli74-k2puAp8AhybJGHPYvyEmuQmJlvPf60wHsy--NGGg/exec"; // no query params
   useEffect(() => {
@@ -81,6 +86,7 @@ const InvitationCard = () => {
     const parts = fullId.split("/");
     const eventIdFromUrl = parts[0];
     const fullUserId = parts[1];
+   
 
     if (!eventIdFromUrl || !fullUserId) return;
 
@@ -120,7 +126,7 @@ const InvitationCard = () => {
       setId(firstPart);
       setSecondId(secondPart);
     }
-  }, [router.query.id]); 
+  }, [router.query.id]);
 
   const userId = localStorage.getItem("userID");
   console.log(userId, "userid");
@@ -440,107 +446,95 @@ const InvitationCard = () => {
 
 
   const handleActionClick = (title) => {
-  if (title === "Upload Pictures") {
-    document.getElementById("imageUploadInput").click();
-  } else if (title === "Thank You Note") {
-    setShowPopup(true);
-  } else if (title === "Lucky Draw") {
-    setShowLuckyDrawPopup(true);
-  }
-};
-
-
-  const handleImageUpload = async (e) => {
-    setUploading(true);
-    const files = e.target.files;
-    if (files.length > 0) {
-      const formData = new FormData();
-
-      // Append each file
-      for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]); // backend should handle array of files under "files"
-      }
-
-      formData.append("customerId", sendCustomerId);
-      formData.append("phoneNo", sendCustomerPhoneNumber);
-      formData.append("folderName", id);
-
-      try {
-        const res = await fetch(
-          "https://horaservices.com:3000/api/photo/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        const data = await res.json();
-        console.log("Uploaded:", data);
-
-        // window.location.reload();
-      } catch (err) {
-        console.error("Upload failed", err);
-      } finally {
-        setUploading(false);
-      }
+    if (title === "Upload Pictures") {
+      document.getElementById("imageUploadInput").click();
+    } else if (title === "Thank You Note") {
+      setShowPopup(true);
+    } else if (title === "Lucky Draw") {
+      setShowLuckyDrawPopup(true);
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const fetchThumbnails = async () => {
-        try {
-          const response = await fetch(
-            `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
-          );
-          const data = await response.json();
-          const images = data.thumbnails.map((item) => ({
-            type: "image",
-            src: item.url,
-            alt: item.key,
-          }));
-          setEventData(images.reverse());
-        } catch (error) {
-          console.error("Error fetching thumbnails:", error);
-        } finally {
-          setLoadingThumbnails(false);
-        }
-      };
 
-      fetchThumbnails();
-    }, 5000); // 5 second delay
+  // const handleImageUpload = async (e) => {
+  //   setUploading(true);
+  //   const files = e.target.files;
+  //   if (files.length > 0) {
+  //     const formData = new FormData();
 
-    return () => clearTimeout(timer);
-  }, [id, sendCustomerId]);
+  //     // Append each file
+  //     for (let i = 0; i < files.length; i++) {
+  //       formData.append("files", files[i]); // backend should handle array of files under "files"
+  //     }
 
- const handleDownload = async () => {
-  if (noteTitle.trim() === "" || noteBy.trim() === "") {
-    setErrorMsg("Please fill all required fields.");
-    return;
-  }
-  setErrorMsg("");
+  //     formData.append("customerId", sendCustomerId);
+  //     formData.append("phoneNo", sendCustomerPhoneNumber);
+  //     formData.append("folderName", id);
 
-  const canvas = await html2canvas(noteRef.current, {
-    backgroundColor: null,
-    useCORS: true,
-  });
+  //     try {
+  //       const res = await fetch(
+  //         "https://horaservices.com:3000/api/photo/upload",
+  //         {
+  //           method: "POST",
+  //           body: formData,
+  //         }
+  //       );
 
-  canvas.toBlob(async (blob) => {
-    if (!blob) return;
+  //       const data = await res.json();
+  //       console.log("Uploaded:", data);
 
-    const file = new File([blob], "sticky-note.png", {
-      type: "image/png",
-      lastModified: new Date().getTime(),
-    });
+  //       // window.location.reload();
+  //     } catch (err) {
+  //       console.error("Upload failed", err);
+  //     } finally {
+  //       setUploading(false);
+  //     }
+  //   }
+  // };
 
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     const fetchThumbnails = async () => {
+  //       try {
+  //         const response = await fetch(
+  //           `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
+  //         );
+  //         const data = await response.json();
+  //         const images = data.thumbnails.map((item) => ({
+  //           type: "image",
+  //           src: item.url,
+  //           alt: item.key,
+  //         }));
+  //         setEventData(images.reverse());
+  //       } catch (error) {
+  //         console.error("Error fetching thumbnails:", error);
+  //       } finally {
+  //         setLoadingThumbnails(false);
+  //       }
+  //     };
+
+  //     fetchThumbnails();
+  //   }, 5000); // 5 second delay
+
+  //   return () => clearTimeout(timer);
+  // }, [id, sendCustomerId]);
+const handleImageUpload = async (e) => {
+  setUploading(true);
+  setWallUploading(true);
+  const files = e.target.files;
+  if (files.length > 0) {
     const formData = new FormData();
-    formData.append("files", file);
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append("files", files[i]); // backend expects "files"
+    }
+
     formData.append("customerId", sendCustomerId);
     formData.append("phoneNo", sendCustomerPhoneNumber);
     formData.append("folderName", id);
 
     try {
-      const response = await fetch(
+      const res = await fetch(
         "https://horaservices.com:3000/api/photo/upload",
         {
           method: "POST",
@@ -548,26 +542,118 @@ const InvitationCard = () => {
         }
       );
 
-      const result = await response.json();
+      const data = await res.json();
+      console.log("Uploaded:", data);
 
-      if (result.success && result.uploaded && result.uploaded[0]?.url) {
-        // ✅ Add the uploaded image to eventData so it shows in the UI
-        const newImage = {
+      if (data?.uploaded && Array.isArray(data.uploaded)) {
+        // Update eventData with uploaded images
+        const newImages = data.uploaded.map((item) => ({
           type: "image",
-          src: result.uploaded[0].url,
-          alt: "Thank You Note",
-        };
-        setEventData((prev) => [newImage, ...prev]);
-      }
+          src: item.url, // backend should return this
+          alt: item.key || item.filename || "Uploaded image",
+        }));
 
-      setShowPopup(false);
-      setNoteTitle("");
-      setNoteBy("");
+        setEventData((prev) => [...newImages, ...prev]);
+      }
     } catch (err) {
-      console.error("Upload failed:", err);
+      console.error("Upload failed", err);
+    } finally {
+      setUploading(false);
+       setWallUploading(false);
     }
-  }, "image/png");
+  }
 };
+useEffect(() => {
+  const timer = setTimeout(() => {
+    fetchThumbnails();
+  }, 2000); // shorter delay is fine now
+
+  return () => clearTimeout(timer);
+}, [id, sendCustomerId]);
+
+ const fetchThumbnails = async () => {
+  try {
+    const response = await fetch(
+      `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
+    );
+    const data = await response.json();
+    const imagesFromAPI = data.thumbnails.map((item) => ({
+      type: "image",
+      src: item.url,
+      alt: item.key,
+    }));
+
+    // Merge without duplication
+    setEventData((prev) => {
+      const apiUrls = imagesFromAPI.map((img) => img.src);
+      const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
+      return [...nonApiUploads, ...imagesFromAPI.reverse()];
+    });
+  } catch (error) {
+    console.error("Error fetching thumbnails:", error);
+  } finally {
+    setLoadingThumbnails(false);
+  }
+};
+
+
+
+
+  const handleDownload = async () => {
+    if (noteTitle.trim() === "" || noteBy.trim() === "") {
+      setErrorMsg("Please fill all required fields.");
+      return;
+    }
+    setErrorMsg("");
+
+    const canvas = await html2canvas(noteRef.current, {
+      backgroundColor: null,
+      useCORS: true,
+    });
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      const file = new File([blob], "sticky-note.png", {
+        type: "image/png",
+        lastModified: new Date().getTime(),
+      });
+
+      const formData = new FormData();
+      formData.append("files", file);
+      formData.append("customerId", sendCustomerId);
+      formData.append("phoneNo", sendCustomerPhoneNumber);
+      formData.append("folderName", id);
+
+      try {
+        const response = await fetch(
+          "https://horaservices.com:3000/api/photo/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const result = await response.json();
+
+        if (result.success && result.uploaded && result.uploaded[0]?.url) {
+          // ✅ Add the uploaded image to eventData so it shows in the UI
+          const newImage = {
+            type: "image",
+            src: result.uploaded[0].url,
+            alt: "Thank You Note",
+          };
+          setEventData((prev) => [newImage, ...prev]);
+        }
+
+        setShowPopup(false);
+        setNoteTitle("");
+        setNoteBy("");
+      } catch (err) {
+        console.error("Upload failed:", err);
+      }
+    }, "image/png");
+  };
 
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
@@ -673,7 +759,7 @@ const InvitationCard = () => {
           <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
         </div>
       ) : (
-        // If user IS logged in, show the full invitation UI
+
         <>
           <div
             className="invitation-container relative  flex flex-col items-center justify-center;"
@@ -683,305 +769,43 @@ const InvitationCard = () => {
                 : `url(${imageBackGround.src})`,
               backgroundSize: "100%",
               backgroundPosition: "center",
-              // backgroundRepeat: "no-repeat",
             }}
           >
             {showFAB && <FloatingEditButton onClick={handleEdit} />}
-            
-
-            <div className="invite-wrapper">
-              <div className="overlay-content bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-4 max-w-2xl w-full text-center">
-                {orderDetails ? (
-                  <>
-                    <h1 className="invitation-title text-3xl font-bold mb-4">
-                    YOU ‘RE INVITED 
-                    </h1>
-
-                    <div className="profile-container flex justify-center mb-4">
-                      <div className="profile-image w-36 h-36 rounded-full overflow-hidden border-4 border-pink-300 shadow-md">
-                        <img
-                          src={`https://horaservices.com/api/uploads/${orderDetails.Image}`}
-                          alt={orderDetails.Name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-
-                    <h2 className="subtitle text-2xl font-semibold text-pink-600 mb-2">
-                        {orderDetails.Name || "Someone Special"}‘S
-                      {orderDetails ["Event Type"] || "Celebration"} CELEBRATION
-                    
-                    </h2>
-
-                    <p className="event-info text-gray-700 mb-1">
-                      📅 {formatDate(orderDetails.Date)} at 🕒{" "}
-                      {orderDetails.Time}
-                    </p>
-
-                    <p className="event-info text-gray-700 mb-4">
-                      📍 Venue:{" "}
-                      <span className="venue-highlight font-medium text-pink-600">
-                        {orderDetails.Address || "Venue Details"}
-                      </span>
-                    </p>
-
-                    <button className="explore-btn" onClick={handleClick}>
-      ✏️ Explore Invites templates
-    </button>
-
-            
-
-{/* <div
-                      className="tabs-container"
-                      style={{
-                        width: "100%",
-                        marginTop: 20,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: 2,
-                        marginleft: 20,
-                      }}
-                    >
-                      {actions.map((action, index) => (
-                        <div className="tab-container">
-                          <div
-                            key={index}
-                            onClick={() => handleActionClick(action.titleTop)}
-                            className="tab-item"
-                          >
-                            <Image
-                              src={action.image}
-                              alt={`${action.titleTop} ${action.titleBottom}`}
-                              style={{
-                                width: 50,
-                                height: 50,
-                                borderRadius: 6,
-                                objectFit: "cover",
-                              }}
-                            />
-                            <div style={{ fontSize: 14, lineHeight: 1.2 }}>
-                              {action.titleTop}
-                              <br />
-                              {action.titleBottom}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>  */}
-
-                  {/* <div>
-                    
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        id="imageUploadInput"
-                        style={{ display: "none" }}
-                        onChange={handleImageUpload}
-                        disabled={uploading}
-                      />
-
-                      {uploading && <p>Uploading image, please wait...</p>}
-                    </div> */}
-                  </>
-
-                ) : (
-                  <p>Loading...</p>
+            {orderDetails ? (
+              <>
+                <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
+                <GuestListPreview
+                  guestList={guestList}
+                  loading={loading}
+                  fetchGuests={fetchGuests}
+                />
+                {showPopup && <div className="overlay"></div>}
+                {showPopup && (
+                  <ThankYouNotePopup
+                    noteTitle={noteTitle}
+                    setNoteTitle={setNoteTitle}
+                    noteBy={noteBy}
+                    setNoteBy={setNoteBy}
+                    errorMsg={errorMsg}
+                    setErrorMsg={setErrorMsg}
+                    handleDownload={handleDownload}
+                    handleClosePopup={handleClosePopup}
+                    noteRef={noteRef}
+                  />
                 )}
-              </div>
-            </div> 
- 
+              </>
 
-         <div style={styles.cardWrapper}>
-          <h3 style={styles.cardTitle}>See Who’s Coming!</h3>
-          <div style={styles.nameRow}>
-            <FaCheckCircle color="green" style={{ marginRight: 6,  width:30, height:30, marginBottom:20,}} />
-            <span>
-              {guestList[0]?.name || "Someone"} and {guestList.length - 1} more are ready to thrill...
-            </span>
+            ) : (
+              <p>Loading...</p>
+            )}
+
           </div>
-          <button
-  onClick={fetchGuests}
-  style={{
-    ...styles.viewListButton,
-    opacity: loading ? 0.7 : 1,
-    cursor: loading ? "not-allowed" : "pointer",
-  }}
-  disabled={loading}
->
-  {loading ? (
-    <>
-      <span className="spinner" style={{ marginRight: 8 }} />
-      Loading...
-    </>
-  ) : (
-    <>
-      <FaUsers style={{ marginRight: 8 }} />
-      View Full List
-    </>
-  )}
-</button>
-</div>
-        </div>          
-            {showPopup && <div className="overlay"></div>}
-           {showPopup && (
-  <div className="popup">
-    <span className="close-button" onClick={handleClosePopup}>×</span>
 
-    <h1 className="title"> Thank You Note</h1>
-    <h3 className="subtitlePopUp">
-      Celebrate the moment with a few words of gratitude.
-    </h3>
+      
 
-    <div className="form-group">
-      <label className="label">Note Title</label>
-      <textarea
-        rows={5}
-        placeholder="Write your thank you message..."
-        value={noteTitle}
-        required
-        onChange={(e) => {
-          const input = e.target.value;
-          const charsCount = input.replace(/\s/g, "").length;
-          if (charsCount <= 125) {
-            setNoteTitle(input);
-          } else {
-            let count = 0;
-            let truncated = "";
-            for (const ch of input) {
-              if (ch !== " ") count++;
-              if (count > 125) break;
-              truncated += ch;
-            }
-            setNoteTitle(truncated);
-          }
-          if (input.trim() !== "" && noteBy.trim() !== "") {
-            setErrorMsg("");
-          }
-        }}
-      />
-      <p
-        className="word-limit"
-        style={{ color: charsWithoutSpaces >= 125 ? "red" : "black" }}
-      >
-        {charsWithoutSpaces >= 125
-          ? "You have reached the 125 character limit!"
-          : `${charsWithoutSpaces} / 125 characters`}
-      </p>
-    </div>
-
-    <div className="form-group">
-      <label className="label">Note By</label>
-      <input
-        type="text"
-        placeholder="Your name"
-        value={noteBy}
-        required
-        onChange={(e) => {
-          setNoteBy(e.target.value);
-          if (noteTitle.trim() !== "" && e.target.value.trim() !== "") {
-            setErrorMsg("");
-          }
-        }}
-      />
-    </div>
-
-    {errorMsg && (
-      <p
-        style={{
-          color: "red",
-          fontWeight: "bold",
-          marginBottom: "0px",
-          fontSize: "14px",
-          textAlign: "center",
-          marginTop: "20px",
-        }}
-      >
-        {errorMsg}
-      </p>
-    )}
-
-    <div className="popup-buttons">
-      <button onClick={handleDownload}>Save</button>
-    </div>
-
-    {/* Yeh hidden div jisko html2canvas capture karega */}
-    <div
-      ref={noteRef}
-      style={{
-        width: "300px",
-        height: "300px",
-        position: "absolute",
-        left: "-9999px",
-        top: "-9999px",
-        backgroundColor: "white",
-        borderRadius: "12px",
-        overflow: "hidden",
-        padding: "15px",
-        boxSizing: "border-box",
-      }}
-    >
-      <Image
-        src={StickyImage}
-        alt="Sticky Note"
-        fill
-        style={{
-          objectFit: "cover",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 0,
-          borderRadius: "12px",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "70%",
-          zIndex: 1,
-          textAlign: "center"
-        }}
-      >
-        <div
-          style={{
-            fontWeight: "bold",
-            fontSize: "20px",
-            color: "black",
-            fontFamily: "Arial, sans-serif",
-            wordWrap: "break-word",
-            whiteSpace: "pre-wrap",
-            lineHeight: 1.1,
-          
-          }}
-        >
-          {noteTitle}
-        </div>
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: 45,
-          right: 70,
-          fontWeight: "bold",
-          fontSize: "20px",
-          color: "black",
-          fontFamily: "Arial, sans-serif",
-          zIndex: 1,
-        }}
-      >
-        - {noteBy}
-      </div>
-    </div>
-  </div>
-)}
-
-
-            {/* Basic CSS */}
-            <style jsx>{`
+          {/* Basic CSS */}
+          <style jsx>{`
               .overlay {
                 position: fixed;
                 top: 0;
@@ -1087,425 +911,153 @@ const InvitationCard = () => {
               }
             `}</style>
 
-<div style={styles.wrapper}>
-      <h2 style={styles.heading}>📸 Celebration Wall</h2>
-      <p style={styles.subheading}>
-        A wall filled with your party’s happiest moments and heartfelt messages.
-      </p>
-
- 
-
-{/* Hidden file input */}
-<input
-  type="file"
-  id="imageUploadInput"
-  multiple
-  accept="image/*"
-  style={{ display: "none" }}
-  onChange={handleImageUpload}
-/>
-
-{/* Buttons */}
-<div className="tabs-container" style={styles.tabsContainer}>
-  {actions.map((action, index) => (
-    <button
-      key={index}
-      onClick={() => {
-        if (action.title === "Upload Pictures") {
-          document.getElementById("imageUploadInput").click();
-        } else {
-          handleActionClick(action.title);
-        }
-      }}
-      style={styles.actionButton}
-    >
-      <Image
-        src={action.image}
-        alt={action.title}
-        style={styles.iconStyle}
-      />
-      <span style={styles.buttonLabel}>{action.title}</span>
-    </button>
-  ))}
-</div>
-              <div className="event-grid">
-                {eventData.map((item, index) => (
-                  <div key={index}>
-                    {item.type === "image" ? (
-                      <>
-                        <img
-                          src={item.src}
-                          alt={item.alt}
-                          className="event-image"
-                          onLoad={(e) =>
-                            e.currentTarget.classList.add("loaded")
-                          }
-                        />
-                        {item.content && (
-                          <div
-                            className="event-text"
-                            dangerouslySetInnerHTML={{ __html: item.content }}
-                          />
-                        )}
-                      </>
-                    ) : (
-                      <div
-                        className="event-text"
-                        dangerouslySetInnerHTML={{ __html: item.content }}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
+    <div style={styles.wrapper}>
+            <h2 style={styles.heading}>📸 Celebration Wall</h2>
+            <p style={styles.subheading}>
+              A wall filled with your party’s happiest moments and heartfelt messages.
+            </p>
 
 
-            </div>
-      
 
-            {/* <div className="event-wall">
-              <h2 className="event-heading">Event Wall</h2>
-              <div className="event-grid">
-                {eventData.map((item, index) => (
-                  <div key={index}>
-                    {item.type === "image" ? (
-                      <>
-                        <img
-                          src={item.src}
-                          alt={item.alt}
-                          className="event-image"
-                          onLoad={(e) =>
-                            e.currentTarget.classList.add("loaded")
-                          }
-                        />
-                        {item.content && (
-                          <div
-                            className="event-text"
-                            dangerouslySetInnerHTML={{ __html: item.content }}
-                          />
-                        )}
-                      </>
-                    ) : (
-                      <div
-                        className="event-text"
-                        dangerouslySetInnerHTML={{ __html: item.content }}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div> */}
-       
-            {/* <div style={{ textAlign: "center", marginTop: 30 }}>
-              <div
-                ref={noteRef}
-                style={{
-                  width: "300px",
-                  height: "300px",
-                  position: "relative",
-                  margin: "0",
-                  padding: "0",
-                  overflow: "hidden",
-                  backgroundColor: "transparent",
-                  position: "absolute",
-                  left: "-9999px",
-                  top: "-9999px",
-                }}
-              >
-                
+           <div className="tabs-container" style={styles.tabsContainer}>
+        {actions.map((action, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              if (action.title === "Upload Pictures") {
+                const input = document.getElementById("imageUploadInput");
+                if (input) {
+                  input.value = ""; // Reset to allow re-upload of same files
+                  input.click();
+                }
+              } else {
+                handleActionClick(action.title);
+              }
+            }}
+            style={styles.actionButton}
+          >
+            <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+            <span style={styles.buttonLabel}>{action.title}</span>
+          </button>
+        ))}
 
-                <Image
-                  src={StickyImage}
-                  alt="Sticky Note"
-                  fill
-                  style={{
-                    objectFit: "cover",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    zIndex: 0,
-                    borderRadius: "12px",
-                  }}
+        {/* ✅ Hidden file input */}
+        <input
+          type="file"
+          id="imageUploadInput"
+          multiple
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleImageUpload}
+        />
+      </div>
+
+      {/* 🖼️ Display uploaded images */}
+      {/* <div className="event-grid">
+        {eventData.map((item, index) => (
+          <div key={index}>
+            {item.type === "image" ? (
+              <>
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  className="event-image"
+                  onLoad={(e) => e.currentTarget.classList.add("loaded")}
                 />
-
-              
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: "85%",
-                    zIndex: 1,
-                    textAlign: "left", 
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "20px",
-                      color: "black",
-                      fontFamily: "Arial, sans-serif",
-                      wordWrap: "break-word",
-                      whiteSpace: "pre-wrap", 
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {noteTitle}
-                  </div>
-                </div>
-
-              
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 20,
-                    right: 70,
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    color: "black",
-                    fontFamily: "Arial, sans-serif",
-                    zIndex: 1,
-                  }}
-                >
-                  - {noteBy}
-                </div>
-              </div>
-            </div> */}
-
-            {showLuckyDrawPopup && (
+              </>
+            ) : (
               <div
-                className="popup-luckdraw-overlay"
-                onClick={() => setShowLuckyDrawPopup(false)}
-              >
-                <div
-                  className="popup-luckdraw-container"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    className="popup-luckdraw-close"
-                    onClick={() => setShowLuckyDrawPopup(false)}
-                  >
-                    ×
-                  </button>
-                  <div className="popup-luckdraw-content">
-                    <LuckyDrawForm
-                      onClose={() => setShowLuckyDrawPopup(false)}
-                    />
-                  </div>
-                </div>
-              </div>
-            )} 
-
-         
-            {showModal && (
-              <div
-                className="modal-overlay"
-                style={{ backgroundImage: `url(${imageBackground.src})` }}
-              >
-                <div
-                  className="modal-content"
-                  role="dialog"
-                  aria-modal="true"
-                  aria-labelledby="modalTitle"
-                >
-                  <h2 id="modalTitle">Create Event Invite</h2>
-
-                  <p className="invite-text" style={{ userSelect: "none" }}>
-                    🌟 A day of joy, a heart full of cheer, <br />
-                    The people we love, we wish to have near.
-                  </p>
-
-                  <p className="invite-text">
-                    So please come join us in celebrating
-                    {/* Searchable Dropdown for Event Type */}
-                    <div
-                      style={{
-                        margin: "10px 0",
-                        position: "relative",
-                        width: "70%",
-                        marginLeft: "auto",
-                        marginRight: "auto",
-                      }}
-                    >
-                      <input
-                        type="text"
-                        placeholder="Event type..."
-                        value={
-                          formData.eventTypeSearch ?? formData.eventType ?? ""
-                        }
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFormData((prev) => ({
-                            ...prev,
-                            eventTypeSearch: value,
-                            eventType: value, // <-- IMPORTANT: sync both
-                          }));
-                          setShowDropdown(true);
-                        }}
-                        onFocus={() => setShowDropdown(true)}
-                        autoComplete="off"
-                        className="underline-input"
-                      />
-
-                      {showDropdown && formData.eventTypeSearch && (
-                        <ul
-                          style={{
-                            position: "absolute",
-                            top: "38px",
-                            left: 0,
-                            right: 0,
-                            maxHeight: "120px",
-                            overflowY: "auto",
-                            background: "white",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            listStyleType: "none",
-                            margin: 0,
-                            padding: 0,
-                            zIndex: 1000,
-                          }}
-                        >
-                          {eventOptions
-                            .filter((opt) =>
-                              opt
-                                .toLowerCase()
-                                .includes(
-                                  formData.eventTypeSearch.toLowerCase()
-                                )
-                            )
-                            .map((opt) => (
-                              <li
-                                key={opt}
-                                style={{
-                                  padding: "8px",
-                                  cursor: "pointer",
-                                  borderBottom: "1px solid #eee",
-                                  textAlign: "left",
-                                }}
-                                onClick={() => {
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    eventType: opt,
-                                    eventTypeSearch: opt,
-                                  }));
-                                  setShowDropdown(false); // hide dropdown on select
-                                }}
-                              >
-                                {opt}
-                              </li>
-                            ))}
-
-                          {eventOptions.filter((opt) =>
-                            opt
-                              .toLowerCase()
-                              .includes(formData.eventTypeSearch.toLowerCase())
-                          ).length === 0 && (
-                            <li style={{ padding: "8px", color: "#888" }}>
-                              No results found
-                            </li>
-                          )}
-                        </ul>
-                      )}
-                    </div>
-                  </p>
-
-                  <div
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      marginLeft: "70px",
-                    }}
-                  >
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Host Name"
-                      className="underline-input "
-                      style={{ minWidth: "100px", textAlign: "centre" }}
-                    />
-                    <span>’s</span>
-                  </div>
-                  <p className="invite-text">
-                    on{" "}
-                    <input
-                      type="date"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleChange}
-                      className="underline-input date-input"
-                    />{" "}
-                    at{" "}
-                    <input
-                      type="time"
-                      name="time"
-                      value={formData.time}
-                      onChange={handleChange}
-                      className="underline-input time-input"
-                    />{" "}
-                    at{" "}
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      placeholder="Venue"
-                      className="underline-input address-input"
-                    />
-                  </p>
-                  <label className="block text-[#4c1d95] text-sm">
-                    {/* Upload Image: */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      ref={fileInputRef}
-                    />
-                  </label>
-                  {(uploadedImage || orderDetails?.Image) && (
-                    <div>
-                      <img
-                        src={`https://horaservices.com/api/uploads/${
-                          uploadedImage || orderDetails.Image
-                        }`}
-                        alt="Preview"
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          borderRadius: "8px",
-                          marginTop: "10px",
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  <p className="invite-text" style={{ marginTop: "1rem" }}>
-                    because happiness means more when shared with you.
-                  </p>
-
-                  <div className="modal-actions">
-                    <button
-                      className="close-btn"
-                      onClick={handleClose}
-                      type="button"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="save-btn"
-                      onClick={handleSave}
-                      type="button"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              </div>
+                className="event-text"
+                dangerouslySetInnerHTML={{ __html: item.content }}
+              />
             )}
-          
-          
+          </div>
+        ))}
+      </div> */}
+
+<div style={{ position: "relative" }}>
+
+  {wallUploading && (
+    <div style={{
+      position: "absolute",
+      top: 0, left: 0, right: 0, bottom: 0,
+      background: "rgba(255, 255, 255, 0.8)",
+      display: "flex",
+      // alignItems: "center",
+      justifyContent: "center",
+      zIndex: 2
+    }}>
+      <div className="spinner" /> {/* You can style this below */}
+    </div>
+  )}
+
+  {/* Image Wall */}
+  <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 }}>
+    {eventData.map((item, index) => (
+      <div key={index}>
+        {item.type === "image" ? (
+          <img
+            src={item.src}
+            alt={item.alt}
+            className="event-image"
+            onLoad={(e) => e.currentTarget.classList.add("loaded")}
+          />
+        ) : (
+          <div
+            className="event-text"
+            dangerouslySetInnerHTML={{ __html: item.content }}
+          />
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+          </div>
+
+          {showLuckyDrawPopup && (
+            <div
+              className="popup-luckdraw-overlay"
+              onClick={() => setShowLuckyDrawPopup(false)}
+            >
+              <div
+                className="popup-luckdraw-container"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="popup-luckdraw-close"
+                  onClick={() => setShowLuckyDrawPopup(false)}
+                >
+                  ×
+                </button>
+                <div className="popup-luckdraw-content">
+                  <LuckyDrawForm
+                    onClose={() => setShowLuckyDrawPopup(false)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+
+          {showModal && (
+            <InvitationModal
+              showModal={showModal}
+              handleClose={handleClose}
+              handleSave={handleSave}
+              formData={formData}
+              setFormData={setFormData}
+              handleChange={handleChange}
+              handleImageChange={handleImageChange}
+              uploadedImage={uploadedImage}
+              eventOptions={eventOptions}
+              fileInputRef={fileInputRef}
+              orderDetails={orderDetails}
+              imageBackground={imageBackground}
+            />
+          )}
+
+
         </>
       )}
       {isFormVisible && (
@@ -1568,63 +1120,15 @@ const InvitationCard = () => {
         </div>
       )}
 
-   
-   {showPopupGuest && (
-  <>
-    <div style={styles.backdrop} onClick={() => setShowPopupGuest(false)} />
 
-    <div style={styles.popupGuest}>
-      <h2 style={styles.popupTitle}>RSVP RESPONSES</h2>
+      {showPopupGuest && (
+        <>
+          <div style={styles.backdrop} onClick={() => setShowPopupGuest(false)} />
 
-      {/* ✅ Confirmed: "I am coming" */}
-      <div style={styles.section}>
-        <p style={styles.sectionTitleGreen}>Confirmed</p>
-        {guestList
-          .filter(g => g.status?.toLowerCase().includes("coming"))
-          .map((guest, idx) => (
-            <div key={idx} style={styles.guestRow}>
-              <span>{guest.name}</span>
-              <span style={styles.check}>✅</span>
-            </div>
-          ))}
-      </div>
+          <RSVPPopup guestList={guestList} onClose={() => setShowPopupGuest(false)} />
 
-      {/* ⚪ Will Try: "Not sure" */}
-      <div style={styles.section}>
-        <p style={styles.sectionTitleGray}>Not Sure</p>
-        {guestList
-          .filter(g => g.status?.toLowerCase().includes("not sure"))
-          .map((guest, idx) => (
-            <div key={idx} style={styles.guestRow}>
-              <span>{guest.name}</span>
-              <span style={styles.dash}>➖</span>
-            </div>
-          ))}
-      </div>
-
-      {/* ❌ No response or others */}
-      <div style={styles.section}>
-        <p style={styles.sectionTitleRed}>No Response / Other</p>
-        {guestList
-          .filter(
-            g =>
-              !g.status?.toLowerCase().includes("coming") &&
-              !g.status?.toLowerCase().includes("not sure")
-          )
-          .map((guest, idx) => (
-            <div key={idx} style={styles.guestRow}>
-              <span>{guest.name}</span>
-              <span style={styles.cross}>❌</span>
-            </div>
-          ))}
-      </div>
-
-      <button style={styles.closeBtn} onClick={() => setShowPopupGuest(false)}>
-        Close
-      </button>
-    </div>
-  </>
-)}
+        </>
+      )}
 
 
 
@@ -1633,7 +1137,7 @@ const InvitationCard = () => {
 };
 
 const styles = {
-   cardWrapper: {
+  cardWrapper: {
     background: "white",
     padding: "20px",
     borderRadius: "15px",
@@ -1641,7 +1145,7 @@ const styles = {
     textAlign: "center",
     margin: "auto",
     border: "2px solid #e0e0e0",
-    width:"95%",
+    width: "95%",
   },
   cardTitle: {
     fontSize: "20px",
@@ -1668,7 +1172,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    margin:"auto",
+    margin: "auto",
   },
   backdrop: {
     position: "fixed",
@@ -1685,7 +1189,7 @@ const styles = {
     borderRadius: "10px",
     width: "350px",
     boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-  
+
   },
   formField: {
     marginBottom: "16px",
@@ -1727,7 +1231,7 @@ const styles = {
     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
     transition: "background-color 0.3s ease",
   },
-backdrop: {
+  backdrop: {
     position: "fixed",
     top: 0,
     left: 0,
@@ -1808,13 +1312,13 @@ backdrop: {
     fontWeight: 'bold',
     marginBottom: 8,
     color: '#a8328e',
-       textAlign: 'center',
+    textAlign: 'center',
   },
   subheading: {
     fontSize: 14,
     marginBottom: 20,
     color: '#555',
-       textAlign: 'center',
+    textAlign: 'center',
   },
   buttonRow: {
     display: 'flex',
@@ -1861,7 +1365,7 @@ backdrop: {
     display: 'block',
   },
 
-    tabsContainer: {
+  tabsContainer: {
     display: "flex",
     justifyContent: "center",
     gap: 16,

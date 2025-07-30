@@ -741,3 +741,8 @@ background-color: none !important;
 .explore-btn:hover {
   background-color: #933e83;
 }
+
+
+.spinner{
+  margin-top: 50px;
+}
