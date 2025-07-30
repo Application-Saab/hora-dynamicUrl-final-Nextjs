@@ -940,9 +940,9 @@ const InvitationCard = () => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "85%",
+          width: "70%",
           zIndex: 1,
-          textAlign: "left",
+          textAlign: "center"
         }}
       >
         <div
@@ -954,6 +954,7 @@ const InvitationCard = () => {
             wordWrap: "break-word",
             whiteSpace: "pre-wrap",
             lineHeight: 1.1,
+          
           }}
         >
           {noteTitle}
@@ -963,7 +964,7 @@ const InvitationCard = () => {
       <div
         style={{
           position: "absolute",
-          bottom: 20,
+          bottom: 45,
           right: 70,
           fontWeight: "bold",
           fontSize: "20px",

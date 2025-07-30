@@ -612,7 +612,6 @@ background-color: none !important;
 /* Images */
 .event-image {
   width: 100%;
-  border-radius: 12px;
   object-fit: cover;
   display: block;
   /* no fixed height so images keep natural height */
