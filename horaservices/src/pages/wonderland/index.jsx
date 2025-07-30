@@ -36,6 +36,7 @@ import FinalInviteDisplay from "@/components/FinalInviteDisplay";
 import GuestListPreview from "@/components/GuestListPreview";
 import ThankYouNotePopup from "@/components/ThankYouNotePopup";
 import RSVPPopup from "@/components/RSVPPopup";
+import GuestRSVPForm from "@/components/GuestRSVPForm";
 
 
 const InvitationCard = () => {
@@ -111,22 +112,47 @@ const [wallUploading, setWallUploading] = useState(false);
 
   const [id, setId] = useState(null);
   const [secondId, setSecondId] = useState("");
-  useEffect(() => {
-    const { id: queryId } = router.query;
+  // useEffect(() => {
+  //   const { id: queryId } = router.query;
 
-    if (queryId) {
-      const parts = queryId.split("/");
-      const firstPart = parts[0];
-      const secondPart = parts[1];
+  //   if (queryId) {
+  //     const parts = queryId.split("/");
+  //     const firstPart = parts[0];
+  //     const secondPart = parts[1];
 
-      console.log("Query ID:", queryId);
-      console.log("Filtered ID (first):", firstPart);
-      console.log("Filtered ID (second):", secondPart);
+  //     console.log("Query ID:", queryId);
+  //     console.log("Filtered ID (first):", firstPart);
+  //     console.log("Filtered ID (second):", secondPart);
 
-      setId(firstPart);
-      setSecondId(secondPart);
+  //     setId(firstPart);
+  //     setSecondId(secondPart);
+  //   }
+  // }, [router.query.id]);
+  const [userType, setUserType] = useState("");
+  const [loadingUser, setLoadingUser] = useState(true);
+useEffect(() => {
+  const { id: queryId } = router.query;
+
+  if (queryId) {
+    const parts = queryId.split("/");
+    const eventId = parts[0];
+    const userId = parts[1];
+    const userTypeFromUrl = parts[2];
+
+    setId(eventId);
+    setSecondId(userId);
+    setUserType(userTypeFromUrl?.toLowerCase());
+
+    // ✅ Check RSVP submission
+    const alreadyRSVP = localStorage.getItem(`rsvp_submitted_${userId}`);
+    if (alreadyRSVP === "true") {
+      setHasSubmitted(true);
     }
-  }, [router.query.id]);
+
+    setLoadingUser(false); // ✅ Only after everything is done
+  }
+}, [router.query.id]);
+
 
   const userId = localStorage.getItem("userID");
   console.log(userId, "userid");
@@ -163,7 +189,12 @@ const [wallUploading, setWallUploading] = useState(false);
 
     // },
   ];
+const isHost = userType === "host";
 
+console.log("ishost",isHost);
+
+ // determine from props or state
+const [hasSubmitted, setHasSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     // image: null,
     name: "",
@@ -685,39 +716,71 @@ useEffect(() => {
     router.replace(`/wonderland?id=${newId}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
-  const handleRSVPSubmit = async (e) => {
-    e.preventDefault();
+  // const handleRSVPSubmit = async (e) => {
+  //   e.preventDefault();
 
-    if (!guestName || !attendanceStatus) {
-      alert("Please enter your name and select an option.");
-      return;
-    }
+  //   if (!guestName || !attendanceStatus) {
+  //     alert("Please enter your name and select an option.");
+  //     return;
+  //   }
 
-    const rsvpData = {
-      name: guestName,
-      phoneNumber: guestPhoneNumber,
-      status: attendanceStatus,
-      hostType: "Guest",
-      eventId: currentEventId,
-      userId: currentGuestId,
-    };
+  //   const rsvpData = {
+  //     name: guestName,
+  //     phoneNumber: guestPhoneNumber,
+  //     status: attendanceStatus,
+  //     hostType: "Guest",
+  //     eventId: currentEventId,
+  //     userId: currentGuestId,
+  //   };
 
-    try {
-      await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams(rsvpData),
-      });
+  //   try {
+  //     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //       body: new URLSearchParams(rsvpData),
+  //     });
 
-      alert("Thank you! Your response has been submitted.");
-      setIsFormVisible(false);
-    } catch (error) {
-      console.error("RSVP submission failed:", error);
-      alert("An error occurred while submitting your response.");
-    }
+  //     alert("Thank you! Your response has been submitted.");
+  //     setIsFormVisible(false);
+  //   } catch (error) {
+  //     console.error("RSVP submission failed:", error);
+  //     alert("An error occurred while submitting your response.");
+  //   }
+  // };
+const handleRSVPSubmit = async (guestData) => {
+  const { name, phone, status } = guestData;
+
+  if (!name || !status) {
+    alert("Please enter your name and select an option.");
+    return;
+  }
+
+  const rsvpData = {
+    name,
+    phoneNumber: phone,
+    status,
+    hostType: "Guest",
+    eventId: currentEventId,
+    userId: currentGuestId,
   };
+
+  try {
+    await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(rsvpData),
+    });
+
+    alert("Thank you! Your response has been submitted.");
+  } catch (error) {
+    console.error("RSVP submission failed:", error);
+    alert("An error occurred while submitting your response.");
+  }
+};
 
   const fetchGuests = async () => {
     setLoading(true);
@@ -775,11 +838,27 @@ useEffect(() => {
             {orderDetails ? (
               <>
                 <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
+                  
                 <GuestListPreview
                   guestList={guestList}
                   loading={loading}
                   fetchGuests={fetchGuests}
                 />
+       {!loadingUser && userType !== "host" && !hasSubmitted && (
+  <GuestRSVPForm
+    userType={userType}
+    onSubmit={(data) => {
+      handleRSVPSubmit(data);
+      setHasSubmitted(true);
+      localStorage.setItem(`rsvp_submitted_${secondId}`, "true");
+    }}
+  />
+)}
+
+
+
+
+
                 {showPopup && <div className="overlay"></div>}
                 {showPopup && (
                   <ThankYouNotePopup
@@ -804,112 +883,7 @@ useEffect(() => {
 
       
 
-          {/* Basic CSS */}
-          <style jsx>{`
-              .overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background-color: rgba(0, 0, 0, 0.2);
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                z-index: 1000;
-                pointer-events: all;
-              }
-
-              .popup {
-                position: fixed;
-                top: 35%;
-                left: 50%;
-                transform: translate(-50%, -25%);
-                background: white;
-                border: 1px solid #ccc;
-                padding: 24px;
-                border-radius: 12px;
-                z-index: 1500;
-                background-color: rgb(238, 233, 240);
-                width: 95%;
-                max-width: 420px;
-                display: flex;
-                flex-direction: column;
-                height: 80%;
-                border: 2px solid purple;
-              }
-
-              .title {
-                margin-top: 25px;
-                text-align: center;
-                font-size: 28px;
-                font-weight: bold;
-                color: rgb(146, 82, 170);
-                margin-bottom: 24px;
-              }
-
-              .subtitlePopUp {
-                text-align: center;
-                font-size: 20px;
-                color: #444;
-                // margin-top: 12px;
-              }
-
-              .form-group {
-                display: flex;
-                flex-direction: column;
-                margin-top: 12px;
-              }
-
-              .label {
-                font-size: 14px;
-                font-weight: 500;
-                margin-bottom: 6px;
-                color: #333;
-              }
-
-              .popup textarea {
-                background: white;
-                color: black;
-                border: 1px solid purple;
-                resize: none;
-                padding: 10px;
-                border-radius: 8px;
-                font-size: 14px;
-              }
-
-              .popup input {
-                background: white;
-                color: black;
-                padding: 10px;
-                border: 1px solid rebeccapurple;
-                border-radius: 8px;
-                font-size: 14px;
-              }
-
-              .word-limit {
-                text-align: right;
-                font-size: 12px;
-                color: #888;
-                margin-top: 4px;
-              }
-
-              .popup-buttons {
-                display: flex;
-                justify-content: center;
-                gap: 10px;
-                margin-top: 20px;
-              }
-
-              .popup button {
-                padding: 8px 18px;
-                border: none;
-                background: rgb(146, 82, 170);
-                color: white;
-                border-radius: 6px;
-                font-weight: 500;
-                cursor: pointer;
-              }
-            `}</style>
+       
 
     <div style={styles.wrapper}>
             <h2 style={styles.heading}>📸 Celebration Wall</h2>
@@ -952,28 +926,7 @@ useEffect(() => {
         />
       </div>
 
-      {/* 🖼️ Display uploaded images */}
-      {/* <div className="event-grid">
-        {eventData.map((item, index) => (
-          <div key={index}>
-            {item.type === "image" ? (
-              <>
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  className="event-image"
-                  onLoad={(e) => e.currentTarget.classList.add("loaded")}
-                />
-              </>
-            ) : (
-              <div
-                className="event-text"
-                dangerouslySetInnerHTML={{ __html: item.content }}
-              />
-            )}
-          </div>
-        ))}
-      </div> */}
+   
 
 <div style={{ position: "relative" }}>
 
@@ -1060,7 +1013,7 @@ useEffect(() => {
 
         </>
       )}
-      {isFormVisible && (
+      {/* {isFormVisible && (
         <div style={styles.backdrop}>
           <div style={styles.popupCard}>
             <h2>Visitor Form</h2>
@@ -1118,7 +1071,7 @@ useEffect(() => {
             </form>
           </div>
         </div>
-      )}
+      )} */}
 
 
       {showPopupGuest && (
@@ -1401,4 +1354,110 @@ const styles = {
     textAlign: "left",
   },
 };
+   {/* Basic CSS */}
+          <style jsx>{`
+              .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                z-index: 1000;
+                pointer-events: all;
+              }
+
+              .popup {
+                position: fixed;
+                top: 35%;
+                left: 50%;
+                transform: translate(-50%, -25%);
+                background: white;
+                border: 1px solid #ccc;
+                padding: 24px;
+                border-radius: 12px;
+                z-index: 1500;
+                background-color: rgb(238, 233, 240);
+                width: 95%;
+                max-width: 420px;
+                display: flex;
+                flex-direction: column;
+                height: 80%;
+                border: 2px solid purple;
+              }
+
+              .title {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 28px;
+                font-weight: bold;
+                color: rgb(146, 82, 170);
+                margin-bottom: 24px;
+              }
+
+              .subtitlePopUp {
+                text-align: center;
+                font-size: 20px;
+                color: #444;
+                // margin-top: 12px;
+              }
+
+              .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-top: 12px;
+              }
+
+              .label {
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 6px;
+                color: #333;
+              }
+
+              .popup textarea {
+                background: white;
+                color: black;
+                border: 1px solid purple;
+                resize: none;
+                padding: 10px;
+                border-radius: 8px;
+                font-size: 14px;
+              }
+
+              .popup input {
+                background: white;
+                color: black;
+                padding: 10px;
+                border: 1px solid rebeccapurple;
+                border-radius: 8px;
+                font-size: 14px;
+              }
+
+              .word-limit {
+                text-align: right;
+                font-size: 12px;
+                color: #888;
+                margin-top: 4px;
+              }
+
+              .popup-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 20px;
+              }
+
+              .popup button {
+                padding: 8px 18px;
+                border: none;
+                background: rgb(146, 82, 170);
+                color: white;
+                border-radius: 6px;
+                font-weight: 500;
+                cursor: pointer;
+              }
+            `}</style>
 export default InvitationCard;

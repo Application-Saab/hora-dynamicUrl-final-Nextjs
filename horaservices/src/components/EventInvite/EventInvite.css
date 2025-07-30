@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&display=swap');
+
+.inviteContainer {
+  width: 350px;
+  height: 700px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  margin: 20px auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.inviteText {
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+}
+
+.nameTxt {
+    margin-top: 250px;
+    font-size: 50px;
+    font-weight: 900;
+    font-family: 'Playwrite AU QLD', sans-serif;
+   
+}
+.dateTxt {
+    margin-top: 0px;
+    font-size: 28px;
+    font-weight: 900;
+    font-family: 'Playwrite AU QLD', sans-serif;
+
+}
+
+.addTxt {
+  font-size: 30px;
+  margin: 5px 0 !important;
+  font-family: 'Playwrite AU QLD', sans-serif;
+}
