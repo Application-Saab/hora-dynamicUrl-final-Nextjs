@@ -80,70 +80,32 @@ const InvitationCard = () => {
 const [wallUploading, setWallUploading] = useState(false);
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyU06csCT5OIJzO3F9VGTjCIli74-k2puAp8AhybJGHPYvyEmuQmJlvPf60wHsy--NGGg/exec"; // no query params
-  useEffect(() => {
-    const fullId = searchParams.get("id");
-    if (!fullId) return;
 
-    const parts = fullId.split("/");
-    const eventIdFromUrl = parts[0];
-    const fullUserId = parts[1];
-   
-
-    if (!eventIdFromUrl || !fullUserId) return;
-
-    setCurrentEventId(eventIdFromUrl);
-    setCurrentGuestId(fullUserId);
-
-    const fullUrl = `${GOOGLE_SCRIPT_URL}?action=signPopupCheck&eventId=${eventIdFromUrl}&userId=${fullUserId}`;
-
-    fetch(fullUrl)
-      .then((response) => response.json())
-      .then((result) => {
-        if (!result.exists) {
-          setIsFormVisible(true);
-        }
-      })
-      .catch((error) => {
-        console.error("Error checking guest registration:", error);
-      });
-  }, [searchParams]);
 
   const [showLuckyDrawPopup, setShowLuckyDrawPopup] = useState(false);
 
   const [id, setId] = useState(null);
   const [secondId, setSecondId] = useState("");
-  // useEffect(() => {
-  //   const { id: queryId } = router.query;
 
-  //   if (queryId) {
-  //     const parts = queryId.split("/");
-  //     const firstPart = parts[0];
-  //     const secondPart = parts[1];
-
-  //     console.log("Query ID:", queryId);
-  //     console.log("Filtered ID (first):", firstPart);
-  //     console.log("Filtered ID (second):", secondPart);
-
-  //     setId(firstPart);
-  //     setSecondId(secondPart);
-  //   }
-  // }, [router.query.id]);
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
-useEffect(() => {
-  const { id: queryId } = router.query;
 
-  if (queryId) {
-    const parts = queryId.split("/");
+
+useEffect(() => {
+  if (!router.isReady) return;
+
+  const queryId = router.query.id;
+  const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
+
+  if (parts && parts.length >= 2) {
     const eventId = parts[0];
     const userId = parts[1];
-    const userTypeFromUrl = parts[2];
+    const userType = parts[2]?.toLowerCase() || "";
 
     setId(eventId);
     setSecondId(userId);
-    setUserType(userTypeFromUrl?.toLowerCase());
+    setUserType(userType);
 
-    // ✅ Check RSVP submission per event + user
     const alreadyRSVP = localStorage.getItem(`rsvp_submitted_${eventId}_${userId}`);
     if (alreadyRSVP === "true") {
       setHasSubmitted(true);
@@ -151,7 +113,7 @@ useEffect(() => {
 
     setLoadingUser(false);
   }
-}, [router.query.id]);
+}, [router.isReady, router.query.id]);
 
 
 
@@ -329,14 +291,19 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
       const result = await response.json();
       console.log("✅ Sheets Response:", result);
 
-      if (result.idd) {
-        window.history.pushState(
-          {},
-          "",
-          `/wonderland?id=${result.idd}/${userId}/host`
-        );
-        setId(result.idd);
-      }
+   if (result.idd) {
+  const newEventId = result.idd;
+  const newUserId = userId;
+  const newUserType = "host";
+
+  // Push new URL to address bar
+  window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
+
+  // Manually update state to reflect new values
+  setId(newEventId);
+  setSecondId(newUserId);
+  setUserType(newUserType); // ✅ ensures isHost becomes true immediately
+}
 
       // Clear form & selections
       setFormData({
@@ -488,69 +455,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
   };
 
 
-  // const handleImageUpload = async (e) => {
-  //   setUploading(true);
-  //   const files = e.target.files;
-  //   if (files.length > 0) {
-  //     const formData = new FormData();
-
-  //     // Append each file
-  //     for (let i = 0; i < files.length; i++) {
-  //       formData.append("files", files[i]); // backend should handle array of files under "files"
-  //     }
-
-  //     formData.append("customerId", sendCustomerId);
-  //     formData.append("phoneNo", sendCustomerPhoneNumber);
-  //     formData.append("folderName", id);
-
-  //     try {
-  //       const res = await fetch(
-  //         "https://horaservices.com:3000/api/photo/upload",
-  //         {
-  //           method: "POST",
-  //           body: formData,
-  //         }
-  //       );
-
-  //       const data = await res.json();
-  //       console.log("Uploaded:", data);
-
-  //       // window.location.reload();
-  //     } catch (err) {
-  //       console.error("Upload failed", err);
-  //     } finally {
-  //       setUploading(false);
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     const fetchThumbnails = async () => {
-  //       try {
-  //         const response = await fetch(
-  //           `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
-  //         );
-  //         const data = await response.json();
-  //         const images = data.thumbnails.map((item) => ({
-  //           type: "image",
-  //           src: item.url,
-  //           alt: item.key,
-  //         }));
-  //         setEventData(images.reverse());
-  //       } catch (error) {
-  //         console.error("Error fetching thumbnails:", error);
-  //       } finally {
-  //         setLoadingThumbnails(false);
-  //       }
-  //     };
-
-  //     fetchThumbnails();
-  //   }, 5000); // 5 second delay
-
-  //   return () => clearTimeout(timer);
-  // }, [id, sendCustomerId]);
-const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e) => {
   setUploading(true);
   setWallUploading(true);
   const files = e.target.files;
@@ -718,38 +623,38 @@ useEffect(() => {
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
  
-// const handleRSVPSubmit = async (guestData) => {
-//   const { name, phone, status } = guestData;
+ 
+const handleRSVPSubmit = async ({ name, phoneNumber, status, rsvpId, userId }) => {
+  if (!name || !status) {
+    alert("Please enter your name and select an option.");
+    return;
+  }
 
-//   if (!name || !status) {
-//     alert("Please enter your name and select an option.");
-//     return;
-//   }
+  const rsvpData = {
+    name,
+    phoneNumber,
+    status,
+    hostType: "Guest",
+    eventId: rsvpId,
+    userId: userId,
+  };
 
-//   const rsvpData = {
-//     name,
-//     phoneNumber: phone,
-//     status,
-//     hostType: "Guest",
-//     eventId: currentEventId,
-//     userId: currentGuestId,
-//   };
+  try {
+    await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(rsvpData),
+    });
 
-//   try {
-//     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/x-www-form-urlencoded",
-//       },
-//       body: new URLSearchParams(rsvpData),
-//     });
+    alert("Thank you! Your response has been submitted.");
+  } catch (error) {
+    console.error("RSVP submission failed:", error);
+    alert("An error occurred while submitting your response.");
+  }
+};
 
-//     alert("Thank you! Your response has been submitted.");
-//   } catch (error) {
-//     console.error("RSVP submission failed:", error);
-//     alert("An error occurred while submitting your response.");
-//   }
-// };
 
   // const fetchGuests = async () => {
   //   setLoading(true);
@@ -777,37 +682,38 @@ useEffect(() => {
   //     setLoading(false);
   //   }
   // };
-const handleRSVPSubmit = async (guestData) => {
-  const { name, status } = guestData;
+// const handleRSVPSubmit = async (guestData) => {
+//   const { name, status } = guestData;
 
-  if (!name || !status) {
-    alert("Please enter your name and select an option.");
-    return;
-  }
+//   if (!name || !status) {
+//     alert("Please enter your name and select an option.");
+//     return;
+//   }
 
-  const rsvpData = {
-    name,
-    status,
-    hostType: "Guest",
-    eventId: currentEventId,
-    userId: currentGuestId,
-  };
+//   const rsvpData = {
+//     name,
+//     status,
+//     hostType: "Guest",
+//     eventId: currentEventId,
+//     userId: currentGuestId,
+    
+//   };
 
-  try {
-    await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams(rsvpData),
-    });
+//   try {
+//     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//       },
+//       body: new URLSearchParams(rsvpData),
+//     });
 
-    // no alert here; it's shown in the form after success
-  } catch (error) {
-    console.error("RSVP submission failed:", error);
-    throw error; // to be caught in form
-  }
-};
+//     // no alert here; it's shown in the form after success
+//   } catch (error) {
+//     console.error("RSVP submission failed:", error);
+//     throw error; // to be caught in form
+//   }
+// };
 
 
   const fetchGuests = async (showPopup = false) => {
@@ -840,6 +746,8 @@ const handleRSVPSubmit = async (guestData) => {
   }
 };
 
+const isGuest = userType === "guest";
+
   const openFileInput = () => document.getElementById('imageUploadInput')?.click();
 
   return (
@@ -870,65 +778,62 @@ const handleRSVPSubmit = async (guestData) => {
               <>
                 <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
            
-{/* <>
-  {userType === "host" || hasSubmitted ? (
-    <GuestListPreview
-    guestList={guestList}
-  loading={loading}
-  fetchGuests={fetchGuests}
-  userType={userType}
-    />
-  ) : (
-    <GuestRSVPForm
-      userType={userType}
-      guestList={guestList}
-      loading={loading}
-      fetchGuests={fetchGuests}
-      onSubmit={(data) => {
-        handleRSVPSubmit(data);
-        setHasSubmitted(true);
-        localStorage.setItem(`rsvp_submitted_${secondId}`, "true");
-      }}
-    />
-  )}
-</> */}
 
-<>
-  {userType === "host" ? (
-    // 👑 Host sees only preview (with full list)
-    <GuestListPreview
-      guestList={guestList}
-      loading={loading}
-      fetchGuests={fetchGuests}
-      userType={userType}
-    />
-  ) : hasSubmitted ? (
-    // ✅ Guest who already submitted also sees preview
-    <GuestListPreview
-      guestList={guestList}
-      loading={loading}
-      fetchGuests={fetchGuests}
-      userType={userType}
-      
-    />
-  ) : (
-    // 📝 Fresh guest sees RSVP form
-   <GuestRSVPForm
+ {isHost ? (
+      <GuestListPreview
+        guestList={guestList}
+        loading={loading}
+        fetchGuests={fetchGuests}
+        userType={userType}
+      />
+    ) : hasSubmitted ? (
+      <GuestListPreview
+        guestList={guestList}
+        loading={loading}
+        fetchGuests={fetchGuests}
+        userType={userType}
+      />
+    ) : (
+  //     <GuestRSVPForm
+  // userType={userType}
+  // guestList={guestList}
+  // loading={loading}
+  // userId={secondId}
+  // rsvpId={id}
+  // fetchGuests={fetchGuests}
+  // hasSubmitted={hasSubmitted}  
+  //  setHasSubmitted={setHasSubmitted}       
+  // onSubmit={(data) => {
+  //   handleRSVPSubmit(data);
+  //   localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true");
+  //   setHasSubmitted(true);            // ✅ lift state in parent
+  // }}
+  
+<GuestRSVPForm
   userType={userType}
   guestList={guestList}
   loading={loading}
-    userId={secondId}
+  userId={secondId}
+  rsvpId={id}
   fetchGuests={fetchGuests}
-  rsvpId={id} 
+  hasSubmitted={hasSubmitted}
+  setHasSubmitted={setHasSubmitted}
   onSubmit={(data) => {
-    handleRSVPSubmit(data);
-    setHasSubmitted(true);
-    localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true"); // ✅ updated
+    const payload = {
+      ...data,
+      rsvpId: id,
+      userId: secondId,
+    };
+
+    handleRSVPSubmit(payload); // send full data to Google Sheet
+    localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true");
+    setHasSubmitted(true); // lift state to show RSVP done
   }}
 />
 
-  )}
-</>
+
+    )}
+
 
 
 

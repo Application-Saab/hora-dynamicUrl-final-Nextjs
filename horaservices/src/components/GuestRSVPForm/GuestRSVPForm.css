@@ -347,3 +347,14 @@
   50% { opacity: 0.8; }
   100% { opacity: 0.4; }
 }
+.rsvp-btn.highlight {
+  border: 2px solid #ff0077;
+  animation: pulse 0.8s ease;
+}
+
+
+.circle.placeholder {
+  background-color: #e0e0e0;
+  opacity: 0.5;
+  filter: blur(1px);
+}
