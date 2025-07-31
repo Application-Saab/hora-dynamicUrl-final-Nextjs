@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import "./GuestRSVPForm.css";
 
-const GuestRSVPForm = ({ onSubmit, userType, guestList = [], loading, fetchGuests }) => {
+const GuestRSVPForm = ({
+  onSubmit,
+  userType,
+  guestList = [],
+  loading,
+  fetchGuests,
+  rsvpId,
+   userId,
+}) => {
   const [guestName, setGuestName] = useState("");
   const [status, setStatus] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false); // ✅ loader state
+  const [submitting, setSubmitting] = useState(false);
 
-  if (userType === "host") return null;
+  // ✅ Load submission status from localStorage
+  useEffect(() => {
+    if (rsvpId) {
+const isSubmitted = localStorage.getItem(`rsvp_submitted_${rsvpId}_${userId}`);
+
+      if (isSubmitted === "true") {
+        setHasSubmitted(true);
+      }
+    }
+  }, [rsvpId]);
 
   const handleClick = (selectedStatus) => {
     setStatus(selectedStatus);
@@ -21,7 +39,8 @@ const GuestRSVPForm = ({ onSubmit, userType, guestList = [], loading, fetchGuest
 
     setSubmitting(true);
     try {
-      await onSubmit({ name: guestName, status }); // ✅ only name & status
+      await onSubmit({ name: guestName, status });
+      localStorage.setItem(`rsvp_submitted_${rsvpId}`, "true");
       alert("Thank you! Your response has been submitted.");
       setHasSubmitted(true);
       setGuestName("");
@@ -47,9 +66,11 @@ const GuestRSVPForm = ({ onSubmit, userType, guestList = [], loading, fetchGuest
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  const isGuestBlocked = userType === "guest" && !hasSubmitted;
+
   return (
     <div className="guest-rsvp-box">
-      {!hasSubmitted && (
+      {userType !== "host" && !hasSubmitted && (
         <>
           <h4 className="rsvp-title">
             Hope you’ll definitely be coming, just wanted to confirm 😊
@@ -70,19 +91,46 @@ const GuestRSVPForm = ({ onSubmit, userType, guestList = [], loading, fetchGuest
 
       <div className="guest-preview-header">
         <span className="guests-label">Guests</span>
-        <span className="view-list" onClick={fetchGuests}>View Full List</span>
+          <span
+            className={`view-list ${isGuestBlocked ? "disabled" : ""}`}
+            onClick={() => {
+              if (!isGuestBlocked) fetchGuests();
+            }}
+            title={isGuestBlocked ? "Submit your RSVP to see the full list" : ""}
+            style={{ cursor: isGuestBlocked ? "not-allowed" : "pointer", opacity: isGuestBlocked ? 0.5 : 1 }}
+          >
+            View Full List
+          </span>
+        {guestList.length > 0 && (
+          <span
+            className={`view-list ${isGuestBlocked ? "disabled" : ""}`}
+            onClick={() => {
+              if (!isGuestBlocked) fetchGuests();
+            }}
+            title={isGuestBlocked ? "Submit your RSVP to see the full list" : ""}
+            style={{ cursor: isGuestBlocked ? "not-allowed" : "pointer", opacity: isGuestBlocked ? 0.5 : 1 }}
+          >
+            View Full List
+          </span>
+        )}
       </div>
 
       <div className="guest-circle-container">
-        {guestList.slice(0, 7).map((g, idx) => (
-          <div
-            className="circle"
-            key={idx}
-            style={{ backgroundColor: getRandomColor(), color: "white" }}
-          >
-            {g.name?.charAt(0).toUpperCase()}
-          </div>
-        ))}
+        {guestList.length > 0 ? (
+          guestList.slice(0, 7).map((g, idx) => (
+            <div
+              className="circle"
+              key={idx}
+              style={{ backgroundColor: getRandomColor(), color: "white" }}
+            >
+              {g.name?.charAt(0).toUpperCase()}
+            </div>
+          ))
+        ) : !loading ? (
+          Array.from({ length: 5 }).map((_, idx) => (
+            <div className="circle placeholder" key={idx}></div>
+          ))
+        ) : null}
       </div>
 
       <div className="guest-count-row">
@@ -104,11 +152,7 @@ const GuestRSVPForm = ({ onSubmit, userType, guestList = [], loading, fetchGuest
                 required
               />
 
-              <button
-                type="submit"
-                className="submit-btn"
-                disabled={submitting}
-              >
+              <button type="submit" className="submit-btn" disabled={submitting}>
                 {submitting ? "Submitting..." : "Submit RSVP"}
               </button>
             </form>

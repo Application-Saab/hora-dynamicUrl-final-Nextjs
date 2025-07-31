@@ -331,3 +331,19 @@
   border: none;
   border-radius: 10px;
 }
+
+.circle.placeholder {
+  background-color: #ddd;
+  opacity: 0.5;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.4; }
+}

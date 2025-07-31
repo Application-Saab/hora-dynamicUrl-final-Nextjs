@@ -143,15 +143,16 @@ useEffect(() => {
     setSecondId(userId);
     setUserType(userTypeFromUrl?.toLowerCase());
 
-    // ✅ Check RSVP submission
-    const alreadyRSVP = localStorage.getItem(`rsvp_submitted_${userId}`);
+    // ✅ Check RSVP submission per event + user
+    const alreadyRSVP = localStorage.getItem(`rsvp_submitted_${eventId}_${userId}`);
     if (alreadyRSVP === "true") {
       setHasSubmitted(true);
     }
 
-    setLoadingUser(false); // ✅ Only after everything is done
+    setLoadingUser(false);
   }
 }, [router.query.id]);
+
 
 
   const userId = localStorage.getItem("userID");
@@ -869,7 +870,7 @@ const handleRSVPSubmit = async (guestData) => {
               <>
                 <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
            
-<>
+{/* <>
   {userType === "host" || hasSubmitted ? (
     <GuestListPreview
     guestList={guestList}
@@ -890,8 +891,44 @@ const handleRSVPSubmit = async (guestData) => {
       }}
     />
   )}
-</>
+</> */}
 
+<>
+  {userType === "host" ? (
+    // 👑 Host sees only preview (with full list)
+    <GuestListPreview
+      guestList={guestList}
+      loading={loading}
+      fetchGuests={fetchGuests}
+      userType={userType}
+    />
+  ) : hasSubmitted ? (
+    // ✅ Guest who already submitted also sees preview
+    <GuestListPreview
+      guestList={guestList}
+      loading={loading}
+      fetchGuests={fetchGuests}
+      userType={userType}
+      
+    />
+  ) : (
+    // 📝 Fresh guest sees RSVP form
+   <GuestRSVPForm
+  userType={userType}
+  guestList={guestList}
+  loading={loading}
+    userId={secondId}
+  fetchGuests={fetchGuests}
+  rsvpId={id} 
+  onSubmit={(data) => {
+    handleRSVPSubmit(data);
+    setHasSubmitted(true);
+    localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true"); // ✅ updated
+  }}
+/>
+
+  )}
+</>
 
 
 
