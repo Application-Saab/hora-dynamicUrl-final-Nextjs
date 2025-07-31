@@ -1,79 +1,56 @@
-import React from "react";
-import { FaCheckCircle, FaUsers } from "react-icons/fa";
+import React, { useEffect } from "react";
+import "./GuestListPreview.css";
 
-const GuestListPreview = ({ guestList = [], loading, fetchGuests }) => {
-  const styles = {
-    cardWrapper: {
-      background: "#fff",
-      borderRadius: "12px",
-      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-      padding: "20px",
-      textAlign: "center",
-      marginTop: "20px",
-    },
-    cardTitle: {
-      fontSize: "1.5rem",
-      fontWeight: "600",
-      marginBottom: "16px",
-    },
-    nameRow: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: "16px",
-      fontSize: "1rem",
-      fontWeight: "500",
-      color: "#444",
-    },
-    viewListButton: {
-      backgroundColor: "#a54c93",
-      color: "#fff",
-      border: "none",
-      borderRadius: "8px",
-      padding: "10px 20px",
-      fontSize: "1rem",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      transition: "opacity 0.3s",
-      margin: "auto",
-    },
+const GuestListPreview = ({ guestList = [], loading, fetchGuests, userType }) => {
+ useEffect(() => {
+  fetchGuests(false); // ❌ Popup nahi khulega
+}, []);
+
+  const confirmedCount = guestList.filter(g => g.status === "I am coming").length;
+  const willTryCount = guestList.filter(g => g.status === "Not sure").length;
+
+  const getRandomColor = () => {
+    const colors = ["#7A4E9D", "#502F87", "#FD5C91", "#A45584", "#392B69", "#0C39A8"];
+    return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  // 🛑 Do not render anything if no guests yet and not a host
+  if (guestList.length === 0 && userType !== "host") return null;
+
   return (
-    <div style={styles.cardWrapper}>
-      <h3 style={styles.cardTitle}>See Who’s Coming!</h3>
-      <div style={styles.nameRow}>
-        <FaCheckCircle
-          color="green"
-          style={{ marginRight: 6, width: 30, height: 30, marginBottom: 20 }}
-        />
-        <span>
-          {guestList[0]?.name || "Someone"} and {guestList.length - 1} more are
-          ready to thrill...
-        </span>
-      </div>
-      <button
-        onClick={fetchGuests}
-        style={{
-          ...styles.viewListButton,
-          opacity: loading ? 0.7 : 1,
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <span className="spinner" style={{ marginRight: 8 }} />
-            Loading...
-          </>
-        ) : (
-          <>
-            <FaUsers style={{ marginRight: 8 }} />
-            View Full List
-          </>
+    <div className="guest-preview-card">
+      <h3 className="preview-title">See Who’s Coming!</h3>
+
+      <div className="preview-header-row">
+        <span className="preview-label">Guests</span>
+        {guestList.length > 0 && (
+          <span className="preview-view-list" onClick={() => fetchGuests(true)}>
+  View Full List
+</span>
         )}
-      </button>
+      </div>
+
+      {guestList.length > 0 && (
+        <>
+          <div className="guest-circle-container">
+            {guestList.slice(0, 7).map((g, idx) => (
+              <div
+                className="guest-initial-circle"
+                key={idx}
+                style={{ backgroundColor: getRandomColor() }}
+              >
+                {g.name?.charAt(0).toUpperCase()}
+              </div>
+            ))}
+          </div>
+
+          <div className="guest-count-row">
+            <span className="confirmed">Confirmed - {confirmedCount}</span>
+            <span className="separator">|</span>
+            <span className="try">Will Try - {willTryCount}</span>
+          </div>
+        </>
+      )}
     </div>
   );
 };

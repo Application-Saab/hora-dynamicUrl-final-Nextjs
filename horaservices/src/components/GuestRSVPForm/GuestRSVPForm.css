@@ -1,4 +1,4 @@
-.modal-overlay {
+/* .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -50,4 +50,284 @@
   padding: 10px;
   border-radius: 6px;
   cursor: pointer;
+} */
+/* ============================================================================ */
+/* 
+.guest-rsvp-box {
+  background: #fdf0dc;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: "Segoe UI", sans-serif;
+  border: 1px solid #eee;
+}
+
+.rsvp-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #a54c93;
+  margin-bottom: 16px;
+}
+
+.rsvp-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.rsvp-btn {
+  background-color: #a54c93;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.coming-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #a54c93;
+  margin-bottom: 10px;
+}
+
+.name-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.name-preview .icon {
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+.view-list-btn {
+  background-color: #a54c93;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  max-width: 320px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modal-content form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.submit-btn {
+  width: 100%;
+  background-color: #a54c93;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+} */
+
+
+.guest-rsvp-box {
+  background: #fff0d4;
+  border: 1px solid #e2b3e5;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+}
+
+.rsvp-title {
+  font-weight: bold;
+  color: #973e96;
+  margin-bottom: 16px;
+}
+
+.rsvp-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.rsvp-btn {
+  background-color: #973e96;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coming-title {
+  color: #973e96;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.guest-preview-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin: 8px 0;
+  padding: 0 8px;
+}
+
+.guests-label {
+  color: #444;
+  font-size: 1.1rem;
+}
+
+.view-list {
+  color: #444;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.guest-circle-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.circle {
+  width: 38px;
+  height: 38px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  color: #444;
+}
+
+.guest-count-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 12px;
+}
+
+.confirmed {
+  color: green;
+}
+
+.separator {
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.try {
+  color: #444;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  background: none;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-content input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #973e96;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
 }

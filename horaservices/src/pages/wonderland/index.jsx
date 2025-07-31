@@ -716,41 +716,68 @@ useEffect(() => {
     router.replace(`/wonderland?id=${newId}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
-  // const handleRSVPSubmit = async (e) => {
-  //   e.preventDefault();
+ 
+// const handleRSVPSubmit = async (guestData) => {
+//   const { name, phone, status } = guestData;
 
-  //   if (!guestName || !attendanceStatus) {
-  //     alert("Please enter your name and select an option.");
-  //     return;
-  //   }
+//   if (!name || !status) {
+//     alert("Please enter your name and select an option.");
+//     return;
+//   }
 
-  //   const rsvpData = {
-  //     name: guestName,
-  //     phoneNumber: guestPhoneNumber,
-  //     status: attendanceStatus,
-  //     hostType: "Guest",
-  //     eventId: currentEventId,
-  //     userId: currentGuestId,
-  //   };
+//   const rsvpData = {
+//     name,
+//     phoneNumber: phone,
+//     status,
+//     hostType: "Guest",
+//     eventId: currentEventId,
+//     userId: currentGuestId,
+//   };
 
+//   try {
+//     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//       },
+//       body: new URLSearchParams(rsvpData),
+//     });
+
+//     alert("Thank you! Your response has been submitted.");
+//   } catch (error) {
+//     console.error("RSVP submission failed:", error);
+//     alert("An error occurred while submitting your response.");
+//   }
+// };
+
+  // const fetchGuests = async () => {
+  //   setLoading(true);
   //   try {
-  //     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/x-www-form-urlencoded",
-  //       },
-  //       body: new URLSearchParams(rsvpData),
-  //     });
+  //     const res = await axios.get(
+  //       "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
+  //       {
+  //         params: { action: "getAssociateIdd", idd: id },
+  //       }
+  //     );
 
-  //     alert("Thank you! Your response has been submitted.");
-  //     setIsFormVisible(false);
-  //   } catch (error) {
-  //     console.error("RSVP submission failed:", error);
-  //     alert("An error occurred while submitting your response.");
+  //     if (res.data.status === "success") {
+  //       const guests = res.data.data.filter((row) => row[10] === "Guest");
+  //       setGuestList(
+  //         guests.map((row) => ({
+  //           name: row[0],
+  //           status: row[11] || "N/A",
+  //         }))
+  //       );
+  //       setShowPopupGuest(true);
+  //     }
+  //   } catch (err) {
+  //     alert("Error fetching data");
+  //   } finally {
+  //     setLoading(false);
   //   }
   // };
 const handleRSVPSubmit = async (guestData) => {
-  const { name, phone, status } = guestData;
+  const { name, status } = guestData;
 
   if (!name || !status) {
     alert("Please enter your name and select an option.");
@@ -759,7 +786,6 @@ const handleRSVPSubmit = async (guestData) => {
 
   const rsvpData = {
     name,
-    phoneNumber: phone,
     status,
     hostType: "Guest",
     eventId: currentEventId,
@@ -775,39 +801,43 @@ const handleRSVPSubmit = async (guestData) => {
       body: new URLSearchParams(rsvpData),
     });
 
-    alert("Thank you! Your response has been submitted.");
+    // no alert here; it's shown in the form after success
   } catch (error) {
     console.error("RSVP submission failed:", error);
-    alert("An error occurred while submitting your response.");
+    throw error; // to be caught in form
   }
 };
 
-  const fetchGuests = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(
-        "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
-        {
-          params: { action: "getAssociateIdd", idd: id },
-        }
+
+  const fetchGuests = async (showPopup = false) => {
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
+      {
+        params: { action: "getAssociateIdd", idd: id },
+      }
+    );
+
+    if (res.data.status === "success") {
+      const guests = res.data.data.filter((row) => row[10] === "Guest");
+      setGuestList(
+        guests.map((row) => ({
+          name: row[0],
+          status: row[11] || "N/A",
+        }))
       );
 
-      if (res.data.status === "success") {
-        const guests = res.data.data.filter((row) => row[10] === "Guest");
-        setGuestList(
-          guests.map((row) => ({
-            name: row[0],
-            status: row[11] || "N/A",
-          }))
-        );
-        setShowPopupGuest(true);
+      if (showPopup) {
+        setShowPopupGuest(true); // ✅ Only open when asked
       }
-    } catch (err) {
-      alert("Error fetching data");
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    alert("Error fetching data");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const openFileInput = () => document.getElementById('imageUploadInput')?.click();
 
@@ -838,23 +868,29 @@ const handleRSVPSubmit = async (guestData) => {
             {orderDetails ? (
               <>
                 <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
-                  
-                <GuestListPreview
-                  guestList={guestList}
-                  loading={loading}
-                  fetchGuests={fetchGuests}
-                />
-       {!loadingUser && userType !== "host" && !hasSubmitted && (
-  <GuestRSVPForm
-    userType={userType}
-    onSubmit={(data) => {
-      handleRSVPSubmit(data);
-      setHasSubmitted(true);
-      localStorage.setItem(`rsvp_submitted_${secondId}`, "true");
-    }}
-  />
-)}
-
+           
+<>
+  {userType === "host" || hasSubmitted ? (
+    <GuestListPreview
+    guestList={guestList}
+  loading={loading}
+  fetchGuests={fetchGuests}
+  userType={userType}
+    />
+  ) : (
+    <GuestRSVPForm
+      userType={userType}
+      guestList={guestList}
+      loading={loading}
+      fetchGuests={fetchGuests}
+      onSubmit={(data) => {
+        handleRSVPSubmit(data);
+        setHasSubmitted(true);
+        localStorage.setItem(`rsvp_submitted_${secondId}`, "true");
+      }}
+    />
+  )}
+</>
 
 
 

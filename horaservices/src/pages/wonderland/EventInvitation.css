@@ -31,7 +31,7 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   padding: 2rem;
   width: 95%;
-  max-width: 600px;
+ max-width: 380px;
   margin: 10px auto;
   text-align: center;
   box-sizing: border-box;
@@ -200,7 +200,7 @@ background-color: none !important;
 @media (max-width: 768px) {
   .overlay-content {
     padding: 1.5rem;
-    max-width: 90%;
+   max-width: 380px;
     margin: 10px auto;
   }
   /* .invitation-container {
@@ -243,7 +243,7 @@ background-color: none !important;
 @media (max-width: 468px) {
   .overlay-content {
     padding: 1rem;
-    max-width: 95%;
+ max-width: 380px;
   }
   /* .invitation-container {
     max-width: 400px;
