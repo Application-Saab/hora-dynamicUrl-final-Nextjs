@@ -10,7 +10,7 @@ import tabIcon3 from "../../assets/luckdrawicon.jpg";
 import dressIcon from "../../assets/dressIcon.jpg";
 import StickyImage from "../../assets/sticky5.png";
 import { FaCheckCircle, FaUsers } from 'react-icons/fa';
-import imageBackground from "../../assets/pastel-purpleBallons.webp";
+import imageBackground from "../../assets/imageBackground.png";
 import imageBackGround from "../../assets/imageBackground.png"
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
@@ -774,7 +774,7 @@ const isGuest = userType === "guest";
 
 
 
-                {showPopup && <div className="overlay"></div>}
+                {/* {showPopup && <div className="overlay"></div>} */}
                 {showPopup && (
                   <ThankYouNotePopup
                     noteTitle={noteTitle}
@@ -1211,109 +1211,109 @@ const styles = {
   },
 };
    {/* Basic CSS */}
-          <style jsx>{`
-              .overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background-color: rgba(0, 0, 0, 0.2);
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                z-index: 1000;
-                pointer-events: all;
-              }
+          // <style jsx>{`
+          //     .overlay {
+          //       position: fixed;
+          //       top: 0;
+          //       left: 0;
+          //       width: 100vw;
+          //       height: 100vh;
+          //       background-color: rgba(0, 0, 0, 0.2);
+          //       backdrop-filter: blur(6px);
+          //       -webkit-backdrop-filter: blur(6px);
+          //       z-index: 1000;
+          //       pointer-events: all;
+          //     }
 
-              .popup {
-                position: fixed;
-                top: 35%;
-                left: 50%;
-                transform: translate(-50%, -25%);
-                background: white;
-                border: 1px solid #ccc;
-                padding: 24px;
-                border-radius: 12px;
-                z-index: 1500;
-                background-color: rgb(238, 233, 240);
-                width: 95%;
-                max-width: 420px;
-                display: flex;
-                flex-direction: column;
-                height: 80%;
-                border: 2px solid purple;
-              }
+          //     .popup {
+          //       position: fixed;
+          //       top: 35%;
+          //       left: 50%;
+          //       transform: translate(-50%, -25%);
+          //       background: white;
+          //       border: 1px solid #ccc;
+          //       padding: 24px;
+          //       border-radius: 12px;
+          //       z-index: 1500;
+          //       background-color: rgb(238, 233, 240);
+          //       width: 95%;
+          //       max-width: 420px;
+          //       display: flex;
+          //       flex-direction: column;
+          //       height: 80%;
+          //       border: 2px solid purple;
+          //     }
 
-              .title {
-                margin-top: 25px;
-                text-align: center;
-                font-size: 28px;
-                font-weight: bold;
-                color: rgb(146, 82, 170);
-                margin-bottom: 24px;
-              }
+          //     .title {
+          //       margin-top: 25px;
+          //       text-align: center;
+          //       font-size: 28px;
+          //       font-weight: bold;
+          //       color: rgb(146, 82, 170);
+          //       margin-bottom: 24px;
+          //     }
 
-              .subtitlePopUp {
-                text-align: center;
-                font-size: 20px;
-                color: #444;
-                // margin-top: 12px;
-              }
+          //     .subtitlePopUp {
+          //       text-align: center;
+          //       font-size: 20px;
+          //       color: #444;
+          //       // margin-top: 12px;
+          //     }
 
-              .form-group {
-                display: flex;
-                flex-direction: column;
-                margin-top: 12px;
-              }
+          //     .form-group {
+          //       display: flex;
+          //       flex-direction: column;
+          //       margin-top: 12px;
+          //     }
 
-              .label {
-                font-size: 14px;
-                font-weight: 500;
-                margin-bottom: 6px;
-                color: #333;
-              }
+          //     .label {
+          //       font-size: 14px;
+          //       font-weight: 500;
+          //       margin-bottom: 6px;
+          //       color: #333;
+          //     }
 
-              .popup textarea {
-                background: white;
-                color: black;
-                border: 1px solid purple;
-                resize: none;
-                padding: 10px;
-                border-radius: 8px;
-                font-size: 14px;
-              }
+          //     .popup textarea {
+          //       background: white;
+          //       color: black;
+          //       border: 1px solid purple;
+          //       resize: none;
+          //       padding: 10px;
+          //       border-radius: 8px;
+          //       font-size: 14px;
+          //     }
 
-              .popup input {
-                background: white;
-                color: black;
-                padding: 10px;
-                border: 1px solid rebeccapurple;
-                border-radius: 8px;
-                font-size: 14px;
-              }
+          //     .popup input {
+          //       background: white;
+          //       color: black;
+          //       padding: 10px;
+          //       border: 1px solid rebeccapurple;
+          //       border-radius: 8px;
+          //       font-size: 14px;
+          //     }
 
-              .word-limit {
-                text-align: right;
-                font-size: 12px;
-                color: #888;
-                margin-top: 4px;
-              }
+          //     .word-limit {
+          //       text-align: right;
+          //       font-size: 12px;
+          //       color: #888;
+          //       margin-top: 4px;
+          //     }
 
-              .popup-buttons {
-                display: flex;
-                justify-content: center;
-                gap: 10px;
-                margin-top: 20px;
-              }
+          //     .popup-buttons {
+          //       display: flex;
+          //       justify-content: center;
+          //       gap: 10px;
+          //       margin-top: 20px;
+          //     }
 
-              .popup button {
-                padding: 8px 18px;
-                border: none;
-                background: rgb(146, 82, 170);
-                color: white;
-                border-radius: 6px;
-                font-weight: 500;
-                cursor: pointer;
-              }
-            `}</style>
+          //     .popup button {
+          //       padding: 8px 18px;
+          //       border: none;
+          //       background: rgb(146, 82, 170);
+          //       color: white;
+          //       border-radius: 6px;
+          //       font-weight: 500;
+          //       cursor: pointer;
+          //     }
+          //   `}</style>
 export default InvitationCard;

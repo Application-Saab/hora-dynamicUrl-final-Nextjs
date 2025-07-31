@@ -20,7 +20,7 @@ body {
 /* Overlay Content */
  .invitation-container {
     max-width: 600px;
-    padding: 1rem;
+    padding: 10px;
     margin:auto
   }
  .overlay-content {
@@ -346,14 +346,14 @@ background-color: none !important;
     height: 1.25rem;
   }
 }
-.modal-overlay {
+/* .modal-overlay {
     position: fixed;
     top:0;
     bottom: 0;
     left: 0;
     width: 100%;
-    min-height: 80vh; /* Ensures full screen height at minimum */
-    height: auto; /* Allows it to grow beyond viewport */
+    min-height: 80vh; 
+    height: auto; 
     background-image: url('/pastel-purpleBallons.webp');
     background-size: cover;
     background-position: center;
@@ -366,7 +366,7 @@ background-color: none !important;
     padding: 40px 10px;
     overflow-y: auto;
     
-}
+} */
 
 
 .modal-content {

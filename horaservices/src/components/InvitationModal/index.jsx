@@ -1,6 +1,7 @@
 import React from "react";
 import "./invitaionmodal.css";
-
+import camera from "../../assets/camera.png"
+import Image from "next/image";
 const InvitationModal = ({
   showModal,
   handleClose,
@@ -28,7 +29,7 @@ const InvitationModal = ({
       className="modal-overlay"
       style={{ backgroundImage: `url(${imageBackground?.src || ""})` }}
     >
-      <div className="invitation-container">
+      <div className="invitation-container-form">
         <h2 className="invite-title">Create Event Invite</h2>
 
         <p className="invite-subtitle">
@@ -90,23 +91,30 @@ const InvitationModal = ({
           onChange={handleChange}
         />
 
-        <label className="input-label">Event Date</label>
-        <input
-          type="date"
-          name="date"
-          className="input-field"
-          value={formData.date}
-          onChange={handleChange}
-        />
+       <div className="date-time-row">
+  <div className="field-group">
+    <label className="input-label">Event Date</label>
+    <input
+      type="date"
+      name="date"
+      className="input-field"
+      value={formData.date}
+      onChange={handleChange}
+    />
+  </div>
 
-        <label className="input-label">Arrival Time</label>
-        <input
-          type="time"
-          name="time"
-          className="input-field"
-          value={formData.time}
-          onChange={handleChange}
-        />
+  <div className="field-group">
+    <label className="input-label">Arrival Time</label>
+    <input
+      type="time"
+      name="time"
+      className="input-field"
+      value={formData.time}
+      onChange={handleChange}
+    />
+  </div>
+</div>
+
 
         <input
           type="text"
@@ -117,31 +125,44 @@ const InvitationModal = ({
           onChange={handleChange}
         />
 
-        <label htmlFor="file-upload" className="upload-box">
-          <img src="/camera-icon.svg" alt="Upload" />
-          <div>Upload Photo</div>
-          <input
-            type="file"
-            accept="image/*"
-            id="file-upload"
-            onChange={handleImageChange}
-            ref={fileInputRef}
-            hidden
-          />
-        </label>
+{(uploadedImage || orderDetails?.Image) ? (
+  <div
+    className="preview-wrapper"
+    onClick={() => fileInputRef.current?.click()} // clicking image triggers upload
+  >
+    <img
+      src={`https://horaservices.com/api/uploads/${
+        uploadedImage || orderDetails?.Image
+      }`}
+      alt="Preview"
+      className="image-preview"
+    />
+    <div className="change-text">Tap to change photo</div>
+    {/* Hidden input for replacing image */}
+    <input
+      type="file"
+      accept="image/*"
+      id="file-upload"
+      onChange={handleImageChange}
+      ref={fileInputRef}
+      hidden
+    />
+  </div>
+) : (
+  <label htmlFor="file-upload" className="upload-box">
+    <Image src={camera} alt="Upload" />
+    <div>Upload Photo</div>
+    <input
+      type="file"
+      accept="image/*"
+      id="file-upload"
+      onChange={handleImageChange}
+      ref={fileInputRef}
+      hidden
+    />
+  </label>
+)}
 
-        {/* Image Preview */}
-        {(uploadedImage || orderDetails?.Image) && (
-          <div className="preview-wrapper">
-            <img
-              src={`https://horaservices.com/api/uploads/${
-                uploadedImage || orderDetails.Image
-              }`}
-              alt="Preview"
-              className="image-preview"
-            />
-          </div>
-        )}
 
         <div className="button-row">
           <button className="cancel-btn" onClick={handleClose}>

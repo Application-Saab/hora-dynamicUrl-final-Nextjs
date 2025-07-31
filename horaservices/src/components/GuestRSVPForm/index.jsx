@@ -145,9 +145,9 @@ const GuestRSVPForm = ({
       </div>
 
       {showForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <button className="modal-close" onClick={handleClose}>
+        <div className="modal-overlay-form">
+          <div className="modal-content-form">
+            <button className="modal-close-form" onClick={handleClose}>
               ×
             </button>
             <form onSubmit={handleSubmit}>
