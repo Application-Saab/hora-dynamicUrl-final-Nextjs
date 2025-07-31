@@ -291,21 +291,31 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
       const result = await response.json();
       console.log("✅ Sheets Response:", result);
 
-   if (result.idd) {
+//    if (result.idd) {
+//   const newEventId = result.idd;
+//   const newUserId = userId;
+//   const newUserType = "host";
+
+//   // Push new URL to address bar
+//   window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
+
+//   // Manually update state to reflect new values
+//   setId(newEventId);
+//   setSecondId(newUserId);
+//   setUserType(newUserType); // ✅ ensures isHost becomes true immediately
+// }
+
+     if (result.idd && result.idd !== id) {
   const newEventId = result.idd;
   const newUserId = userId;
   const newUserType = "host";
 
-  // Push new URL to address bar
   window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
-
-  // Manually update state to reflect new values
   setId(newEventId);
   setSecondId(newUserId);
-  setUserType(newUserType); // ✅ ensures isHost becomes true immediately
+  setUserType(newUserType);
 }
 
-      // Clear form & selections
       setFormData({
         name: "",
         date: "",
@@ -656,66 +666,6 @@ const handleRSVPSubmit = async ({ name, phoneNumber, status, rsvpId, userId }) =
 };
 
 
-  // const fetchGuests = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const res = await axios.get(
-  //       "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
-  //       {
-  //         params: { action: "getAssociateIdd", idd: id },
-  //       }
-  //     );
-
-  //     if (res.data.status === "success") {
-  //       const guests = res.data.data.filter((row) => row[10] === "Guest");
-  //       setGuestList(
-  //         guests.map((row) => ({
-  //           name: row[0],
-  //           status: row[11] || "N/A",
-  //         }))
-  //       );
-  //       setShowPopupGuest(true);
-  //     }
-  //   } catch (err) {
-  //     alert("Error fetching data");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-// const handleRSVPSubmit = async (guestData) => {
-//   const { name, status } = guestData;
-
-//   if (!name || !status) {
-//     alert("Please enter your name and select an option.");
-//     return;
-//   }
-
-//   const rsvpData = {
-//     name,
-//     status,
-//     hostType: "Guest",
-//     eventId: currentEventId,
-//     userId: currentGuestId,
-    
-//   };
-
-//   try {
-//     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/x-www-form-urlencoded",
-//       },
-//       body: new URLSearchParams(rsvpData),
-//     });
-
-//     // no alert here; it's shown in the form after success
-//   } catch (error) {
-//     console.error("RSVP submission failed:", error);
-//     throw error; // to be caught in form
-//   }
-// };
-
-
   const fetchGuests = async (showPopup = false) => {
   setLoading(true);
   try {
@@ -794,20 +744,7 @@ const isGuest = userType === "guest";
         userType={userType}
       />
     ) : (
-  //     <GuestRSVPForm
-  // userType={userType}
-  // guestList={guestList}
-  // loading={loading}
-  // userId={secondId}
-  // rsvpId={id}
-  // fetchGuests={fetchGuests}
-  // hasSubmitted={hasSubmitted}  
-  //  setHasSubmitted={setHasSubmitted}       
-  // onSubmit={(data) => {
-  //   handleRSVPSubmit(data);
-  //   localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true");
-  //   setHasSubmitted(true);            // ✅ lift state in parent
-  // }}
+
   
 <GuestRSVPForm
   userType={userType}
@@ -991,66 +928,7 @@ const isGuest = userType === "guest";
 
         </>
       )}
-      {/* {isFormVisible && (
-        <div style={styles.backdrop}>
-          <div style={styles.popupCard}>
-            <h2>Visitor Form</h2>
-            <form onSubmit={handleRSVPSubmit}>
-              <div style={styles.formField}>
-                <label htmlFor="guestName">Your Name:</label>
-                <input
-                  id="guestName"
-                  type="text"
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  required
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.formField}>
-                <label htmlFor="guestName">Your Phone Number:</label>
-                <input
-                  id="guestPhoneNumber"
-                  type="number"
-                  value={guestPhoneNumber}
-                  onChange={(e) => setGuestPhoneNumber(e.target.value)}
-                  required
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.formField}>
-                <label>
-                  <input
-                    type="radio"
-                    name="attendance"
-                    value="I am coming"
-                    onChange={(e) => setAttendanceStatus(e.target.value)}
-                    required
-                  />{" "}
-                  I am coming
-                </label>
-                <br />
-                <label>
-                  <input
-                    type="radio"
-                    name="attendance"
-                    value="Not sure"
-                    onChange={(e) => setAttendanceStatus(e.target.value)}
-                  />{" "}
-                  Not sure
-                </label>
-              </div>
-
-              <button type="submit" style={styles.submitButton}>
-                Submit RSVP
-              </button>
-            </form>
-          </div>
-        </div>
-      )} */}
-
+      
 
       {showPopupGuest && (
         <>

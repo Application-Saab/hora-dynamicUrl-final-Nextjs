@@ -1,5 +1,5 @@
-// components/InvitationModal.js
 import React from "react";
+import "./invitaionmodal.css";
 
 const InvitationModal = ({
   showModal,
@@ -26,143 +26,128 @@ const InvitationModal = ({
   return (
     <div
       className="modal-overlay"
-      style={{ backgroundImage: `url(${imageBackground.src})` }}
+      style={{ backgroundImage: `url(${imageBackground?.src || ""})` }}
     >
-      <div
-        className="modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modalTitle"
-      >
-        <h2 id="modalTitle">Create Event Invite</h2>
+      <div className="invitation-container">
+        <h2 className="invite-title">Create Event Invite</h2>
 
-        <p className="invite-text" style={{ userSelect: "none" }}>
-          🌟 A day of joy, a heart full of cheer, <br />
-          The people we love, we wish to have near.
+        <p className="invite-subtitle">
+          ✨ A day of joy, a heart full of cheer, <br />
+          The people we love, we wish to have near. <br />
+          So come join us and make memories dear.
         </p>
 
-        <p className="invite-text">
-          So please come join us in celebrating
-          <div style={{ margin: "10px auto", position: "relative", width: "70%" }}>
-            <input
-              type="text"
-              placeholder="Event type..."
-              value={formData.eventTypeSearch ?? formData.eventType ?? ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                setFormData((prev) => ({
-                  ...prev,
-                  eventTypeSearch: value,
-                  eventType: value,
-                }));
-                setShowDropdown(true);
-              }}
-              onFocus={() => setShowDropdown(true)}
-              autoComplete="off"
-              className="underline-input"
-            />
-
-            {showDropdown && formData.eventTypeSearch && (
-              <ul className="dropdown-list">
-                {filteredOptions.length > 0 ? (
-                  filteredOptions.map((opt) => (
-                    <li
-                      key={opt}
-                      onClick={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          eventType: opt,
-                          eventTypeSearch: opt,
-                        }));
-                        setShowDropdown(false);
-                      }}
-                    >
-                      {opt}
-                    </li>
-                  ))
-                ) : (
-                  <li className="no-results">No results found</li>
-                )}
-              </ul>
-            )}
-          </div>
-        </p>
-
-        <div className="name-wrapper">
+        {/* Event Type Input with Dropdown */}
+        <div className="dropdown-wrapper">
           <input
             type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Host Name"
-            className="underline-input"
+            placeholder="Event Name"
+            className="input-field"
+            value={formData.eventTypeSearch ?? formData.eventType ?? ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFormData((prev) => ({
+                ...prev,
+                eventType: val,
+                eventTypeSearch: val,
+              }));
+              setShowDropdown(true);
+            }}
+            onFocus={() => setShowDropdown(true)}
+            autoComplete="off"
           />
-          <span>’s</span>
+          {showDropdown && formData.eventTypeSearch && (
+            <ul className="dropdown-list">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((opt) => (
+                  <li
+                    key={opt}
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        eventType: opt,
+                        eventTypeSearch: opt,
+                      }));
+                      setShowDropdown(false);
+                    }}
+                  >
+                    {opt}
+                  </li>
+                ))
+              ) : (
+                <li className="no-results">No results found</li>
+              )}
+            </ul>
+          )}
         </div>
 
-        <p className="invite-text">
-          on{" "}
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="underline-input date-input"
-          />{" "}
-          at{" "}
-          <input
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            className="underline-input time-input"
-          />{" "}
-          at{" "}
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Venue"
-            className="underline-input address-input"
-          />
-        </p>
+        <input
+          type="text"
+          placeholder="Host Name"
+          name="name"
+          className="input-field"
+          value={formData.name}
+          onChange={handleChange}
+        />
 
-        <label className="block text-[#4c1d95] text-sm">
+        <label className="input-label">Event Date</label>
+        <input
+          type="date"
+          name="date"
+          className="input-field"
+          value={formData.date}
+          onChange={handleChange}
+        />
+
+        <label className="input-label">Arrival Time</label>
+        <input
+          type="time"
+          name="time"
+          className="input-field"
+          value={formData.time}
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          placeholder="Venue"
+          name="address"
+          className="input-field"
+          value={formData.address}
+          onChange={handleChange}
+        />
+
+        <label htmlFor="file-upload" className="upload-box">
+          <img src="/camera-icon.svg" alt="Upload" />
+          <div>Upload Photo</div>
           <input
             type="file"
             accept="image/*"
+            id="file-upload"
             onChange={handleImageChange}
             ref={fileInputRef}
+            hidden
           />
         </label>
 
+        {/* Image Preview */}
         {(uploadedImage || orderDetails?.Image) && (
-          <div>
+          <div className="preview-wrapper">
             <img
               src={`https://horaservices.com/api/uploads/${
                 uploadedImage || orderDetails.Image
               }`}
               alt="Preview"
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "8px",
-                marginTop: "10px",
-              }}
+              className="image-preview"
             />
           </div>
         )}
 
-        <p className="invite-text" style={{ marginTop: "1rem" }}>
-          because happiness means more when shared with you.
-        </p>
-
-        <div className="modal-actions">
-          <button className="close-btn" onClick={handleClose} type="button">
+        <div className="button-row">
+          <button className="cancel-btn" onClick={handleClose}>
             Cancel
           </button>
-          <button className="save-btn" onClick={handleSave} type="button">
+          <button className="save-btn" onClick={handleSave}>
             Save
           </button>
         </div>
