@@ -1,5 +1,5 @@
 .guest-preview-card {
-  background: #fef1e6;
+  background: #FFFFFF;
   border-radius: 14px;
   padding: 20px;
   text-align: center;
@@ -19,7 +19,7 @@
 .preview-header-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 2px;
   font-weight: 600;
   color: #444;
   padding: 0 10px;

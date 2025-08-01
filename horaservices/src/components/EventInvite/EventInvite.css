@@ -1,44 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Monotype+Corsiva&display=swap');
 
-.inviteContainer {
-  width: 350px;
-  height: 700px;
-  background-repeat: no-repeat;
+.inviteWrapper {
+  width: 1080px;
+  height: 1920px;
+  position: relative;
   background-size: cover;
   background-position: center;
-  margin: 20px auto;
-  position: relative;
+  background-repeat: no-repeat;
+  font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 20px;
+  justify-content: flex-start;
 }
 
-.inviteText {
-  padding: 20px;
-  border-radius: 10px;
+.nameField {
+  position: absolute;
+  top: 140px;
+  width: 100%;
+  text-align: center;
+  font-size: 46px;
+  font-family: 'Monotype Corsiva', cursive;
   color: white;
 }
 
-.nameTxt {
-    margin-top: 250px;
-    font-size: 50px;
-    font-weight: 900;
-    font-family: 'Playwrite AU QLD', sans-serif;
-   
-}
-.dateTxt {
-    margin-top: 0px;
-    font-size: 28px;
-    font-weight: 900;
-    font-family: 'Playwrite AU QLD', sans-serif;
-
+.dateTimeField {
+  position: absolute;
+  top: 950px;
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
 }
 
-.addTxt {
-  font-size: 30px;
-  margin: 5px 0 !important;
-  font-family: 'Playwrite AU QLD', sans-serif;
+.addressField {
+  position: absolute;
+  bottom: 120px;
+  width: 100%;
+  padding: 0 60px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.5;
+  color: white;
 }
