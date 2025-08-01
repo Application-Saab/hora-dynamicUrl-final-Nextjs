@@ -5,7 +5,7 @@ export default function Home() {
     name: 'lakshya ',                      // Event's Name
     time: '11 PM',                     // Event's Time
     date: '10',                         // Date of the event
-    month: ' August',                    // Month of the event
+    month: 'Augu 2025',                    // Month of the event
     address: '4th Floor, 5 & 10, Arakere Bannerghatta Rd, Syndicate Bank Colony, Omkar Nagar, Arekere, Bengaluru, Karnataka 560076', // Event's Address
   };
 
