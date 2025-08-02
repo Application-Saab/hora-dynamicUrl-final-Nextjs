@@ -1,121 +1,102 @@
 
 
+'use client';
 import React from 'react';
+import Head from 'next/head';
 
-const truncate = (text, max) => (text?.length > max ? text.slice(0, max) : text);
-
-const EventInvite = ({ name, time, date, month, address }) => {
+const AstroBirthdayInvite = ({ name, date, time, address }) => {
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Monotype+Corsiva&display=swap');
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
 
-        .invite-wrapper {
-          background: url('/balloon-bg.png') no-repeat center center;
-          background-size: cover;
-          padding: 30px 16px;
+      <style>{`
+        .astro-invite {
+           padding: 40px 16px;
           display: flex;
           align-items: center;
           justify-content: center;
           min-height: 100vh;
+          font-family: 'Roboto', sans-serif;
         }
 
         .invite-card {
-    position: relative;
-    width: 100%;
-     max-width: 390px; 
-    aspect-ratio: 11 / 19;
-    /* border-radius: 24px; */
-    background-image: url(/GoldandBlueSimpleBirthdayPartyInvitation.png);
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    font-family: 'Roboto', sans-serif;
-    text-align: center;
-}
-
-        .top-text,
-        .name,
-        .birthday,
-        .party,
-        .time,
-        .date,
-        .month,
-        .address {
-          // white-space: nowrap;
-          // overflow: hidden;
-          // text-overflow: ellipsis;
-        }
-
-        .name {
-          position: absolute;
-          top: 13%;
           width: 100%;
+          max-width: 390px;
+          aspect-ratio: 3 / 5;
+          background-image: url('/DarkBlueIllustrativeBirthdayPartyInvitation.png');
+          background-size: cover;
+          background-position: center;
+        
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
           text-align: center;
-          font-size: 300%;
-          font-family: 'Monotype Corsiva', cursive;
+          padding: 40px 20px;
           color: white;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
         }
 
-        .time,
-        .date,
-        .month {
-          position: absolute;
-          // bottom: 20%;
+        .invite-heading {
           font-size: 16px;
-          color: #ffd95c;
+          font-weight: 500;
+          margin-bottom: 10px;
         }
 
-      .time {
-    left: 0%;
-    right: 0%;
-    top: 65%;
-}
-
-       .date {
-    left: 0%;
-    right: 0%;
-    top: 70%;
-    color: white;
-    font-size: 28px;
-}
-
-        .month {
-          right: 12%;
+        .invite-name {
+          font-size: 36px;
+          font-family: 'Brush Script MT', cursive;
+          font-weight: bold;
         }
 
-        .address {
-          position: absolute;
-          bottom: 8%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 85%;
-          text-align: center;
-          font-size: 13px;
-          color: white;
-          line-height: 1.5;
+        .invite-occasion {
+          font-size: 32px;
+          margin: 20px 0 10px;
+          font-family: 'Brush Script MT', cursive;
         }
 
-        @media (min-width: 600px) {
-          .name { font-size: 44px; }
-          .time, .month { font-size: 18px; }
-          .date { font-size: 32px; }
-          .address { font-size: 15px; }
+        .invite-divider {
+          margin: 10px auto 20px;
+          font-size: 20px;
+          color: #ffffffcc;
+        }
+
+        .invite-details {
+          font-size: 16px;
+          line-height: 1.6;
+        }
+
+        .invite-datetime {
+          font-weight: 500;
+          font-size: 16px;
+          margin-bottom: 10px;
+        }
+
+        .invite-address {
+          font-size: 14px;
+          color: #dddddd;
         }
       `}</style>
 
-      <div className="invite-wrapper">
+      <div className="astro-invite">
         <div className="invite-card">
-          <div className="name">{truncate(name, 10)}</div>
-          <div className="time"> Time: {`At ${truncate(time, 5)}`}</div>
-          <div className="date">Date :{truncate(date, 2)} {truncate(month, 10)}</div>
-          <div className="address">{truncate(address, 110)}</div>
+        
+       
+            <div className="invite-name">{name}</div>
+          
+          <div className="invite-details">
+            <div className="invite-datetime">{date} &nbsp;&nbsp; At {time}</div>
+            <div className="invite-address">{address}</div>
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default EventInvite;
+export default AstroBirthdayInvite;
+
