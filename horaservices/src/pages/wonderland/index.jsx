@@ -5,13 +5,13 @@ import profileImage from "../../assets/Ahmdabad.png"; // Add your own image
 // import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
 import tabIcon1 from "../../assets/galleryicon.jpg";
 import tabIcon2 from "../../assets/thankyouicon.png";
-import { FaUpload, FaStickyNote } from 'react-icons/fa';
+import { FaUpload, FaStickyNote } from "react-icons/fa";
 import tabIcon3 from "../../assets/luckdrawicon.jpg";
 import dressIcon from "../../assets/dressIcon.jpg";
 import StickyImage from "../../assets/sticky5.png";
-import { FaCheckCircle, FaUsers } from 'react-icons/fa';
+import { FaCheckCircle, FaUsers } from "react-icons/fa";
 import imageBackground from "../../assets/imageBackground.png";
-import imageBackGround from "../../assets/imageBackground.png"
+import imageBackGround from "../../assets/imageBackground.png";
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
@@ -37,7 +37,6 @@ import GuestListPreview from "@/components/GuestListPreview";
 import ThankYouNotePopup from "@/components/ThankYouNotePopup";
 import RSVPPopup from "@/components/RSVPPopup";
 import GuestRSVPForm from "@/components/GuestRSVPForm";
-
 
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
@@ -77,10 +76,9 @@ const InvitationCard = () => {
   const [showPopupGuest, setShowPopupGuest] = useState(false);
   const [guestList, setGuestList] = useState([]);
   const [loading, setLoading] = useState(false);
-const [wallUploading, setWallUploading] = useState(false);
+  const [wallUploading, setWallUploading] = useState(false);
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyU06csCT5OIJzO3F9VGTjCIli74-k2puAp8AhybJGHPYvyEmuQmJlvPf60wHsy--NGGg/exec"; // no query params
-
 
   const [showLuckyDrawPopup, setShowLuckyDrawPopup] = useState(false);
 
@@ -90,32 +88,31 @@ const [wallUploading, setWallUploading] = useState(false);
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
 
+  useEffect(() => {
+    if (!router.isReady) return;
 
-useEffect(() => {
-  if (!router.isReady) return;
+    const queryId = router.query.id;
+    const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
 
-  const queryId = router.query.id;
-  const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
+    if (parts && parts.length >= 2) {
+      const eventId = parts[0];
+      const userId = parts[1];
+      const userType = parts[2]?.toLowerCase() || "";
 
-  if (parts && parts.length >= 2) {
-    const eventId = parts[0];
-    const userId = parts[1];
-    const userType = parts[2]?.toLowerCase() || "";
+      setId(eventId);
+      setSecondId(userId);
+      setUserType(userType);
 
-    setId(eventId);
-    setSecondId(userId);
-    setUserType(userType);
+      const alreadyRSVP = localStorage.getItem(
+        `rsvp_submitted_${eventId}_${userId}`
+      );
+      if (alreadyRSVP === "true") {
+        setHasSubmitted(true);
+      }
 
-    const alreadyRSVP = localStorage.getItem(`rsvp_submitted_${eventId}_${userId}`);
-    if (alreadyRSVP === "true") {
-      setHasSubmitted(true);
+      setLoadingUser(false);
     }
-
-    setLoadingUser(false);
-  }
-}, [router.isReady, router.query.id]);
-
-
+  }, [router.isReady, router.query.id]);
 
   const userId = localStorage.getItem("userID");
   console.log(userId, "userid");
@@ -146,18 +143,17 @@ useEffect(() => {
       image: tabIcon2,
       title: "Thank You Note",
     },
-    // {
-    //   image: tabIcon3,
-    //   title: "Lucky Draw",
-
-    // },
+    {
+      image: tabIcon3,
+      title: "Lucky Draw",
+    },
   ];
-const isHost = userType === "host";
+  const isHost = userType === "host";
 
-console.log("ishost",isHost);
+  console.log("ishost", isHost);
 
- // determine from props or state
-const [hasSubmitted, setHasSubmitted] = useState(false);
+  // determine from props or state
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     // image: null,
     name: "",
@@ -210,7 +206,7 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
   };
 
   const handleClick = () => {
-    router.push('/templates');
+    router.push("/templates");
   };
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -291,30 +287,34 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
       const result = await response.json();
       console.log("✅ Sheets Response:", result);
 
-//    if (result.idd) {
-//   const newEventId = result.idd;
-//   const newUserId = userId;
-//   const newUserType = "host";
+      //    if (result.idd) {
+      //   const newEventId = result.idd;
+      //   const newUserId = userId;
+      //   const newUserType = "host";
 
-//   // Push new URL to address bar
-//   window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
+      //   // Push new URL to address bar
+      //   window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
 
-//   // Manually update state to reflect new values
-//   setId(newEventId);
-//   setSecondId(newUserId);
-//   setUserType(newUserType); // ✅ ensures isHost becomes true immediately
-// }
+      //   // Manually update state to reflect new values
+      //   setId(newEventId);
+      //   setSecondId(newUserId);
+      //   setUserType(newUserType); // ✅ ensures isHost becomes true immediately
+      // }
 
-     if (result.idd && result.idd !== id) {
-  const newEventId = result.idd;
-  const newUserId = userId;
-  const newUserType = "host";
+      if (result.idd && result.idd !== id) {
+        const newEventId = result.idd;
+        const newUserId = userId;
+        const newUserType = "host";
 
-  window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
-  setId(newEventId);
-  setSecondId(newUserId);
-  setUserType(newUserType);
-}
+        window.history.pushState(
+          {},
+          "",
+          `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`
+        );
+        setId(newEventId);
+        setSecondId(newUserId);
+        setUserType(newUserType);
+      }
 
       setFormData({
         name: "",
@@ -453,7 +453,6 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     "Bachelorette",
   ];
 
-
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
       document.getElementById("imageUploadInput").click();
@@ -464,87 +463,83 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     }
   };
 
-
   const handleImageUpload = async (e) => {
-  setUploading(true);
-  setWallUploading(true);
-  const files = e.target.files;
-  if (files.length > 0) {
-    const formData = new FormData();
+    setUploading(true);
+    setWallUploading(true);
+    const files = e.target.files;
+    if (files.length > 0) {
+      const formData = new FormData();
 
-    for (let i = 0; i < files.length; i++) {
-      formData.append("files", files[i]); // backend expects "files"
-    }
-
-    formData.append("customerId", sendCustomerId);
-    formData.append("phoneNo", sendCustomerPhoneNumber);
-    formData.append("folderName", id);
-
-    try {
-      const res = await fetch(
-        "https://horaservices.com:3000/api/photo/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-      console.log("Uploaded:", data);
-
-      if (data?.uploaded && Array.isArray(data.uploaded)) {
-        // Update eventData with uploaded images
-        const newImages = data.uploaded.map((item) => ({
-          type: "image",
-          src: item.url, // backend should return this
-          alt: item.key || item.filename || "Uploaded image",
-        }));
-
-        setEventData((prev) => [...newImages, ...prev]);
+      for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]); // backend expects "files"
       }
-    } catch (err) {
-      console.error("Upload failed", err);
-    } finally {
-      setUploading(false);
-       setWallUploading(false);
+
+      formData.append("customerId", sendCustomerId);
+      formData.append("phoneNo", sendCustomerPhoneNumber);
+      formData.append("folderName", id);
+
+      try {
+        const res = await fetch(
+          "https://horaservices.com:3000/api/photo/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const data = await res.json();
+        console.log("Uploaded:", data);
+
+        if (data?.uploaded && Array.isArray(data.uploaded)) {
+          // Update eventData with uploaded images
+          const newImages = data.uploaded.map((item) => ({
+            type: "image",
+            src: item.url, // backend should return this
+            alt: item.key || item.filename || "Uploaded image",
+          }));
+
+          setEventData((prev) => [...newImages, ...prev]);
+        }
+      } catch (err) {
+        console.error("Upload failed", err);
+      } finally {
+        setUploading(false);
+        setWallUploading(false);
+      }
     }
-  }
-};
-useEffect(() => {
-  const timer = setTimeout(() => {
-    fetchThumbnails();
-  }, 2000); // shorter delay is fine now
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchThumbnails();
+    }, 2000); // shorter delay is fine now
 
-  return () => clearTimeout(timer);
-}, [id, sendCustomerId]);
+    return () => clearTimeout(timer);
+  }, [id, sendCustomerId]);
 
- const fetchThumbnails = async () => {
-  try {
-    const response = await fetch(
-      `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
-    );
-    const data = await response.json();
-    const imagesFromAPI = data.thumbnails.map((item) => ({
-      type: "image",
-      src: item.url,
-      alt: item.key,
-    }));
+  const fetchThumbnails = async () => {
+    try {
+      const response = await fetch(
+        `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
+      );
+      const data = await response.json();
+      const imagesFromAPI = data.thumbnails.map((item) => ({
+        type: "image",
+        src: item.url,
+        alt: item.key,
+      }));
 
-    // Merge without duplication
-    setEventData((prev) => {
-      const apiUrls = imagesFromAPI.map((img) => img.src);
-      const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
-      return [...nonApiUploads, ...imagesFromAPI.reverse()];
-    });
-  } catch (error) {
-    console.error("Error fetching thumbnails:", error);
-  } finally {
-    setLoadingThumbnails(false);
-  }
-};
-
-
-
+      // Merge without duplication
+      setEventData((prev) => {
+        const apiUrls = imagesFromAPI.map((img) => img.src);
+        const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
+        return [...nonApiUploads, ...imagesFromAPI.reverse()];
+      });
+    } catch (error) {
+      console.error("Error fetching thumbnails:", error);
+    } finally {
+      setLoadingThumbnails(false);
+    }
+  };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -632,73 +627,77 @@ useEffect(() => {
     router.replace(`/wonderland?id=${newId}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
- 
- 
-const handleRSVPSubmit = async ({ name, phoneNumber, status, rsvpId, userId }) => {
-  if (!name || !status) {
-    alert("Please enter your name and select an option.");
-    return;
-  }
-
-  const rsvpData = {
+  const handleRSVPSubmit = async ({
     name,
     phoneNumber,
     status,
-    hostType: "Guest",
-    eventId: rsvpId,
-    userId: userId,
+    rsvpId,
+    userId,
+  }) => {
+    if (!name || !status) {
+      alert("Please enter your name and select an option.");
+      return;
+    }
+
+    const rsvpData = {
+      name,
+      phoneNumber,
+      status,
+      hostType: "Guest",
+      eventId: rsvpId,
+      userId: userId,
+    };
+
+    try {
+      await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(rsvpData),
+      });
+
+      alert("Thank you! Your response has been submitted.");
+    } catch (error) {
+      console.error("RSVP submission failed:", error);
+      alert("An error occurred while submitting your response.");
+    }
   };
 
-  try {
-    await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams(rsvpData),
-    });
-
-    alert("Thank you! Your response has been submitted.");
-  } catch (error) {
-    console.error("RSVP submission failed:", error);
-    alert("An error occurred while submitting your response.");
-  }
-};
-
-
   const fetchGuests = async (showPopup = false) => {
-  setLoading(true);
-  try {
-    const res = await axios.get(
-      "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
-      {
-        params: { action: "getAssociateIdd", idd: id },
-      }
-    );
-
-    if (res.data.status === "success") {
-      const guests = res.data.data.filter((row) => row[10] === "Guest");
-      setGuestList(
-        guests.map((row) => ({
-          name: row[0],
-          status: row[11] || "N/A",
-        }))
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
+        {
+          params: { action: "getAssociateIdd", idd: id },
+        }
       );
 
-      if (showPopup) {
-        setShowPopupGuest(true); // ✅ Only open when asked
+      if (res.data.status === "success") {
+        const guests = res.data.data.filter((row) => row[10] === "Guest");
+        setGuestList(
+          guests.map((row) => ({
+            name: row[0],
+            status: row[11] || "N/A",
+          }))
+        );
+
+        if (showPopup) {
+          setShowPopupGuest(true); // ✅ Only open when asked
+        }
       }
+    } catch (err) {
+      alert("Error fetching data");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    alert("Error fetching data");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-const isGuest = userType === "guest";
+  const isGuest = userType === "guest";
 
-  const openFileInput = () => document.getElementById('imageUploadInput')?.click();
+  const openFileInput = () =>
+    document.getElementById("imageUploadInput")?.click();
 
   return (
     <>
@@ -711,7 +710,6 @@ const isGuest = userType === "guest";
           <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
         </div>
       ) : (
-
         <>
           <div
             className="invitation-container relative  flex flex-col items-center justify-center;"
@@ -726,53 +724,51 @@ const isGuest = userType === "guest";
             {showFAB && <FloatingEditButton onClick={handleEdit} />}
             {orderDetails ? (
               <>
-                <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
-           
+                <FinalInviteDisplay
+                  orderDetails={orderDetails}
+                  handleClick={handleClick}
+                />
 
- {isHost ? (
-      <GuestListPreview
-        guestList={guestList}
-        loading={loading}
-        fetchGuests={fetchGuests}
-        userType={userType}
-      />
-    ) : hasSubmitted ? (
-      <GuestListPreview
-        guestList={guestList}
-        loading={loading}
-        fetchGuests={fetchGuests}
-        userType={userType}
-      />
-    ) : (
+                {isHost ? (
+                  <GuestListPreview
+                    guestList={guestList}
+                    loading={loading}
+                    fetchGuests={fetchGuests}
+                    userType={userType}
+                  />
+                ) : hasSubmitted ? (
+                  <GuestListPreview
+                    guestList={guestList}
+                    loading={loading}
+                    fetchGuests={fetchGuests}
+                    userType={userType}
+                  />
+                ) : (
+                  <GuestRSVPForm
+                    userType={userType}
+                    guestList={guestList}
+                    loading={loading}
+                    userId={secondId}
+                    rsvpId={id}
+                    fetchGuests={fetchGuests}
+                    hasSubmitted={hasSubmitted}
+                    setHasSubmitted={setHasSubmitted}
+                    onSubmit={(data) => {
+                      const payload = {
+                        ...data,
+                        rsvpId: id,
+                        userId: secondId,
+                      };
 
-  
-<GuestRSVPForm
-  userType={userType}
-  guestList={guestList}
-  loading={loading}
-  userId={secondId}
-  rsvpId={id}
-  fetchGuests={fetchGuests}
-  hasSubmitted={hasSubmitted}
-  setHasSubmitted={setHasSubmitted}
-  onSubmit={(data) => {
-    const payload = {
-      ...data,
-      rsvpId: id,
-      userId: secondId,
-    };
-
-    handleRSVPSubmit(payload); // send full data to Google Sheet
-    localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true");
-    setHasSubmitted(true); // lift state to show RSVP done
-  }}
-/>
-
-
-    )}
-
-
-
+                      handleRSVPSubmit(payload); // send full data to Google Sheet
+                      localStorage.setItem(
+                        `rsvp_submitted_${id}_${secondId}`,
+                        "true"
+                      );
+                      setHasSubmitted(true); // lift state to show RSVP done
+                    }}
+                  />
+                )}
 
                 {/* {showPopup && <div className="overlay"></div>} */}
                 {showPopup && (
@@ -789,98 +785,99 @@ const isGuest = userType === "guest";
                   />
                 )}
               </>
-
             ) : (
               <p>Loading...</p>
             )}
-
           </div>
 
-      
-
-       
-
-    <div style={styles.wrapper}>
+          <div style={styles.wrapper}>
             <h2 style={styles.heading}>📸 Celebration Wall</h2>
             <p style={styles.subheading}>
-              A wall filled with your party’s happiest moments and heartfelt messages.
+              A wall filled with your party’s happiest moments and heartfelt
+              messages.
             </p>
 
+            <div className="tabs-container" style={styles.tabsContainer}>
+              {actions.map((action, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (action.title === "Upload Pictures") {
+                      const input = document.getElementById("imageUploadInput");
+                      if (input) {
+                        input.value = ""; // Reset to allow re-upload of same files
+                        input.click();
+                      }
+                    } else {
+                      handleActionClick(action.title);
+                    }
+                  }}
+                  style={styles.actionButton}
+                >
+                  <Image
+                    src={action.image}
+                    alt={action.title}
+                    style={styles.iconStyle}
+                  />
+                  <span style={styles.buttonLabel}>{action.title}</span>
+                </button>
+              ))}
 
+              {/* ✅ Hidden file input */}
+              <input
+                type="file"
+                id="imageUploadInput"
+                multiple
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageUpload}
+              />
+            </div>
 
-           <div className="tabs-container" style={styles.tabsContainer}>
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (action.title === "Upload Pictures") {
-                const input = document.getElementById("imageUploadInput");
-                if (input) {
-                  input.value = ""; // Reset to allow re-upload of same files
-                  input.click();
-                }
-              } else {
-                handleActionClick(action.title);
-              }
-            }}
-            style={styles.actionButton}
-          >
-            <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-            <span style={styles.buttonLabel}>{action.title}</span>
-          </button>
-        ))}
+            <div style={{ position: "relative" }}>
+              {wallUploading && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(255, 255, 255, 0.8)",
+                    display: "flex",
+                    // alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 2,
+                  }}
+                >
+                  <div className="spinner" /> {/* You can style this below */}
+                </div>
+              )}
 
-        {/* ✅ Hidden file input */}
-        <input
-          type="file"
-          id="imageUploadInput"
-          multiple
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleImageUpload}
-        />
-      </div>
-
-   
-
-<div style={{ position: "relative" }}>
-
-  {wallUploading && (
-    <div style={{
-      position: "absolute",
-      top: 0, left: 0, right: 0, bottom: 0,
-      background: "rgba(255, 255, 255, 0.8)",
-      display: "flex",
-      // alignItems: "center",
-      justifyContent: "center",
-      zIndex: 2
-    }}>
-      <div className="spinner" /> {/* You can style this below */}
-    </div>
-  )}
-
-  {/* Image Wall */}
-  <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 }}>
-    {eventData.map((item, index) => (
-      <div key={index}>
-        {item.type === "image" ? (
-          <img
-            src={item.src}
-            alt={item.alt}
-            className="event-image"
-            onLoad={(e) => e.currentTarget.classList.add("loaded")}
-          />
-        ) : (
-          <div
-            className="event-text"
-            dangerouslySetInnerHTML={{ __html: item.content }}
-          />
-        )}
-      </div>
-    ))}
-  </div>
-</div>
-
+              {/* Image Wall */}
+              <div
+                className="event-grid"
+                style={{ opacity: wallUploading ? 0.5 : 1 }}
+              >
+                {eventData.map((item, index) => (
+                  <div key={index}>
+                    {item.type === "image" ? (
+                      <img
+                        src={item.src}
+                        alt={item.alt}
+                        className="event-image"
+                        onLoad={(e) => e.currentTarget.classList.add("loaded")}
+                      />
+                    ) : (
+                      <div
+                        className="event-text"
+                        dangerouslySetInnerHTML={{ __html: item.content }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {showLuckyDrawPopup && (
@@ -894,19 +891,17 @@ const isGuest = userType === "guest";
               >
                 <button
                   className="popup-luckdraw-close"
+                  style={{ position: "absolute", top: "-10px", right: "10px", fontSize: "40px", background: "none", border: "none", cursor: "pointer" }}
                   onClick={() => setShowLuckyDrawPopup(false)}
                 >
                   ×
                 </button>
-                <div className="popup-luckdraw-content">
-                  <LuckyDrawForm
-                    onClose={() => setShowLuckyDrawPopup(false)}
-                  />
+                <div className="popup-luckdraw-content" style={{marginBlock: "30px"}}>
+                  <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
                 </div>
               </div>
             </div>
           )}
-
 
           {showModal && (
             <InvitationModal
@@ -924,23 +919,22 @@ const isGuest = userType === "guest";
               imageBackground={imageBackground}
             />
           )}
-
-
         </>
       )}
-      
 
       {showPopupGuest && (
         <>
-          <div style={styles.backdrop} onClick={() => setShowPopupGuest(false)} />
+          <div
+            style={styles.backdrop}
+            onClick={() => setShowPopupGuest(false)}
+          />
 
-          <RSVPPopup guestList={guestList} onClose={() => setShowPopupGuest(false)} />
-
+          <RSVPPopup
+            guestList={guestList}
+            onClose={() => setShowPopupGuest(false)}
+          />
         </>
       )}
-
-
-
     </>
   );
 };
@@ -998,7 +992,6 @@ const styles = {
     borderRadius: "10px",
     width: "350px",
     boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-
   },
   formField: {
     marginBottom: "16px",
@@ -1112,66 +1105,66 @@ const styles = {
   },
   wrapper: {
     padding: 20,
-    fontFamily: 'sans-serif',
+    fontFamily: "sans-serif",
     maxWidth: 500,
-    margin: '0 auto',
+    margin: "0 auto",
   },
   heading: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
-    color: '#a8328e',
-    textAlign: 'center',
+    color: "#a8328e",
+    textAlign: "center",
   },
   subheading: {
     fontSize: 14,
     marginBottom: 20,
-    color: '#555',
-    textAlign: 'center',
+    color: "#555",
+    textAlign: "center",
   },
   buttonRow: {
-    display: 'flex',
+    display: "flex",
     gap: 10,
     marginBottom: 20,
   },
   button: {
     flex: 1,
-    backgroundColor: '#a8328e',
-    color: '#fff',
-    border: 'none',
-    padding: '10px 12px',
+    backgroundColor: "#a8328e",
+    color: "#fff",
+    border: "none",
+    padding: "10px 12px",
     borderRadius: 6,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 14,
   },
   uploading: {
     fontSize: 13,
-    color: '#444',
+    color: "#444",
     marginBottom: 10,
   },
   loading: {
     fontSize: 15,
     fontWeight: 500,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 40,
   },
   gallery: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
     gap: 8,
   },
   imageBox: {
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   image: {
-    width: '100%',
-    height: 'auto',
-    objectFit: 'cover',
-    display: 'block',
+    width: "100%",
+    height: "auto",
+    objectFit: "cover",
+    display: "block",
   },
 
   tabsContainer: {
@@ -1210,110 +1203,112 @@ const styles = {
     textAlign: "left",
   },
 };
-   {/* Basic CSS */}
-          // <style jsx>{`
-          //     .overlay {
-          //       position: fixed;
-          //       top: 0;
-          //       left: 0;
-          //       width: 100vw;
-          //       height: 100vh;
-          //       background-color: rgba(0, 0, 0, 0.2);
-          //       backdrop-filter: blur(6px);
-          //       -webkit-backdrop-filter: blur(6px);
-          //       z-index: 1000;
-          //       pointer-events: all;
-          //     }
+{
+  /* Basic CSS */
+}
+// <style jsx>{`
+//     .overlay {
+//       position: fixed;
+//       top: 0;
+//       left: 0;
+//       width: 100vw;
+//       height: 100vh;
+//       background-color: rgba(0, 0, 0, 0.2);
+//       backdrop-filter: blur(6px);
+//       -webkit-backdrop-filter: blur(6px);
+//       z-index: 1000;
+//       pointer-events: all;
+//     }
 
-          //     .popup {
-          //       position: fixed;
-          //       top: 35%;
-          //       left: 50%;
-          //       transform: translate(-50%, -25%);
-          //       background: white;
-          //       border: 1px solid #ccc;
-          //       padding: 24px;
-          //       border-radius: 12px;
-          //       z-index: 1500;
-          //       background-color: rgb(238, 233, 240);
-          //       width: 95%;
-          //       max-width: 420px;
-          //       display: flex;
-          //       flex-direction: column;
-          //       height: 80%;
-          //       border: 2px solid purple;
-          //     }
+//     .popup {
+//       position: fixed;
+//       top: 35%;
+//       left: 50%;
+//       transform: translate(-50%, -25%);
+//       background: white;
+//       border: 1px solid #ccc;
+//       padding: 24px;
+//       border-radius: 12px;
+//       z-index: 1500;
+//       background-color: rgb(238, 233, 240);
+//       width: 95%;
+//       max-width: 420px;
+//       display: flex;
+//       flex-direction: column;
+//       height: 80%;
+//       border: 2px solid purple;
+//     }
 
-          //     .title {
-          //       margin-top: 25px;
-          //       text-align: center;
-          //       font-size: 28px;
-          //       font-weight: bold;
-          //       color: rgb(146, 82, 170);
-          //       margin-bottom: 24px;
-          //     }
+//     .title {
+//       margin-top: 25px;
+//       text-align: center;
+//       font-size: 28px;
+//       font-weight: bold;
+//       color: rgb(146, 82, 170);
+//       margin-bottom: 24px;
+//     }
 
-          //     .subtitlePopUp {
-          //       text-align: center;
-          //       font-size: 20px;
-          //       color: #444;
-          //       // margin-top: 12px;
-          //     }
+//     .subtitlePopUp {
+//       text-align: center;
+//       font-size: 20px;
+//       color: #444;
+//       // margin-top: 12px;
+//     }
 
-          //     .form-group {
-          //       display: flex;
-          //       flex-direction: column;
-          //       margin-top: 12px;
-          //     }
+//     .form-group {
+//       display: flex;
+//       flex-direction: column;
+//       margin-top: 12px;
+//     }
 
-          //     .label {
-          //       font-size: 14px;
-          //       font-weight: 500;
-          //       margin-bottom: 6px;
-          //       color: #333;
-          //     }
+//     .label {
+//       font-size: 14px;
+//       font-weight: 500;
+//       margin-bottom: 6px;
+//       color: #333;
+//     }
 
-          //     .popup textarea {
-          //       background: white;
-          //       color: black;
-          //       border: 1px solid purple;
-          //       resize: none;
-          //       padding: 10px;
-          //       border-radius: 8px;
-          //       font-size: 14px;
-          //     }
+//     .popup textarea {
+//       background: white;
+//       color: black;
+//       border: 1px solid purple;
+//       resize: none;
+//       padding: 10px;
+//       border-radius: 8px;
+//       font-size: 14px;
+//     }
 
-          //     .popup input {
-          //       background: white;
-          //       color: black;
-          //       padding: 10px;
-          //       border: 1px solid rebeccapurple;
-          //       border-radius: 8px;
-          //       font-size: 14px;
-          //     }
+//     .popup input {
+//       background: white;
+//       color: black;
+//       padding: 10px;
+//       border: 1px solid rebeccapurple;
+//       border-radius: 8px;
+//       font-size: 14px;
+//     }
 
-          //     .word-limit {
-          //       text-align: right;
-          //       font-size: 12px;
-          //       color: #888;
-          //       margin-top: 4px;
-          //     }
+//     .word-limit {
+//       text-align: right;
+//       font-size: 12px;
+//       color: #888;
+//       margin-top: 4px;
+//     }
 
-          //     .popup-buttons {
-          //       display: flex;
-          //       justify-content: center;
-          //       gap: 10px;
-          //       margin-top: 20px;
-          //     }
+//     .popup-buttons {
+//       display: flex;
+//       justify-content: center;
+//       gap: 10px;
+//       margin-top: 20px;
+//     }
 
-          //     .popup button {
-          //       padding: 8px 18px;
-          //       border: none;
-          //       background: rgb(146, 82, 170);
-          //       color: white;
-          //       border-radius: 6px;
-          //       font-weight: 500;
-          //       cursor: pointer;
-          //     }
-          //   `}</style>
+//     .popup button {
+//       padding: 8px 18px;
+//       border: none;
+//       background: rgb(146, 82, 170);
+//       color: white;
+//       border-radius: 6px;
+//       font-weight: 500;
+//       cursor: pointer;
+//     }
+//   `}</style>
 export default InvitationCard;
