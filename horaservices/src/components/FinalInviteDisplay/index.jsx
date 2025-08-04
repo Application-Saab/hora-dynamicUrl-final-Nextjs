@@ -1,5 +1,6 @@
 import React from "react";
 import "./finalInvteDisplay.css";
+
 const formatDate = (isoDateString) => {
   const date = new Date(isoDateString);
   return date.toLocaleDateString("en-US", {
@@ -15,18 +16,18 @@ const FinalInviteDisplay = ({ orderDetails, handleClick }) => {
   return (
     <div className="invite-wrapper">
       <div className="invite-card">
-        <h2 className="invite-heading">YOU ‘RE INVITED</h2>
+        <h2 className="invite-heading">YOU‘RE INVITED</h2>
 
         <div className="cake-image-wrapper">
           <img
-            src={`https://horaservices.com/api/uploads/${orderDetails.Image}`}
+            src={orderDetails.Image} // ✅ Expecting base64 format here
             alt="Cake"
             className="cake-image"
           />
         </div>
 
         <h3 className="invite-title">
-          {orderDetails.Name || "Someone"} ‘S{" "}
+          {orderDetails.Name || "Someone"}‘S{" "}
           {orderDetails["Event Type"] || "Birthday"} CELEBRATION
         </h3>
 
@@ -39,8 +40,7 @@ const FinalInviteDisplay = ({ orderDetails, handleClick }) => {
         </p>
 
         <p className="invite-detail">
-          <span>📍</span>{" "}
-          <strong>Home</strong> ({orderDetails.Address || "Venue"})
+          <span>📍</span> <strong>Home</strong> ({orderDetails.Address || "Venue"})
         </p>
 
         <button className="invite-btn" onClick={handleClick}>
@@ -52,4 +52,3 @@ const FinalInviteDisplay = ({ orderDetails, handleClick }) => {
 };
 
 export default FinalInviteDisplay;
-

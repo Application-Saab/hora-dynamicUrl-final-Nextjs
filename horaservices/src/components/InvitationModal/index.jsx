@@ -125,20 +125,53 @@ const InvitationModal = ({
           onChange={handleChange}
         />
 
-{(uploadedImage || orderDetails?.Image) ? (
+{/* {(uploadedImage || orderDetails?.Image) ? (
   <div
     className="preview-wrapper"
     onClick={() => fileInputRef.current?.click()} // clicking image triggers upload
   >
     <img
-      src={`https://horaservices.com/api/uploads/${
-        uploadedImage || orderDetails?.Image
-      }`}
+  src={uploadedImage || orderDetails?.Image || ""}
+
+      className="image-preview"
+    />
+    <div className="change-text">Tap to change photo</div>
+   
+    <input
+      type="file"
+      accept="image/*"
+      id="file-upload"
+      onChange={handleImageChange}
+      ref={fileInputRef}
+      hidden
+    />
+  </div>
+) : (
+  <label htmlFor="file-upload" className="upload-box">
+    <Image src={camera} alt="Upload" />
+    <div>Upload Photo</div>
+    <input
+      type="file"
+      accept="image/*"
+      id="file-upload"
+      onChange={handleImageChange}
+      ref={fileInputRef}
+      hidden
+    />
+  </label>
+)} */}
+
+{(uploadedImage || orderDetails?.Image) ? (
+  <div
+    className="preview-wrapper"
+    onClick={() => fileInputRef.current?.click()}
+  >
+    <img
+      src={uploadedImage || orderDetails?.Image || ""}
       alt="Preview"
       className="image-preview"
     />
     <div className="change-text">Tap to change photo</div>
-    {/* Hidden input for replacing image */}
     <input
       type="file"
       accept="image/*"
@@ -162,7 +195,6 @@ const InvitationModal = ({
     />
   </label>
 )}
-
 
         <div className="button-row">
           <button className="cancel-btn" onClick={handleClose}>

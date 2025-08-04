@@ -121,6 +121,7 @@ useEffect(() => {
   console.log(userId, "userid");
   const userPhoneNumber = localStorage.getItem("mobileNumber");
   console.log(userPhoneNumber, "userPhoneNumber");
+const [isHost, setIsHost] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -152,7 +153,8 @@ useEffect(() => {
 
     // },
   ];
-const isHost = userType === "host";
+
+
 
 console.log("ishost",isHost);
 
@@ -168,32 +170,52 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     eventTypeSearch: "",
   });
   const [uploadedImage, setUploadedImage] = useState(null);
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const reader = new FileReader();
 
-    const formData = new FormData();
-    formData.append("file", file);
+  reader.onloadend = async () => {
+    const base64String = reader.result;
 
     try {
-      const res = await fetch(BASE_URL + IMAGE_UPLOAD, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Image upload failed");
-
-      const data = await res.json();
-      console.log("Image uploaded:", data);
-      console.log("Image uploaded2:", data.data);
-
-      setUploadedImage(data.data); // Save response for later use
+      const compressed = await compressBase64Image(base64String, 500, 0.4); // 👈 compress karo
+      setUploadedImage(compressed); // ✅ use compressed base64
+      console.log("Compressed Base64:", compressed);
+      console.log("Size (approx):", Math.round((compressed.length * 3) / 4 / 1024), "KB");
     } catch (err) {
-      console.error("Image upload error:", err);
-      alert("Failed to upload image");
+      console.error("Image compression failed:", err);
+      alert("Image compress karne mein error aaya.");
     }
   };
+
+  reader.readAsDataURL(file); // ✅ Converts file to base64 string
+};
+
+const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+
+      const ratio = img.width / img.height;
+      const newWidth = Math.min(img.width, maxWidth);
+      const newHeight = newWidth / ratio;
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+      const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+      resolve(compressedBase64);
+    };
+    img.onerror = (err) => reject(err);
+    img.src = base64;
+  });
+};
 
   const handleEdit = () => {
     setShowModal(true);
@@ -221,117 +243,212 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     }
   };
 
-  const handleSave = async () => {
-    if (!formData.eventType && formData.eventTypeSearch) {
-      formData.eventType = formData.eventTypeSearch;
-    }
+const getBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+};
 
-    const formattedDate = new Date(formData.date).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
 
-    const formattedTime = new Date(
-      `1970-01-01T${formData.time}`
-    ).toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
 
-    console.log(formattedTime, "formattedTime");
 
-    const HostType = "Host";
+// const handleSave = async () => {
+//   if (!formData.eventType && formData.eventTypeSearch) {
+//     formData.eventType = formData.eventTypeSearch;
+//   }
 
-    const params = new URLSearchParams();
-    params.append("name", formData.name);
-    params.append("date", formattedDate);
-    params.append("time", formattedTime);
-    params.append("address", formData.address);
-    params.append("selectedImage", selectedImage || "");
-    params.append("image", uploadedImage || orderDetails?.Image || "");
+//   const formattedDate = new Date(formData.date).toISOString();
+//   const formattedTime = new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
+//     hour: "numeric",
+//     minute: "2-digit",
+//     hour12: true,
+//   });
 
-    params.append("idd", id);
-    params.append("eventType", formData.eventType);
-    params.append("hostType", HostType);
+//   const finalImage = uploadedImage || orderDetails?.Image || "";
+//   const token = localStorage.getItem("token");
 
-    params.append("customerId", userId);
-    params.append("customerPhoneNumber", userPhoneNumber);
-    console.log("🚀 Submitting:", {
-      image: uploadedImage,
-      fallbackImage: orderDetails?.Image,
-      finalImage: uploadedImage || orderDetails?.Image || "",
-    });
-    console.log("🚀 Submitting data to Google Sheets:", {
-      name: formData.name,
-      date: formattedDate,
-      time: formattedTime,
-      address: formData.address,
-      selectedImage,
-      uploadedImage,
-      id,
-      eventType: formData.eventType,
-      eventTypeSearch: formData.eventTypeSearch,
-      customerId,
-      customerPhoneNumber,
-    });
-    try {
-      const response = await fetch(
-        `${GOOGLE_SCRIPT_URL}?action=saveOrUpdateEvent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: params.toString(),
-        }
-      );
+//   if (!token) {
+//     alert("Please login to continue.");
+//     return;
+//   }
 
-      const result = await response.json();
-      console.log("✅ Sheets Response:", result);
+  
 
-//    if (result.idd) {
-//   const newEventId = result.idd;
-//   const newUserId = userId;
-//   const newUserType = "host";
+//   const payload = {
+//     userId: loggedInUserId, // ✅ use the real host's userId
+//     eventType: formData.eventType,
+//     hostName: formData.name,
+//     eventDate: formattedDate,
+//     eventTime: formattedTime,
+//     location: formData.address,
+//     hostImage: finalImage,
+//     ...(id && { idd: id }),
+//   };
 
-//   // Push new URL to address bar
-//   window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
+//   try {
+//     const res = await fetch(`${BASE_URL}/api/customer/event/create-event-invite`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: token,
+//       },
+//       body: JSON.stringify(payload),
+//     });
 
-//   // Manually update state to reflect new values
-//   setId(newEventId);
-//   setSecondId(newUserId);
-//   setUserType(newUserType); // ✅ ensures isHost becomes true immediately
-// }
+//     const result = await res.json();
+//     console.log("✅ Full API Response:", JSON.stringify(result, null, 2));
 
-     if (result.idd && result.idd !== id) {
-  const newEventId = result.idd;
-  const newUserId = userId;
-  const newUserType = "host";
+//     const createdEventId =
+//       result?.data?.idd ||
+//       result?.data?.id ||
+//       result?.data?._id ||
+//       result?.data?.event?._id;
 
-  window.history.pushState({}, "", `/wonderland?id=${newEventId}/${newUserId}/${newUserType}`);
-  setId(newEventId);
-  setSecondId(newUserId);
-  setUserType(newUserType);
-}
+      
+//     const eventCreatorId =
+//       result?.data?.userId || result?.data?.event?.userId || loggedInUserId;
 
-      setFormData({
-        name: "",
-        date: "",
-        time: "",
-        address: "",
-        eventType: "",
-        eventTypeSearch: "",
-      });
-      setUploadedImage(null);
-      setSelectedImage("");
-      setShowModal(false);
-      // window.location.reload();
-    } catch (error) {
-      console.error("❌ Failed to send to Google Sheets:", error);
-    }
+//    const isHost = (loggedInUserId?.trim?.() || "") === (eventCreatorId?.trim?.() || "");
+//   const role = userId === eventCreatorId ? "host" : "guest";
+
+
+//     if (res.ok && createdEventId) {
+//       router
+//         .push(`/wonderland?id=${createdEventId}/${loggedInUserId}/${role}`)
+//         .then(() => {
+//           console.log("✅ Navigation successful!");
+//           setShowModal(false);
+//           setId(createdEventId);
+//           setSecondId(loggedInUserId);
+//           setUserType(role);
+//         })
+//         .catch((err) => {
+//           console.error("❌ Router push failed:", err);
+//         });
+//     } else {
+//       console.warn("❌ No event ID found in response. Navigation skipped.");
+//     }
+
+//     // Reset form
+//     setFormData({
+//       name: "",
+//       date: "",
+//       time: "",
+//       address: "",
+//       eventType: "",
+//       eventTypeSearch: "",
+//     });
+//     setUploadedImage(null);
+//     setSelectedImage("");
+//     setShowModal(false);
+//   } catch (err) {
+//     console.error("❌ Error submitting to backend:", err);
+//     alert("Something went wrong. Please try again.");
+//   }
+// };
+
+const handleSave = async () => {
+  if (!formData.eventType && formData.eventTypeSearch) {
+    formData.eventType = formData.eventTypeSearch;
+  }
+
+  const formattedDate = new Date(formData.date).toISOString();
+  const formattedTime = new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const finalImage = uploadedImage || orderDetails?.Image || "";
+  const token = localStorage.getItem("token");
+  const loggedInUserId = localStorage.getItem("userID");
+
+  if (!token || !loggedInUserId) {
+    alert("Please login to continue.");
+    return;
+  }
+
+  const payload = {
+    userId: loggedInUserId,
+    eventType: formData.eventType,
+    hostName: formData.name,
+    eventDate: formattedDate,
+    eventTime: formattedTime,
+    location: formData.address,
+    hostImage: finalImage,
+    ...(id && { idd: id }),
   };
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/customer/event/create-event-invite`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await res.json();
+
+    const createdEventId =
+      result?.data?.idd || result?.data?.id || result?.data?._id || result?.data?.event?._id;
+
+    const eventCreatorId =
+      result?.data?.userId || result?.data?.event?.userId || loggedInUserId;
+
+    const role = loggedInUserId === eventCreatorId ? "host" : "guest";
+
+    if (res.ok && createdEventId) {
+      const finalRoute = `${createdEventId}/${loggedInUserId}/${role}`;
+      router.push(`/wonderland?id=${finalRoute}`);
+
+      // set states
+      setId(createdEventId);
+      setSecondId(loggedInUserId);
+      setUserType(role);
+      setShowModal(false);
+    } else {
+      alert("Failed to save invitation.");
+    }
+
+    // Reset
+    setFormData({
+      name: "",
+      date: "",
+      time: "",
+      address: "",
+      eventType: "",
+      eventTypeSearch: "",
+    });
+    setUploadedImage(null);
+    setSelectedImage("");
+  } catch (err) {
+    console.error("❌ Error:", err);
+    alert("Something went wrong. Try again.");
+  }
+};
+
+
+const convertTo24Hour = (timeStr) => {
+  const [time, modifier] = timeStr.split(" ");
+
+  let [hours, minutes] = time.split(":");
+  hours = parseInt(hours, 10);
+
+  if (modifier === "PM" && hours !== 12) {
+    hours += 12;
+  }
+  if (modifier === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  return `${hours.toString().padStart(2, "0")}:${minutes}`;
+};
+
 
   useEffect(() => {
     if (orderDetails) {
@@ -361,74 +478,131 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     }
   }, []);
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      console.log(window.location.href);
+// useEffect(() => {
+//   if (!router.isReady) return;
 
-      console.log(id, "iddd2");
+//   const queryId = router.query.id;
+//   const eventId = Array.isArray(queryId) ? queryId[0] : queryId?.split("/")?.[0];
+//   if (!eventId) return;
 
-      // if (!orderid) return;
-      if (!id) return;
+//   fetchOrderDetails(eventId);
+// }, [router.isReady, router.query.id]);
 
-      console.log(id, "idddiid1");
+// const fetchOrderDetails = async (eventId) => {
+//   const token = localStorage.getItem("token");
+//   if (!token) {
+//     alert("Please login to continue.");
+//     return;
+//   }
 
-      try {
-        const response = await fetch(
-          `https://script.google.com/macros/s/AKfycbwkX57cwaJw5DeJsQM3p0BukqMIvrbybUHmT3KBseCnoW6JPP0Swnv3590WyEhdH2Wq4g/exec?action=getByIdd&idd=${id}`
-        );
+//   try {
+//     const res = await fetch(
+//       `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": token,  
+//         },
+//       }
+//     );
 
-        console.log(response, "response");
+//     if (!res.ok) {
+//       console.warn(`❌ Fetch failed with status: ${res.status}`);
+//       alert(`Failed to fetch event details: ${res.status}`);
+//       return;
+//     }
 
-        const result = await response.json();
-        console.log(result, "ressss");
-        if (result.status === "success") {
-          console.log("Matched Order Details:", result.data);
-          const customerPhone = result.data["Customer Phone Number"];
-          const customerId = result.data["Customer ID"];
-          console.log("Customer ID11:", customerId);
-          console.log("Customer Phone:", customerPhone);
-          setSendCustomerId(customerId);
-          setSendCustomerPhoneNumber(customerPhone);
+//     const result = await res.json();
 
-          setOrderDetails(result.data);
-        } else {
-          console.log("Order ID not found in sheet.");
-          // setShowFAB(true);
-          setShowModal(true);
-        }
-      } catch (err) {
-        console.error("Error fetching order details:", err);
-      }
-    };
+//   if (res.status === 200 && result.data) {
+//   const inviteData = result.data;
 
-    fetchOrderDetails();
-  }, [id]);
+//   const loggedInUserId = localStorage.getItem("userID");
 
-  //Format Time
-  function convertTo24Hour(time12h) {
-    if (!time12h) return "";
-    const [time, modifier] = time12h.split(" ");
-    let [hours, minutes] = time.split(":");
+//   setOrderDetails({
+//     Name: inviteData.hostName,
+//     "Event Type": inviteData.eventType,
+//     Date: inviteData.eventDate,
+//     Time: inviteData.eventTime,
+//     Address: inviteData.location,
+//     Image: inviteData.hostImage || inviteData.imageUrl || "",
+//     userId: inviteData.userId,
+//   });
 
-    if (hours === "12") {
-      hours = "00";
-    }
-    if (modifier === "PM") {
-      hours = parseInt(hours, 10) + 12;
-    }
-    return `${hours.toString().padStart(2, "0")}:${minutes}`;
-  }
-  // Format date
-  const formatDate = (isoDateString) => {
-    const date = new Date(isoDateString);
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
+//   // ✅ Set host check after order details set
+//  const fetchedHostId = String(inviteData.userId).trim();
+// const loggedInId = String(localStorage.getItem("userID")).trim();
+// setIsHost(fetchedHostId === loggedInId);
+
+// }
+//  else {
+//   alert(`Error fetching data: ${result.message || "Unknown error"}`);
+// }
+
+//   } catch (err) {
+//     console.error("❌ Error fetching invite:", err);
+//     alert("Error fetching event details, please try again later.");
+//   }
+// };
+
+useEffect(() => {
+  if (!router.isReady) return;
+
+  const queryId = router.query.id;
+  const eventId = Array.isArray(queryId) ? queryId[0] : queryId?.split("/")?.[0];
+  if (!eventId) return;
+
+  fetchOrderDetails(eventId);
+}, [router.isReady, router.query.id]);
+
+const fetchOrderDetails = async (eventId) => {
+  const token = localStorage.getItem("token");
+  const loggedInId = localStorage.getItem("userID");
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
     });
-  };
 
-  // sheet second fetch data Background_templates
+    const result = await res.json();
+
+    if (res.status === 200 && result.data) {
+      const data = result.data;
+      const hostId = String(data.userId).trim();
+
+      setOrderDetails({
+        Name: data.hostName,
+        "Event Type": data.eventType,
+        Date: data.eventDate,
+        Time: data.eventTime,
+        Address: data.location,
+        Image: data.hostImage || data.imageUrl || "",
+        userId: hostId,
+      });
+
+      // ✅ Set host ID globally
+      setSendCustomerId(hostId);
+    }
+  } catch (err) {
+    console.error("❌ Fetch failed:", err);
+    alert("Fetch failed.");
+  }
+};
+
+
+
+
+ 
+
+  
+  
+  
+  
   const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -518,12 +692,33 @@ useEffect(() => {
   return () => clearTimeout(timer);
 }, [id, sendCustomerId]);
 
- const fetchThumbnails = async () => {
+
+const fetchThumbnails = async () => {
+  // Safety check
+  if (!id || !sendCustomerId) {
+    console.warn("❌ Missing 'id' (folderName) or 'sendCustomerId'");
+    setLoadingThumbnails(false);
+    return;
+  }
+
   try {
     const response = await fetch(
       `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
     );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
     const data = await response.json();
+
+    if (!Array.isArray(data?.thumbnails)) {
+      console.error("❌ Unexpected response format:", data);
+      setLoadingThumbnails(false);
+      return;
+    }
+
     const imagesFromAPI = data.thumbnails.map((item) => ({
       type: "image",
       src: item.url,
@@ -537,12 +732,11 @@ useEffect(() => {
       return [...nonApiUploads, ...imagesFromAPI.reverse()];
     });
   } catch (error) {
-    console.error("Error fetching thumbnails:", error);
+    console.error("❌ Error fetching thumbnails:", error);
   } finally {
     setLoadingThumbnails(false);
   }
 };
-
 
 
 
@@ -604,36 +798,31 @@ useEffect(() => {
 
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
-  useEffect(() => {
-    if (sendCustomerId && userId && sendCustomerId.trim() === userId.trim()) {
-      setShowFAB(true);
-    } else {
-      setShowFAB(false);
-    }
-  }, [sendCustomerId, userId]);
+ useEffect(() => {
+  if (sendCustomerId && userId) {
+    const isHost = sendCustomerId.trim() === userId.trim();
+    setIsHost(isHost);
+    setShowFAB(isHost);
+  }
+}, [sendCustomerId, userId]);
 
-  useEffect(() => {
-    if (!router.isReady) return;
-    if (!userId) return;
 
-    const { id } = router.query;
-    if (!id || typeof id !== "string") return;
+useEffect(() => {
+  if (!router.isReady || !userId || !sendCustomerId) return;
 
-    const parts = id.split("/");
-    const firstPart = parts[0];
+  const { id } = router.query;
+  if (!id || typeof id !== "string") return;
 
-    const isHost = String(userId).trim() === String(sendCustomerId).trim();
-    const role = isHost ? "host" : "guest";
+  const [eventId, routeUserId, routeRole] = id.split("/");
 
-    // Avoid redirect loop
-    if (parts[1] === userId && parts[2] === role) return;
+  const actualRole = userId.trim() === sendCustomerId.trim() ? "host" : "guest";
 
-    const newId = `${firstPart}/${userId}/${role}`;
-    router.replace(`/wonderland?id=${newId}`);
-  }, [router.isReady, router.query.id, userId, sendCustomerId]);
+  if (routeUserId === userId && routeRole === actualRole) return;
 
- 
- 
+  const newRoute = `${eventId}/${userId}/${actualRole}`;
+  router.replace(`/wonderland?id=${newRoute}`);
+}, [router.isReady, router.query.id, userId, sendCustomerId]);
+
 const handleRSVPSubmit = async ({ name, phoneNumber, status, rsvpId, userId }) => {
   if (!name || !status) {
     alert("Please enter your name and select an option.");
@@ -700,249 +889,238 @@ const isGuest = userType === "guest";
 
   const openFileInput = () => document.getElementById('imageUploadInput')?.click();
 
-  return (
-    <>
-      {!isLoggedIn ? (
-        // If user is NOT logged in
-        <div className="no-orders">
-          <h2 className="no-record-heading">
-            Please log in to check all your orders.
-          </h2>
-          <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
-        </div>
-      ) : (
-
-        <>
-          <div
-            className="invitation-container relative  flex flex-col items-center justify-center;"
-            style={{
-              backgroundImage: orderDetails?.Template
-                ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
-                : `url(${imageBackGround.src})`,
-              backgroundSize: "100%",
-              backgroundPosition: "center",
-            }}
-          >
-            {showFAB && <FloatingEditButton onClick={handleEdit} />}
-            {orderDetails ? (
-              <>
-                <FinalInviteDisplay orderDetails={orderDetails} handleClick={handleClick} />
-           
-
- {isHost ? (
-      <GuestListPreview
-        guestList={guestList}
-        loading={loading}
-        fetchGuests={fetchGuests}
-        userType={userType}
-      />
-    ) : hasSubmitted ? (
-      <GuestListPreview
-        guestList={guestList}
-        loading={loading}
-        fetchGuests={fetchGuests}
-        userType={userType}
-      />
+ return (
+  <>
+    {!isLoggedIn ? (
+      <div className="no-orders">
+        <h2 className="no-record-heading">
+          Please log in to check all your orders.
+        </h2>
+        <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+      </div>
     ) : (
+      <>
+        {/* 📜 Invitation Display Container */}
+        <div
+          className="invitation-container relative flex flex-col items-center justify-center"
+          style={{
+            backgroundImage: orderDetails?.Template
+              ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
+              : `url(${imageBackGround.src})`,
+            backgroundSize: "100%",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* {showFAB && <FloatingEditButton onClick={handleEdit} />} */}
+{showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
-  
-<GuestRSVPForm
-  userType={userType}
-  guestList={guestList}
-  loading={loading}
-  userId={secondId}
-  rsvpId={id}
-  fetchGuests={fetchGuests}
-  hasSubmitted={hasSubmitted}
-  setHasSubmitted={setHasSubmitted}
-  onSubmit={(data) => {
-    const payload = {
-      ...data,
-      rsvpId: id,
-      userId: secondId,
-    };
+          {orderDetails ? (
+            <>
+              <FinalInviteDisplay
+                orderDetails={orderDetails}
+                handleClick={handleClick}
+              />
 
-    handleRSVPSubmit(payload); // send full data to Google Sheet
-    localStorage.setItem(`rsvp_submitted_${id}_${secondId}`, "true");
-    setHasSubmitted(true); // lift state to show RSVP done
-  }}
-/>
+              {/* 🎉 RSVP Section */}
+              {isHost || hasSubmitted ? (
+                <GuestListPreview
+                  guestList={guestList}
+                  loading={loading}
+                  fetchGuests={fetchGuests}
+                  userType={userType}
+                />
+              ) : (
+                <GuestRSVPForm
+                  userType={userType}
+                  guestList={guestList}
+                  loading={loading}
+                  userId={secondId}
+                  rsvpId={id}
+                  fetchGuests={fetchGuests}
+                  hasSubmitted={hasSubmitted}
+                  setHasSubmitted={setHasSubmitted}
+                  onSubmit={(data) => {
+                    const payload = {
+                      ...data,
+                      rsvpId: id,
+                      userId: secondId,
+                    };
+                    handleRSVPSubmit(payload);
+                    localStorage.setItem(
+                      `rsvp_submitted_${id}_${secondId}`,
+                      "true"
+                    );
+                    setHasSubmitted(true);
+                  }}
+                />
+              )}
 
+              {/* 💌 Thank You Note Popup */}
+              {showPopup && (
+                <ThankYouNotePopup
+                  noteTitle={noteTitle}
+                  setNoteTitle={setNoteTitle}
+                  noteBy={noteBy}
+                  setNoteBy={setNoteBy}
+                  errorMsg={errorMsg}
+                  setErrorMsg={setErrorMsg}
+                  handleDownload={handleDownload}
+                  handleClosePopup={handleClosePopup}
+                  noteRef={noteRef}
+                />
+              )}
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </div>
 
-    )}
+        {/* 🎊 Celebration Wall */}
+        <div style={styles.wrapper}>
+          <h2 style={styles.heading}>📸 Celebration Wall</h2>
+          <p style={styles.subheading}>
+            A wall filled with your party’s happiest moments and heartfelt messages.
+          </p>
 
-
-
-
-                {/* {showPopup && <div className="overlay"></div>} */}
-                {showPopup && (
-                  <ThankYouNotePopup
-                    noteTitle={noteTitle}
-                    setNoteTitle={setNoteTitle}
-                    noteBy={noteBy}
-                    setNoteBy={setNoteBy}
-                    errorMsg={errorMsg}
-                    setErrorMsg={setErrorMsg}
-                    handleDownload={handleDownload}
-                    handleClosePopup={handleClosePopup}
-                    noteRef={noteRef}
-                  />
-                )}
-              </>
-
-            ) : (
-              <p>Loading...</p>
-            )}
-
-          </div>
-
-      
-
-       
-
-    <div style={styles.wrapper}>
-            <h2 style={styles.heading}>📸 Celebration Wall</h2>
-            <p style={styles.subheading}>
-              A wall filled with your party’s happiest moments and heartfelt messages.
-            </p>
-
-
-
-           <div className="tabs-container" style={styles.tabsContainer}>
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (action.title === "Upload Pictures") {
-                const input = document.getElementById("imageUploadInput");
-                if (input) {
-                  input.value = ""; // Reset to allow re-upload of same files
-                  input.click();
-                }
-              } else {
-                handleActionClick(action.title);
-              }
-            }}
-            style={styles.actionButton}
-          >
-            <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-            <span style={styles.buttonLabel}>{action.title}</span>
-          </button>
-        ))}
-
-        {/* ✅ Hidden file input */}
-        <input
-          type="file"
-          id="imageUploadInput"
-          multiple
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleImageUpload}
-        />
-      </div>
-
-   
-
-<div style={{ position: "relative" }}>
-
-  {wallUploading && (
-    <div style={{
-      position: "absolute",
-      top: 0, left: 0, right: 0, bottom: 0,
-      background: "rgba(255, 255, 255, 0.8)",
-      display: "flex",
-      // alignItems: "center",
-      justifyContent: "center",
-      zIndex: 2
-    }}>
-      <div className="spinner" /> {/* You can style this below */}
-    </div>
-  )}
-
-  {/* Image Wall */}
-  <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 }}>
-    {eventData.map((item, index) => (
-      <div key={index}>
-        {item.type === "image" ? (
-          <img
-            src={item.src}
-            alt={item.alt}
-            className="event-image"
-            onLoad={(e) => e.currentTarget.classList.add("loaded")}
-          />
-        ) : (
-          <div
-            className="event-text"
-            dangerouslySetInnerHTML={{ __html: item.content }}
-          />
-        )}
-      </div>
-    ))}
-  </div>
-</div>
-
-          </div>
-
-          {showLuckyDrawPopup && (
-            <div
-              className="popup-luckdraw-overlay"
-              onClick={() => setShowLuckyDrawPopup(false)}
-            >
-              <div
-                className="popup-luckdraw-container"
-                onClick={(e) => e.stopPropagation()}
+          <div className="tabs-container" style={styles.tabsContainer}>
+            {actions.map((action, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  if (action.title === "Upload Pictures") {
+                    const input = document.getElementById("imageUploadInput");
+                    if (input) {
+                      input.value = "";
+                      input.click();
+                    }
+                  } else {
+                    handleActionClick(action.title);
+                  }
+                }}
+                style={styles.actionButton}
               >
-                <button
-                  className="popup-luckdraw-close"
-                  onClick={() => setShowLuckyDrawPopup(false)}
-                >
-                  ×
-                </button>
-                <div className="popup-luckdraw-content">
-                  <LuckyDrawForm
-                    onClose={() => setShowLuckyDrawPopup(false)}
-                  />
+                <Image
+                  src={action.image}
+                  alt={action.title}
+                  style={styles.iconStyle}
+                />
+                <span style={styles.buttonLabel}>{action.title}</span>
+              </button>
+            ))}
+            <input
+              type="file"
+              id="imageUploadInput"
+              multiple
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+          </div>
+
+          <div style={{ position: "relative" }}>
+            {wallUploading && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: "rgba(255, 255, 255, 0.8)",
+                  display: "flex",
+                  justifyContent: "center",
+                  zIndex: 2,
+                }}
+              >
+                <div className="spinner" />
+              </div>
+            )}
+            <div
+              className="event-grid"
+              style={{ opacity: wallUploading ? 0.5 : 1 }}
+            >
+              {eventData.map((item, index) => (
+                <div key={index}>
+                  {item.type === "image" ? (
+                    <img
+                      src={item.src}
+                      alt={item.alt}
+                      className="event-image"
+                      onLoad={(e) =>
+                        e.currentTarget.classList.add("loaded")
+                      }
+                    />
+                  ) : (
+                    <div
+                      className="event-text"
+                      dangerouslySetInnerHTML={{ __html: item.content }}
+                    />
+                  )}
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 🎁 Lucky Draw Popup */}
+        {showLuckyDrawPopup && (
+          <div
+            className="popup-luckdraw-overlay"
+            onClick={() => setShowLuckyDrawPopup(false)}
+          >
+            <div
+              className="popup-luckdraw-container"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="popup-luckdraw-close"
+                onClick={() => setShowLuckyDrawPopup(false)}
+              >
+                ×
+              </button>
+              <div className="popup-luckdraw-content">
+                <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
+        {/* 🛠 Invitation Modal */}
+        {showModal && (
+          <InvitationModal
+            showModal={showModal}
+            handleClose={handleClose}
+            handleSave={handleSave}
+            formData={formData}
+            setFormData={setFormData}
+            handleChange={handleChange}
+            handleImageChange={handleImageChange}
+            uploadedImage={uploadedImage}
+            eventOptions={eventOptions}
+            fileInputRef={fileInputRef}
+            orderDetails={orderDetails}
+            imageBackground={imageBackground}
+          />
+        )}
+      </>
+    )}
 
-          {showModal && (
-            <InvitationModal
-              showModal={showModal}
-              handleClose={handleClose}
-              handleSave={handleSave}
-              formData={formData}
-              setFormData={setFormData}
-              handleChange={handleChange}
-              handleImageChange={handleImageChange}
-              uploadedImage={uploadedImage}
-              eventOptions={eventOptions}
-              fileInputRef={fileInputRef}
-              orderDetails={orderDetails}
-              imageBackground={imageBackground}
-            />
-          )}
+    {/* 📋 Guest List Modal Popup */}
+    {showPopupGuest && (
+      <>
+        <div
+          style={styles.backdrop}
+          onClick={() => setShowPopupGuest(false)}
+        />
+        <RSVPPopup
+          guestList={guestList}
+          onClose={() => setShowPopupGuest(false)}
+        />
+      </>
+    )}
+  </>
+);
 
-
-        </>
-      )}
-      
-
-      {showPopupGuest && (
-        <>
-          <div style={styles.backdrop} onClick={() => setShowPopupGuest(false)} />
-
-          <RSVPPopup guestList={guestList} onClose={() => setShowPopupGuest(false)} />
-
-        </>
-      )}
-
-
-
-    </>
-  );
 };
 
 const styles = {
