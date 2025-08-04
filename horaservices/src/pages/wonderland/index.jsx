@@ -332,87 +332,6 @@ const getBase64 = (file) => {
 
 
 
-// const handleSave = async () => {
-//   if (!formData.eventType && formData.eventTypeSearch) {
-//     formData.eventType = formData.eventTypeSearch;
-//   }
-
-//   const formattedDate = new Date(formData.date).toISOString();
-//   const formattedTime = new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-//     hour: "numeric",
-//     minute: "2-digit",
-//     hour12: true,
-//   });
-
-//   const finalImage = uploadedImage || orderDetails?.Image || "";
-//   const token = localStorage.getItem("token");
-//   const loggedInUserId = localStorage.getItem("userID");
-
-//   if (!token || !loggedInUserId) {
-//     alert("Please login to continue.");
-//     return;
-//   }
-
-//   const payload = {
-//     userId: loggedInUserId,
-//     eventType: formData.eventType,
-//     hostName: formData.name,
-//     eventDate: formattedDate,
-//     eventTime: formattedTime,
-//     location: formData.address,
-//     hostImage: finalImage,
-//     ...(id && { idd: id }),
-//   };
-
-//   try {
-//     const res = await fetch(`${BASE_URL}/api/customer/event/create-event-invite`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: token,
-//       },
-//       body: JSON.stringify(payload),
-//     });
-
-//     const result = await res.json();
-
-//     const createdEventId =
-//       result?.data?.idd || result?.data?.id || result?.data?._id || result?.data?.event?._id;
-
-//     const eventCreatorId =
-//       result?.data?.userId || result?.data?.event?.userId || loggedInUserId;
-
-//     const role = loggedInUserId === eventCreatorId ? "host" : "guest";
-
-//     if (res.ok && createdEventId) {
-//       const finalRoute = `${createdEventId}/${loggedInUserId}/${role}`;
-//       router.push(`/wonderland?id=${finalRoute}`);
-
-//       // set states
-//       setId(createdEventId);
-//       setSecondId(loggedInUserId);
-//       setUserType(role);
-//       setShowModal(false);
-//     } else {
-//       alert("Failed to save invitation.");
-//     }
-
-//     // Reset
-//     setFormData({
-//       name: "",
-//       date: "",
-//       time: "",
-//       address: "",
-//       eventType: "",
-//       eventTypeSearch: "",
-//     });
-//     setUploadedImage(null);
-//     setSelectedImage("");
-//   } catch (err) {
-//     console.error("❌ Error:", err);
-//     alert("Something went wrong. Try again.");
-//   }
-// };
 const handleSave = async () => {
   if (!formData.eventType && formData.eventTypeSearch) {
     formData.eventType = formData.eventTypeSearch;
@@ -497,12 +416,6 @@ const handleSave = async () => {
     alert("Something went wrong.");
   }
 };
-
-
-
-
-
-
 
 const convertTo24Hour = (timeStr) => {
   const [time, modifier] = timeStr.split(" ");
@@ -926,6 +839,7 @@ const isGuest = userType === "guest";
               <FinalInviteDisplay
                 orderDetails={orderDetails}
                 handleClick={handleClick}
+                isHost={userType === "host"}
               />
 
               {/* 🎉 RSVP Section */}
