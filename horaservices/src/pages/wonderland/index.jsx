@@ -37,7 +37,7 @@ import GuestListPreview from "@/components/GuestListPreview";
 import ThankYouNotePopup from "@/components/ThankYouNotePopup";
 import RSVPPopup from "@/components/RSVPPopup";
 import GuestRSVPForm from "@/components/GuestRSVPForm";
-
+import frame from "@/assets/Frame 1171276066.png"
 
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
@@ -956,7 +956,7 @@ const isGuest = userType === "guest";
                 <div className="spinner" />
               </div>
             )}
-            <div
+            {/* <div
               className="event-grid"
               style={{ opacity: wallUploading ? 0.5 : 1 }}
             >
@@ -979,7 +979,39 @@ const isGuest = userType === "guest";
                   )}
                 </div>
               ))}
-            </div>
+            </div> */}
+            <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 }}>
+  {eventData.length === 0 ? (
+    <Image
+      src={frame}
+      alt="Celebration Collage Placeholder"
+      style={{
+        width: "100%",
+        borderRadius: "12px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      }}
+    />
+  ) : (
+    eventData.map((item, index) => (
+      <div key={index}>
+        {item.type === "image" ? (
+          <img
+            src={item.src}
+            alt={item.alt}
+            className="event-image"
+            onLoad={(e) => e.currentTarget.classList.add("loaded")}
+          />
+        ) : (
+          <div
+            className="event-text"
+            dangerouslySetInnerHTML={{ __html: item.content }}
+          />
+        )}
+      </div>
+    ))
+  )}
+</div>
+
           </div>
         </div>
 
