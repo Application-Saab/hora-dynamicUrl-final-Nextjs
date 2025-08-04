@@ -37,7 +37,7 @@ import GuestListPreview from "@/components/GuestListPreview";
 import ThankYouNotePopup from "@/components/ThankYouNotePopup";
 import RSVPPopup from "@/components/RSVPPopup";
 import GuestRSVPForm from "@/components/GuestRSVPForm";
-import frame from "@/assets/Frame 1171276066.png"
+import frame from "@/assets/Frame1.png"
 
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
