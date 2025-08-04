@@ -217,9 +217,85 @@ const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
   });
 };
 
-  const handleEdit = () => {
-    setShowModal(true);
-  };
+
+// const handleEdit = () => {
+//   if (!orderDetails) return;
+
+//   let formattedTime = "";
+//   if (orderDetails.Time) {
+//     try {
+//       // Convert 12-hour string to 24-hour format
+//       const [time, modifier] = orderDetails.Time.split(" ");
+//       let [hours, minutes] = time.split(":").map(Number);
+
+//       if (modifier === "PM" && hours < 12) hours += 12;
+//       if (modifier === "AM" && hours === 12) hours = 0;
+
+//       // Pad to always get "HH:mm"
+//       formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+//     } catch (err) {
+//       console.warn("⛔ Invalid time format in orderDetails.Time:", orderDetails.Time);
+//     }
+//   }
+
+//   setFormData({
+//     name: orderDetails.Name || "",
+//     date: orderDetails.Date
+//       ? new Date(orderDetails.Date).toISOString().split("T")[0]
+//       : "",
+//     time: formattedTime,
+//     address: orderDetails.Address || "",
+//     eventType: orderDetails.eventType || orderDetails["Event Type"] || "",
+//     eventTypeSearch: orderDetails.eventType || orderDetails["Event Type"] || "",
+//   });
+
+//   setUploadedImage(orderDetails.Image || "");
+//   setSelectedImage(orderDetails.Image || "");
+//   setId(orderDetails?.id || orderDetails?.eventId || orderDetails?._id);
+//   setShowModal(true);
+// };
+
+const handleEdit = () => {
+  if (!orderDetails) return;
+
+  let formattedTime = "";
+  if (orderDetails.Time) {
+    const timeStr = orderDetails.Time;
+    const parsed = new Date(`1970-01-01T${timeStr}`);
+    if (!isNaN(parsed)) {
+      formattedTime = parsed.toTimeString().slice(0, 5); // "HH:mm"
+    } else {
+      try {
+        const [timePart, meridian] = timeStr.split(" ");
+        const [h, m] = timePart.split(":");
+        let hours = parseInt(h, 10);
+        if (meridian === "PM" && hours < 12) hours += 12;
+        if (meridian === "AM" && hours === 12) hours = 0;
+        formattedTime = `${hours.toString().padStart(2, "0")}:${m}`;
+      } catch {
+        formattedTime = "";
+      }
+    }
+  }
+
+  setFormData({
+    name: orderDetails.Name || "",
+    date: orderDetails.Date
+      ? new Date(orderDetails.Date).toISOString().split("T")[0]
+      : "",
+    time: formattedTime,
+    address: orderDetails.Address || "",
+    eventType: orderDetails.eventType || orderDetails["Event Type"] || "",
+    eventTypeSearch: orderDetails.eventType || orderDetails["Event Type"] || "",
+  });
+
+  setUploadedImage(orderDetails.Image || "");
+  setSelectedImage(orderDetails.Image || "");
+  setId(orderDetails?.id || orderDetails?._id || orderDetails?.eventId);
+  setShowModal(true);
+};
+
+
 
   const handleClosePopup = () => {
     setNoteTitle("");
@@ -255,6 +331,7 @@ const getBase64 = (file) => {
 
 
 
+
 // const handleSave = async () => {
 //   if (!formData.eventType && formData.eventTypeSearch) {
 //     formData.eventType = formData.eventTypeSearch;
@@ -269,16 +346,15 @@ const getBase64 = (file) => {
 
 //   const finalImage = uploadedImage || orderDetails?.Image || "";
 //   const token = localStorage.getItem("token");
+//   const loggedInUserId = localStorage.getItem("userID");
 
-//   if (!token) {
+//   if (!token || !loggedInUserId) {
 //     alert("Please login to continue.");
 //     return;
 //   }
 
-  
-
 //   const payload = {
-//     userId: loggedInUserId, // ✅ use the real host's userId
+//     userId: loggedInUserId,
 //     eventType: formData.eventType,
 //     hostName: formData.name,
 //     eventDate: formattedDate,
@@ -299,40 +375,29 @@ const getBase64 = (file) => {
 //     });
 
 //     const result = await res.json();
-//     console.log("✅ Full API Response:", JSON.stringify(result, null, 2));
 
 //     const createdEventId =
-//       result?.data?.idd ||
-//       result?.data?.id ||
-//       result?.data?._id ||
-//       result?.data?.event?._id;
+//       result?.data?.idd || result?.data?.id || result?.data?._id || result?.data?.event?._id;
 
-      
 //     const eventCreatorId =
 //       result?.data?.userId || result?.data?.event?.userId || loggedInUserId;
 
-//    const isHost = (loggedInUserId?.trim?.() || "") === (eventCreatorId?.trim?.() || "");
-//   const role = userId === eventCreatorId ? "host" : "guest";
-
+//     const role = loggedInUserId === eventCreatorId ? "host" : "guest";
 
 //     if (res.ok && createdEventId) {
-//       router
-//         .push(`/wonderland?id=${createdEventId}/${loggedInUserId}/${role}`)
-//         .then(() => {
-//           console.log("✅ Navigation successful!");
-//           setShowModal(false);
-//           setId(createdEventId);
-//           setSecondId(loggedInUserId);
-//           setUserType(role);
-//         })
-//         .catch((err) => {
-//           console.error("❌ Router push failed:", err);
-//         });
+//       const finalRoute = `${createdEventId}/${loggedInUserId}/${role}`;
+//       router.push(`/wonderland?id=${finalRoute}`);
+
+//       // set states
+//       setId(createdEventId);
+//       setSecondId(loggedInUserId);
+//       setUserType(role);
+//       setShowModal(false);
 //     } else {
-//       console.warn("❌ No event ID found in response. Navigation skipped.");
+//       alert("Failed to save invitation.");
 //     }
 
-//     // Reset form
+//     // Reset
 //     setFormData({
 //       name: "",
 //       date: "",
@@ -343,24 +408,24 @@ const getBase64 = (file) => {
 //     });
 //     setUploadedImage(null);
 //     setSelectedImage("");
-//     setShowModal(false);
 //   } catch (err) {
-//     console.error("❌ Error submitting to backend:", err);
-//     alert("Something went wrong. Please try again.");
+//     console.error("❌ Error:", err);
+//     alert("Something went wrong. Try again.");
 //   }
 // };
-
 const handleSave = async () => {
   if (!formData.eventType && formData.eventTypeSearch) {
     formData.eventType = formData.eventTypeSearch;
   }
 
-  const formattedDate = new Date(formData.date).toISOString();
-  const formattedTime = new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const formattedDate = formData.date ? new Date(formData.date).toISOString() : "";
+  const formattedTime = formData.time
+    ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
+    : "";
 
   const finalImage = uploadedImage || orderDetails?.Image || "";
   const token = localStorage.getItem("token");
@@ -379,43 +444,44 @@ const handleSave = async () => {
     eventTime: formattedTime,
     location: formData.address,
     hostImage: finalImage,
-    ...(id && { idd: id }),
   };
 
+  const isEdit = !!id;
+
   try {
-    const res = await fetch(`${BASE_URL}/api/customer/event/create-event-invite`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(
+      isEdit
+        ? `${BASE_URL}/api/customer/event/event-invites/${id}`
+        : `${BASE_URL}/api/customer/event/create-event-invite`,
+      {
+        method: isEdit ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const result = await res.json();
+    const finalEventId = isEdit
+      ? id
+      : result?.data?._id || result?.data?.idd || result?.data?.event?._id;
 
-    const createdEventId =
-      result?.data?.idd || result?.data?.id || result?.data?._id || result?.data?.event?._id;
-
-    const eventCreatorId =
-      result?.data?.userId || result?.data?.event?.userId || loggedInUserId;
-
-    const role = loggedInUserId === eventCreatorId ? "host" : "guest";
-
-    if (res.ok && createdEventId) {
-      const finalRoute = `${createdEventId}/${loggedInUserId}/${role}`;
-      router.push(`/wonderland?id=${finalRoute}`);
-
-      // set states
-      setId(createdEventId);
+    if (res.ok && finalEventId) {
+      await fetchOrderDetails(finalEventId); // ✅ Refresh latest details
+      setId(finalEventId);
       setSecondId(loggedInUserId);
-      setUserType(role);
+      setUserType("host");
       setShowModal(false);
+
+      // ✅ Update the URL route to reflect changes
+      router.replace(`/wonderland?id=${finalEventId}/${loggedInUserId}/host`);
     } else {
       alert("Failed to save invitation.");
     }
 
-    // Reset
+    // ✅ Reset form
     setFormData({
       name: "",
       date: "",
@@ -428,9 +494,14 @@ const handleSave = async () => {
     setSelectedImage("");
   } catch (err) {
     console.error("❌ Error:", err);
-    alert("Something went wrong. Try again.");
+    alert("Something went wrong.");
   }
 };
+
+
+
+
+
 
 
 const convertTo24Hour = (timeStr) => {
@@ -478,73 +549,6 @@ const convertTo24Hour = (timeStr) => {
     }
   }, []);
 
-// useEffect(() => {
-//   if (!router.isReady) return;
-
-//   const queryId = router.query.id;
-//   const eventId = Array.isArray(queryId) ? queryId[0] : queryId?.split("/")?.[0];
-//   if (!eventId) return;
-
-//   fetchOrderDetails(eventId);
-// }, [router.isReady, router.query.id]);
-
-// const fetchOrderDetails = async (eventId) => {
-//   const token = localStorage.getItem("token");
-//   if (!token) {
-//     alert("Please login to continue.");
-//     return;
-//   }
-
-//   try {
-//     const res = await fetch(
-//       `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Authorization": token,  
-//         },
-//       }
-//     );
-
-//     if (!res.ok) {
-//       console.warn(`❌ Fetch failed with status: ${res.status}`);
-//       alert(`Failed to fetch event details: ${res.status}`);
-//       return;
-//     }
-
-//     const result = await res.json();
-
-//   if (res.status === 200 && result.data) {
-//   const inviteData = result.data;
-
-//   const loggedInUserId = localStorage.getItem("userID");
-
-//   setOrderDetails({
-//     Name: inviteData.hostName,
-//     "Event Type": inviteData.eventType,
-//     Date: inviteData.eventDate,
-//     Time: inviteData.eventTime,
-//     Address: inviteData.location,
-//     Image: inviteData.hostImage || inviteData.imageUrl || "",
-//     userId: inviteData.userId,
-//   });
-
-//   // ✅ Set host check after order details set
-//  const fetchedHostId = String(inviteData.userId).trim();
-// const loggedInId = String(localStorage.getItem("userID")).trim();
-// setIsHost(fetchedHostId === loggedInId);
-
-// }
-//  else {
-//   alert(`Error fetching data: ${result.message || "Unknown error"}`);
-// }
-
-//   } catch (err) {
-//     console.error("❌ Error fetching invite:", err);
-//     alert("Error fetching event details, please try again later.");
-//   }
-// };
 
 useEffect(() => {
   if (!router.isReady) return;
@@ -575,15 +579,18 @@ const fetchOrderDetails = async (eventId) => {
       const data = result.data;
       const hostId = String(data.userId).trim();
 
-      setOrderDetails({
-        Name: data.hostName,
-        "Event Type": data.eventType,
-        Date: data.eventDate,
-        Time: data.eventTime,
-        Address: data.location,
-        Image: data.hostImage || data.imageUrl || "",
-        userId: hostId,
-      });
+     setOrderDetails({
+  Name: data.hostName,
+  "Event Type": data.eventType,
+  eventType: data.eventType, // ✅ add this
+  Date: data.eventDate,
+  Time: data.eventTime,
+  Address: data.location,
+  Image: data.hostImage || data.imageUrl || "",
+  userId: hostId,
+  id: data._id || data.id || data.eventId,
+});
+
 
       // ✅ Set host ID globally
       setSendCustomerId(hostId);
