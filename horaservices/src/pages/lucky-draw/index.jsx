@@ -5,8 +5,9 @@ import CamIcon from "../../assets/wonderland/cam_Icon_luckydraw.svg";
 import LogoHora from "../../assets/wonderland/logo_small_lucky.svg";
 import { API_BASE_URL } from "@/config";
 
-const LuckyDrawForm = ({ onClose, guestId }) => {
-  guestId = "688b26f23630903e5fd214a8";
+const LuckyDrawForm = ({ onClose }) => {
+  let eventId = "6893126fb25684ca87888152";
+  let userId = "68849ffc1651b3b2e77f00c3";
   const [preview, setPreview] = useState(null);
   const [boxOpened, setBoxOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,11 +30,12 @@ const LuckyDrawForm = ({ onClose, guestId }) => {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("luckyDrawImage", preview.file); // Append the file object
+    formData.append("image", preview.file);
+    formData.append("userId", userId);
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/customer/event/event-guests/${guestId}/lucky-draw`,
+        `${API_BASE_URL}/customer/event/event-images/${eventId}/lucky-draw`,
         {
           method: "PUT",
           body: formData,
