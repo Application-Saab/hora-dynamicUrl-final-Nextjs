@@ -1,5 +1,3 @@
-
-
 // import React from "react";
 // import{ useEffect } from "react";
 // import "./GuestListPreview.css"; // you'll create this CSS file
@@ -53,16 +51,30 @@
 import React, { useEffect } from "react";
 import "./GuestListPreview.css";
 
-const GuestListPreview = ({ guestList = [], loading, fetchGuests, userType }) => {
- useEffect(() => {
-  fetchGuests(false); // ❌ Popup nahi khulega
-}, []);
+const GuestListPreview = ({
+  guestList = [],
+  loading,
+  fetchGuests,
+  userType,
+}) => {
+  useEffect(() => {
+    fetchGuests(false);
+  }, []);
 
-  const confirmedCount = guestList.filter(g => g.status === "I am coming").length;
-  const willTryCount = guestList.filter(g => g.status === "Not sure").length;
+  const confirmedCount = guestList.filter(
+    (g) => g.status === "I am coming"
+  ).length;
+  const willTryCount = guestList.filter((g) => g.status === "Not sure").length;
 
   const getRandomColor = () => {
-    const colors = ["#7A4E9D", "#502F87", "#FD5C91", "#A45584", "#392B69", "#0C39A8"];
+    const colors = [
+      "#7A4E9D",
+      "#502F87",
+      "#FD5C91",
+      "#A45584",
+      "#392B69",
+      "#0C39A8",
+    ];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
@@ -77,8 +89,8 @@ const GuestListPreview = ({ guestList = [], loading, fetchGuests, userType }) =>
         <span className="preview-label">Guests</span>
         {guestList.length > 0 && (
           <span className="preview-view-list" onClick={() => fetchGuests(true)}>
-  View Full List
-</span>
+            View Full List
+          </span>
         )}
       </div>
 

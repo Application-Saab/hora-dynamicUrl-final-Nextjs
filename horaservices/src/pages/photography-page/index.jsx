@@ -37,6 +37,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import Tabs from '@/components/Tabs';
 import google from "../../assets/google.jpg";
+import { BASE_URL } from '@/utils/apiconstants';
 const index = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
 const scriptTag = JSON.stringify(schemaOrg);
@@ -155,7 +156,7 @@ const scriptTag = JSON.stringify(schemaOrg);
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
+        `${BASE_URL}/api/photography/searchByTag/${tagId}`
       );
       const productData = response.data.data.map(item => {
         const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);

@@ -9,6 +9,7 @@ import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is
 import LazyImage from '../../components/LazyImage';         // Ensure path is correct
 import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
 import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
+import { BASE_URL } from "@/utils/apiconstants";
 
 // If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
 // import "slick-carousel/slick/slick.css"; 
@@ -74,7 +75,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       }
       setLoading(true); setError(null);
       try {
-        const response = await fetch(`https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
+        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
         const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));

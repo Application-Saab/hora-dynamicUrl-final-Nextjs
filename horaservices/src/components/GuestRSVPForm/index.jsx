@@ -107,7 +107,7 @@ const GuestRSVPForm = ({
         </>
       )}
 
-      <h3 className="coming-title">See Who’s Coming!</h3>
+      <h3 className="coming-title">See Who’s Cominghhh!</h3>
 
       <div className="guest-preview-header">
         <span className="guests-label">Guests</span>

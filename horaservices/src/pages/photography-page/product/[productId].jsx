@@ -15,6 +15,7 @@ import SECURESTORAGE from "../../../assets/secureStorage.png";
 import SUPPORT from "../../../assets/support.png";
 import "./productDetails.css";
 import { FaQuestionCircle } from "react-icons/fa";
+import { BASE_URL } from '@/utils/apiconstants';
 const ProductDetails = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
@@ -193,7 +194,7 @@ const ProductDetails = () => {
     const fetchFromBackup = async () => {
       try {
         const res = await axios.get(
-          'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
+          `${BASE_URL}/api/photography/searchByTag/66c96b4e22ed47b72117e09a`
         );
         const allWorks = res.data.data;
         const matched = allWorks.find((item) => item._id === productId);
