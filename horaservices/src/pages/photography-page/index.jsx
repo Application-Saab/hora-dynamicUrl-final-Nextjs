@@ -125,7 +125,13 @@ const scriptTag = JSON.stringify(schemaOrg);
     );
   }
  const viewMoreProduct = (work, activeTab) => {
-  // GTM Event Fire
+   router.push({
+      pathname: `/photography-page/product/${work._id}`,
+      query: {
+        product: JSON.stringify(work),
+        tagId: tagIds[activeTab],  
+      },
+    });
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: 'photography_view_more_click',
@@ -135,7 +141,9 @@ const scriptTag = JSON.stringify(schemaOrg);
     productId: work?._id,
     tabName: activeTab,
   });
+ 
   };
+
   const getDiscountedPrice = (price) => {
     let discount;
 
