@@ -10,8 +10,8 @@ import tabIcon3 from "../../assets/luckdrawicon.jpg";
 import dressIcon from "../../assets/dressIcon.jpg";
 import StickyImage from "../../assets/sticky5.png";
 import { FaCheckCircle, FaUsers } from 'react-icons/fa';
-import imageBackground from "../../assets/imageBackground.png";
-import imageBackGround from "../../assets/imageBackground.png"
+import imageBackground from "../../assets/imageBackground.jpg";
+import imageBackGround from "../../assets/finalInviteBackground.png"
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
@@ -218,42 +218,6 @@ const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
 };
 
 
-// const handleEdit = () => {
-//   if (!orderDetails) return;
-
-//   let formattedTime = "";
-//   if (orderDetails.Time) {
-//     try {
-//       // Convert 12-hour string to 24-hour format
-//       const [time, modifier] = orderDetails.Time.split(" ");
-//       let [hours, minutes] = time.split(":").map(Number);
-
-//       if (modifier === "PM" && hours < 12) hours += 12;
-//       if (modifier === "AM" && hours === 12) hours = 0;
-
-//       // Pad to always get "HH:mm"
-//       formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-//     } catch (err) {
-//       console.warn("⛔ Invalid time format in orderDetails.Time:", orderDetails.Time);
-//     }
-//   }
-
-//   setFormData({
-//     name: orderDetails.Name || "",
-//     date: orderDetails.Date
-//       ? new Date(orderDetails.Date).toISOString().split("T")[0]
-//       : "",
-//     time: formattedTime,
-//     address: orderDetails.Address || "",
-//     eventType: orderDetails.eventType || orderDetails["Event Type"] || "",
-//     eventTypeSearch: orderDetails.eventType || orderDetails["Event Type"] || "",
-//   });
-
-//   setUploadedImage(orderDetails.Image || "");
-//   setSelectedImage(orderDetails.Image || "");
-//   setId(orderDetails?.id || orderDetails?.eventId || orderDetails?._id);
-//   setShowModal(true);
-// };
 
 const handleEdit = () => {
   if (!orderDetails) return;
@@ -310,14 +274,35 @@ const handleEdit = () => {
   const handleClick = () => {
     router.push('/templates');
   };
+  // const handleChange = (e) => {
+  //   const { name, value, files } = e.target;
+  //   if (name === "image") {
+  //     setFormData({ ...formData, image: files[0] });
+  //   } else {
+  //     setFormData({ ...formData, [name]: value });
+  //   }
+    
+  // };
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      setFormData({ ...formData, image: files[0] });
+  const { name, value, files, type } = e.target;
+
+  // Set the input value in formData
+  if (name === "image") {
+    setFormData({ ...formData, image: files[0] });
+  } else {
+    setFormData({ ...formData, [name]: value });
+  }
+
+  // ✅ Add/remove `has-value` class for date/time inputs
+  if (type === "date" || type === "time") {
+    if (value) {
+      e.target.classList.add("has-value");
     } else {
-      setFormData({ ...formData, [name]: value });
+      e.target.classList.remove("has-value");
     }
-  };
+  }
+};
+
 
 const getBase64 = (file) => {
   return new Promise((resolve, reject) => {

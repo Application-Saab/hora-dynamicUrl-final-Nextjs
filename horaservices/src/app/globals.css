@@ -587,14 +587,10 @@ p.m-0.p-0.fw-bold.filter-price-tag {
 
 /* login form css */
 
-.input-field {
+/* .input-field {
   background-color: #d9d9d9;
-}
+} */
 
-.input-field:focus {
-  background-color: #d9d9d9;
-  /*border-color: "none";*/
-}
 
 .form-control {
   outline: none;

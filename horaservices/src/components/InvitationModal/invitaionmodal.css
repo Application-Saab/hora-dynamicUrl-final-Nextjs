@@ -7,28 +7,38 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+
   overflow-y: auto;
 }
 
 .invitation-container-form {
   width: 100%;
   max-width: 320px;
-  background: rgba(255, 255, 255, 0.7); /* white with 60% opacity */
+  background: linear-gradient(180deg, #A8E3FE 0%, #FED7F3 53.58%, #FEDFD7 88.89%, #FFDACE 100%);
   border-radius: 20px;
   padding: 10px 18px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
   font-family: "Segoe UI", sans-serif;
-      margin: 50px;
+  margin: 50px;
 }
 
-.invite-title {
-  font-size: 1.3rem;
-  font-weight: bold;
+
+
+.invite-Title {
+  font-family: 'Aclonica', sans-serif;
+  font-size: 25px;
+  font-weight: 500;
   color: #97538C;
-  margin-bottom: 6px;
+  text-align: center;
+  text-shadow:
+    -1px -1px 0 #fff,  
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff; 
 }
+
+
 
 .invite-subtitle {
   font-size: 0.75rem;
@@ -60,12 +70,13 @@
   width: 100%;
   padding: 8px 12px;
   font-size: 0.85rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  border-radius: 5px;
+   border: 1px solid #00000066;
   margin-bottom: 5px;
   outline: none;
   background-color: white;
   transition: border 0.3s;
+  color: #00000099;;
 }
 
 .input-field:focus {
@@ -78,13 +89,13 @@
   align-items: center;
   margin-top: 12px;
   padding: 16px;
-  border: 2px dashed #d946ef;
+  border: 1px solid #97538C;
   border-radius: 14px;
   cursor: pointer;
   background-color: #fff0f6;
-  color: #a21caf;
+  color: #666666;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .upload-box img {
@@ -181,3 +192,31 @@
   color: #888;
   font-style: italic;
 }
+
+.input-field::placeholder {
+  opacity:10; 
+  font-weight: 400;
+}
+
+
+.input-field::-webkit-calendar-picker-indicator {
+  filter: invert(40%) sepia(38%) saturate(300%) hue-rotate(265deg) brightness(85%) contrast(95%);
+  cursor: pointer;
+}
+
+input[type="text"].input-field {
+  color: #000000;
+}
+
+/* Default style (when input is empty) */
+input[type="date"].input-field,
+input[type="time"].input-field {
+  color: #999; /* light gray placeholder-like */
+}
+
+/* When user has selected a date/time */
+input[type="date"].input-field.has-value,
+input[type="time"].input-field.has-value {
+  color: #000; /* solid black for filled input */
+}
+

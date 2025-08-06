@@ -2,6 +2,7 @@ import React from "react";
 import "./invitaionmodal.css";
 import camera from "../../assets/camera.png"
 import Image from "next/image";
+import Head from "next/head";
 const InvitationModal = ({
   showModal,
   handleClose,
@@ -23,17 +24,34 @@ const InvitationModal = ({
   );
 
   if (!showModal) return null;
+React.useEffect(() => {
+  const dateInput = document.querySelector('input[name="date"]');
+  const timeInput = document.querySelector('input[name="time"]');
+
+  if (dateInput?.value) dateInput.classList.add("has-value");
+  if (timeInput?.value) timeInput.classList.add("has-value");
+}, []);
 
   return (
+
     <div
       className="modal-overlay"
       style={{ backgroundImage: `url(${imageBackground?.src || ""})` }}
     >
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
       <div className="invitation-container-form">
-        <h2 className="invite-title">Create Event Invite</h2>
+        <h2 className="invite-Title">Create  Invitation</h2>
 
         <p className="invite-subtitle">
-          ✨ A day of joy, a heart full of cheer, <br />
+          {/* ✨ A day of joy, a heart full of cheer, <br />
+          The people we love, we wish to have near. <br />
+          So come join us and make memories dear. */}
+          🌟 A day of joy, a heart full of cheer 🌟 <br />
           The people we love, we wish to have near. <br />
           So come join us and make memories dear.
         </p>
@@ -91,29 +109,29 @@ const InvitationModal = ({
           onChange={handleChange}
         />
 
-       <div className="date-time-row">
-  <div className="field-group">
-    <label className="input-label">Event Date</label>
-    <input
-      type="date"
-      name="date"
-      className="input-field"
-      value={formData.date}
-      onChange={handleChange}
-    />
-  </div>
+        <div className="date-time-row">
+          <div className="field-group">
+            <label className="input-label">Event Date</label>
+            <input
+              type="date"
+              name="date"
+              className="input-field"
+              value={formData.date}
+              onChange={handleChange}
+            />
+          </div>
 
-  <div className="field-group">
-    <label className="input-label">Arrival Time</label>
-    <input
-      type="time"
-      name="time"
-      className="input-field"
-      value={formData.time}
-      onChange={handleChange}
-    />
-  </div>
-</div>
+          <div className="field-group">
+            <label className="input-label">Arrival Time</label>
+            <input
+              type="time"
+              name="time"
+              className="input-field"
+              value={formData.time}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
 
 
         <input
@@ -124,77 +142,40 @@ const InvitationModal = ({
           value={formData.address}
           onChange={handleChange}
         />
-
-{/* {(uploadedImage || orderDetails?.Image) ? (
-  <div
-    className="preview-wrapper"
-    onClick={() => fileInputRef.current?.click()} // clicking image triggers upload
-  >
-    <img
-  src={uploadedImage || orderDetails?.Image || ""}
-
-      className="image-preview"
-    />
-    <div className="change-text">Tap to change photo</div>
-   
-    <input
-      type="file"
-      accept="image/*"
-      id="file-upload"
-      onChange={handleImageChange}
-      ref={fileInputRef}
-      hidden
-    />
-  </div>
-) : (
-  <label htmlFor="file-upload" className="upload-box">
-    <Image src={camera} alt="Upload" />
-    <div>Upload Photo</div>
-    <input
-      type="file"
-      accept="image/*"
-      id="file-upload"
-      onChange={handleImageChange}
-      ref={fileInputRef}
-      hidden
-    />
-  </label>
-)} */}
-
-{(uploadedImage || orderDetails?.Image) ? (
-  <div
-    className="preview-wrapper"
-    onClick={() => fileInputRef.current?.click()}
-  >
-    <img
-      src={uploadedImage || orderDetails?.Image || ""}
-      alt="Preview"
-      className="image-preview"
-    />
-    <div className="change-text">Tap to change photo</div>
-    <input
-      type="file"
-      accept="image/*"
-      id="file-upload"
-      onChange={handleImageChange}
-      ref={fileInputRef}
-      hidden
-    />
-  </div>
-) : (
-  <label htmlFor="file-upload" className="upload-box">
-    <Image src={camera} alt="Upload" />
-    <div>Upload Photo</div>
-    <input
-      type="file"
-      accept="image/*"
-      id="file-upload"
-      onChange={handleImageChange}
-      ref={fileInputRef}
-      hidden
-    />
-  </label>
-)}
+        {(uploadedImage || orderDetails?.Image) ? (
+          <div
+            className="preview-wrapper"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <img
+              src={uploadedImage || orderDetails?.Image || ""}
+              alt="Preview"
+              className="image-preview"
+            />
+            <div className="change-text">Tap to change photo</div>
+            <input
+              type="file"
+              accept="image/*"
+              id="file-upload"
+              onChange={handleImageChange}
+              ref={fileInputRef}
+              hidden
+            />
+          </div>
+        ) : (
+          <label htmlFor="file-upload" className="upload-box">
+            <Image src={camera} alt="Upload" />
+            <div>Upload Photo</div>
+            <input
+              type="file"
+              accept="image/*"
+              id="file-upload"
+              onChange={handleImageChange}
+              ref={fileInputRef}
+              hidden
+            />
+          </label>
+        )}
 
         <div className="button-row">
           <button className="cancel-btn" onClick={handleClose}>
