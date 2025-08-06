@@ -7,7 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
+  background-repeat: no-repeat;
   overflow-y: auto;
 }
 
@@ -20,7 +20,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
   font-family: "Segoe UI", sans-serif;
-  margin: 50px;
+  margin: 30px 30px 30px 30px;
 }
 
 
@@ -50,7 +50,7 @@
 .input-label {
   text-align: left;
   font-size: 0.75rem;
-  color: #6b21a8;
+  color: #424648;
   margin-bottom: 4px;
   display: block;
 }
@@ -67,32 +67,32 @@
 }
 
 .input-field {
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  border-radius: 5px;
-   border: 1px solid #00000066;
-  margin-bottom: 5px;
-  outline: none;
-  background-color: white;
-  transition: border 0.3s;
-  color: #00000099;;
+    width: 100%;
+    padding: 8px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    border: 1px solid #00000066;
+    margin-bottom: 10px;
+    outline: none;
+    background-color: white;
+    transition: border 0.3s;
+    color: #00000099;
 }
 
-.input-field:focus {
+/* .input-field:focus {
   border-color: #f472b6;
-}
+} */
 
 .upload-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 12px;
-  padding: 16px;
+  padding: 20px 0px 20px 0px;
   border: 1px solid #97538C;
   border-radius: 14px;
   cursor: pointer;
-  background-color: #fff0f6;
+  background-color: white;
   color: #666666;
   font-weight: 600;
   font-size: 12px;
@@ -200,7 +200,7 @@
 
 
 .input-field::-webkit-calendar-picker-indicator {
-  filter: invert(40%) sepia(38%) saturate(300%) hue-rotate(265deg) brightness(85%) contrast(95%);
+ filter: invert(40%) sepia(38%) saturate(300%) hue-rotate(265deg) brightness(85%) contrast(95%);
   cursor: pointer;
 }
 
@@ -211,7 +211,7 @@ input[type="text"].input-field {
 /* Default style (when input is empty) */
 input[type="date"].input-field,
 input[type="time"].input-field {
-  color: #999; /* light gray placeholder-like */
+  color: #5f5e5e; /* light gray placeholder-like */
 }
 
 /* When user has selected a date/time */

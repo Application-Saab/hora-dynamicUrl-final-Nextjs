@@ -1,28 +1,41 @@
 .invite-wrapper {
-  background: url('/balloon-bg.png') no-repeat center center;
-  background-size: cover;
-  padding: 30px 16px;
-  display: flex;
+  /* background-size: cover; */
+  /* padding: 30px 16px; */
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
+      background-size: cover;
+    padding: 20px 1px;
 }
 
 .invite-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
-  padding: 24px 16px;
-  width: 100%;
-  max-width: 340px;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border: 2px solid #ffe3f1;
+    background: rgba(255, 255, 255, 0.50);
+    border-radius: 24px;
+    padding: 24px 16px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    height: 400px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    /* border: 2px solid #ffe3f1; */
+    margin: auto;
 }
 
+.highlight-title {
+  font-family: 'Aclonica', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 100%;
+  text-align: center;
+  color: #10235B;
+  margin: 16px 0 12px;
+  text-transform: capitalize;
+}
 /* 🎉 Heading */
 .party-title {
   font-family: 'Aclonica', sans-serif;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 22px;
   line-height: 100%;
   text-align: center;
   color: #97538C;
@@ -55,46 +68,43 @@
   border-radius: 50%;
   object-fit: cover;
 }
-.event-info-container {
+.event-info-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center; /* 🔥 Center the whole block horizontally */
-  gap: 6px;
+  align-items: center; /* ✅ Center the entire block */
+}
+
+.event-details {
+  text-align: left;     /* ✅ Text inside is left aligned */
+  display: inline-block;
+}
+
+.event-line {
+  color: #10235B;
+  font-weight: 500;
+  font-size: 15px;
   margin-top: 10px;
 }
 
-.event-line-left {
-  text-align: left;
-  width: 100%;
-  max-width: 240px; /* 👈 Optional: adjust width for consistent alignment */
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
+.event-address {
+  margin-top: 10px;
+  text-align: center;
   color: #10235B;
+  font-weight: 500;
   font-size: 15px;
 }
-
-.event-line-center {
-  text-align: center;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  color: #10235B;
-  font-size: 14px;
-}
-
-
-
 /* 🔘 Buttons */
 .invite-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin-top: 18px;
+  margin: 18px 0px 18px 0px;
 }
 
 .btn-green {
   background-color: #1cb88b;
   color: white;
-  padding: 10px 14px;
+  padding: 5px;
   border: none;
   border-radius: 8px;
   font-size: 13px;
@@ -108,7 +118,7 @@
 .btn-pink {
   background-color: #e25787;
   color: white;
-  padding: 10px 14px;
+  padding: 5px;
   border: none;
   border-radius: 8px;
   font-size: 13px;

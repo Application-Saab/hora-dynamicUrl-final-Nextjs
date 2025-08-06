@@ -3,17 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
 import profileImage from "../../assets/Ahmdabad.png"; // Add your own image
 // import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
-import tabIcon1 from "../../assets/galleryicon.jpg";
+import tabIcon1 from "../../assets/galleryicon.png";
 import tabIcon2 from "../../assets/thankyouicon.png";
-import { FaUpload, FaStickyNote } from 'react-icons/fa';
-import tabIcon3 from "../../assets/luckdrawicon.jpg";
-import dressIcon from "../../assets/dressIcon.jpg";
-import StickyImage from "../../assets/sticky5.png";
-import { FaCheckCircle, FaUsers } from 'react-icons/fa';
+import wallCamera from "@/assets/wallCamera.png"
 import imageBackground from "../../assets/imageBackground.jpg";
 import imageBackGround from "../../assets/finalInviteBackground.png"
 import Image from "next/image";
-import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
 import { BASE_URL, IMAGE_UPLOAD } from "../../utils/apiconstants";
 import { useRouter } from "next/router";
@@ -21,8 +16,7 @@ import axios from "axios";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
 import html2canvas from "html2canvas";
 import LuckyDrawForm from "../lucky-draw/index";
-import { MapPin, User, Gift, Wand2, Camera } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // add icons
+import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg"
 import {
   faCamera,
   faPen,
@@ -147,13 +141,7 @@ const [isHost, setIsHost] = useState(false);
       image: tabIcon2,
       title: "Thank You Note",
     },
-    // {
-    //   image: tabIcon3,
-    //   title: "Lucky Draw",
-
-    // },
   ];
-
 
 
 console.log("ishost",isHost);
@@ -806,26 +794,24 @@ const isGuest = userType === "guest";
     ) : (
       <>
         {/* 📜 Invitation Display Container */}
-        <div
-          className="invitation-container relative flex flex-col items-center justify-center"
-          style={{
-            backgroundImage: orderDetails?.Template
-              ? `url(https://horaservices.com/api/uploads/${orderDetails.Template})`
-              : `url(${imageBackGround.src})`,
-            backgroundSize: "100%",
-            backgroundPosition: "center",
-          }}
-        >
-          {/* {showFAB && <FloatingEditButton onClick={handleEdit} />} */}
+        
+         
 {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
           {orderDetails ? (
             <>
+             <div
+          className="invitation-container"
+          style={{
+            backgroundImage:  `url(${imageBackGround.src})`,
+          }}
+        >
               <FinalInviteDisplay
                 orderDetails={orderDetails}
                 handleClick={handleClick}
                 isHost={userType === "host"}
-              />
+
+              /></div>
 
               {/* 🎉 RSVP Section */}
               {isHost || hasSubmitted ? (
@@ -879,11 +865,26 @@ const isGuest = userType === "guest";
           ) : (
             <p>Loading...</p>
           )}
-        </div>
+<div className="lucky-draw-banner">
+  <Image src={LuckDrawBanner} alt="Luck Draw Banner" className="banner-img" />
+  <button className="click-now-btn" onClick={() => setShowLuckyDrawPopup(true)}>
+    Click Now
+  </button>
+</div>
+
 
         {/* 🎊 Celebration Wall */}
         <div style={styles.wrapper}>
-          <h2 style={styles.heading}>📸 Celebration Wall</h2>
+          {/* <h2 style={styles.heading}>📸 Celebration Wall</h2> */}
+          <h2 style={styles.heading}>
+  <Image
+    src={wallCamera} // ✅ replace with your actual image path
+    alt="Camera Icon"
+    style={{ width: 60, height: 60, }}
+  />
+  Celebration Wall
+</h2>
+
           <p style={styles.subheading}>
             A wall filled with your party’s happiest moments and heartfelt messages.
           </p>
@@ -941,30 +942,7 @@ const isGuest = userType === "guest";
                 <div className="spinner" />
               </div>
             )}
-            {/* <div
-              className="event-grid"
-              style={{ opacity: wallUploading ? 0.5 : 1 }}
-            >
-              {eventData.map((item, index) => (
-                <div key={index}>
-                  {item.type === "image" ? (
-                    <img
-                      src={item.src}
-                      alt={item.alt}
-                      className="event-image"
-                      onLoad={(e) =>
-                        e.currentTarget.classList.add("loaded")
-                      }
-                    />
-                  ) : (
-                    <div
-                      className="event-text"
-                      dangerouslySetInnerHTML={{ __html: item.content }}
-                    />
-                  )}
-                </div>
-              ))}
-            </div> */}
+            
             <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 }}>
   {eventData.length === 0 ? (
     <Image
@@ -1062,88 +1040,88 @@ const isGuest = userType === "guest";
 };
 
 const styles = {
-  cardWrapper: {
-    background: "white",
-    padding: "20px",
-    borderRadius: "15px",
-    boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-    textAlign: "center",
-    margin: "auto",
-    border: "2px solid #e0e0e0",
-    width: "95%",
-  },
-  cardTitle: {
-    fontSize: "20px",
-    color: "#6b21a8",
-    marginBottom: "15px",
-  },
-  nameRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "16px",
-    color: "#333",
-    marginBottom: "15px",
-  },
-  viewListButton: {
-    backgroundColor: "#a54c93",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    padding: "5px 30px",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "auto",
-  },
-  backdrop: {
-    position: "fixed",
-    inset: 0,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  },
-  popupCard: {
-    backgroundColor: "#ffffff",
-    padding: "30px",
-    borderRadius: "10px",
-    width: "350px",
-    boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+  // cardWrapper: {
+  //   background: "white",
+  //   padding: "20px",
+  //   borderRadius: "15px",
+  //   boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+  //   textAlign: "center",
+  //   margin: "auto",
+  //   border: "2px solid #e0e0e0",
+  //   width: "95%",
+  // },
+  // cardTitle: {
+  //   fontSize: "20px",
+  //   color: "#6b21a8",
+  //   marginBottom: "15px",
+  // },
+  // nameRow: {
+  //   display: "flex",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   fontSize: "16px",
+  //   color: "#333",
+  //   marginBottom: "15px",
+  // },
+  // viewListButton: {
+  //   backgroundColor: "#a54c93",
+  //   color: "#fff",
+  //   border: "none",
+  //   borderRadius: "8px",
+  //   padding: "5px 30px",
+  //   fontSize: "14px",
+  //   fontWeight: "600",
+  //   cursor: "pointer",
+  //   display: "flex",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   margin: "auto",
+  // },
+  // backdrop: {
+  //   position: "fixed",
+  //   inset: 0,
+  //   backgroundColor: "rgba(0,0,0,0.4)",
+  //   display: "flex",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   zIndex: 1000,
+  // },
+  // popupCard: {
+  //   backgroundColor: "#ffffff",
+  //   padding: "30px",
+  //   borderRadius: "10px",
+  //   width: "350px",
+  //   boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
 
-  },
-  formField: {
-    marginBottom: "16px",
-  },
-  input: {
-    width: "100%",
-    padding: "8px",
-    marginTop: "6px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-  },
-  submitButton: {
-    backgroundColor: "#0070f3",
-    color: "white",
-    padding: "10px 16px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
+  // },
+  // formField: {
+  //   marginBottom: "16px",
+  // },
+  // input: {
+  //   width: "100%",
+  //   padding: "8px",
+  //   marginTop: "6px",
+  //   border: "1px solid #ccc",
+  //   borderRadius: "4px",
+  // },
+  // submitButton: {
+  //   backgroundColor: "#0070f3",
+  //   color: "white",
+  //   padding: "10px 16px",
+  //   border: "none",
+  //   borderRadius: "6px",
+  //   cursor: "pointer",
+  // },
 
-  container: {
-    minHeight: "100vh",
-    background: "linear-gradient(to bottom right, #e0c3fc, #8ec5fc)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "40px",
-  },
+  // container: {
+  //   minHeight: "100vh",
+  //   background: "linear-gradient(to bottom right, #e0c3fc, #8ec5fc)",
+  //   display: "flex",
+  //   flexDirection: "column",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   padding: "40px",
+  // },
 
   button: {
     backgroundColor: "#6b21a8",
@@ -1156,6 +1134,7 @@ const styles = {
     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
     transition: "background-color 0.3s ease",
   },
+  
   backdrop: {
     position: "fixed",
     top: 0,
@@ -1165,67 +1144,67 @@ const styles = {
     background: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
   },
-  popupGuest: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "#fff",
-    borderRadius: "16px",
-    padding: "24px",
-    width: "300px",
-    maxHeight: "80vh",
-    overflowY: "auto",
-    boxShadow: "0 0 15px rgba(0,0,0,0.3)",
-    zIndex: 1000,
-  },
-  popupTitle: {
-    textAlign: "center",
-    color: "#924c9d",
-    fontSize: "20px",
-    marginBottom: "16px",
-    fontWeight: "bold",
-  },
-  section: {
-    marginBottom: "16px",
-  },
-  sectionTitleGreen: {
-    fontWeight: "bold",
-    color: "green",
-    marginBottom: "6px",
-  },
-  sectionTitleGray: {
-    fontWeight: "bold",
-    color: "#444",
-    marginBottom: "6px",
-  },
-  guestRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "6px 0",
-    fontSize: "15px",
-    color: "#333",
-  },
-  check: {
-    color: "green",
-    fontSize: "16px",
-  },
-  dash: {
-    fontSize: "16px",
-    color: "#777",
-  },
-  closeBtn: {
-    marginTop: "10px",
-    width: "100%",
-    padding: "8px",
-    backgroundColor: "#924c9d",
-    color: "white",
-    fontWeight: "bold",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
+  // popupGuest: {
+  //   position: "fixed",
+  //   top: "50%",
+  //   left: "50%",
+  //   transform: "translate(-50%, -50%)",
+  //   backgroundColor: "#fff",
+  //   borderRadius: "16px",
+  //   padding: "24px",
+  //   width: "300px",
+  //   maxHeight: "80vh",
+  //   overflowY: "auto",
+  //   boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+  //   zIndex: 1000,
+  // },
+  // popupTitle: {
+  //   textAlign: "center",
+  //   color: "#924c9d",
+  //   fontSize: "20px",
+  //   marginBottom: "16px",
+  //   fontWeight: "bold",
+  // },
+  // section: {
+  //   marginBottom: "16px",
+  // },
+  // sectionTitleGreen: {
+  //   fontWeight: "bold",
+  //   color: "green",
+  //   marginBottom: "6px",
+  // },
+  // sectionTitleGray: {
+  //   fontWeight: "bold",
+  //   color: "#444",
+  //   marginBottom: "6px",
+  // },
+  // guestRow: {
+  //   display: "flex",
+  //   justifyContent: "space-between",
+  //   alignItems: "center",
+  //   padding: "6px 0",
+  //   fontSize: "15px",
+  //   color: "#333",
+  // },
+  // check: {
+  //   color: "green",
+  //   fontSize: "16px",
+  // },
+  // dash: {
+  //   fontSize: "16px",
+  //   color: "#777",
+  // },
+  // closeBtn: {
+  //   marginTop: "10px",
+  //   width: "100%",
+  //   padding: "8px",
+  //   backgroundColor: "#924c9d",
+  //   color: "white",
+  //   fontWeight: "bold",
+  //   border: "none",
+  //   borderRadius: "6px",
+  //   cursor: "pointer",
+  // },
   wrapper: {
     padding: 20,
     fontFamily: 'sans-serif',
@@ -1233,16 +1212,18 @@ const styles = {
     margin: '0 auto',
   },
   heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#a8328e',
+    fontSize: 28,
+    fontWeight: 700,
+    // marginBottom: 8,
+    color: 'rgb(168, 50, 142)',
     textAlign: 'center',
   },
+     
   subheading: {
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 20,
-    color: '#555',
+    fontWeight:400,
+    color: '#97538C',
     textAlign: 'center',
   },
   buttonRow: {
@@ -1263,6 +1244,7 @@ const styles = {
     justifyContent: 'center',
     fontSize: 14,
   },
+  
   uploading: {
     fontSize: 13,
     color: '#444',
@@ -1293,27 +1275,41 @@ const styles = {
   tabsContainer: {
     display: "flex",
     justifyContent: "center",
-    gap: 16,
+    gap: "5px",
     flexWrap: "wrap",
     marginTop: 20,
   },
 
-  actionButton: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    background: "linear-gradient(to right, #6b21a8, #9333ea)",
-    color: "#fff",
-    border: "none",
-    borderRadius: 12,
-    padding: "10px 20px",
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: "pointer",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-    minWidth: 160,
-    justifyContent: "center",
-  },
+  // actionButton: {
+  //   display: "flex",
+  //   alignItems: "center",
+  //   gap: 8,
+  //   background: "linear-gradient(to right, #6b21a8, #9333ea)",
+  //   color: "#fff",
+  //   border: "none",
+  //   borderRadius: 5,
+  //   padding: "5px",
+  //   fontSize: 12,
+  //   fontWeight: 600,
+  //   cursor: "pointer",
+  //   boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+  //   justifyContent: "center",
+  // },
+actionButton: {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  background: "linear-gradient(90deg, #351F79 15.1%, #832585 85.42%)",
+  color: "#fff",
+  border: "none",
+  borderRadius: "10px",
+  padding: "10px",
+  fontSize: 12,
+  fontWeight: 600,
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+  justifyContent: "center",
+},
 
   iconStyle: {
     width: 20,
@@ -1326,110 +1322,5 @@ const styles = {
     textAlign: "left",
   },
 };
-   {/* Basic CSS */}
-          // <style jsx>{`
-          //     .overlay {
-          //       position: fixed;
-          //       top: 0;
-          //       left: 0;
-          //       width: 100vw;
-          //       height: 100vh;
-          //       background-color: rgba(0, 0, 0, 0.2);
-          //       backdrop-filter: blur(6px);
-          //       -webkit-backdrop-filter: blur(6px);
-          //       z-index: 1000;
-          //       pointer-events: all;
-          //     }
-
-          //     .popup {
-          //       position: fixed;
-          //       top: 35%;
-          //       left: 50%;
-          //       transform: translate(-50%, -25%);
-          //       background: white;
-          //       border: 1px solid #ccc;
-          //       padding: 24px;
-          //       border-radius: 12px;
-          //       z-index: 1500;
-          //       background-color: rgb(238, 233, 240);
-          //       width: 95%;
-          //       max-width: 420px;
-          //       display: flex;
-          //       flex-direction: column;
-          //       height: 80%;
-          //       border: 2px solid purple;
-          //     }
-
-          //     .title {
-          //       margin-top: 25px;
-          //       text-align: center;
-          //       font-size: 28px;
-          //       font-weight: bold;
-          //       color: rgb(146, 82, 170);
-          //       margin-bottom: 24px;
-          //     }
-
-          //     .subtitlePopUp {
-          //       text-align: center;
-          //       font-size: 20px;
-          //       color: #444;
-          //       // margin-top: 12px;
-          //     }
-
-          //     .form-group {
-          //       display: flex;
-          //       flex-direction: column;
-          //       margin-top: 12px;
-          //     }
-
-          //     .label {
-          //       font-size: 14px;
-          //       font-weight: 500;
-          //       margin-bottom: 6px;
-          //       color: #333;
-          //     }
-
-          //     .popup textarea {
-          //       background: white;
-          //       color: black;
-          //       border: 1px solid purple;
-          //       resize: none;
-          //       padding: 10px;
-          //       border-radius: 8px;
-          //       font-size: 14px;
-          //     }
-
-          //     .popup input {
-          //       background: white;
-          //       color: black;
-          //       padding: 10px;
-          //       border: 1px solid rebeccapurple;
-          //       border-radius: 8px;
-          //       font-size: 14px;
-          //     }
-
-          //     .word-limit {
-          //       text-align: right;
-          //       font-size: 12px;
-          //       color: #888;
-          //       margin-top: 4px;
-          //     }
-
-          //     .popup-buttons {
-          //       display: flex;
-          //       justify-content: center;
-          //       gap: 10px;
-          //       margin-top: 20px;
-          //     }
-
-          //     .popup button {
-          //       padding: 8px 18px;
-          //       border: none;
-          //       background: rgb(146, 82, 170);
-          //       color: white;
-          //       border-radius: 6px;
-          //       font-weight: 500;
-          //       cursor: pointer;
-          //     }
-          //   `}</style>
+   
 export default InvitationCard;
