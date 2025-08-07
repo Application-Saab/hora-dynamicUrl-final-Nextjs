@@ -1,85 +1,102 @@
-// import React from "react";
-// import{ useEffect } from "react";
-// import "./GuestListPreview.css"; // you'll create this CSS file
-
-// const GuestListPreview = ({ guestList = [], loading, fetchGuests }) => {
-//    useEffect(() => {
-//     fetchGuests(); // 👈 this ensures guests are loaded on refresh too
-//   }, []);
-//   const confirmedCount = guestList.filter(g => g.status === "I am coming").length;
-//   const willTryCount = guestList.filter(g => g.status === "Not sure").length;
-
-//   const getRandomColor = () => {
-//     const colors = ["#7A4E9D", "#502F87", "#FD5C91", "#A45584", "#392B69", "#0C39A8"];
-//     return colors[Math.floor(Math.random() * colors.length)];
-//   };
-
-//   return (
-//     <div className="guest-preview-card">
-//       <h3 className="preview-title">See Who’s Coming!</h3>
-
-//       <div className="preview-header-row">
-//         <span className="preview-label">Guests</span>
-//         <span className="preview-view-list" onClick={fetchGuests}>
-//           View Full List
-//         </span>
-//       </div>
-
-//       <div className="guest-circle-container">
-//         {guestList.slice(0, 7).map((g, idx) => (
-//           <div
-//             className="guest-initial-circle"
-//             key={idx}
-//             style={{ backgroundColor: getRandomColor() }}
-//           >
-//             {g.name?.charAt(0).toUpperCase()}
-//           </div>
-//         ))}
-//       </div>
-
-//       <div className="guest-count-row">
-//         <span className="confirmed">Confirmed- {confirmedCount}</span>
-//         <span className="separator">|</span>
-//         <span className="try">Will Try- {willTryCount}</span>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default GuestListPreview;
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./GuestListPreview.css";
+import RSVPPopup from "../RSVPPopup";
+import { useRouter } from "next/router";
 
-const GuestListPreview = ({
-  guestList = [],
-  loading,
-  fetchGuests,
-  userType,
-}) => {
+const RSVP_STATUS = {
+  WILL_COME: "will Come",
+  WILL_TRY: "Sure, will try",
+};
+
+const getRandomColor = () => {
+  const colors = [
+    "#7A4E9D",
+    "#502F87",
+    "#FD5C91",
+    "#A45584",
+    "#392B69",
+    "#0C39A8",
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+const GuestListPreview = ({ hostData }) => {
+  const router = useRouter();
+  const { id } = router.query;
+  let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
+  const paramsUserId = id ? id.split("/")[1] : null;
+  const isHost = localStorage.getItem("userID") === paramsUserId;
+
+  const [guestData, setGuestData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [openRsvpList, setOpenRsvpList] = useState(false);
+  const [guestCounts, setGuestCounts] = useState({
+    confirmed: 0,
+    willTry: 0,
+    notAnswered: 0,
+  });
+
   useEffect(() => {
-    fetchGuests(false);
-  }, []);
+    const fetchGuests = async () => {
+      if (!eventId) {
+        setError("Event ID not found in URL");
+        setLoading(false);
+        return;
+      }
+      const token = localStorage.getItem("token"); // Assuming token is stored here
+      if (!token) {
+        setError("No authentication token found");
+        setLoading(false);
+        return;
+      }
 
-  const confirmedCount = guestList.filter(
-    (g) => g.status === "I am coming"
-  ).length;
-  const willTryCount = guestList.filter((g) => g.status === "Not sure").length;
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/customer/event/event-guests/all/${eventId}`,
+          {
+            headers: {
+              Authorization: `${token}`, // Add token in Authorization header
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.error) {
+          setError(data.message || "Failed to fetch guests");
+        } else {
+          setGuestData(data.data || []);
+        }
+      } catch (err) {
+        setError("Error fetching guests: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const getRandomColor = () => {
-    const colors = [
-      "#7A4E9D",
-      "#502F87",
-      "#FD5C91",
-      "#A45584",
-      "#392B69",
-      "#0C39A8",
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
+    fetchGuests();
+  }, [eventId]);
+
+  useEffect(() => {
+    if (guestData.length > 0) {
+      const confirmed = guestData.filter(
+        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+      ).length;
+      const willTry = guestData.filter(
+        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+      ).length;
+      const notAnswered = guestData.filter(
+        (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+      ).length;
+
+      setGuestCounts({ confirmed, willTry, notAnswered });
+    }
+  }, [guestData]);
+
+  if (loading) return <div>Loading...</div>;
 
   // 🛑 Do not render anything if no guests yet and not a host
-  if (guestList.length === 0 && userType !== "host") return null;
+  if (guestData.length === 0) return null;
 
   return (
     <div className="guest-preview-card">
@@ -87,17 +104,20 @@ const GuestListPreview = ({
 
       <div className="preview-header-row">
         <span className="preview-label">Guests</span>
-        {guestList.length > 0 && (
-          <span className="preview-view-list" onClick={() => fetchGuests(true)}>
+        {guestData?.length > 0 && (
+          <span
+            className="preview-view-list"
+            onClick={() => setOpenRsvpList(true)}
+          >
             View Full List
           </span>
         )}
       </div>
 
-      {guestList.length > 0 && (
+      {guestData?.length > 0 && (
         <>
           <div className="guest-circle-container">
-            {guestList.slice(0, 7).map((g, idx) => (
+            {guestData.slice(0, 7)?.map((g, idx) => (
               <div
                 className="guest-initial-circle"
                 key={idx}
@@ -109,11 +129,23 @@ const GuestListPreview = ({
           </div>
 
           <div className="guest-count-row">
-            <span className="confirmed">Confirmed - {confirmedCount}</span>
+            <span className="confirmed">
+              Confirmed - {guestCounts?.confirmed}
+            </span>
             <span className="separator">|</span>
-            <span className="try">Will Try - {willTryCount}</span>
+            <span className="try">Will Try - {guestCounts?.willTry}</span>
           </div>
         </>
+      )}
+
+      {openRsvpList && (
+        <RSVPPopup
+          hostData={hostData}
+          guestData={guestData}
+          loading={loading}
+          error={error}
+          onClose={() => setOpenRsvpList(false)}
+        />
       )}
     </div>
   );

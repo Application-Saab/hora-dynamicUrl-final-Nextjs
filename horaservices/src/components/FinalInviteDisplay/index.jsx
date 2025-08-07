@@ -68,13 +68,11 @@ const FinalInviteDisplay = ({ orderDetails, handleClick, isHost }) => {
   if (!orderDetails) return <p>Loading...</p>;
 
   const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails._id}/${orderDetails.userId}/guest`;
+    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails?.id}/${orderDetails?.userId}/guest`;
 
-    const shareText = `You're invited to ${
-      orderDetails.Name || "someone"
-    }'s ${orderDetails["Event Type"] || "Birthday"}! 🎉\n\n📅 ${formatDate(
-      orderDetails.Date
-    )}\n⏰ ${orderDetails.Time}\n📍 ${
+    const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${
+      orderDetails["Event Type"] || "Birthday"
+    }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${
       orderDetails.Address || "Venue"
     }\n\n👉 Tap to view the invite:\n${inviteURL}`;
 
@@ -88,11 +86,7 @@ const FinalInviteDisplay = ({ orderDetails, handleClick, isHost }) => {
         <h2 className="invite-heading">YOU‘RE INVITED</h2>
 
         <div className="cake-image-wrapper">
-          <img
-            src={orderDetails.Image}
-            alt="Cake"
-            className="cake-image"
-          />
+          <img src={orderDetails.Image} alt="Cake" className="cake-image" />
         </div>
 
         <h3 className="invite-title">
@@ -109,7 +103,8 @@ const FinalInviteDisplay = ({ orderDetails, handleClick, isHost }) => {
         </p>
 
         <p className="invite-detail">
-          <span>📍</span> <strong>Home</strong> ({orderDetails.Address || "Venue"})
+          <span>📍</span> <strong>Home</strong> (
+          {orderDetails.Address || "Venue"})
         </p>
 
         {/* ✅ Show both buttons to Host only */}

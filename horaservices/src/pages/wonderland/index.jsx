@@ -15,7 +15,12 @@ import imageBackGround from "../../assets/finalInviteBackground.png";
 import Image from "next/image";
 import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
-import { BASE_URL, IMAGE_UPLOAD } from "../../utils/apiconstants";
+import {
+  BASE_URL,
+  CREATE_GUEST_BY_EVENTID,
+  GET_EVENT_IMAGES,
+  IMAGE_UPLOAD,
+} from "../../utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
@@ -42,8 +47,119 @@ import frame from "@/assets/Frame1.png";
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
   const router = useRouter();
-  const { orderid } = router.query;
+  const { id: id2 } = router.query;
+  const userID = localStorage.getItem("userID");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const token = localStorage.getItem("token");
+  const [errorAddGuest, setErrorAddGuest] = useState("");
+  const [openRsvpList, setOpenRsvpList] = useState(false);
+
+  const [eventAllImages, setEventAllImages] = useState([]);
+  console.log(
+    "%c [ eventAllImages ]-58",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    eventAllImages
+  );
+  const [loadingEventImages, setLoadingEventImages] = useState(true);
+  const [errorEventImages, setErrorEventImages] = useState(null);
+
+  const [urlParams, setUrlParams] = useState({
+    eventId: "",
+    eventUserId: "",
+    userType: "host",
+  });
+
+  useEffect(() => {
+    if (id2) {
+      const parts = id2.split("/");
+      if (parts.length >= 2) {
+        setUrlParams((prev) => ({
+          ...prev,
+          eventId: parts[0],
+          eventUserId: parts[1],
+          userType: parts[2] ? parts[2].toLowerCase() : "host",
+        }));
+      }
+    }
+  }, [id2]);
+
+  useEffect(() => {
+    const fetchEventImages = async () => {
+      if (!urlParams.eventId) {
+        setErrorEventImages("Event ID not found in URL");
+        setLoadingEventImages(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${BASE_URL}${GET_EVENT_IMAGES}/${urlParams?.eventId}`,
+          {
+            headers: {
+              Authorization: `${token}`, // Add token in Authorization header
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.error) {
+          setErrorEventImages(data.message || "Failed to fetch guests");
+        } else {
+          setEventAllImages(data.data || []);
+        }
+      } catch (err) {
+        setErrorEventImages("Error fetching guests: " + err.message);
+      } finally {
+        setLoadingEventImages(false);
+      }
+    };
+
+    fetchEventImages();
+  }, [urlParams.eventId]);
+
+  useEffect(() => {
+    const addGuest = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}${CREATE_GUEST_BY_EVENTID}`, {
+          method: "POST",
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            eventId: urlParams.eventId,
+            userId: userID,
+          }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          setErrorAddGuest(data.message || "Failed to add guest");
+        } else {
+          console.log("Guest added successfully:", data);
+          setErrorAddGuest(null);
+        }
+      } catch (err) {
+        setErrorAddGuest("Error adding guest: " + err.message);
+      }
+    };
+    if (
+      isLoggedIn === "true" &&
+      urlParams.eventId &&
+      urlParams.eventUserId &&
+      urlParams.userType === "guest"
+    ) {
+      addGuest();
+    }
+  }, [
+    urlParams.eventId,
+    urlParams.eventUserId,
+    urlParams.userType,
+    isLoggedIn,
+  ]);
+
   const [orderDetails, setOrderDetails] = useState(null);
+
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -64,8 +180,6 @@ const InvitationCard = () => {
   const [noteBy, setNoteBy] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
-
-  const searchParams = useSearchParams();
 
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [guestName, setGuestName] = useState("");
@@ -122,7 +236,7 @@ const InvitationCard = () => {
   const [isHost, setIsHost] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+
   useEffect(() => {
     const checkAuth = () => {
       if (isLoggedIn !== "true") {
@@ -145,11 +259,10 @@ const InvitationCard = () => {
       image: tabIcon2,
       title: "Thank You Note",
     },
-    // {
-    //   image: tabIcon3,
-    //   title: "Lucky Draw",
-
-    // },
+    {
+      image: tabIcon3,
+      title: "Lucky Draw",
+    },
   ];
 
   console.log("ishost", isHost);
@@ -326,7 +439,6 @@ const InvitationCard = () => {
       : "";
 
     const finalImage = uploadedImage || orderDetails?.Image || "";
-    const token = localStorage.getItem("token");
     const loggedInUserId = localStorage.getItem("userID");
 
     if (!token || !loggedInUserId) {
@@ -453,9 +565,6 @@ const InvitationCard = () => {
   }, [router.isReady, router.query.id]);
 
   const fetchOrderDetails = async (eventId) => {
-    const token = localStorage.getItem("token");
-    const loggedInId = localStorage.getItem("userID");
-
     try {
       const res = await fetch(
         `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
@@ -816,17 +925,20 @@ const InvitationCard = () => {
                     loading={loading}
                     fetchGuests={fetchGuests}
                     userType={userType}
+                    hostData={orderDetails}
                   />
                 ) : (
                   <GuestRSVPForm
+                    hostData={orderDetails}
                     userType={userType}
                     guestList={guestList}
                     loading={loading}
-                    userId={secondId}
-                    rsvpId={id}
+                    userId={userID}
+                    eventId={urlParams.eventId}
                     fetchGuests={fetchGuests}
                     hasSubmitted={hasSubmitted}
                     setHasSubmitted={setHasSubmitted}
+                    setShowPopupGuest={setShowPopupGuest}
                     onSubmit={(data) => {
                       const payload = {
                         ...data,
@@ -952,7 +1064,7 @@ const InvitationCard = () => {
                 className="event-grid"
                 style={{ opacity: wallUploading ? 0.5 : 1 }}
               >
-                {eventData.length === 0 ? (
+                {eventAllImages?.length === 0 ? (
                   <Image
                     src={frame}
                     alt="Celebration Collage Placeholder"
@@ -963,23 +1075,14 @@ const InvitationCard = () => {
                     }}
                   />
                 ) : (
-                  eventData.map((item, index) => (
+                  eventAllImages?.map((item, index) => (
                     <div key={index}>
-                      {item.type === "image" ? (
-                        <img
-                          src={item.src}
-                          alt={item.alt}
-                          className="event-image"
-                          onLoad={(e) =>
-                            e.currentTarget.classList.add("loaded")
-                          }
-                        />
-                      ) : (
-                        <div
-                          className="event-text"
-                          dangerouslySetInnerHTML={{ __html: item.content }}
-                        />
-                      )}
+                      <img
+                        src={item?.imageUrl}
+                        alt={`${item.imageType}_${index + 1}`}
+                        className="event-image"
+                        onLoad={(e) => e.currentTarget.classList.add("loaded")}
+                      />
                     </div>
                   ))
                 )}
@@ -999,17 +1102,28 @@ const InvitationCard = () => {
               >
                 <button
                   className="popup-luckdraw-close"
+                  style={{
+                    position: "absolute",
+                    top: "-10px",
+                    right: "10px",
+                    fontSize: "40px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
                   onClick={() => setShowLuckyDrawPopup(false)}
                 >
                   ×
                 </button>
-                <div className="popup-luckdraw-content">
+                <div
+                  className="popup-luckdraw-content"
+                  style={{ marginBlock: "30px" }}
+                >
                   <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
                 </div>
               </div>
             </div>
           )}
-
           {/* 🛠 Invitation Modal */}
           {showModal && (
             <InvitationModal
@@ -1038,7 +1152,10 @@ const InvitationCard = () => {
             onClick={() => setShowPopupGuest(false)}
           />
           <RSVPPopup
-            guestList={guestList}
+            hostData={orderDetails}
+            guestData={guestList}
+            loading={false}
+            error={false}
             onClose={() => setShowPopupGuest(false)}
           />
         </>
