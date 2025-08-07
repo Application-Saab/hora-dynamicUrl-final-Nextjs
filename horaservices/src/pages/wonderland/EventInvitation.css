@@ -576,12 +576,6 @@ background-color: none !important;
 
 
 
-/* Masonry style using columns */
-.event-grid {
-  column-count: 2;
-  column-gap: 12px;
-  margin:10px
-}
 
 /* Responsive breakpoints */
 @media (min-width: 480px) {
@@ -608,14 +602,14 @@ background-color: none !important;
 @media (max-width: 480px) {
   .event-grid {
     column-count: 2;
-    column-gap: 10px;
+    column-gap: 5px;
   }
 }
 
 /* Each item inside masonry */
 .event-grid > div {
   break-inside: avoid;
-  margin-bottom: 12px;
+  margin-bottom: 5px;
   position: relative;
 }
 
@@ -671,44 +665,74 @@ background-color: none !important;
 }
 
 /* luckey draw */
+/* Overlay backdrop */
 .popup-luckdraw-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+
 }
 
+/* Container box */
 .popup-luckdraw-container {
-  background: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  max-height: 650px; /* Small height */
-  overflow-y: auto;   /* Scrollable */
-  padding: 5px;
+  background: #fff;
+  border-radius: 12px;
+  overflow-y: auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   position: relative;
+  padding: 24px 20px 20px;
+  animation: scaleIn 0.3s ease-in-out;
+  
 }
 
+/* Close button */
 .popup-luckdraw-close {
   position: absolute;
-  top: 10px;
-  right: 14px;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
   background: transparent;
   border: none;
-  font-size: 24px;
+  color: #333;
   cursor: pointer;
+  transition: color 0.2s;
 }
 
-.popup-luckdraw-content {
-  font-size: 14px;
-  line-height: 1.4;
+.popup-luckdraw-close:hover {
+  color: #e74c3c;
 }
+
+/* Main content area */
+.popup-luckdraw-content {
+  margin-top: 20px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 
 /* close button thankyou popup */
 .close-button {
@@ -787,4 +811,29 @@ background-color: none !important;
     cursor: pointer;
     font-size: 14px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+.event-collage {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+.collage-item {
+  width: 100%;
+}
+
+.collage-image {
+  width: 100%;
+  height: auto;
+  /* border-radius: 12px; */
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }

@@ -17,12 +17,14 @@ import OtpLoginPopup from "../../components/OtpLoginPopup";
 import html2canvas from "html2canvas";
 import LuckyDrawForm from "../lucky-draw/index";
 import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg"
-import {
-  faCamera,
-  faPen,
-  faGift,
-  faPersonDress,
-} from "@fortawesome/free-solid-svg-icons"; // add icons
+import photo1 from "@/assets/collage/photo1.png"
+import photo2 from "@/assets/collage/photo2.png"
+import photo3 from "@/assets/collage/photo3.png"
+import photo4 from "@/assets/collage/photo4.png"
+import photo5 from "@/assets/collage/photo5.png"
+import photo6 from "@/assets/collage/photo6.png"
+import photo7 from "@/assets/collage/photo7.png"
+import photo8 from "@/assets/collage/photo8.png"
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
 import InvitationModal from "@/components/InvitationModal";
@@ -873,9 +875,8 @@ const isGuest = userType === "guest";
 </div>
 
 
-        {/* 🎊 Celebration Wall */}
+     
         <div style={styles.wrapper}>
-          {/* <h2 style={styles.heading}>📸 Celebration Wall</h2> */}
           <h2 style={styles.heading}>
   <Image
     src={wallCamera} // ✅ replace with your actual image path
@@ -924,7 +925,7 @@ const isGuest = userType === "guest";
             />
           </div>
 
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", marginTop: "10px auto", maxWidth: "350px" }}>
             {wallUploading && (
               <div
                 style={{
@@ -943,17 +944,35 @@ const isGuest = userType === "guest";
               </div>
             )}
             
-            <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 }}>
+            <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 , margin: "10px auto"}}>
   {eventData.length === 0 ? (
-    <Image
-      src={frame}
-      alt="Celebration Collage Placeholder"
-      style={{
-        width: "100%",
-        borderRadius: "12px",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-      }}
-    />
+    <>
+    <div className="collage-item">
+      <Image src={photo1} className="collage-image" alt="img1" />
+    </div>
+    <div className="collage-item">
+      <Image src={photo4} className="collage-image" alt="sticky note" />
+    </div>
+    <div className="collage-item">
+      <Image src={photo3} className="collage-image" alt="img2" />
+    </div>
+    <div className="collage-item">
+      <Image src={photo7} className="collage-image" alt="img2" />
+    </div>
+     <div className="collage-item">
+      <Image src={photo8} className="collage-image" alt="img5" />
+    </div>
+    <div className="collage-item">
+      <Image src={photo2} className="collage-image" alt="img3" />
+    </div>
+    <div className="collage-item">
+      <Image src={photo5} className="collage-image" alt="img4" />
+    </div>
+    <div className="collage-item">
+      <Image src={photo6} className="collage-image" alt="img5" />
+    </div>
+    
+  </>
   ) : (
     eventData.map((item, index) => (
       <div key={index}>
@@ -979,7 +998,7 @@ const isGuest = userType === "guest";
         </div>
 
         {/* 🎁 Lucky Draw Popup */}
-        {showLuckyDrawPopup && (
+        {/* {showLuckyDrawPopup && (
           <div
             className="popup-luckdraw-overlay"
             onClick={() => setShowLuckyDrawPopup(false)}
@@ -999,7 +1018,20 @@ const isGuest = userType === "guest";
               </div>
             </div>
           </div>
-        )}
+        )} */}
+        {showLuckyDrawPopup && (
+  <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
+    <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
+      <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
+        ×
+      </button>
+      <div className="popup-luckdraw-content">
+        <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
+      </div>
+    </div>
+  </div>
+)}
+
 
         {/* 🛠 Invitation Modal */}
         {showModal && (
@@ -1276,7 +1308,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     gap: "5px",
-    flexWrap: "wrap",
+    // flexWrap: "wrap",
     marginTop: 20,
   },
 
