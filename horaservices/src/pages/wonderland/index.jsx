@@ -18,7 +18,7 @@ import html2canvas from "html2canvas";
 import LuckyDrawForm from "../lucky-draw/index";
 import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg"
 import photo1 from "@/assets/collage/photo1.png"
-import photo2 from "@/assets/collage/photo2.png"
+import photo2 from "@/assets/collage/photo2.jpeg"
 import photo3 from "@/assets/collage/photo3.png"
 import photo4 from "@/assets/collage/photo4.png"
 import photo5 from "@/assets/collage/photo5.png"
@@ -795,7 +795,7 @@ const isGuest = userType === "guest";
       </div>
     ) : (
       <>
-        {/* 📜 Invitation Display Container */}
+       
         
          
 {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
@@ -851,6 +851,7 @@ const isGuest = userType === "guest";
 
               {/* 💌 Thank You Note Popup */}
               {showPopup && (
+                <div className="popup-thankyounaote-container">
                 <ThankYouNotePopup
                   noteTitle={noteTitle}
                   setNoteTitle={setNoteTitle}
@@ -862,6 +863,7 @@ const isGuest = userType === "guest";
                   handleClosePopup={handleClosePopup}
                   noteRef={noteRef}
                 />
+                </div>
               )}
             </>
           ) : (
@@ -925,7 +927,7 @@ const isGuest = userType === "guest";
             />
           </div>
 
-          <div style={{ position: "relative", marginTop: "10px auto", maxWidth: "350px" }}>
+          <div style={{ position: "relative", marginTop: " auto", }}>
             {wallUploading && (
               <div
                 style={{
@@ -998,28 +1000,7 @@ const isGuest = userType === "guest";
         </div>
 
         {/* 🎁 Lucky Draw Popup */}
-        {/* {showLuckyDrawPopup && (
-          <div
-            className="popup-luckdraw-overlay"
-            onClick={() => setShowLuckyDrawPopup(false)}
-          >
-            <div
-              className="popup-luckdraw-container"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="popup-luckdraw-close"
-                onClick={() => setShowLuckyDrawPopup(false)}
-              >
-                ×
-              </button>
-              <div className="popup-luckdraw-content">
-                <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
-              </div>
-            </div>
-          </div>
-        )} */}
-        {showLuckyDrawPopup && (
+       {showLuckyDrawPopup && (
   <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
     <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
       <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
@@ -1240,8 +1221,8 @@ const styles = {
   wrapper: {
     padding: 20,
     fontFamily: 'sans-serif',
-    maxWidth: 500,
-    margin: '0 auto',
+    maxWidth: 480,
+    margin: 'auto',
   },
   heading: {
     fontSize: 28,

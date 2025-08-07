@@ -1,31 +1,31 @@
-
-.light-bulb {
-  width: 8px;
-  height: 8px;
-  background-color: #fcd34d;
-  border-radius: 50%;
-  margin-top: -4px;
-  box-shadow: 0 0 8px 2px rgba(255, 222, 173, 0.6);
-}
-
-
 /* General Font Setup */
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
-
 
 body {
   font-family: 'Segoe UI', sans-serif;
 }
 
 /* Overlay Content */
-.invitation-container {
-    max-width: 380px;
-    /* width: 100vw; */
-    /* height: 100vh; */
+/* .invitation-container {
+    max-width: 480px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-color: #fff;
+    justify-content: center;
+    padding: 20px;
+    margin: auto;
+    overflow: hidden;
+} */
+.invitation-container {
+    max-width: 480px;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     padding: 20px;
     margin: auto;
@@ -689,6 +689,15 @@ background-color: none !important;
   animation: scaleIn 0.3s ease-in-out;
   
 }
+.popup-thankyounaote-container {
+  position: fixed;
+  inset: 0;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
 /* Close button */
 .popup-luckdraw-close {
@@ -787,7 +796,7 @@ background-color: none !important;
 .lucky-draw-banner {
   position: relative;
   width: 100%;
-  max-width: 380px; /* Set same width as your image */
+  max-width: 480px; /* Set same width as your image */
   margin: auto;
 }
 
@@ -806,6 +815,7 @@ background-color: none !important;
     color: white;
     font-weight: bold;
     padding: 5px;
+    width:100px;
     border: none;
     border-radius: 15px;
     cursor: pointer;

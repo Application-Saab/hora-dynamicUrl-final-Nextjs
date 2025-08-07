@@ -11,104 +11,121 @@ const DynamicTemplateRenderer = ({ templateId}) => {
     address: "4th Floor, 5 & 10, Arakere Bannerghatta Rd, Syndicate Bank Colony, Omkar Nagar, Arekere, Bengaluru, Karnataka 560076",
   });
 
-//   useEffect(() => {
-//     const mockTemplate = {
-//       templateId: 'template-1',
-//       fontUrls: [
-//         'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
-//         'https://fonts.googleapis.com/css2?family=Brush+Script+MT&display=swap'
-//       ],
-//       cssCode: `
-//         .invite-wrapper {
-//           background: url('/balloon-bg.png') no-repeat center center;
-//           background-size: cover;
-//         //   padding: 30px 16px;
-//           display: flex;
-//           align-items: center;
-//           justify-content: center;
-//           min-height: 100vh;
-//         }
+   useEffect(() => {
+    // Replace this with API call later
+    const mockTemplate = {
+      templateId: 'template-1',
+      fontUrls: [
+        'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
+        'https://fonts.googleapis.com/css2?family=Monotype+Corsiva&display=swap',
+      ],
+      cssCode: `.invite-wrapper {
+          background: url('/balloon-bg.png') no-repeat center center;
+          background-size: cover;
+          padding: 30px 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
 
-//         .invite-card {
-//           position: relative;
-//           width: 100%;
-//           max-width: 390px;
-//           aspect-ratio: 11 / 19;
-//           background-image: url('/DarkBlueIllustrativeBirthdayPartyInvitation.png');
-//           background-size: cover;
-//           background-position: center;
-//           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-//           overflow: hidden;
-//           font-family: 'Roboto', sans-serif;
-//           text-align: center;
-//         }
+        .invite-card {
+    position: relative;
+    width: 100%;
+     max-width: 390px; 
+    aspect-ratio: 11 / 19;
+    /* border-radius: 24px; */
+    background-image: url(/GoldandBlueSimpleBirthdayPartyInvitation.png);
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+}
 
-//         .name {
-//           position: absolute;
-//           top: 13%;
-//           width: 100%;
-//           text-align: center;
-//           font-size: 340%;
-//           font-family: 'Monotype Corsiva', cursive;
-//           color: white;
-//         }
+        .top-text,
+        .name,
+        .birthday,
+        .party,
+        .time,
+        .date,
+        .month,
+        .address {
+          // white-space: nowrap;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
+        }
 
-//         .datetime {
-//           position: absolute;
-//           top: 65%;
-//           left: 0%;
-//           right: 0%;
-//           width: 100%;
-//           text-align: center;
-//           font-size: 18px;
-//           font-weight: 500;
-//           color: white;
-//         }
+        .name {
+          position: absolute;
+          top: 13%;
+          width: 100%;
+          text-align: center;
+          font-size: 300%;
+          font-family: 'Monotype Corsiva', cursive;
+          color: white;
+        }
 
-//         .time {
-//           position: absolute;
-//           top: 71%;
-//           left: 0%;
-//           right: 0%;
-//           width: 100%;
-//           text-align: center;
-//           font-size: 18px;
-//           font-weight: 500;
-//           color: white;
-//         }
+        .time,
+        .date,
+        .month {
+          position: absolute;
+          // bottom: 20%;
+          font-size: 16px;
+          color: #ffd95c;
+        }
 
-//         .address {
-//           position: absolute;
-//           bottom: 5%;
-//           left: 50%;
-//           transform: translateX(-50%);
-//           width: 85%;
-//           text-align: center;
-//           font-size: 14px;
-//           color: white;
-//           line-height: 1.4;
-//         }
+      .time {
+    left: 0%;
+    right: 0%;
+    top: 65%;
+}
 
-//         @media (min-width: 600px) {
-//           .name { font-size: 44px; }
-//           .datetime, .time { font-size: 20px; }
-//           .address { font-size: 16px; }
-//         }
-//       `,
-//       jsCode: `
-//         <div class="invite-wrapper">
-//           <div class="invite-card">
-//             <div class="name">{{name}}</div>
-//             <div class="datetime">{{date}} {{month}}</div>
-//             <div class="time">at {{time}}</div>
-//             <div class="address">{{address}}</div>
-//           </div>
-//         </div>
-//       `
-//     };
+       .date {
+    left: 0%;
+    right: 0%;
+    top: 70%;
+    color: white;
+    font-size: 28px;
+}
 
-//     setTemplate(mockTemplate);
-//   }, [templateId]);
+        .month {
+          right: 12%;
+        }
+
+        .address {
+          position: absolute;
+          bottom: 8%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 85%;
+          text-align: center;
+          font-size: 13px;
+          color: white;
+          line-height: 1.5;
+        }
+
+        @media (min-width: 600px) {
+          .name { font-size: 44px; }
+          .time, .month { font-size: 18px; }
+          .date { font-size: 32px; }
+          .address { font-size: 15px; }
+        }`, // your full CSS here
+      jsCode: `
+        <div class="invite-wrapper">
+          <div class="invite-card">
+            <div class="name">{{name}}</div>
+            <div class="time">Time: At {{time}}</div>
+            <div class="date">Date: {{date}} {{month}}</div>
+            <div class="address">{{address}}</div>
+          </div>
+        </div>
+      `,
+    };
+
+    setTemplate(mockTemplate);
+  }, [templateId]);
 
 //    useEffect(() => {
 //     // Replace with API call if needed
@@ -304,71 +321,71 @@ const DynamicTemplateRenderer = ({ templateId}) => {
 //     setTemplate(mockTemplate);
 //   }, [templateId]);
 
-useEffect(() => {
-  const mockTemplate = {
-    templateId: 'template-4',
-    fontUrls: [
-      'https://fonts.googleapis.com/css2?family=Poppins&display=swap',
-      'https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap'
-    ],
-    cssCode: `
-      .haldi-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-      }
+// useEffect(() => {
+//   const mockTemplate = {
+//     templateId: 'template-4',
+//     fontUrls: [
+//       'https://fonts.googleapis.com/css2?family=Poppins&display=swap',
+//       'https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap'
+//     ],
+//     cssCode: `
+//       .haldi-wrapper {
+//         display: flex;
+//         align-items: center;
+//         justify-content: center;
+//         min-height: 100vh;
+//       }
 
-      .haldi-card {
-        position: relative;
-        width: 100%;
-        max-width: 390px;
-        aspect-ratio: 11 / 19;
-        background-image: url('/Final.png'); /* final uploaded image */
-        background-size: cover;
-        background-position: center;
-        font-family: 'Poppins', sans-serif;
-        text-align: center;
-      }
+//       .haldi-card {
+//         position: relative;
+//         width: 100%;
+//         max-width: 390px;
+//         aspect-ratio: 11 / 19;
+//         background-image: url('/Final.png'); /* final uploaded image */
+//         background-size: cover;
+//         background-position: center;
+//         font-family: 'Poppins', sans-serif;
+//         text-align: center;
+//       }
 
-      .name {
-        position: absolute;
-        top: 77%;
-        width: 100%;
-        font-family: 'Tenor Sans', sans-serif;
-        font-size: 30px;
-        color: #c01c28;
-      }
+//       .name {
+//         position: absolute;
+//         top: 77%;
+//         width: 100%;
+//         font-family: 'Tenor Sans', sans-serif;
+//         font-size: 30px;
+//         color: #c01c28;
+//       }
 
-      .datetime {
-        position: absolute;
-        top: 85%;
-        width: 100%;
-        font-size: 14px;
-        color: #000;
-      }
+//       .datetime {
+//         position: absolute;
+//         top: 85%;
+//         width: 100%;
+//         font-size: 14px;
+//         color: #000;
+//       }
 
-      .address {
-        position: absolute;
-        bottom: 7%;
-        width: 100%;
-        font-size: 8px;
-        color: #000;
-      }
-    `,
-    jsCode: `
-      <div class="haldi-wrapper">
-        <div class="haldi-card">
-          <div class="name">{{name}}</div>
-          <div class="datetime">{{date}} {{month}} {{year}} | {{time}}</div>
-          <div class="address">{{address}}</div>
-        </div>
-      </div>
-    `
-  };
+//       .address {
+//         position: absolute;
+//         bottom: 7%;
+//         width: 100%;
+//         font-size: 8px;
+//         color: #000;
+//       }
+//     `,
+//     jsCode: `
+//       <div class="haldi-wrapper">
+//         <div class="haldi-card">
+//           <div class="name">{{name}}</div>
+//           <div class="datetime">{{date}} {{month}} {{year}} | {{time}}</div>
+//           <div class="address">{{address}}</div>
+//         </div>
+//       </div>
+//     `
+//   };
 
-  setTemplate(mockTemplate);
-}, [templateId]);
+//   setTemplate(mockTemplate);
+// }, [templateId]);
 
 
   const renderHTML = (jsCode, rawData) => {
