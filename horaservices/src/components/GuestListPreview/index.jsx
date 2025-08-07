@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./GuestListPreview.css";
 import RSVPPopup from "../RSVPPopup";
 import { useRouter } from "next/router";
+import { BASE_URL } from "@/utils/apiconstants";
 
 const RSVP_STATUS = {
   WILL_COME: "will Come",
@@ -53,7 +54,7 @@ const GuestListPreview = ({ hostData }) => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/customer/event/event-guests/all/${eventId}`,
+          `${BASE_URL}/api/customer/event/event-guests/all/${eventId}`,
           {
             headers: {
               Authorization: `${token}`, // Add token in Authorization header

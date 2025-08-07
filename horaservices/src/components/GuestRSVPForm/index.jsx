@@ -78,7 +78,7 @@ const GuestRSVPForm = ({
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/customer/event/event-guests/all/${eventId}`,
+        `${BASE_URL}/api/customer/event/event-guests/all/${eventId}`,
         {
           headers: {
             Authorization: `${token}`, // Add token in Authorization header

@@ -880,11 +880,6 @@ const InvitationCard = () => {
     }
   };
 
-  const isGuest = userType === "guest";
-
-  const openFileInput = () =>
-    document.getElementById("imageUploadInput")?.click();
-
   return (
     <>
       {!isLoggedIn ? (
