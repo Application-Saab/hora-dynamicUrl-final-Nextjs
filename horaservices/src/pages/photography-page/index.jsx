@@ -226,6 +226,7 @@ const firePoseClickEvent = (eventName) => {
   });
 };
 
+
   const bannerImages = [
     Banner1,
     Banner2,

@@ -204,21 +204,31 @@ const WhatsAppIcon = ({ router }) => {
         productNameEvent = 'city_balloon_decoration_youtube_product_detail_whatsapp_click';
         window.open(`https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Google.%20Need%20it%20for%20an%20event.`, '_blank');
         break;
-      default:
-        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
-        return;
-
+      case '/party-food-delivery-live-catering-buffet/party-food-delivery':
+        eventName = 'bulkfood_dishesselection_page_whatsappclick';
+        productNameEvent = 'bulkfood_dishesselection_page_whatsappclick';
+        window.open('https://wa.me/7338584828?text=Hi%2C%20Found%20your%20decoration%20on%20Instagram.%20Need%20details.', '_blank');
+        break;
+      case '/party-food-delivery-live-catering-buffet/':
+        eventName = 'foodcategoriespage_whatsapp_click';
+        productNameEvent = 'food&livecateringpage_whatsapp_click';
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services");
+        break;
+      case '/party-food-delivery-live-catering-buffet/party-live-buffet-catering':
+        eventName = 'livecatering_dishesselection_whatsapp_click';
+        productNameEvent = 'livecatering_dishesselection_whatsapp_click';
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services");
+        break;
       case pathname.startsWith('/photography-page/product/') && pathname:
         eventName = 'photographyProduct_page_whatsappclick';
         productNameEvent = 'photography_page_whatsappclick';
         window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services");
         break;
-        
-      case '/party-food-delivery-live-catering-buffet':
-        eventName = 'food&livecateringpage_whatsapp_click';
-        productNameEvent = 'food&livecateringpage_whatsapp_click';
-        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services");
-        break;
+
+
+      default:
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
+        return;
     }
 
     window.dataLayer = window.dataLayer || [];
