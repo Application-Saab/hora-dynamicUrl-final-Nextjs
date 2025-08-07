@@ -1,5 +1,5 @@
 
-
+/* 
 .guest-rsvp-box {
   background: #fff0d4;
   border: 1px solid #e2b3e5;
@@ -8,8 +8,17 @@
   text-align: center;
   max-width: 400px;
   margin: auto;
+} */
+.guest-rsvp-box {
+    background: #fff0d4;
+    border: 1px solid #e2b3e5;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    
+    max-width: 90%;
+    margin: 10px auto;
 }
-
 .rsvp-title {
   font-weight: bold;
   color: #973e96;

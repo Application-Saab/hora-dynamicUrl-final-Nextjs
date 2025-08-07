@@ -3,14 +3,24 @@ import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
 import profileImage from "../../assets/Ahmdabad.png"; // Add your own image
 // import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
-import tabIcon1 from "../../assets/galleryicon.png";
+import tabIcon1 from "../../assets/galleryicon.jpg";
 import tabIcon2 from "../../assets/thankyouicon.png";
-import wallCamera from "@/assets/wallCamera.png"
+import { FaUpload, FaStickyNote } from "react-icons/fa";
+import tabIcon3 from "../../assets/luckdrawicon.jpg";
+import dressIcon from "../../assets/dressIcon.jpg";
+import StickyImage from "../../assets/sticky5.png";
+import { FaCheckCircle, FaUsers } from "react-icons/fa";
 import imageBackground from "../../assets/imageBackground.jpg";
-import imageBackGround from "../../assets/finalInviteBackground.png"
+import imageBackGround from "../../assets/finalInviteBackground.png";
 import Image from "next/image";
+import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
-import { BASE_URL, IMAGE_UPLOAD } from "../../utils/apiconstants";
+import {
+  BASE_URL,
+  CREATE_GUEST_BY_EVENTID,
+  GET_EVENT_IMAGES,
+  IMAGE_UPLOAD,
+} from "../../utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
@@ -24,6 +34,8 @@ import photo4 from "@/assets/collage/photo4.png"
 import photo5 from "@/assets/collage/photo5.png"
 import photo6 from "@/assets/collage/photo6.png"
 import photo7 from "@/assets/collage/photo7.png"
+import wallCamera from "@/assets/wallCamera.png"
+
 import photo8 from "@/assets/collage/photo8.png"
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
@@ -33,13 +45,124 @@ import GuestListPreview from "@/components/GuestListPreview";
 import ThankYouNotePopup from "@/components/ThankYouNotePopup";
 import RSVPPopup from "@/components/RSVPPopup";
 import GuestRSVPForm from "@/components/GuestRSVPForm";
-import frame from "@/assets/Frame1.png"
+import frame from "@/assets/Frame1.png";
 
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
   const router = useRouter();
-  const { orderid } = router.query;
+  const { id: id2 } = router.query;
+  const userID = localStorage.getItem("userID");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const token = localStorage.getItem("token");
+  const [errorAddGuest, setErrorAddGuest] = useState("");
+  const [openRsvpList, setOpenRsvpList] = useState(false);
+
+  const [eventAllImages, setEventAllImages] = useState([]);
+  console.log(
+    "%c [ eventAllImages ]-58",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    eventAllImages
+  );
+  const [loadingEventImages, setLoadingEventImages] = useState(true);
+  const [errorEventImages, setErrorEventImages] = useState(null);
+
+  const [urlParams, setUrlParams] = useState({
+    eventId: "",
+    eventUserId: "",
+    userType: "host",
+  });
+
+  useEffect(() => {
+    if (id2) {
+      const parts = id2.split("/");
+      if (parts.length >= 2) {
+        setUrlParams((prev) => ({
+          ...prev,
+          eventId: parts[0],
+          eventUserId: parts[1],
+          userType: parts[2] ? parts[2].toLowerCase() : "host",
+        }));
+      }
+    }
+  }, [id2]);
+
+  useEffect(() => {
+    const fetchEventImages = async () => {
+      if (!urlParams.eventId) {
+        setErrorEventImages("Event ID not found in URL");
+        setLoadingEventImages(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${BASE_URL}${GET_EVENT_IMAGES}/${urlParams?.eventId}`,
+          {
+            headers: {
+              Authorization: `${token}`, // Add token in Authorization header
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.error) {
+          setErrorEventImages(data.message || "Failed to fetch guests");
+        } else {
+          setEventAllImages(data.data || []);
+        }
+      } catch (err) {
+        setErrorEventImages("Error fetching guests: " + err.message);
+      } finally {
+        setLoadingEventImages(false);
+      }
+    };
+
+    fetchEventImages();
+  }, [urlParams.eventId]);
+
+  useEffect(() => {
+    const addGuest = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}${CREATE_GUEST_BY_EVENTID}`, {
+          method: "POST",
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            eventId: urlParams.eventId,
+            userId: userID,
+          }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+          setErrorAddGuest(data.message || "Failed to add guest");
+        } else {
+          console.log("Guest added successfully:", data);
+          setErrorAddGuest(null);
+        }
+      } catch (err) {
+        setErrorAddGuest("Error adding guest: " + err.message);
+      }
+    };
+    if (
+      isLoggedIn === "true" &&
+      urlParams.eventId &&
+      urlParams.eventUserId &&
+      urlParams.userType === "guest"
+    ) {
+      addGuest();
+    }
+  }, [
+    urlParams.eventId,
+    urlParams.eventUserId,
+    urlParams.userType,
+    isLoggedIn,
+  ]);
+
   const [orderDetails, setOrderDetails] = useState(null);
+
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -61,8 +184,6 @@ const InvitationCard = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
 
-  const searchParams = useSearchParams();
-
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [guestPhoneNumber, setGuestPhoneNumber] = useState("");
@@ -73,10 +194,9 @@ const InvitationCard = () => {
   const [showPopupGuest, setShowPopupGuest] = useState(false);
   const [guestList, setGuestList] = useState([]);
   const [loading, setLoading] = useState(false);
-const [wallUploading, setWallUploading] = useState(false);
+  const [wallUploading, setWallUploading] = useState(false);
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyU06csCT5OIJzO3F9VGTjCIli74-k2puAp8AhybJGHPYvyEmuQmJlvPf60wHsy--NGGg/exec"; // no query params
-
 
   const [showLuckyDrawPopup, setShowLuckyDrawPopup] = useState(false);
 
@@ -86,41 +206,40 @@ const [wallUploading, setWallUploading] = useState(false);
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
 
+  useEffect(() => {
+    if (!router.isReady) return;
 
-useEffect(() => {
-  if (!router.isReady) return;
+    const queryId = router.query.id;
+    const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
 
-  const queryId = router.query.id;
-  const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
+    if (parts && parts.length >= 2) {
+      const eventId = parts[0];
+      const userId = parts[1];
+      const userType = parts[2]?.toLowerCase() || "";
 
-  if (parts && parts.length >= 2) {
-    const eventId = parts[0];
-    const userId = parts[1];
-    const userType = parts[2]?.toLowerCase() || "";
+      setId(eventId);
+      setSecondId(userId);
+      setUserType(userType);
 
-    setId(eventId);
-    setSecondId(userId);
-    setUserType(userType);
+      const alreadyRSVP = localStorage.getItem(
+        `rsvp_submitted_${eventId}_${userId}`
+      );
+      if (alreadyRSVP === "true") {
+        setHasSubmitted(true);
+      }
 
-    const alreadyRSVP = localStorage.getItem(`rsvp_submitted_${eventId}_${userId}`);
-    if (alreadyRSVP === "true") {
-      setHasSubmitted(true);
+      setLoadingUser(false);
     }
-
-    setLoadingUser(false);
-  }
-}, [router.isReady, router.query.id]);
-
-
+  }, [router.isReady, router.query.id]);
 
   const userId = localStorage.getItem("userID");
   console.log(userId, "userid");
   const userPhoneNumber = localStorage.getItem("mobileNumber");
   console.log(userPhoneNumber, "userPhoneNumber");
-const [isHost, setIsHost] = useState(false);
+  const [isHost, setIsHost] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+
   useEffect(() => {
     const checkAuth = () => {
       if (isLoggedIn !== "true") {
@@ -145,11 +264,10 @@ const [isHost, setIsHost] = useState(false);
     },
   ];
 
+  console.log("ishost", isHost);
 
-console.log("ishost",isHost);
-
- // determine from props or state
-const [hasSubmitted, setHasSubmitted] = useState(false);
+  // determine from props or state
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     // image: null,
     name: "",
@@ -160,96 +278,97 @@ const [hasSubmitted, setHasSubmitted] = useState(false);
     eventTypeSearch: "",
   });
   const [uploadedImage, setUploadedImage] = useState(null);
-const handleImageChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const reader = new FileReader();
+    const reader = new FileReader();
 
-  reader.onloadend = async () => {
-    const base64String = reader.result;
+    reader.onloadend = async () => {
+      const base64String = reader.result;
 
-    try {
-      const compressed = await compressBase64Image(base64String, 500, 0.4); // 👈 compress karo
-      setUploadedImage(compressed); // ✅ use compressed base64
-      console.log("Compressed Base64:", compressed);
-      console.log("Size (approx):", Math.round((compressed.length * 3) / 4 / 1024), "KB");
-    } catch (err) {
-      console.error("Image compression failed:", err);
-      alert("Image compress karne mein error aaya.");
-    }
+      try {
+        const compressed = await compressBase64Image(base64String, 500, 0.4); // 👈 compress karo
+        setUploadedImage(compressed); // ✅ use compressed base64
+        console.log("Compressed Base64:", compressed);
+        console.log(
+          "Size (approx):",
+          Math.round((compressed.length * 3) / 4 / 1024),
+          "KB"
+        );
+      } catch (err) {
+        console.error("Image compression failed:", err);
+        alert("Image compress karne mein error aaya.");
+      }
+    };
+
+    reader.readAsDataURL(file); // ✅ Converts file to base64 string
   };
 
-  reader.readAsDataURL(file); // ✅ Converts file to base64 string
-};
+  const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
 
-const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
+        const ratio = img.width / img.height;
+        const newWidth = Math.min(img.width, maxWidth);
+        const newHeight = newWidth / ratio;
 
-      const ratio = img.width / img.height;
-      const newWidth = Math.min(img.width, maxWidth);
-      const newHeight = newWidth / ratio;
+        canvas.width = newWidth;
+        canvas.height = newHeight;
 
-      canvas.width = newWidth;
-      canvas.height = newHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+        resolve(compressedBase64);
+      };
+      img.onerror = (err) => reject(err);
+      img.src = base64;
+    });
+  };
 
-      const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
-      resolve(compressedBase64);
-    };
-    img.onerror = (err) => reject(err);
-    img.src = base64;
-  });
-};
+  const handleEdit = () => {
+    if (!orderDetails) return;
 
-
-
-const handleEdit = () => {
-  if (!orderDetails) return;
-
-  let formattedTime = "";
-  if (orderDetails.Time) {
-    const timeStr = orderDetails.Time;
-    const parsed = new Date(`1970-01-01T${timeStr}`);
-    if (!isNaN(parsed)) {
-      formattedTime = parsed.toTimeString().slice(0, 5); // "HH:mm"
-    } else {
-      try {
-        const [timePart, meridian] = timeStr.split(" ");
-        const [h, m] = timePart.split(":");
-        let hours = parseInt(h, 10);
-        if (meridian === "PM" && hours < 12) hours += 12;
-        if (meridian === "AM" && hours === 12) hours = 0;
-        formattedTime = `${hours.toString().padStart(2, "0")}:${m}`;
-      } catch {
-        formattedTime = "";
+    let formattedTime = "";
+    if (orderDetails.Time) {
+      const timeStr = orderDetails.Time;
+      const parsed = new Date(`1970-01-01T${timeStr}`);
+      if (!isNaN(parsed)) {
+        formattedTime = parsed.toTimeString().slice(0, 5); // "HH:mm"
+      } else {
+        try {
+          const [timePart, meridian] = timeStr.split(" ");
+          const [h, m] = timePart.split(":");
+          let hours = parseInt(h, 10);
+          if (meridian === "PM" && hours < 12) hours += 12;
+          if (meridian === "AM" && hours === 12) hours = 0;
+          formattedTime = `${hours.toString().padStart(2, "0")}:${m}`;
+        } catch {
+          formattedTime = "";
+        }
       }
     }
-  }
 
-  setFormData({
-    name: orderDetails.Name || "",
-    date: orderDetails.Date
-      ? new Date(orderDetails.Date).toISOString().split("T")[0]
-      : "",
-    time: formattedTime,
-    address: orderDetails.Address || "",
-    eventType: orderDetails.eventType || orderDetails["Event Type"] || "",
-    eventTypeSearch: orderDetails.eventType || orderDetails["Event Type"] || "",
-  });
+    setFormData({
+      name: orderDetails.Name || "",
+      date: orderDetails.Date
+        ? new Date(orderDetails.Date).toISOString().split("T")[0]
+        : "",
+      time: formattedTime,
+      address: orderDetails.Address || "",
+      eventType: orderDetails.eventType || orderDetails["Event Type"] || "",
+      eventTypeSearch:
+        orderDetails.eventType || orderDetails["Event Type"] || "",
+    });
 
-  setUploadedImage(orderDetails.Image || "");
-  setSelectedImage(orderDetails.Image || "");
-  setId(orderDetails?.id || orderDetails?._id || orderDetails?.eventId);
-  setShowModal(true);
-};
-
-
+    setUploadedImage(orderDetails.Image || "");
+    setSelectedImage(orderDetails.Image || "");
+    setId(orderDetails?.id || orderDetails?._id || orderDetails?.eventId);
+    setShowModal(true);
+  };
 
   const handleClosePopup = () => {
     setNoteTitle("");
@@ -262,7 +381,7 @@ const handleEdit = () => {
   };
 
   const handleClick = () => {
-    router.push('/templates');
+    router.push("/templates");
   };
   // const handleChange = (e) => {
   //   const { name, value, files } = e.target;
@@ -271,143 +390,138 @@ const handleEdit = () => {
   //   } else {
   //     setFormData({ ...formData, [name]: value });
   //   }
-    
+
   // };
   const handleChange = (e) => {
-  const { name, value, files, type } = e.target;
+    const { name, value, files, type } = e.target;
 
-  // Set the input value in formData
-  if (name === "image") {
-    setFormData({ ...formData, image: files[0] });
-  } else {
-    setFormData({ ...formData, [name]: value });
-  }
-
-  // ✅ Add/remove `has-value` class for date/time inputs
-  if (type === "date" || type === "time") {
-    if (value) {
-      e.target.classList.add("has-value");
+    // Set the input value in formData
+    if (name === "image") {
+      setFormData({ ...formData, image: files[0] });
     } else {
-      e.target.classList.remove("has-value");
+      setFormData({ ...formData, [name]: value });
     }
-  }
-};
 
-
-const getBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-};
-
-
-
-
-
-const handleSave = async () => {
-  if (!formData.eventType && formData.eventTypeSearch) {
-    formData.eventType = formData.eventTypeSearch;
-  }
-
-  const formattedDate = formData.date ? new Date(formData.date).toISOString() : "";
-  const formattedTime = formData.time
-    ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
-    : "";
-
-  const finalImage = uploadedImage || orderDetails?.Image || "";
-  const token = localStorage.getItem("token");
-  const loggedInUserId = localStorage.getItem("userID");
-
-  if (!token || !loggedInUserId) {
-    alert("Please login to continue.");
-    return;
-  }
-
-  const payload = {
-    userId: loggedInUserId,
-    eventType: formData.eventType,
-    hostName: formData.name,
-    eventDate: formattedDate,
-    eventTime: formattedTime,
-    location: formData.address,
-    hostImage: finalImage,
+    // ✅ Add/remove `has-value` class for date/time inputs
+    if (type === "date" || type === "time") {
+      if (value) {
+        e.target.classList.add("has-value");
+      } else {
+        e.target.classList.remove("has-value");
+      }
+    }
   };
 
-  const isEdit = !!id;
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
-  try {
-    const res = await fetch(
-      isEdit
-        ? `${BASE_URL}/api/customer/event/event-invites/${id}`
-        : `${BASE_URL}/api/customer/event/create-event-invite`,
-      {
-        method: isEdit ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    const result = await res.json();
-    const finalEventId = isEdit
-      ? id
-      : result?.data?._id || result?.data?.idd || result?.data?.event?._id;
-
-    if (res.ok && finalEventId) {
-      await fetchOrderDetails(finalEventId); // ✅ Refresh latest details
-      setId(finalEventId);
-      setSecondId(loggedInUserId);
-      setUserType("host");
-      setShowModal(false);
-
-      // ✅ Update the URL route to reflect changes
-      router.replace(`/wonderland?id=${finalEventId}/${loggedInUserId}/host`);
-    } else {
-      alert("Failed to save invitation.");
+  const handleSave = async () => {
+    if (!formData.eventType && formData.eventTypeSearch) {
+      formData.eventType = formData.eventTypeSearch;
     }
 
-    // ✅ Reset form
-    setFormData({
-      name: "",
-      date: "",
-      time: "",
-      address: "",
-      eventType: "",
-      eventTypeSearch: "",
-    });
-    setUploadedImage(null);
-    setSelectedImage("");
-  } catch (err) {
-    console.error("❌ Error:", err);
-    alert("Something went wrong.");
-  }
-};
+    const formattedDate = formData.date
+      ? new Date(formData.date).toISOString()
+      : "";
+    const formattedTime = formData.time
+      ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "";
 
-const convertTo24Hour = (timeStr) => {
-  const [time, modifier] = timeStr.split(" ");
+    const finalImage = uploadedImage || orderDetails?.Image || "";
+    const loggedInUserId = localStorage.getItem("userID");
 
-  let [hours, minutes] = time.split(":");
-  hours = parseInt(hours, 10);
+    if (!token || !loggedInUserId) {
+      alert("Please login to continue.");
+      return;
+    }
 
-  if (modifier === "PM" && hours !== 12) {
-    hours += 12;
-  }
-  if (modifier === "AM" && hours === 12) {
-    hours = 0;
-  }
+    const payload = {
+      userId: loggedInUserId,
+      eventType: formData.eventType,
+      hostName: formData.name,
+      eventDate: formattedDate,
+      eventTime: formattedTime,
+      location: formData.address,
+      hostImage: finalImage,
+    };
 
-  return `${hours.toString().padStart(2, "0")}:${minutes}`;
-};
+    const isEdit = !!id;
 
+    try {
+      const res = await fetch(
+        isEdit
+          ? `${BASE_URL}/api/customer/event/event-invites/${id}`
+          : `${BASE_URL}/api/customer/event/create-event-invite`,
+        {
+          method: isEdit ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await res.json();
+      const finalEventId = isEdit
+        ? id
+        : result?.data?._id || result?.data?.idd || result?.data?.event?._id;
+
+      if (res.ok && finalEventId) {
+        await fetchOrderDetails(finalEventId); // ✅ Refresh latest details
+        setId(finalEventId);
+        setSecondId(loggedInUserId);
+        setUserType("host");
+        setShowModal(false);
+
+        // ✅ Update the URL route to reflect changes
+        router.replace(`/wonderland?id=${finalEventId}/${loggedInUserId}/host`);
+      } else {
+        alert("Failed to save invitation.");
+      }
+
+      // ✅ Reset form
+      setFormData({
+        name: "",
+        date: "",
+        time: "",
+        address: "",
+        eventType: "",
+        eventTypeSearch: "",
+      });
+      setUploadedImage(null);
+      setSelectedImage("");
+    } catch (err) {
+      console.error("❌ Error:", err);
+      alert("Something went wrong.");
+    }
+  };
+
+  const convertTo24Hour = (timeStr) => {
+    const [time, modifier] = timeStr.split(" ");
+
+    let [hours, minutes] = time.split(":");
+    hours = parseInt(hours, 10);
+
+    if (modifier === "PM" && hours !== 12) {
+      hours += 12;
+    }
+    if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+
+    return `${hours.toString().padStart(2, "0")}:${minutes}`;
+  };
 
   useEffect(() => {
     if (orderDetails) {
@@ -437,67 +551,58 @@ const convertTo24Hour = (timeStr) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!router.isReady) return;
 
-useEffect(() => {
-  if (!router.isReady) return;
+    const queryId = router.query.id;
+    const eventId = Array.isArray(queryId)
+      ? queryId[0]
+      : queryId?.split("/")?.[0];
+    if (!eventId) return;
 
-  const queryId = router.query.id;
-  const eventId = Array.isArray(queryId) ? queryId[0] : queryId?.split("/")?.[0];
-  if (!eventId) return;
+    fetchOrderDetails(eventId);
+  }, [router.isReady, router.query.id]);
 
-  fetchOrderDetails(eventId);
-}, [router.isReady, router.query.id]);
+  const fetchOrderDetails = async (eventId) => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        }
+      );
 
-const fetchOrderDetails = async (eventId) => {
-  const token = localStorage.getItem("token");
-  const loggedInId = localStorage.getItem("userID");
+      const result = await res.json();
 
-  try {
-    const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-    });
+      if (res.status === 200 && result.data) {
+        const data = result.data;
+        const hostId = String(data.userId).trim();
 
-    const result = await res.json();
+        setOrderDetails({
+          Name: data.hostName,
+          "Event Type": data.eventType,
+          eventType: data.eventType, // ✅ add this
+          Date: data.eventDate,
+          Time: data.eventTime,
+          Address: data.location,
+          Image: data.hostImage || data.imageUrl || "",
+          userId: hostId,
+          id: data._id || data.id || data.eventId,
+        });
 
-    if (res.status === 200 && result.data) {
-      const data = result.data;
-      const hostId = String(data.userId).trim();
-
-     setOrderDetails({
-  Name: data.hostName,
-  "Event Type": data.eventType,
-  eventType: data.eventType, // ✅ add this
-  Date: data.eventDate,
-  Time: data.eventTime,
-  Address: data.location,
-  Image: data.hostImage || data.imageUrl || "",
-  userId: hostId,
-  id: data._id || data.id || data.eventId,
-});
-
-
-      // ✅ Set host ID globally
-      setSendCustomerId(hostId);
+        // ✅ Set host ID globally
+        setSendCustomerId(hostId);
+      }
+    } catch (err) {
+      console.error("❌ Fetch failed:", err);
+      alert("Fetch failed.");
     }
-  } catch (err) {
-    console.error("❌ Fetch failed:", err);
-    alert("Fetch failed.");
-  }
-};
+  };
 
-
-
-
- 
-
-  
-  
-  
-  
   const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -522,7 +627,6 @@ const fetchOrderDetails = async (eventId) => {
     "Bachelorette",
   ];
 
-
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
       document.getElementById("imageUploadInput").click();
@@ -533,107 +637,100 @@ const fetchOrderDetails = async (eventId) => {
     }
   };
 
-
   const handleImageUpload = async (e) => {
-  setUploading(true);
-  setWallUploading(true);
-  const files = e.target.files;
-  if (files.length > 0) {
-    const formData = new FormData();
+    setUploading(true);
+    setWallUploading(true);
+    const files = e.target.files;
+    if (files.length > 0) {
+      const formData = new FormData();
 
-    for (let i = 0; i < files.length; i++) {
-      formData.append("files", files[i]); // backend expects "files"
-    }
+      for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]); // backend expects "files"
+      }
 
-    formData.append("customerId", sendCustomerId);
-    formData.append("phoneNo", sendCustomerPhoneNumber);
-    formData.append("folderName", id);
+      formData.append("customerId", sendCustomerId);
+      formData.append("phoneNo", sendCustomerPhoneNumber);
+      formData.append("folderName", id);
 
-    try {
-      const res = await fetch(
-        "https://horaservices.com:3000/api/photo/upload",
-        {
+      try {
+        const res = await fetch(`${BASE_URL}/api/photo/upload`, {
           method: "POST",
           body: formData,
+        });
+
+        const data = await res.json();
+        console.log("Uploaded:", data);
+
+        if (data?.uploaded && Array.isArray(data.uploaded)) {
+          // Update eventData with uploaded images
+          const newImages = data.uploaded.map((item) => ({
+            type: "image",
+            src: item.url, // backend should return this
+            alt: item.key || item.filename || "Uploaded image",
+          }));
+
+          setEventData((prev) => [...newImages, ...prev]);
         }
-      );
-
-      const data = await res.json();
-      console.log("Uploaded:", data);
-
-      if (data?.uploaded && Array.isArray(data.uploaded)) {
-        // Update eventData with uploaded images
-        const newImages = data.uploaded.map((item) => ({
-          type: "image",
-          src: item.url, // backend should return this
-          alt: item.key || item.filename || "Uploaded image",
-        }));
-
-        setEventData((prev) => [...newImages, ...prev]);
+      } catch (err) {
+        console.error("Upload failed", err);
+      } finally {
+        setUploading(false);
+        setWallUploading(false);
       }
-    } catch (err) {
-      console.error("Upload failed", err);
-    } finally {
-      setUploading(false);
-       setWallUploading(false);
     }
-  }
-};
-useEffect(() => {
-  const timer = setTimeout(() => {
-    fetchThumbnails();
-  }, 2000); // shorter delay is fine now
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchThumbnails();
+    }, 2000); // shorter delay is fine now
 
-  return () => clearTimeout(timer);
-}, [id, sendCustomerId]);
+    return () => clearTimeout(timer);
+  }, [id, sendCustomerId]);
 
-
-const fetchThumbnails = async () => {
-  // Safety check
-  if (!id || !sendCustomerId) {
-    console.warn("❌ Missing 'id' (folderName) or 'sendCustomerId'");
-    setLoadingThumbnails(false);
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    const data = await response.json();
-
-    if (!Array.isArray(data?.thumbnails)) {
-      console.error("❌ Unexpected response format:", data);
+  const fetchThumbnails = async () => {
+    // Safety check
+    if (!id || !sendCustomerId) {
+      console.warn("❌ Missing 'id' (folderName) or 'sendCustomerId'");
       setLoadingThumbnails(false);
       return;
     }
 
-    const imagesFromAPI = data.thumbnails.map((item) => ({
-      type: "image",
-      src: item.url,
-      alt: item.key,
-    }));
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
+      );
 
-    // Merge without duplication
-    setEventData((prev) => {
-      const apiUrls = imagesFromAPI.map((img) => img.src);
-      const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
-      return [...nonApiUploads, ...imagesFromAPI.reverse()];
-    });
-  } catch (error) {
-    console.error("❌ Error fetching thumbnails:", error);
-  } finally {
-    setLoadingThumbnails(false);
-  }
-};
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
 
+      const data = await response.json();
 
+      if (!Array.isArray(data?.thumbnails)) {
+        console.error("❌ Unexpected response format:", data);
+        setLoadingThumbnails(false);
+        return;
+      }
+
+      const imagesFromAPI = data.thumbnails.map((item) => ({
+        type: "image",
+        src: item.url,
+        alt: item.key,
+      }));
+
+      // Merge without duplication
+      setEventData((prev) => {
+        const apiUrls = imagesFromAPI.map((img) => img.src);
+        const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
+        return [...nonApiUploads, ...imagesFromAPI.reverse()];
+      });
+    } catch (error) {
+      console.error("❌ Error fetching thumbnails:", error);
+    } finally {
+      setLoadingThumbnails(false);
+    }
+  };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -662,13 +759,10 @@ const fetchThumbnails = async () => {
       formData.append("folderName", id);
 
       try {
-        const response = await fetch(
-          "https://horaservices.com:3000/api/photo/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+        const response = await fetch(`${BASE_URL}/api/photo/upload`, {
+          method: "POST",
+          body: formData,
+        });
 
         const result = await response.json();
 
@@ -693,96 +787,68 @@ const fetchThumbnails = async () => {
 
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
- useEffect(() => {
-  if (sendCustomerId && userId) {
-    const isHost = sendCustomerId.trim() === userId.trim();
-    setIsHost(isHost);
-    setShowFAB(isHost);
-  }
-}, [sendCustomerId, userId]);
-
-
-useEffect(() => {
-  if (!router.isReady || !userId || !sendCustomerId) return;
-
-  const { id } = router.query;
-  if (!id || typeof id !== "string") return;
-
-  const [eventId, routeUserId, routeRole] = id.split("/");
-
-  const actualRole = userId.trim() === sendCustomerId.trim() ? "host" : "guest";
-
-  if (routeUserId === userId && routeRole === actualRole) return;
-
-  const newRoute = `${eventId}/${userId}/${actualRole}`;
-  router.replace(`/wonderland?id=${newRoute}`);
-}, [router.isReady, router.query.id, userId, sendCustomerId]);
-
-const handleRSVPSubmit = async ({ name, phoneNumber, status, rsvpId, userId }) => {
-  if (!name || !status) {
-    alert("Please enter your name and select an option.");
-    return;
-  }
-
-  const rsvpData = {
-    name,
-    phoneNumber,
-    status,
-    hostType: "Guest",
-    eventId: rsvpId,
-    userId: userId,
-  };
-
-  try {
-    await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams(rsvpData),
-    });
-
-    alert("Thank you! Your response has been submitted.");
-  } catch (error) {
-    console.error("RSVP submission failed:", error);
-    alert("An error occurred while submitting your response.");
-  }
-};
-
-
-  const fetchGuests = async (showPopup = false) => {
-  setLoading(true);
-  try {
-    const res = await axios.get(
-      "https://script.google.com/macros/s/AKfycbz5_pOpOi7tfRnvBNUMtNuayZ3_Jdw27l5cmohLKx7GlknqePtKxD8TW87Hlz4dgbu6Dw/exec",
-      {
-        params: { action: "getAssociateIdd", idd: id },
-      }
-    );
-
-    if (res.data.status === "success") {
-      const guests = res.data.data.filter((row) => row[10] === "Guest");
-      setGuestList(
-        guests.map((row) => ({
-          name: row[0],
-          status: row[11] || "N/A",
-        }))
-      );
-
-      if (showPopup) {
-        setShowPopupGuest(true); // ✅ Only open when asked
-      }
+  useEffect(() => {
+    if (sendCustomerId && userId) {
+      const isHost = sendCustomerId.trim() === userId.trim();
+      setIsHost(isHost);
+      setShowFAB(isHost);
     }
-  } catch (err) {
-    alert("Error fetching data");
-  } finally {
-    setLoading(false);
-  }
-};
+  }, [sendCustomerId, userId]);
 
-const isGuest = userType === "guest";
+  useEffect(() => {
+    if (!router.isReady || !userId || !sendCustomerId) return;
 
-  const openFileInput = () => document.getElementById('imageUploadInput')?.click();
+    const { id } = router.query;
+    if (!id || typeof id !== "string") return;
+
+    const [eventId, routeUserId, routeRole] = id.split("/");
+
+    const actualRole =
+      userId.trim() === sendCustomerId.trim() ? "host" : "guest";
+
+    if (routeUserId === userId && routeRole === actualRole) return;
+
+    const newRoute = `${eventId}/${userId}/${actualRole}`;
+    router.replace(`/wonderland?id=${newRoute}`);
+  }, [router.isReady, router.query.id, userId, sendCustomerId]);
+
+  // const handleRSVPSubmit = async ({
+  //   name,
+  //   phoneNumber,
+  //   status,
+  //   rsvpId,
+  //   userId,
+  // }) => {
+  //   if (!name || !status) {
+  //     alert("Please enter your name and select an option.");
+  //     return;
+  //   }
+
+  //   const rsvpData = {
+  //     name,
+  //     phoneNumber,
+  //     status,
+  //     hostType: "Guest",
+  //     eventId: rsvpId,
+  //     userId: userId,
+  //   };
+
+  //   try {
+  //     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded",
+  //       },
+  //       body: new URLSearchParams(rsvpData),
+  //     });
+
+  //     alert("Thank you! Your response has been submitted.");
+  //   } catch (error) {
+  //     console.error("RSVP submission failed:", error);
+  //     alert("An error occurred while submitting your response.");
+  //   }
+  // };
+
 
  return (
   <>
@@ -820,33 +886,35 @@ const isGuest = userType === "guest";
                 <GuestListPreview
                   guestList={guestList}
                   loading={loading}
-                  fetchGuests={fetchGuests}
                   userType={userType}
+                   hostData={orderDetails}
                 />
               ) : (
                 <GuestRSVPForm
-                  userType={userType}
-                  guestList={guestList}
-                  loading={loading}
-                  userId={secondId}
-                  rsvpId={id}
-                  fetchGuests={fetchGuests}
-                  hasSubmitted={hasSubmitted}
-                  setHasSubmitted={setHasSubmitted}
-                  onSubmit={(data) => {
-                    const payload = {
-                      ...data,
-                      rsvpId: id,
-                      userId: secondId,
-                    };
-                    handleRSVPSubmit(payload);
-                    localStorage.setItem(
-                      `rsvp_submitted_${id}_${secondId}`,
-                      "true"
-                    );
-                    setHasSubmitted(true);
-                  }}
-                />
+                    hostData={orderDetails}
+                    userType={userType}
+                    guestList={guestList}
+                    loading={loading}
+                    userId={userID}
+                    eventId={urlParams.eventId}
+                    // fetchGuests={fetchGuests}
+                    hasSubmitted={hasSubmitted}
+                    setHasSubmitted={setHasSubmitted}
+                    setShowPopupGuest={setShowPopupGuest}
+                    onSubmit={(data) => {
+                      const payload = {
+                        ...data,
+                        rsvpId: id,
+                        userId: secondId,
+                      };
+                      // handleRSVPSubmit(payload);
+                      localStorage.setItem(
+                        `rsvp_submitted_${id}_${secondId}`,
+                        "true"
+                      );
+                      setHasSubmitted(true);
+                    }}
+                  />
               )}
 
               {/* 💌 Thank You Note Popup */}
@@ -1337,3 +1405,4 @@ actionButton: {
 };
    
 export default InvitationCard;
+
