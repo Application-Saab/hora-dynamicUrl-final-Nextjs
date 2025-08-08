@@ -734,58 +734,58 @@ const InvitationCard = () => {
       setWallUploading(false);
     }
   };
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchThumbnails();
-    }, 2000); // shorter delay is fine now
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     fetchThumbnails();
+  //   }, 2000); // shorter delay is fine now
 
-    return () => clearTimeout(timer);
-  }, [id, sendCustomerId]);
+  //   return () => clearTimeout(timer);
+  // }, [id, sendCustomerId]);
 
-  const fetchThumbnails = async () => {
-    // Safety check
-    if (!id || !sendCustomerId) {
-      console.warn("❌ Missing 'id' (folderName) or 'sendCustomerId'");
-      setLoadingThumbnails(false);
-      return;
-    }
+  // const fetchThumbnails = async () => {
+  //   // Safety check
+  //   if (!id || !sendCustomerId) {
+  //     console.warn("❌ Missing 'id' (folderName) or 'sendCustomerId'");
+  //     setLoadingThumbnails(false);
+  //     return;
+  //   }
 
-    try {
-      const response = await fetch(
-        `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
-      );
+  //   try {
+  //     const response = await fetch(
+  //       `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
+  //     );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
+  //     if (!response.ok) {
+  //       const errorText = await response.text();
+  //       throw new Error(`HTTP ${response.status}: ${errorText}`);
+  //     }
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (!Array.isArray(data?.thumbnails)) {
-        console.error("❌ Unexpected response format:", data);
-        setLoadingThumbnails(false);
-        return;
-      }
+  //     if (!Array.isArray(data?.thumbnails)) {
+  //       console.error("❌ Unexpected response format:", data);
+  //       setLoadingThumbnails(false);
+  //       return;
+  //     }
 
-      const imagesFromAPI = data.thumbnails.map((item) => ({
-        type: "image",
-        src: item.url,
-        alt: item.key,
-      }));
+  //     const imagesFromAPI = data.thumbnails.map((item) => ({
+  //       type: "image",
+  //       src: item.url,
+  //       alt: item.key,
+  //     }));
 
-      // Merge without duplication
-      setEventData((prev) => {
-        const apiUrls = imagesFromAPI.map((img) => img.src);
-        const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
-        return [...nonApiUploads, ...imagesFromAPI.reverse()];
-      });
-    } catch (error) {
-      console.error("❌ Error fetching thumbnails:", error);
-    } finally {
-      setLoadingThumbnails(false);
-    }
-  };
+  //     // Merge without duplication
+  //     setEventData((prev) => {
+  //       const apiUrls = imagesFromAPI.map((img) => img.src);
+  //       const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
+  //       return [...nonApiUploads, ...imagesFromAPI.reverse()];
+  //     });
+  //   } catch (error) {
+  //     console.error("❌ Error fetching thumbnails:", error);
+  //   } finally {
+  //     setLoadingThumbnails(false);
+  //   }
+  // };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -1034,55 +1034,32 @@ const InvitationCard = () => {
                 </div>
               )}
 
-              <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
-                {eventData.length === 0 ? (
-                  <>
-                    <div className="collage-item">
-                      <Image src={photo1} className="collage-image" alt="img1" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo4} className="collage-image" alt="sticky note" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo3} className="collage-image" alt="img2" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo7} className="collage-image" alt="img2" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo8} className="collage-image" alt="img5" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo2} className="collage-image" alt="img3" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo5} className="collage-image" alt="img4" />
-                    </div>
-                    <div className="collage-item">
-                      <Image src={photo6} className="collage-image" alt="img5" />
-                    </div>
-
-                  </>
-                ) : (
-                  eventData.map((item, index) => (
-                    <div key={index}>
-                      {item.type === "image" ? (
-                        <img
-                          src={item.src}
-                          alt={item.alt}
-                          className="event-image"
-                          onLoad={(e) => e.currentTarget.classList.add("loaded")}
-                        />
-                      ) : (
-                        <div
-                          className="event-text"
-                          dangerouslySetInnerHTML={{ __html: item.content }}
-                        />
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
+           <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
+  {eventAllImages.length === 0 ? (
+    <>
+      {/* fallback static images */}
+      <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
+      <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
+      <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
+      <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
+      <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
+      <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
+      <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
+      <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
+    </>
+  ) : (
+    eventAllImages.map((item, index) => (
+      <div key={item._id || index} className="collage-item">
+        <img
+          src={item.imageUrl}
+          alt={`Event Image ${index + 1}`}
+          className="event-image"
+          onLoad={(e) => e.currentTarget.classList.add("loaded")}
+        />
+      </div>
+    ))
+  )}
+</div>
 
             </div>
           </div>
