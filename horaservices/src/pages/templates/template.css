@@ -72,8 +72,8 @@
 
 .templateGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Bigger cards */
+  gap: 20px;
 }
 
 .templateCard {
@@ -83,26 +83,22 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: relative; /* for button positioning */
+  position: relative;
 }
 
 .templatePreview {
   width: 100%;
-  height: 240px;
+  height: 280px; /* Bigger image area */
   object-fit: cover;
   display: block;
 }
 
-/* Apply Button */
+/* Apply Button - between image and bottom */
 .inviteBtn {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 18px;
+  padding: 5px ;
   background-color: #97538C;
   color: #fff;
   border: none;
@@ -111,7 +107,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 2;
 }
 
 .inviteBtn:hover {
@@ -137,13 +132,13 @@
   font-weight: bold;
 }
 
-/* Mobile */
+/* Mobile Adjustments */
 @media (max-width: 600px) {
   .templateGrid {
     grid-template-columns: 1fr 1fr;
   }
 
   .templatePreview {
-    height: 180px;
+    height: 200px;
   }
 }

@@ -134,7 +134,7 @@ const TemplateGrid = () => {
           </>
         ) : (
           <>
-            APPLY NOW <span className="btnCircle">→</span>
+            APPLY NOW <span className="btnCircle">✔</span>
           </>
         )}
       </button>

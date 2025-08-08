@@ -140,7 +140,7 @@ React.useEffect(() => {
           value={formData.address}
           onChange={handleChange}
         />
-        {(uploadedImage || orderDetails?.Image) ? (
+        {uploadedImage || orderDetails?.Image ? (
           <div
             className="preview-wrapper"
             onClick={() => fileInputRef.current?.click()}

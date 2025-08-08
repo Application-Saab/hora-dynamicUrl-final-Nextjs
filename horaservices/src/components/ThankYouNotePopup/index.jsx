@@ -14,6 +14,7 @@ const ThankYouNotePopup = ({
   handleDownload,
   handleClosePopup,
   noteRef,
+  hostData,
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
@@ -64,7 +65,7 @@ const ThankYouNotePopup = ({
               setNoteTitle(truncated);
             }
 
-            if (input.trim() !== "" && noteBy.trim() !== "") {
+            if (input?.trim() !== "" && noteBy?.trim() !== "") {
               setErrorMsg("");
             }
           }}
@@ -88,7 +89,7 @@ const ThankYouNotePopup = ({
           required
           onChange={(e) => {
             setNoteBy(e.target.value);
-            if (noteTitle.trim() !== "" && e.target.value.trim() !== "") {
+            if (noteTitle?.trim() !== "" && e.target.value.trim() !== "") {
               setErrorMsg("");
             }
           }}
