@@ -1,6 +1,6 @@
 import React from "react";
 import "./invitaionmodal.css";
-import camera from "../../assets/camera.png"
+import camera from "../../assets/camera.png";
 import Image from "next/image";
 import Head from "next/head";
 const InvitationModal = ({
@@ -24,16 +24,15 @@ const InvitationModal = ({
   );
 
   if (!showModal) return null;
-React.useEffect(() => {
-  const dateInput = document.querySelector('input[name="date"]');
-  const timeInput = document.querySelector('input[name="time"]');
+  React.useEffect(() => {
+    const dateInput = document.querySelector('input[name="date"]');
+    const timeInput = document.querySelector('input[name="time"]');
 
-  if (dateInput?.value) dateInput.classList.add("has-value");
-  if (timeInput?.value) timeInput.classList.add("has-value");
-}, []);
+    if (dateInput?.value) dateInput.classList.add("has-value");
+    if (timeInput?.value) timeInput.classList.add("has-value");
+  }, []);
 
   return (
-
     <div
       className="modal-overlay"
       style={{ backgroundImage: `url(${imageBackground?.src || ""})` }}
@@ -45,7 +44,7 @@ React.useEffect(() => {
         />
       </Head>
       <div className="invitation-container-form">
-        <h2 className="invite-Title">Create  Invitation</h2>
+        <h2 className="invite-Title">Create Invitation</h2>
 
         <p className="invite-subtitle">
           {/* ✨ A day of joy, a heart full of cheer, <br />
@@ -133,7 +132,6 @@ React.useEffect(() => {
           </div>
         </div>
 
-
         <input
           type="text"
           placeholder="Venue"
@@ -142,7 +140,7 @@ React.useEffect(() => {
           value={formData.address}
           onChange={handleChange}
         />
-        {(uploadedImage || orderDetails?.Image) ? (
+        {uploadedImage || orderDetails?.Image ? (
           <div
             className="preview-wrapper"
             onClick={() => fileInputRef.current?.click()}

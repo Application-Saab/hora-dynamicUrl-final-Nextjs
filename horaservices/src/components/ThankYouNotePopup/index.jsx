@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import StickyImage from "../../assets/sticky5.png"; // adjust path
 
-
 const ThankYouNotePopup = ({
   noteTitle,
   noteBy,
@@ -13,12 +12,15 @@ const ThankYouNotePopup = ({
   handleDownload,
   handleClosePopup,
   noteRef,
+  hostData,
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
   return (
     <div className="popup">
-      <span className="close-button" onClick={handleClosePopup}>×</span>
+      <span className="close-button" onClick={handleClosePopup}>
+        ×
+      </span>
 
       <h1 className="title">Thank You Note</h1>
       <h3 className="subtitlePopUp">
@@ -49,7 +51,7 @@ const ThankYouNotePopup = ({
               setNoteTitle(truncated);
             }
 
-            if (input.trim() !== "" && noteBy.trim() !== "") {
+            if (input?.trim() !== "" && noteBy?.trim() !== "") {
               setErrorMsg("");
             }
           }}
@@ -73,18 +75,14 @@ const ThankYouNotePopup = ({
           required
           onChange={(e) => {
             setNoteBy(e.target.value);
-            if (noteTitle.trim() !== "" && e.target.value.trim() !== "") {
+            if (noteTitle?.trim() !== "" && e.target.value.trim() !== "") {
               setErrorMsg("");
             }
           }}
         />
       </div>
 
-      {errorMsg && (
-        <p className="error-msg">
-          {errorMsg}
-        </p>
-      )}
+      {errorMsg && <p className="error-msg">{errorMsg}</p>}
 
       <div className="popup-buttons">
         <button onClick={handleDownload}>Save</button>

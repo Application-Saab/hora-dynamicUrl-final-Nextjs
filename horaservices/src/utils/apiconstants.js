@@ -1,4 +1,4 @@
-export const BASE_URL = "https://horaservices.com:3000";
+export const BASE_URL = "http://localhost:5000";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
@@ -35,4 +35,7 @@ export const GET_GUESTS_BY_EVENTID = "/api/customer/event/event-guests/all";
 export const CREATE_GUEST_BY_EVENTID = "/api/customer/event/event-guest";
 export const UPDATE_RSVP_STATUS = "/api/customer/event/event-guest";
 export const GET_ALL_TEMPLATES = "/api/photo/templates";
-export const GET_EVENT_IMAGES = '/api/customer/event/event-images'
+export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
+export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
+export const UPLOAD_THANKYOU_NOTE = "/api/customer/event/event-images";
+export const GET_GUEST_DETTAILS = '/api/customer/event/event-guest'

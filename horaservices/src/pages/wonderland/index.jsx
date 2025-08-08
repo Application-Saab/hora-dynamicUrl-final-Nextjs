@@ -19,7 +19,9 @@ import {
   BASE_URL,
   CREATE_GUEST_BY_EVENTID,
   GET_EVENT_IMAGES,
-  IMAGE_UPLOAD,
+  GET_GUEST_DETTAILS,
+  UPLOAD_IMAGES_SELF,
+  UPLOAD_THANKYOU_NOTE,
 } from "../../utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -53,15 +55,14 @@ const InvitationCard = () => {
   const token = localStorage.getItem("token");
   const [errorAddGuest, setErrorAddGuest] = useState("");
   const [openRsvpList, setOpenRsvpList] = useState(false);
+  const [errorGetGuest, setErrorGetGuest] = useState(null);
+  const [guestDetails, setGuestDetails] = useState({});
+  console.log('%c [ guestDetails ]-60', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
 
   const [eventAllImages, setEventAllImages] = useState([]);
-  console.log(
-    "%c [ eventAllImages ]-58",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    eventAllImages
-  );
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
+  const [refetchEventImages, setRefetchEventImages] = useState(false);
 
   const [urlParams, setUrlParams] = useState({
     eventId: "",
@@ -115,7 +116,42 @@ const InvitationCard = () => {
     };
 
     fetchEventImages();
-  }, [urlParams.eventId]);
+  }, [urlParams.eventId, refetchEventImages]);
+
+  useEffect(() => {
+    const fetchGuestDetails = async () => {
+      if (userID === urlParams.eventUserId){
+        // alert(`${userID} and ${urlParams.eventUserId} are same`);
+        return
+      };
+      if (!urlParams.eventId || !userID) {
+        setErrorGetGuest("Event id or user id not found!");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${BASE_URL}${GET_GUEST_DETTAILS}/${urlParams?.eventId}/user/${userID}`,
+          {
+            headers: {
+              Authorization: `${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.error) {
+          setErrorGetGuest(data.message || "Failed to fetch guest");
+        } else {
+          setGuestDetails(data.data || []);
+        }
+      } catch (err) {
+        setErrorGetGuest("Error fetching guest: " + err.message);
+      }
+    };
+
+    fetchGuestDetails();
+  }, [urlParams.eventId, userID, urlParams.eventUserId  ]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -156,9 +192,11 @@ const InvitationCard = () => {
     urlParams.eventUserId,
     urlParams.userType,
     isLoggedIn,
+    guestDetails
   ]);
 
   const [orderDetails, setOrderDetails] = useState(null);
+  console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
 
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
@@ -177,7 +215,8 @@ const InvitationCard = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [noteTitle, setNoteTitle] = useState("");
-  const [noteBy, setNoteBy] = useState("");
+  const [noteBy, setNoteBy] = useState(userID === urlParams.eventUserId ? orderDetails?.Name : guestDetails?.name);
+  console.log('%c [ noteBy ]-219', 'font-size:13px; background:pink; color:#bf2c9f;', noteBy)
   const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
 
@@ -638,48 +677,113 @@ const InvitationCard = () => {
     }
   };
 
+  // const handleImageUpload = async (e) => {
+  //   setUploading(true);
+  //   setWallUploading(true);
+  //   const files = e.target.files;
+  //   if (files.length > 0) {
+  //     const formData = new FormData();
+
+  //     for (let i = 0; i < files.length; i++) {
+  //       formData.append("files", files[i]); // backend expects "files"
+  //     }
+
+  //     formData.append("customerId", sendCustomerId);
+  //     formData.append("phoneNo", sendCustomerPhoneNumber);
+  //     formData.append("folderName", id);
+
+  //     try {
+  //       const res = await fetch(`${BASE_URL}/api/photo/upload`, {
+  //         method: "POST",
+  //         body: formData,
+  //       });
+
+  //       const data = await res.json();
+  //       console.log("Uploaded:", data);
+
+  //       if (data?.uploaded && Array.isArray(data.uploaded)) {
+  //         // Update eventData with uploaded images
+  //         const newImages = data.uploaded.map((item) => ({
+  //           type: "image",
+  //           src: item.url, // backend should return this
+  //           alt: item.key || item.filename || "Uploaded image",
+  //         }));
+
+  //         setEventData((prev) => [...newImages, ...prev]);
+  //       }
+  //     } catch (err) {
+  //       console.error("Upload failed", err);
+  //     } finally {
+  //       setUploading(false);
+  //       setWallUploading(false);
+  //     }
+  //   }
+  // };
   const handleImageUpload = async (e) => {
     setUploading(true);
     setWallUploading(true);
+
     const files = e.target.files;
-    if (files.length > 0) {
-      const formData = new FormData();
+    if (!files || files.length === 0) {
+      console.error("No files selected for upload");
+      setUploading(false);
+      setWallUploading(false);
+      return;
+    }
 
-      for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]); // backend expects "files"
-      }
+    const formData = new FormData();
 
-      formData.append("customerId", sendCustomerId);
-      formData.append("phoneNo", sendCustomerPhoneNumber);
-      formData.append("folderName", id);
+    // Append all files with the same field name "files" (backend should handle array)
+    Array.from(files).forEach((file, index) => {
+      formData.append("selfUploadedImages", file); // Multiple files under "files" key
+    });
 
-      try {
-        const res = await fetch(`${BASE_URL}/api/photo/upload`, {
-          method: "POST",
+    formData.append("userId", userID);
+
+    try {
+      const res = await fetch(
+        `${BASE_URL}${UPLOAD_IMAGES_SELF}/${urlParams?.eventId}/self-uploaded`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `${token}`,
+          },
           body: formData,
-        });
-
-        const data = await res.json();
-        console.log("Uploaded:", data);
-
-        if (data?.uploaded && Array.isArray(data.uploaded)) {
-          // Update eventData with uploaded images
-          const newImages = data.uploaded.map((item) => ({
-            type: "image",
-            src: item.url, // backend should return this
-            alt: item.key || item.filename || "Uploaded image",
-          }));
-
-          setEventData((prev) => [...newImages, ...prev]);
         }
-      } catch (err) {
-        console.error("Upload failed", err);
-      } finally {
-        setUploading(false);
-        setWallUploading(false);
+      );
+
+      if (!res.ok) {
+        throw new Error(`Upload failed with status: ${res.status}`);
       }
+
+      const data = await res.json();
+      console.log("Uploaded:", data);
+
+      if (data?.uploaded && Array.isArray(data.uploaded)) {
+        // Update eventData with uploaded images
+        const newImages = data.uploaded.map((item) => ({
+          type: "image",
+          src: item.url, // Ensure backend returns "url" field
+          alt:
+            item.key ||
+            item.filename ||
+            `Uploaded image ${data.uploaded.indexOf(item) + 1}`,
+        }));
+
+        setEventData((prev) => [...newImages, ...prev]);
+      } else {
+        console.warn("No valid uploaded images data received", data);
+      }
+    } catch (err) {
+      console.error("Upload failed", err.message);
+      // Optionally show user feedback (e.g., alert or UI message)
+    } finally {
+      setRefetchEventImages(!refetchEventImages);
+      setUploading(false);
+      setWallUploading(false);
     }
   };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchThumbnails();
@@ -754,16 +858,24 @@ const InvitationCard = () => {
       });
 
       const formData = new FormData();
-      formData.append("files", file);
-      formData.append("customerId", sendCustomerId);
-      formData.append("phoneNo", sendCustomerPhoneNumber);
-      formData.append("folderName", id);
+      formData.append("image", file);
+      formData.append("userId", userID);
 
       try {
-        const response = await fetch(`${BASE_URL}/api/photo/upload`, {
-          method: "POST",
-          body: formData,
-        });
+        // const response = await fetch(`${BASE_URL}/api/photo/upload`, {
+        //   method: "POST",
+        //   body: formData,
+        // });
+        const response = await fetch(
+          `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${urlParams?.eventId}/thankyou-note`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `${token}`,
+            },
+            body: formData,
+          }
+        );
 
         const result = await response.json();
 
@@ -776,7 +888,7 @@ const InvitationCard = () => {
           };
           setEventData((prev) => [newImage, ...prev]);
         }
-
+        setRefetchEventImages(!refetchEventImages);
         setShowPopup(false);
         setNoteTitle("");
         setNoteBy("");
@@ -809,7 +921,7 @@ const InvitationCard = () => {
 
     if (routeUserId === userId && routeRole === actualRole) return;
 
-    const newRoute = `${eventId}/${userId}/${actualRole}`;
+    const newRoute = `${eventId}/${routeUserId}/${actualRole}`;
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
