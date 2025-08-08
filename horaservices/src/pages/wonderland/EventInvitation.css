@@ -19,7 +19,7 @@ body {
 } */
 .invitation-container {
     max-width: 480px;
-    min-height: 100vh;
+    /* min-height: 100vh; */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

@@ -383,15 +383,7 @@ const InvitationCard = () => {
   const handleClick = () => {
     router.push("/templates");
   };
-  // const handleChange = (e) => {
-  //   const { name, value, files } = e.target;
-  //   if (name === "image") {
-  //     setFormData({ ...formData, image: files[0] });
-  //   } else {
-  //     setFormData({ ...formData, [name]: value });
-  //   }
 
-  // };
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
 
@@ -811,43 +803,6 @@ const InvitationCard = () => {
     const newRoute = `${eventId}/${userId}/${actualRole}`;
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
-
-  // const handleRSVPSubmit = async ({
-  //   name,
-  //   phoneNumber,
-  //   status,
-  //   rsvpId,
-  //   userId,
-  // }) => {
-  //   if (!name || !status) {
-  //     alert("Please enter your name and select an option.");
-  //     return;
-  //   }
-
-  //   const rsvpData = {
-  //     name,
-  //     phoneNumber,
-  //     status,
-  //     hostType: "Guest",
-  //     eventId: rsvpId,
-  //     userId: userId,
-  //   };
-
-  //   try {
-  //     await fetch(`${GOOGLE_SCRIPT_URL}?action=updateGuestStatus`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/x-www-form-urlencoded",
-  //       },
-  //       body: new URLSearchParams(rsvpData),
-  //     });
-
-  //     alert("Thank you! Your response has been submitted.");
-  //   } catch (error) {
-  //     console.error("RSVP submission failed:", error);
-  //     alert("An error occurred while submitting your response.");
-  //   }
-  // };
 
 
  return (

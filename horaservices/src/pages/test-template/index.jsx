@@ -1,11 +1,11 @@
-import DynamicTemplateRenderer from '@/components/DynamicTemplateRenderer';
+// import DynamicTemplateRenderer from '@/components/DynamicTemplateRenderer';
 
-export default function TestTemplatePage() {
+// export default function TestTemplatePage() {
     
-  return (
-    <div style={{ padding: 20 }}>
+//   return (
+//     <div style={{ padding: 20 }}>
 
-      <DynamicTemplateRenderer templateId="template-3" />
-    </div>
-  );
-}
+//       <DynamicTemplateRenderer templateId={templateId} />
+//     </div>
+//   );
+// }

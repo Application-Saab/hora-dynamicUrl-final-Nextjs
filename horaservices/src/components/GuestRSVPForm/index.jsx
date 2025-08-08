@@ -350,29 +350,48 @@ const GuestRSVPForm = ({
       </div>
 
       {showForm && (
+        // <div className="modal-overlay-form">
+        //   <div className="modal-content-form">
+        //     <button className="modal-close-form" onClick={() => setShowForm(false)}>
+        //       ×
+        //     </button>
+        //     <form onSubmit={handleSubmit}>
+        //       <input
+        //         type="text"
+        //         placeholder="Your Name"
+        //         value={guestName}
+        //         onChange={(e) => setGuestName(e.target.value)}
+        //         required
+        //       />
+        //       <button
+        //         type="submit"
+        //         className="submit-btn"
+        //         disabled={submitting}
+        //       >
+        //         {submitting ? "Submitting..." : "Submit RSVP"}
+        //       </button>
+        //     </form>
+        //   </div>
+        // </div>
         <div className="modal-overlay-form">
-          <div className="modal-content-form">
-            <button className="modal-close-form" onClick={() => setShowForm(false)}>
-              ×
-            </button>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                placeholder="Your Name"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                required
-              />
-              <button
-                type="submit"
-                className="submit-btn"
-                disabled={submitting}
-              >
-                {submitting ? "Submitting..." : "Submit RSVP"}
-              </button>
-            </form>
-          </div>
-        </div>
+  <div className="modal-content-form">
+    <button className="modal-close-form" onClick={() => setShowForm(false)}>×</button>
+    <h2>What Should We Scream When You Enter?</h2>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Write Your Name Here"
+        value={guestName}
+        onChange={(e) => setGuestName(e.target.value)}
+        required
+      />
+      <button type="submit" className="submit-btn" disabled={submitting}>
+        {submitting ? "Submitting..." : "SAVE"}
+      </button>
+    </form>
+  </div>
+</div>
+
       )}
 
       {openRsvpList && (

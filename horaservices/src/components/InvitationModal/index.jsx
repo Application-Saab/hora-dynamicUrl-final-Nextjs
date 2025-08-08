@@ -48,9 +48,7 @@ React.useEffect(() => {
         <h2 className="invite-Title">Create  Invitation</h2>
 
         <p className="invite-subtitle">
-          {/* ✨ A day of joy, a heart full of cheer, <br />
-          The people we love, we wish to have near. <br />
-          So come join us and make memories dear. */}
+        
           🌟 A day of joy, a heart full of cheer 🌟 <br />
           The people we love, we wish to have near. <br />
           So come join us and make memories dear.
