@@ -850,18 +850,29 @@ console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#
         lastModified: new Date().getTime(),
       });
 
-      const formData = new FormData();
-      formData.append("files", file);
-      formData.append("customerId", sendCustomerId);
-      formData.append("phoneNo", sendCustomerPhoneNumber);
-      formData.append("folderName", id);
-
+      // const formData = new FormData();
+      // formData.append("files", file);
+      // formData.append("customerId", sendCustomerId);
+      // formData.append("phoneNo", sendCustomerPhoneNumber);
+      // formData.append("folderName", id);
+  const formData = new FormData();
+      formData.append("image", file);
+      formData.append("userId", userID);
       try {
-        const response = await fetch(`${BASE_URL}/api/photo/upload`, {
-          method: "POST",
-          body: formData,
-        });
-
+        // const response = await fetch(`${BASE_URL}/api/photo/upload`, {
+        //   method: "POST",
+        //   body: formData,
+        // });
+  const response = await fetch(
+          `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${urlParams?.eventId}/thankyou-note`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `${token}`,
+            },
+            body: formData,
+          }
+        );
         const result = await response.json();
 
         if (result.success && result.uploaded && result.uploaded[0]?.url) {
