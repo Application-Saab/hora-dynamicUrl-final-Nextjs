@@ -1,8 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import StickyImage from "../../assets/sticky5.png"; // adjust path
-
-
+import DummySticky from "@/assets/collage/photo2.jpeg";
+import "./Thankyounotepopup.css"
+import Head from "next/head";
 const ThankYouNotePopup = ({
   noteTitle,
   noteBy,
@@ -13,20 +14,35 @@ const ThankYouNotePopup = ({
   handleDownload,
   handleClosePopup,
   noteRef,
+  hostData,
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 
   return (
-    <div className="popup">
-      <span className="close-button" onClick={handleClosePopup}>×</span>
 
+    <div className="popup-thankyou">
+       <Head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+     
       <h1 className="title">Thank You Note</h1>
       <h3 className="subtitlePopUp">
         Celebrate the moment with a few words of gratitude.
       </h3>
-
+<Image
+  src={DummySticky}
+  alt="Sticky Note Sample"
+  className="thankyou-image"
+/>
       <div className="form-group">
-        <label className="label">Note Title</label>
+        <label className="label">Type Note</label>
         <textarea
           rows={5}
           placeholder="Write your thank you message..."
@@ -49,7 +65,7 @@ const ThankYouNotePopup = ({
               setNoteTitle(truncated);
             }
 
-            if (input.trim() !== "" && noteBy.trim() !== "") {
+            if (input?.trim() !== "" && noteBy?.trim() !== "") {
               setErrorMsg("");
             }
           }}
@@ -65,7 +81,7 @@ const ThankYouNotePopup = ({
       </div>
 
       <div className="form-group">
-        <label className="label">Note By</label>
+        <label className="label">Type Your Name</label>
         <input
           type="text"
           placeholder="Your name"
@@ -73,7 +89,7 @@ const ThankYouNotePopup = ({
           required
           onChange={(e) => {
             setNoteBy(e.target.value);
-            if (noteTitle.trim() !== "" && e.target.value.trim() !== "") {
+            if (noteTitle?.trim() !== "" && e.target.value.trim() !== "") {
               setErrorMsg("");
             }
           }}
@@ -86,9 +102,11 @@ const ThankYouNotePopup = ({
         </p>
       )}
 
-      <div className="popup-buttons">
-        <button onClick={handleDownload}>Save</button>
-      </div>
+     <div className="popup-buttons">
+  <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
+  <button className="save-btn" onClick={handleDownload}>SAVE</button>
+</div>
+
 
       {/* Hidden Canvas */}
       <div
@@ -161,6 +179,7 @@ const ThankYouNotePopup = ({
         </div>
       </div>
     </div>
+   
   );
 };
 

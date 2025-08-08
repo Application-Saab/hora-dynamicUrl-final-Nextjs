@@ -1,36 +1,37 @@
-
-
 .guest-rsvp-box {
-  background: #fff0d4;
-  border: 1px solid #e2b3e5;
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  max-width: 400px;
-  margin: auto;
+    background: #fff0d4;
+    /* border: 1px solid #e2b3e5; */
+    border: 1px solid #CBA2AF;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    max-width: 90%;
+    margin: 10px auto;
 }
-
 .rsvp-title {
   font-weight: bold;
-  color: #973e96;
+  color: #97538C;
   margin-bottom: 16px;
+  font-size: 15px;
 }
 
 .rsvp-button-group {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 20px;
 }
 
 .rsvp-btn {
-  background-color: #973e96;
-  color: #fff;
+  background-color:#97538C;;
+  color: #FFF0D2;
+text-decoration: underline;
+text-decoration-color:#FFF0D2;
   border: none;
   padding: 10px 20px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  font-size: 15px;
 }
 
 .coming-title {
@@ -117,64 +118,68 @@
 
 .modal-content-form {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
+  padding: 24px;
+  border-radius: 20px;
   width: 90%;
   max-width: 400px;
   position: relative;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .modal-close-form {
   position: absolute;
   right: 12px;
-  top: 10px;
+  top: 0px;
   background: none;
-  font-size: 20px;
+  font-size: 25px;
   border: none;
   cursor: pointer;
+  color: #999;
 }
 
-.modal-content input {
+.modal-content-form h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #9b4f96; /* title color */
+  margin: 10px;
+}
+
+.modal-content-form input {
   width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  margin: 12px 0;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1.5px solid #d8b5d8;
+  font-size: 14px;
+  outline: none;
+  box-shadow: 5px 3px 40px 0px #E767674D; /* soft glow */
+}
+
+
+.modal-content-form input::placeholder {
+  color: #b88fb8;
 }
 
 .submit-btn {
-  width: 100%;
-  padding: 10px;
-  background-color: #973e96;
+  width: 50%;
+  padding: 12px;
+  background: #9b4f96;
   color: #fff;
   font-weight: 600;
   border: none;
   border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-.circle.placeholder {
-  background-color: #ddd;
-  opacity: 0.5;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  margin: 4px;
-  animation: pulse 1.5s infinite ease-in-out;
+.submit-btn:hover {
+  background: #863d82;
 }
 
-@keyframes pulse {
-  0% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.4; }
-}
+
 .rsvp-btn.highlight {
   border: 2px solid #ff0077;
   animation: pulse 0.8s ease;
-}
-
-
-.circle.placeholder {
-  background-color: #e0e0e0;
-  opacity: 0.5;
-  filter: blur(1px);
 }

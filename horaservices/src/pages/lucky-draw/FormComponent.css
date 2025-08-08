@@ -1,15 +1,119 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-/* Full-screen wrapper with mystery-style background */
 .lucky-draw-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  flex-direction: column;
-  background-size: cover;
-  color: #fff;
-  background-color: white;
+  position: relative;
 }
+.lucky-draw-container {
+  background: linear-gradient(
+    180deg,
+    #a8e3fe 0%,
+    #fed7f3 53.58%,
+    #fedfd7 88.89%,
+    #ffdace 100%
+  );
+  border-radius: 18px;
+  padding: 10px;
+  margin-inline: 25px;
+  max-width: 380px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  height:90vh
+}
+.lucky-draw-title {
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: rgba(151, 83, 140, 1);
+  margin-bottom: 10px;
+}
+.lucky-draw-description {
+  font-size: 1.2rem;
+  color: rgba(0, 0, 0, 1);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+.file-upload {
+  border-radius: 14px;
+  border: 1px solid rgba(151, 83, 140, 1);
+  height: 181px;
+  width: 262px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+.file-upload .img-label-upload {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(75, 71, 71, 1);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.file-upload input[type="file"] {
+  display: none;
+}
+.file-upload label {
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+.preview-image {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 10px;
+}
+.lucky-btn-submit {
+  background: rgba(151, 83, 140, 1);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 10px;
+  min-height: 45px;
+  max-height: 45px;
+  width: 236px;
+  cursor: pointer;
+}
+.lucky-btn-submit:hover {
+  background: rgba(151, 83, 140, 1);
+}
+.sponsored-txt {
+  font-size: 1.2rem;
+  color: rgba(0, 0, 0, 1);
+  margin-left: 8px;
+  font-weight: bold;
+}
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 25px;
+  opacity: 0.8;
+  border-radius: 3px;
+  animation: fall 5s linear infinite;
+  transform: rotate(45deg);
+}
+@keyframes fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+
 @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
 
 /* Text above the box */
@@ -19,8 +123,6 @@
   font-weight: normal;
   text-align: center;
   margin-bottom: 20px;
-  color: black;
-  text-shadow: 2px 2px 0 #ff6ec7, -2px -2px 0 #7b61ff, 0 0 10px #fff176;
   letter-spacing: 1px;
   animation: wiggle 1.5s infinite ease-in-out;
 }
@@ -87,262 +189,8 @@
 .giftbox-title {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #ffdf6c;
-  text-shadow: 0 0 10px #ffdf6c;
+  color: #FFF;
   text-align: center;
   margin: 0;
 }
 
-
-
-.lucky-draw-container {
-  width: 100%;
-  max-width: 380px; /* smaller form width */
- margin: 1px 1px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: 'Poppins', sans-serif;
-  color: #3a0ca3;
-  padding: 15px 15px 35px;
-  background: linear-gradient(135deg, #f72585, #720026);
-  border-radius: 18px;
-  box-shadow: 0 6px 20px rgba(247, 37, 133, 0.35);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Confetti */
-.confetti {
-  position: absolute;
-  width: 10px; /* slightly smaller */
-  height: 25px;
-  z-index: 1;
-  opacity: 0.8;
-  border-radius: 3px;
-  animation: fall 5s linear infinite;
-  transform: rotate(45deg);
-}
-@keyframes fall {
-  0% {
-    transform: translateY(-100px) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
-    opacity: 0.2;
-  }
-}
-/* Form container */
-.form-container-sec {
-  width: 100%;
-  background-color: #fff;
-  border-radius: 14px;
-  padding: 24px 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 10;
-}
-
-/* Content wrapper */
-.content-wrapper {
-  width: 100%;
-  margin: 0 auto;
-}.header-section {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  width: 100%;
-  height: 120px;
-  margin-bottom: 10px;
-}
-
-/* Labels */
-.input-group label {
-    font-size: 14px;
-    /* margin-bottom: 8px; */
-    font-weight: 600;
-    color: #720026;
-    margin-top: 8%;
-}
-
-/* Inputs */
-.input-group input[type="text"],
-.input-group input[type="tel"] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 2px solid #720026;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #3a0ca3;
-  background-color: #fafafa;
-  transition: border-color 0.3s;
-}
-
-.input-group input[type="text"]:focus,
-.input-group input[type="tel"]:focus {
-  outline: none;
-  border-color: #f72585;
-  box-shadow: 0 0 6px rgba(247, 37, 133, 0.6);
-}
-
-/* File Upload */
-.file-upload {
-  position: relative;
-  background-color: #fafafa;
-  border: 2px dashed #720026;
-  border-radius: 10px;
-  height: 80px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.3s;
-  margin-top: 5px;
-  padding: 0 20px; /* Add horizontal padding */
-  text-align: center; /* Center text if it wraps */
-}
-
-.placeholder {
-  font-size: 16px;
-  color: #720026;
-  user-select: none;
-  margin: 0; /* Reset margin */
-  padding: 8px 12px; /* Add some internal padding */
-  text-align: center;
-}
-
-
-.file-upload:hover {
-  border-color: #f72585;
-}
-
-/* .placeholder {
-  font-size: 16px;
-  color: #720026;
-  user-select: none;
-   margin-right:10% ;
-} */
-
-.preview-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.file-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-/* Radio Buttons */
-.radio-options {
-  display: flex;
-  gap: 24px;
-  margin-top: 5px;
-}
-
-.radio-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.radio-option input[type="radio"] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #720026;
-  border-radius: 50%;
-  background-clip: content-box;
-  padding: 3px;
-  cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
-}
-
-.radio-option input[type="radio"]:checked {
-  background-color: #f72585;
-  border-color: #f72585;
-  padding: 3px;
-}
-
-.radio-option label {
-  font-size: 16px;
-  color: #720026;
-  cursor: pointer;
-}
-
-/* Submit Button */
-.submit-button {
-  background: linear-gradient(90deg, #f72585, #720026);
-  color: white;
-  border: none;
-  padding: 14px;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.4s ease;
-  margin-top: 12px;
-  width: 100%;
-  box-shadow: 0 4px 12px rgba(247, 37, 133, 0.6);
-}
-
-.submit-button:hover {
-  background: linear-gradient(90deg, #720026, #f72585);
-  box-shadow: 0 6px 16px rgba(247, 37, 133, 0.9);
-}
-
-/* Footer */
-.footer {
-  margin-top: 30px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  z-index: 10;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  user-select: none;
-}
-
-.company-name {
-  font-size: 14px;
-  letter-spacing: 1.5px;
-  color: purple;
-  font-weight: 700;
-  /* text-shadow: 0 0 8px #f72585; */
-}
-
-/* Loader Spinner */
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 18px;
-}
-
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #f72585;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  animation: spin 1.5s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
