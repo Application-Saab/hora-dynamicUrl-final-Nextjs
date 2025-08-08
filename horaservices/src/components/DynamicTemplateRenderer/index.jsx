@@ -1,418 +1,309 @@
-'use client';
-import { useEffect, useState } from 'react';
+// "use client";
+// import { useEffect, useState } from "react";
+// import { useSearchParams } from "next/navigation";
+// import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 
-const DynamicTemplateRenderer = ({ templateId}) => {
-  const [template, setTemplate] = useState(null);
-  const [data, setData] = useState({
-    name: "Riya",
-    time: "6:00 PM",
-    date: "20",
-    month: "August 2025",
-    address: "4th Floor, 5 & 10, Arakere Bannerghatta Rd, Syndicate Bank Colony, Omkar Nagar, Arekere, Bengaluru, Karnataka 560076",
-  });
+// const DynamicTemplateRenderer = () => {
+//   const searchParams = useSearchParams();
+//   const templateId = searchParams.get("templateId");
 
-   useEffect(() => {
-    // Replace this with API call later
-    const mockTemplate = {
-      templateId: 'template-1',
-      fontUrls: [
-        'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
-        'https://fonts.googleapis.com/css2?family=Monotype+Corsiva&display=swap',
-      ],
-      cssCode: `.invite-wrapper {
-          background: url('/balloon-bg.png') no-repeat center center;
-          background-size: cover;
-          padding: 30px 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 100vh;
-        }
+//   const [template, setTemplate] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
-        .invite-card {
-    position: relative;
-    width: 100%;
-     max-width: 390px; 
-    aspect-ratio: 11 / 19;
-    /* border-radius: 24px; */
-    background-image: url(/GoldandBlueSimpleBirthdayPartyInvitation.png);
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    font-family: 'Roboto', sans-serif;
-    text-align: center;
-}
+//   const [data, setData] = useState({
+//     name: "",
+//     time: "",
+//     date: "",
+//     month: "",
+//     address: "",
+//   });
 
-        .top-text,
-        .name,
-        .birthday,
-        .party,
-        .time,
-        .date,
-        .month,
-        .address {
-          // white-space: nowrap;
-          // overflow: hidden;
-          // text-overflow: ellipsis;
-        }
+//   useEffect(() => {
+//     if (!templateId) {
+//       setError("No template selected");
+//       setLoading(false);
+//       return;
+//     }
 
-        .name {
-          position: absolute;
-          top: 13%;
-          width: 100%;
-          text-align: center;
-          font-size: 300%;
-          font-family: 'Monotype Corsiva', cursive;
-          color: white;
-        }
+//     const fetchTemplate = async () => {
+//       try {
+//         const response = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+//         const result = await response.json();
 
-        .time,
-        .date,
-        .month {
-          position: absolute;
-          // bottom: 20%;
-          font-size: 16px;
-          color: #ffd95c;
-        }
+//         if (result.error) {
+//           setError(result.message || "Failed to fetch template");
+//         } else {
+//           const selectedTemplate = result.templates.find(
+//             (tpl) => tpl.configs?.templateId === templateId
+//           );
 
-      .time {
-    left: 0%;
-    right: 0%;
-    top: 65%;
-}
-
-       .date {
-    left: 0%;
-    right: 0%;
-    top: 70%;
-    color: white;
-    font-size: 28px;
-}
-
-        .month {
-          right: 12%;
-        }
-
-        .address {
-          position: absolute;
-          bottom: 8%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 85%;
-          text-align: center;
-          font-size: 13px;
-          color: white;
-          line-height: 1.5;
-        }
-
-        @media (min-width: 600px) {
-          .name { font-size: 44px; }
-          .time, .month { font-size: 18px; }
-          .date { font-size: 32px; }
-          .address { font-size: 15px; }
-        }`, // your full CSS here
-      jsCode: `
-        <div class="invite-wrapper">
-          <div class="invite-card">
-            <div class="name">{{name}}</div>
-            <div class="time">Time: At {{time}}</div>
-            <div class="date">Date: {{date}} {{month}}</div>
-            <div class="address">{{address}}</div>
-          </div>
-        </div>
-      `,
-    };
-
-    setTemplate(mockTemplate);
-  }, [templateId]);
-
-//    useEffect(() => {
-//     // Replace with API call if needed
-//     const mockTemplate = {
-//       templateId: 'template-2',
-//       fontUrls: [
-//         'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
-//         'https://fonts.googleapis.com/css2?family=Monotype+Corsiva&display=swap',
-//       ],
-//       cssCode: `
-//         .astro-invite {
-//           display: flex;
-//           align-items: center;
-//           justify-content: center;
-//           min-height: 100vh;
+//           if (selectedTemplate) {
+//             const { cssCode, jsCode, fontUrls } = selectedTemplate.configs;
+//             setTemplate({
+//               cssCode,
+//               jsCode,
+//               fontUrls: JSON.parse(fontUrls),
+//             });
+//           } else {
+//             setError("Template not found");
+//           }
 //         }
-
-//         .invite-card {
-//           position: relative;
-//           width: 100%;
-//           max-width: 390px; 
-//           aspect-ratio: 11 / 19;
-//           background-image: url('/PurpleWatercolorBirthdayPartyInvitation.png');
-//           background-size: cover;
-//           background-position: center;
-//           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-//           overflow: hidden;
-//           font-family: 'Roboto', sans-serif;
-//           text-align: center;
-//         }
-
-//         .name {
-//           position: absolute;
-//           top: 14%;
-//           width: 100%;
-//           text-align: center;
-//           font-family: 'Lato', sans-serif;
-//           font-size: 20px;
-//           font-weight: 700;
-//         }
-
-//         .date {
-//           position: absolute;
-//           top: 55%;
-//           left: 10%;
-//           text-align: center;
-//           font-weight: bold;
-//           font-family: 'Roboto', sans-serif;
-//           font-size: 32px;
-//         }
-
-//         .month {
-//           position: absolute;
-//           top: 63%;
-//           left: 5%;
-//           text-align: center;
-//           font-size: 16px;
-//           text-transform: uppercase;
-//           font-family: 'Roboto', sans-serif;
-//         }
-
-//         .time {
-//           position: absolute;
-//           top: 69%;
-//           left: 8%;
-//           text-align: center;
-//           font-size: 16px;
-//           font-weight: 600;
-//           font-family: 'Roboto', sans-serif;
-//         }
-
-//         .address {
-//           position: absolute;
-//           top: 75%;
-//           left: 5%;
-//           width: 30%;
-//           font-family: 'Roboto', sans-serif;
-//           font-size: 14px;
-//         }
-//       `,
-//       jsCode: `
-//         <div class="astro-invite">
-//           <div class="invite-card">
-//             <div class="name">{{name}}'s</div>
-//             <div class="date">{{date}}</div>
-//             <div class="month">{{month}}</div>
-//             <div class="time">{{time}}</div>
-//             <div class="address">{{address}}</div>
-//           </div>
-//         </div>
-//       `,
+//       } catch (err) {
+//         setError("Error fetching template: " + err.message);
+//       } finally {
+//         setLoading(false);
+//       }
 //     };
 
-//     setTemplate(mockTemplate);
+//     fetchTemplate();
 //   }, [templateId]);
 
-//     useEffect(() => {
-//     const mockTemplate = {
-//       templateId: 'template-3',
-//       fontUrls: [
-//         'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap',
-//         'https://fonts.googleapis.com/css2?family=Brush+Script+MT&display=swap'
-//       ],
-//       cssCode: `
-//         .invite-wrapper {
-//           background: url('/balloon-bg.png') no-repeat center center;
-//           background-size: cover;
-//         //   padding: 30px 16px;
-//           display: flex;
-//           align-items: center;
-//           justify-content: center;
-//           min-height: 100vh;
-//         }
+//  const handleChange = (e) => {
+//   const { name, value } = e.target;
 
-//         .invite-card {
-//           position: relative;
-//           width: 100%;
-//           max-width: 390px;
-//           aspect-ratio: 11 / 19;
-//           background-image: url('/DarkBlueIllustrativeBirthdayPartyInvitation.png');
-//           background-size: cover;
-//           background-position: center;
-//           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-//           overflow: hidden;
-//           font-family: 'Roboto', sans-serif;
-//           text-align: center;
-//         }
+//   if (name === "date") {
+//     // Agar user ne space ke saath month bhi likh diya ho
+//     const parts = value.trim().split(" ");
+//     if (parts.length >= 2) {
+//       const day = parts[0];
+//       const monthName = parts.slice(1).join(" ");
+//       setData((prev) => ({
+//         ...prev,
+//         date: day,
+//         month: monthName
+//       }));
+//       return;
+//     }
+//   }
 
-//         .name {
-//           position: absolute;
-//           top: 13%;
-//           width: 100%;
-//           text-align: center;
-//           font-size: 340%;
-//           font-family: 'Monotype Corsiva', cursive;
-//           color: white;
-//         }
+//   setData((prev) => ({
+//     ...prev,
+//     [name]: value
+//   }));
+// };
 
-//         .datetime {
-//           position: absolute;
-//           top: 65%;
-//           left: 0%;
-//           right: 0%;
-//           width: 100%;
-//           text-align: center;
-//           font-size: 18px;
-//           font-weight: 500;
-//           color: white;
-//         }
 
-//         .time {
-//           position: absolute;
-//           top: 71%;
-//           left: 0%;
-//           right: 0%;
-//           width: 100%;
-//           text-align: center;
-//           font-size: 18px;
-//           font-weight: 500;
-//           color: white;
-//         }
-
-//         .address {
-//           position: absolute;
-//           bottom: 5%;
-//           left: 50%;
-//           transform: translateX(-50%);
-//           width: 85%;
-//           text-align: center;
-//           font-size: 14px;
-//           color: white;
-//           line-height: 1.4;
-//         }
-
-//         @media (min-width: 600px) {
-//           .name { font-size: 44px; }
-//           .datetime, .time { font-size: 20px; }
-//           .address { font-size: 16px; }
-//         }
-//       `,
-//       jsCode: `
-//         <div class="invite-wrapper">
-//           <div class="invite-card">
-//             <div class="name">{{name}}</div>
-//             <div class="datetime">{{date}} {{month}}</div>
-//             <div class="time">at {{time}}</div>
-//             <div class="address">{{address}}</div>
-//           </div>
-//         </div>
-//       `
-//     };
-
-//     setTemplate(mockTemplate);
-//   }, [templateId]);
-
-// useEffect(() => {
-//   const mockTemplate = {
-//     templateId: 'template-4',
-//     fontUrls: [
-//       'https://fonts.googleapis.com/css2?family=Poppins&display=swap',
-//       'https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap'
-//     ],
-//     cssCode: `
-//       .haldi-wrapper {
-//         display: flex;
-//         align-items: center;
-//         justify-content: center;
-//         min-height: 100vh;
-//       }
-
-//       .haldi-card {
-//         position: relative;
-//         width: 100%;
-//         max-width: 390px;
-//         aspect-ratio: 11 / 19;
-//         background-image: url('/Final.png'); /* final uploaded image */
-//         background-size: cover;
-//         background-position: center;
-//         font-family: 'Poppins', sans-serif;
-//         text-align: center;
-//       }
-
-//       .name {
-//         position: absolute;
-//         top: 77%;
-//         width: 100%;
-//         font-family: 'Tenor Sans', sans-serif;
-//         font-size: 30px;
-//         color: #c01c28;
-//       }
-
-//       .datetime {
-//         position: absolute;
-//         top: 85%;
-//         width: 100%;
-//         font-size: 14px;
-//         color: #000;
-//       }
-
-//       .address {
-//         position: absolute;
-//         bottom: 7%;
-//         width: 100%;
-//         font-size: 8px;
-//         color: #000;
-//       }
-//     `,
-//     jsCode: `
-//       <div class="haldi-wrapper">
-//         <div class="haldi-card">
-//           <div class="name">{{name}}</div>
-//           <div class="datetime">{{date}} {{month}} {{year}} | {{time}}</div>
-//           <div class="address">{{address}}</div>
-//         </div>
-//       </div>
-//     `
+//   const renderHTML = (jsCode, rawData) => {
+//     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
 //   };
 
-//   setTemplate(mockTemplate);
-// }, [templateId]);
+//   if (loading) return <p>Loading template...</p>;
+//   if (error) return <p style={{ color: "red" }}>{error}</p>;
+//   if (!template) return <p>No template found.</p>;
+
+//   return (
+//     <div style={{ padding: "20px" }}>
+//       {template.fontUrls.map((url, idx) => (
+//         <link key={idx} href={url} rel="stylesheet" />
+//       ))}
+
+//       <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+
+//       <div
+//         dangerouslySetInnerHTML={{
+//           __html: renderHTML(template.jsCode, data),
+//         }}
+//       />
+
+//       <div style={{ marginTop: "30px", maxWidth: "500px" }}>
+//         <h3>Edit Invitation</h3>
+
+//         {["name", "time", "date", "month"].map((field) => (
+//           <div key={field}>
+//             <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+//             <input
+//               type="text"
+//               name={field}
+//               value={data[field]}
+//               onChange={handleChange}
+//               placeholder={`Enter ${field}`}
+//               style={inputStyle}
+//             />
+//           </div>
+//         ))}
+
+//         <label>Address:</label>
+//         <textarea
+//           name="address"
+//           value={data.address}
+//           onChange={handleChange}
+//           placeholder="Enter address"
+//           style={{ ...inputStyle, height: "60px" }}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// const inputStyle = {
+//   display: "block",
+//   width: "100%",
+//   margin: "8px 0 16px",
+//   padding: "10px",
+//   fontSize: "14px",
+//   border: "1px solid #ccc",
+//   borderRadius: "4px",
+// };
+
+// export default DynamicTemplateRenderer;
 
 
-  const renderHTML = (jsCode, rawData) => {
-    const truncate = (str, max) => str?.toString().slice(0, max) || '';
+"use client";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 
-    const data = {
-      name: truncate(rawData.name, 10),
-      time: truncate(rawData.time, 5),
-      date: truncate(rawData.date, 2),
-      month: truncate(rawData.month, 7),
-      address: truncate(rawData.address, 50),
+const DynamicTemplateRenderer = () => {
+  const searchParams = useSearchParams();
+  const templateId = searchParams.get("templateId");
+
+  const [template, setTemplate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [data, setData] = useState({
+    name: "",
+    time: "",
+    date: "",
+    month: "",
+    address: "",
+  });
+
+  // ===== Fetch Template =====
+  useEffect(() => {
+    if (!templateId) {
+      setError("No template selected");
+      setLoading(false);
+      return;
+    }
+
+    const fetchTemplate = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+        const result = await response.json();
+
+        if (result.error) {
+          setError(result.message || "Failed to fetch template");
+        } else {
+          const selectedTemplate = result.templates.find(
+            (tpl) => tpl.configs?.templateId === templateId
+          );
+
+          if (selectedTemplate) {
+            const { cssCode, jsCode, fontUrls } = selectedTemplate.configs;
+            setTemplate({
+              cssCode,
+              jsCode,
+              fontUrls: JSON.parse(fontUrls),
+            });
+          } else {
+            setError("Template not found");
+          }
+        }
+      } catch (err) {
+        setError("Error fetching template: " + err.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    return jsCode.replace(/{{(.*?)}}/g, (_, key) => data[key.trim()] || '');
+    fetchTemplate();
+  }, [templateId]);
+
+  // ===== Handle Form Changes =====
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "date") {
+      const parts = value.trim().split(" ");
+      if (parts.length >= 2) {
+        const day = parts[0];
+        const monthName = parts.slice(1).join(" ");
+        setData((prev) => ({
+          ...prev,
+          date: day,
+          month: monthName, // auto set
+        }));
+        return;
+      }
+    }
+
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  if (!template) return <p>Loading template...</p>;
+  // ===== Replace Variables in Template =====
+  const renderHTML = (jsCode, rawData) => {
+    return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
+  };
 
+  // ===== Render States =====
+  if (loading) return <p>Loading template...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (!template) return <p>No template found.</p>;
+
+  // ===== JSX =====
   return (
-    <>
-      {template.fontUrls.map((url, index) => (
-        <link key={index} href={url} rel="stylesheet" />
+    <div style={{ padding: "20px" }}>
+      {/* Load Template Fonts */}
+      {template.fontUrls.map((url, idx) => (
+        <link key={idx} href={url} rel="stylesheet" />
       ))}
+
+      {/* Apply Template CSS */}
       <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-      <div dangerouslySetInnerHTML={{ __html: renderHTML(template.jsCode, data) }} />
-    </>
+
+      {/* Template Preview */}
+      <div
+        dangerouslySetInnerHTML={{
+          __html: renderHTML(template.jsCode, data),
+        }}
+      />
+
+      {/* Edit Form */}
+      <div style={{ marginTop: "30px", maxWidth: "500px" }}>
+        <h3>Edit Invitation</h3>
+
+        {/* name, time, date only */}
+        {["name", "time", "date"].map((field) => (
+          <div key={field}>
+            <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+            <input
+              type="text"
+              name={field}
+              value={data[field]}
+              onChange={handleChange}
+              placeholder={`Enter ${field}`}
+              style={inputStyle}
+            />
+          </div>
+        ))}
+
+        {/* Address */}
+        <label>Address:</label>
+        <textarea
+          name="address"
+          value={data.address}
+          onChange={handleChange}
+          placeholder="Enter address"
+          style={{ ...inputStyle, height: "60px" }}
+        />
+      </div>
+    </div>
   );
+};
+
+const inputStyle = {
+  display: "block",
+  width: "100%",
+  margin: "8px 0 16px",
+  padding: "10px",
+  fontSize: "14px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
 };
 
 export default DynamicTemplateRenderer;

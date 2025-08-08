@@ -1,4 +1,4 @@
-.templateWrapper {
+/* .templateWrapper {
   padding: 20px;
   background: transparent;
   text-align: center;
@@ -57,4 +57,93 @@
 }
 .button-container{
     margin-top: -20px;
+} */
+.templateWrapper {
+  padding: 20px;
+  text-align: center;
+}
+
+.templateTitle {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #97538C;
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.templateCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative; /* for button positioning */
+}
+
+.templatePreview {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Apply Button */
+.inviteBtn {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background-color: #97538C;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.inviteBtn:hover {
+  background-color: #7d3f74;
+}
+
+.selectedBtn {
+  background-color: #fff;
+  color: #97538C;
+  border: 2px solid #97538C;
+}
+
+.btnCircle {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  color: #97538C;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .templateGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .templatePreview {
+    height: 180px;
+  }
 }

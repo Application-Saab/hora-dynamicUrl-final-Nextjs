@@ -1,23 +1,12 @@
 // "use client";
-
 // import { useEffect, useState } from "react";
 // import { useRouter } from "next/navigation";
 // import "./template.css";
 // import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
-// // const templates = [
-// //   { id: 1, image: "/assets/template1.svg" },
-// //   { id: 2, image: "/assets/template2.svg" },
-// //   { id: 3, image: "/assets/template3.svg" },
-// //   { id: 4, image: "/assets/template6.svg" },
-// //   { id: 5, image: "/assets/template7.svg" },
-// //   { id: 6, image: "/assets/template9.svg" },
-// //   { id: 7, image: "/assets/template10.svg" },
-// //   { id: 8, image: "/assets/template11.svg" },
-// // ];
 
 // const TemplateGrid = () => {
 //   const router = useRouter();
-//   const [templtesData, setTemplatesData] = useState([]);
+//   const [templatesData, setTemplatesData] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
 
@@ -41,23 +30,18 @@
 //     fetchTemplates();
 //   }, []);
 
-//   const handleApplyClick = (template) => {
-//     router.push(
-//       `/wonderland/create-invite-template?templateId=${template._id}`
-//     );
+//   const handleApplyClick = (templateId) => {
+//     router.push(`/wonderland/create-invite-template?templateId=${templateId}`);
 //   };
-//   if (loading) {
-//     return <div>Loading templates...</div>;
-//   }
-//   if (error) {
-//     return <div>Error: {error}</div>;
-//   }
+
+//   if (loading) return <div>Loading templates...</div>;
+//   if (error) return <div>Error: {error}</div>;
 
 //   return (
 //     <div className="templateWrapper">
-//       <h2 className="templateTitle">Choose From 50+ Invites </h2>
+//       <h2 className="templateTitle">Choose From 50+ Invites</h2>
 //       <div className="templateGrid">
-//         {templtesData?.map((template) => (
+//         {templatesData.map((template) => (
 //           <div key={template._id} className="templateCard">
 //             <object
 //               data={template.webpUrl}
@@ -70,7 +54,7 @@
 //             <div className="button-container">
 //               <button
 //                 className="templateApplyBtn"
-//                 onClick={() => handleApplyClick(template)}
+//                 onClick={() => handleApplyClick(template.configs?.templateId)}
 //               >
 //                 Apply
 //               </button>
@@ -88,6 +72,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import "./template.css";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 
@@ -96,6 +81,7 @@ const TemplateGrid = () => {
   const [templatesData, setTemplatesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -118,6 +104,7 @@ const TemplateGrid = () => {
   }, []);
 
   const handleApplyClick = (templateId) => {
+    setSelectedTemplate(templateId);
     router.push(`/wonderland/create-invite-template?templateId=${templateId}`);
   };
 
@@ -128,26 +115,33 @@ const TemplateGrid = () => {
     <div className="templateWrapper">
       <h2 className="templateTitle">Choose From 50+ Invites</h2>
       <div className="templateGrid">
-        {templatesData.map((template) => (
-          <div key={template._id} className="templateCard">
-            <object
-              data={template.webpUrl}
-              type="image/svg+xml"
-              className="templatePreview"
-            >
-              Template Preview
-            </object>
+     {templatesData.map((template) => {
+  const isSelected = selectedTemplate === template.configs?.templateId;
+  return (
+    <div key={template._id} className="templateCard">
+      <img
+        src={template.webpUrl}
+        alt="Template Preview"
+        className="templatePreview"
+      />
+      <button
+        className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
+        onClick={() => handleApplyClick(template.configs?.templateId)}
+      >
+        {isSelected ? (
+          <>
+            SELECTED <span className="btnCircle">✔</span>
+          </>
+        ) : (
+          <>
+            APPLY NOW <span className="btnCircle">→</span>
+          </>
+        )}
+      </button>
+    </div>
+  );
+})}
 
-            <div className="button-container">
-              <button
-                className="templateApplyBtn"
-                onClick={() => handleApplyClick(template.configs?.templateId)}
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
