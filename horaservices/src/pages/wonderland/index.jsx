@@ -62,7 +62,7 @@ const InvitationCard = () => {
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
   console.log('%c [ guestDetails ]-60', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
- 
+
   const [eventAllImages, setEventAllImages] = useState([]);
 
   const [loadingEventImages, setLoadingEventImages] = useState(true);
@@ -121,12 +121,12 @@ const InvitationCard = () => {
     };
 
     fetchEventImages();
-  // }, [urlParams.eventId]);
-}, [urlParams.eventId, refetchEventImages]);
- 
-useEffect(() => {
+    // }, [urlParams.eventId]);
+  }, [urlParams.eventId, refetchEventImages]);
+
+  useEffect(() => {
     const fetchGuestDetails = async () => {
-      if (userID === urlParams.eventUserId){
+      if (userID === urlParams.eventUserId) {
         // alert(`${userID} and ${urlParams.eventUserId} are same`);
         return
       };
@@ -157,10 +157,10 @@ useEffect(() => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, urlParams.eventUserId  ]);
+  }, [urlParams.eventId, userID, urlParams.eventUserId]);
 
 
-useEffect(() => {
+  useEffect(() => {
     const addGuest = async () => {
       try {
         const response = await fetch(`${BASE_URL}${CREATE_GUEST_BY_EVENTID}`, {
@@ -203,7 +203,7 @@ useEffect(() => {
   ]);
 
   const [orderDetails, setOrderDetails] = useState(null);
-console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
+  console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -465,10 +465,10 @@ console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#
       : "";
     const formattedTime = formData.time
       ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
       : "";
 
     const finalImage = uploadedImage || orderDetails?.Image || "";
@@ -670,49 +670,6 @@ console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#
       setShowLuckyDrawPopup(true);
     }
   };
-
-  // const handleImageUpload = async (e) => {
-  //   setUploading(true);
-  //   setWallUploading(true);
-  //   const files = e.target.files;
-  //   if (files.length > 0) {
-  //     const formData = new FormData();
-
-  //     for (let i = 0; i < files.length; i++) {
-  //       formData.append("files", files[i]); // backend expects "files"
-  //     }
-
-  //     formData.append("customerId", sendCustomerId);
-  //     formData.append("phoneNo", sendCustomerPhoneNumber);
-  //     formData.append("folderName", id);
-
-  //     try {
-  //       const res = await fetch(`${BASE_URL}/api/photo/upload`, {
-  //         method: "POST",
-  //         body: formData,
-  //       });
-
-  //       const data = await res.json();
-  //       console.log("Uploaded:", data);
-
-  //       if (data?.uploaded && Array.isArray(data.uploaded)) {
-  //         // Update eventData with uploaded images
-  //         const newImages = data.uploaded.map((item) => ({
-  //           type: "image",
-  //           src: item.url, // backend should return this
-  //           alt: item.key || item.filename || "Uploaded image",
-  //         }));
-
-  //         setEventData((prev) => [...newImages, ...prev]);
-  //       }
-  //     } catch (err) {
-  //       console.error("Upload failed", err);
-  //     } finally {
-  //       setUploading(false);
-  //       setWallUploading(false);
-  //     }
-  //   }
-  // };
   const handleImageUpload = async (e) => {
     setUploading(true);
     setWallUploading(true);
@@ -850,20 +807,11 @@ console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#
         lastModified: new Date().getTime(),
       });
 
-      // const formData = new FormData();
-      // formData.append("files", file);
-      // formData.append("customerId", sendCustomerId);
-      // formData.append("phoneNo", sendCustomerPhoneNumber);
-      // formData.append("folderName", id);
-  const formData = new FormData();
+      const formData = new FormData();
       formData.append("image", file);
       formData.append("userId", userID);
       try {
-        // const response = await fetch(`${BASE_URL}/api/photo/upload`, {
-        //   method: "POST",
-        //   body: formData,
-        // });
-  const response = await fetch(
+        const response = await fetch(
           `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${urlParams?.eventId}/thankyou-note`,
           {
             method: "PUT",
@@ -884,7 +832,7 @@ console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#
           };
           setEventData((prev) => [newImage, ...prev]);
         }
-          setRefetchEventImages(!refetchEventImages);
+        setRefetchEventImages(!refetchEventImages);
         setShowPopup(false);
         setNoteTitle("");
         setNoteBy("");
@@ -916,42 +864,42 @@ console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#
       userId.trim() === sendCustomerId.trim() ? "host" : "guest";
 
     if (routeUserId === userId && routeRole === actualRole) return;
-const newRoute = `${eventId}/${routeUserId}/${actualRole}`;
+    const newRoute = `${eventId}/${routeUserId}/${actualRole}`;
     // const newRoute = `${eventId}/${userId}/${actualRole}`;
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
 
- return (
-  <>
-    {!isLoggedIn ? (
-      <div className="no-orders">
-        <h2 className="no-record-heading">
-          Please log in to check all your orders.
-        </h2>
-        <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
-      </div>
-    ) : (
-      <>
-       
-        
-         
-{showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
+  return (
+    <>
+      {!isLoggedIn ? (
+        <div className="no-orders">
+          <h2 className="no-record-heading">
+            Please log in to check all your orders.
+          </h2>
+          <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+        </div>
+      ) : (
+        <>
+
+
+
+          {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
           {orderDetails ? (
             <>
-             <div
-          className="invitation-container"
-          style={{
-            backgroundImage:  `url(${imageBackGround.src})`,
-          }}
-        >
-              <FinalInviteDisplay
-                orderDetails={orderDetails}
-                handleClick={handleClick}
-                isHost={userType === "host"}
+              <div
+                className="invitation-container"
+                style={{
+                  backgroundImage: `url(${imageBackGround.src})`,
+                }}
+              >
+                <FinalInviteDisplay
+                  orderDetails={orderDetails}
+                  handleClick={handleClick}
+                  isHost={userType === "host"}
 
-              /></div>
+                /></div>
 
               {/* 🎉 RSVP Section */}
               {isHost || hasSubmitted ? (
@@ -959,324 +907,241 @@ const newRoute = `${eventId}/${routeUserId}/${actualRole}`;
                   guestList={guestList}
                   loading={loading}
                   userType={userType}
-                   hostData={orderDetails}
+                  hostData={orderDetails}
                 />
               ) : (
                 <GuestRSVPForm
-                    hostData={orderDetails}
-                    userType={userType}
-                    guestList={guestList}
-                    loading={loading}
-                    userId={userID}
-                    eventId={urlParams.eventId}
-                    // fetchGuests={fetchGuests}
-                    hasSubmitted={hasSubmitted}
-                    setHasSubmitted={setHasSubmitted}
-                    setShowPopupGuest={setShowPopupGuest}
-                    onSubmit={(data) => {
-                      const payload = {
-                        ...data,
-                        rsvpId: id,
-                        userId: secondId,
-                      };
-                      // handleRSVPSubmit(payload);
-                      localStorage.setItem(
-                        `rsvp_submitted_${id}_${secondId}`,
-                        "true"
-                      );
-                      setHasSubmitted(true);
-                    }}
-                  />
+                  hostData={orderDetails}
+                  userType={userType}
+                  guestList={guestList}
+                  loading={loading}
+                  userId={userID}
+                  eventId={urlParams.eventId}
+                  // fetchGuests={fetchGuests}
+                  hasSubmitted={hasSubmitted}
+                  setHasSubmitted={setHasSubmitted}
+                  setShowPopupGuest={setShowPopupGuest}
+                  onSubmit={(data) => {
+                    const payload = {
+                      ...data,
+                      rsvpId: id,
+                      userId: secondId,
+                    };
+                    // handleRSVPSubmit(payload);
+                    localStorage.setItem(
+                      `rsvp_submitted_${id}_${secondId}`,
+                      "true"
+                    );
+                    setHasSubmitted(true);
+                  }}
+                />
               )}
 
               {/* 💌 Thank You Note Popup */}
               {showPopup && (
                 <div className="popup-thankyounaote-container">
-                <ThankYouNotePopup
-                  noteTitle={noteTitle}
-                  setNoteTitle={setNoteTitle}
-                  noteBy={noteBy}
-                  setNoteBy={setNoteBy}
-                  errorMsg={errorMsg}
-                  setErrorMsg={setErrorMsg}
-                  handleDownload={handleDownload}
-                  handleClosePopup={handleClosePopup}
-                  noteRef={noteRef}
-                />
+                  <ThankYouNotePopup
+                    noteTitle={noteTitle}
+                    setNoteTitle={setNoteTitle}
+                    noteBy={noteBy}
+                    setNoteBy={setNoteBy}
+                    errorMsg={errorMsg}
+                    setErrorMsg={setErrorMsg}
+                    handleDownload={handleDownload}
+                    handleClosePopup={handleClosePopup}
+                    noteRef={noteRef}
+                  />
                 </div>
               )}
             </>
           ) : (
             <p>Loading...</p>
           )}
-<div className="lucky-draw-banner">
-  <Image src={LuckDrawBanner} alt="Luck Draw Banner" className="banner-img" />
-  <button className="click-now-btn" onClick={() => setShowLuckyDrawPopup(true)}>
-    Click Now
-  </button>
-</div>
+          <div className="lucky-draw-banner">
+            <Image src={LuckDrawBanner} alt="Luck Draw Banner" className="banner-img" />
+            <button className="click-now-btn" onClick={() => setShowLuckyDrawPopup(true)}>
+              Click Now
+            </button>
+          </div>
 
 
-     
-        <div style={styles.wrapper}>
-          <h2 style={styles.heading}>
-  <Image
-    src={wallCamera} // ✅ replace with your actual image path
-    alt="Camera Icon"
-    style={{ width: 60, height: 60, }}
-  />
-  Celebration Wall
-</h2>
 
-          <p style={styles.subheading}>
-            A wall filled with your party’s happiest moments and heartfelt messages.
-          </p>
+          <div style={styles.wrapper}>
+            <h2 style={styles.heading}>
+              <Image
+                src={wallCamera} // ✅ replace with your actual image path
+                alt="Camera Icon"
+                style={{ width: 60, height: 60, }}
+              />
+              Celebration Wall
+            </h2>
 
-          <div className="tabs-container" style={styles.tabsContainer}>
-            {actions.map((action, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  if (action.title === "Upload Pictures") {
-                    const input = document.getElementById("imageUploadInput");
-                    if (input) {
-                      input.value = "";
-                      input.click();
+            <p style={styles.subheading}>
+              A wall filled with your party’s happiest moments and heartfelt messages.
+            </p>
+
+            <div className="tabs-container" style={styles.tabsContainer}>
+              {actions.map((action, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (action.title === "Upload Pictures") {
+                      const input = document.getElementById("imageUploadInput");
+                      if (input) {
+                        input.value = "";
+                        input.click();
+                      }
+                    } else {
+                      handleActionClick(action.title);
                     }
-                  } else {
-                    handleActionClick(action.title);
-                  }
-                }}
-                style={styles.actionButton}
-              >
-                <Image
-                  src={action.image}
-                  alt={action.title}
-                  style={styles.iconStyle}
-                />
-                <span style={styles.buttonLabel}>{action.title}</span>
-              </button>
-            ))}
-            <input
-              type="file"
-              id="imageUploadInput"
-              multiple
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleImageUpload}
-            />
-          </div>
+                  }}
+                  style={styles.actionButton}
+                >
+                  <Image
+                    src={action.image}
+                    alt={action.title}
+                    style={styles.iconStyle}
+                  />
+                  <span style={styles.buttonLabel}>{action.title}</span>
+                </button>
+              ))}
+              <input
+                type="file"
+                id="imageUploadInput"
+                multiple
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageUpload}
+              />
+            </div>
 
-          <div style={{ position: "relative", marginTop: " auto", }}>
-            {wallUploading && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: "rgba(255, 255, 255, 0.8)",
-                  display: "flex",
-                  justifyContent: "center",
-                  zIndex: 2,
-                }}
-              >
-                <div className="spinner" />
+            <div style={{ position: "relative", marginTop: " auto", }}>
+              {wallUploading && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(255, 255, 255, 0.8)",
+                    display: "flex",
+                    justifyContent: "center",
+                    zIndex: 2,
+                  }}
+                >
+                  <div className="spinner" />
+                </div>
+              )}
+
+              <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
+                {eventData.length === 0 ? (
+                  <>
+                    <div className="collage-item">
+                      <Image src={photo1} className="collage-image" alt="img1" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo4} className="collage-image" alt="sticky note" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo3} className="collage-image" alt="img2" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo7} className="collage-image" alt="img2" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo8} className="collage-image" alt="img5" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo2} className="collage-image" alt="img3" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo5} className="collage-image" alt="img4" />
+                    </div>
+                    <div className="collage-item">
+                      <Image src={photo6} className="collage-image" alt="img5" />
+                    </div>
+
+                  </>
+                ) : (
+                  eventData.map((item, index) => (
+                    <div key={index}>
+                      {item.type === "image" ? (
+                        <img
+                          src={item.src}
+                          alt={item.alt}
+                          className="event-image"
+                          onLoad={(e) => e.currentTarget.classList.add("loaded")}
+                        />
+                      ) : (
+                        <div
+                          className="event-text"
+                          dangerouslySetInnerHTML={{ __html: item.content }}
+                        />
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
-            )}
-            
-            <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1 , margin: "10px auto"}}>
-  {eventData.length === 0 ? (
-    <>
-    <div className="collage-item">
-      <Image src={photo1} className="collage-image" alt="img1" />
-    </div>
-    <div className="collage-item">
-      <Image src={photo4} className="collage-image" alt="sticky note" />
-    </div>
-    <div className="collage-item">
-      <Image src={photo3} className="collage-image" alt="img2" />
-    </div>
-    <div className="collage-item">
-      <Image src={photo7} className="collage-image" alt="img2" />
-    </div>
-     <div className="collage-item">
-      <Image src={photo8} className="collage-image" alt="img5" />
-    </div>
-    <div className="collage-item">
-      <Image src={photo2} className="collage-image" alt="img3" />
-    </div>
-    <div className="collage-item">
-      <Image src={photo5} className="collage-image" alt="img4" />
-    </div>
-    <div className="collage-item">
-      <Image src={photo6} className="collage-image" alt="img5" />
-    </div>
-    
-  </>
-  ) : (
-    eventData.map((item, index) => (
-      <div key={index}>
-        {item.type === "image" ? (
-          <img
-            src={item.src}
-            alt={item.alt}
-            className="event-image"
-            onLoad={(e) => e.currentTarget.classList.add("loaded")}
-          />
-        ) : (
-          <div
-            className="event-text"
-            dangerouslySetInnerHTML={{ __html: item.content }}
-          />
-        )}
-      </div>
-    ))
-  )}
-</div>
 
+            </div>
           </div>
-        </div>
 
-        {/* 🎁 Lucky Draw Popup */}
-       {showLuckyDrawPopup && (
-  <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
-    <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
-      <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
-        ×
-      </button>
-      <div className="popup-luckdraw-content">
-        <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
-      </div>
-    </div>
-  </div>
-)}
+          {/* 🎁 Lucky Draw Popup */}
+          {showLuckyDrawPopup && (
+            <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
+              <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
+                <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
+                  ×
+                </button>
+                <div className="popup-luckdraw-content">
+                  <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
+                </div>
+              </div>
+            </div>
+          )}
 
 
-        {/* 🛠 Invitation Modal */}
-        {showModal && (
-          <InvitationModal
-            showModal={showModal}
-            handleClose={handleClose}
-            handleSave={handleSave}
-            formData={formData}
-            setFormData={setFormData}
-            handleChange={handleChange}
-            handleImageChange={handleImageChange}
-            uploadedImage={uploadedImage}
-            eventOptions={eventOptions}
-            fileInputRef={fileInputRef}
-            orderDetails={orderDetails}
-            imageBackground={imageBackground}
+          {/* 🛠 Invitation Modal */}
+          {showModal && (
+            <InvitationModal
+              showModal={showModal}
+              handleClose={handleClose}
+              handleSave={handleSave}
+              formData={formData}
+              setFormData={setFormData}
+              handleChange={handleChange}
+              handleImageChange={handleImageChange}
+              uploadedImage={uploadedImage}
+              eventOptions={eventOptions}
+              fileInputRef={fileInputRef}
+              orderDetails={orderDetails}
+              imageBackground={imageBackground}
+            />
+          )}
+        </>
+      )}
+
+      {/* 📋 Guest List Modal Popup */}
+      {showPopupGuest && (
+        <>
+          <div
+            style={styles.backdrop}
+            onClick={() => setShowPopupGuest(false)}
           />
-        )}
-      </>
-    )}
-
-    {/* 📋 Guest List Modal Popup */}
-    {showPopupGuest && (
-      <>
-        <div
-          style={styles.backdrop}
-          onClick={() => setShowPopupGuest(false)}
-        />
-        <RSVPPopup
-          guestList={guestList}
-          onClose={() => setShowPopupGuest(false)}
-        />
-      </>
-    )}
-  </>
-);
+          <RSVPPopup
+            guestList={guestList}
+            onClose={() => setShowPopupGuest(false)}
+          />
+        </>
+      )}
+    </>
+  );
 
 };
 
 const styles = {
-  // cardWrapper: {
-  //   background: "white",
-  //   padding: "20px",
-  //   borderRadius: "15px",
-  //   boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-  //   textAlign: "center",
-  //   margin: "auto",
-  //   border: "2px solid #e0e0e0",
-  //   width: "95%",
-  // },
-  // cardTitle: {
-  //   fontSize: "20px",
-  //   color: "#6b21a8",
-  //   marginBottom: "15px",
-  // },
-  // nameRow: {
-  //   display: "flex",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   fontSize: "16px",
-  //   color: "#333",
-  //   marginBottom: "15px",
-  // },
-  // viewListButton: {
-  //   backgroundColor: "#a54c93",
-  //   color: "#fff",
-  //   border: "none",
-  //   borderRadius: "8px",
-  //   padding: "5px 30px",
-  //   fontSize: "14px",
-  //   fontWeight: "600",
-  //   cursor: "pointer",
-  //   display: "flex",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   margin: "auto",
-  // },
-  // backdrop: {
-  //   position: "fixed",
-  //   inset: 0,
-  //   backgroundColor: "rgba(0,0,0,0.4)",
-  //   display: "flex",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   zIndex: 1000,
-  // },
-  // popupCard: {
-  //   backgroundColor: "#ffffff",
-  //   padding: "30px",
-  //   borderRadius: "10px",
-  //   width: "350px",
-  //   boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-
-  // },
-  // formField: {
-  //   marginBottom: "16px",
-  // },
-  // input: {
-  //   width: "100%",
-  //   padding: "8px",
-  //   marginTop: "6px",
-  //   border: "1px solid #ccc",
-  //   borderRadius: "4px",
-  // },
-  // submitButton: {
-  //   backgroundColor: "#0070f3",
-  //   color: "white",
-  //   padding: "10px 16px",
-  //   border: "none",
-  //   borderRadius: "6px",
-  //   cursor: "pointer",
-  // },
-
-  // container: {
-  //   minHeight: "100vh",
-  //   background: "linear-gradient(to bottom right, #e0c3fc, #8ec5fc)",
-  //   display: "flex",
-  //   flexDirection: "column",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   padding: "40px",
-  // },
-
-  button: {
+button: {
     backgroundColor: "#6b21a8",
     color: "#fff",
     padding: "10px 20px",
@@ -1287,7 +1152,7 @@ const styles = {
     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
     transition: "background-color 0.3s ease",
   },
-  
+
   backdrop: {
     position: "fixed",
     top: 0,
@@ -1297,67 +1162,7 @@ const styles = {
     background: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
   },
-  // popupGuest: {
-  //   position: "fixed",
-  //   top: "50%",
-  //   left: "50%",
-  //   transform: "translate(-50%, -50%)",
-  //   backgroundColor: "#fff",
-  //   borderRadius: "16px",
-  //   padding: "24px",
-  //   width: "300px",
-  //   maxHeight: "80vh",
-  //   overflowY: "auto",
-  //   boxShadow: "0 0 15px rgba(0,0,0,0.3)",
-  //   zIndex: 1000,
-  // },
-  // popupTitle: {
-  //   textAlign: "center",
-  //   color: "#924c9d",
-  //   fontSize: "20px",
-  //   marginBottom: "16px",
-  //   fontWeight: "bold",
-  // },
-  // section: {
-  //   marginBottom: "16px",
-  // },
-  // sectionTitleGreen: {
-  //   fontWeight: "bold",
-  //   color: "green",
-  //   marginBottom: "6px",
-  // },
-  // sectionTitleGray: {
-  //   fontWeight: "bold",
-  //   color: "#444",
-  //   marginBottom: "6px",
-  // },
-  // guestRow: {
-  //   display: "flex",
-  //   justifyContent: "space-between",
-  //   alignItems: "center",
-  //   padding: "6px 0",
-  //   fontSize: "15px",
-  //   color: "#333",
-  // },
-  // check: {
-  //   color: "green",
-  //   fontSize: "16px",
-  // },
-  // dash: {
-  //   fontSize: "16px",
-  //   color: "#777",
-  // },
-  // closeBtn: {
-  //   marginTop: "10px",
-  //   width: "100%",
-  //   padding: "8px",
-  //   backgroundColor: "#924c9d",
-  //   color: "white",
-  //   fontWeight: "bold",
-  //   border: "none",
-  //   borderRadius: "6px",
-  //   cursor: "pointer",
-  // },
+  
   wrapper: {
     padding: 20,
     fontFamily: 'sans-serif',
@@ -1371,11 +1176,11 @@ const styles = {
     color: 'rgb(168, 50, 142)',
     textAlign: 'center',
   },
-     
+
   subheading: {
     fontSize: 16,
     marginBottom: 20,
-    fontWeight:400,
+    fontWeight: 400,
     color: '#97538C',
     textAlign: 'center',
   },
@@ -1397,7 +1202,7 @@ const styles = {
     justifyContent: 'center',
     fontSize: 14,
   },
-  
+
   uploading: {
     fontSize: 13,
     color: '#444',
@@ -1433,36 +1238,21 @@ const styles = {
     marginTop: 20,
   },
 
-  // actionButton: {
-  //   display: "flex",
-  //   alignItems: "center",
-  //   gap: 8,
-  //   background: "linear-gradient(to right, #6b21a8, #9333ea)",
-  //   color: "#fff",
-  //   border: "none",
-  //   borderRadius: 5,
-  //   padding: "5px",
-  //   fontSize: 12,
-  //   fontWeight: 600,
-  //   cursor: "pointer",
-  //   boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-  //   justifyContent: "center",
-  // },
-actionButton: {
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  background: "linear-gradient(90deg, #351F79 15.1%, #832585 85.42%)",
-  color: "#fff",
-  border: "none",
-  borderRadius: "10px",
-  padding: "10px",
-  fontSize: 12,
-  fontWeight: 600,
-  cursor: "pointer",
-  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-  justifyContent: "center",
-},
+  actionButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    background: "linear-gradient(90deg, #351F79 15.1%, #832585 85.42%)",
+    color: "#fff",
+    border: "none",
+    borderRadius: "10px",
+    padding: "10px",
+    fontSize: 12,
+    fontWeight: 600,
+    cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+    justifyContent: "center",
+  },
 
   iconStyle: {
     width: 20,
@@ -1475,6 +1265,6 @@ actionButton: {
     textAlign: "left",
   },
 };
-   
+
 export default InvitationCard;
 
