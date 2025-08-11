@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 .lucky-draw-wrapper {
   display: flex;
   justify-content: center;
@@ -13,7 +14,7 @@
     #ffdace 100%
   );
   border-radius: 18px;
-  padding: 10px;
+  padding: 20px;
   margin-inline: 25px;
   max-width: 380px;
   text-align: center;
@@ -23,19 +24,20 @@
   align-items: center;
   justify-content: center;
   z-index: 10;
-  height:90vh
 }
 .lucky-draw-title {
   font-size: 1.9rem;
-  font-weight: 900;
+  font-weight: 400;
   color: rgba(151, 83, 140, 1);
   margin-bottom: 10px;
+  font-family: "Aclonica", sans-serif;
 }
 .lucky-draw-description {
   font-size: 1.2rem;
   color: rgba(0, 0, 0, 1);
   margin-bottom: 20px;
   font-weight: 600;
+  font-family: "Inter", sans-serif;
 }
 .file-upload {
   border-radius: 14px;
@@ -55,6 +57,7 @@
   color: rgba(75, 71, 71, 1);
   text-align: center;
   margin-top: 16px;
+  font-family: "Inter", sans-serif;
 }
 
 .file-upload input[type="file"] {
@@ -66,24 +69,44 @@
   cursor: pointer;
 }
 .preview-image {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 260px;
+  max-height: 180px;
+  width: 100%;
   border-radius: 10px;
 }
+
 .lucky-btn-submit {
   background: rgba(151, 83, 140, 1);
   color: #fff;
+  margin-inline: 10px;
   font-size: 16px;
   font-weight: 700;
   border: none;
   font-size: 18px;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 5px;
   min-height: 45px;
   max-height: 45px;
-  width: 236px;
+  width: 134px;
   cursor: pointer;
 }
+
+.lucky-btn-cancel {
+  background: rgba(255, 156, 173, 1);
+  color: #fff;
+  margin-inline: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 5px;
+  min-height: 45px;
+  max-height: 45px;
+  width: 134px;
+  cursor: pointer;
+}
+
 .lucky-btn-submit:hover {
   background: rgba(151, 83, 140, 1);
 }
@@ -113,12 +136,11 @@
   }
 }
 
-
-@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
 
 /* Text above the box */
 .giftbox-title {
-  font-family: 'Luckiest Guy', cursive;
+  font-family: "Luckiest Guy", cursive;
   font-size: 2.5rem;
   font-weight: normal;
   text-align: center;
@@ -129,7 +151,8 @@
 
 /* Bounce animation */
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -150,10 +173,10 @@
   gap: 15px; /* space between image and text */
 }
 
-
 /* Bounce up and down vertically */
 @keyframes vertical-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -165,11 +188,9 @@
   animation: vertical-bounce 1s ease-in-out infinite;
 }
 
-
 .rotate {
   animation: slow-rotate 8s linear infinite;
 }
-
 
 .close-icon {
   position: absolute;
@@ -177,20 +198,17 @@
   right: 15px;
   font-size: 28px;
   font-weight: bold;
-  color: white; 
+  color: white;
   cursor: pointer;
   user-select: none;
   z-index: 1000;
   transition: color 0.3s ease;
 }
 
-
-
 .giftbox-title {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #FFF;
+  color: #fff;
   text-align: center;
   margin: 0;
 }
-

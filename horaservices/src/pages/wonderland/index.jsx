@@ -29,17 +29,18 @@ import axios from "axios";
 import OtpLoginPopup from "../../components/OtpLoginPopup";
 import html2canvas from "html2canvas";
 import LuckyDrawForm from "../lucky-draw/index";
-import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg"
-import photo1 from "@/assets/collage/photo1.png"
-import photo2 from "@/assets/collage/photo2.jpeg"
-import photo3 from "@/assets/collage/photo3.png"
-import photo4 from "@/assets/collage/photo4.png"
-import photo5 from "@/assets/collage/photo5.png"
-import photo6 from "@/assets/collage/photo6.png"
-import photo7 from "@/assets/collage/photo7.png"
-import wallCamera from "@/assets/wallCamera.png"
+import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg";
+import LuckDrawTicketBanner from "@/assets/wonderland/lucky_draw_ticket_bg.png";
+import photo1 from "@/assets/collage/photo1.png";
+import photo2 from "@/assets/collage/photo2.jpeg";
+import photo3 from "@/assets/collage/photo3.png";
+import photo4 from "@/assets/collage/photo4.png";
+import photo5 from "@/assets/collage/photo5.png";
+import photo6 from "@/assets/collage/photo6.png";
+import photo7 from "@/assets/collage/photo7.png";
+import wallCamera from "@/assets/wallCamera.png";
 
-import photo8 from "@/assets/collage/photo8.png"
+import photo8 from "@/assets/collage/photo8.png";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
 import InvitationModal from "@/components/InvitationModal";
@@ -61,7 +62,12 @@ const InvitationCard = () => {
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
-  console.log('%c [ guestDetails ]-60', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
+  const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
+  console.log(
+    "%c [ guestDetails ]-60",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    guestDetails
+  );
 
   const [eventAllImages, setEventAllImages] = useState([]);
 
@@ -122,14 +128,14 @@ const InvitationCard = () => {
 
     fetchEventImages();
     // }, [urlParams.eventId]);
-  }, [urlParams.eventId, refetchEventImages]);
+  }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
       if (userID === urlParams.eventUserId) {
         // alert(`${userID} and ${urlParams.eventUserId} are same`);
-        return
-      };
+        return;
+      }
       if (!urlParams.eventId || !userID) {
         setErrorGetGuest("Event id or user id not found!");
         return;
@@ -157,8 +163,7 @@ const InvitationCard = () => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, urlParams.eventUserId]);
-
+  }, [urlParams.eventId, userID, urlParams.eventUserId, refetchLuckyDraw]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -199,11 +204,15 @@ const InvitationCard = () => {
     urlParams.eventUserId,
     urlParams.userType,
     isLoggedIn,
-    guestDetails
+    guestDetails,
   ]);
 
   const [orderDetails, setOrderDetails] = useState(null);
-  console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
+  console.log(
+    "%c [ orderDetails ]-199",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    orderDetails
+  );
   const [showFAB, setShowFAB] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -221,8 +230,14 @@ const InvitationCard = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [noteTitle, setNoteTitle] = useState("");
-  const [noteBy, setNoteBy] = useState(userID === urlParams.eventUserId ? orderDetails?.Name : guestDetails?.name);
-  console.log('%c [ noteBy ]-219', 'font-size:13px; background:pink; color:#bf2c9f;', noteBy)
+  const [noteBy, setNoteBy] = useState(
+    userID === urlParams.eventUserId ? orderDetails?.Name : guestDetails?.name
+  );
+  console.log(
+    "%c [ noteBy ]-219",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    noteBy
+  );
   const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
 
@@ -465,10 +480,10 @@ const InvitationCard = () => {
       : "";
     const formattedTime = formData.time
       ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
       : "";
 
     const finalImage = uploadedImage || orderDetails?.Image || "";
@@ -626,6 +641,7 @@ const InvitationCard = () => {
           Image: data.hostImage || data.imageUrl || "",
           userId: hostId,
           id: data._id || data.id || data.eventId,
+          luckyDraws: data?.luckyDraws || [],
         });
 
         // ✅ Set host ID globally
@@ -734,6 +750,43 @@ const InvitationCard = () => {
       setWallUploading(false);
     }
   };
+
+  const handleDeleteImage = async (imgData) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/customer/event/event-images/689973bb62d1220a9e1e2d0c/delete`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userID,
+            imageId: imgData._id,
+            imageType: imgData.imageType,
+          }), // Convert object to JSON string
+        }
+      );
+
+      const data = await response.json(); // Parse response body
+      console.log("Delete Response:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          `Delete failed with status: ${response.status}, message: ${
+            data.message || "No message provided"
+          }`
+        );
+      }
+
+      return data; // Return response data for further use
+    } catch (err) {
+      console.error("Delete failed:", err.message);
+      throw err; // Re-throw error for caller to handle
+    }
+  };
+
   // useEffect(() => {
   //   const timer = setTimeout(() => {
   //     fetchThumbnails();
@@ -869,7 +922,6 @@ const InvitationCard = () => {
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, router.query.id, userId, sendCustomerId]);
 
-
   return (
     <>
       {!isLoggedIn ? (
@@ -881,9 +933,6 @@ const InvitationCard = () => {
         </div>
       ) : (
         <>
-
-
-
           {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
           {orderDetails ? (
@@ -898,11 +947,11 @@ const InvitationCard = () => {
                   orderDetails={orderDetails}
                   handleClick={handleClick}
                   isHost={userType === "host"}
-
-                /></div>
+                />
+              </div>
 
               {/* 🎉 RSVP Section */}
-              
+
               {isHost || hasSubmitted ? (
                 <GuestListPreview
                   guestList={guestList}
@@ -958,27 +1007,80 @@ const InvitationCard = () => {
           ) : (
             <p>Loading...</p>
           )}
-          <div className="lucky-draw-banner">
-            <Image src={LuckDrawBanner} alt="Luck Draw Banner" className="banner-img" />
-            <button className="click-now-btn" onClick={() => setShowLuckyDrawPopup(true)}>
-              Click Now
-            </button>
-          </div>
-
-
+          {isHost &&
+            orderDetails &&
+            (orderDetails?.luckyDraws?.length === 0 ? (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <button
+                  className="click-now-btn"
+                  onClick={() => setShowLuckyDrawPopup(true)}
+                >
+                  Click Now
+                </button>
+              </div>
+            ) : (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawTicketBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <span className="ticket-number">
+                  {orderDetails &&
+                    orderDetails?.luckyDraws?.length > 0 &&
+                    orderDetails?.luckyDraws[0]?.ticketNumber}
+                </span>
+              </div>
+            ))}
+          {!isHost &&
+            guestDetails &&
+            (guestDetails?.luckyDraws?.length === 0 ? (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <button
+                  className="click-now-btn"
+                  onClick={() => setShowLuckyDrawPopup(true)}
+                >
+                  Click Now
+                </button>
+              </div>
+            ) : (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawTicketBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <span className="ticket-number">
+                  {guestDetails &&
+                    guestDetails?.luckyDraws?.length > 0 &&
+                    guestDetails?.luckyDraws[0]?.ticketNumber}
+                </span>
+              </div>
+            ))}
 
           <div style={styles.wrapper}>
             <h2 style={styles.heading}>
               <Image
                 src={wallCamera} // ✅ replace with your actual image path
                 alt="Camera Icon"
-                style={{ width: 60, height: 60, }}
+                style={{ width: 60, height: 60 }}
               />
               Celebration Wall
             </h2>
 
             <p style={styles.subheading}>
-              A wall filled with your party’s happiest moments and heartfelt messages.
+              A wall filled with your party’s happiest moments and heartfelt
+              messages.
             </p>
 
             <div className="tabs-container" style={styles.tabsContainer}>
@@ -1016,7 +1118,7 @@ const InvitationCard = () => {
               />
             </div>
 
-            <div style={{ position: "relative", marginTop: " auto", }}>
+            <div style={{ position: "relative", marginTop: " auto" }}>
               {wallUploading && (
                 <div
                   style={{
@@ -1035,50 +1137,135 @@ const InvitationCard = () => {
                 </div>
               )}
 
-           <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
-  {eventAllImages.length === 0 ? (
-    <>
-      {/* fallback static images */}
-      <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
-      <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
-      <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
-      <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
-      <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
-      <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
-      <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
-      <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
-    </>
-  ) : (
-    eventAllImages.map((item, index) => (
-      <div key={item._id || index} className="collage-item">
-        <img
-          src={item.imageUrl}
-          alt={`Event Image ${index + 1}`}
-          className="event-image"
-          onLoad={(e) => e.currentTarget.classList.add("loaded")}
-        />
-      </div>
-    ))
-  )}
-</div>
-
+              <div
+                className="event-grid"
+                style={{
+                  opacity: wallUploading ? 0.5 : 1,
+                  margin: "10px auto",
+                }}
+              >
+                {eventAllImages.length === 0 ? (
+                  <>
+                    {/* fallback static images */}
+                    <div className="collage-item">
+                      <Image
+                        src={photo1}
+                        className="collage-image"
+                        alt="img1"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo4}
+                        className="collage-image"
+                        alt="sticky note"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo3}
+                        className="collage-image"
+                        alt="img2"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo7}
+                        className="collage-image"
+                        alt="img2"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo8}
+                        className="collage-image"
+                        alt="img5"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo2}
+                        className="collage-image"
+                        alt="img3"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo5}
+                        className="collage-image"
+                        alt="img4"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo6}
+                        className="collage-image"
+                        alt="img5"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  eventAllImages?.map((item, index) => (
+                    <div key={item._id || index} className="collage-item">
+                      <img
+                        src={item.imageUrl}
+                        alt={`Event Image ${index + 1}`}
+                        className="event-image"
+                        onLoad={(e) => e.currentTarget.classList.add("loaded")}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage(item)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
 
           {/* 🎁 Lucky Draw Popup */}
           {showLuckyDrawPopup && (
-            <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
-              <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
-                <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
+            <div
+              className="popup-luckdraw-overlay"
+              onClick={() => setShowLuckyDrawPopup(false)}
+            >
+              <div
+                className="popup-luckdraw-container"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="popup-luckdraw-close"
+                  style={{
+                    position: "absolute",
+                    top: "-10px",
+                    right: "10px",
+                    fontSize: "40px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setShowLuckyDrawPopup(false)}
+                >
                   ×
                 </button>
-                <div className="popup-luckdraw-content">
-                  <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
+                <div
+                  className="popup-luckdraw-content"
+                  style={{ marginBlock: "30px" }}
+                >
+                  <LuckyDrawForm
+                    hostData={orderDetails}
+                    onClose={() => {
+                      setShowLuckyDrawPopup(false);
+                      setRefetchLuckyDraw(!refetchLuckyDraw);
+                    }}
+                  />
                 </div>
               </div>
             </div>
           )}
-
 
           {/* 🛠 Invitation Modal */}
           {showModal && (
@@ -1115,11 +1302,10 @@ const InvitationCard = () => {
       )}
     </>
   );
-
 };
 
 const styles = {
-button: {
+  button: {
     backgroundColor: "#6b21a8",
     color: "#fff",
     padding: "10px 20px",
@@ -1140,72 +1326,72 @@ button: {
     background: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
   },
-  
+
   wrapper: {
     padding: 20,
-    fontFamily: 'sans-serif',
+    fontFamily: "sans-serif",
     maxWidth: 480,
-    margin: 'auto',
+    margin: "auto",
   },
   heading: {
     fontSize: 28,
     fontWeight: 700,
     // marginBottom: 8,
-    color: 'rgb(168, 50, 142)',
-    textAlign: 'center',
+    color: "rgb(168, 50, 142)",
+    textAlign: "center",
   },
 
   subheading: {
     fontSize: 16,
     marginBottom: 20,
     fontWeight: 400,
-    color: '#97538C',
-    textAlign: 'center',
+    color: "#97538C",
+    textAlign: "center",
   },
   buttonRow: {
-    display: 'flex',
+    display: "flex",
     gap: 10,
     marginBottom: 20,
   },
   button: {
     flex: 1,
-    backgroundColor: '#a8328e',
-    color: '#fff',
-    border: 'none',
-    padding: '10px 12px',
+    backgroundColor: "#a8328e",
+    color: "#fff",
+    border: "none",
+    padding: "10px 12px",
     borderRadius: 6,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 14,
   },
 
   uploading: {
     fontSize: 13,
-    color: '#444',
+    color: "#444",
     marginBottom: 10,
   },
   loading: {
     fontSize: 15,
     fontWeight: 500,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 40,
   },
   gallery: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
     gap: 8,
   },
   imageBox: {
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   image: {
-    width: '100%',
-    height: 'auto',
-    objectFit: 'cover',
-    display: 'block',
+    width: "100%",
+    height: "auto",
+    objectFit: "cover",
+    display: "block",
   },
 
   tabsContainer: {
@@ -1245,4 +1431,3 @@ button: {
 };
 
 export default InvitationCard;
-

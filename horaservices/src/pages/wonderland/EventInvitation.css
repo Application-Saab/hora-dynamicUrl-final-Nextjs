@@ -1,8 +1,8 @@
 /* General Font Setup */
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap");
 
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 /* Overlay Content */
@@ -18,21 +18,21 @@ body {
     overflow: hidden;
 } */
 .invitation-container {
-    max-width: 480px;
-    /* min-height: 100vh; */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 20px;
-    margin: auto;
-    overflow: hidden;
+  max-width: 480px;
+  /* min-height: 100vh; */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  margin: auto;
+  overflow: hidden;
 }
 
- .overlay-content {
+.overlay-content {
   background-color: rgba(255, 255, 255, 0.85);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -40,10 +40,10 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   padding: 2rem;
   width: 95%;
- max-width: 380px;
+  max-width: 380px;
   margin: 10px auto;
   text-align: center;
-    
+
   box-sizing: border-box;
 }
 
@@ -73,24 +73,23 @@ body {
 }
 
 /* Invitation Title */
-.invitation-title
- {
-    text-align: center;
-    color: #be185d;
-    font-family: 'Amatic SC', cursive;
-    font-size:1.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
+.invitation-title {
+  text-align: center;
+  color: #be185d;
+  font-family: "Amatic SC", cursive;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
 }
 
 /* Subtitle */
 .subtitle {
-    text-align: center;
-    font-family: 'Pacifico', cursive;
-    font-size: 1.2rem;
-    color: black;
-    margin-bottom: 1rem;
-    font-weight: 700;
+  text-align: center;
+  font-family: "Pacifico", cursive;
+  font-size: 1.2rem;
+  color: black;
+  margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 /* Event Info */
@@ -110,9 +109,8 @@ body {
 
 /* Theme Card */
 .info-card {
- 
   text-align: center;
-background-color: none !important;
+  background-color: none !important;
   color: black;
 }
 .info-card-title {
@@ -124,9 +122,9 @@ background-color: none !important;
   margin-bottom: 0.5rem;
   gap: 6px;
 }
-    .info-card-text {
-        font-size: 1.2rem;
-    }
+.info-card-text {
+  font-size: 1.2rem;
+}
 
 /* Final Note */
 .waiting-text {
@@ -157,15 +155,6 @@ background-color: none !important;
   opacity: 0.9;
 }
 
-
-
-
-
-
-
-
-
-
 .full-width {
   grid-column: span 2;
 }
@@ -188,29 +177,27 @@ background-color: none !important;
   height: 100%;
   object-fit: cover;
 }
-.object-contain{
+.object-contain {
   width: 19px;
   height: auto;
 }
 
-
 /* Animation for twinkling stars */
 @keyframes twinkle {
-  0%, 100% { 
-    opacity: 0.2; 
+  0%,
+  100% {
+    opacity: 0.2;
   }
-  50% { 
-    opacity: 1; 
+  50% {
+    opacity: 1;
   }
 }
-
-
 
 /* Media query for tablets (768px) */
 @media (max-width: 768px) {
   .overlay-content {
     padding: 1.5rem;
-   max-width: 380px;
+    max-width: 380px;
     margin: 10px auto;
   }
   /* .invitation-container {
@@ -218,32 +205,32 @@ background-color: none !important;
      max-width: 400px;
     padding: 2rem; 
   } */
-  
+
   .profile-image {
     width: 7rem;
     height: 7rem;
   }
-  
+
   .invitation-title h1 {
     font-size: 2rem;
   }
-  
+
   .event-location-text,
   .event-description-text,
   .waiting-text,
   .info-card-title {
     font-size: 1.125rem;
   }
-  
+
   .rsvp-button {
     font-size: 1.25rem;
     padding: 0.875rem;
   }
-  
+
   .photo-gallery {
     gap: 0.4rem;
   }
-  
+
   .light-string {
     width: 80%;
   }
@@ -253,7 +240,7 @@ background-color: none !important;
 @media (max-width: 468px) {
   .overlay-content {
     padding: 1rem;
- max-width: 380px;
+    max-width: 380px;
   }
   /* .invitation-container {
     max-width: 400px;
@@ -261,96 +248,95 @@ background-color: none !important;
     border-radius: 0.5rem;
     margin:auto
   } */
-  
+
   .profile-image {
     width: 6rem;
     height: 6rem;
     border-width: 3px;
   }
-  
+
   .profile-name {
     font-size: 1.125rem;
   }
-  
+
   .invitation-title {
     margin-bottom: 1.5rem;
   }
-  
+
   .invitation-title h1 {
     font-size: 1.2rem;
   }
-  
+
   .event-details-card {
     padding: 0.875rem;
     margin-bottom: 1.25rem;
   }
-  
+
   .event-location-text,
   .event-description-text {
     font-size: 1rem;
   }
-  
+
   .icon {
     margin-right: 0.5rem;
   }
-  
+
   .rsvp-button {
     font-size: 1.125rem;
     padding: 0.75rem;
     margin-bottom: 0.75rem;
   }
-  
+
   .waiting-text {
     font-size: 1rem;
     margin-bottom: 1.25rem;
   }
-  
+
   .info-grid {
     gap: 0.5rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .info-card {
     padding: 0;
   }
-  
-  .info-card-title {
-    font-size: 1.rem;
-    margin-bottom: 0.25rem;
 
+  .info-card-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
   }
-  
+
   .info-card-text {
     font-size: 1rem;
     margin-left: 10px;
   }
-  
+
   .photo-gallery {
     grid-template-columns: repeat(4, 1fr);
     gap: 0.35rem;
     margin-bottom: 1.25rem;
   }
-  
+
   .footer-buttons {
     gap: 0.5rem;
   }
-  
+
   .footer-button {
     padding: 0.625rem;
     font-size: 0.722rem;
   }
-  
+
   .star {
     width: 3px;
     height: 3px;
   }
-  
+
   .light-bulb {
     width: 6px;
     height: 6px;
     margin-top: -3px;
   }
-  
+
   .light-string {
     width: 90%;
     height: 1.25rem;
@@ -378,7 +364,6 @@ background-color: none !important;
     
 } */
 
-
 .modal-content {
   padding: 30px 25px;
   width: 100%;
@@ -388,7 +373,7 @@ background-color: none !important;
   animation: fadeIn 0.4s ease;
   position: relative;
   z-index: 2100;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   background-color: rgba(252, 246, 246, 0.6); /* transparent white */
   backdrop-filter: blur(1.5px); /* glass effect */
@@ -397,14 +382,13 @@ background-color: none !important;
   /* margin-top: 50%; */
 }
 
-
 .modal-content h2 {
   /* margin-top:2px;
   margin-bottom: 1px; */
   font-weight: 700;
   font-size: 24px;
   color: #6b21a8;
-   font-family: 'Baloo 2', cursive;
+  font-family: "Baloo 2", cursive;
 }
 
 .invite-text {
@@ -432,11 +416,9 @@ background-color: none !important;
   border-color: #6b21a8;
 }
 
-
 .date-input {
   width: 130px;
   padding-left: 4px;
-  
 }
 
 .time-input {
@@ -499,51 +481,49 @@ background-color: none !important;
   }
 }
 
-
 /* =============================================================================================== */
 
-  
-
-  @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
 .party-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 2px;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 20px;
-   height: 110px;
-    width: 100%;
-   
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 20px;
+  height: 110px;
+  width: 100%;
 }
 
-   .tab-item {
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 8;
-    /* border: 1px solid #ccc; */
-    /* background-color: #fff; */
-    display: flex;
-    flex-Direction: column;
-    align-Items: center;
-    gap: 8;
-    user-Select: none;
-    width: 110;
-    font-Weight: 600;
-    color: #3a0b59;
-    text-Align: center;
+.tab-item {
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8;
+  /* border: 1px solid #ccc; */
+  /* background-color: #fff; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8;
+  user-select: none;
+  width: 110;
+  font-weight: 600;
+  color: #3a0b59;
+  text-align: center;
 }
 .action-card {
-  width: calc((100% - 8px) / 3); /* 360px - 2 gaps (4px each) = 352, /3 = ~117.3px */
-  background-color:#f6f0ff;
+  width: calc(
+    (100% - 8px) / 3
+  ); /* 360px - 2 gaps (4px each) = 352, /3 = ~117.3px */
+  background-color: #f6f0ff;
   border: 1px solid #bb66ff;
   border-radius: 8px;
   padding: 8px 6px;
   /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); */
-  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-family: "Segoe UI", Roboto, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -551,7 +531,7 @@ background-color: none !important;
 }
 .action-card:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .top-row {
@@ -565,17 +545,12 @@ background-color: none !important;
   color: #9c27b0;
 }
 
-
 .title-text {
   font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
   color: #3a0b59;
 }
-
-
-
-
 
 /* Responsive breakpoints */
 @media (min-width: 480px) {
@@ -661,64 +636,60 @@ background-color: none !important;
   background: white;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* luckey draw */
-/* Overlay backdrop */
+
+/* luckey draw */
 .popup-luckdraw-overlay {
   position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 0.3s ease-in-out;
-
 }
 
-/* Container box */
 .popup-luckdraw-container {
-  background: #fff;
-  border-radius: 12px;
+  background-image: url("../../assets/wonderland/lucky_draw_bg.png"); /* Use absolute path if in public/ */
+  background-size: cover; /* Make sure it fills */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: black;
+
+  border-radius: 8px;
+  /* width: 90%; */
+  /* max-width: 400px; */
+  height: 100%;
+  width: 100%;
+  /* max-height: 70vh; */
+
   overflow-y: auto;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   position: relative;
-  padding: 24px 20px 20px;
-  animation: scaleIn 0.3s ease-in-out;
-  
-}
-.popup-thankyounaote-container {
-  position: fixed;
-  inset: 0;
-  background: white;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
 }
 
-/* Close button */
 .popup-luckdraw-close {
   position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 24px;
+  top: 10px;
+  right: 14px;
   background: transparent;
   border: none;
-  color: #333;
+  font-size: 24px;
   cursor: pointer;
-  transition: color 0.2s;
 }
 
-.popup-luckdraw-close:hover {
-  color: #e74c3c;
-}
-
-/* Main content area */
 .popup-luckdraw-content {
-  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 /* Animations */
@@ -742,7 +713,6 @@ background-color: none !important;
   }
 }
 
-
 /* close button thankyou popup */
 .close-button {
   position: absolute;
@@ -761,9 +731,6 @@ background-color: none !important;
   color: rgb(146, 82, 170);
 }
 
-
-
-
 .explore-btn {
   background-color: #a54c93;
   color: white;
@@ -778,20 +745,16 @@ background-color: none !important;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin:auto;
+  margin: auto;
 }
 
 .explore-btn:hover {
   background-color: #933e83;
 }
 
-
-.spinner{
+.spinner {
   margin-top: 50px;
 }
-
-
-
 
 .lucky-draw-banner {
   position: relative;
@@ -807,24 +770,32 @@ background-color: none !important;
 }
 
 .click-now-btn {
-    position: absolute;
-    bottom: 5px;
-    left: 70%;
-    transform: translateX(-50%);
-    background: #FFFFFF66;
-    color: white;
-    font-weight: bold;
-    padding: 5px;
-    width:100px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 14px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  bottom: 13px;
+  left: 70%;
+  transform: translateX(-50%);
+  background: rgba(217, 180, 115, 1);
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  width: 130px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-
-
+.ticket-number {
+  position: absolute;
+  bottom: 50%;
+  top: 45%;
+  left: 30%;
+  /* background: #ffffff66; */
+  color: #9128b4;
+  font-weight: bold;
+  font-size: 70px;
+}
 
 .event-collage {
   display: flex;
