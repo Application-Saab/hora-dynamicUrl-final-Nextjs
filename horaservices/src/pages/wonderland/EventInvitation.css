@@ -925,7 +925,7 @@ background-color: none !important;
 
 .lightbox-content {
   position: relative;
-  max-width: 90%;
+  /* max-width: 90%; */
   max-height: 90%;
 }
 

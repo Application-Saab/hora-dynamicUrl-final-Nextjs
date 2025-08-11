@@ -1,21 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
-import Lightbox from "react-image-lightbox"; // npm install react-image-lightbox
-import "react-image-lightbox/style.css";
-// import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
+import { useSwipeable } from 'react-swipeable';
 import tabIcon1 from "../../assets/galleryicon.jpg";
 import tabIcon2 from "../../assets/thankyouicon.png";
-
-import { FaUpload, FaStickyNote } from "react-icons/fa";
-import tabIcon3 from "../../assets/luckdrawicon.jpg";
-import dressIcon from "../../assets/dressIcon.jpg";
-import StickyImage from "../../assets/sticky5.png";
-import { FaCheckCircle, FaUsers } from "react-icons/fa";
 import imageBackground from "../../assets/imageBackground.jpg";
 import imageBackGround from "../../assets/finalInviteBackground.png";
 import Image from "next/image";
-import { FaCamera, FaRegStickyNote, FaTicketAlt } from "react-icons/fa";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
 import {
   BASE_URL,
@@ -228,8 +219,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [noteTitle, setNoteTitle] = useState("");
   const [noteBy, setNoteBy] = useState(userID === urlParams.eventUserId ? orderDetails?.Name : guestDetails?.name);
-  console.log('%c [ noteBy ]-219', 'font-size:13px; background:pink; color:#bf2c9f;', noteBy)
-  const [errorMsg, setErrorMsg] = useState("");
+   const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
 
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -767,6 +757,19 @@ const eventOptions = [
       setShowLuckyDrawPopup(true);
     }
   };
+  const handlers = useSwipeable({
+  onSwipedLeft: () => {
+    const nextIndex = (selectedIndex + 1) % eventAllImages.length;
+    setSelectedIndex(nextIndex);
+    setSelectedImage(eventAllImages[nextIndex]);
+  },
+  onSwipedRight: () => {
+    const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
+    setSelectedIndex(prevIndex);
+    setSelectedImage(eventAllImages[prevIndex]);
+  },
+  trackMouse: true // optional, mouse drag support bhi deta hai
+});
   const handleImageUpload = async (e) => {
     setUploading(true);
     setWallUploading(true);
@@ -836,7 +839,7 @@ const handleDelete = async (imageId, imageType) => {
 
   try {
     const res = await fetch(
-      `${BASE_URL}/event-images/${urlParams.eventId}/delete`,
+      `${BASE_URL}/api/customer/event/event-images/event-images/${urlParams.eventId}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1276,67 +1279,67 @@ setShowPopup(false);
 )} */}
 
 {isImageOpen && selectedImage && (
-  <div className="custom-lightbox">
-    <div className="lightbox-content">
-      {/* Close Button */}
-      <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
+    <div className="custom-lightbox">
+      <div {...handlers} className="lightbox-content">
+        {/* Close Button */}
+        <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
 
-      {/* Prev Button */}
-      <button
-        className="nav-btn prev-btn"
-        onClick={() => {
-          const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
-          setSelectedIndex(prevIndex);
-          setSelectedImage(eventAllImages[prevIndex]);
-        }}
-      >
-        ‹
-      </button>
-
-      {/* Image */}
-      <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
-
-      {/* Next Button */}
-      <button
-        className="nav-btn next-btn"
-        onClick={() => {
-          const nextIndex = (selectedIndex + 1) % eventAllImages.length;
-          setSelectedIndex(nextIndex);
-          setSelectedImage(eventAllImages[nextIndex]);
-        }}
-      >
-        ›
-      </button>
-
-      {/* Toolbar */}
-      <div className="lightbox-toolbar">
+        {/* Prev Button */}
         <button
-          className="lightbox-btn"
-          onClick={() => handleDownload(selectedImage.imageUrl)}
+          className="nav-btn prev-btn"
+          onClick={() => {
+            const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
+            setSelectedIndex(prevIndex);
+            setSelectedImage(eventAllImages[prevIndex]);
+          }}
         >
-         <Image
-    src={downloadicon}  
-    alt="Download"
-    style={{ width: 30, height: 30 }}
-  />
+          ‹
         </button>
 
-        {selectedImage.userId === userID && (
+        {/* Image */}
+        <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
+
+        {/* Next Button */}
+        <button
+          className="nav-btn next-btn"
+          onClick={() => {
+            const nextIndex = (selectedIndex + 1) % eventAllImages.length;
+            setSelectedIndex(nextIndex);
+            setSelectedImage(eventAllImages[nextIndex]);
+          }}
+        >
+          ›
+        </button>
+
+        {/* Toolbar */}
+        <div className="lightbox-toolbar">
           <button
             className="lightbox-btn"
-            onClick={() => handleDelete(selectedImage._id, selectedImage.imageType)}
+            onClick={() => handleDownload(selectedImage.imageUrl)}
           >
-             <Image
-    src={deletebtn}  
-    alt="Download"
-    style={{ width: "30px", height: "30px" }}
-  />
+            <Image
+              src={downloadicon}  
+              alt="Download"
+              style={{ width: 30, height: 30 }}
+            />
           </button>
-        )}
+
+          {selectedImage.userId === userID && (
+            <button
+              className="lightbox-btn"
+              onClick={() => handleDelete(selectedImage._id, selectedImage.imageType)}
+            >
+              <Image
+                src={deletebtn}  
+                alt="Delete"
+                style={{ width: 30, height: 30 }}
+              />
+            </button>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-)}
+  )}
 
 
 

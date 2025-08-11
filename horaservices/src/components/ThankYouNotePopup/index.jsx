@@ -3,6 +3,7 @@ import Image from "next/image";
 import StickyImage from "../../assets/sticky5.png"; // adjust path
 import DummySticky from "@/assets/collage/photo2.jpeg";
 import "./Thankyounotepopup.css"
+
 import Head from "next/head";
 const ThankYouNotePopup = ({
   noteTitle,
@@ -21,7 +22,7 @@ const ThankYouNotePopup = ({
   return (
 
     <div className="popup">
-       <Head>
+      <Head>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -30,17 +31,21 @@ const ThankYouNotePopup = ({
           href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
       </Head>
-     
+
       <h1 className="title">Thank You Note</h1>
       <h3 className="subtitlePopUp">
         Celebrate the moment with a few words of gratitude.
       </h3>
-<Image
-  src={DummySticky}
-  alt="Sticky Note Sample"
-  className="thankyou-image"
-/>
+      <Image
+        src={DummySticky}
+        alt="Sticky Note Sample"
+        className="thankyou-image"
+      />
       <div className="form-group">
         <label className="label">Type Note</label>
         <textarea
@@ -102,10 +107,10 @@ const ThankYouNotePopup = ({
         </p>
       )}
 
-     <div className="popup-buttons">
-  <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
-  <button className="save-btn" onClick={handleDownload}>SAVE</button>
-</div>
+      <div className="popup-buttons">
+        <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
+        <button className="save-btn" onClick={handleDownload}>SAVE</button>
+      </div>
 
 
       {/* Hidden Canvas */}
@@ -153,7 +158,7 @@ const ThankYouNotePopup = ({
               fontWeight: "bold",
               fontSize: "20px",
               color: "black",
-              fontFamily: "Arial, sans-serif",
+              fontFamily: "'Montserrat', sans-serif",
               wordWrap: "break-word",
               whiteSpace: "pre-wrap",
               lineHeight: 1.1,
@@ -167,11 +172,11 @@ const ThankYouNotePopup = ({
           style={{
             position: "absolute",
             bottom: 45,
-            right: 70,
+            left: 100,
             fontWeight: "bold",
             fontSize: "20px",
             color: "black",
-            fontFamily: "Arial, sans-serif",
+            fontFamily: "'Montserrat', sans-serif",
             zIndex: 1,
           }}
         >
@@ -179,7 +184,7 @@ const ThankYouNotePopup = ({
         </div>
       </div>
     </div>
-   
+
   );
 };
 
