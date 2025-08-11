@@ -10,17 +10,6 @@ const RSVP_STATUS = {
   WILL_TRY: "Sure, will try",
 };
 
-const getRandomColor = () => {
-  const colors = [
-    "#7A4E9D",
-    "#502F87",
-    "#FD5C91",
-    "#A45584",
-    "#392B69",
-    "#0C39A8",
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-};
 
 const GuestListPreview = ({ hostData }) => {
   const router = useRouter();
@@ -97,59 +86,10 @@ const GuestListPreview = ({ hostData }) => {
 
   if (loading) return <div>Loading...</div>;
 
-  // 🛑 Do not render anything if no guests yet and not a host
   if (guestData.length === 0) return null;
 
   return (
-    // <div className="guest-preview-card">
-    //   <h3 className="preview-title">See Who’s Coming!</h3>
-
-    //   <div className="preview-header-row">
-    //     <span className="preview-label">Guests</span>
-    //     {guestData?.length > 0 && (
-    //       <span
-    //         className="preview-view-list"
-    //         onClick={() => setOpenRsvpList(true)}
-    //       >
-    //         View Full List
-    //       </span>
-    //     )}
-    //   </div>
-
-    //   {guestData?.length > 0 && (
-    //     <>
-    //       <div className="guest-circle-container">
-    //         {guestData.slice(0, 7)?.map((g, idx) => (
-    //           <div
-    //             className="guest-initial-circle"
-    //             key={idx}
-    //             style={{ backgroundColor: getRandomColor() }}
-    //           >
-    //             {g.name?.charAt(0).toUpperCase()}
-    //           </div>
-    //         ))}
-    //       </div>
-
-    //       <div className="guest-count-row">
-    //         <span className="confirmed">
-    //           Confirmed - {guestCounts?.confirmed}
-    //         </span>
-    //         <span className="separator">|</span>
-    //         <span className="try">Will Try - {guestCounts?.willTry}</span>
-    //       </div>
-    //     </>
-    //   )}
-
-    //   {openRsvpList && (
-    //     <RSVPPopup
-    //       hostData={hostData}
-    //       guestData={guestData}
-    //       loading={loading}
-    //       error={error}
-    //       onClose={() => setOpenRsvpList(false)}
-    //     />
-    //   )}
-    // </div>
+  
     <div className="guest-preview-card">
   <h3 className="preview-title">Let’s see who’s joining</h3>
 

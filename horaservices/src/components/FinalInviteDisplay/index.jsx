@@ -16,21 +16,10 @@ const formatDate = (isoDateString) => {
 const FinalInviteDisplay = ({ orderDetails, handleClick, isHost }) => {
   if (!orderDetails) return <p>Loading...</p>;
 
-  const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails._id}/${orderDetails.userId}/guest`;
-    const shareText = `You're invited to ${
-      orderDetails.Name || "someone"
-    }'s ${orderDetails["Event Type"] || "Birthday"}! 🎉\n\n📅 ${formatDate(
-      orderDetails.Date
-    )}\n⏰ ${orderDetails.Time}\n📍 ${
-      orderDetails.Address || "Venue"
-    }\n\n👉 Tap to view the invite:\n${inviteURL}`;
-
-    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-    window.open(whatsappLink, "_blank");
-  };
+ 
 
   return (
+
     <div className="invite-wrapper">
       <Head>
         <link
@@ -67,18 +56,11 @@ const FinalInviteDisplay = ({ orderDetails, handleClick, isHost }) => {
 
 
 
-        {isHost && (
-          <div className="invite-buttons">
-            <button className="btn-green" onClick={handleClick}>
-              <i className="fa fa-magic" /> Explore Themes
-            </button>
-            <button className="btn-pink" onClick={handleWhatsAppShare}>
-              <i className="fa fa-whatsapp" /> Share Invitation
-            </button>
-          </div>
-        )}
+       
       </div>
+     
     </div>
+
   );
 };
 

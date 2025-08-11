@@ -52,7 +52,7 @@
   color:#97538C;
   font-size: 14px;
 }
-textarea,
+
 input {
   width: 100%;
   padding: 12px;
@@ -64,13 +64,25 @@ input {
   outline: none;
   color:black
 }
-
+textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid #ccc;
+  font-size: 14px;
+  background: #fff;
+  box-sizing: border-box;
+  outline: none;
+  color:black;
+  height: 80px;
+}
 .word-limit {
   font-size: 12px;
-  margin-top: 4px;
+  /* margin-top: 4px; */
   text-align: right;
   font-weight: 500;
   color: #6d2f6e;
+  margin-bottom: 0px;
 }
 
 .error-msg {
@@ -82,7 +94,7 @@ input {
 .popup-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .popup-buttons button {

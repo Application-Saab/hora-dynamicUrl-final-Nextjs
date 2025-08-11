@@ -9,18 +9,6 @@ const RSVP_STATUS = {
   WILL_TRY: "Sure, will try",
 };
 
-const getRandomColor = () => {
-  const colors = [
-    "#7A4E9D",
-    "#502F87",
-    "#FD5C91",
-    "#A45584",
-    "#392B69",
-    "#0C39A8",
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-};
-
 const GuestRSVPForm = ({
   hostData,
   userType,

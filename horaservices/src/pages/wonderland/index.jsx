@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
-import profileImage from "../../assets/Ahmdabad.png"; // Add your own image
+import Lightbox from "react-image-lightbox"; // npm install react-image-lightbox
+import "react-image-lightbox/style.css";
 // import pr from "../../../../public/sticky.jpeg";import tabIcon1 from "../../../assets/galleryicon.jpg";
 import tabIcon1 from "../../assets/galleryicon.jpg";
 import tabIcon2 from "../../assets/thankyouicon.png";
+
 import { FaUpload, FaStickyNote } from "react-icons/fa";
 import tabIcon3 from "../../assets/luckdrawicon.jpg";
 import dressIcon from "../../assets/dressIcon.jpg";
@@ -37,8 +39,9 @@ import photo4 from "@/assets/collage/photo4.png"
 import photo5 from "@/assets/collage/photo5.png"
 import photo6 from "@/assets/collage/photo6.png"
 import photo7 from "@/assets/collage/photo7.png"
-import wallCamera from "@/assets/wallCamera.png"
-
+import wallCamera from "@/assets/wallCamera.png";
+import downloadicon from "@/assets/download-icon.png";
+import deletebtn from "@/assets/deletebtn.png"
 import photo8 from "@/assets/collage/photo8.png"
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
@@ -64,7 +67,8 @@ const InvitationCard = () => {
   console.log('%c [ guestDetails ]-60', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
 
   const [eventAllImages, setEventAllImages] = useState([]);
-
+const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
@@ -205,6 +209,8 @@ const InvitationCard = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
   const [showFAB, setShowFAB] = useState(false);
+  const [isImageOpen, setIsImageOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -425,7 +431,19 @@ const InvitationCard = () => {
   const handleClick = () => {
     router.push("/templates");
   };
+ const handleWhatsAppShare = () => {
+    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails._id}/${orderDetails.userId}/guest`;
+    const shareText = `You're invited to ${
+      orderDetails.Name || "someone"
+    }'s ${orderDetails["Event Type"] || "Birthday"}! 🎉\n\n📅 ${formatDate(
+      orderDetails.Date
+    )}\n⏰ ${orderDetails.Time}\n📍 ${
+      orderDetails.Address || "Venue"
+    }\n\n👉 Tap to view the invite:\n${inviteURL}`;
 
+    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    window.open(whatsappLink, "_blank");
+  };
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
 
@@ -651,15 +669,94 @@ const InvitationCard = () => {
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
 
-  const eventOptions = [
-    "Birthday",
-    "Wedding",
-    "Anniversary",
-    "Engagement",
-    "Baby welcome/Baby shower",
-    "Haldi-mendani",
-    "Bachelorette",
-  ];
+
+const eventOptions = [
+  "Birthday",
+  "Baby Shower",
+  "Seemantham",
+  "Dohale Jevan",
+  "Godh Bharai",
+  "Chatti",
+  "Naming Ceremony",
+  "Namkaran",
+  "Annaprashan",
+  "Choroonu",
+  "Hatey Khori",
+  "Vidyarambham",
+
+  // Sahaj's Events
+  "First Birthday",
+  "Half Birthday",
+  "First Tooth Celebration",
+  "First Walk Ceremony",
+  "Ayush Homam",
+  "Pet Birthday",
+
+  // Richa & Ramesh's Events
+  "Proposal Party",
+  "Dating Anniversary",
+  "Valentine's Day Party",
+  "Pre-Engagement",
+  "Engagement",
+  "Roka Ceremony",
+  "Haldi",
+  "Mehendi",
+  "Sangeet",
+  "Tilak Ceremony",
+  "Bou Bhaat",
+  "Mameru",
+  "Wedding",
+  "Reception",
+  "Post-Wedding Party",
+  "Gender Reveal",
+
+  // Richa & Ramesh's House Events
+  "Housewarming",
+  "Griha Pravesh",
+
+  // Celebration Events
+  "Satyanarayan Puja",
+  "Ramayan Katha",
+  "Vrat Udyapan",
+  "Thread Ceremony (Upanayan)",
+  "Thread Ceremony for Girls",
+  "Baptism",
+  "Christening",
+  "Eid",
+  "Iftar",
+  "Diwali",
+  "Holi",
+  "Karva Chauth Udyapan",
+  "Kitty Party",
+  "Farewell Party",
+  "Raksha Bandhan",
+  "Navratri",
+  "Dussehra",
+  "Ganesh Chaturthi",
+  "Onam",
+  "Durga Puja",
+  "Pongal",
+  "Makar Sankranti",
+  "Lohri",
+  "Bihu",
+  "Ugadi",
+  "Gudi Padwa",
+  "Vishu",
+  "Mahavir Jayanti",
+  "Guru Nanak Jayanti",
+  "Janmashtami",
+  "Baisakhi",
+  "Karva Chauth",
+  "Chhath Puja",
+
+  // Party Events
+  "Game Night",
+  "Tambola",
+  "Housie Party",
+  "Poker Night",
+  "Retirement",
+  "Pet Welcome",
+];
 
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
@@ -734,58 +831,32 @@ const InvitationCard = () => {
       setWallUploading(false);
     }
   };
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     fetchThumbnails();
-  //   }, 2000); // shorter delay is fine now
+const handleDelete = async (imageId, imageType) => {
+  if (!confirm("Are you sure you want to delete this image?")) return;
 
-  //   return () => clearTimeout(timer);
-  // }, [id, sendCustomerId]);
+  try {
+    const res = await fetch(
+      `${BASE_URL}/event-images/${urlParams.eventId}/delete`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: userID, imageId, imageType }),
+      }
+    );
 
-  // const fetchThumbnails = async () => {
-  //   // Safety check
-  //   if (!id || !sendCustomerId) {
-  //     console.warn("❌ Missing 'id' (folderName) or 'sendCustomerId'");
-  //     setLoadingThumbnails(false);
-  //     return;
-  //   }
+    const data = await res.json();
+    if (!data.error) {
+      setEventAllImages((prev) => prev.filter((img) => img._id !== imageId));
+      alert("Image deleted successfully");
+    } else {
+      alert(data.message || "Failed to delete image");
+    }
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("Server error while deleting");
+  }
+};
 
-  //   try {
-  //     const response = await fetch(
-  //       `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${id}&customerId=${sendCustomerId}`
-  //     );
-
-  //     if (!response.ok) {
-  //       const errorText = await response.text();
-  //       throw new Error(`HTTP ${response.status}: ${errorText}`);
-  //     }
-
-  //     const data = await response.json();
-
-  //     if (!Array.isArray(data?.thumbnails)) {
-  //       console.error("❌ Unexpected response format:", data);
-  //       setLoadingThumbnails(false);
-  //       return;
-  //     }
-
-  //     const imagesFromAPI = data.thumbnails.map((item) => ({
-  //       type: "image",
-  //       src: item.url,
-  //       alt: item.key,
-  //     }));
-
-  //     // Merge without duplication
-  //     setEventData((prev) => {
-  //       const apiUrls = imagesFromAPI.map((img) => img.src);
-  //       const nonApiUploads = prev.filter((img) => !apiUrls.includes(img.src));
-  //       return [...nonApiUploads, ...imagesFromAPI.reverse()];
-  //     });
-  //   } catch (error) {
-  //     console.error("❌ Error fetching thumbnails:", error);
-  //   } finally {
-  //     setLoadingThumbnails(false);
-  //   }
-  // };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -793,7 +864,7 @@ const InvitationCard = () => {
       return;
     }
     setErrorMsg("");
-
+setShowPopup(false); 
     const canvas = await html2canvas(noteRef.current, {
       backgroundColor: null,
       useCORS: true,
@@ -833,7 +904,7 @@ const InvitationCard = () => {
           setEventData((prev) => [newImage, ...prev]);
         }
         setRefetchEventImages(!refetchEventImages);
-        setShowPopup(false);
+        // setShowPopup(false);
         setNoteTitle("");
         setNoteBy("");
       } catch (err) {
@@ -898,8 +969,26 @@ const InvitationCard = () => {
                   orderDetails={orderDetails}
                   handleClick={handleClick}
                   isHost={userType === "host"}
-
                 /></div>
+               
+                 <div> 
+       {isHost && (
+          <div className="invite-section">
+  <h2 className="invite-titles">Turn invites into memory albums!</h2>
+  <p className="invite-subtitles">
+    🎉 Let your friends and family join in the joy! <br />
+    A special day is waiting — don’t miss the celebration!
+  </p>
+  <div className="invite-butons">
+    <button className="btn-explore" onClick={handleClick}>
+      <i className="fa fa-paper-plane" /> Explore Themes
+    </button>
+    <button className="btn-share" onClick={handleWhatsAppShare}>
+      <i className="fa fa-whatsapp" /> Share Invitation
+    </button>
+  </div>
+</div>
+        )}</div>
 
               {/* 🎉 RSVP Section */}
               {isHost || hasSubmitted ? (
@@ -966,7 +1055,7 @@ const InvitationCard = () => {
 
 
 
-          <div style={styles.wrapper}>
+          {/* <div style={styles.wrapper}>
             <h2 style={styles.heading}>
               <Image
                 src={wallCamera} // ✅ replace with your actual image path
@@ -1037,7 +1126,7 @@ const InvitationCard = () => {
            <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
   {eventAllImages.length === 0 ? (
     <>
-      {/* fallback static images */}
+     
       <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
       <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
       <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
@@ -1062,7 +1151,197 @@ const InvitationCard = () => {
 </div>
 
             </div>
+          </div> */}
+
+       <div style={styles.wrapper}>
+      <h2 style={styles.heading}>
+        <Image src={wallCamera} alt="Camera Icon" style={{ width: 60, height: 60 }} />
+        Celebration Wall
+      </h2>
+
+      <p style={styles.subheading}>
+        A wall filled with your party’s happiest moments and heartfelt messages.
+      </p>
+
+      {/* Action Buttons */}
+      <div className="tabs-container" style={styles.tabsContainer}>
+        {actions.map((action, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              if (action.title === "Upload Pictures") {
+                const input = document.getElementById("imageUploadInput");
+                if (input) {
+                  input.value = "";
+                  input.click();
+                }
+              } else {
+                handleActionClick(action.title);
+              }
+            }}
+            style={styles.actionButton}
+          >
+            <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+            <span style={styles.buttonLabel}>{action.title}</span>
+          </button>
+        ))}
+        <input
+          type="file"
+          id="imageUploadInput"
+          multiple
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleImageUpload}
+        />
+      </div>
+
+      {/* Images Grid */}
+      <div style={{ position: "relative", marginTop: "auto" }}>
+        {wallUploading && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: "rgba(255, 255, 255, 0.8)",
+              display: "flex", justifyContent: "center",
+              zIndex: 2,
+            }}
+          >
+            <div className="spinner" />
           </div>
+        )}
+
+        <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
+          {eventAllImages.length === 0 ? (
+            <>
+              <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
+              <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
+              <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
+              <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
+              <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
+              <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
+              <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
+              <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
+            </>
+          ) : (
+          eventAllImages.map((item, index) => (
+              <div key={item._id || index} className="collage-item" style={{ position: "relative" }}>
+                <img
+                  src={item.imageUrl}
+                  alt={`Event Image ${index + 1}`}
+                  className="event-image"
+                   onClick={() => {
+            setSelectedImage(item); // Image select karo
+            setIsImageOpen(true);   // Lightbox open karo
+          }}
+                />
+
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+{/* {isImageOpen && selectedImage && (
+  <div className="custom-lightbox">
+    <div className="lightbox-content">
+      
+      <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
+
+   
+      <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
+
+  
+      <div className="lightbox-toolbar">
+   
+        <button
+          className="lightbox-btn"
+          onClick={() => handleDownload(selectedImage.imageUrl)}
+        >
+          ⬇
+        </button>
+
+    
+        {selectedImage.userId === userID && (
+          <button
+            className="lightbox-btn"
+            onClick={() => handleDelete(selectedImage._id, selectedImage.imageType)}
+          >
+            🗑
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+)} */}
+
+{isImageOpen && selectedImage && (
+  <div className="custom-lightbox">
+    <div className="lightbox-content">
+      {/* Close Button */}
+      <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
+
+      {/* Prev Button */}
+      <button
+        className="nav-btn prev-btn"
+        onClick={() => {
+          const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
+          setSelectedIndex(prevIndex);
+          setSelectedImage(eventAllImages[prevIndex]);
+        }}
+      >
+        ‹
+      </button>
+
+      {/* Image */}
+      <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
+
+      {/* Next Button */}
+      <button
+        className="nav-btn next-btn"
+        onClick={() => {
+          const nextIndex = (selectedIndex + 1) % eventAllImages.length;
+          setSelectedIndex(nextIndex);
+          setSelectedImage(eventAllImages[nextIndex]);
+        }}
+      >
+        ›
+      </button>
+
+      {/* Toolbar */}
+      <div className="lightbox-toolbar">
+        <button
+          className="lightbox-btn"
+          onClick={() => handleDownload(selectedImage.imageUrl)}
+        >
+         <Image
+    src={downloadicon}  
+    alt="Download"
+    style={{ width: 30, height: 30 }}
+  />
+        </button>
+
+        {selectedImage.userId === userID && (
+          <button
+            className="lightbox-btn"
+            onClick={() => handleDelete(selectedImage._id, selectedImage.imageType)}
+          >
+             <Image
+    src={deletebtn}  
+    alt="Download"
+    style={{ width: "30px", height: "30px" }}
+  />
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+    </div>
+
 
           {/* 🎁 Lucky Draw Popup */}
           {showLuckyDrawPopup && (
@@ -1145,6 +1424,7 @@ button: {
     fontFamily: 'sans-serif',
     maxWidth: 480,
     margin: 'auto',
+    backgroundColor: "#FFDBDB",
   },
   heading: {
     fontSize: 28,
@@ -1153,7 +1433,6 @@ button: {
     color: 'rgb(168, 50, 142)',
     textAlign: 'center',
   },
-
   subheading: {
     fontSize: 16,
     marginBottom: 20,

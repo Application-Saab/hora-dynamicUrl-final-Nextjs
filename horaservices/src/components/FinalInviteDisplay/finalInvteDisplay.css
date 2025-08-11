@@ -90,7 +90,7 @@
   font-size: 15px;
 }
 /* 🔘 Buttons */
-.invite-buttons {
+/* .invite-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -131,4 +131,5 @@
 
 .btn-pink:hover {
   background-color: #c34670;
-}
+} */
+

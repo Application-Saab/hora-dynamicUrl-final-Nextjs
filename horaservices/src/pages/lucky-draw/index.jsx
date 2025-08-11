@@ -62,80 +62,127 @@ const LuckyDrawForm = ({ onClose }) => {
     }
   };
 
-  return (
-    <div className="lucky-draw-wrapper">
-      {!boxOpened ? (
-        <div className="giftbox-container" onClick={() => setBoxOpened(true)}>
-          <Image
-            src="/assets/giftbox-open.avif"
-            alt="Gift Box"
-            width={200}
-            height={200}
-            className="giftbox-closed bounce"
-          />
-          <p className="giftbox-title">Tap to reveal your surprise!</p>
-        </div>
-      ) : (
-        <div className="lucky-draw-container">
-          {/* Confetti Effect */}
-          {/* {Array(20)
-          .fill()
-          .map((_, i) => (
-            <div
-              key={i}
-              className="confetti"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                backgroundColor: ["#FF5F5F", "#FFCC00", "#3E8BFF"][
-                  Math.floor(Math.random() * 3)
-                ],
-              }}
-            />
-          ))} */}
+  // return (
+  //   <div className="lucky-draw-wrapper">
+  //     {!boxOpened ? (
+  //       <div className="giftbox-container" onClick={() => setBoxOpened(true)}>
+  //         <Image
+  //           src="/assets/giftbox-open.avif"
+  //           alt="Gift Box"
+  //           width={200}
+  //           height={200}
+  //           className="giftbox-closed bounce"
+  //         />
+  //         <p className="giftbox-title">Tap to reveal your surprise!</p>
+  //       </div>
+  //     ) : (
+  //       <div className="lucky-draw-container">
+  //         {/* Confetti Effect */}
+  //         {/* {Array(20)
+  //         .fill()
+  //         .map((_, i) => (
+  //           <div
+  //             key={i}
+  //             className="confetti"
+  //             style={{
+  //               left: `${Math.random() * 100}%`,
+  //               top: `${Math.random() * 100}%`,
+  //               backgroundColor: ["#FF5F5F", "#FFCC00", "#3E8BFF"][
+  //                 Math.floor(Math.random() * 3)
+  //               ],
+  //             }}
+  //           />
+  //         ))} */}
 
-          <h2 className="lucky-draw-title">Pose with Sahaj Win ₹10,000!</h2>
-          <p className="lucky-draw-description">
-            Upload your photo with Sahaj from the party to join the lucky draw
-          </p>
+  //         <h2 className="lucky-draw-title">Pose with Sahaj Win ₹10,000!</h2>
+  //         <p className="lucky-draw-description">
+  //           Upload your photo with Sahaj from the party to join the lucky draw
+  //         </p>
+  //         <div
+  //           className="file-upload"
+  //           onClick={() => document.getElementById("luckyDrawImage").click()}
+  //         >
+  //           {preview ? (
+  //             <img src={preview?.url} alt="Preview" className="preview-image" />
+  //           ) : (
+  //             <div
+  //               style={{
+  //                 display: "flex",
+  //                 flexDirection: "column",
+  //                 alignItems: "center",
+  //                 justifyContent: "center",
+  //                 height: "100%",
+  //               }}
+  //             >
+  //               <Image src={CamIcon} alt="camera icon" />
+  //               <p className="img-label-upload">UPLOAD PHOTO WITH SAHAJ</p>
+  //             </div>
+  //           )}
+  //           <input
+  //             type="file"
+  //             id="luckyDrawImage"
+  //             accept="image/*"
+  //             onChange={handleFileChange}
+  //           />
+  //         </div>
+  //         <button className="lucky-btn-submit" onClick={handleSubmit}>
+  //           {isLoading ? "Submitting..." : "Submit"}
+  //         </button>
+  //         <div style={{ marginTop: "25px" }}>
+  //           <Image src={LogoHora} alt="logo hora" />
+  //           <span className="sponsored-txt">SPONCERED BY HORA</span>
+  //         </div>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
+return (
+  <div className="lucky-draw-wrapper">
+    <div className="lucky-draw-container">
+      <h2 className="lucky-draw-title">Pose with Sahaj Win ₹10,000!</h2>
+      <p className="lucky-draw-description">
+        Upload your photo with Sahaj from the party to join the lucky draw
+      </p>
+      <div
+        className="file-upload"
+        onClick={() => document.getElementById("luckyDrawImage").click()}
+      >
+        {preview ? (
+          <img src={preview?.url} alt="Preview" className="preview-image" />
+        ) : (
           <div
-            className="file-upload"
-            onClick={() => document.getElementById("luckyDrawImage").click()}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+            }}
           >
-            {preview ? (
-              <img src={preview?.url} alt="Preview" className="preview-image" />
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                }}
-              >
-                <Image src={CamIcon} alt="camera icon" />
-                <p className="img-label-upload">UPLOAD PHOTO WITH SAHAJ</p>
-              </div>
-            )}
-            <input
-              type="file"
-              id="luckyDrawImage"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
+            <Image src={CamIcon} alt="camera icon" />
+            <p className="img-label-upload">UPLOAD PHOTO WITH SAHAJ</p>
           </div>
-          <button className="lucky-btn-submit" onClick={handleSubmit}>
-            {isLoading ? "Submitting..." : "Submit"}
-          </button>
-          <div style={{ marginTop: "25px" }}>
-            <Image src={LogoHora} alt="logo hora" />
-            <span className="sponsored-txt">SPONCERED BY HORA</span>
-          </div>
-        </div>
-      )}
+        )}
+        <input
+          type="file"
+          id="luckyDrawImage"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
+      </div>
+      <button className="lucky-btn-submit" onClick={handleSubmit}>
+        {isLoading ? "Submitting..." : "Submit"}
+      </button>
+      <div style={{ marginTop: "25px" }}>
+        <Image src={LogoHora} alt="logo hora" />
+        <span className="sponsored-txt">SPONCERED BY HORA</span>
+      </div>
     </div>
-  );
+  </div>
+);
+
+
+
 };
 
 export default LuckyDrawForm;
