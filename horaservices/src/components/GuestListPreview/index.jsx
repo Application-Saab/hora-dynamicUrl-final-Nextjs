@@ -11,12 +11,12 @@ const RSVP_STATUS = {
 };
 
 
-const GuestListPreview = ({ hostData }) => {
+const GuestListPreview = ({ hostData, urlParams }) => {
   const router = useRouter();
-  const { id } = router.query;
-  let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
-  const paramsUserId = id ? id.split("/")[1] : null;
-  const isHost = localStorage.getItem("userID") === paramsUserId;
+  // const { id } = router.query;
+  // let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
+  // const paramsUserId = id ? id.split("/")[1] : null;
+  // const isHost = localStorage.getItem("userID") === paramsUserId;
 
   const [guestData, setGuestData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const GuestListPreview = ({ hostData }) => {
 
   useEffect(() => {
     const fetchGuests = async () => {
-      if (!eventId) {
+      if (!urlParams?.eventId) {
         setError("Event ID not found in URL");
         setLoading(false);
         return;
@@ -44,7 +44,7 @@ const GuestListPreview = ({ hostData }) => {
 
       try {
         const response = await fetch(
-          `${BASE_URL}/api/customer/event/event-guests/all/${eventId}`,
+          `${BASE_URL}/api/customer/event/event-guests/all/${urlParams?.eventId}`,
           {
             headers: {
               Authorization: `${token}`, // Add token in Authorization header
@@ -66,7 +66,7 @@ const GuestListPreview = ({ hostData }) => {
     };
 
     fetchGuests();
-  }, [eventId]);
+  }, [urlParams?.eventId]);
 
   useEffect(() => {
     if (guestData.length > 0) {

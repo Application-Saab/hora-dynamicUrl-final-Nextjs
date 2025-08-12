@@ -115,33 +115,32 @@ const TemplateGrid = () => {
     <div className="templateWrapper">
       <h2 className="templateTitle">Choose From 50+ Invites</h2>
       <div className="templateGrid">
-     {templatesData.map((template) => {
-  const isSelected = selectedTemplate === template.configs?.templateId;
-  return (
-    <div key={template._id} className="templateCard">
-      <img
-        src={template.webpUrl}
-        alt="Template Preview"
-        className="templatePreview"
-      />
-      <button
-        className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
-        onClick={() => handleApplyClick(template.configs?.templateId)}
-      >
-        {isSelected ? (
-          <>
-            SELECTED <span className="btnCircle">✔</span>
-          </>
-        ) : (
-          <>
-            APPLY NOW <span className="btnCircle">✔</span>
-          </>
-        )}
-      </button>
-    </div>
-  );
-})}
-
+        {templatesData.map((template) => {
+          const isSelected = selectedTemplate === template.configs?.templateId;
+          return (
+            <div key={template._id} className="templateCard">
+              <img
+                src={template.webpUrl}
+                alt="Template Preview"
+                className="templatePreview"
+              />
+              <button
+                className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
+                onClick={() => handleApplyClick(template.configs?.templateId)}
+              >
+                {isSelected ? (
+                  <>
+                    SELECTED <span className="btnCircle">✔</span>
+                  </>
+                ) : (
+                  <>
+                    APPLY NOW <span className="btnCircle">✔</span>
+                  </>
+                )}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

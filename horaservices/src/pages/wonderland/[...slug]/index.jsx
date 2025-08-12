@@ -1,14 +1,14 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import "./EventInvitation.css";
-import { useSwipeable } from 'react-swipeable';
-import tabIcon1 from "../../assets/galleryicon.jpg";
-import tabIcon2 from "../../assets/thankyouicon.png";
-import imageBackground from "../../assets/imageBackground.jpg";
-import imageBackGround from "../../assets/finalInviteBackground.png";
-import LuckDrawTicketBanner from "../../assets/lucky_draw_ticket_bg.png"
+import "../EventInvitation.css"
+import { useSwipeable } from "react-swipeable";
+import tabIcon1 from "../../../assets/galleryicon.jpg";
+import tabIcon2 from "../../../assets/thankyouicon.png";
+import imageBackground from "../../../assets/imageBackground.jpg";
+import imageBackGround from "../../../assets/finalInviteBackground.png";
+import LuckDrawTicketBanner from "../../../assets/lucky_draw_ticket_bg.png";
 import Image from "next/image";
-import FloatingEditButton from "../../components/FloatingActionButton/FAB";
+import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import {
   BASE_URL,
   CREATE_GUEST_BY_EVENTID,
@@ -17,24 +17,24 @@ import {
   GET_GUEST_DETTAILS,
   UPLOAD_IMAGES_SELF,
   UPLOAD_THANKYOU_NOTE,
-} from "../../utils/apiconstants";
+} from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
-import OtpLoginPopup from "../../components/OtpLoginPopup";
+import OtpLoginPopup from "@/components/OtpLoginPopup";
 import html2canvas from "html2canvas";
-import LuckyDrawForm from "../lucky-draw/index";
-import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg"
-import photo1 from "@/assets/collage/photo1.png"
-import photo2 from "@/assets/collage/photo2.jpeg"
-import photo3 from "@/assets/collage/photo3.png"
-import photo4 from "@/assets/collage/photo4.png"
-import photo5 from "@/assets/collage/photo5.png"
-import photo6 from "@/assets/collage/photo6.png"
-import photo7 from "@/assets/collage/photo7.png"
+import LuckyDrawForm from "../../lucky-draw/index";
+import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg";
+import photo1 from "@/assets/collage/photo1.png";
+import photo2 from "@/assets/collage/photo2.jpeg";
+import photo3 from "@/assets/collage/photo3.png";
+import photo4 from "@/assets/collage/photo4.png";
+import photo5 from "@/assets/collage/photo5.png";
+import photo6 from "@/assets/collage/photo6.png";
+import photo7 from "@/assets/collage/photo7.png";
 import wallCamera from "@/assets/wallCamera.png";
 import downloadicon from "@/assets/download-icon.png";
-import deletebtn from "@/assets/deletebtn.png"
-import photo8 from "@/assets/collage/photo8.png"
+import deletebtn from "@/assets/deletebtn.png";
+import photo8 from "@/assets/collage/photo8.png";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
 import InvitationModal from "@/components/InvitationModal";
@@ -44,11 +44,15 @@ import ThankYouNotePopup from "@/components/ThankYouNotePopup";
 import RSVPPopup from "@/components/RSVPPopup";
 import GuestRSVPForm from "@/components/GuestRSVPForm";
 import frame from "@/assets/Frame1.png";
+import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage";
+import { eventOptions } from "../constants";
 
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
   const router = useRouter();
   const { id: id2 } = router.query;
+  const slug = router.query.slug || []
+  console.log('%c [ slug ]-54', 'font-size:13px; background:pink; color:#bf2c9f;', slug)
   const userID = localStorage.getItem("userID");
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const token = localStorage.getItem("token");
@@ -56,34 +60,39 @@ const InvitationCard = () => {
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
-  console.log('%c [ guestDetails ]-60', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
+  console.log(
+    "%c [ guestDetails ]-60",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    guestDetails
+  );
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
-const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
 
   const [urlParams, setUrlParams] = useState({
-    eventId: "",
-    eventUserId: "",
-    userType: "host",
+    eventId: slug[0] || "",
+    eventUserId: slug[1] || "",
+    userType: slug[2] ? slug[2].toLowerCase() : "host",
   });
+  console.log('%c [ urlParams ]-77', 'font-size:13px; background:pink; color:#bf2c9f;', urlParams)
 
   useEffect(() => {
-    if (id2) {
-      const parts = id2.split("/");
-      if (parts.length >= 2) {
+    if (slug.length) {
+      // const parts = id2.split("/");
+      if (slug.length >= 2) {
         setUrlParams((prev) => ({
           ...prev,
-          eventId: parts[0],
-          eventUserId: parts[1],
-          userType: parts[2] ? parts[2].toLowerCase() : "host",
+          eventId: slug[0],
+          eventUserId: slug[1],
+          userType: slug[2] ? slug[2].toLowerCase() : "host",
         }));
       }
     }
-  }, [id2]);
+  }, [slug]);
 
   useEffect(() => {
     const fetchEventImages = async () => {
@@ -117,15 +126,14 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
     };
 
     fetchEventImages();
-    // }, [urlParams.eventId]);
   }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
       if (userID === urlParams.eventUserId) {
         // alert(`${userID} and ${urlParams.eventUserId} are same`);
-        return
-      };
+        return;
+      }
       if (!urlParams.eventId || !userID) {
         setErrorGetGuest("Event id or user id not found!");
         return;
@@ -154,7 +162,6 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
 
     fetchGuestDetails();
   }, [urlParams.eventId, userID, urlParams.eventUserId, refetchLuckyDraw]);
-
 
   useEffect(() => {
     const addGuest = async () => {
@@ -195,11 +202,15 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
     urlParams.eventUserId,
     urlParams.userType,
     isLoggedIn,
-    guestDetails
+    guestDetails,
   ]);
 
   const [orderDetails, setOrderDetails] = useState(null);
-  console.log('%c [ orderDetails ]-199', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
+  console.log(
+    "%c [ orderDetails ]-199",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    orderDetails
+  );
   const [showFAB, setShowFAB] = useState(false);
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -219,8 +230,10 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const [showPopup, setShowPopup] = useState(false);
   const [noteTitle, setNoteTitle] = useState("");
-  const [noteBy, setNoteBy] = useState(userID === urlParams.eventUserId ? orderDetails?.Name : guestDetails?.name);
-   const [errorMsg, setErrorMsg] = useState("");
+  const [noteBy, setNoteBy] = useState(
+    userID === urlParams.eventUserId ? orderDetails?.Name : guestDetails?.name
+  );
+  const [errorMsg, setErrorMsg] = useState("");
   const noteRef = useRef(null);
 
   const [isFormVisible, setIsFormVisible] = useState(false);
@@ -248,13 +261,13 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   useEffect(() => {
     if (!router.isReady) return;
 
-    const queryId = router.query.id;
-    const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
+    // const queryId = router.query.id;
+    // const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
 
-    if (parts && parts.length >= 2) {
-      const eventId = parts[0];
-      const userId = parts[1];
-      const userType = parts[2]?.toLowerCase() || "";
+    if (urlParams && slug.length >= 2) {
+      const eventId = urlParams.eventId;
+      const userId = urlParams.eventUserId;
+      const userType = urlParams.userType || "host";
 
       setId(eventId);
       setSecondId(userId);
@@ -272,9 +285,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   }, [router.isReady, router.query.id]);
 
   const userId = localStorage.getItem("userID");
-  console.log(userId, "userid");
   const userPhoneNumber = localStorage.getItem("mobileNumber");
-  console.log(userPhoneNumber, "userPhoneNumber");
   const [isHost, setIsHost] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -289,7 +300,6 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
       }
     };
     checkAuth();
-    // }
   }, []);
 
   const actions = [
@@ -308,7 +318,6 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   // determine from props or state
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    // image: null,
     name: "",
     date: "",
     time: "",
@@ -422,13 +431,11 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   const handleClick = () => {
     router.push("/templates");
   };
- const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails._id}/${orderDetails.userId}/guest`;
-    const shareText = `You're invited to ${
-      orderDetails.Name || "someone"
-    }'s ${orderDetails["Event Type"] || "Birthday"}! 🎉\n\n📅 ${formatDate(
-      orderDetails.Date
-    )}\n⏰ ${orderDetails.Time}\n📍 ${
+  const handleWhatsAppShare = () => {
+    const inviteURL = `https://horaservices.com/wonderland/${orderDetails._id}/${orderDetails.userId}/guest`;
+    const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${
+      orderDetails["Event Type"] || "Birthday"
+    }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${
       orderDetails.Address || "Venue"
     }\n\n👉 Tap to view the invite:\n${inviteURL}`;
 
@@ -474,10 +481,10 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
       : "";
     const formattedTime = formData.time
       ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      })
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
       : "";
 
     const finalImage = uploadedImage || orderDetails?.Image || "";
@@ -528,7 +535,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
         setShowModal(false);
 
         // ✅ Update the URL route to reflect changes
-        router.replace(`/wonderland?id=${finalEventId}/${loggedInUserId}/host`);
+        router.replace(`/wonderland/${finalEventId}/${loggedInUserId}/host`);
       } else {
         alert("Failed to save invitation.");
       }
@@ -597,14 +604,12 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   useEffect(() => {
     if (!router.isReady) return;
 
-    const queryId = router.query.id;
-    const eventId = Array.isArray(queryId)
-      ? queryId[0]
-      : queryId?.split("/")?.[0];
+    // const queryId = router.query.id;
+    const eventId = urlParams?.eventId
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, router.query.id]);
+  }, [router.isReady, urlParams?.eventId]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -643,7 +648,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
       }
     } catch (err) {
       console.error("❌ Fetch failed:", err);
-      alert("Fetch failed.");
+      // alert("Fetch failed.");
     }
   };
 
@@ -662,94 +667,6 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   }, []);
 
 
-const eventOptions = [
-  "Birthday",
-  "Baby Shower",
-  "Seemantham",
-  "Dohale Jevan",
-  "Godh Bharai",
-  "Chatti",
-  "Naming Ceremony",
-  "Namkaran",
-  "Annaprashan",
-  "Choroonu",
-  "Hatey Khori",
-  "Vidyarambham",
-
-  // Sahaj's Events
-  "First Birthday",
-  "Half Birthday",
-  "First Tooth Celebration",
-  "First Walk Ceremony",
-  "Ayush Homam",
-  "Pet Birthday",
-
-  // Richa & Ramesh's Events
-  "Proposal Party",
-  "Dating Anniversary",
-  "Valentine's Day Party",
-  "Pre-Engagement",
-  "Engagement",
-  "Roka Ceremony",
-  "Haldi",
-  "Mehendi",
-  "Sangeet",
-  "Tilak Ceremony",
-  "Bou Bhaat",
-  "Mameru",
-  "Wedding",
-  "Reception",
-  "Post-Wedding Party",
-  "Gender Reveal",
-
-  // Richa & Ramesh's House Events
-  "Housewarming",
-  "Griha Pravesh",
-
-  // Celebration Events
-  "Satyanarayan Puja",
-  "Ramayan Katha",
-  "Vrat Udyapan",
-  "Thread Ceremony (Upanayan)",
-  "Thread Ceremony for Girls",
-  "Baptism",
-  "Christening",
-  "Eid",
-  "Iftar",
-  "Diwali",
-  "Holi",
-  "Karva Chauth Udyapan",
-  "Kitty Party",
-  "Farewell Party",
-  "Raksha Bandhan",
-  "Navratri",
-  "Dussehra",
-  "Ganesh Chaturthi",
-  "Onam",
-  "Durga Puja",
-  "Pongal",
-  "Makar Sankranti",
-  "Lohri",
-  "Bihu",
-  "Ugadi",
-  "Gudi Padwa",
-  "Vishu",
-  "Mahavir Jayanti",
-  "Guru Nanak Jayanti",
-  "Janmashtami",
-  "Baisakhi",
-  "Karva Chauth",
-  "Chhath Puja",
-
-  // Party Events
-  "Game Night",
-  "Tambola",
-  "Housie Party",
-  "Poker Night",
-  "Retirement",
-  "Pet Welcome",
-];
-
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
       document.getElementById("imageUploadInput").click();
@@ -760,18 +677,19 @@ const eventOptions = [
     }
   };
   const handlers = useSwipeable({
-  onSwipedLeft: () => {
-    const nextIndex = (selectedIndex + 1) % eventAllImages.length;
-    setSelectedIndex(nextIndex);
-    setSelectedImage(eventAllImages[nextIndex]);
-  },
-  onSwipedRight: () => {
-    const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
-    setSelectedIndex(prevIndex);
-    setSelectedImage(eventAllImages[prevIndex]);
-  },
-  trackMouse: true // optional, mouse drag support bhi deta hai
-});
+    onSwipedLeft: () => {
+      const nextIndex = (selectedIndex + 1) % eventAllImages.length;
+      setSelectedIndex(nextIndex);
+      setSelectedImage(eventAllImages[nextIndex]);
+    },
+    onSwipedRight: () => {
+      const prevIndex =
+        (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
+      setSelectedIndex(prevIndex);
+      setSelectedImage(eventAllImages[prevIndex]);
+    },
+    trackMouse: true, // optional, mouse drag support bhi deta hai
+  });
   const handleImageUpload = async (e) => {
     setUploading(true);
     setWallUploading(true);
@@ -836,53 +754,50 @@ const eventOptions = [
       setWallUploading(false);
     }
   };
-const handleDeleteImage = async (imageId, imageType) => {
-  if (!confirm("Are you sure you want to delete this image?")) return;
+  const handleDeleteImage = async (imageId, imageType) => {
+    if (!confirm("Are you sure you want to delete this image?")) return;
 
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`, 
-      {
-        method: "POST", 
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: userID, imageId, imageType }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (!data.error) {
-      // Update images list state
-      setEventAllImages((prev) => {
-        const newImages = prev.filter((img) => img._id !== imageId);
-
-        // Update selectedImage and selectedIndex so lightbox doesn't show deleted image
-        if (newImages.length === 0) {
-          setIsImageOpen(false); // Close lightbox if no images left
-        } else {
-          let newIndex = selectedIndex;
-          if (selectedIndex >= newImages.length) {
-            newIndex = newImages.length - 1;
-          }
-          setSelectedIndex(newIndex);
-          setSelectedImage(newImages[newIndex]);
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: userID, imageId, imageType }),
         }
+      );
 
-        return newImages;
-      });
+      const data = await res.json();
 
-      alert("Image deleted successfully");
-    } else {
-      alert(data.message || "Failed to delete image");
+      if (!data.error) {
+        // Update images list state
+        setEventAllImages((prev) => {
+          const newImages = prev.filter((img) => img._id !== imageId);
+
+          // Update selectedImage and selectedIndex so lightbox doesn't show deleted image
+          if (newImages.length === 0) {
+            setIsImageOpen(false); // Close lightbox if no images left
+          } else {
+            let newIndex = selectedIndex;
+            if (selectedIndex >= newImages.length) {
+              newIndex = newImages.length - 1;
+            }
+            setSelectedIndex(newIndex);
+            setSelectedImage(newImages[newIndex]);
+          }
+
+          return newImages;
+        });
+
+        alert("Image deleted successfully");
+      } else {
+        alert(data.message || "Failed to delete image");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Server error while deleting");
     }
-  } catch (err) {
-    console.error("Delete error:", err);
-    alert("Server error while deleting");
-  }
-};
-
-
-
+  };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -890,7 +805,7 @@ const handleDeleteImage = async (imageId, imageType) => {
       return;
     }
     setErrorMsg("");
-setShowPopup(false); 
+    setShowPopup(false);
     const canvas = await html2canvas(noteRef.current, {
       backgroundColor: null,
       useCORS: true,
@@ -952,35 +867,28 @@ setShowPopup(false);
   useEffect(() => {
     if (!router.isReady || !userId || !sendCustomerId) return;
 
-    const { id } = router.query;
-    if (!id || typeof id !== "string") return;
+    // const { id } = router.query;
+    // if (!id || typeof id !== "string") return;
 
-    const [eventId, routeUserId, routeRole] = id.split("/");
+    // const [eventId, routeUserId, routeRole] = id.split("/");
 
     const actualRole =
       userId.trim() === sendCustomerId.trim() ? "host" : "guest";
 
-    if (routeUserId === userId && routeRole === actualRole) return;
-    const newRoute = `${eventId}/${routeUserId}/${actualRole}`;
+    if (urlParams?.eventUserId === userId && urlParams?.userType === actualRole) return;
+    const newRoute = `${urlParams?.eventId}/${urlParams?.eventUserId}/${actualRole}`;
     // const newRoute = `${eventId}/${userId}/${actualRole}`;
-    router.replace(`/wonderland?id=${newRoute}`);
-  }, [router.isReady, router.query.id, userId, sendCustomerId]);
-
+    router.replace(`/wonderland/${newRoute}`);
+  }, [router.isReady, urlParams, userId, sendCustomerId]);
 
   return (
     <>
       {!isLoggedIn ? (
         <div className="no-orders">
-          <h2 className="no-record-heading">
-            Please log in to check all your orders.
-          </h2>
-          <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+          <WonderlandLandingPage />
         </div>
       ) : (
         <>
-
-
-
           {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
           {orderDetails ? (
@@ -995,26 +903,33 @@ setShowPopup(false);
                   orderDetails={orderDetails}
                   handleClick={handleClick}
                   isHost={userType === "host"}
-                /></div>
-               
-                 <div> 
-       {isHost && (
-          <div className="invite-section">
-  <h2 className="invite-titles">Turn invites into memory albums!</h2>
-  <p className="invite-subtitles">
-    🎉 Let your friends and family join in the joy! <br />
-    A special day is waiting — don’t miss the celebration!
-  </p>
-  <div className="invite-butons">
-    <button className="btn-explore" onClick={handleClick}>
-      <i className="fa fa-paper-plane" /> Explore Themes
-    </button>
-    <button className="btn-share" onClick={handleWhatsAppShare}>
-      <i className="fa fa-whatsapp" /> Share Invitation
-    </button>
-  </div>
-</div>
-        )}</div>
+                />
+              </div>
+
+              <div>
+                {isHost && (
+                  <div className="invite-section">
+                    <h2 className="invite-titles">
+                      Turn invites into memory albums!
+                    </h2>
+                    <p className="invite-subtitles">
+                      🎉 Let your friends and family join in the joy! <br />A
+                      special day is waiting — don’t miss the celebration!
+                    </p>
+                    <div className="invite-butons">
+                      <button className="btn-explore" onClick={handleClick}>
+                        <i className="fa fa-paper-plane" /> Explore Themes
+                      </button>
+                      <button
+                        className="btn-share"
+                        onClick={handleWhatsAppShare}
+                      >
+                        <i className="fa fa-whatsapp" /> Share Invitation
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* 🎉 RSVP Section */}
               {isHost || hasSubmitted ? (
@@ -1023,6 +938,7 @@ setShowPopup(false);
                   loading={loading}
                   userType={userType}
                   hostData={orderDetails}
+                  urlParams={urlParams}
                 />
               ) : (
                 <GuestRSVPForm
@@ -1072,7 +988,7 @@ setShowPopup(false);
           ) : (
             <p>Loading...</p>
           )}
-            {isHost &&
+          {isHost &&
             orderDetails &&
             (orderDetails?.luckyDraws?.length === 0 ? (
               <div className="lucky-draw-banner">
@@ -1133,22 +1049,22 @@ setShowPopup(false);
               </div>
             ))}
 
-
-
-          {/* <div style={styles.wrapper}>
+          <div style={styles.wrapper}>
             <h2 style={styles.heading}>
               <Image
-                src={wallCamera} // ✅ replace with your actual image path
+                src={wallCamera}
                 alt="Camera Icon"
-                style={{ width: 60, height: 60, }}
+                style={{ width: 60, height: 60 }}
               />
               Celebration Wall
             </h2>
 
             <p style={styles.subheading}>
-              A wall filled with your party’s happiest moments and heartfelt messages.
+              A wall filled with your party’s happiest moments and heartfelt
+              messages.
             </p>
 
+            {/* Action Buttons */}
             <div className="tabs-container" style={styles.tabsContainer}>
               {actions.map((action, index) => (
                 <button
@@ -1184,7 +1100,8 @@ setShowPopup(false);
               />
             </div>
 
-            <div style={{ position: "relative", marginTop: " auto", }}>
+            {/* Images Grid */}
+            <div style={{ position: "relative", marginTop: "auto" }}>
               {wallUploading && (
                 <div
                   style={{
@@ -1203,198 +1120,177 @@ setShowPopup(false);
                 </div>
               )}
 
-           <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
-  {eventAllImages.length === 0 ? (
-    <>
-     
-      <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
-      <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
-      <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
-      <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
-      <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
-      <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
-      <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
-      <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
-    </>
-  ) : (
-    eventAllImages.map((item, index) => (
-      <div key={item._id || index} className="collage-item">
-        <img
-          src={item.imageUrl}
-          alt={`Event Image ${index + 1}`}
-          className="event-image"
-          onLoad={(e) => e.currentTarget.classList.add("loaded")}
-        />
-      </div>
-    ))
-  )}
-</div>
-
-            </div>
-          </div> */}
-
-       <div style={styles.wrapper}>
-      <h2 style={styles.heading}>
-        <Image src={wallCamera} alt="Camera Icon" style={{ width: 60, height: 60 }} />
-        Celebration Wall
-      </h2>
-
-      <p style={styles.subheading}>
-        A wall filled with your party’s happiest moments and heartfelt messages.
-      </p>
-
-      {/* Action Buttons */}
-      <div className="tabs-container" style={styles.tabsContainer}>
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (action.title === "Upload Pictures") {
-                const input = document.getElementById("imageUploadInput");
-                if (input) {
-                  input.value = "";
-                  input.click();
-                }
-              } else {
-                handleActionClick(action.title);
-              }
-            }}
-            style={styles.actionButton}
-          >
-            <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-            <span style={styles.buttonLabel}>{action.title}</span>
-          </button>
-        ))}
-        <input
-          type="file"
-          id="imageUploadInput"
-          multiple
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleImageUpload}
-        />
-      </div>
-
-      {/* Images Grid */}
-      <div style={{ position: "relative", marginTop: "auto" }}>
-        {wallUploading && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0, left: 0, right: 0, bottom: 0,
-              background: "rgba(255, 255, 255, 0.8)",
-              display: "flex", justifyContent: "center",
-              zIndex: 2,
-            }}
-          >
-            <div className="spinner" />
-          </div>
-        )}
-
-        <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
-          {eventAllImages.length === 0 ? (
-            <>
-              <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
-              <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
-              <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
-              <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
-              <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
-              <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
-              <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
-              <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
-            </>
-          ) : (
-          eventAllImages.map((item, index) => (
-              <div key={item._id || index} className="collage-item" style={{ position: "relative" }}>
-                <img
-                  src={item.imageUrl}
-                  alt={`Event Image ${index + 1}`}
-                  className="event-image"
-                   onClick={() => {
-            setSelectedImage(item); // Image select karo
-            setIsImageOpen(true);   // Lightbox open karo
-          }}
-                />
-
+              <div
+                className="event-grid"
+                style={{
+                  opacity: wallUploading ? 0.5 : 1,
+                  margin: "10px auto",
+                }}
+              >
+                {eventAllImages.length === 0 ? (
+                  <>
+                    <div className="collage-item">
+                      <Image
+                        src={photo1}
+                        className="collage-image"
+                        alt="img1"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo4}
+                        className="collage-image"
+                        alt="sticky note"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo3}
+                        className="collage-image"
+                        alt="img2"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo7}
+                        className="collage-image"
+                        alt="img2"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo8}
+                        className="collage-image"
+                        alt="img5"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo2}
+                        className="collage-image"
+                        alt="img3"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo5}
+                        className="collage-image"
+                        alt="img4"
+                      />
+                    </div>
+                    <div className="collage-item">
+                      <Image
+                        src={photo6}
+                        className="collage-image"
+                        alt="img5"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  eventAllImages.map((item, index) => (
+                    <div
+                      key={item._id || index}
+                      className="collage-item"
+                      style={{ position: "relative" }}
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={`Event Image ${index + 1}`}
+                        className="event-image"
+                        onClick={() => {
+                          setSelectedImage(item); // Image select karo
+                          setIsImageOpen(true); // Lightbox open karo
+                        }}
+                      />
+                    </div>
+                  ))
+                )}
               </div>
-            ))
-          )}
-        </div>
-      </div>
+            </div>
 
+            {isImageOpen && selectedImage && (
+              <div className="custom-lightbox">
+                <div {...handlers} className="lightbox-content">
+                  {/* Close Button */}
+                  <button
+                    className="close-btn"
+                    onClick={() => setIsImageOpen(false)}
+                  >
+                    ✖
+                  </button>
 
+                  {/* Prev Button */}
+                  <button
+                    className="nav-btn prev-btn"
+                    onClick={() => {
+                      const prevIndex =
+                        (selectedIndex - 1 + eventAllImages.length) %
+                        eventAllImages.length;
+                      setSelectedIndex(prevIndex);
+                      setSelectedImage(eventAllImages[prevIndex]);
+                    }}
+                  >
+                    ‹
+                  </button>
 
-{isImageOpen && selectedImage && (
-    <div className="custom-lightbox">
-      <div {...handlers} className="lightbox-content">
-        {/* Close Button */}
-        <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
+                  {/* Image */}
+                  <img
+                    src={selectedImage.imageUrl}
+                    alt=""
+                    className="lightbox-img"
+                  />
 
-        {/* Prev Button */}
-        <button
-          className="nav-btn prev-btn"
-          onClick={() => {
-            const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
-            setSelectedIndex(prevIndex);
-            setSelectedImage(eventAllImages[prevIndex]);
-          }}
-        >
-          ‹
-        </button>
+                  {/* Next Button */}
+                  <button
+                    className="nav-btn next-btn"
+                    onClick={() => {
+                      const nextIndex =
+                        (selectedIndex + 1) % eventAllImages.length;
+                      setSelectedIndex(nextIndex);
+                      setSelectedImage(eventAllImages[nextIndex]);
+                    }}
+                  >
+                    ›
+                  </button>
 
-        {/* Image */}
-        <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
+                  {/* Toolbar */}
+                  <div className="lightbox-toolbar">
+                    <button
+                      className="lightbox-btn"
+                      onClick={() => handleDownload(selectedImage.imageUrl)}
+                    >
+                      <Image
+                        src={downloadicon}
+                        alt="Download"
+                        style={{ width: 30, height: 30 }}
+                      />
+                    </button>
 
-        {/* Next Button */}
-        <button
-          className="nav-btn next-btn"
-          onClick={() => {
-            const nextIndex = (selectedIndex + 1) % eventAllImages.length;
-            setSelectedIndex(nextIndex);
-            setSelectedImage(eventAllImages[nextIndex]);
-          }}
-        >
-          ›
-        </button>
-
-        {/* Toolbar */}
-        <div className="lightbox-toolbar">
-          <button
-            className="lightbox-btn"
-            onClick={() => handleDownload(selectedImage.imageUrl)}
-          >
-            <Image
-              src={downloadicon}  
-              alt="Download"
-              style={{ width: 30, height: 30 }}
-            />
-          </button>
-
-          {selectedImage.userId === userID && (
-            <button
-              className="lightbox-btn"
-           onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-
-            >
-              <Image
-                src={deletebtn}  
-                alt="Delete"
-                style={{ width: 30, height: 30 }}
-              />
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  )}
-
-
-
-    </div>
-
+                    {selectedImage.userId === userID && (
+                      <button
+                        className="lightbox-btn"
+                        onClick={() =>
+                          handleDeleteImage(
+                            selectedImage._id,
+                            selectedImage.imageType
+                          )
+                        }
+                      >
+                        <Image
+                          src={deletebtn}
+                          alt="Delete"
+                          style={{ width: 30, height: 30 }}
+                        />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* 🎁 Lucky Draw Popup */}
-        {showLuckyDrawPopup && (
+          {showLuckyDrawPopup && (
             <div
               className="popup-luckdraw-overlay"
               onClick={() => setShowLuckyDrawPopup(false)}
@@ -1419,7 +1315,6 @@ setShowPopup(false);
             </div>
           )}
 
-
           {/* 🛠 Invitation Modal */}
           {showModal && (
             <InvitationModal
@@ -1440,7 +1335,7 @@ setShowPopup(false);
         </>
       )}
 
-      {/* 📋 Guest List Modal Popup */}
+      {/* Guest List Modal Popup */}
       {showPopupGuest && (
         <>
           <div
@@ -1455,11 +1350,10 @@ setShowPopup(false);
       )}
     </>
   );
-
 };
 
 const styles = {
-button: {
+  button: {
     backgroundColor: "#6b21a8",
     color: "#fff",
     padding: "10px 20px",
@@ -1480,72 +1374,72 @@ button: {
     background: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
   },
-  
+
   wrapper: {
     padding: 20,
-    fontFamily: 'sans-serif',
+    fontFamily: "sans-serif",
     maxWidth: 480,
-    margin: 'auto',
+    margin: "auto",
     backgroundColor: "#FFDBDB",
   },
   heading: {
     fontSize: 28,
     fontWeight: 700,
     // marginBottom: 8,
-    color: 'rgb(168, 50, 142)',
-    textAlign: 'center',
+    color: "rgb(168, 50, 142)",
+    textAlign: "center",
   },
   subheading: {
     fontSize: 16,
     marginBottom: 20,
     fontWeight: 400,
-    color: '#97538C',
-    textAlign: 'center',
+    color: "#97538C",
+    textAlign: "center",
   },
   buttonRow: {
-    display: 'flex',
+    display: "flex",
     gap: 10,
     marginBottom: 20,
   },
   button: {
     flex: 1,
-    backgroundColor: '#a8328e',
-    color: '#fff',
-    border: 'none',
-    padding: '10px 12px',
+    backgroundColor: "#a8328e",
+    color: "#fff",
+    border: "none",
+    padding: "10px 12px",
     borderRadius: 6,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 14,
   },
 
   uploading: {
     fontSize: 13,
-    color: '#444',
+    color: "#444",
     marginBottom: 10,
   },
   loading: {
     fontSize: 15,
     fontWeight: 500,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 40,
   },
   gallery: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
     gap: 8,
   },
   imageBox: {
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   image: {
-    width: '100%',
-    height: 'auto',
-    objectFit: 'cover',
-    display: 'block',
+    width: "100%",
+    height: "auto",
+    objectFit: "cover",
+    display: "block",
   },
 
   tabsContainer: {
@@ -1585,4 +1479,3 @@ button: {
 };
 
 export default InvitationCard;
-
