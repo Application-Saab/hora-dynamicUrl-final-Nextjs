@@ -50,7 +50,7 @@ const ThankYouNotePopup = ({
         <label className="label">Type Note</label>
         <textarea
           rows={5}
-          placeholder="Write your thank you message..."
+          placeholder="Write Your thank You Message..."
           value={noteTitle}
           required
           onChange={(e) => {
@@ -77,7 +77,7 @@ const ThankYouNotePopup = ({
         />
         <p
           className="word-limit"
-          style={{ color: charsWithoutSpaces >= 125 ? "red" : "black" }}
+          style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
         >
           {charsWithoutSpaces >= 125
             ? "You have reached the 125 character limit!"
@@ -86,10 +86,10 @@ const ThankYouNotePopup = ({
       </div>
 
       <div className="form-group">
-        <label className="label">Type Your Name</label>
+        <label className="label">Type Your Name </label>
         <input
           type="text"
-          placeholder="Your name"
+          placeholder="Write Your Name Here"
           value={noteBy}
           required
           onChange={(e) => {

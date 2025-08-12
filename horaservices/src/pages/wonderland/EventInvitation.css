@@ -855,22 +855,19 @@ background-color: none !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-
-
 .invite-section {
-    text-align: center;
-    background-color: #FFDBDB;
-    padding: 10px;
-    /* border-radius: 8px; */
-    max-width: 480px;
-    margin: auto;
+  text-align: center;
+  background-color: #ffdbdb;
+  padding: 10px;
+  max-width: 480px;
+  margin: auto;
 }
 
 .invite-titles {
   font-family: 'Comic Sans MS', cursive, sans-serif;
   font-size: 20px;
   font-weight: bold;
-  color: #97538C; /* purple */
+  color: #97538c;
   margin-bottom: 10px;
 }
 
@@ -881,7 +878,7 @@ background-color: none !important;
   line-height: 1.4;
 }
 
-.invite-butons {
+.invite-buttons {
   display: flex;
   gap: 10px;
   justify-content: center;
@@ -891,36 +888,49 @@ background-color: none !important;
 .btn-share {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: white;
+  gap: 10px;
   border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 10px;
+  border-radius: 2px;
+  padding: 2px;
+  font-size: 13px;
   font-weight: bold;
   cursor: pointer;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-explore {
-  background-color: #00c0c7; /* turquoise */
+  background-color: #00BFC1;
 }
 
 .btn-share {
-  background-color: #25d366; /* WhatsApp green */
+  background-color: #13A200;
 }
 
-.btn-explore i,
-.btn-share i {
-  font-size: 18px;
+.icon-bg {
+  background-color: white;
+  padding: 6px 8px; /* rectangle padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px; /* small rounded corners, change to 0 for sharp */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* optional shadow for better look */
 }
+
+.icon-img {
+  width: 18px;
+  height: 18px;
+}
+
 
 .btn-explore:hover {
-  background-color: #00adb3;
+  background-color: #00BFC1;
 }
 
 .btn-share:hover {
-  background-color: #20ba59;
+  background-color: #13A200;
 }
+
 
 .custom-lightbox {
   position: fixed;
@@ -939,10 +949,14 @@ background-color: none !important;
 }
 
 .lightbox-img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 600px;      /* Fixed width */
+  height: 400px;     /* Fixed height */
+  object-fit: contain; /* Keeps image ratio without cropping */
   border-radius: 8px;
+  display: block;
+  margin: 0 auto;
 }
+
 
 .close-btn {
   position: absolute;

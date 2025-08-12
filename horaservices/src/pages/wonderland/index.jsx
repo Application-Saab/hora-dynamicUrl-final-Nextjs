@@ -2,11 +2,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./EventInvitation.css";
 import { useSwipeable } from 'react-swipeable';
-import tabIcon1 from "../../assets/galleryicon.jpg";
+import tabIcon1 from "../../assets/galleryicon.png";
 import tabIcon2 from "../../assets/thankyouicon.png";
 import imageBackground from "../../assets/imageBackground.jpg";
 import imageBackGround from "../../assets/finalInviteBackground.png";
-import LuckDrawTicketBanner from "../../assets/lucky_draw_ticket_bg.png"
+import LuckDrawTicketBanner from "../../assets/lucky_draw_ticket_bg.png";
+import shareinvitaion from "@/assets/shareinvitation.png";
+import whatshare from "@/assets/whatshare.png"
 import Image from "next/image";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
 import {
@@ -606,11 +608,13 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
     fetchOrderDetails(eventId);
   }, [router.isReady, router.query.id]);
 
+
   const fetchOrderDetails = async (eventId) => {
     try {
       const res = await fetch(
         `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
         {
+          
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -626,6 +630,8 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
         const hostId = String(data.userId).trim();
 
         setOrderDetails({
+          _id: String(hostId),
+           name: data.hostName,
           Name: data.hostName,
           "Event Type": data.eventType,
           eventType: data.eventType, // ✅ add this
@@ -648,8 +654,12 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
   };
 
   const [images, setImages] = useState([]);
+console.log("data",orderDetails);
+
+      
 
   useEffect(() => {
+    
     fetch(
       "https://script.google.com/macros/s/AKfycbwkX57cwaJw5DeJsQM3p0BukqMIvrbybUHmT3KBseCnoW6JPP0Swnv3590WyEhdH2Wq4g/exec"
     )
@@ -1025,8 +1035,8 @@ setShowPopup(false);
         <>
 
 
-
-          {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
+{/* 
+{showFAB && isHost && <FloatingEditButton onClick={handleEdit} />} */}
 
           {orderDetails ? (
             <>
@@ -1044,21 +1054,32 @@ setShowPopup(false);
                
                  <div> 
        {isHost && (
-          <div className="invite-section">
+<div className="invite-section">
   <h2 className="invite-titles">Turn invites into memory albums!</h2>
   <p className="invite-subtitles">
     🎉 Let your friends and family join in the joy! <br />
     A special day is waiting — don’t miss the celebration!
   </p>
-  <div className="invite-butons">
+
+  <div className="invite-buttons">
     <button className="btn-explore" onClick={handleClick}>
-      <i className="fa fa-paper-plane" /> Explore Themes
+      <span className="icon-bg">
+        <Image src={shareinvitaion} alt="Explore" className="icon-img" />
+      </span>
+      <span>Explore Themes</span>
     </button>
+
     <button className="btn-share" onClick={handleWhatsAppShare}>
-      <i className="fa fa-whatsapp" /> Share Invitation
+      <span>Share Invitation</span>
+      <span className="icon-bg">
+        <Image src={whatshare} alt="WhatsApp" className="icon-img" />
+      </span>
     </button>
   </div>
 </div>
+
+
+
         )}</div>
 
               {/* 🎉 RSVP Section */}
@@ -1280,7 +1301,7 @@ setShowPopup(false);
 
        <div style={styles.wrapper}>
       <h2 style={styles.heading}>
-        <Image src={wallCamera} alt="Camera Icon" style={{ width: 60, height: 60 }} />
+        <Image src={wallCamera} alt="Camera Icon" style={{ width: 70, height: 50 }} />
         Celebration Wall
       </h2>
 
@@ -1369,8 +1390,77 @@ setShowPopup(false);
 
 
 
+{/* {isImageOpen && selectedImage && (
+    <div className="custom-lightbox"   onClick={() => setIsImageOpen(false)} >
+      <div {...handlers} className="lightbox-content">
+     
+        <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
+
+        
+        <button
+          className="nav-btn prev-btn"
+          onClick={() => {
+            const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
+            setSelectedIndex(prevIndex);
+            setSelectedImage(eventAllImages[prevIndex]);
+          }}
+        >
+          ‹
+        </button>
+
+        <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
+
+      
+        <button
+          className="nav-btn next-btn"
+          onClick={() => {
+            const nextIndex = (selectedIndex + 1) % eventAllImages.length;
+            setSelectedIndex(nextIndex);
+            setSelectedImage(eventAllImages[nextIndex]);
+          }}
+        >
+          ›
+        </button>
+
+        <div className="lightbox-toolbar">
+          <button
+            className="lightbox-btn"
+            onClick={() => handleDownload(selectedImage.imageUrl)}
+          >
+            <Image
+              src={downloadicon}  
+              alt="Download"
+              style={{ width: 30, height: 30 }}
+            />
+          </button>
+
+          {selectedImage.userId === userID && (
+            <button
+              className="lightbox-btn"
+           onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
+
+            >
+              <Image
+                src={deletebtn}  
+                alt="Delete"
+                style={{ width: 30, height: 30 }}
+              />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )} */}
 {isImageOpen && selectedImage && (
-    <div className="custom-lightbox">
+  <div
+    className="custom-lightbox"
+    onClick={() => setIsImageOpen(false)} // Close when clicking overlay
+  >
+    {/* Everything inside this div is safe from closing */}
+    <div
+      className="lightbox-inner"
+      onClick={(e) => e.stopPropagation()} // Prevent close for arrows, image, toolbar
+    >
       <div {...handlers} className="lightbox-content">
         {/* Close Button */}
         <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
@@ -1408,30 +1498,22 @@ setShowPopup(false);
             className="lightbox-btn"
             onClick={() => handleDownload(selectedImage.imageUrl)}
           >
-            <Image
-              src={downloadicon}  
-              alt="Download"
-              style={{ width: 30, height: 30 }}
-            />
+            <Image src={downloadicon} alt="Download" style={{ width: 30, height: 30 }} />
           </button>
 
           {selectedImage.userId === userID && (
             <button
               className="lightbox-btn"
-           onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-
+              onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
             >
-              <Image
-                src={deletebtn}  
-                alt="Delete"
-                style={{ width: 30, height: 30 }}
-              />
+              <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
             </button>
           )}
         </div>
       </div>
     </div>
-  )}
+  </div>
+)}
 
 
 
@@ -1522,7 +1604,7 @@ button: {
     backgroundColor: "#FFDBDB",
   },
   heading: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 700,
     // marginBottom: 8,
     color: 'rgb(168, 50, 142)',
@@ -1598,7 +1680,7 @@ button: {
     border: "none",
     borderRadius: "10px",
     padding: "10px",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 600,
     cursor: "pointer",
     boxShadow: "0 2px 6px rgba(0,0,0,0.15)",

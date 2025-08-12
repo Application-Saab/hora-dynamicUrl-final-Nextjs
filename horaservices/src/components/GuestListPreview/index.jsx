@@ -68,26 +68,42 @@ const GuestListPreview = ({ hostData }) => {
     fetchGuests();
   }, [eventId]);
 
-  useEffect(() => {
-    if (guestData.length > 0) {
-      const confirmed = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-      ).length;
-      const willTry = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-      ).length;
-      const notAnswered = guestData.filter(
-        (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-      ).length;
 
-      setGuestCounts({ confirmed, willTry, notAnswered });
-    }
-  }, [guestData]);
+useEffect(() => {
+  if (!hostData) {
+    setGuestCounts({ confirmed: 0, willTry: 0, notAnswered: 0 });
+    return;
+  }
+
+  // Host + guest combine & remove duplicates
+ let allPeople = [hostData, ...guestData].filter(
+  (p, idx, arr) => arr.findIndex(x => String(x._id) === String(p._id)) === idx
+);
+
+
+  // Host ka RSVP default "will Come"
+allPeople = allPeople.map(p =>
+  String(p._id) === String(hostData._id) && !p.rsvpStatus
+    ? { ...p, rsvpStatus: RSVP_STATUS.WILL_COME }
+    : p
+);
+
+
+  const confirmed = allPeople.filter(p => p.rsvpStatus === RSVP_STATUS.WILL_COME).length;
+  const willTry = allPeople.filter(p => p.rsvpStatus === RSVP_STATUS.WILL_TRY).length;
+  const notAnswered = allPeople.filter(p => !p.rsvpStatus).length;
+
+  setGuestCounts({ confirmed, willTry, notAnswered });
+}, [guestData, hostData]);
+
+
+
+
 
   if (loading) return <div>Loading...</div>;
 
-  if (guestData.length === 0) return null;
-
+  // if (guestData.length === 0) return null;
+if (guestData.length === 0 && !isHost) return null;
   return (
   
     <div className="guest-preview-card">
@@ -99,11 +115,16 @@ const GuestListPreview = ({ hostData }) => {
       <Image src={train} alt="Train Guests" className="train-image" />
     </div>
     {/* Overlaid counts */}
-    <div className="guest-count-overlay">
+    {/* <div className="guest-count-overlay">
       <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
       <span className="separator">|</span>
       <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
-    </div>
+    </div> */}
+    <div className="guest-count-overlay">
+  <span className="confirmed"> Confirm - {guestCounts?.confirmed || 0}</span>
+  <span className="separator">|</span>
+  <span className="try"> Will Try - {guestCounts?.willTry || 0}</span>
+</div>
   </div>
 
   {/* View Full List Button */}
