@@ -820,7 +820,16 @@ background-color: none !important;
     font-size: 14px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
-
+.ticket-number {
+    position: absolute;
+    bottom: 50%;
+    top: 40%;
+    left: 44%;
+    /* background: #ffffff66; */
+    color: #9128b4;
+    font-weight: bold;
+    font-size: 70px;
+}
 
 
 

@@ -6,6 +6,7 @@ import tabIcon1 from "../../assets/galleryicon.jpg";
 import tabIcon2 from "../../assets/thankyouicon.png";
 import imageBackground from "../../assets/imageBackground.jpg";
 import imageBackGround from "../../assets/finalInviteBackground.png";
+import LuckDrawTicketBanner from "../../assets/lucky_draw_ticket_bg.png"
 import Image from "next/image";
 import FloatingEditButton from "../../components/FloatingActionButton/FAB";
 import {
@@ -834,22 +835,41 @@ const eventOptions = [
       setWallUploading(false);
     }
   };
-const handleDelete = async (imageId, imageType) => {
+const handleDeleteImage = async (imageId, imageType) => {
   if (!confirm("Are you sure you want to delete this image?")) return;
 
   try {
     const res = await fetch(
-      `${BASE_URL}/api/customer/event/event-images/event-images/${urlParams.eventId}`,
+      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`, 
       {
-        method: "POST",
+        method: "POST", 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: userID, imageId, imageType }),
       }
     );
 
     const data = await res.json();
+
     if (!data.error) {
-      setEventAllImages((prev) => prev.filter((img) => img._id !== imageId));
+      // Update images list state
+      setEventAllImages((prev) => {
+        const newImages = prev.filter((img) => img._id !== imageId);
+
+        // Update selectedImage and selectedIndex so lightbox doesn't show deleted image
+        if (newImages.length === 0) {
+          setIsImageOpen(false); // Close lightbox if no images left
+        } else {
+          let newIndex = selectedIndex;
+          if (selectedIndex >= newImages.length) {
+            newIndex = newImages.length - 1;
+          }
+          setSelectedIndex(newIndex);
+          setSelectedImage(newImages[newIndex]);
+        }
+
+        return newImages;
+      });
+
       alert("Image deleted successfully");
     } else {
       alert(data.message || "Failed to delete image");
@@ -859,6 +879,8 @@ const handleDelete = async (imageId, imageType) => {
     alert("Server error while deleting");
   }
 };
+
+
 
 
   const handleDownload = async () => {
@@ -1049,12 +1071,66 @@ setShowPopup(false);
           ) : (
             <p>Loading...</p>
           )}
-          <div className="lucky-draw-banner">
-            <Image src={LuckDrawBanner} alt="Luck Draw Banner" className="banner-img" />
-            <button className="click-now-btn" onClick={() => setShowLuckyDrawPopup(true)}>
-              Click Now
-            </button>
-          </div>
+            {isHost &&
+            orderDetails &&
+            (orderDetails?.luckyDraws?.length === 0 ? (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <button
+                  className="click-now-btn"
+                  onClick={() => setShowLuckyDrawPopup(true)}
+                >
+                  Click Now
+                </button>
+              </div>
+            ) : (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawTicketBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <span className="ticket-number">
+                  {orderDetails &&
+                    orderDetails?.luckyDraws?.length > 0 &&
+                    orderDetails?.luckyDraws[0]?.ticketNumber}
+                </span>
+              </div>
+            ))}
+          {!isHost &&
+            guestDetails &&
+            (guestDetails?.luckyDraws?.length === 0 ? (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <button
+                  className="click-now-btn"
+                  onClick={() => setShowLuckyDrawPopup(true)}
+                >
+                  Click Now
+                </button>
+              </div>
+            ) : (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawTicketBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <span className="ticket-number">
+                  {guestDetails &&
+                    guestDetails?.luckyDraws?.length > 0 &&
+                    guestDetails?.luckyDraws[0]?.ticketNumber}
+                </span>
+              </div>
+            ))}
 
 
 
@@ -1245,38 +1321,7 @@ setShowPopup(false);
         </div>
       </div>
 
-{/* {isImageOpen && selectedImage && (
-  <div className="custom-lightbox">
-    <div className="lightbox-content">
-      
-      <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
 
-   
-      <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
-
-  
-      <div className="lightbox-toolbar">
-   
-        <button
-          className="lightbox-btn"
-          onClick={() => handleDownload(selectedImage.imageUrl)}
-        >
-          ⬇
-        </button>
-
-    
-        {selectedImage.userId === userID && (
-          <button
-            className="lightbox-btn"
-            onClick={() => handleDelete(selectedImage._id, selectedImage.imageType)}
-          >
-            🗑
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-)} */}
 
 {isImageOpen && selectedImage && (
     <div className="custom-lightbox">
@@ -1327,7 +1372,8 @@ setShowPopup(false);
           {selectedImage.userId === userID && (
             <button
               className="lightbox-btn"
-              onClick={() => handleDelete(selectedImage._id, selectedImage.imageType)}
+           onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
+
             >
               <Image
                 src={deletebtn}  
