@@ -146,7 +146,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
           <button
             disabled={isLoading}
             className="lucky-btn-submit"
-            onClick={handleSubmit}
+            onClick={onClose}
           >
             {isLoading ? "Submitting..." : "Submit"}
           </button>

@@ -57,14 +57,14 @@ const InvitationCard = () => {
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
   console.log('%c [ guestDetails ]-60', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
-
+  const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
 const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
-  const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
+
   const [urlParams, setUrlParams] = useState({
     eventId: "",
     eventUserId: "",
@@ -118,7 +118,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
 
     fetchEventImages();
     // }, [urlParams.eventId]);
-  }, [urlParams.eventId, refetchEventImages]);
+  }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -153,8 +153,8 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
     };
 
     fetchGuestDetails();
-  // }, [urlParams.eventId, userID, urlParams.eventUserId]);
- }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw]);
+  }, [urlParams.eventId, userID, urlParams.eventUserId, refetchLuckyDraw]);
+
 
   useEffect(() => {
     const addGuest = async () => {
@@ -635,7 +635,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
           Image: data.hostImage || data.imageUrl || "",
           userId: hostId,
           id: data._id || data.id || data.eventId,
-             luckyDraws: data?.luckyDraws || [],
+          luckyDraws: data?.luckyDraws || [],
         });
 
         // ✅ Set host ID globally
@@ -836,64 +836,15 @@ const eventOptions = [
       setWallUploading(false);
     }
   };
-// const handleDeleteImage = async (imageId, imageType) => {
-//   if (!confirm("Are you sure you want to delete this image?")) return;
-
-//   try {
-//     const res = await fetch(
-//       `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`, 
-//       {
-//         method: "POST", 
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ userId: userID, imageId, imageType }),
-//       }
-//     );
-
-//     const data = await res.json();
-
-//     if (!data.error) {
-//       // Update images list state
-//       setEventAllImages((prev) => {
-//         const newImages = prev.filter((img) => img._id !== imageId);
-
-//         // Update selectedImage and selectedIndex so lightbox doesn't show deleted image
-//         if (newImages.length === 0) {
-//           setIsImageOpen(false); // Close lightbox if no images left
-//         } else {
-//           let newIndex = selectedIndex;
-//           if (selectedIndex >= newImages.length) {
-//             newIndex = newImages.length - 1;
-//           }
-//           setSelectedIndex(newIndex);
-//           setSelectedImage(newImages[newIndex]);
-//         }
-
-//         return newImages;
-//       });
-
-//       alert("Image deleted successfully");
-//     } else {
-//       alert(data.message || "Failed to delete image");
-//     }
-//   } catch (err) {
-//     console.error("Delete error:", err);
-//     alert("Server error while deleting");
-//   }
-// };
-
-
 const handleDeleteImage = async (imageId, imageType) => {
   if (!confirm("Are you sure you want to delete this image?")) return;
 
   try {
     const res = await fetch(
-      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`, 
       {
-        method: "POST",
-        headers: {
-          Authorization: token, // ✅ token without "Bearer "
-          "Content-Type": "application/json",
-        },
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: userID, imageId, imageType }),
       }
     );
@@ -901,11 +852,13 @@ const handleDeleteImage = async (imageId, imageType) => {
     const data = await res.json();
 
     if (!data.error) {
+      // Update images list state
       setEventAllImages((prev) => {
         const newImages = prev.filter((img) => img._id !== imageId);
 
+        // Update selectedImage and selectedIndex so lightbox doesn't show deleted image
         if (newImages.length === 0) {
-          setIsImageOpen(false);
+          setIsImageOpen(false); // Close lightbox if no images left
         } else {
           let newIndex = selectedIndex;
           if (selectedIndex >= newImages.length) {
@@ -927,6 +880,8 @@ const handleDeleteImage = async (imageId, imageType) => {
     alert("Server error while deleting");
   }
 };
+
+
 
 
   const handleDownload = async () => {
@@ -1118,6 +1073,36 @@ setShowPopup(false);
             <p>Loading...</p>
           )}
             {isHost &&
+            orderDetails &&
+            (orderDetails?.luckyDraws?.length === 0 ? (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <button
+                  className="click-now-btn"
+                  onClick={() => setShowLuckyDrawPopup(true)}
+                >
+                  Click Now
+                </button>
+              </div>
+            ) : (
+              <div className="lucky-draw-banner">
+                <Image
+                  src={LuckDrawTicketBanner}
+                  alt="Luck Draw Banner"
+                  className="banner-img"
+                />
+                <span className="ticket-number">
+                  {orderDetails &&
+                    orderDetails?.luckyDraws?.length > 0 &&
+                    orderDetails?.luckyDraws[0]?.ticketNumber}
+                </span>
+              </div>
+            ))}
+           {isHost &&
             orderDetails &&
             (orderDetails?.luckyDraws?.length === 0 ? (
               <div className="lucky-draw-banner">
@@ -1439,14 +1424,26 @@ setShowPopup(false);
 
 
           {/* 🎁 Lucky Draw Popup */}
-          {showLuckyDrawPopup && (
-            <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
-              <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
-                <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
-                  ×
-                </button>
-                <div className="popup-luckdraw-content">
-                  <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
+        {showLuckyDrawPopup && (
+            <div
+              className="popup-luckdraw-overlay"
+              onClick={() => setShowLuckyDrawPopup(false)}
+            >
+              <div
+                className="popup-luckdraw-container"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  className="popup-luckdraw-content"
+                  style={{ marginBlock: "30px" }}
+                >
+                  <LuckyDrawForm
+                    hostData={orderDetails}
+                    onClose={() => {
+                      setShowLuckyDrawPopup(false);
+                      setRefetchLuckyDraw(!refetchLuckyDraw);
+                    }}
+                  />
                 </div>
               </div>
             </div>
