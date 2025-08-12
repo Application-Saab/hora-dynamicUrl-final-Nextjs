@@ -1102,36 +1102,6 @@ setShowPopup(false);
                 </span>
               </div>
             ))}
-           {isHost &&
-            orderDetails &&
-            (orderDetails?.luckyDraws?.length === 0 ? (
-              <div className="lucky-draw-banner">
-                <Image
-                  src={LuckDrawBanner}
-                  alt="Luck Draw Banner"
-                  className="banner-img"
-                />
-                <button
-                  className="click-now-btn"
-                  onClick={() => setShowLuckyDrawPopup(true)}
-                >
-                  Click Now
-                </button>
-              </div>
-            ) : (
-              <div className="lucky-draw-banner">
-                <Image
-                  src={LuckDrawTicketBanner}
-                  alt="Luck Draw Banner"
-                  className="banner-img"
-                />
-                <span className="ticket-number">
-                  {orderDetails &&
-                    orderDetails?.luckyDraws?.length > 0 &&
-                    orderDetails?.luckyDraws[0]?.ticketNumber}
-                </span>
-              </div>
-            ))}
           {!isHost &&
             guestDetails &&
             (guestDetails?.luckyDraws?.length === 0 ? (
