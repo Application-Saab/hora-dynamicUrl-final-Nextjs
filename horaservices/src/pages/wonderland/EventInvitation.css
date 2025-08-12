@@ -663,30 +663,7 @@ background-color: none !important;
 }
 
 /* luckey draw */
-/* Overlay backdrop */
-.popup-luckdraw-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 0.3s ease-in-out;
 
-}
-
-/* Container box */
-.popup-luckdraw-container {
-  background: #fff;
-  border-radius: 12px;
-  overflow-y: auto;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  position: relative;
-  padding: 24px 20px 20px;
-  animation: scaleIn 0.3s ease-in-out;
-  
-}
 .popup-thankyounaote-container {
   position: fixed;
   inset: 0;
@@ -696,27 +673,54 @@ background-color: none !important;
   align-items: center;
   z-index: 9999;
 }
+.popup-luckdraw-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
-/* Close button */
+.popup-luckdraw-container {
+  background-image: url("../../assets/lucky_draw_bg.png"); /* Use absolute path if in public/ */
+  background-size: cover; /* Make sure it fills */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: black;
+
+  border-radius: 8px;
+  /* width: 90%; */
+  /* max-width: 400px; */
+  height: 100%;
+  width: 100%;
+  /* max-height: 70vh; */
+
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .popup-luckdraw-close {
   position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 24px;
+  top: 10px;
+  right: 14px;
   background: transparent;
   border: none;
-  color: #333;
+  font-size: 24px;
   cursor: pointer;
-  transition: color 0.2s;
 }
 
-.popup-luckdraw-close:hover {
-  color: #e74c3c;
-}
-
-/* Main content area */
 .popup-luckdraw-content {
-  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 /* Animations */
@@ -758,9 +762,6 @@ background-color: none !important;
 .close-button:hover {
   color: rgb(146, 82, 170);
 }
-
-
-
 
 .explore-btn {
   background-color: #a54c93;
@@ -822,9 +823,9 @@ background-color: none !important;
 }
 .ticket-number {
     position: absolute;
-    bottom: 50%;
-    top: 40%;
-    left: 44%;
+    bottom: 52%;
+    top: 45%;
+    left: 33%;
     /* background: #ffffff66; */
     color: #9128b4;
     font-weight: bold;
