@@ -4,7 +4,9 @@
   justify-content: center;
   align-items: center;
   position: relative;
+  height: 90vh; 
 }
+
 .lucky-draw-container {
   background: linear-gradient(
     180deg,
@@ -16,43 +18,44 @@
   border-radius: 18px;
   padding: 20px;
   margin-inline: 25px;
-  max-width: 380px;
   text-align: center;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 10;
+ height:98%;
+ overflow-y: scroll;
 }
+
 .lucky-draw-title {
-  font-size: 1.9rem;
+  font-size: 22px;
   font-weight: 400;
   color: rgba(151, 83, 140, 1);
-  margin-bottom: 10px;
   font-family: "Aclonica", sans-serif;
+  margin-bottom: 10px;
 }
 .lucky-draw-description {
-  font-size: 1.2rem;
+  font-size: 12px;
   color: rgba(0, 0, 0, 1);
-  margin-bottom: 20px;
+  margin-bottom:10px;
   font-weight: 600;
   font-family: "Inter", sans-serif;
 }
 .file-upload {
   border-radius: 14px;
   border: 1px solid rgba(151, 83, 140, 1);
-  height: 181px;
-  width: 262px;
+ padding: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   background: white;
-  margin-bottom: 15px;
+  margin:10px;
   cursor: pointer;
 }
 .file-upload .img-label-upload {
-  font-size: 1rem;
+  font-size: 12px;
   font-weight: 700;
   color: rgba(75, 71, 71, 1);
   text-align: center;
@@ -69,49 +72,31 @@
   cursor: pointer;
 }
 .preview-image {
-  max-width: 260px;
-  max-height: 180px;
-  width: 100%;
+
+  max-height: 200px;
   border-radius: 10px;
+}
+
+.lucky-btn {
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 25px;
+  cursor: pointer;
+  color: #fff;
 }
 
 .lucky-btn-submit {
   background: rgba(151, 83, 140, 1);
-  color: #fff;
-  margin-inline: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 5px;
-  min-height: 45px;
-  max-height: 45px;
-  width: 134px;
-  cursor: pointer;
 }
 
 .lucky-btn-cancel {
   background: rgba(255, 156, 173, 1);
-  color: #fff;
-  margin-inline: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 5px;
-  min-height: 45px;
-  max-height: 45px;
-  width: 134px;
-  cursor: pointer;
 }
 
-.lucky-btn-submit:hover {
-  background: rgba(151, 83, 140, 1);
-}
 .sponsored-txt {
-  font-size: 1.2rem;
+  font-size: 17px;
   color: rgba(0, 0, 0, 1);
   margin-left: 8px;
   font-weight: bold;

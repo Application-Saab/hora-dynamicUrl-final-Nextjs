@@ -119,8 +119,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
     };
 
     fetchEventImages();
-    // }, [urlParams.eventId]);
-  }, [urlParams.eventId, refetchEventImages]);
+  }, [urlParams.eventId, refetchEventImages,refetchLuckyDraw]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -606,7 +605,7 @@ const [lightboxIndex, setLightboxIndex] = useState(0);
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, router.query.id]);
+  }, [router.isReady, router.query.id,refetchLuckyDraw]);
 
 
   const fetchOrderDetails = async (eventId) => {
@@ -1138,7 +1137,8 @@ setShowPopup(false);
           ) : (
             <p>Loading...</p>
           )}
-            {isHost &&
+          
+         {isHost &&
             orderDetails &&
             (orderDetails?.luckyDraws?.length === 0 ? (
               <div className="lucky-draw-banner">
@@ -1201,104 +1201,7 @@ setShowPopup(false);
 
 
 
-          {/* <div style={styles.wrapper}>
-            <h2 style={styles.heading}>
-              <Image
-                src={wallCamera} // ✅ replace with your actual image path
-                alt="Camera Icon"
-                style={{ width: 60, height: 60, }}
-              />
-              Celebration Wall
-            </h2>
-
-            <p style={styles.subheading}>
-              A wall filled with your party’s happiest moments and heartfelt messages.
-            </p>
-
-            <div className="tabs-container" style={styles.tabsContainer}>
-              {actions.map((action, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    if (action.title === "Upload Pictures") {
-                      const input = document.getElementById("imageUploadInput");
-                      if (input) {
-                        input.value = "";
-                        input.click();
-                      }
-                    } else {
-                      handleActionClick(action.title);
-                    }
-                  }}
-                  style={styles.actionButton}
-                >
-                  <Image
-                    src={action.image}
-                    alt={action.title}
-                    style={styles.iconStyle}
-                  />
-                  <span style={styles.buttonLabel}>{action.title}</span>
-                </button>
-              ))}
-              <input
-                type="file"
-                id="imageUploadInput"
-                multiple
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageUpload}
-              />
-            </div>
-
-            <div style={{ position: "relative", marginTop: " auto", }}>
-              {wallUploading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: "rgba(255, 255, 255, 0.8)",
-                    display: "flex",
-                    justifyContent: "center",
-                    zIndex: 2,
-                  }}
-                >
-                  <div className="spinner" />
-                </div>
-              )}
-
-           <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
-  {eventAllImages.length === 0 ? (
-    <>
-     
-      <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
-      <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
-      <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
-      <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
-      <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
-      <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
-      <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
-      <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
-    </>
-  ) : (
-    eventAllImages.map((item, index) => (
-      <div key={item._id || index} className="collage-item">
-        <img
-          src={item.imageUrl}
-          alt={`Event Image ${index + 1}`}
-          className="event-image"
-          onLoad={(e) => e.currentTarget.classList.add("loaded")}
-        />
-      </div>
-    ))
-  )}
-</div>
-
-            </div>
-          </div> */}
-
+         
        <div style={styles.wrapper}>
       <h2 style={styles.heading}>
         <Image src={wallCamera} alt="Camera Icon" style={{ width: 70, height: 50 }} />
@@ -1390,82 +1293,21 @@ setShowPopup(false);
 
 
 
-{/* {isImageOpen && selectedImage && (
-    <div className="custom-lightbox"   onClick={() => setIsImageOpen(false)} >
-      <div {...handlers} className="lightbox-content">
-     
-        <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
 
-        
-        <button
-          className="nav-btn prev-btn"
-          onClick={() => {
-            const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
-            setSelectedIndex(prevIndex);
-            setSelectedImage(eventAllImages[prevIndex]);
-          }}
-        >
-          ‹
-        </button>
-
-        <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
-
-      
-        <button
-          className="nav-btn next-btn"
-          onClick={() => {
-            const nextIndex = (selectedIndex + 1) % eventAllImages.length;
-            setSelectedIndex(nextIndex);
-            setSelectedImage(eventAllImages[nextIndex]);
-          }}
-        >
-          ›
-        </button>
-
-        <div className="lightbox-toolbar">
-          <button
-            className="lightbox-btn"
-            onClick={() => handleDownload(selectedImage.imageUrl)}
-          >
-            <Image
-              src={downloadicon}  
-              alt="Download"
-              style={{ width: 30, height: 30 }}
-            />
-          </button>
-
-          {selectedImage.userId === userID && (
-            <button
-              className="lightbox-btn"
-           onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-
-            >
-              <Image
-                src={deletebtn}  
-                alt="Delete"
-                style={{ width: 30, height: 30 }}
-              />
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  )} */}
 {isImageOpen && selectedImage && (
   <div
     className="custom-lightbox"
-    onClick={() => setIsImageOpen(false)} // Close when clicking overlay
+    onClick={() => setIsImageOpen(false)} 
   >
-    {/* Everything inside this div is safe from closing */}
+   
     <div
       className="lightbox-inner"
-      onClick={(e) => e.stopPropagation()} // Prevent close for arrows, image, toolbar
+      onClick={(e) => e.stopPropagation()} 
     >
       <div {...handlers} className="lightbox-content">
-        {/* Close Button */}
+       
         <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
 
-        {/* Prev Button */}
         <button
           className="nav-btn prev-btn"
           onClick={() => {
@@ -1477,10 +1319,11 @@ setShowPopup(false);
           ‹
         </button>
 
-        {/* Image */}
+       
         <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
-
-        {/* Next Button */}
+ {selectedImage.name && (
+          <p className="lightbox-name">{selectedImage.name}</p>
+        )}
         <button
           className="nav-btn next-btn"
           onClick={() => {
@@ -1522,13 +1365,25 @@ setShowPopup(false);
 
           {/* 🎁 Lucky Draw Popup */}
           {showLuckyDrawPopup && (
-            <div className="popup-luckdraw-overlay" onClick={() => setShowLuckyDrawPopup(false)}>
-              <div className="popup-luckdraw-container" onClick={(e) => e.stopPropagation()}>
-                <button className="popup-luckdraw-close" onClick={() => setShowLuckyDrawPopup(false)}>
-                  ×
-                </button>
-                <div className="popup-luckdraw-content">
-                  <LuckyDrawForm onClose={() => setShowLuckyDrawPopup(false)} />
+            <div
+              className="popup-luckdraw-overlay"
+              onClick={() => setShowLuckyDrawPopup(false)}
+            >
+              <div
+                className="popup-luckdraw-container"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  className="popup-luckdraw-content"
+                  style={{ marginBlock: "30px" }}
+                >
+                  <LuckyDrawForm
+                    hostData={orderDetails}
+                    onClose={() => {
+                      setShowLuckyDrawPopup(false);
+                      setRefetchLuckyDraw(!refetchLuckyDraw);
+                    }}
+                  />
                 </div>
               </div>
             </div>
