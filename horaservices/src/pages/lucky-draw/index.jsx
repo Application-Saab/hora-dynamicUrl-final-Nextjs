@@ -8,15 +8,13 @@ import LogoHora from "../../assets/logo_small_lucky.svg";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 
-const LuckyDrawForm = ({ onClose, hostData }) => {
+const LuckyDrawForm = ({ onClose, hostData, urlParams }) => {
   console.log(
     "%c [ hostData ]-153",
     "font-size:13px; background:pink; color:#bf2c9f;",
     hostData
   );
-  const router = useRouter();
-  const { id } = router.query;
-  let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
+  let eventId = urlParams?.eventId
   const userId = localStorage.getItem("userID");
 
   const [preview, setPreview] = useState(null);

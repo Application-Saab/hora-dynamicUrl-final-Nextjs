@@ -59,6 +59,7 @@ const InvitationCard = () => {
   );
   const userID = localStorage.getItem("userID");
   const isLoggedIn = localStorage.getItem("isLoggedIn");
+  console.log('%c [ isLoggedIn ]-62', 'font-size:13px; background:pink; color:#bf2c9f;', isLoggedIn)
   const token = localStorage.getItem("token");
   const [errorAddGuest, setErrorAddGuest] = useState("");
   const [openRsvpList, setOpenRsvpList] = useState(false);
@@ -1310,6 +1311,7 @@ const InvitationCard = () => {
                     >
                       <LuckyDrawForm
                         hostData={orderDetails}
+                        urlParams={urlParams}
                         onClose={() => {
                           setShowLuckyDrawPopup(false);
                           setRefetchLuckyDraw(!refetchLuckyDraw);
