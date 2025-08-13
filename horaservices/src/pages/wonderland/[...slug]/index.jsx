@@ -71,6 +71,7 @@ const InvitationCard = () => {
     "font-size:13px; background:pink; color:#bf2c9f;",
     guestDetails
   );
+  const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -171,7 +172,7 @@ const InvitationCard = () => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, refetchLuckyDraw, refetchEventImages]);
+  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages, refetchAddGuest]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -193,6 +194,7 @@ const InvitationCard = () => {
           setErrorAddGuest(data.message || "Failed to add guest");
         } else {
           console.log("Guest added successfully:", data);
+          setRefetchAddGuest(true)
           setErrorAddGuest(null);
         }
       } catch (err) {
