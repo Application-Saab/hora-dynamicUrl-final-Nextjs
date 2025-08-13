@@ -1,60 +1,9 @@
-// import React from "react";
-// import "./finalInvteDisplay.css";
 
-// const formatDate = (isoDateString) => {
-//   const date = new Date(isoDateString);
-//   return date.toLocaleDateString("en-US", {
-//     month: "long",
-//     day: "numeric",
-//     year: "numeric",
-//   });
-// };
 
-// const FinalInviteDisplay = ({ orderDetails, handleClick }) => {
-//   if (!orderDetails) return <p>Loading...</p>;
-
-//   return (
-//     <div className="invite-wrapper">
-//       <div className="invite-card">
-//         <h2 className="invite-heading">YOU‘RE INVITED</h2>
-
-//         <div className="cake-image-wrapper">
-//           <img
-//             src={orderDetails.Image} // ✅ Expecting base64 format here
-//             alt="Cake"
-//             className="cake-image"
-//           />
-//         </div>
-
-//         <h3 className="invite-title">
-//           {orderDetails.Name || "Someone"}‘S{" "}
-//           {orderDetails["Event Type"] || "Birthday"} CELEBRATION
-//         </h3>
-
-//         <p className="invite-detail">
-//           <span>📅</span> DATE : {formatDate(orderDetails.Date)}
-//         </p>
-
-//         <p className="invite-detail">
-//           <span>⏰</span> TIME : {orderDetails.Time}
-//         </p>
-
-//         <p className="invite-detail">
-//           <span>📍</span> <strong>Home</strong> ({orderDetails.Address || "Venue"})
-//         </p>
-
-//         <button className="invite-btn" onClick={handleClick}>
-//           📩 Explore Invites templates
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FinalInviteDisplay;
 import React from "react";
 import "./finalInvteDisplay.css";
-
+import Head from "next/head";
+import imageBackground from "@/assets/imageBackground.jpg";
 const formatDate = (isoDateString) => {
   const date = new Date(isoDateString);
   return date.toLocaleDateString("en-US", {
@@ -67,64 +16,51 @@ const formatDate = (isoDateString) => {
 const FinalInviteDisplay = ({ orderDetails, handleClick, isHost }) => {
   if (!orderDetails) return <p>Loading...</p>;
 
-  const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails._id}/${orderDetails.userId}/guest`;
-
-    const shareText = `You're invited to ${
-      orderDetails.Name || "someone"
-    }'s ${orderDetails["Event Type"] || "Birthday"}! 🎉\n\n📅 ${formatDate(
-      orderDetails.Date
-    )}\n⏰ ${orderDetails.Time}\n📍 ${
-      orderDetails.Address || "Venue"
-    }\n\n👉 Tap to view the invite:\n${inviteURL}`;
-
-    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-    window.open(whatsappLink, "_blank");
-  };
+ 
 
   return (
+
     <div className="invite-wrapper">
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Aclonica&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+
       <div className="invite-card">
-        <h2 className="invite-heading">YOU‘RE INVITED</h2>
+        <h2 className="invite-heading party-title">It's Time To Party!</h2>
 
         <div className="cake-image-wrapper">
-          <img
-            src={orderDetails.Image}
-            alt="Cake"
-            className="cake-image"
-          />
+          <img src={orderDetails.Image} alt="Cake" className="cake-image" />
         </div>
 
-        <h3 className="invite-title">
-          {orderDetails.Name || "Someone"}‘S{" "}
-          {orderDetails["Event Type"] || "Birthday"} CELEBRATION
+        <h3 className="invite-title highlight-title">
+          {orderDetails.Name || "Someone"}’s{" "}
+          {orderDetails["Event Type"] || "Birthday"}
         </h3>
 
-        <p className="invite-detail">
-          <span>📅</span> DATE : {formatDate(orderDetails.Date)}
-        </p>
+      
 
-        <p className="invite-detail">
-          <span>⏰</span> TIME : {orderDetails.Time}
-        </p>
+<div className="event-info-wrapper">
+  <div className="event-details">
+    <div className="event-line">📅 Date : {formatDate(orderDetails.Date)}</div>
+    <div className="event-line">⏰ Time : {orderDetails.Time}</div>
+  </div>
+  <div className="event-address">{orderDetails.Address}</div>
+</div>
 
-        <p className="invite-detail">
-          <span>📍</span> <strong>Home</strong> ({orderDetails.Address || "Venue"})
-        </p>
 
-        {/* ✅ Show both buttons to Host only */}
-        {isHost && (
-          <div className="invite-buttons">
-            <button className="invite-btn" onClick={handleClick}>
-              📩 Explore templates
-            </button>
-            <button className="invite-btn" onClick={handleWhatsAppShare}>
-              📤 Share Invitation
-            </button>
-          </div>
-        )}
+
+       
       </div>
+     
     </div>
+
   );
 };
 

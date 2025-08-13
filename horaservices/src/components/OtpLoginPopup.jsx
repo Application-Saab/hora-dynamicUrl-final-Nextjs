@@ -148,6 +148,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
         localStorage.setItem("mobileNumber", mobileNumber);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userID', response.data.data._id);
+         window.dispatchEvent(new Event("loginStateChange"));
         sendWelcomeMessage(mobileNumber);
         setError('');
         setOtpError('');

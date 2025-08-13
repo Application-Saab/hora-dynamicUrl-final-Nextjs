@@ -10,24 +10,9 @@ const RSVP_STATUS = {
   WILL_TRY: "Sure, will try",
 };
 
-const getRandomColor = () => {
-  const colors = [
-    "#7A4E9D",
-    "#502F87",
-    "#FD5C91",
-    "#A45584",
-    "#392B69",
-    "#0C39A8",
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-};
 
-const GuestListPreview = ({ hostData }) => {
+const GuestListPreview = ({ hostData, urlParams }) => {
   const router = useRouter();
-  const { id } = router.query;
-  let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
-  const paramsUserId = id ? id.split("/")[1] : null;
-  const isHost = localStorage.getItem("userID") === paramsUserId;
 
   const [guestData, setGuestData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +26,7 @@ const GuestListPreview = ({ hostData }) => {
 
   useEffect(() => {
     const fetchGuests = async () => {
-      if (!eventId) {
+      if (!urlParams?.eventId) {
         setError("Event ID not found in URL");
         setLoading(false);
         return;
@@ -55,7 +40,7 @@ const GuestListPreview = ({ hostData }) => {
 
       try {
         const response = await fetch(
-          `${BASE_URL}/api/customer/event/event-guests/all/${eventId}`,
+          `${BASE_URL}/api/customer/event/event-guests/all/${urlParams?.eventId}`,
           {
             headers: {
               Authorization: `${token}`, // Add token in Authorization header
@@ -77,7 +62,7 @@ const GuestListPreview = ({ hostData }) => {
     };
 
     fetchGuests();
-  }, [eventId]);
+  }, [urlParams?.eventId]);
 
   // useEffect(() => {
   //   if (guestData.length > 0) {
@@ -95,38 +80,27 @@ const GuestListPreview = ({ hostData }) => {
   //   }
   // }, [guestData]);
 useEffect(() => {
-  if (guestData.length >= 0) {
-    let confirmed = guestData.filter(
-      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-    ).length;
+  const confirmed = guestData.filter(
+    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+  ).length + 1; // host hamesha confirmed me
 
-    let willTry = guestData.filter(
-      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-    ).length;
+  const willTry = guestData.filter(
+    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+  ).length;
 
-    let notAnswered = guestData.filter(
-      (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-    ).length;
+  const notAnswered = guestData.filter(
+    (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+  ).length;
 
-    // ✅ Host ka +1 har case me confirmed me
-    const totalConfirmed = confirmed + 1;
-
-    setGuestCounts({
-      confirmed: totalConfirmed,
-      willTry,
-      notAnswered,
-    });
-  }
+  setGuestCounts({ confirmed, willTry, notAnswered });
 }, [guestData]);
 
-
   if (loading) return <div>Loading...</div>;
-
 
   
 
   return (
-
+  
     <div className="guest-preview-card">
   <h3 className="preview-title">Let’s see who’s joining</h3>
 

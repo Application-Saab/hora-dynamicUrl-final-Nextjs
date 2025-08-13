@@ -55,7 +55,7 @@ React.useEffect(() => {
         </p>
 
         {/* Event Type Input with Dropdown */}
-        <div className="dropdown-wrapper">
+        {/* <div className="dropdown-wrapper">
           <input
             type="text"
             placeholder="Event Name"
@@ -96,7 +96,59 @@ React.useEffect(() => {
               )}
             </ul>
           )}
-        </div>
+        </div> */}
+<div className="dropdown-wrapper">
+  <input
+    type="text"
+    placeholder="Event Name"
+    className="input-field"
+    value={formData.eventTypeSearch ?? formData.eventType ?? ""}
+    onChange={(e) => {
+      const val = e.target.value;
+      setFormData((prev) => ({
+        ...prev,
+        eventType: val,
+        eventTypeSearch: val,
+      }));
+
+      // Only show dropdown if matching options exist
+      const matches = eventOptions.filter((opt) =>
+        opt.toLowerCase().includes(val.toLowerCase())
+      );
+      setShowDropdown(matches.length > 0);
+    }}
+    onFocus={() => {
+      // Show dropdown only if current text has matches
+      const matches = eventOptions.filter((opt) =>
+        opt.toLowerCase().includes(
+          (formData.eventTypeSearch ?? formData.eventType ?? "").toLowerCase()
+        )
+      );
+      setShowDropdown(matches.length > 0);
+    }}
+    autoComplete="off"
+  />
+
+  {showDropdown && formData.eventTypeSearch && filteredOptions.length > 0 && (
+    <ul className="dropdown-list">
+      {filteredOptions.map((opt) => (
+        <li
+          key={opt}
+          onClick={() => {
+            setFormData((prev) => ({
+              ...prev,
+              eventType: opt,
+              eventTypeSearch: opt,
+            }));
+            setShowDropdown(false);
+          }}
+        >
+          {opt}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
         <input
           type="text"

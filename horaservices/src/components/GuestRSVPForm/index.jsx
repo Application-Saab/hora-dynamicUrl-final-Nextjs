@@ -9,18 +9,6 @@ const RSVP_STATUS = {
   WILL_TRY: "Sure, will try",
 };
 
-const getRandomColor = () => {
-  const colors = [
-    "#7A4E9D",
-    "#502F87",
-    "#FD5C91",
-    "#A45584",
-    "#392B69",
-    "#0C39A8",
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-};
-
 const GuestRSVPForm = ({
   hostData,
   userType,
@@ -49,21 +37,21 @@ const GuestRSVPForm = ({
   });
 
   useEffect(() => {
-    if (guestData.length > 0) {
-      const confirmed = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-      ).length;
-      const willTry = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-      ).length;
-      const notAnswered = guestData.filter(
-        (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-      ).length;
+  const confirmed =
+    guestData.filter(
+      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+    ).length + 1; // host ka fixed count
 
-      setGuestCounts({ confirmed, willTry, notAnswered });
-    }
-  }, [guestData]);
+  const willTry = guestData.filter(
+    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+  ).length;
 
+  const notAnswered = guestData.filter(
+    (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+  ).length;
+
+  setGuestCounts({ confirmed, willTry, notAnswered });
+}, [guestData]);
   const fetchGuestsInside = async () => {
     if (!eventId) {
       setError("Event ID not found in URL");
@@ -189,24 +177,25 @@ const GuestRSVPForm = ({
     updateRsvpStatus();
   };
 
+ 
   return(
     <>
-    <div className="guest-rsvp-box">
+    <div className={`guest-rsvp-box ${highlightRSVPButtons ? "highlight" : ""}`}>
       {userType !== "host" && !hasSubmitted && (
         <div className="rsvp-box">
           <h4 className="rsvp-title">
             Hope you’ll definitely be coming, just wanted to confirm 😊
           </h4>
 
-          <div className="rsvp-button-group">
+          <div  className="rsvp-button-group">
             <button
-              className={`rsvp-btn ${highlightRSVPButtons ? "highlight" : ""}`}
+              className="rsvp-btn"
                    onClick={() => handleClick(RSVP_STATUS.WILL_COME)}
             >
               Will Come
             </button>
             <button
-              className={`rsvp-btn ${highlightRSVPButtons ? "highlight" : ""}`}
+               className="rsvp-btn"
              onClick={() => handleClick(RSVP_STATUS.WILL_TRY)}
             >
               Sure, will try
@@ -248,7 +237,7 @@ const GuestRSVPForm = ({
       </div>
 
       {showForm && (
-         <div className="modal-overlay-form">
+        <div className="modal-overlay-form">
   <div className="modal-content-form">
     <button className="modal-close-form" onClick={() => setShowForm(false)}>×</button>
     <h2>What Should We Scream When You Enter?</h2>

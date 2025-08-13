@@ -38,4 +38,5 @@ export const GET_ALL_TEMPLATES = "/api/photo/templates";
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
 export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
 export const UPLOAD_THANKYOU_NOTE = "/api/customer/event/event-images";
-export const GET_GUEST_DETTAILS = '/api/customer/event/event-guest'
+export const GET_GUEST_DETTAILS = '/api/customer/event/event-guest';
+export const GET_ALL_EVENTS_BY_USERID = '/api/customer/event/event-invites/all'
