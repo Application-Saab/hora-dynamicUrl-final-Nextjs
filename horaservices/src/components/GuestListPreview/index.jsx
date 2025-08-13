@@ -11,12 +11,12 @@ const RSVP_STATUS = {
 };
 
 
-const GuestListPreview = ({ hostData }) => {
+const GuestListPreview = ({ hostData, urlParams }) => {
   const router = useRouter();
-  const { id } = router.query;
-  let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
-  const paramsUserId = id ? id.split("/")[1] : null;
-  const isHost = localStorage.getItem("userID") === paramsUserId;
+  // const { id } = router.query;
+  // let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
+  // const paramsUserId = id ? id.split("/")[1] : null;
+  // const isHost = localStorage.getItem("userID") === paramsUserId;
 
   const [guestData, setGuestData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const GuestListPreview = ({ hostData }) => {
 
   useEffect(() => {
     const fetchGuests = async () => {
-      if (!eventId) {
+      if (!urlParams?.eventId) {
         setError("Event ID not found in URL");
         setLoading(false);
         return;
@@ -44,7 +44,7 @@ const GuestListPreview = ({ hostData }) => {
 
       try {
         const response = await fetch(
-          `${BASE_URL}/api/customer/event/event-guests/all/${eventId}`,
+          `${BASE_URL}/api/customer/event/event-guests/all/${urlParams?.eventId}`,
           {
             headers: {
               Authorization: `${token}`, // Add token in Authorization header
@@ -66,44 +66,28 @@ const GuestListPreview = ({ hostData }) => {
     };
 
     fetchGuests();
-  }, [eventId]);
+  }, [urlParams?.eventId]);
 
+  useEffect(() => {
+    if (guestData.length > 0) {
+      const confirmed = guestData.filter(
+        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+      ).length;
+      const willTry = guestData.filter(
+        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+      ).length;
+      const notAnswered = guestData.filter(
+        (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+      ).length;
 
-useEffect(() => {
-  if (!hostData) {
-    setGuestCounts({ confirmed: 0, willTry: 0, notAnswered: 0 });
-    return;
-  }
-
-  // Host + guest combine & remove duplicates
- let allPeople = [hostData, ...guestData].filter(
-  (p, idx, arr) => arr.findIndex(x => String(x._id) === String(p._id)) === idx
-);
-
-
-  // Host ka RSVP default "will Come"
-allPeople = allPeople.map(p =>
-  String(p._id) === String(hostData._id) && !p.rsvpStatus
-    ? { ...p, rsvpStatus: RSVP_STATUS.WILL_COME }
-    : p
-);
-
-
-  const confirmed = allPeople.filter(p => p.rsvpStatus === RSVP_STATUS.WILL_COME).length;
-  const willTry = allPeople.filter(p => p.rsvpStatus === RSVP_STATUS.WILL_TRY).length;
-  const notAnswered = allPeople.filter(p => !p.rsvpStatus).length;
-
-  setGuestCounts({ confirmed, willTry, notAnswered });
-}, [guestData, hostData]);
-
-
-
-
+      setGuestCounts({ confirmed, willTry, notAnswered });
+    }
+  }, [guestData]);
 
   if (loading) return <div>Loading...</div>;
 
-  // if (guestData.length === 0) return null;
-if (guestData.length === 0 && !isHost) return null;
+  if (guestData.length === 0) return null;
+
   return (
   
     <div className="guest-preview-card">
@@ -115,16 +99,11 @@ if (guestData.length === 0 && !isHost) return null;
       <Image src={train} alt="Train Guests" className="train-image" />
     </div>
     {/* Overlaid counts */}
-    {/* <div className="guest-count-overlay">
+    <div className="guest-count-overlay">
       <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
       <span className="separator">|</span>
       <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
-    </div> */}
-    <div className="guest-count-overlay">
-  <span className="confirmed"> Confirm - {guestCounts?.confirmed || 0}</span>
-  <span className="separator">|</span>
-  <span className="try"> Will Try - {guestCounts?.willTry || 0}</span>
-</div>
+    </div>
   </div>
 
   {/* View Full List Button */}

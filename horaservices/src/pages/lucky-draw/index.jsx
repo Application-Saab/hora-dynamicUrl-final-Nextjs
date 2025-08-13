@@ -15,7 +15,8 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
   );
   const router = useRouter();
   const { id } = router.query;
-  let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
+  const slug = router.query.slug || [];
+  let eventId = slug[1]
   const userId = localStorage.getItem("userID");
 
   const [preview, setPreview] = useState(null);

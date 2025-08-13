@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import styles from "./RSVPPopup.module.css";
 
@@ -7,21 +9,6 @@ const RSVP_STATUS = {
 };
 
 const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
-  // ✅ Combine host + guests and remove duplicates by _id
-  const combinedList = hostData
-    ? [hostData, ...guestData].filter(
-        (p, idx, arr) =>
-          arr.findIndex(x => String(x._id) === String(p._id)) === idx
-      )
-    : guestData;
-
-  // ✅ Set RSVP default for host if not set
-  const finalList = combinedList.map(p =>
-    String(p._id) === String(hostData?._id) && !p.rsvpStatus
-      ? { ...p, rsvpStatus: RSVP_STATUS.WILL_COME }
-      : p
-  );
-
   return (
     <>
       <div className={styles.backdrop} onClick={onClose} />
@@ -32,22 +19,24 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
         <div className={styles.list}>
           {!loading && !error && (
             <>
-              {finalList.map((person, idx) => (
+              {hostData && (
+                <div className={styles.row}>
+                  <span className={styles.name}>{hostData.Name}</span>
+                  <span className={styles.check}>✔</span>
+                </div>
+              )}
+
+              {guestData.map((guest, idx) => (
                 <div key={idx} className={styles.row}>
-                  <span className={styles.name}>
-                    {person.name || person.Name || person.fullName || "Unknown"}{" "}
-                    {String(person._id) === String(hostData?._id) && (
-                      <strong>(Host)</strong>
-                    )}
-                  </span>
+                  <span className={styles.name}>{guest.name}</span>
                   <span
                     className={
-                      person.rsvpStatus === RSVP_STATUS.WILL_COME
+                      guest.rsvpStatus === RSVP_STATUS.WILL_COME
                         ? styles.check
                         : styles.dash
                     }
                   >
-                    {person.rsvpStatus === RSVP_STATUS.WILL_COME ? "✔" : "―"}
+                    {guest.rsvpStatus === RSVP_STATUS.WILL_COME ? "✔" : "―"}
                   </span>
                 </div>
               ))}
@@ -64,4 +53,3 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
 };
 
 export default RSVPPopup;
-
