@@ -171,7 +171,7 @@ const InvitationCard = () => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages]);
+  }, [urlParams.eventId, userID, refetchLuckyDraw, refetchEventImages]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -326,6 +326,8 @@ const InvitationCard = () => {
   console.log("ishost", isHost);
 
   // determine from props or state
+  const [highlightRSVPButtons, setHighlightRSVPButtons] = useState(false);
+
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -442,18 +444,16 @@ const InvitationCard = () => {
     router.push("/templates");
   };
   const formatDate = (dateString) => {
-  if (!dateString) return "";
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  return new Date(dateString).toLocaleDateString(undefined, options);
-};
+    if (!dateString) return "";
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   const handleWhatsAppShare = () => {
     const inviteURL = `localhost:3000/wonderland/${orderDetails.userId}/${orderDetails.id}/guest`;
-    const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${
-      orderDetails["Event Type"] || "Birthday"
-    }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${
-      orderDetails.Address || "Venue"
-    }\n\n👉 Tap to view the invite:\n${inviteURL}`;
+    const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${orderDetails["Event Type"] || "Birthday"
+      }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${orderDetails.Address || "Venue"
+      }\n\n👉 Tap to view the invite:\n${inviteURL}`;
 
     const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappLink, "_blank");
@@ -497,10 +497,10 @@ const InvitationCard = () => {
       : "";
     const formattedTime = formData.time
       ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
       : "";
 
     const finalImage = uploadedImage || orderDetails?.Image || "";
@@ -625,7 +625,7 @@ const InvitationCard = () => {
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams,refetchLuckyDraw]);
+  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -769,51 +769,51 @@ const InvitationCard = () => {
       setWallUploading(false);
     }
   };
- const handleDeleteImage = async (imageId, imageType) => {
-   if (!confirm("Are you sure you want to delete this image?")) return;
- 
-   try {
-     const res = await fetch(
-       `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-       {
-         method: "POST",
-         headers: {
-           Authorization: token, // ✅ token without "Bearer "
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({ userId: userID, imageId, imageType }),
-       }
-     );
- 
-     const data = await res.json();
- 
-     if (!data.error) {
-       setEventAllImages((prev) => {
-         const newImages = prev.filter((img) => img._id !== imageId);
- 
-         if (newImages.length === 0) {
-           setIsImageOpen(false);
-         } else {
-           let newIndex = selectedIndex;
-           if (selectedIndex >= newImages.length) {
-             newIndex = newImages.length - 1;
-           }
-           setSelectedIndex(newIndex);
-           setSelectedImage(newImages[newIndex]);
-         }
- 
-         return newImages;
-       });
- 
-       alert("Image deleted successfully");
-     } else {
-       alert(data.message || "Failed to delete image");
-     }
-   } catch (err) {
-     console.error("Delete error:", err);
-     alert("Server error while deleting");
-   }
- };
+  const handleDeleteImage = async (imageId, imageType) => {
+    if (!confirm("Are you sure you want to delete this image?")) return;
+
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: token, // ✅ token without "Bearer "
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: userID, imageId, imageType }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.error) {
+        setEventAllImages((prev) => {
+          const newImages = prev.filter((img) => img._id !== imageId);
+
+          if (newImages.length === 0) {
+            setIsImageOpen(false);
+          } else {
+            let newIndex = selectedIndex;
+            if (selectedIndex >= newImages.length) {
+              newIndex = newImages.length - 1;
+            }
+            setSelectedIndex(newIndex);
+            setSelectedImage(newImages[newIndex]);
+          }
+
+          return newImages;
+        });
+
+        alert("Image deleted successfully");
+      } else {
+        alert(data.message || "Failed to delete image");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Server error while deleting");
+    }
+  };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -929,14 +929,14 @@ const InvitationCard = () => {
                           🎉 Let your friends and family join in the joy! <br />
                           A special day is waiting — don’t miss the celebration!
                         </p>
-                       <div className="invite-buttons">
+                        <div className="invite-buttons">
                           {/* <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
                           </button> */}
-                      
+
                           <button className="btn-share" onClick={handleWhatsAppShare}>
                             <span>Share Invitation</span>
                             <span className="icon-bg">
@@ -948,7 +948,7 @@ const InvitationCard = () => {
                     )}
                   </div>
 
-                
+
                   {/* {isHost || hasSubmitted ? (
                     <GuestListPreview
                       guestList={guestList}
@@ -985,49 +985,49 @@ const InvitationCard = () => {
                     />
                   )} */}
                   {isHost ? (
-  
-  <GuestListPreview
-    guestList={guestList}
-    loading={loading}
-    userType={userType}
-    hostData={orderDetails}
-    urlParams={urlParams}
-  />
-) : hasSubmitted ? (
- 
-  <GuestListPreview
-    guestList={guestList}
-    loading={loading}
-    userType={userType}
-    hostData={orderDetails}
-    urlParams={urlParams}
-  />
-) : (
- 
-  <GuestRSVPForm
-    hostData={orderDetails}
-    userType={userType}
-    guestList={guestList}
-    loading={loading}
-    userId={userID}
-    eventId={urlParams.eventId}
-    hasSubmitted={hasSubmitted}
-    setHasSubmitted={setHasSubmitted}
-    setShowPopupGuest={setShowPopupGuest}
-    onSubmit={(data) => {
-      const payload = {
-        ...data,
-        rsvpId: id,
-        userId: secondId,
-      };
-      localStorage.setItem(
-        `rsvp_submitted_${id}_${secondId}`,
-        "true"
-      );
-      setHasSubmitted(true);
-    }}
-  />
-)}
+
+                    <GuestListPreview
+                      guestList={guestList}
+                      loading={loading}
+                      userType={userType}
+                      hostData={orderDetails}
+                      urlParams={urlParams}
+                    />
+                  ) : hasSubmitted ? (
+
+                    <GuestListPreview
+                      guestList={guestList}
+                      loading={loading}
+                      userType={userType}
+                      hostData={orderDetails}
+                      urlParams={urlParams}
+                    />
+                  ) : (
+
+                    <GuestRSVPForm
+                      hostData={orderDetails}
+                      userType={userType}
+                      guestList={guestList}
+                      loading={loading}
+                      userId={userID}
+                      eventId={urlParams.eventId}
+                      hasSubmitted={hasSubmitted}
+                      setHasSubmitted={setHasSubmitted}
+                      setShowPopupGuest={setShowPopupGuest}
+                      onSubmit={(data) => {
+                        const payload = {
+                          ...data,
+                          rsvpId: id,
+                          userId: secondId,
+                        };
+                        localStorage.setItem(
+                          `rsvp_submitted_${id}_${secondId}`,
+                          "true"
+                        );
+                        setHasSubmitted(true);
+                      }}
+                    />
+                  )}
 
 
                   {/* 💌 Thank You Note Popup */}
@@ -1065,6 +1065,7 @@ const InvitationCard = () => {
                     >
                       Click Now
                     </button>
+
                   </div>
                 ) : (
                   <div className="lucky-draw-banner">
@@ -1089,12 +1090,31 @@ const InvitationCard = () => {
                       alt="Luck Draw Banner"
                       className="banner-img"
                     />
-                    <button
+                    {/* <button
                       className="click-now-btn"
                       onClick={() => setShowLuckyDrawPopup(true)}
                     >
                       Click Now
+                    </button> */}
+                    <button
+                      className="click-now-btn"
+                      onClick={() => {
+                        if (!hasSubmitted) {
+                          // RSVP submit nahi hua → highlight effect
+                          setHighlightRSVPButtons(true);
+                          setTimeout(() => setHighlightRSVPButtons(false), 1500); // 1.5 sec highlight
+                          return;
+                        }
+                        setShowLuckyDrawPopup(true); // RSVP submit hua → normal behaviour
+                      }}
+                      style={{
+                        ...(highlightRSVPButtons ? { border: "2px solid red", animation: "pulse 1.5s" } : {}),
+                      }}
+                    >
+                      Click Now
                     </button>
+
+
                   </div>
                 ) : (
                   <div className="lucky-draw-banner">
@@ -1111,19 +1131,19 @@ const InvitationCard = () => {
                   </div>
                 ))}
 
-                <div style={styles.wrapper}>
-                   <h2 style={styles.heading}>
-                     <Image src={wallCamera} alt="Camera Icon" style={{ width: 70, height: 50 }} />
-                     Celebration Wall
-                   </h2>
-             
-                   <p style={styles.subheading}>
-                     A wall filled with your party’s happiest moments and heartfelt messages.
-                   </p>
-             
-                   {/* Action Buttons */}
-                   <div className="tabs-container" style={styles.tabsContainer}>
-                     {actions.map((action, index) => (
+              <div style={styles.wrapper}>
+                <h2 style={styles.heading}>
+                  <Image src={wallCamera} alt="Camera Icon" style={{ width: 70, height: 50 }} />
+                  Celebration Wall
+                </h2>
+
+                <p style={styles.subheading}>
+                  A wall filled with your party’s happiest moments and heartfelt messages.
+                </p>
+
+                {/* Action Buttons */}
+                <div className="tabs-container" style={styles.tabsContainer}>
+                  {/* {actions.map((action, index) => (
                        <button
                          key={index}
                          onClick={() => {
@@ -1142,134 +1162,164 @@ const InvitationCard = () => {
                          <Image src={action.image} alt={action.title} style={styles.iconStyle} />
                          <span style={styles.buttonLabel}>{action.title}</span>
                        </button>
-                     ))}
-                     <input
-                       type="file"
-                       id="imageUploadInput"
-                       multiple
-                       accept="image/*"
-                       style={{ display: "none" }}
-                       onChange={handleImageUpload}
-                     />
-                   </div>
-             
-                   {/* Images Grid */}
-                   <div style={{ position: "relative", marginTop: "auto" }}>
-                     {wallUploading && (
-                       <div
-                         style={{
-                           position: "absolute",
-                           top: 0, left: 0, right: 0, bottom: 0,
-                           background: "rgba(255, 255, 255, 0.8)",
-                           display: "flex", justifyContent: "center",
-                           zIndex: 2,
-                         }}
-                       >
-                         <div className="spinner" />
-                       </div>
-                     )}
-             
-                     <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
-                       {eventAllImages.length === 0 ? (
-                         <>
-                           <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
-                           <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
-                           <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
-                           <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
-                           <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
-                           <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
-                           <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
-                           <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
-                         </>
-                       ) : (
-                       eventAllImages.map((item, index) => (
-                           <div key={item._id || index} className="collage-item" style={{ position: "relative" }}>
-                             <img
-                               src={item.imageUrl}
-                               alt={`Event Image ${index + 1}`}
-                               className="event-image"
-                                onClick={() => {
-                         setSelectedImage(item); // Image select karo
-                         setIsImageOpen(true);   // Lightbox open karo
-                       }}
-                             />
-             
-                           </div>
-                         ))
-                       )}
-                     </div>
-                   </div>
-             
-             
-             
-             
-             {isImageOpen && selectedImage && (
-               <div
-                 className="custom-lightbox"
-                 onClick={() => setIsImageOpen(false)} 
-               >
-                
-                 <div
-                   className="lightbox-inner"
-                   onClick={(e) => e.stopPropagation()} 
-                 >
-                   <div {...handlers} className="lightbox-content">
-                    
-                     <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
-             
-                     <button
-                       className="nav-btn prev-btn"
-                       onClick={() => {
-                         const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
-                         setSelectedIndex(prevIndex);
-                         setSelectedImage(eventAllImages[prevIndex]);
-                       }}
-                     >
-                       ‹
-                     </button>
-             
-                    
-                     <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
-              {selectedImage.name && (
-                       <p className="lightbox-name">Shared BY : {selectedImage.name}</p>
-                     )}
-                     <button
-                       className="nav-btn next-btn"
-                       onClick={() => {
-                         const nextIndex = (selectedIndex + 1) % eventAllImages.length;
-                         setSelectedIndex(nextIndex);
-                         setSelectedImage(eventAllImages[nextIndex]);
-                       }}
-                     >
-                       ›
-                     </button>
-             
-                     {/* Toolbar */}
-                     <div className="lightbox-toolbar">
-                       <button
-                         className="lightbox-btn"
-                         onClick={() => handleDownload(selectedImage.imageUrl)}
-                       >
-                         <Image src={downloadicon} alt="Download" style={{ width: 30, height: 30 }} />
-                       </button>
-             
-                       {selectedImage.userId === userID && (
-                         <button
-                           className="lightbox-btn"
-                           onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-                         >
-                           <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
-                         </button>
-                       )}
-                     </div>
-                   </div>
-                 </div>
-               </div>
-             )}
-             
-             
-             
-                 </div>
+                     ))} */}
+                  {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (!hasSubmitted) {
+                          setHighlightRSVPButtons(true);
+                          setTimeout(() => setHighlightRSVPButtons(false), 1000);
+                          return; // RSVP submit nahi hua → button ka kaam nahi chalega
+                        }
+
+                        if (action.title === "Upload Pictures") {
+                          const input = document.getElementById("imageUploadInput");
+                          if (input) {
+                            input.value = "";
+                            input.click();
+                          }
+                        } else {
+                          handleActionClick(action.title);
+                        }
+                      }}
+                      style={{
+                        ...styles.actionButton,
+                        ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
+                      }}
+                    >
+                      <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+                      <span style={styles.buttonLabel}>{action.title}</span>
+                    </button>
+                  ))}
+
+                  <input
+                    type="file"
+                    id="imageUploadInput"
+                    multiple
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleImageUpload}
+                  />
+                </div>
+
+                {/* Images Grid */}
+                <div style={{ position: "relative", marginTop: "auto" }}>
+                  {wallUploading && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        background: "rgba(255, 255, 255, 0.8)",
+                        display: "flex", justifyContent: "center",
+                        zIndex: 2,
+                      }}
+                    >
+                      <div className="spinner" />
+                    </div>
+                  )}
+
+                  <div className="event-grid" style={{ opacity: wallUploading ? 0.5 : 1, margin: "10px auto" }}>
+                    {eventAllImages.length === 0 ? (
+                      <>
+                        <div className="collage-item"><Image src={photo1} className="collage-image" alt="img1" /></div>
+                        <div className="collage-item"><Image src={photo4} className="collage-image" alt="sticky note" /></div>
+                        <div className="collage-item"><Image src={photo3} className="collage-image" alt="img2" /></div>
+                        <div className="collage-item"><Image src={photo7} className="collage-image" alt="img2" /></div>
+                        <div className="collage-item"><Image src={photo8} className="collage-image" alt="img5" /></div>
+                        <div className="collage-item"><Image src={photo2} className="collage-image" alt="img3" /></div>
+                        <div className="collage-item"><Image src={photo5} className="collage-image" alt="img4" /></div>
+                        <div className="collage-item"><Image src={photo6} className="collage-image" alt="img5" /></div>
+                      </>
+                    ) : (
+                      eventAllImages.map((item, index) => (
+                        <div key={item._id || index} className="collage-item" style={{ position: "relative" }}>
+                          <img
+                            src={item.imageUrl}
+                            alt={`Event Image ${index + 1}`}
+                            className="event-image"
+                            onClick={() => {
+                              setSelectedImage(item); // Image select karo
+                              setIsImageOpen(true);   // Lightbox open karo
+                            }}
+                          />
+
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+
+
+
+                {isImageOpen && selectedImage && (
+                  <div
+                    className="custom-lightbox"
+                    onClick={() => setIsImageOpen(false)}
+                  >
+
+                    <div
+                      className="lightbox-inner"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div {...handlers} className="lightbox-content">
+
+                        <button className="close-btn" onClick={() => setIsImageOpen(false)}>✖</button>
+
+                        <button
+                          className="nav-btn prev-btn"
+                          onClick={() => {
+                            const prevIndex = (selectedIndex - 1 + eventAllImages.length) % eventAllImages.length;
+                            setSelectedIndex(prevIndex);
+                            setSelectedImage(eventAllImages[prevIndex]);
+                          }}
+                        >
+                          ‹
+                        </button>
+
+
+                        <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
+                        {selectedImage.name && (
+                          <p className="lightbox-name">Shared BY : {selectedImage.name}</p>
+                        )}
+                        <button
+                          className="nav-btn next-btn"
+                          onClick={() => {
+                            const nextIndex = (selectedIndex + 1) % eventAllImages.length;
+                            setSelectedIndex(nextIndex);
+                            setSelectedImage(eventAllImages[nextIndex]);
+                          }}
+                        >
+                          ›
+                        </button>
+
+                        {/* Toolbar */}
+                        <div className="lightbox-toolbar">
+                          <button
+                            className="lightbox-btn"
+                            onClick={() => handleDownload(selectedImage.imageUrl)}
+                          >
+                            <Image src={downloadicon} alt="Download" style={{ width: 30, height: 30 }} />
+                          </button>
+
+                          {selectedImage.userId === userID && (
+                            <button
+                              className="lightbox-btn"
+                              onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
+                            >
+                              <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+
+
+              </div>
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1355,7 +1405,7 @@ const InvitationCard = () => {
 };
 
 const styles = {
-button: {
+  button: {
     backgroundColor: "#6b21a8",
     color: "#fff",
     padding: "10px 20px",
@@ -1376,7 +1426,7 @@ button: {
     background: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
   },
-  
+
   wrapper: {
     padding: 20,
     fontFamily: 'sans-serif',
