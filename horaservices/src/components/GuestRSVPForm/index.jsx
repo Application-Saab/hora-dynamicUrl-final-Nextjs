@@ -37,21 +37,21 @@ const GuestRSVPForm = ({
   });
 
   useEffect(() => {
-    if (guestData.length > 0) {
-      const confirmed = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-      ).length;
-      const willTry = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-      ).length;
-      const notAnswered = guestData.filter(
-        (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-      ).length;
+  const confirmed =
+    guestData.filter(
+      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+    ).length + 1; // host ka fixed count
 
-      setGuestCounts({ confirmed, willTry, notAnswered });
-    }
-  }, [guestData]);
+  const willTry = guestData.filter(
+    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+  ).length;
 
+  const notAnswered = guestData.filter(
+    (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+  ).length;
+
+  setGuestCounts({ confirmed, willTry, notAnswered });
+}, [guestData]);
   const fetchGuestsInside = async () => {
     if (!eventId) {
       setError("Event ID not found in URL");

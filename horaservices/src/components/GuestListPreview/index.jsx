@@ -13,10 +13,6 @@ const RSVP_STATUS = {
 
 const GuestListPreview = ({ hostData, urlParams }) => {
   const router = useRouter();
-  // const { id } = router.query;
-  // let eventId = id ? id.split("/")[0] : null; // Extract eventId from URL
-  // const paramsUserId = id ? id.split("/")[1] : null;
-  // const isHost = localStorage.getItem("userID") === paramsUserId;
 
   const [guestData, setGuestData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,21 +64,36 @@ const GuestListPreview = ({ hostData, urlParams }) => {
     fetchGuests();
   }, [urlParams?.eventId]);
 
-  useEffect(() => {
-    if (guestData.length > 0) {
-      const confirmed = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-      ).length;
-      const willTry = guestData.filter(
-        (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-      ).length;
-      const notAnswered = guestData.filter(
-        (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-      ).length;
+  // useEffect(() => {
+  //   if (guestData.length > 0) {
+  //     const confirmed = guestData.filter(
+  //       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+  //     ).length;
+  //     const willTry = guestData.filter(
+  //       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+  //     ).length;
+  //     const notAnswered = guestData.filter(
+  //       (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+  //     ).length;
 
-      setGuestCounts({ confirmed, willTry, notAnswered });
-    }
-  }, [guestData]);
+  //     setGuestCounts({ confirmed, willTry, notAnswered });
+  //   }
+  // }, [guestData]);
+useEffect(() => {
+  const confirmed = guestData.filter(
+    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+  ).length + 1; // host hamesha confirmed me
+
+  const willTry = guestData.filter(
+    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+  ).length;
+
+  const notAnswered = guestData.filter(
+    (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+  ).length;
+
+  setGuestCounts({ confirmed, willTry, notAnswered });
+}, [guestData]);
 
   if (loading) return <div>Loading...</div>;
 
