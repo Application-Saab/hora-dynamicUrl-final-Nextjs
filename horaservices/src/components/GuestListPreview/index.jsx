@@ -86,7 +86,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
 
   if (loading) return <div>Loading...</div>;
 
-  if (guestData.length === 0) return null;
+  
 
   return (
   

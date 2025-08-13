@@ -942,8 +942,8 @@ const InvitationCard = () => {
                     )}
                   </div>
 
-                  {/* 🎉 RSVP Section */}
-                  {isHost || hasSubmitted ? (
+                
+                  {/* {isHost || hasSubmitted ? (
                     <GuestListPreview
                       guestList={guestList}
                       loading={loading}
@@ -977,7 +977,52 @@ const InvitationCard = () => {
                         setHasSubmitted(true);
                       }}
                     />
-                  )}
+                  )} */}
+                  {isHost ? (
+  
+  <GuestListPreview
+    guestList={guestList}
+    loading={loading}
+    userType={userType}
+    hostData={orderDetails}
+    urlParams={urlParams}
+  />
+) : hasSubmitted ? (
+ 
+  <GuestListPreview
+    guestList={guestList}
+    loading={loading}
+    userType={userType}
+    hostData={orderDetails}
+    urlParams={urlParams}
+  />
+) : (
+ 
+  <GuestRSVPForm
+    hostData={orderDetails}
+    userType={userType}
+    guestList={guestList}
+    loading={loading}
+    userId={userID}
+    eventId={urlParams.eventId}
+    hasSubmitted={hasSubmitted}
+    setHasSubmitted={setHasSubmitted}
+    setShowPopupGuest={setShowPopupGuest}
+    onSubmit={(data) => {
+      const payload = {
+        ...data,
+        rsvpId: id,
+        userId: secondId,
+      };
+      localStorage.setItem(
+        `rsvp_submitted_${id}_${secondId}`,
+        "true"
+      );
+      setHasSubmitted(true);
+    }}
+  />
+)}
+
 
                   {/* 💌 Thank You Note Popup */}
                   {showPopup && (

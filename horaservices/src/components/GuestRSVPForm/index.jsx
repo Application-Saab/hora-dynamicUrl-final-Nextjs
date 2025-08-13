@@ -177,126 +177,25 @@ const GuestRSVPForm = ({
     updateRsvpStatus();
   };
 
-  // return (
-  //   <div className="guest-rsvp-box">
-  //     {userType !== "host" && !hasSubmitted && (
-  //       <>
-  //         <h4 className="rsvp-title">
-  //           Hope you’ll definitely be coming, just wanted to confirm 😊
-  //         </h4>
-
-  //         <div className="rsvp-button-group">
-  //           <button
-  //             className={`rsvp-btn ${highlightRSVPButtons ? "highlight" : ""}`}
-  //             onClick={() => handleClick(RSVP_STATUS.WILL_COME)}
-  //           >
-  //             Will Come
-  //           </button>
-  //           <button
-  //             className={`rsvp-btn ${highlightRSVPButtons ? "highlight" : ""}`}
-  //             onClick={() => handleClick(RSVP_STATUS.WILL_TRY)}
-  //           >
-  //             Sure, will try
-  //           </button>
-  //         </div>
-  //       </>
-  //     )}
-
-  //     <h3 className="coming-title">See Who’s Coming!</h3>
-
-  //     <div className="guest-preview-header">
-  //       <span className="guests-label">Guests</span>
-  //       <span
-  //         className="view-list"
-  //         onClick={handleViewFullListClick}
-  //         style={{ cursor: "pointer" }}
-  //       >
-  //         View Full List
-  //       </span>
-  //     </div>
-
-  //     <div className="guest-circle-container">
-  //       {guestData?.length > 0 &&
-  //       (guestCounts?.confirmed > 0 || guestCounts?.willTry > 0)
-  //         ? guestData?.slice(0, 7).map((g, idx) => (
-  //             <div
-  //               className="circle"
-  //               key={idx}
-  //               style={{ backgroundColor: getRandomColor(), color: "white" }}
-  //             >
-  //               {g.name?.charAt(0).toUpperCase()}
-  //             </div>
-  //           ))
-  //         : Array.from({ length: 5 }).map((_, idx) => (
-  //             <div className="circle placeholder" key={idx}></div>
-  //           ))}
-  //     </div>
-
-  //     <div className="guest-count-row">
-  //       <span className="confirmed">Confirmed - {guestCounts?.confirmed}</span>
-  //       <span className="separator">|</span>
-  //       <span className="try">Will Try - {guestCounts?.willTry}</span>
-  //     </div>
-
-  //     {showForm && (
-  //       <div className="modal-overlay-form">
-  //         <div className="modal-content-form">
-  //           <button className="modal-close-form" onClick={handleClose}>
-  //             ×
-  //           </button>
-  //           <form onSubmit={handleSubmit}>
-  //             <input
-  //               type="text"
-  //               placeholder="Your Name"
-  //               value={guestName}
-  //               onChange={(e) => setGuestName(e.target.value)}
-  //               required
-  //             />
-  //             <button
-  //               type="submit"
-  //               className="submit-btn"
-  //               disabled={submitting}
-  //             >
-  //               {submitting ? "Submitting..." : "Submit RSVP"}
-  //             </button>
-  //           </form>
-  //         </div>
-  //       </div>
-  //     )}
-  //     {openRsvpList && (
-  //       <RSVPPopup
-  //         hostData={hostData}
-  //         guestData={guestData}
-  //         loading={loading}
-  //         error={error}
-  //         onClose={() => {
-  //           setOpenRsvpList(false);
-  //           setHasSubmitted(true)
-  //         }}
-  //       />
-  //     )}
-  //   </div>
-  // );
- 
  
   return(
     <>
-    <div className="guest-rsvp-box">
+    <div className={`guest-rsvp-box ${highlightRSVPButtons ? "highlight" : ""}`}>
       {userType !== "host" && !hasSubmitted && (
         <div className="rsvp-box">
           <h4 className="rsvp-title">
             Hope you’ll definitely be coming, just wanted to confirm 😊
           </h4>
 
-          <div className="rsvp-button-group">
+          <div  className="rsvp-button-group">
             <button
-              className={`rsvp-btn ${highlightRSVPButtons ? "highlight" : ""}`}
+              className="rsvp-btn"
                    onClick={() => handleClick(RSVP_STATUS.WILL_COME)}
             >
               Will Come
             </button>
             <button
-              className={`rsvp-btn ${highlightRSVPButtons ? "highlight" : ""}`}
+               className="rsvp-btn"
              onClick={() => handleClick(RSVP_STATUS.WILL_TRY)}
             >
               Sure, will try
@@ -338,29 +237,6 @@ const GuestRSVPForm = ({
       </div>
 
       {showForm && (
-        // <div className="modal-overlay-form">
-        //   <div className="modal-content-form">
-        //     <button className="modal-close-form" onClick={() => setShowForm(false)}>
-        //       ×
-        //     </button>
-        //     <form onSubmit={handleSubmit}>
-        //       <input
-        //         type="text"
-        //         placeholder="Your Name"
-        //         value={guestName}
-        //         onChange={(e) => setGuestName(e.target.value)}
-        //         required
-        //       />
-        //       <button
-        //         type="submit"
-        //         className="submit-btn"
-        //         disabled={submitting}
-        //       >
-        //         {submitting ? "Submitting..." : "Submit RSVP"}
-        //       </button>
-        //     </form>
-        //   </div>
-        // </div>
         <div className="modal-overlay-form">
   <div className="modal-content-form">
     <button className="modal-close-form" onClick={() => setShowForm(false)}>×</button>
