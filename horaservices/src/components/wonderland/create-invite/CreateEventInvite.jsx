@@ -5,9 +5,14 @@ import imageBackground from "../../../assets/imageBackground.jpg";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 
-const CreateEventInvite = ({ slug }) => {
+const CreateEventInvite = ({ slug, showModalCreate, handleClose }) => {
+
+  if(!showModalCreate){
+    return router.replace(`/wonderland/${slug[0]}`)
+  }
+
   const fileInputRef = useRef(null);
-  const [showModal, setShowModal] = useState(true);
+  // const [showModal, setShowModal] = useState(true);
   const router = useRouter();
   const hostUserId = slug[0];
   const eventId = slug[1];
@@ -160,17 +165,22 @@ const CreateEventInvite = ({ slug }) => {
         eventTypeSearch: "",
       });
       setUploadedImage(null);
-    //   setSelectedImage("");
+      //   setSelectedImage("");
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
     }
   };
 
+  // const handleCancelClick = () => {
+  //   // setShowModal(false);
+  //   return router.replace(`/wonderland/${hostUserId}`);
+  // };
+
   return (
     <InvitationModal
-      showModal={showModal}
-      handleClose={() => setShowModal(false)}
+      showModal={showModalCreate}
+      handleClose={handleClose}
       handleSave={handleSave}
       formData={formData}
       setFormData={setFormData}
@@ -181,6 +191,7 @@ const CreateEventInvite = ({ slug }) => {
       fileInputRef={fileInputRef}
       orderDetails={""}
       imageBackground={imageBackground}
+      slug={slug}
     />
   );
 };

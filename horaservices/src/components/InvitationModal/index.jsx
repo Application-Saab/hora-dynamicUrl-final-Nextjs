@@ -1,8 +1,9 @@
 import React from "react";
 import "./invitaionmodal.css";
-import camera from "../../assets/camera.png"
+import camera from "../../assets/camera.png";
 import Image from "next/image";
 import Head from "next/head";
+import { useRouter } from "next/router";
 const InvitationModal = ({
   showModal,
   handleClose,
@@ -16,24 +17,35 @@ const InvitationModal = ({
   fileInputRef,
   orderDetails,
   imageBackground,
+  // slug,
 }) => {
+  if (!showModal) return null;
+  const router = useRouter();
+  const { page } = router.query;
   const [showDropdown, setShowDropdown] = React.useState(false);
-
+  const slug = router.query.slug || [];
+  
   const filteredOptions = eventOptions.filter((opt) =>
     opt.toLowerCase().includes((formData.eventTypeSearch || "").toLowerCase())
   );
 
-  if (!showModal) return null;
-React.useEffect(() => {
-  const dateInput = document.querySelector('input[name="date"]');
-  const timeInput = document.querySelector('input[name="time"]');
+  React.useEffect(() => {
+    const dateInput = document.querySelector('input[name="date"]');
+    const timeInput = document.querySelector('input[name="time"]');
 
-  if (dateInput?.value) dateInput.classList.add("has-value");
-  if (timeInput?.value) timeInput.classList.add("has-value");
-}, []);
+    if (dateInput?.value) dateInput.classList.add("has-value");
+    if (timeInput?.value) timeInput.classList.add("has-value");
+  }, []);
+
+  const handleCancelClick = () => {
+    if (page === "create-invite" && slug.length > 0) {
+      return router.push(`/wonderland/${slug[0]}`);
+    } else {
+      handleClose();
+    }
+  };
 
   return (
-
     <div
       className="modal-overlay"
       style={{ backgroundImage: `url(${imageBackground?.src || ""})` }}
@@ -45,10 +57,9 @@ React.useEffect(() => {
         />
       </Head>
       <div className="invitation-container-form">
-        <h2 className="invite-Title">Create  Invitation</h2>
+        <h2 className="invite-Title">Create Invitation</h2>
 
         <p className="invite-subtitle">
-        
           🌟 A day of joy, a heart full of cheer 🌟 <br />
           The people we love, we wish to have near. <br />
           So come join us and make memories dear.
@@ -97,58 +108,66 @@ React.useEffect(() => {
             </ul>
           )}
         </div> */}
-<div className="dropdown-wrapper">
-  <input
-    type="text"
-    placeholder="Event Name"
-    className="input-field"
-    value={formData.eventTypeSearch ?? formData.eventType ?? ""}
-    onChange={(e) => {
-      const val = e.target.value;
-      setFormData((prev) => ({
-        ...prev,
-        eventType: val,
-        eventTypeSearch: val,
-      }));
+        <div className="dropdown-wrapper">
+          <input
+            type="text"
+            placeholder="Event Name"
+            className="input-field"
+            value={formData.eventTypeSearch ?? formData.eventType ?? ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFormData((prev) => ({
+                ...prev,
+                eventType: val,
+                eventTypeSearch: val,
+              }));
 
-      // Only show dropdown if matching options exist
-      const matches = eventOptions.filter((opt) =>
-        opt.toLowerCase().includes(val.toLowerCase())
-      );
-      setShowDropdown(matches.length > 0);
-    }}
-    onFocus={() => {
-      // Show dropdown only if current text has matches
-      const matches = eventOptions.filter((opt) =>
-        opt.toLowerCase().includes(
-          (formData.eventTypeSearch ?? formData.eventType ?? "").toLowerCase()
-        )
-      );
-      setShowDropdown(matches.length > 0);
-    }}
-    autoComplete="off"
-  />
+              // Only show dropdown if matching options exist
+              const matches = eventOptions.filter((opt) =>
+                opt.toLowerCase().includes(val.toLowerCase())
+              );
+              setShowDropdown(matches.length > 0);
+            }}
+            onFocus={() => {
+              // Show dropdown only if current text has matches
+              const matches = eventOptions.filter((opt) =>
+                opt
+                  .toLowerCase()
+                  .includes(
+                    (
+                      formData.eventTypeSearch ??
+                      formData.eventType ??
+                      ""
+                    ).toLowerCase()
+                  )
+              );
+              setShowDropdown(matches.length > 0);
+            }}
+            autoComplete="off"
+          />
 
-  {showDropdown && formData.eventTypeSearch && filteredOptions.length > 0 && (
-    <ul className="dropdown-list">
-      {filteredOptions.map((opt) => (
-        <li
-          key={opt}
-          onClick={() => {
-            setFormData((prev) => ({
-              ...prev,
-              eventType: opt,
-              eventTypeSearch: opt,
-            }));
-            setShowDropdown(false);
-          }}
-        >
-          {opt}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
+          {showDropdown &&
+            formData.eventTypeSearch &&
+            filteredOptions.length > 0 && (
+              <ul className="dropdown-list">
+                {filteredOptions.map((opt) => (
+                  <li
+                    key={opt}
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        eventType: opt,
+                        eventTypeSearch: opt,
+                      }));
+                      setShowDropdown(false);
+                    }}
+                  >
+                    {opt}
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
 
         <input
           type="text"
@@ -182,7 +201,6 @@ React.useEffect(() => {
             />
           </div>
         </div>
-
 
         <input
           type="text"
@@ -228,7 +246,7 @@ React.useEffect(() => {
         )}
 
         <div className="button-row">
-          <button className="cancel-btn" onClick={handleClose}>
+          <button className="cancel-btn" onClick={handleCancelClick}>
             Cancel
           </button>
           <button className="save-btn" onClick={handleSave}>
