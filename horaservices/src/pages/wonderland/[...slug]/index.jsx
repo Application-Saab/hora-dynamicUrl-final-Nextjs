@@ -66,6 +66,7 @@ const InvitationCard = () => {
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
+  const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -171,7 +172,7 @@ const InvitationCard = () => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages]);
+  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages, refetchAddGuest]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -193,6 +194,7 @@ const InvitationCard = () => {
           setErrorAddGuest(data.message || "Failed to add guest");
         } else {
           console.log("Guest added successfully:", data);
+          setRefetchAddGuest(true)
           setErrorAddGuest(null);
         }
       } catch (err) {
