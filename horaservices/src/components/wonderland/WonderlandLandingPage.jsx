@@ -1,27 +1,161 @@
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
+// import "./WonderlandLandingPage.css";
+// import { useRouter } from "next/router";
+// import CreateInviteModal from "./create-invite/CreateEventInvite";
+// import { BASE_URL } from "@/utils/apiconstants";
+// import OtpLoginPopup from "@/components/OtpLoginPopup";
+
+// const WonderlandLandingPage = ({ userId, slug }) => {
+//   const router = useRouter();
+//   const isLoggedIn = localStorage.getItem("isLoggedIn");
+//   const [isUerLoggedIn, setIsUserLoggedIn] = useState(false);
+//   const [showModal, setShowModal] = useState(false);
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   useEffect(() => {
+//     setIsUserLoggedIn(isLoggedIn);
+//   }, [isLoggedIn, isModalOpen]);
+//   const { page } = router.query;
+//   const token = localStorage.getItem("token");
+//   const USER_ID = localStorage.getItem("userID");
+
+//   const handleClickCreateInvite = async () => {
+//     try {
+//       const payload = {
+//         userId: userId || "", // prop se userId
+//         eventType: "",
+//         hostName: "",
+//         eventDate: "",
+//         eventTime: "",
+//         location: "",
+//         hostImage: null,
+//       };
+
+//       const res = await fetch(
+//         `${BASE_URL}/api/customer/event/create-event-invite`,
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//             Authorization: token,
+//           },
+//           body: JSON.stringify(payload),
+//         }
+//       );
+
+//       const result = await res.json();
+
+//       if (res.ok) {
+//         console.log("Invitation created:", result);
+//         const finalEventId = result?.data?._id;
+//         if (finalEventId) {
+//           router.replace(
+//             `/wonderland/${userId}/${finalEventId}?page=create-invite`
+//           );
+//         }
+//       } else {
+//         console.error("Failed:", result);
+//         alert("Failed to save invitation.");
+//       }
+//     } catch (err) {
+//       console.error("Error:", err);
+//       alert("Something went wrong.");
+//     }
+//   };
+
+//   // Agar query me create-invite hai to direct component render karo
+//   if (page === "create-invite") {
+//     return <CreateInviteModal slug={slug} />;
+//   }
+
+//   useEffect(() => {
+//     if (isUerLoggedIn && USER_ID && slug?.length === 0) {
+//       router.replace(`/wonderland/${USER_ID}`);
+//     }
+//   }, [slug, USER_ID, isUerLoggedIn]);
+
+//   useEffect(() => {
+//     const checkAuth = () => {
+//       if (isLoggedIn !== "true") {
+//         setIsModalOpen(true);
+//         setShowModal(false);
+//       } else {
+//         setIsModalOpen(false);
+//       }
+//     };
+//     checkAuth();
+//   }, []);
+
+//   // useEffect(() => {
+//   //   if (!isUerLoggedIn && slug?.length <= 2) {
+//   //     router.replace("/wonderland");
+//   //   }
+//   // }, [isUerLoggedIn, slug]);
+
+//   return (
+//     <>
+//       {!isLoggedIn &&
+//         slug?.length === 3 &&
+//         slug[2].toLowerCase() === "guest" && (
+//           <div className="no-orders">
+//             <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+//           </div>
+//         )}
+//       {!userId && slug?.length <= 0 && (
+//         <div className="no-orders">
+//           <div>Wonderland Public Landing Page</div>
+//         </div>
+//       )}
+//       {userId && slug?.length === 1 && (
+//         <div className="logedin-container">
+//           <div>Wonderland User Specific Page for Id : {userId}</div>
+//           <div>
+//             <button
+//               type="button"
+//               className="btn btn-primary"
+//               onClick={handleClickCreateInvite}
+//             >
+//               Create Invite
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default WonderlandLandingPage;
+
+
+
+
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./WonderlandLandingPage.css";
 import { useRouter } from "next/router";
 import CreateInviteModal from "./create-invite/CreateEventInvite";
 import { BASE_URL } from "@/utils/apiconstants";
 import OtpLoginPopup from "@/components/OtpLoginPopup";
 
-const WonderlandLandingPage = ({ userId, slug }) => {
+const WonderlandLandingPage = ({ userId }) => {
   const router = useRouter();
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-  const [isUerLoggedIn, setIsUserLoggedIn] = useState(false);
+  const slug = router.query.slug || [];
+  const { page } = router.query;
+
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
+  const [loggedinUserId, setLoggedinUserId] = useState(
+    localStorage.getItem("userID") || ""
+  );
+
+  const token = localStorage.getItem("token");
+
   const [showModal, setShowModal] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  useEffect(() => {
-    setIsUserLoggedIn(isLoggedIn);
-  }, [isLoggedIn, isModalOpen]);
-  const { page } = router.query;
-  const token = localStorage.getItem("token");
-  const USER_ID = localStorage.getItem("userID");
 
   const handleClickCreateInvite = async () => {
     try {
       const payload = {
-        userId: userId || "", // prop se userId
+        userId: userId || "",
         eventType: "",
         hostName: "",
         eventDate: "",
@@ -67,44 +201,68 @@ const WonderlandLandingPage = ({ userId, slug }) => {
     return <CreateInviteModal slug={slug} />;
   }
 
-  useEffect(() => {
-    if (isUerLoggedIn && USER_ID && slug?.length === 0) {
-      router.replace(`/wonderland/${USER_ID}`);
+  // 🔹 Jab login state change hoti hai to redirect
+  useLayoutEffect(() => {
+    if (isUserLoggedIn && loggedinUserId && slug?.length === 0) {
+      router.push(`/wonderland/${loggedinUserId}`);
     }
-  }, [slug, USER_ID, isUerLoggedIn]);
+  }, [slug, loggedinUserId, isUserLoggedIn]);
 
   useEffect(() => {
-    const checkAuth = () => {
-      if (isLoggedIn !== "true") {
-        setIsModalOpen(true);
-        setShowModal(false);
-      } else {
-        setIsModalOpen(false);
-      }
-    };
-    checkAuth();
-  }, []);
+    if (
+      isUserLoggedIn &&
+      loggedinUserId &&
+      slug?.length === 3 &&
+      slug[2] === "guest"
+    ) {
+      router.push(`/wonderland/${loggedinUserId}/${slug[1]}/guest`);
+    }
+  }, [loggedinUserId, isUserLoggedIn, slug]);
 
-  // useEffect(() => {
-  //   if (!isUerLoggedIn && slug?.length <= 2) {
-  //     router.replace("/wonderland");
-  //   }
-  // }, [isUerLoggedIn, slug]);
+  useEffect(() => {
+    if (!isUserLoggedIn) {
+      setIsModalOpen(true);
+      setShowModal(false);
+    } else {
+      setIsModalOpen(false);
+    }
+  }, [isUserLoggedIn]);
+
+  // 🔹 LocalStorage changes listen karo
+  useEffect(() => {
+    const syncLoginState = () => {
+      setIsUserLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+      setLoggedinUserId(localStorage.getItem("userID") || "");
+    };
+
+    window.addEventListener("storage", syncLoginState);
+
+    // Same tab ke liye bhi run karo jab login success ke baad tum manually set karte ho
+    window.addEventListener("loginStateChange", syncLoginState);
+
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("loginStateChange", syncLoginState);
+    };
+  }, []);
 
   return (
     <>
-      {!isLoggedIn &&
+      {!isUserLoggedIn &&
+        slug &&
         slug?.length === 3 &&
         slug[2].toLowerCase() === "guest" && (
           <div className="no-orders">
             <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
           </div>
         )}
+
       {!userId && slug?.length <= 0 && (
         <div className="no-orders">
           <div>Wonderland Public Landing Page</div>
         </div>
       )}
+
       {userId && slug?.length === 1 && (
         <div className="logedin-container">
           <div>Wonderland User Specific Page for Id : {userId}</div>

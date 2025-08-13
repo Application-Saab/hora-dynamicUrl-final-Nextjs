@@ -148,6 +148,8 @@ const sendWelcomeMessage = async (mobileNumber) => {
         localStorage.setItem("mobileNumber", mobileNumber);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userID', response.data.data._id);
+        // Trigger event so same tab listeners also catch it
+        window.dispatchEvent(new Event("loginStateChange"));
         sendWelcomeMessage(mobileNumber);
         setError('');
         setOtpError('');
