@@ -441,8 +441,14 @@ const InvitationCard = () => {
   const handleClick = () => {
     router.push("/templates");
   };
+  const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
   const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland/${orderDetails.userId}/${orderDetails._id}/guest`;
+    const inviteURL = `localhost:3000/wonderland/${orderDetails.userId}/${orderDetails.id}/guest`;
     const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${
       orderDetails["Event Type"] || "Birthday"
     }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${
@@ -896,7 +902,7 @@ const InvitationCard = () => {
         <>
           {slug.length === 3 && orderDetails && (
             <>
-              {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
+              {/* {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />} */}
 
               {orderDetails ? (
                 <>
@@ -924,12 +930,12 @@ const InvitationCard = () => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                        <div className="invite-buttons">
-                          <button className="btn-explore" onClick={handleClick}>
+                          {/* <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button>
+                          </button> */}
                       
                           <button className="btn-share" onClick={handleWhatsAppShare}>
                             <span>Share Invitation</span>
@@ -1225,7 +1231,7 @@ const InvitationCard = () => {
                     
                      <img src={selectedImage.imageUrl} alt="" className="lightbox-img" />
               {selectedImage.name && (
-                       <p className="lightbox-name">{selectedImage.name}</p>
+                       <p className="lightbox-name">Shared BY : {selectedImage.name}</p>
                      )}
                      <button
                        className="nav-btn next-btn"
