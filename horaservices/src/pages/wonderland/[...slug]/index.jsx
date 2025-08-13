@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import "../EventInvitation.css"
+import "../EventInvitation.css";
 import { useSwipeable } from "react-swipeable";
 import tabIcon1 from "../../../assets/galleryicon.jpg";
 import tabIcon2 from "../../../assets/thankyouicon.png";
@@ -50,9 +50,13 @@ import { eventOptions } from "../constants";
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
   const router = useRouter();
-  const { id: id2 } = router.query;
-  const slug = router.query.slug || []
-  console.log('%c [ slug ]-54', 'font-size:13px; background:pink; color:#bf2c9f;', slug)
+  const { page } = router.query;
+  const slug = router.query.slug || [];
+  console.log(
+    "%c [ slug ]-54",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    slug
+  );
   const userID = localStorage.getItem("userID");
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const token = localStorage.getItem("token");
@@ -74,11 +78,15 @@ const InvitationCard = () => {
   const [refetchEventImages, setRefetchEventImages] = useState(false);
 
   const [urlParams, setUrlParams] = useState({
-    eventId: slug[0] || "",
-    eventUserId: slug[1] || "",
-    userType: slug[2] ? slug[2].toLowerCase() : "host",
+    eventUserId: slug[0] || "",
+    eventId: slug[1] || "",
+    userType: slug[2] ? slug[2].toLowerCase() : "",
   });
-  console.log('%c [ urlParams ]-77', 'font-size:13px; background:pink; color:#bf2c9f;', urlParams)
+  console.log(
+    "%c [ urlParams ]-77",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    urlParams
+  );
 
   useEffect(() => {
     if (slug.length) {
@@ -86,8 +94,8 @@ const InvitationCard = () => {
       if (slug.length >= 2) {
         setUrlParams((prev) => ({
           ...prev,
-          eventId: slug[0],
-          eventUserId: slug[1],
+          eventUserId: slug[0],
+          eventId: slug[1],
           userType: slug[2] ? slug[2].toLowerCase() : "host",
         }));
       }
@@ -130,10 +138,10 @@ const InvitationCard = () => {
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
-      if (userID === urlParams.eventUserId) {
-        // alert(`${userID} and ${urlParams.eventUserId} are same`);
-        return;
-      }
+      // if (userID === urlParams.eventUserId) {
+      //   // alert(`${userID} and ${urlParams.eventUserId} are same`);
+      //   return;
+      // }
       if (!urlParams.eventId || !userID) {
         setErrorGetGuest("Event id or user id not found!");
         return;
@@ -161,7 +169,7 @@ const InvitationCard = () => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, urlParams.eventUserId, refetchLuckyDraw]);
+  }, [urlParams.eventId, userID, refetchLuckyDraw]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -264,7 +272,7 @@ const InvitationCard = () => {
     // const queryId = router.query.id;
     // const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
 
-    if (urlParams && slug.length >= 2) {
+    if (urlParams && slug.length > 2) {
       const eventId = urlParams.eventId;
       const userId = urlParams.eventUserId;
       const userType = urlParams.userType || "host";
@@ -282,7 +290,7 @@ const InvitationCard = () => {
 
       setLoadingUser(false);
     }
-  }, [router.isReady, router.query.id]);
+  }, [router.isReady, urlParams]);
 
   const userId = localStorage.getItem("userID");
   const userPhoneNumber = localStorage.getItem("mobileNumber");
@@ -432,7 +440,7 @@ const InvitationCard = () => {
     router.push("/templates");
   };
   const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland/${orderDetails._id}/${orderDetails.userId}/guest`;
+    const inviteURL = `https://horaservices.com/wonderland/${orderDetails.userId}/${orderDetails._id}/guest`;
     const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${
       orderDetails["Event Type"] || "Birthday"
     }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${
@@ -535,7 +543,7 @@ const InvitationCard = () => {
         setShowModal(false);
 
         // ✅ Update the URL route to reflect changes
-        router.replace(`/wonderland/${finalEventId}/${loggedInUserId}/host`);
+        router.replace(`/wonderland/${loggedInUserId}/${finalEventId}/host`);
       } else {
         alert("Failed to save invitation.");
       }
@@ -594,8 +602,8 @@ const InvitationCard = () => {
   useEffect(() => {
     // Show modal if user visits /wonderland (no id in query)
     if (
-      window.location.pathname === "/wonderland" &&
-      !window.location.search.includes("id=")
+      window.location.pathname === "/wonderland"
+      // !window.location.search.includes("id=")
     ) {
       setShowModal(true);
     }
@@ -605,11 +613,11 @@ const InvitationCard = () => {
     if (!router.isReady) return;
 
     // const queryId = router.query.id;
-    const eventId = urlParams?.eventId
+    const eventId = urlParams?.eventId;
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId]);
+  }, [router.isReady, urlParams?.eventId, urlParams]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -665,7 +673,6 @@ const InvitationCard = () => {
       })
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
-
 
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
@@ -867,17 +874,12 @@ const InvitationCard = () => {
   useEffect(() => {
     if (!router.isReady || !userId || !sendCustomerId) return;
 
-    // const { id } = router.query;
-    // if (!id || typeof id !== "string") return;
-
-    // const [eventId, routeUserId, routeRole] = id.split("/");
-
     const actualRole =
       userId.trim() === sendCustomerId.trim() ? "host" : "guest";
 
-    if (urlParams?.eventUserId === userId && urlParams?.userType === actualRole) return;
-    const newRoute = `${urlParams?.eventId}/${urlParams?.eventUserId}/${actualRole}`;
-    // const newRoute = `${eventId}/${userId}/${actualRole}`;
+    if (urlParams?.userType === actualRole) return; // Only check role; skip if already correct
+
+    const newRoute = `${urlParams?.eventUserId}/${urlParams?.eventId}/${actualRole}`;
     router.replace(`/wonderland/${newRoute}`);
   }, [router.isReady, urlParams, userId, sendCustomerId]);
 
@@ -885,452 +887,475 @@ const InvitationCard = () => {
     <>
       {!isLoggedIn ? (
         <div className="no-orders">
-          <WonderlandLandingPage />
+          <WonderlandLandingPage isLoggedIn={isLoggedIn} />
         </div>
       ) : (
         <>
-          {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
-
-          {orderDetails ? (
+          {slug.length === 3 && orderDetails && (
             <>
-              <div
-                className="invitation-container"
-                style={{
-                  backgroundImage: `url(${imageBackGround.src})`,
-                }}
-              >
-                <FinalInviteDisplay
-                  orderDetails={orderDetails}
-                  handleClick={handleClick}
-                  isHost={userType === "host"}
-                />
-              </div>
+              {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
-              <div>
-                {isHost && (
-                  <div className="invite-section">
-                    <h2 className="invite-titles">
-                      Turn invites into memory albums!
-                    </h2>
-                    <p className="invite-subtitles">
-                      🎉 Let your friends and family join in the joy! <br />A
-                      special day is waiting — don’t miss the celebration!
-                    </p>
-                    <div className="invite-butons">
-                      <button className="btn-explore" onClick={handleClick}>
-                        <i className="fa fa-paper-plane" /> Explore Themes
-                      </button>
-                      <button
-                        className="btn-share"
-                        onClick={handleWhatsAppShare}
-                      >
-                        <i className="fa fa-whatsapp" /> Share Invitation
-                      </button>
-                    </div>
+              {orderDetails ? (
+                <>
+                  <div
+                    className="invitation-container"
+                    style={{
+                      backgroundImage: `url(${imageBackGround.src})`,
+                    }}
+                  >
+                    <FinalInviteDisplay
+                      orderDetails={orderDetails}
+                      handleClick={handleClick}
+                      isHost={userType === "host"}
+                    />
                   </div>
-                )}
-              </div>
 
-              {/* 🎉 RSVP Section */}
-              {isHost || hasSubmitted ? (
-                <GuestListPreview
-                  guestList={guestList}
-                  loading={loading}
-                  userType={userType}
-                  hostData={orderDetails}
-                  urlParams={urlParams}
-                />
+                  <div>
+                    {isHost && (
+                      <div className="invite-section">
+                        <h2 className="invite-titles">
+                          Turn invites into memory albums!
+                        </h2>
+                        <p className="invite-subtitles">
+                          🎉 Let your friends and family join in the joy! <br />
+                          A special day is waiting — don’t miss the celebration!
+                        </p>
+                        <div className="invite-butons">
+                          <button className="btn-explore" onClick={handleClick}>
+                            <i className="fa fa-paper-plane" /> Explore Themes
+                          </button>
+                          <button
+                            className="btn-share"
+                            onClick={handleWhatsAppShare}
+                          >
+                            <i className="fa fa-whatsapp" /> Share Invitation
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 🎉 RSVP Section */}
+                  {isHost || hasSubmitted ? (
+                    <GuestListPreview
+                      guestList={guestList}
+                      loading={loading}
+                      userType={userType}
+                      hostData={orderDetails}
+                      urlParams={urlParams}
+                    />
+                  ) : (
+                    <GuestRSVPForm
+                      hostData={orderDetails}
+                      userType={userType}
+                      guestList={guestList}
+                      loading={loading}
+                      userId={userID}
+                      eventId={urlParams.eventId}
+                      // fetchGuests={fetchGuests}
+                      hasSubmitted={hasSubmitted}
+                      setHasSubmitted={setHasSubmitted}
+                      setShowPopupGuest={setShowPopupGuest}
+                      onSubmit={(data) => {
+                        const payload = {
+                          ...data,
+                          rsvpId: id,
+                          userId: secondId,
+                        };
+                        // handleRSVPSubmit(payload);
+                        localStorage.setItem(
+                          `rsvp_submitted_${id}_${secondId}`,
+                          "true"
+                        );
+                        setHasSubmitted(true);
+                      }}
+                    />
+                  )}
+
+                  {/* 💌 Thank You Note Popup */}
+                  {showPopup && (
+                    <div className="popup-thankyounaote-container">
+                      <ThankYouNotePopup
+                        noteTitle={noteTitle}
+                        setNoteTitle={setNoteTitle}
+                        noteBy={noteBy}
+                        setNoteBy={setNoteBy}
+                        errorMsg={errorMsg}
+                        setErrorMsg={setErrorMsg}
+                        handleDownload={handleDownload}
+                        handleClosePopup={handleClosePopup}
+                        noteRef={noteRef}
+                      />
+                    </div>
+                  )}
+                </>
               ) : (
-                <GuestRSVPForm
-                  hostData={orderDetails}
-                  userType={userType}
-                  guestList={guestList}
-                  loading={loading}
-                  userId={userID}
-                  eventId={urlParams.eventId}
-                  // fetchGuests={fetchGuests}
-                  hasSubmitted={hasSubmitted}
-                  setHasSubmitted={setHasSubmitted}
-                  setShowPopupGuest={setShowPopupGuest}
-                  onSubmit={(data) => {
-                    const payload = {
-                      ...data,
-                      rsvpId: id,
-                      userId: secondId,
-                    };
-                    // handleRSVPSubmit(payload);
-                    localStorage.setItem(
-                      `rsvp_submitted_${id}_${secondId}`,
-                      "true"
-                    );
-                    setHasSubmitted(true);
-                  }}
-                />
+                <p>Loading...</p>
               )}
-
-              {/* 💌 Thank You Note Popup */}
-              {showPopup && (
-                <div className="popup-thankyounaote-container">
-                  <ThankYouNotePopup
-                    noteTitle={noteTitle}
-                    setNoteTitle={setNoteTitle}
-                    noteBy={noteBy}
-                    setNoteBy={setNoteBy}
-                    errorMsg={errorMsg}
-                    setErrorMsg={setErrorMsg}
-                    handleDownload={handleDownload}
-                    handleClosePopup={handleClosePopup}
-                    noteRef={noteRef}
-                  />
-                </div>
-              )}
-            </>
-          ) : (
-            <p>Loading...</p>
-          )}
-          {isHost &&
-            orderDetails &&
-            (orderDetails?.luckyDraws?.length === 0 ? (
-              <div className="lucky-draw-banner">
-                <Image
-                  src={LuckDrawBanner}
-                  alt="Luck Draw Banner"
-                  className="banner-img"
-                />
-                <button
-                  className="click-now-btn"
-                  onClick={() => setShowLuckyDrawPopup(true)}
-                >
-                  Click Now
-                </button>
-              </div>
-            ) : (
-              <div className="lucky-draw-banner">
-                <Image
-                  src={LuckDrawTicketBanner}
-                  alt="Luck Draw Banner"
-                  className="banner-img"
-                />
-                <span className="ticket-number">
-                  {orderDetails &&
-                    orderDetails?.luckyDraws?.length > 0 &&
-                    orderDetails?.luckyDraws[0]?.ticketNumber}
-                </span>
-              </div>
-            ))}
-          {!isHost &&
-            guestDetails &&
-            (guestDetails?.luckyDraws?.length === 0 ? (
-              <div className="lucky-draw-banner">
-                <Image
-                  src={LuckDrawBanner}
-                  alt="Luck Draw Banner"
-                  className="banner-img"
-                />
-                <button
-                  className="click-now-btn"
-                  onClick={() => setShowLuckyDrawPopup(true)}
-                >
-                  Click Now
-                </button>
-              </div>
-            ) : (
-              <div className="lucky-draw-banner">
-                <Image
-                  src={LuckDrawTicketBanner}
-                  alt="Luck Draw Banner"
-                  className="banner-img"
-                />
-                <span className="ticket-number">
-                  {guestDetails &&
-                    guestDetails?.luckyDraws?.length > 0 &&
-                    guestDetails?.luckyDraws[0]?.ticketNumber}
-                </span>
-              </div>
-            ))}
-
-          <div style={styles.wrapper}>
-            <h2 style={styles.heading}>
-              <Image
-                src={wallCamera}
-                alt="Camera Icon"
-                style={{ width: 60, height: 60 }}
-              />
-              Celebration Wall
-            </h2>
-
-            <p style={styles.subheading}>
-              A wall filled with your party’s happiest moments and heartfelt
-              messages.
-            </p>
-
-            {/* Action Buttons */}
-            <div className="tabs-container" style={styles.tabsContainer}>
-              {actions.map((action, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    if (action.title === "Upload Pictures") {
-                      const input = document.getElementById("imageUploadInput");
-                      if (input) {
-                        input.value = "";
-                        input.click();
-                      }
-                    } else {
-                      handleActionClick(action.title);
-                    }
-                  }}
-                  style={styles.actionButton}
-                >
-                  <Image
-                    src={action.image}
-                    alt={action.title}
-                    style={styles.iconStyle}
-                  />
-                  <span style={styles.buttonLabel}>{action.title}</span>
-                </button>
-              ))}
-              <input
-                type="file"
-                id="imageUploadInput"
-                multiple
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleImageUpload}
-              />
-            </div>
-
-            {/* Images Grid */}
-            <div style={{ position: "relative", marginTop: "auto" }}>
-              {wallUploading && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: "rgba(255, 255, 255, 0.8)",
-                    display: "flex",
-                    justifyContent: "center",
-                    zIndex: 2,
-                  }}
-                >
-                  <div className="spinner" />
-                </div>
-              )}
-
-              <div
-                className="event-grid"
-                style={{
-                  opacity: wallUploading ? 0.5 : 1,
-                  margin: "10px auto",
-                }}
-              >
-                {eventAllImages.length === 0 ? (
-                  <>
-                    <div className="collage-item">
-                      <Image
-                        src={photo1}
-                        className="collage-image"
-                        alt="img1"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo4}
-                        className="collage-image"
-                        alt="sticky note"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo3}
-                        className="collage-image"
-                        alt="img2"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo7}
-                        className="collage-image"
-                        alt="img2"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo8}
-                        className="collage-image"
-                        alt="img5"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo2}
-                        className="collage-image"
-                        alt="img3"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo5}
-                        className="collage-image"
-                        alt="img4"
-                      />
-                    </div>
-                    <div className="collage-item">
-                      <Image
-                        src={photo6}
-                        className="collage-image"
-                        alt="img5"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  eventAllImages.map((item, index) => (
-                    <div
-                      key={item._id || index}
-                      className="collage-item"
-                      style={{ position: "relative" }}
-                    >
-                      <img
-                        src={item.imageUrl}
-                        alt={`Event Image ${index + 1}`}
-                        className="event-image"
-                        onClick={() => {
-                          setSelectedImage(item); // Image select karo
-                          setIsImageOpen(true); // Lightbox open karo
-                        }}
-                      />
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {isImageOpen && selectedImage && (
-              <div className="custom-lightbox">
-                <div {...handlers} className="lightbox-content">
-                  {/* Close Button */}
-                  <button
-                    className="close-btn"
-                    onClick={() => setIsImageOpen(false)}
-                  >
-                    ✖
-                  </button>
-
-                  {/* Prev Button */}
-                  <button
-                    className="nav-btn prev-btn"
-                    onClick={() => {
-                      const prevIndex =
-                        (selectedIndex - 1 + eventAllImages.length) %
-                        eventAllImages.length;
-                      setSelectedIndex(prevIndex);
-                      setSelectedImage(eventAllImages[prevIndex]);
-                    }}
-                  >
-                    ‹
-                  </button>
-
-                  {/* Image */}
-                  <img
-                    src={selectedImage.imageUrl}
-                    alt=""
-                    className="lightbox-img"
-                  />
-
-                  {/* Next Button */}
-                  <button
-                    className="nav-btn next-btn"
-                    onClick={() => {
-                      const nextIndex =
-                        (selectedIndex + 1) % eventAllImages.length;
-                      setSelectedIndex(nextIndex);
-                      setSelectedImage(eventAllImages[nextIndex]);
-                    }}
-                  >
-                    ›
-                  </button>
-
-                  {/* Toolbar */}
-                  <div className="lightbox-toolbar">
+              {isHost &&
+                orderDetails &&
+                (orderDetails?.luckyDraws?.length === 0 ? (
+                  <div className="lucky-draw-banner">
+                    <Image
+                      src={LuckDrawBanner}
+                      alt="Luck Draw Banner"
+                      className="banner-img"
+                    />
                     <button
-                      className="lightbox-btn"
-                      onClick={() => handleDownload(selectedImage.imageUrl)}
+                      className="click-now-btn"
+                      onClick={() => setShowLuckyDrawPopup(true)}
+                    >
+                      Click Now
+                    </button>
+                  </div>
+                ) : (
+                  <div className="lucky-draw-banner">
+                    <Image
+                      src={LuckDrawTicketBanner}
+                      alt="Luck Draw Banner"
+                      className="banner-img"
+                    />
+                    <span className="ticket-number">
+                      {orderDetails &&
+                        orderDetails?.luckyDraws?.length > 0 &&
+                        orderDetails?.luckyDraws[0]?.ticketNumber}
+                    </span>
+                  </div>
+                ))}
+              {!isHost &&
+                guestDetails &&
+                (guestDetails?.luckyDraws?.length === 0 ? (
+                  <div className="lucky-draw-banner">
+                    <Image
+                      src={LuckDrawBanner}
+                      alt="Luck Draw Banner"
+                      className="banner-img"
+                    />
+                    <button
+                      className="click-now-btn"
+                      onClick={() => setShowLuckyDrawPopup(true)}
+                    >
+                      Click Now
+                    </button>
+                  </div>
+                ) : (
+                  <div className="lucky-draw-banner">
+                    <Image
+                      src={LuckDrawTicketBanner}
+                      alt="Luck Draw Banner"
+                      className="banner-img"
+                    />
+                    <span className="ticket-number">
+                      {guestDetails &&
+                        guestDetails?.luckyDraws?.length > 0 &&
+                        guestDetails?.luckyDraws[0]?.ticketNumber}
+                    </span>
+                  </div>
+                ))}
+
+              <div style={styles.wrapper}>
+                <h2 style={styles.heading}>
+                  <Image
+                    src={wallCamera}
+                    alt="Camera Icon"
+                    style={{ width: 60, height: 60 }}
+                  />
+                  Celebration Wall
+                </h2>
+
+                <p style={styles.subheading}>
+                  A wall filled with your party’s happiest moments and heartfelt
+                  messages.
+                </p>
+
+                {/* Action Buttons */}
+                <div className="tabs-container" style={styles.tabsContainer}>
+                  {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (action.title === "Upload Pictures") {
+                          const input =
+                            document.getElementById("imageUploadInput");
+                          if (input) {
+                            input.value = "";
+                            input.click();
+                          }
+                        } else {
+                          handleActionClick(action.title);
+                        }
+                      }}
+                      style={styles.actionButton}
                     >
                       <Image
-                        src={downloadicon}
-                        alt="Download"
-                        style={{ width: 30, height: 30 }}
+                        src={action.image}
+                        alt={action.title}
+                        style={styles.iconStyle}
                       />
+                      <span style={styles.buttonLabel}>{action.title}</span>
                     </button>
+                  ))}
+                  <input
+                    type="file"
+                    id="imageUploadInput"
+                    multiple
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleImageUpload}
+                  />
+                </div>
 
-                    {selectedImage.userId === userID && (
-                      <button
-                        className="lightbox-btn"
-                        onClick={() =>
-                          handleDeleteImage(
-                            selectedImage._id,
-                            selectedImage.imageType
-                          )
-                        }
-                      >
-                        <Image
-                          src={deletebtn}
-                          alt="Delete"
-                          style={{ width: 30, height: 30 }}
-                        />
-                      </button>
+                {/* Images Grid */}
+                <div style={{ position: "relative", marginTop: "auto" }}>
+                  {wallUploading && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: "rgba(255, 255, 255, 0.8)",
+                        display: "flex",
+                        justifyContent: "center",
+                        zIndex: 2,
+                      }}
+                    >
+                      <div className="spinner" />
+                    </div>
+                  )}
+
+                  <div
+                    className="event-grid"
+                    style={{
+                      opacity: wallUploading ? 0.5 : 1,
+                      margin: "10px auto",
+                    }}
+                  >
+                    {eventAllImages.length === 0 ? (
+                      <>
+                        <div className="collage-item">
+                          <Image
+                            src={photo1}
+                            className="collage-image"
+                            alt="img1"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo4}
+                            className="collage-image"
+                            alt="sticky note"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo3}
+                            className="collage-image"
+                            alt="img2"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo7}
+                            className="collage-image"
+                            alt="img2"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo8}
+                            className="collage-image"
+                            alt="img5"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo2}
+                            className="collage-image"
+                            alt="img3"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo5}
+                            className="collage-image"
+                            alt="img4"
+                          />
+                        </div>
+                        <div className="collage-item">
+                          <Image
+                            src={photo6}
+                            className="collage-image"
+                            alt="img5"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      eventAllImages.map((item, index) => (
+                        <div
+                          key={item._id || index}
+                          className="collage-item"
+                          style={{ position: "relative" }}
+                        >
+                          <img
+                            src={item.imageUrl}
+                            alt={`Event Image ${index + 1}`}
+                            className="event-image"
+                            onClick={() => {
+                              setSelectedImage(item); // Image select karo
+                              setIsImageOpen(true); // Lightbox open karo
+                            }}
+                          />
+                        </div>
+                      ))
                     )}
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
 
-          {/* 🎁 Lucky Draw Popup */}
-          {showLuckyDrawPopup && (
-            <div
-              className="popup-luckdraw-overlay"
-              onClick={() => setShowLuckyDrawPopup(false)}
-            >
-              <div
-                className="popup-luckdraw-container"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div
-                  className="popup-luckdraw-content"
-                  style={{ marginBlock: "30px" }}
-                >
-                  <LuckyDrawForm
-                    hostData={orderDetails}
-                    onClose={() => {
-                      setShowLuckyDrawPopup(false);
-                      setRefetchLuckyDraw(!refetchLuckyDraw);
-                    }}
-                  />
-                </div>
+                {isImageOpen && selectedImage && (
+                  <div className="custom-lightbox">
+                    <div {...handlers} className="lightbox-content">
+                      {/* Close Button */}
+                      <button
+                        className="close-btn"
+                        onClick={() => setIsImageOpen(false)}
+                      >
+                        ✖
+                      </button>
+
+                      {/* Prev Button */}
+                      <button
+                        className="nav-btn prev-btn"
+                        onClick={() => {
+                          const prevIndex =
+                            (selectedIndex - 1 + eventAllImages.length) %
+                            eventAllImages.length;
+                          setSelectedIndex(prevIndex);
+                          setSelectedImage(eventAllImages[prevIndex]);
+                        }}
+                      >
+                        ‹
+                      </button>
+
+                      {/* Image */}
+                      <img
+                        src={selectedImage.imageUrl}
+                        alt=""
+                        className="lightbox-img"
+                      />
+
+                      {/* Next Button */}
+                      <button
+                        className="nav-btn next-btn"
+                        onClick={() => {
+                          const nextIndex =
+                            (selectedIndex + 1) % eventAllImages.length;
+                          setSelectedIndex(nextIndex);
+                          setSelectedImage(eventAllImages[nextIndex]);
+                        }}
+                      >
+                        ›
+                      </button>
+
+                      {/* Toolbar */}
+                      <div className="lightbox-toolbar">
+                        <button
+                          className="lightbox-btn"
+                          onClick={() => handleDownload(selectedImage.imageUrl)}
+                        >
+                          <Image
+                            src={downloadicon}
+                            alt="Download"
+                            style={{ width: 30, height: 30 }}
+                          />
+                        </button>
+
+                        {selectedImage.userId === userID && (
+                          <button
+                            className="lightbox-btn"
+                            onClick={() =>
+                              handleDeleteImage(
+                                selectedImage._id,
+                                selectedImage.imageType
+                              )
+                            }
+                          >
+                            <Image
+                              src={deletebtn}
+                              alt="Delete"
+                              style={{ width: 30, height: 30 }}
+                            />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* 🎁 Lucky Draw Popup */}
+              {showLuckyDrawPopup && (
+                <div
+                  className="popup-luckdraw-overlay"
+                  onClick={() => setShowLuckyDrawPopup(false)}
+                >
+                  <div
+                    className="popup-luckdraw-container"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div
+                      className="popup-luckdraw-content"
+                      style={{ marginBlock: "30px" }}
+                    >
+                      <LuckyDrawForm
+                        hostData={orderDetails}
+                        onClose={() => {
+                          setShowLuckyDrawPopup(false);
+                          setRefetchLuckyDraw(!refetchLuckyDraw);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 🛠 Invitation Modal */}
+              {showModal && (
+                <InvitationModal
+                  showModal={showModal}
+                  handleClose={handleClose}
+                  handleSave={handleSave}
+                  formData={formData}
+                  setFormData={setFormData}
+                  handleChange={handleChange}
+                  handleImageChange={handleImageChange}
+                  uploadedImage={uploadedImage}
+                  eventOptions={eventOptions}
+                  fileInputRef={fileInputRef}
+                  orderDetails={orderDetails}
+                  imageBackground={imageBackground}
+                />
+              )}
+            </>
+          )}
+          {slug.length === 1 && (
+            <div>
+              <WonderlandLandingPage
+                isLoggedIn={isLoggedIn}
+                userId={userID}
+                slug={slug}
+              />
             </div>
           )}
-
-          {/* 🛠 Invitation Modal */}
-          {showModal && (
-            <InvitationModal
-              showModal={showModal}
-              handleClose={handleClose}
-              handleSave={handleSave}
-              formData={formData}
-              setFormData={setFormData}
-              handleChange={handleChange}
-              handleImageChange={handleImageChange}
-              uploadedImage={uploadedImage}
-              eventOptions={eventOptions}
-              fileInputRef={fileInputRef}
-              orderDetails={orderDetails}
-              imageBackground={imageBackground}
-            />
+          {slug.length === 2 && page === "create-invite" && (
+            <div>
+              <WonderlandLandingPage
+                isLoggedIn={isLoggedIn}
+                userId={userID}
+                slug={slug}
+              />
+            </div>
           )}
         </>
       )}
