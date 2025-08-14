@@ -39,7 +39,7 @@ const ThankYouNotePopup = ({
 
       <h1 className="title">Thank You Note</h1>
       <h3 className="subtitlePopUp">
-        Celebrate the moment with a few words of gratitude.
+        Celebrate the moment with few words of gratitude for {} and crew
       </h3>
       <Image
         src={DummySticky}

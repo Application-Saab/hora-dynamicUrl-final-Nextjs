@@ -5,7 +5,7 @@
 } */
 
 .invite-card {
-    background: rgba(255, 255, 255, 0.50);
+    background: rgba(255, 255, 255, 0.54);
     border-radius: 24px;
     padding: 24px 16px;
     width: 100%;
@@ -21,7 +21,6 @@
   font-family: 'Aclonica', sans-serif;
   font-weight: 400;
   font-size: 20px;
-  line-height: 100%;
   text-align: center;
   color: #10235B;
   margin: 16px 0 12px;
@@ -35,11 +34,7 @@
   line-height: 100%;
   text-align: center;
   color: #97538C;
-  text-shadow:
-    -1px -1px 0 #fff,  
-     1px -1px 0 #fff,
-    -1px  1px 0 #fff,
-     1px  1px 0 #fff;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
   margin-bottom: 12px;
 }
 

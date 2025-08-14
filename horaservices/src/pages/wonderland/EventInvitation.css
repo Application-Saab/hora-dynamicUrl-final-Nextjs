@@ -863,18 +863,20 @@ background-color: none !important;
 }
 
 .invite-titles {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-family: 'Aclonica', cursive, sans-serif;
   font-size: 20px;
   font-weight: bold;
   color: #97538c;
   margin-bottom: 10px;
+  padding: 0px 20px 0px 20px;
+      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
 
 .invite-subtitles {
-  font-size: 14px;
+  font-size: 12px;
   color: #000;
   margin-bottom: 20px;
-  line-height: 1.4;
+     font-weight: 500;
 }
 
 .invite-buttons {
@@ -885,17 +887,19 @@ background-color: none !important;
 
 .btn-explore,
 .btn-share {
-  display: flex;
+ display: flex;
   align-items: center;
   gap: 10px;
   border: none;
-  border-radius: 2px;
-  padding: 2px;
-  font-size: 13px;
+  border-radius: 8px;
+ padding: 0px 0px 0px 10px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   color: white;
+  background-color: #25D366; /* WhatsApp green */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-explore {
@@ -912,13 +916,13 @@ background-color: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px; /* small rounded corners, change to 0 for sharp */
+      border-radius: 0px 4px 4px 0px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* optional shadow for better look */
 }
 
 .icon-img {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
 }
 
 

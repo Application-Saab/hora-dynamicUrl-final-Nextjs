@@ -3,7 +3,8 @@ import "./GuestRSVPForm.css";
 import { BASE_URL, UPDATE_RSVP_STATUS } from "@/utils/apiconstants";
 import RSVPPopup from "../RSVPPopup";
 import Image from "next/image";
-import train from "@/assets/train.png"
+import train from "@/assets/train.png";
+import curveBg from "@/assets/train-background.png";
 const RSVP_STATUS = {
   WILL_COME: "will Come",
   WILL_TRY: "Sure, will try",
@@ -206,25 +207,29 @@ const GuestRSVPForm = ({
 </div>
 
       <div className="guest-preview-card">
-        <h3 className="preview-title">Let’s see who’s joining</h3>
-
-        <div className="train-preview-wrapper">
-          <div className="train-gradient-bg">
+        <div className="curve-container">
+          <Image src={curveBg} alt="Curve Background" className="curve-bg" />
+          
+          <h3 className="preview-title">Let’s see who’s joining</h3>
+      
+          {/* 🚂 Train Image */}
+          <div className="train-preview-wrapper">
             <Image src={train} alt="Train Guests" className="train-image" />
+      
+            {/* 🔢 Overlay Guest Counts */}
+            <div className="guest-count-overlay">
+              <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+              <span className="separator">|</span>
+              <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
+            </div>
           </div>
-
-          <div className="guest-count-overlay">
-            <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
-            <span className="separator">|</span>
-            <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
+      
+          {/* 🔘 Full Guest List Button */}
+          <div className="view-list-button" onClick={handleViewFullListClick}>
+            <span className="list-icon">☰</span> Full Guest List
           </div>
         </div>
-
-        <div className="view-list-button"onClick={handleViewFullListClick}>
-          <span className="list-icon">☰</span> Full Guest List
-        </div>
-        
-
+      
         {openRsvpList && (
           <RSVPPopup
             hostData={hostData}

@@ -3,7 +3,8 @@ import "./GuestListPreview.css";
 import RSVPPopup from "../RSVPPopup";
 import { useRouter } from "next/router";
 import { BASE_URL } from "@/utils/apiconstants";
-import train from "@/assets/train.png"
+import train from "@/assets/train.png";
+import curveBg from "@/assets/train-background.png";
 import Image from "next/image";
 const RSVP_STATUS = {
   WILL_COME: "will Come",
@@ -64,21 +65,6 @@ const GuestListPreview = ({ hostData, urlParams }) => {
     fetchGuests();
   }, [urlParams?.eventId]);
 
-  // useEffect(() => {
-  //   if (guestData.length > 0) {
-  //     const confirmed = guestData.filter(
-  //       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-  //     ).length;
-  //     const willTry = guestData.filter(
-  //       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-  //     ).length;
-  //     const notAnswered = guestData.filter(
-  //       (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-  //     ).length;
-
-  //     setGuestCounts({ confirmed, willTry, notAnswered });
-  //   }
-  // }, [guestData]);
 useEffect(() => {
   const confirmed = guestData.filter(
     (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
@@ -102,14 +88,21 @@ useEffect(() => {
   return (
   
     <div className="guest-preview-card">
+    <div className="curve-container">
+  <Image src={curveBg} alt="Curve Background" className="curve-bg" />
   <h3 className="preview-title">Let’s see who’s joining</h3>
 
- 
- <div className="train-preview-wrapper">
-    <div className="train-gradient-bg">
-      <Image src={train} alt="Train Guests" className="train-image" />
-    </div>
-    {/* Overlaid counts */}
+  <div className="train-preview-wrapper">
+    <Image src={train} alt="Train Guests" className="train-image" />
+
+    {/* 🟡 Balloon Letters */}
+    {(guestData || []).slice(0, 5).map((guest, index) => (
+      <span key={index} className={`balloon-letter balloon-${index}`}>
+        {guest?.name?.charAt(0).toUpperCase() || ""}
+      </span>
+    ))}
+
+    {/* 🔢 Guest Count */}
     <div className="guest-count-overlay">
       <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
       <span className="separator">|</span>
@@ -117,11 +110,10 @@ useEffect(() => {
     </div>
   </div>
 
-  {/* View Full List Button */}
   <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
     <span className="list-icon">☰</span> Full Guest List
   </div>
-
+</div>
   {openRsvpList && (
     <RSVPPopup
       hostData={hostData}
@@ -133,7 +125,44 @@ useEffect(() => {
   )}
 </div>
 
+
+
+
   );
 };
 
 export default GuestListPreview;
+{/* <div className="guest-preview-card">
+  <div className="curve-container">
+    <Image src={curveBg} alt="Curve Background" className="curve-bg" />
+    
+    <h3 className="preview-title">Let’s see who’s joining</h3>
+
+   
+    <div className="train-preview-wrapper">
+      <Image src={train} alt="Train Guests" className="train-image" />
+
+     
+      <div className="guest-count-overlay">
+        <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+        <span className="separator">|</span>
+        <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
+      </div>
+    </div>
+
+  
+    <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
+      <span className="list-icon">☰</span> Full Guest List
+    </div>
+  </div>
+
+  {openRsvpList && (
+    <RSVPPopup
+      hostData={hostData}
+      guestData={guestData}
+      loading={loading}
+      error={error}
+      onClose={() => setOpenRsvpList(false)}
+    />
+  )}
+</div> */}

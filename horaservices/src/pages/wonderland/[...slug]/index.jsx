@@ -141,10 +141,6 @@ const InvitationCard = () => {
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
-      // if (userID === urlParams.eventUserId) {
-      //   // alert(`${userID} and ${urlParams.eventUserId} are same`);
-      //   return;
-      // }
       if (!urlParams.eventId || !userID) {
         setErrorGetGuest("Event id or user id not found!");
         return;
@@ -636,8 +632,8 @@ const InvitationCard = () => {
         {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
+          "Content-Type": "application/json",
+          Authorization: token,
           },
         }
       );
@@ -904,7 +900,7 @@ const InvitationCard = () => {
         <>
           {slug.length === 3 && orderDetails && (
             <>
-              {/* {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />} */}
+              {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
               {orderDetails ? (
                 <>
@@ -1165,35 +1161,37 @@ const InvitationCard = () => {
                          <span style={styles.buttonLabel}>{action.title}</span>
                        </button>
                      ))} */}
-                  {actions.map((action, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        if (!hasSubmitted) {
-                          setHighlightRSVPButtons(true);
-                          setTimeout(() => setHighlightRSVPButtons(false), 1000);
-                          return; // RSVP submit nahi hua → button ka kaam nahi chalega
-                        }
+                 {actions.map((action, index) => (
+  <button
+    key={index}
+    onClick={() => {
+      // Guest ke liye: RSVP check
+      if (userType !== "host" && !hasSubmitted) {
+        setHighlightRSVPButtons(true);
+        setTimeout(() => setHighlightRSVPButtons(false), 1000);
+        return; // RSVP submit nahi hua → button ka kaam nahi chalega
+      }
 
-                        if (action.title === "Upload Pictures") {
-                          const input = document.getElementById("imageUploadInput");
-                          if (input) {
-                            input.value = "";
-                            input.click();
-                          }
-                        } else {
-                          handleActionClick(action.title);
-                        }
-                      }}
-                      style={{
-                        ...styles.actionButton,
-                        ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
-                      }}
-                    >
-                      <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-                      <span style={styles.buttonLabel}>{action.title}</span>
-                    </button>
-                  ))}
+      // Upload Pictures
+      if (action.title === "Upload Pictures") {
+        const input = document.getElementById("imageUploadInput");
+        if (input) {
+          input.value = "";
+          input.click();
+        }
+      } else {
+        handleActionClick(action.title);
+      }
+    }}
+    style={{
+      ...styles.actionButton,
+      ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
+    }}
+  >
+    <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+    <span style={styles.buttonLabel}>{action.title}</span>
+  </button>
+))}
 
                   <input
                     type="file"
@@ -1397,6 +1395,7 @@ const InvitationCard = () => {
             onClick={() => setShowPopupGuest(false)}
           />
           <RSVPPopup
+           hostData={hostData}
             guestList={guestList}
             onClose={() => setShowPopupGuest(false)}
           />
@@ -1440,11 +1439,12 @@ const styles = {
     fontSize: 26,
     fontWeight: 700,
     // marginBottom: 8,
-    color: 'rgb(168, 50, 142)',
+    color: '#97538C',
     textAlign: 'center',
   },
   subheading: {
-    fontSize: 16,
+    fontSize: 15,
+    padding: "0px 10px 0px 10px",
     marginBottom: 20,
     fontWeight: 400,
     color: '#97538C',
