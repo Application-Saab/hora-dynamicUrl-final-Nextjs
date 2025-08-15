@@ -452,7 +452,7 @@ const InvitationCard = () => {
   };
 
   const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/${orderDetails.userId}/${orderDetails.id}/guest`;
+    const inviteURL = `https://horaservices.com/wonderland/${orderDetails.userId}/${orderDetails.id}/guest`;
     const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${orderDetails["Event Type"] || "Birthday"
       }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${orderDetails.Address || "Venue"
       }\n\n👉 Tap to view the invite:\n${inviteURL}`;
@@ -1249,7 +1249,7 @@ const InvitationCard = () => {
                       eventAllImages.map((item, index) => (
                         <div key={item._id || index} className="collage-item" style={{ position: "relative" }}>
                           <img
-                            src={item.imageUrl}
+                            src={item.webpUrl}
                             alt={`Event Image ${index + 1}`}
                             className="event-image"
                             onClick={() => {

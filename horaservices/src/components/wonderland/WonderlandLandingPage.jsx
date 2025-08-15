@@ -19,11 +19,7 @@ const WonderlandLandingPage = ({ userId }) => {
   const [allEventsData, setAllEventsData] = useState([]);
   const [getEventsError, setGetEventsError] = useState(null);
   const [getEventsLoading, setEventsLoading] = useState(null);
-  console.log(
-    "%c [ allEventsData ]-20",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    allEventsData
-  );
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -93,7 +89,7 @@ const WonderlandLandingPage = ({ userId }) => {
       slug?.length === 3 &&
       slug[2] === "guest"
     ) {
-      router.push(`/wonderland/${loggedinUserId}/${slug[1]}/guest`);
+      router.push(`/wonderland/${slug[0]}/${slug[1]}/guest`);
     }
   }, [loggedinUserId, isUserLoggedIn, slug]);
 
@@ -166,7 +162,7 @@ const WonderlandLandingPage = ({ userId }) => {
     }
   }, [loggedinUserId, isUserLoggedIn]);
 
-    const formatDate = (dateString) => {
+  const formatDate = (dateString) => {
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
         day: "numeric",
@@ -178,88 +174,105 @@ const WonderlandLandingPage = ({ userId }) => {
     }
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!isUserLoggedIn && slug?.length) {
+      if (slug?.length === 3 && slug[2].toLowerCase() === "guest") {
+        setShowLoginModal(true);
+      }
+    } else {
+      setShowLoginModal(false);
+    }
+  }, [isUserLoggedIn, slug]);
+
+  const handleClickViewEvent = (eventData) => {
+      if(eventData?.hostName && eventData?.eventType && eventData?.eventDate && eventData?.eventTime) {
+        router.push(`/wonderland/${eventData?.userId}/${eventData._id}/host`);
+      }else{
+        router.push(`/wonderland/${eventData?.userId}/${eventData._id}?page=create-invite`);
+      }
+  }
+
   return (
-  <>
-    {!isUserLoggedIn &&
-      slug &&
-      slug?.length === 3 &&
-      slug[2].toLowerCase() === "guest" && (
+    <>
+      {showLoginModal && (
         <div className="no-orders">
           <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
         </div>
       )}
 
-    {!userId && slug?.length <= 0 && (
-      <div className="no-orders">
-        <div>Wonderland Public Landing Page</div>
-      </div>
-    )}
-
-    {userId && slug?.length === 1 && (
-      <div className="logedin-container">
-        {/* Create New Event Button */}
-        <div style={{ marginBottom: "20px" }}>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleClickCreateInvite}
-          >
-            Create New Event
-          </button>
+      {!userId && slug?.length <= 0 && (
+        <div className="no-orders">
+          <div>Wonderland Public Landing Page</div>
         </div>
+      )}
 
-        {/* Event List */}
-        {getEventsLoading && <p>Loading your events...</p>}
-        {getEventsError && <p style={{ color: "red" }}>{getEventsError}</p>}
-
-        {!getEventsLoading && allEventsData.length > 0 && (
-          <div className="event-list">
-             <h3 style={{textAlign: 'center'}}>OR</h3>
-            {/* <h3 style={{textAlign: 'center'}}>View Old Events</h3> */}
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              {allEventsData?.map((event) => (
-                <li
-                  key={event._id}
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "10px",
-                    marginBottom: "10px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div style={{marginRight: '20px'}}>
-                    <strong>{event?.hostName}'s {event.eventType || "Untitled Event"}</strong>
-                    <br />
-                    <small>
-                      {formatDate(event.eventDate)} at {event.eventTime}
-                    </small>
-                  </div>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() =>
-                      router.push(
-                        `/wonderland/${userId}/${event._id}/host`
-                      )
-                    }
-                  >
-                    View Event
-                  </button>
-                </li>
-              ))}
-            </ul>
+      {userId && slug?.length === 1 && (
+        <div className="logedin-container">
+          {/* Create New Event Button */}
+          <div style={{ marginBottom: "20px" }}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleClickCreateInvite}
+            >
+              Create New Event
+            </button>
           </div>
-        )}
 
-        {!getEventsLoading && allEventsData.length === 0 && (
-          <p>No events found. Create your first one!</p>
-        )}
-      </div>
-    )}
-  </>
-);
+          {/* Event List */}
+          {getEventsLoading && <p>Loading your events...</p>}
+          {getEventsError && <p style={{ color: "red" }}>{getEventsError}</p>}
+
+          {!getEventsLoading && allEventsData.length > 0 && (
+            <div className="event-list">
+              <h3 style={{ textAlign: "center" }}>OR</h3>
+              {/* <h3 style={{textAlign: 'center'}}>View Old Events</h3> */}
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {allEventsData?.map((event) => (
+                  <li
+                    key={event._id}
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      padding: "10px",
+                      marginBottom: "10px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div style={{ marginRight: "20px" }}>
+                      <strong>
+                        {event?.hostName}'s{" "}
+                        {event.eventType || "Untitled Event"}
+                      </strong>
+                      <br />
+                      <small>
+                        {formatDate(event.eventDate)} at {event.eventTime}
+                      </small>
+                    </div>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() =>
+                        handleClickViewEvent(event)
+                      }
+                    >
+                      View Event
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!getEventsLoading && allEventsData.length === 0 && (
+            <p>No events found. Create your first one!</p>
+          )}
+        </div>
+      )}
+    </>
+  );
 };
 
 export default WonderlandLandingPage;

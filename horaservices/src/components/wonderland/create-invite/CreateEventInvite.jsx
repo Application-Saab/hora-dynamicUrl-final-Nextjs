@@ -1,6 +1,6 @@
 import InvitationModal from "@/components/InvitationModal";
 import { eventOptions } from "@/utils/constants";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import imageBackground from "../../../assets/imageBackground.jpg";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
@@ -21,6 +21,45 @@ const CreateEventInvite = ({ slug }) => {
     eventTypeSearch: "",
   });
   const [uploadedImage, setUploadedImage] = useState(null);
+
+  const fetchOrderDetails = async (eventId) => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        }
+      );
+
+      const result = await res.json();
+
+      if (res.status === 200 && result.data) {
+        const data = result.data;
+
+        setFormData({
+          name: data.hostName,
+          eventType: data.eventType,
+          date: data.eventDate,
+          time: data.eventTime,
+          address: data.location,
+          eventTypeSearch: "",
+        });
+        setUploadedImage(data.hostImage || null);
+      }
+    } catch (err) {
+      console.error("Fetch failed:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (eventId) {
+      fetchOrderDetails(eventId);
+    }
+  }, [eventId]);
 
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
@@ -160,7 +199,7 @@ const CreateEventInvite = ({ slug }) => {
         eventTypeSearch: "",
       });
       setUploadedImage(null);
-    //   setSelectedImage("");
+      //   setSelectedImage("");
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");

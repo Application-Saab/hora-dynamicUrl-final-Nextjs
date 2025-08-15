@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
 useEffect(() => {
   const blockContextMenu = (e) => e.preventDefault();
   const blockKeys = (e) => {
-    const key = e.key.toLowerCase();
+    const key = e?.key?.toLowerCase();
     if (
       e.ctrlKey && (key === 'u' || key === 's') || // Ctrl+U, Ctrl+S
       (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'c')) || // Ctrl+Shift+I, C
