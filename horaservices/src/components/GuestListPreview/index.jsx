@@ -6,6 +6,7 @@ import { BASE_URL } from "@/utils/apiconstants";
 import train from "@/assets/train.png";
 import curveBg from "@/assets/train-background.png";
 import Image from "next/image";
+import ballon from "@/assets/balloon.png"
 const RSVP_STATUS = {
   WILL_COME: "will Come",
   WILL_TRY: "Sure, will try",
@@ -92,24 +93,29 @@ useEffect(() => {
   <Image src={curveBg} alt="Curve Background" className="curve-bg" />
   <h3 className="preview-title">Let’s see who’s joining</h3>
 
-  <div className="train-preview-wrapper">
-    <Image src={train} alt="Train Guests" className="train-image" />
+<div className="train-preview-wrapper">
+  <Image src={train} alt="Train Guests" className="train-image" />
+
+  {(guestData || [])
+    .filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
+    .slice(0, 5)
+    .map((guest, index) => {
+      const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
+      return (
+        <span key={index} className={`balloon-letter balloon-${index}`}>
+          {firstLetter}
+        </span>
+      );
+    })}
 
 
-    {(guestData || []).slice(0, 5).map((guest, index) => (
-      
-      <span key={index} className={`balloon-letter balloon-${index}`}>
-        {guest?.name?.charAt(0).toUpperCase() || ""}
-      </span>
-    ))}
-
-  
-    <div className="guest-count-overlay">
-      <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
-      <span className="separator">|</span>
-      <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
-    </div>
+  <div className="guest-count-overlay">
+    <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+    <span className="separator">|</span>
+    <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
   </div>
+</div>
+
 
   <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
     <span className="list-icon">☰</span> Full Guest List

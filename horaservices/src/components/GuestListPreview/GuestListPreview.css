@@ -33,25 +33,19 @@
   z-index: 5;
 }
 
-
+/* 
 .train-preview-wrapper {
   position: relative;
   display: flex;
   justify-content: center;
-}
+}*/
 
-.train-image {
-  width: 150px;
-  height: auto;
-  position: relative;
-  z-index: 1;
-  bottom: 50px;
-}
+
 
 /* 🔢 Guest Count Overlay */
 .guest-count-overlay {
   position: absolute;
-  bottom: 18px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 14px;
@@ -76,10 +70,10 @@
 
 /* 🔘 Button */
 .view-list-button {
-  margin: 10px;
+  margin-bottom: 10px;
   background: linear-gradient(90deg, #ff984d, #fd5e8b);
   color: white;
-  padding: 8px 14px;
+  padding: 4px 14px;
   border-radius: 25px;
   display: inline-flex;
   align-items: center;
@@ -87,26 +81,56 @@
   cursor: pointer;
   font-size: 14px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+    /* bottom: 5px; */
 }
 
 .list-icon {
   margin-right: 6px;
   font-size: 16px;
 }
-
-
-.balloon-letter {
-  position: absolute;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  font-family: 'Aclonica', sans-serif;
-  transform: translate(-50%, -50%);
+.train-preview-wrapper {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
 }
 
-/* 🎈 Adjust based on balloon position in train image */
-.balloon-0 { top: 5%; left: 20%; }
-.balloon-1 { top: 5%; left: 34%; }
-.balloon-2 { top: 5%; left: 48%; }
-.balloon-3 { top: 5%; left: 62%; }
-.balloon-4 { top: 5%; left: 76%; }
+
+.train-image {
+  width: 150px;
+  height: auto;
+  position: relative;
+  z-index: 1;
+  bottom: 40px;
+  display: block;
+} 
+.balloon-letter {
+  position: absolute;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+/* These positions are approximate — tweak as needed */
+.balloon-0 {
+  bottom: 95px;
+  left: 15%;
+}
+.balloon-1 {
+    bottom: 95px;
+  left: 34%;
+}
+.balloon-2 {
+  bottom: 95px;
+  left: 53%;
+}
+.balloon-3 {
+   bottom: 95px;
+  left: 71%;
+}
+.balloon-4 {
+  bottom: 95px;
+  left: 88%;
+}
