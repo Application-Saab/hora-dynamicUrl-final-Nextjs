@@ -6,7 +6,6 @@ import { BASE_URL } from "@/utils/apiconstants";
 import train from "@/assets/train.png";
 import curveBg from "@/assets/train-background.png";
 import Image from "next/image";
-import ballon from "@/assets/balloon.png"
 const RSVP_STATUS = {
   WILL_COME: "will Come",
   WILL_TRY: "Sure, will try",
@@ -33,7 +32,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
         setLoading(false);
         return;
       }
-      const token = localStorage.getItem("token"); // Assuming token is stored here
+      const token = localStorage.getItem("token");
       if (!token) {
         setError("No authentication token found");
         setLoading(false);
@@ -45,7 +44,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
           `${BASE_URL}/api/customer/event/event-guests/all/${urlParams?.eventId}`,
           {
             headers: {
-              Authorization: `${token}`, // Add token in Authorization header
+              Authorization: `${token}`,
               "Content-Type": "application/json",
             },
           }
@@ -66,71 +65,77 @@ const GuestListPreview = ({ hostData, urlParams }) => {
     fetchGuests();
   }, [urlParams?.eventId]);
 
-useEffect(() => {
-  const confirmed = guestData.filter(
-    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-  ).length + 1; // host hamesha confirmed me
+  useEffect(() => {
+    const confirmed = guestData.filter(
+      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+    ).length + 1; 
 
-  const willTry = guestData.filter(
-    (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
-  ).length;
+    const willTry = guestData.filter(
+      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
+    ).length;
 
-  const notAnswered = guestData.filter(
-    (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
-  ).length;
+    const notAnswered = guestData.filter(
+      (guest) => guest.rsvpStatus === undefined || guest.rsvpStatus === ""
+    ).length;
 
-  setGuestCounts({ confirmed, willTry, notAnswered });
-}, [guestData]);
+    setGuestCounts({ confirmed, willTry, notAnswered });
+  }, [guestData]);
 
   if (loading) return <div>Loading...</div>;
 
-  
+
 
   return (
-  
+
     <div className="guest-preview-card">
-    <div className="curve-container">
-  <Image src={curveBg} alt="Curve Background" className="curve-bg" />
-  <h3 className="preview-title">Let’s see who’s joining</h3>
+      <div className="curve-container">
+        <Image src={curveBg} alt="Curve Background" className="curve-bg" />
+        <h3 className="preview-title">Let’s see who’s joining</h3>
 
-<div className="train-preview-wrapper">
-  <Image src={train} alt="Train Guests" className="train-image" />
+        <div className="train-preview-wrapper">
+          <Image src={train} alt="Train Guests" className="train-image" />
 
-  {(guestData || [])
-    .filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
-    .slice(0, 5)
-    .map((guest, index) => {
-      const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
-      return (
-        <span key={index} className={`balloon-letter balloon-${index}`}>
-          {firstLetter}
-        </span>
-      );
-    })}
-
-
-  <div className="guest-count-overlay">
-    <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
-    <span className="separator">|</span>
-    <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
-  </div>
-</div>
+          {
+            [
+              { name: hostData?.name || hostData?.Name },
+              ...guestData.filter(
+                (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+              ),
+            ]
+              .slice(0, 5)
+              .map((guest, index) => {
+                const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
+                return (
+                  <span key={index} className={`balloon-letter balloon-${index}`}>
+                    {firstLetter}
+                  </span>
+                );
+              })
+          }
 
 
-  <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
-    <span className="list-icon">☰</span> Full Guest List
-  </div>
-</div>
-  {openRsvpList && (
-    <RSVPPopup
-      hostData={hostData}
-      guestData={guestData}
-      loading={loading}
-      error={error}
-      onClose={() => setOpenRsvpList(false)}
-    />
-  )}
-</div>
+          <div className="guest-count-overlay">
+            <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+            <span className="separator">|</span>
+            <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
+          </div>
+        </div>
+
+
+        <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
+          <span className="list-icon">☰</span> Full Guest List
+        </div>
+      </div>
+      {openRsvpList && (
+        <RSVPPopup
+          hostData={hostData}
+          guestData={guestData}
+          loading={loading}
+          error={error}
+          onClose={() => setOpenRsvpList(false)}
+        />
+      )}
+    </div>
 
 
 
@@ -139,37 +144,3 @@ useEffect(() => {
 };
 
 export default GuestListPreview;
-{/* <div className="guest-preview-card">
-  <div className="curve-container">
-    <Image src={curveBg} alt="Curve Background" className="curve-bg" />
-    
-    <h3 className="preview-title">Let’s see who’s joining</h3>
-
-   
-    <div className="train-preview-wrapper">
-      <Image src={train} alt="Train Guests" className="train-image" />
-
-     
-      <div className="guest-count-overlay">
-        <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
-        <span className="separator">|</span>
-        <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
-      </div>
-    </div>
-
-  
-    <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
-      <span className="list-icon">☰</span> Full Guest List
-    </div>
-  </div>
-
-  {openRsvpList && (
-    <RSVPPopup
-      hostData={hostData}
-      guestData={guestData}
-      loading={loading}
-      error={error}
-      onClose={() => setOpenRsvpList(false)}
-    />
-  )}
-</div> */}

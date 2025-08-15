@@ -84,7 +84,7 @@ const InvitationCard = () => {
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -94,8 +94,8 @@ const [deleteTarget, setDeleteTarget] = useState(null);
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
- const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
-const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(false);
+  const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
+  const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(false);
 
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
@@ -114,7 +114,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
   useEffect(() => {
     if (slug.length) {
-      // const parts = id2.split("/");
       if (slug.length >= 2) {
         setUrlParams((prev) => ({
           ...prev,
@@ -139,7 +138,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
           `${BASE_URL}${GET_EVENT_IMAGES}/${urlParams?.eventId}`,
           {
             headers: {
-              Authorization: `${token}`, // Add token in Authorization header
+              Authorization: `${token}`,
               "Content-Type": "application/json",
             },
           }
@@ -159,7 +158,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
     fetchEventImages();
   }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw, refetchLuckyDrawHostDelete,
-  refetchLuckyDrawGuestDelete]);
+    refetchLuckyDrawGuestDelete]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -190,7 +189,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages, refetchAddGuest, refetchLuckyDrawGuestDelete]);
+  }, [urlParams.eventId, userID, refetchLuckyDraw, refetchEventImages, refetchAddGuest, refetchLuckyDrawGuestDelete]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -289,7 +288,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [loadingUser, setLoadingUser] = useState(true);
 
 
-   const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
   const [eventId, setEventId] = useState(null);
@@ -298,10 +297,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [hasNewMessage, setHasNewMessage] = useState(false);
   useEffect(() => {
     if (!router.isReady) return;
-
-    // const queryId = router.query.id;
-    // const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
-
     if (urlParams && slug.length > 2) {
       const eventId = urlParams.eventId;
       const userId = urlParams.eventUserId;
@@ -353,7 +348,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
   console.log("ishost", isHost);
 
-  // determine from props or state
   const [highlightRSVPButtons, setHighlightRSVPButtons] = useState(false);
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -376,8 +370,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       const base64String = reader.result;
 
       try {
-        const compressed = await compressBase64Image(base64String, 500, 0.4); // 👈 compress karo
-        setUploadedImage(compressed); // ✅ use compressed base64
+        const compressed = await compressBase64Image(base64String, 500, 0.4);
+        setUploadedImage(compressed);
         console.log("Compressed Base64:", compressed);
         console.log(
           "Size (approx):",
@@ -390,7 +384,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       }
     };
 
-    reader.readAsDataURL(file); // ✅ Converts file to base64 string
+    reader.readAsDataURL(file);
   };
 
   const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
@@ -425,7 +419,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       const timeStr = orderDetails.Time;
       const parsed = new Date(`1970-01-01T${timeStr}`);
       if (!isNaN(parsed)) {
-        formattedTime = parsed.toTimeString().slice(0, 5); // "HH:mm"
+        formattedTime = parsed.toTimeString().slice(0, 5);
       } else {
         try {
           const [timePart, meridian] = timeStr.split(" ");
@@ -477,9 +471,9 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-   const goToSharePage = () => {
+  const goToSharePage = () => {
     router.push({
-      pathname: "/wonderland/ShareInvitation", // tumhare ShareInvitation page ka route
+      pathname: "/wonderland/ShareInvitation",
       query: { data: JSON.stringify(orderDetails) }
     });
   };
@@ -569,19 +563,18 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
         : result?.data?._id || result?.data?.idd || result?.data?.event?._id;
 
       if (res.ok && finalEventId) {
-        await fetchOrderDetails(finalEventId); // ✅ Refresh latest details
+        await fetchOrderDetails(finalEventId);
         setId(finalEventId);
         setSecondId(loggedInUserId);
         setUserType("host");
         setShowModal(false);
 
-        // ✅ Update the URL route to reflect changes
         router.replace(`/wonderland/${loggedInUserId}/${finalEventId}/host`);
       } else {
         alert("Failed to save invitation.");
       }
 
-      // ✅ Reset form
+
       setFormData({
         name: "",
         date: "",
@@ -618,7 +611,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     if (orderDetails) {
       const time24h = convertTo24Hour(orderDetails["Time"]);
       const date = new Date(orderDetails["Date"]);
-      const isoDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
+      const isoDate = date.toISOString().split("T")[0];
       let time = orderDetails["Time"];
 
       setFormData({
@@ -633,7 +626,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   }, [orderDetails]);
 
   useEffect(() => {
-   
+
     if (
       window.location.pathname === "/wonderland"
     ) {
@@ -644,12 +637,11 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   useEffect(() => {
     if (!router.isReady) return;
 
-    // const queryId = router.query.id;
     const eventId = urlParams?.eventId;
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw,  refetchLuckyDrawHostDelete]);
+  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw, refetchLuckyDrawHostDelete]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -658,8 +650,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
         {
           method: "GET",
           headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
+            "Content-Type": "application/json",
+            Authorization: token,
           },
         }
       );
@@ -683,12 +675,10 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
           luckyDraws: data?.luckyDraws || [],
         });
 
-        // ✅ Set host ID globally
         setSendCustomerId(hostId);
       }
     } catch (err) {
       console.error("❌ Fetch failed:", err);
-      // alert("Fetch failed.");
     }
   };
 
@@ -727,7 +717,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       setSelectedIndex(prevIndex);
       setSelectedImage(eventAllImages[prevIndex]);
     },
-    trackMouse: true, // optional, mouse drag support bhi deta hai
+    trackMouse: true,
   });
   const handleImageUpload = async (e) => {
     setUploading(true);
@@ -743,9 +733,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
     const formData = new FormData();
 
-    // Append all files with the same field name "files" (backend should handle array)
     Array.from(files).forEach((file, index) => {
-      formData.append("selfUploadedImages", file); // Multiple files under "files" key
+      formData.append("selfUploadedImages", file);
     });
 
     formData.append("userId", userID);
@@ -770,10 +759,9 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       console.log("Uploaded:", data);
 
       if (data?.uploaded && Array.isArray(data.uploaded)) {
-        // Update eventData with uploaded images
         const newImages = data.uploaded.map((item) => ({
           type: "image",
-          src: item.url, // Ensure backend returns "url" field
+          src: item.url,
           alt:
             item.key ||
             item.filename ||
@@ -786,106 +774,60 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       }
     } catch (err) {
       console.error("Upload failed", err.message);
-      // Optionally show user feedback (e.g., alert or UI message)
     } finally {
       setRefetchEventImages(!refetchEventImages);
       setUploading(false);
       setWallUploading(false);
     }
   };
-  // const handleDeleteImage = async (imageId, imageType) => {
-  //   if (!confirm("Are you sure you want to delete this image?")) return;
+  const handleDeleteImage = async (imageId, imageType) => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: userID, imageId, imageType }),
+        }
+      );
 
-  //   try {
-  //     const res = await fetch(
-  //       `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: token, // ✅ token without "Bearer "
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ userId: userID, imageId, imageType }),
-  //       }
-  //     );
+      const data = await res.json();
 
-  //     const data = await res.json();
+      if (!data.error) {
+        setEventAllImages((prev) => {
+          const newImages = prev.filter((img) => img._id !== imageId);
 
-  //     if (!data.error) {
-  //       setEventAllImages((prev) => {
-  //         const newImages = prev.filter((img) => img._id !== imageId);
-
-  //         if (newImages.length === 0) {
-  //           setIsImageOpen(false);
-  //         } else {
-  //           let newIndex = selectedIndex;
-  //           if (selectedIndex >= newImages.length) {
-  //             newIndex = newImages.length - 1;
-  //           }
-  //           setSelectedIndex(newIndex);
-  //           setSelectedImage(newImages[newIndex]);
-  //         }
-
-  //         return newImages;
-  //       });
-
-  //       alert("Image deleted successfully");
-  //     } else {
-  //       alert(data.message || "Failed to delete image");
-  //     }
-  //   } catch (err) {
-  //     console.error("Delete error:", err);
-  //     alert("Server error while deleting");
-  //   }
-  // };
-const handleDeleteImage = async (imageId, imageType) => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: userID, imageId, imageType }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (!data.error) {
-      setEventAllImages((prev) => {
-        const newImages = prev.filter((img) => img._id !== imageId);
-
-        if (newImages.length === 0) {
-          setIsImageOpen(false);
-        } else {
-          let newIndex = selectedIndex;
-          if (selectedIndex >= newImages.length) {
-            newIndex = newImages.length - 1;
+          if (newImages.length === 0) {
+            setIsImageOpen(false);
+          } else {
+            let newIndex = selectedIndex;
+            if (selectedIndex >= newImages.length) {
+              newIndex = newImages.length - 1;
+            }
+            setSelectedIndex(newIndex);
+            setSelectedImage(newImages[newIndex]);
           }
-          setSelectedIndex(newIndex);
-          setSelectedImage(newImages[newIndex]);
+
+          return newImages;
+        });
+        if (imageType === "luckyDraw") {
+          if (isHost) {
+            setRefetchLuckyDrawHostDelete(prev => !prev);
+          } else {
+            setRefetchLuckyDrawGuestDelete(prev => !prev);
+          }
         }
 
-        return newImages;
-      });
-     if (imageType === "luckyDraw") {
-  if (isHost) {
-    setRefetchLuckyDrawHostDelete(prev => !prev);
-  } else {
-    setRefetchLuckyDrawGuestDelete(prev => !prev);
-  }
-}
-
-    } else {
-      console.error(data.message || "Failed to delete image");
+      } else {
+        console.error(data.message || "Failed to delete image");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
     }
-  } catch (err) {
-    console.error("Delete error:", err);
-  }
-};
+  };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -924,7 +866,6 @@ const handleDeleteImage = async (imageId, imageType) => {
         const result = await response.json();
 
         if (result.success && result.uploaded && result.uploaded[0]?.url) {
-          // ✅ Add the uploaded image to eventData so it shows in the UI
           const newImage = {
             type: "image",
             src: result.uploaded[0].url,
@@ -933,7 +874,6 @@ const handleDeleteImage = async (imageId, imageType) => {
           setEventData((prev) => [newImage, ...prev]);
         }
         setRefetchEventImages(!refetchEventImages);
-        // setShowPopup(false);
         setNoteTitle("");
         setNoteBy("");
       } catch (err) {
@@ -958,67 +898,67 @@ const handleDeleteImage = async (imageId, imageType) => {
     const actualRole =
       userId.trim() === sendCustomerId.trim() ? "host" : "guest";
 
-    if (urlParams?.userType === actualRole) return; // Only check role; skip if already correct
+    if (urlParams?.userType === actualRole) return;
 
     const newRoute = `${urlParams?.eventUserId}/${urlParams?.eventId}/${actualRole}`;
     router.replace(`/wonderland/${newRoute}`);
   }, [router.isReady, urlParams, userId, sendCustomerId]);
 
 
- useEffect(() => {
-  if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
-    return;
-
-  setEventId(urlParams.eventId);
-  setUserIdd(urlParams.eventUserId);
-  setRole(urlParams.userType);
-
-  registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
-  listenToMessages(urlParams.eventId);
-}, [urlParams]);
-
-
-
-
-  // Register FCM token
   useEffect(() => {
-  if (!userIdd || typeof window === "undefined") return;
+    if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
+      return;
 
-  const requestPermissionAndSaveToken = async () => {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        console.warn("Notification permission not granted");
-        return;
-      }
+    setEventId(urlParams.eventId);
+    setUserIdd(urlParams.eventUserId);
+    setRole(urlParams.userType);
 
-      const messagingInstance = getMessaging();
-      if (!messagingInstance) return;
+    registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
+    listenToMessages(urlParams.eventId);
+  }, [urlParams]);
 
-      const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
-      if (!token) {
-        console.warn("No FCM token retrieved");
-        return;
-      }
 
-      await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
 
-      onMessage(messagingInstance, (payload) => {
-        if (!chatOpen) {
-          alert(`🔔 ${payload.notification.title}\n${payload.notification.body}`);
-          setHasNewMessage(true);
+
+
+  useEffect(() => {
+    if (!userIdd || typeof window === "undefined") return;
+
+    const requestPermissionAndSaveToken = async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          console.warn("Notification permission not granted");
+          return;
         }
-      });
-    } catch (error) {
-      console.error("FCM error:", error);
-    }
-  };
 
-  requestPermissionAndSaveToken();
-}, [userIdd, chatOpen]);
+        const messagingInstance = getMessaging();
+        if (!messagingInstance) return;
+
+        const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+        if (!token) {
+          console.warn("No FCM token retrieved");
+          return;
+        }
+
+        await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
+
+        onMessage(messagingInstance, (payload) => {
+          if (!chatOpen) {
+            alert(`🔔 ${payload.notification.title}\n${payload.notification.body}`);
+            setHasNewMessage(true);
+          }
+        });
+      } catch (error) {
+        console.error("FCM error:", error);
+      }
+    };
+
+    requestPermissionAndSaveToken();
+  }, [userIdd, chatOpen]);
 
 
-  //  Register user in Firebase
+
   const registerUser = async (eventId, userId, role) => {
     const groupRef = doc(db, "groups", eventId);
     const groupSnap = await getDoc(groupRef);
@@ -1038,7 +978,6 @@ const handleDeleteImage = async (imageId, imageType) => {
     }
   };
 
-  // Listen for new messages
   const listenToMessages = (eventId) => {
     const messagesRef = collection(db, "groups", eventId, "messages");
     const q = query(messagesRef, orderBy("sentAt", "asc"));
@@ -1049,7 +988,7 @@ const handleDeleteImage = async (imageId, imageType) => {
         ...doc.data(),
       }));
 
-      // Show red dot if new message and chat closed
+
       if (msgs.length > messages.length && !chatOpen) {
         setHasNewMessage(true);
       }
@@ -1058,22 +997,21 @@ const handleDeleteImage = async (imageId, imageType) => {
     });
   };
 
-// ✅ Send message with safe guards
-const sendMessage = async () => {
-  if (!text.trim()) return;
-  if (!eventId || !userIdd) {
-    console.warn("Missing eventId or userId — cannot send message.");
-    return;
-  }
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+    if (!eventId || !userIdd) {
+      console.warn("Missing eventId or userId — cannot send message.");
+      return;
+    }
 
-  await addDoc(collection(db, "groups", eventId, "messages"), {
-    text,
-    senderId: userIdd,
-    sentAt: new Date(),
-  });
+    await addDoc(collection(db, "groups", eventId, "messages"), {
+      text,
+      senderId: userIdd,
+      sentAt: new Date(),
+    });
 
-  setText("");
-};
+    setText("");
+  };
   return (
     <>
       {!isLoggedIn ? (
@@ -1098,11 +1036,11 @@ const sendMessage = async () => {
                       orderDetails={orderDetails}
                       handleClick={handleClick}
                       isHost={userType === "host"}
-                      openChat={() => setChatOpen(true)} 
-                      clearNewMessage={() => setHasNewMessage(false)} 
-                      hasNewMessage={hasNewMessage} 
+                      openChat={() => setChatOpen(true)}
+                      clearNewMessage={() => setHasNewMessage(false)}
+                      hasNewMessage={hasNewMessage}
                     />
-      
+
                   </div>
 
                   <div>
@@ -1250,12 +1188,11 @@ const sendMessage = async () => {
                       className="click-now-btn"
                       onClick={() => {
                         if (!hasSubmitted) {
-                          // RSVP submit nahi hua → highlight effect
                           setHighlightRSVPButtons(true);
-                          setTimeout(() => setHighlightRSVPButtons(false), 1500); // 1.5 sec highlight
+                          setTimeout(() => setHighlightRSVPButtons(false), 1500);
                           return;
                         }
-                        setShowLuckyDrawPopup(true); // RSVP submit hua → normal behaviour
+                        setShowLuckyDrawPopup(true);
                       }}
                       style={{
                         ...(highlightRSVPButtons ? { border: "2px solid red", animation: "pulse 1.5s" } : {}),
@@ -1293,57 +1230,36 @@ const sendMessage = async () => {
 
                 {/* Action Buttons */}
                 <div className="tabs-container" style={styles.tabsContainer}>
-                  {/* {actions.map((action, index) => (
-                       <button
-                         key={index}
-                         onClick={() => {
-                           if (action.title === "Upload Pictures") {
-                             const input = document.getElementById("imageUploadInput");
-                             if (input) {
-                               input.value = "";
-                               input.click();
-                             }
-                           } else {
-                             handleActionClick(action.title);
-                           }
-                         }}
-                         style={styles.actionButton}
-                       >
-                         <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-                         <span style={styles.buttonLabel}>{action.title}</span>
-                       </button>
-                     ))} */}
-                 {actions.map((action, index) => (
-  <button
-    key={index}
-    onClick={() => {
-      // Guest ke liye: RSVP check
-      if (userType !== "host" && !hasSubmitted) {
-        setHighlightRSVPButtons(true);
-        setTimeout(() => setHighlightRSVPButtons(false), 1000);
-        return; // RSVP submit nahi hua → button ka kaam nahi chalega
-      }
+                  {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
 
-      // Upload Pictures
-      if (action.title === "Upload Pictures") {
-        const input = document.getElementById("imageUploadInput");
-        if (input) {
-          input.value = "";
-          input.click();
-        }
-      } else {
-        handleActionClick(action.title);
-      }
-    }}
-    style={{
-      ...styles.actionButton,
-      ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
-    }}
-  >
-    <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-    <span style={styles.buttonLabel}>{action.title}</span>
-  </button>
-))}
+                        if (userType !== "host" && !hasSubmitted) {
+                          setHighlightRSVPButtons(true);
+                          setTimeout(() => setHighlightRSVPButtons(false), 1000);
+                          return;
+                        }
+
+                        if (action.title === "Upload Pictures") {
+                          const input = document.getElementById("imageUploadInput");
+                          if (input) {
+                            input.value = "";
+                            input.click();
+                          }
+                        } else {
+                          handleActionClick(action.title);
+                        }
+                      }}
+                      style={{
+                        ...styles.actionButton,
+                        ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
+                      }}
+                    >
+                      <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+                      <span style={styles.buttonLabel}>{action.title}</span>
+                    </button>
+                  ))}
 
                   <input
                     type="file"
@@ -1355,7 +1271,7 @@ const sendMessage = async () => {
                   />
                 </div>
 
-                {/* Images Grid */}
+
                 <div style={{ position: "relative", marginTop: "auto" }}>
                   {wallUploading && (
                     <div
@@ -1391,8 +1307,8 @@ const sendMessage = async () => {
                             alt={`Event Image ${index + 1}`}
                             className="event-image"
                             onClick={() => {
-                              setSelectedImage(item); // Image select karo
-                              setIsImageOpen(true);   // Lightbox open karo
+                              setSelectedImage(item);
+                              setIsImageOpen(true);
                             }}
                           />
 
@@ -1456,23 +1372,20 @@ const sendMessage = async () => {
                           </button>
 
                           {selectedImage.userId === userID && (
-                            // <button
-                            //   className="lightbox-btn"
-                            //   onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-                            // >
-                             <button
-  className="lightbox-btn"
-  onClick={(e) => {
-    e.stopPropagation(); // click को overlay तक जाने से रोकता है
-    setDeleteTarget({
-      imageId: selectedImage._id,
-      imageType: selectedImage.imageType
-    });
-    setShowDeletePopup(true);
-  }}
->
-  <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
-</button>
+
+                            <button
+                              className="lightbox-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget({
+                                  imageId: selectedImage._id,
+                                  imageType: selectedImage.imageType
+                                });
+                                setShowDeletePopup(true);
+                              }}
+                            >
+                              <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
+                            </button>
 
                           )}
                         </div>
@@ -1484,31 +1397,31 @@ const sendMessage = async () => {
 
 
               </div>
-{showDeletePopup && (
-  <div className="deletepopup-overlay">
-    <div className="deletepopup">
-      <h3>Confirm Delete</h3>
-      <p>Are you sure you want to delete this photo?</p>
-      <div className="deletepopup-buttons">
-        <button
-          className="deletecancel-btn"
-          onClick={() => setShowDeletePopup(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="deletedelete-btn"
-          onClick={() => {
-            handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
-            setShowDeletePopup(false);
-          }}
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              {showDeletePopup && (
+                <div className="deletepopup-overlay">
+                  <div className="deletepopup">
+                    <h3>Confirm Delete</h3>
+                    <p>Are you sure you want to delete this photo?</p>
+                    <div className="deletepopup-buttons">
+                      <button
+                        className="deletecancel-btn"
+                        onClick={() => setShowDeletePopup(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="deletedelete-btn"
+                        onClick={() => {
+                          handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
+                          setShowDeletePopup(false);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1584,14 +1497,14 @@ const sendMessage = async () => {
             onClick={() => setShowPopupGuest(false)}
           />
           <RSVPPopup
-           hostData={hostData}
+            hostData={hostData}
             guestList={guestList}
             onClose={() => setShowPopupGuest(false)}
           />
         </>
       )}
-       <>
-    
+      <>
+
 
         {/* Chat UI */}
         {chatOpen && (

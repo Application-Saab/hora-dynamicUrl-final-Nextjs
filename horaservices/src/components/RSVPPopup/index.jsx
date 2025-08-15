@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import styles from "./RSVPPopup.module.css";
 
@@ -22,6 +24,8 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
     return name.charAt(0).toUpperCase();
   };
 
+  const hostName = hostData?.name || hostData?.Name || hostData?.hostName || "";
+
   return (
     <>
       <div className={styles.backdrop} onClick={onClose} />
@@ -29,60 +33,47 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
       <div className={styles.popupGuest}>
         <h2 className={styles.title}>RSVP LIST</h2>
 
-      <div className={styles.list}>
-  {!loading && !error && (
-    <>
-      {/* Always show host if available */}
-      {hostData && hostData.Name  && (
-        <div className={styles.row}>
-          <span
-            className={styles.avatar}
-            style={{ backgroundColor: avatarColors[0] }}
-          >
-            {getAvatarContent(hostData.Name)}
-          </span>
-          <span className={styles.name}>{hostData.Name}</span>
-          <span className={styles.check}>✔</span>
-        </div>
-      )}
-
-      {/* Only show guests if they exist */}
-      {guestData?.length > 0 ? (
-        guestData
-          .filter((guest) => guest.name && guest.name.trim() !== "")
-          .map((guest, idx) => {
-            const avatarText = getAvatarContent(guest.name);
-            const bgColor =
-              avatarColors[(idx + 1) % avatarColors.length]; // +1 to skip host's color
-
-            return (
-              <div key={idx} className={styles.row}>
-                <span
-                  className={styles.avatar}
-                  style={{ backgroundColor: bgColor }}
-                >
-                  {avatarText}
+        <div className={styles.list}>
+          {/* Show host always */}
+          {(() => {
+            const hostName = hostData?.name || hostData?.Name || "";
+            return hostName ? (
+              <div className={styles.row}>
+                <span className={styles.avatar} style={{ backgroundColor: avatarColors[0] }}>
+                  {getAvatarContent(hostName)}
                 </span>
-                <span className={styles.name}>{guest.name}</span>
-                <span
-                  className={
-                    guest.rsvpStatus === RSVP_STATUS.WILL_COME
-                      ? styles.check
-                      : styles.dash
-                  }
-                >
-                  {guest.rsvpStatus === RSVP_STATUS.WILL_COME ? "✔" : "―"}
-                </span>
+                <span className={styles.name}>{hostName}</span>
+                <span className={styles.check}>✔</span>
               </div>
-            );
-          })
-      ) : (
-        <p>No guests added yet.</p>
-      )}
-    </>
-  )}
-</div>
+            ) : null;
+          })()}
 
+          {/* Guests */}
+          {loading ? (
+            <p>Loading guests...</p>
+          ) : error ? null : guestData?.length > 0 ? (
+            guestData
+              .filter((guest) => guest.name?.trim())
+              .map((guest, idx) => {
+                const avatarText = getAvatarContent(guest.name);
+                const bgColor = avatarColors[(idx + 1) % avatarColors.length];
+
+                return (
+                  <div key={idx} className={styles.row}>
+                    <span className={styles.avatar} style={{ backgroundColor: bgColor }}>
+                      {avatarText}
+                    </span>
+                    <span className={styles.name}>{guest.name}</span>
+                    <span className={guest.rsvpStatus === RSVP_STATUS.WILL_COME ? styles.check : styles.dash}>
+                      {guest.rsvpStatus === RSVP_STATUS.WILL_COME ? "✔" : "―"}
+                    </span>
+                  </div>
+                );
+              })
+          ) : (
+            <p>No guests added yet.</p>
+          )}
+        </div>
 
         <button className={styles.closeBtn} onClick={onClose}>
           Close
