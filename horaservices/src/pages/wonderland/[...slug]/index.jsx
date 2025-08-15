@@ -6,7 +6,7 @@ import tabIcon1 from "@/assets/galleryicon.png";
 import tabIcon2 from "@/assets/thankyouicon.png";
 import imageBackground from "../../../assets/imageBackground.jpg";
 import imageBackGround from "../../../assets/finalInviteBackground.png";
-import LuckDrawTicketBanner from "../../../assets/lucky_draw_ticket_bg.png";
+import LuckDrawTicketBanner from "../../../assets/lucky_draw_ticket_bg.jpg";
 import Image from "next/image";
 import whatshare from "@/assets/whatshare.png";
 import shareinvitaion from "@/assets/shareinvitation.png";
@@ -49,6 +49,23 @@ import frame from "@/assets/Frame1.png";
 import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage";
 import { eventOptions } from "@/utils/constants";
 
+
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import { db } from "../../../firebase";
+import { getToken, onMessage, getMessaging } from "firebase/messaging";
+
+const VAPID_KEY =
+  "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
+
 const InvitationCard = () => {
   const fileInputRef = useRef(null);
   const router = useRouter();
@@ -66,16 +83,20 @@ const InvitationCard = () => {
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+const [deleteTarget, setDeleteTarget] = useState(null);
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
     guestDetails
   );
+
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+ const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
+const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(false);
+
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
@@ -137,7 +158,8 @@ const InvitationCard = () => {
     };
 
     fetchEventImages();
-  }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw]);
+  }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw, refetchLuckyDrawHostDelete,
+  refetchLuckyDrawGuestDelete]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -168,7 +190,7 @@ const InvitationCard = () => {
     };
 
     fetchGuestDetails();
-  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages, refetchAddGuest]);
+  }, [urlParams.eventId, userID, refetchLuckyDraw,refetchEventImages, refetchAddGuest, refetchLuckyDrawGuestDelete]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -266,6 +288,14 @@ const InvitationCard = () => {
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
 
+
+   const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [eventId, setEventId] = useState(null);
+  const [userIdd, setUserIdd] = useState(null);
+  const [role, setRole] = useState(null);
+  const [hasNewMessage, setHasNewMessage] = useState(false);
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -447,14 +477,11 @@ const InvitationCard = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleWhatsAppShare = () => {
-    const inviteURL = `localhost:3000/wonderland/${orderDetails.userId}/${orderDetails.id}/guest`;
-    const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${orderDetails["Event Type"] || "Birthday"
-      }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${orderDetails.Address || "Venue"
-      }\n\n👉 Tap to view the invite:\n${inviteURL}`;
-
-    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-    window.open(whatsappLink, "_blank");
+   const goToSharePage = () => {
+    router.push({
+      pathname: "/wonderland/ShareInvitation", // tumhare ShareInvitation page ka route
+      query: { data: JSON.stringify(orderDetails) }
+    });
   };
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
@@ -606,10 +633,9 @@ const InvitationCard = () => {
   }, [orderDetails]);
 
   useEffect(() => {
-    // Show modal if user visits /wonderland (no id in query)
+   
     if (
       window.location.pathname === "/wonderland"
-      // !window.location.search.includes("id=")
     ) {
       setShowModal(true);
     }
@@ -623,7 +649,7 @@ const InvitationCard = () => {
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw]);
+  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw,  refetchLuckyDrawHostDelete]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -767,51 +793,99 @@ const InvitationCard = () => {
       setWallUploading(false);
     }
   };
-  const handleDeleteImage = async (imageId, imageType) => {
-    if (!confirm("Are you sure you want to delete this image?")) return;
+  // const handleDeleteImage = async (imageId, imageType) => {
+  //   if (!confirm("Are you sure you want to delete this image?")) return;
 
-    try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: token, // ✅ token without "Bearer "
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: userID, imageId, imageType }),
-        }
-      );
+  //   try {
+  //     const res = await fetch(
+  //       `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: token, // ✅ token without "Bearer "
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ userId: userID, imageId, imageType }),
+  //       }
+  //     );
 
-      const data = await res.json();
+  //     const data = await res.json();
 
-      if (!data.error) {
-        setEventAllImages((prev) => {
-          const newImages = prev.filter((img) => img._id !== imageId);
+  //     if (!data.error) {
+  //       setEventAllImages((prev) => {
+  //         const newImages = prev.filter((img) => img._id !== imageId);
 
-          if (newImages.length === 0) {
-            setIsImageOpen(false);
-          } else {
-            let newIndex = selectedIndex;
-            if (selectedIndex >= newImages.length) {
-              newIndex = newImages.length - 1;
-            }
-            setSelectedIndex(newIndex);
-            setSelectedImage(newImages[newIndex]);
-          }
+  //         if (newImages.length === 0) {
+  //           setIsImageOpen(false);
+  //         } else {
+  //           let newIndex = selectedIndex;
+  //           if (selectedIndex >= newImages.length) {
+  //             newIndex = newImages.length - 1;
+  //           }
+  //           setSelectedIndex(newIndex);
+  //           setSelectedImage(newImages[newIndex]);
+  //         }
 
-          return newImages;
-        });
+  //         return newImages;
+  //       });
 
-        alert("Image deleted successfully");
-      } else {
-        alert(data.message || "Failed to delete image");
+  //       alert("Image deleted successfully");
+  //     } else {
+  //       alert(data.message || "Failed to delete image");
+  //     }
+  //   } catch (err) {
+  //     console.error("Delete error:", err);
+  //     alert("Server error while deleting");
+  //   }
+  // };
+const handleDeleteImage = async (imageId, imageType) => {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userID, imageId, imageType }),
       }
-    } catch (err) {
-      console.error("Delete error:", err);
-      alert("Server error while deleting");
+    );
+
+    const data = await res.json();
+
+    if (!data.error) {
+      setEventAllImages((prev) => {
+        const newImages = prev.filter((img) => img._id !== imageId);
+
+        if (newImages.length === 0) {
+          setIsImageOpen(false);
+        } else {
+          let newIndex = selectedIndex;
+          if (selectedIndex >= newImages.length) {
+            newIndex = newImages.length - 1;
+          }
+          setSelectedIndex(newIndex);
+          setSelectedImage(newImages[newIndex]);
+        }
+
+        return newImages;
+      });
+     if (imageType === "luckyDraw") {
+  if (isHost) {
+    setRefetchLuckyDrawHostDelete(prev => !prev);
+  } else {
+    setRefetchLuckyDrawGuestDelete(prev => !prev);
+  }
+}
+
+    } else {
+      console.error(data.message || "Failed to delete image");
     }
-  };
+  } catch (err) {
+    console.error("Delete error:", err);
+  }
+};
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -890,6 +964,116 @@ const InvitationCard = () => {
     router.replace(`/wonderland/${newRoute}`);
   }, [router.isReady, urlParams, userId, sendCustomerId]);
 
+
+ useEffect(() => {
+  if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
+    return;
+
+  setEventId(urlParams.eventId);
+  setUserIdd(urlParams.eventUserId);
+  setRole(urlParams.userType);
+
+  registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
+  listenToMessages(urlParams.eventId);
+}, [urlParams]);
+
+
+
+
+  // Register FCM token
+  useEffect(() => {
+  if (!userIdd || typeof window === "undefined") return;
+
+  const requestPermissionAndSaveToken = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        console.warn("Notification permission not granted");
+        return;
+      }
+
+      const messagingInstance = getMessaging();
+      if (!messagingInstance) return;
+
+      const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+      if (!token) {
+        console.warn("No FCM token retrieved");
+        return;
+      }
+
+      await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
+
+      onMessage(messagingInstance, (payload) => {
+        if (!chatOpen) {
+          alert(`🔔 ${payload.notification.title}\n${payload.notification.body}`);
+          setHasNewMessage(true);
+        }
+      });
+    } catch (error) {
+      console.error("FCM error:", error);
+    }
+  };
+
+  requestPermissionAndSaveToken();
+}, [userIdd, chatOpen]);
+
+
+  //  Register user in Firebase
+  const registerUser = async (eventId, userId, role) => {
+    const groupRef = doc(db, "groups", eventId);
+    const groupSnap = await getDoc(groupRef);
+
+    if (!groupSnap.exists()) {
+      await setDoc(groupRef, { createdAt: new Date() });
+    }
+
+    const memberRef = doc(db, "groups", eventId, "members", userId);
+    const memberSnap = await getDoc(memberRef);
+
+    if (!memberSnap.exists()) {
+      await setDoc(memberRef, {
+        role,
+        joinedAt: new Date(),
+      });
+    }
+  };
+
+  // Listen for new messages
+  const listenToMessages = (eventId) => {
+    const messagesRef = collection(db, "groups", eventId, "messages");
+    const q = query(messagesRef, orderBy("sentAt", "asc"));
+
+    onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Show red dot if new message and chat closed
+      if (msgs.length > messages.length && !chatOpen) {
+        setHasNewMessage(true);
+      }
+
+      setMessages(msgs);
+    });
+  };
+
+// ✅ Send message with safe guards
+const sendMessage = async () => {
+  if (!text.trim()) return;
+  if (!eventId || !userIdd) {
+    console.warn("Missing eventId or userId — cannot send message.");
+    return;
+  }
+
+  await addDoc(collection(db, "groups", eventId, "messages"), {
+    text,
+    senderId: userIdd,
+    sentAt: new Date(),
+  });
+
+  setText("");
+};
   return (
     <>
       {!isLoggedIn ? (
@@ -900,7 +1084,7 @@ const InvitationCard = () => {
         <>
           {slug.length === 3 && orderDetails && (
             <>
-              {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
+              {/* {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />} */}
 
               {orderDetails ? (
                 <>
@@ -914,7 +1098,11 @@ const InvitationCard = () => {
                       orderDetails={orderDetails}
                       handleClick={handleClick}
                       isHost={userType === "host"}
+                      openChat={() => setChatOpen(true)} 
+                      clearNewMessage={() => setHasNewMessage(false)} 
+                      hasNewMessage={hasNewMessage} 
                     />
+      
                   </div>
 
                   <div>
@@ -935,7 +1123,7 @@ const InvitationCard = () => {
                             <span>Explore Themes</span>
                           </button> */}
 
-                          <button className="btn-share" onClick={handleWhatsAppShare}>
+                          <button className="btn-share" onClick={goToSharePage}>
                             <span>Share Invitation</span>
                             <span className="icon-bg">
                               <Image src={whatshare} alt="WhatsApp" className="icon-img" />
@@ -946,42 +1134,6 @@ const InvitationCard = () => {
                     )}
                   </div>
 
-
-                  {/* {isHost || hasSubmitted ? (
-                    <GuestListPreview
-                      guestList={guestList}
-                      loading={loading}
-                      userType={userType}
-                      hostData={orderDetails}
-                      urlParams={urlParams}
-                    />
-                  ) : (
-                    <GuestRSVPForm
-                      hostData={orderDetails}
-                      userType={userType}
-                      guestList={guestList}
-                      loading={loading}
-                      userId={userID}
-                      eventId={urlParams.eventId}
-                      // fetchGuests={fetchGuests}
-                      hasSubmitted={hasSubmitted}
-                      setHasSubmitted={setHasSubmitted}
-                      setShowPopupGuest={setShowPopupGuest}
-                      onSubmit={(data) => {
-                        const payload = {
-                          ...data,
-                          rsvpId: id,
-                          userId: secondId,
-                        };
-                        // handleRSVPSubmit(payload);
-                        localStorage.setItem(
-                          `rsvp_submitted_${id}_${secondId}`,
-                          "true"
-                        );
-                        setHasSubmitted(true);
-                      }}
-                    />
-                  )} */}
                   {isHost ? (
 
                     <GuestListPreview
@@ -1304,12 +1456,24 @@ const InvitationCard = () => {
                           </button>
 
                           {selectedImage.userId === userID && (
-                            <button
-                              className="lightbox-btn"
-                              onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-                            >
-                              <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
-                            </button>
+                            // <button
+                            //   className="lightbox-btn"
+                            //   onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
+                            // >
+                             <button
+  className="lightbox-btn"
+  onClick={(e) => {
+    e.stopPropagation(); // click को overlay तक जाने से रोकता है
+    setDeleteTarget({
+      imageId: selectedImage._id,
+      imageType: selectedImage.imageType
+    });
+    setShowDeletePopup(true);
+  }}
+>
+  <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
+</button>
+
                           )}
                         </div>
                       </div>
@@ -1320,6 +1484,31 @@ const InvitationCard = () => {
 
 
               </div>
+{showDeletePopup && (
+  <div className="deletepopup-overlay">
+    <div className="deletepopup">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete this photo?</p>
+      <div className="deletepopup-buttons">
+        <button
+          className="deletecancel-btn"
+          onClick={() => setShowDeletePopup(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="deletedelete-btn"
+          onClick={() => {
+            handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
+            setShowDeletePopup(false);
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1401,6 +1590,132 @@ const InvitationCard = () => {
           />
         </>
       )}
+       <>
+    
+
+        {/* Chat UI */}
+        {chatOpen && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              display: "flex",
+              flexDirection: "column",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#fff",
+                padding: "16px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+              }}
+            >
+              <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>
+                Wonderland Chat ({eventId})
+              </h2>
+              <button
+                onClick={() => setChatOpen(false)}
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                  color: "#dc2626",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Messages */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: "auto",
+                backgroundColor: "#f3f4f6",
+                padding: "16px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+              }}
+            >
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  style={{
+                    maxWidth: "70%",
+                    padding: "10px",
+                    borderRadius: "10px",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                    backgroundColor:
+                      msg.senderId === userIdd ? "#3b82f6" : "#fff",
+                    color: msg.senderId === userIdd ? "#fff" : "#333",
+                    alignSelf:
+                      msg.senderId === userIdd ? "flex-end" : "flex-start",
+                    textAlign: msg.senderId === userIdd ? "right" : "left",
+                  }}
+                >
+                  <div style={{ fontSize: "14px" }}>{msg.text}</div>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      marginTop: "6px",
+                      color: msg.senderId === userIdd ? "#dbeafe" : "#999",
+                    }}
+                  >
+                    {msg.sentAt?.toDate
+                      ? new Date(msg.sentAt.toDate()).toLocaleTimeString()
+                      : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Input */}
+            <div
+              style={{
+                backgroundColor: "#fff",
+                padding: "12px",
+                borderTop: "1px solid #ddd",
+                display: "flex",
+                gap: "8px",
+              }}
+            >
+              <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Type your message..."
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  borderRadius: "6px",
+                  border: "1px solid #ccc",
+                  fontSize: "14px",
+                }}
+              />
+              <button
+                onClick={sendMessage}
+                style={{
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  padding: "10px 16px",
+                  borderRadius: "6px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+      </>
     </>
   );
 };

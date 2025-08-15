@@ -150,12 +150,10 @@ const GuestRSVPForm = ({
       if (data.error) {
         alert("Something went wrong. Please try again. 1");
       } else {
-        fetchGuestsInside(); // Refresh the guest list
-        // fetchGuests(); // Refresh the guest list
+        fetchGuestsInside(); 
         setOpenRsvpList(true);
         localStorage.setItem(`rsvp_submitted_${eventId}_${userId}`, "true");
         setHasSubmitted(true);
-        alert("Thank you! Your response has been submitted.");
         setGuestName("");
         setStatus("");
         setShowForm(false);
@@ -263,7 +261,7 @@ const GuestRSVPForm = ({
 
       )}
 
-      {openRsvpList && (
+      {/* {openRsvpList && (
         <div className="popup-rsvp-list">
           <div className="rsvp-list-box">
             <h4>Guest List</h4>
@@ -275,7 +273,7 @@ const GuestRSVPForm = ({
             <button onClick={() => setOpenRsvpList(false)}>Close</button>
           </div>
         </div>
-      )}
+      )} */}
     {/* </div> */}
     </>
   );

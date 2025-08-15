@@ -95,14 +95,15 @@ useEffect(() => {
   <div className="train-preview-wrapper">
     <Image src={train} alt="Train Guests" className="train-image" />
 
-    {/* 🟡 Balloon Letters */}
+
     {(guestData || []).slice(0, 5).map((guest, index) => (
+      
       <span key={index} className={`balloon-letter balloon-${index}`}>
         {guest?.name?.charAt(0).toUpperCase() || ""}
       </span>
     ))}
 
-    {/* 🔢 Guest Count */}
+  
     <div className="guest-count-overlay">
       <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
       <span className="separator">|</span>
