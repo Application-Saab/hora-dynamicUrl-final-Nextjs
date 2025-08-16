@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Image from "next/image";
 import "./FormComponent.css";
@@ -14,9 +13,11 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
     hostData
   );
   const router = useRouter();
-  const { id } = router.query;
-  const slug = router.query.slug || [];
-  let eventId = slug[1]
+  const { id : queryId } = router.query;
+  // const slug = router.query.slug || [];
+  // const queryId = router.query.id;
+  const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
+  let eventId = slug[1];
   const userId = localStorage.getItem("userID");
 
   const [preview, setPreview] = useState(null);
@@ -26,7 +27,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setPreview({ url: imageUrl, file }); // Store URL and file object
+      setPreview({ url: imageUrl, file }); 
     }
   };
 
@@ -50,16 +51,15 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
           method: "PUT",
           body: formData,
           headers: {
-            Authorization: `${localStorage.getItem("token") || ""}`, // Fallback to empty string if no token
+            Authorization: `${localStorage.getItem("token") || ""}`, 
           },
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        alert("Lucky draw submitted successfully!");
-        setPreview(null); // Clear preview after success
-        onClose(); // Close the form on success
+        setPreview(null);
+        onClose();
       } else {
         const error = await response.json();
         alert("Submission failed: " + (error.message || error.error));
@@ -81,7 +81,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
         <p className="lucky-draw-description">
           Upload your photo with {hostData?.Name} <br />{" "}
           <span style={{ color: "rgba(151, 83, 140, 1)" }}>from the party</span>{" "}
-         to  Win the Lucky Ticket 
+          to Win the Lucky Ticket
         </p>
         <div
           className="file-upload"
@@ -96,10 +96,10 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "10px"
+                padding: "10px",
               }}
             >
-             <Image src={CamIcon} alt="camera icon" width={30} height={30} />
+              <Image src={CamIcon} alt="camera icon" width={30} height={30} />
 
               <p
                 className="img-label-upload"
@@ -116,13 +116,13 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
             onChange={handleFileChange}
           />
         </div>
-        <div style={{
-        display:"flex",
-        gap:"10px",
-        marginTop:"10px",
-        }}>
-
-      
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginTop: "10px",
+          }}
+        >
           <button
             disabled={isLoading}
             className="lucky-btn lucky-btn-cancel"
@@ -136,7 +136,11 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
             className="lucky-btn lucky-btn-submit"
             onClick={handleSubmit}
           >
-            {isLoading ? "Submitting..." : "Submit"}
+{isLoading ? (
+    <span className="loader"></span>
+  ) : (
+    "Submit"
+  )}
           </button>
         </div>
         <div style={{ marginTop: "50px" }}>

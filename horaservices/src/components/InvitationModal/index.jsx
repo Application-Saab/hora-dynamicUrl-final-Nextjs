@@ -17,13 +17,15 @@ const InvitationModal = ({
   fileInputRef,
   orderDetails,
   imageBackground,
-  // slug,
 }) => {
   if (!showModal) return null;
   const router = useRouter();
-  const { page } = router.query;
+  const { page, id: queryId } = router.query;
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const slug = router.query.slug || [];
+  // const queryId = router.query.id;
+  const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
+
+  // const slug = router.query.slug || [];
   
   const filteredOptions = eventOptions.filter((opt) =>
     opt.toLowerCase().includes((formData.eventTypeSearch || "").toLowerCase())
@@ -39,7 +41,7 @@ const InvitationModal = ({
 
   const handleCancelClick = () => {
     if (page === "create-invite" && slug.length > 0) {
-      return router.push(`/wonderland/${slug[0]}`);
+      return router.push(`/wonderland?id=${slug[0]}`);
     } else {
       handleClose();
     }
@@ -65,49 +67,6 @@ const InvitationModal = ({
           So come join us and make memories dear.
         </p>
 
-        {/* Event Type Input with Dropdown */}
-        {/* <div className="dropdown-wrapper">
-          <input
-            type="text"
-            placeholder="Event Name"
-            className="input-field"
-            value={formData.eventTypeSearch ?? formData.eventType ?? ""}
-            onChange={(e) => {
-              const val = e.target.value;
-              setFormData((prev) => ({
-                ...prev,
-                eventType: val,
-                eventTypeSearch: val,
-              }));
-              setShowDropdown(true);
-            }}
-            onFocus={() => setShowDropdown(true)}
-            autoComplete="off"
-          />
-          {showDropdown && formData.eventTypeSearch && (
-            <ul className="dropdown-list">
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((opt) => (
-                  <li
-                    key={opt}
-                    onClick={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        eventType: opt,
-                        eventTypeSearch: opt,
-                      }));
-                      setShowDropdown(false);
-                    }}
-                  >
-                    {opt}
-                  </li>
-                ))
-              ) : (
-                <li className="no-results">No results found</li>
-              )}
-            </ul>
-          )}
-        </div> */}
         <div className="dropdown-wrapper">
           <input
             type="text"

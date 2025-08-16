@@ -65,7 +65,7 @@ input {
   outline: none;
   color:black
 }
-textarea {
+.textareanote {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
