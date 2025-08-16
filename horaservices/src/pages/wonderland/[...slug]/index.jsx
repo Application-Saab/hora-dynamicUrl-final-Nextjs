@@ -52,6 +52,7 @@ import { eventOptions } from "@/utils/constants";
 
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   setDoc,
@@ -67,6 +68,7 @@ const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
 
 const InvitationCard = () => {
+  const rsvpRef = useRef(null);
   const fileInputRef = useRef(null);
   const router = useRouter();
   const { page } = router.query;
@@ -278,19 +280,15 @@ const InvitationCard = () => {
   const [wallUploading, setWallUploading] = useState(false);
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyU06csCT5OIJzO3F9VGTjCIli74-k2puAp8AhybJGHPYvyEmuQmJlvPf60wHsy--NGGg/exec"; // no query params
-
   const [showLuckyDrawPopup, setShowLuckyDrawPopup] = useState(false);
-
   const [id, setId] = useState(null);
   const [secondId, setSecondId] = useState("");
-
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
-
-
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [userIdd, setUserIdd] = useState(null);
   const [role, setRole] = useState(null);
@@ -917,8 +915,23 @@ const InvitationCard = () => {
     listenToMessages(urlParams.eventId);
   }, [urlParams]);
 
+  const handleDeleteMessage = async (msgId) => {
+    try {
+      // Firebase document delete for message with id = msgId
+      await deleteDoc(doc(db, "groups", eventId, "messages", msgId));
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
 
 
+  const hasSetUpMessageListener = useRef(false);
+  useEffect(() => {
+    const chatContainer = document.querySelector(".chat-messages");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
 
 
   useEffect(() => {
@@ -927,36 +940,31 @@ const InvitationCard = () => {
     const requestPermissionAndSaveToken = async () => {
       try {
         const permission = await Notification.requestPermission();
-        if (permission !== "granted") {
-          console.warn("Notification permission not granted");
-          return;
-        }
+        if (permission !== "granted") return;
 
         const messagingInstance = getMessaging();
-        if (!messagingInstance) return;
-
         const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
-        if (!token) {
-          console.warn("No FCM token retrieved");
-          return;
+        if (token) {
+          await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
         }
 
-        await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
-
-        onMessage(messagingInstance, (payload) => {
-          if (!chatOpen) {
-            alert(`🔔 ${payload.notification.title}\n${payload.notification.body}`);
-            setHasNewMessage(true);
-          }
-        });
-      } catch (error) {
-        console.error("FCM error:", error);
+        // ✅ Add listener only once
+        if (!hasSetUpMessageListener.current) {
+          onMessage(messagingInstance, (payload) => {
+            if (!chatOpen) {
+              alert(`🔔 ${payload.notification?.title}\n${payload.notification?.body}`);
+              setHasNewMessage(true);
+            }
+          });
+          hasSetUpMessageListener.current = true;
+        }
+      } catch (err) {
+        console.error("FCM Error:", err);
       }
     };
 
     requestPermissionAndSaveToken();
-  }, [userIdd, chatOpen]);
-
+  }, [userIdd]);
 
 
   const registerUser = async (eventId, userId, role) => {
@@ -1007,11 +1015,24 @@ const InvitationCard = () => {
     await addDoc(collection(db, "groups", eventId, "messages"), {
       text,
       senderId: userIdd,
+      senderPhoneNumber: localStorage.getItem("mobileNumber"), // yahan phone number save karo
       sentAt: new Date(),
     });
 
+
+
     setText("");
   };
+  useEffect(() => {
+    if (userType !== "host" && !hasSubmitted && highlightRSVPButtons) {
+      if (rsvpRef.current) {
+        rsvpRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      setTimeout(() => setHighlightRSVPButtons(false), 9000);
+    }
+  }, [highlightRSVPButtons, userType, hasSubmitted]);
+
   return (
     <>
       {!isLoggedIn ? (
@@ -1091,30 +1112,36 @@ const InvitationCard = () => {
                       urlParams={urlParams}
                     />
                   ) : (
+                    <div
+                      ref={rsvpRef}
+                    >
 
-                    <GuestRSVPForm
-                      hostData={orderDetails}
-                      userType={userType}
-                      guestList={guestList}
-                      loading={loading}
-                      userId={userID}
-                      eventId={urlParams.eventId}
-                      hasSubmitted={hasSubmitted}
-                      setHasSubmitted={setHasSubmitted}
-                      setShowPopupGuest={setShowPopupGuest}
-                      onSubmit={(data) => {
-                        const payload = {
-                          ...data,
-                          rsvpId: id,
-                          userId: secondId,
-                        };
-                        localStorage.setItem(
-                          `rsvp_submitted_${id}_${secondId}`,
-                          "true"
-                        );
-                        setHasSubmitted(true);
-                      }}
-                    />
+                      <GuestRSVPForm
+                        highlightRSVPButtons={highlightRSVPButtons}
+                        setHighlightRSVPButtons={setHighlightRSVPButtons}
+                        hostData={orderDetails}
+                        userType={userType}
+                        guestList={guestList}
+                        loading={loading}
+                        userId={userID}
+                        eventId={urlParams.eventId}
+                        hasSubmitted={hasSubmitted}
+                        setHasSubmitted={setHasSubmitted}
+                        setShowPopupGuest={setShowPopupGuest}
+                        onSubmit={(data) => {
+                          const payload = {
+                            ...data,
+                            rsvpId: id,
+                            userId: secondId,
+                          };
+                          localStorage.setItem(
+                            `rsvp_submitted_${id}_${secondId}`,
+                            "true"
+                          );
+                          setHasSubmitted(true);
+                        }}
+                      />
+                    </div>
                   )}
 
 
@@ -1194,9 +1221,7 @@ const InvitationCard = () => {
                         }
                         setShowLuckyDrawPopup(true);
                       }}
-                      style={{
-                        ...(highlightRSVPButtons ? { border: "2px solid red", animation: "pulse 1.5s" } : {}),
-                      }}
+
                     >
                       Click Now
                     </button>
@@ -1253,7 +1278,6 @@ const InvitationCard = () => {
                       }}
                       style={{
                         ...styles.actionButton,
-                        ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
                       }}
                     >
                       <Image src={action.image} alt={action.title} style={styles.iconStyle} />
@@ -1506,128 +1530,102 @@ const InvitationCard = () => {
       <>
 
 
-        {/* Chat UI */}
         {chatOpen && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              display: "flex",
-              flexDirection: "column",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "#fff",
-                padding: "16px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-              }}
-            >
-              <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>
-                Wonderland Chat ({eventId})
-              </h2>
-              <button
-                onClick={() => setChatOpen(false)}
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  color: "#dc2626",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Messages */}
-            <div
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                backgroundColor: "#f3f4f6",
-                padding: "16px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-              }}
-            >
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  style={{
-                    maxWidth: "70%",
-                    padding: "10px",
-                    borderRadius: "10px",
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                    backgroundColor:
-                      msg.senderId === userIdd ? "#3b82f6" : "#fff",
-                    color: msg.senderId === userIdd ? "#fff" : "#333",
-                    alignSelf:
-                      msg.senderId === userIdd ? "flex-end" : "flex-start",
-                    textAlign: msg.senderId === userIdd ? "right" : "left",
-                  }}
-                >
-                  <div style={{ fontSize: "14px" }}>{msg.text}</div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      marginTop: "6px",
-                      color: msg.senderId === userIdd ? "#dbeafe" : "#999",
+          <div className="chat-overlay">
+            <div className="chat-header">
+              {selectedMessages.length > 0 ? (
+                <div className="chat-actions">
+                  <button
+                    className="delete-icon"
+                    onClick={() => {
+                      selectedMessages.forEach(id => handleDeleteMessage(id));
+                      setSelectedMessages([]);
                     }}
                   >
-                    {msg.sentAt?.toDate
-                      ? new Date(msg.sentAt.toDate()).toLocaleTimeString()
-                      : ""}
-                  </div>
+                    🗑️
+                  </button>
+                  <span>{selectedMessages.length} selected</span>
                 </div>
-              ))}
+              ) : (
+                <div className="chat-user-info">
+
+                  <h3>Group Chat</h3>
+                  <span>{orderDetails?.Name}</span>
+                  <span> {orderDetails?.eventType} party</span>
+                </div>
+              )}
+
+              <button className="chat-close-btn" onClick={() => setChatOpen(false)}>×</button>
             </div>
 
-            {/* Input */}
-            <div
-              style={{
-                backgroundColor: "#fff",
-                padding: "12px",
-                borderTop: "1px solid #ddd",
-                display: "flex",
-                gap: "8px",
-              }}
-            >
-              <input
+
+            <div className="chat-messages">
+              {messages.map((msg) => {
+                const isSender = msg.senderPhoneNumber === userPhoneNumber;
+
+                return (
+                  <div
+                    key={msg.id}
+                    className={`chat-message ${isSender ? "sender" : "receiver"} ${selectedMessages.includes(msg.id) ? "selected" : ""
+                      }`}
+                    onClick={() => {
+                      if (selectedMessages.includes(msg.id)) {
+                        setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
+                      } else {
+                        // ✅ Sirf apne message select karne ki condition
+                        if (msg.senderPhoneNumber === userPhoneNumber) {
+                          setSelectedMessages([...selectedMessages, msg.id]);
+                        }
+                      }
+                    }}
+                  >
+                    <div className="chat-bubble">
+                      <div className="chat-sender">
+                        +91 {msg.senderPhoneNumber}
+                      </div>
+                      <div className="chat-text">{msg.text}</div>
+                      <div className="chat-time">
+                        {msg.sentAt?.toDate
+                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                );
+              })}
+            </div>
+
+            <div className="chat-input-container">
+
+              <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Type your message..."
-                style={{
-                  flex: 1,
-                  padding: "10px",
-                  borderRadius: "6px",
-                  border: "1px solid #ccc",
-                  fontSize: "14px",
+                placeholder="Type your message"
+                className="chat-input"
+                rows={1}
+                onInput={(e) => {
+                  e.target.style.height = "auto";
+                  const newHeight = Math.min(e.target.scrollHeight, 120);
+                  e.target.style.height = newHeight + "px";
                 }}
               />
-              <button
-                onClick={sendMessage}
-                style={{
-                  backgroundColor: "#2563eb",
-                  color: "#fff",
-                  padding: "10px 16px",
-                  borderRadius: "6px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                Send
-              </button>
+
+
+              <button onClick={sendMessage} className="chat-send-btn">➤</button>
             </div>
           </div>
         )}
+
+
+
+
       </>
     </>
   );

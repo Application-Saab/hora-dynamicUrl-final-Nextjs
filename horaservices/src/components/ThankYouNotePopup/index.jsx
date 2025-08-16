@@ -52,6 +52,7 @@ const ThankYouNotePopup = ({
           rows={5}
           placeholder="Write Your thank You Message..."
           value={noteTitle}
+          className="textareanote"
           required
           onChange={(e) => {
             const input = e.target.value;
