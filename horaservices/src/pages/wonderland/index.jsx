@@ -6,7 +6,7 @@ import tabIcon1 from "@/assets/galleryicon.png";
 import tabIcon2 from "@/assets/thankyouicon.png";
 import imageBackground from "@/assets/imageBackground.jpg";
 import imageBackGround from "@/assets/finalInviteBackground.png";
-import LuckDrawTicketBanner from "@/assets/lucky_draw_ticket_bg.png";
+import LuckDrawTicketBanner from "@/assets/lucky_draw_ticket_bg.jpg";
 import Image from "next/image";
 import whatshare from "@/assets/whatshare.png";
 import shareinvitaion from "@/assets/shareinvitation.png";
@@ -49,7 +49,27 @@ import frame from "@/assets/Frame1.png";
 import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage";
 import { eventOptions } from "@/utils/constants";
 
+
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import { db } from "../../firebase";
+import { getToken, onMessage, getMessaging } from "firebase/messaging";
+
+const VAPID_KEY =
+  "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
+
+
 const InvitationCard = () => {
+  const rsvpRef = useRef(null);
   const router = useRouter();
   const { page, id : queryId } = router.query;
   // const slug = router.query.slug || [];
@@ -70,6 +90,8 @@ const InvitationCard = () => {
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+const [deleteTarget, setDeleteTarget] = useState(null);
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -78,8 +100,8 @@ const InvitationCard = () => {
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+ const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
+const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(false);
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
@@ -141,7 +163,8 @@ const InvitationCard = () => {
     };
 
     fetchEventImages();
-  }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw]);
+    }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw, refetchLuckyDrawHostDelete,
+  refetchLuckyDrawGuestDelete]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -182,6 +205,7 @@ const InvitationCard = () => {
     refetchLuckyDraw,
     refetchEventImages,
     refetchAddGuest,
+    refetchLuckyDrawGuestDelete
   ]);
 
   useEffect(() => {
@@ -279,6 +303,16 @@ const InvitationCard = () => {
 
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
+
+  
+   const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
+    const [selectedMessages, setSelectedMessages] = useState([]);
+  const [eventId, setEventId] = useState(null);
+  const [userIdd, setUserIdd] = useState(null);
+  const [role, setRole] = useState(null);
+  const [hasNewMessage, setHasNewMessage] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -461,16 +495,11 @@ const InvitationCard = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleWhatsAppShare = () => {
-    const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails.userId}/${orderDetails.id}/guest`;
-    const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${
-      orderDetails["Event Type"] || "Birthday"
-    }! 🎉\n\n📅 ${formatDate(orderDetails.Date)}\n⏰ ${orderDetails.Time}\n📍 ${
-      orderDetails.Address || "Venue"
-    }\n\n👉 Tap to view the invite:\n${inviteURL}`;
-
-    const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-    window.open(whatsappLink, "_blank");
+   const goToSharePage = () => {
+    router.push({
+      pathname: "/wonderland/ShareInvitation", // tumhare ShareInvitation page ka route
+      query: { data: JSON.stringify(orderDetails) }
+    });
   };
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
@@ -639,7 +668,7 @@ const InvitationCard = () => {
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw]);
+  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw, refetchLuckyDrawHostDelete]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -769,51 +798,100 @@ const InvitationCard = () => {
       setWallUploading(false);
     }
   };
-  const handleDeleteImage = async (imageId, imageType) => {
-    if (!confirm("Are you sure you want to delete this image?")) return;
+  // const handleDeleteImage = async (imageId, imageType) => {
+  //   if (!confirm("Are you sure you want to delete this image?")) return;
 
-    try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: token, // ✅ token without "Bearer "
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: userID, imageId, imageType }),
-        }
-      );
+  //   try {
+  //     const res = await fetch(
+  //       `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: token, // ✅ token without "Bearer "
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ userId: userID, imageId, imageType }),
+  //       }
+  //     );
 
-      const data = await res.json();
+  //     const data = await res.json();
 
-      if (!data.error) {
-        setEventAllImages((prev) => {
-          const newImages = prev.filter((img) => img._id !== imageId);
+  //     if (!data.error) {
+  //       setEventAllImages((prev) => {
+  //         const newImages = prev.filter((img) => img._id !== imageId);
 
-          if (newImages.length === 0) {
-            setIsImageOpen(false);
-          } else {
-            let newIndex = selectedIndex;
-            if (selectedIndex >= newImages.length) {
-              newIndex = newImages.length - 1;
-            }
-            setSelectedIndex(newIndex);
-            setSelectedImage(newImages[newIndex]);
-          }
+  //         if (newImages.length === 0) {
+  //           setIsImageOpen(false);
+  //         } else {
+  //           let newIndex = selectedIndex;
+  //           if (selectedIndex >= newImages.length) {
+  //             newIndex = newImages.length - 1;
+  //           }
+  //           setSelectedIndex(newIndex);
+  //           setSelectedImage(newImages[newIndex]);
+  //         }
 
-          return newImages;
-        });
+  //         return newImages;
+  //       });
 
-        alert("Image deleted successfully");
-      } else {
-        alert(data.message || "Failed to delete image");
+  //       alert("Image deleted successfully");
+  //     } else {
+  //       alert(data.message || "Failed to delete image");
+  //     }
+  //   } catch (err) {
+  //     console.error("Delete error:", err);
+  //     alert("Server error while deleting");
+  //   }
+  // };
+const handleDeleteImage = async (imageId, imageType) => {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userID, imageId, imageType }),
       }
-    } catch (err) {
-      console.error("Delete error:", err);
-      alert("Server error while deleting");
+    );
+
+    const data = await res.json();
+
+    if (!data.error) {
+      setEventAllImages((prev) => {
+        const newImages = prev.filter((img) => img._id !== imageId);
+
+        if (newImages.length === 0) {
+          setIsImageOpen(false);
+        } else {
+          let newIndex = selectedIndex;
+          if (selectedIndex >= newImages.length) {
+            newIndex = newImages.length - 1;
+          }
+          setSelectedIndex(newIndex);
+          setSelectedImage(newImages[newIndex]);
+        }
+
+        return newImages;
+      });
+     if (imageType === "luckyDraw") {
+  if (isHost) {
+    setRefetchLuckyDrawHostDelete(prev => !prev);
+  } else {
+    setRefetchLuckyDrawGuestDelete(prev => !prev);
+  }
+}
+
+    } else {
+      console.error(data.message || "Failed to delete image");
     }
-  };
+  } catch (err) {
+    console.error("Delete error:", err);
+  }
+};
+
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -892,6 +970,141 @@ const InvitationCard = () => {
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, urlParams, userId, sendCustomerId]);
 
+ useEffect(() => {
+  if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
+    return;
+
+  setEventId(urlParams.eventId);
+  setUserIdd(urlParams.eventUserId);
+  setRole(urlParams.userType);
+
+  registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
+  listenToMessages(urlParams.eventId);
+}, [urlParams]);
+
+
+
+
+  const handleDeleteMessage = async (msgId) => {
+    try {
+      // Firebase document delete for message with id = msgId
+      await deleteDoc(doc(db, "groups", eventId, "messages", msgId));
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
+
+
+  const hasSetUpMessageListener = useRef(false);
+  useEffect(() => {
+    const chatContainer = document.querySelector(".chat-messages");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
+
+
+  useEffect(() => {
+    if (!userIdd || typeof window === "undefined") return;
+
+    const requestPermissionAndSaveToken = async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
+
+        const messagingInstance = getMessaging();
+        const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+        if (token) {
+          await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
+        }
+
+        // ✅ Add listener only once
+        if (!hasSetUpMessageListener.current) {
+          onMessage(messagingInstance, (payload) => {
+            if (!chatOpen) {
+              alert(`🔔 ${payload.notification?.title}\n${payload.notification?.body}`);
+              setHasNewMessage(true);
+            }
+          });
+          hasSetUpMessageListener.current = true;
+        }
+      } catch (err) {
+        console.error("FCM Error:", err);
+      }
+    };
+
+    requestPermissionAndSaveToken();
+  }, [userIdd]);
+
+
+  //  Register user in Firebase
+  const registerUser = async (eventId, userId, role) => {
+    const groupRef = doc(db, "groups", eventId);
+    const groupSnap = await getDoc(groupRef);
+
+    if (!groupSnap.exists()) {
+      await setDoc(groupRef, { createdAt: new Date() });
+    }
+
+    const memberRef = doc(db, "groups", eventId, "members", userId);
+    const memberSnap = await getDoc(memberRef);
+
+    if (!memberSnap.exists()) {
+      await setDoc(memberRef, {
+        role,
+        joinedAt: new Date(),
+      });
+    }
+  };
+
+  // Listen for new messages
+  const listenToMessages = (eventId) => {
+    const messagesRef = collection(db, "groups", eventId, "messages");
+    const q = query(messagesRef, orderBy("sentAt", "asc"));
+
+    onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Show red dot if new message and chat closed
+      if (msgs.length > messages.length && !chatOpen) {
+        setHasNewMessage(true);
+      }
+
+      setMessages(msgs);
+    });
+  };
+
+// ✅ Send message with safe guards
+const sendMessage = async () => {
+  if (!text.trim()) return;
+  if (!eventId || !userIdd) {
+    console.warn("Missing eventId or userId — cannot send message.");
+    return;
+  }
+
+  await addDoc(collection(db, "groups", eventId, "messages"), {
+    text,
+    senderId: userIdd,
+    senderPhoneNumber: localStorage.getItem("mobileNumber"),
+    sentAt: new Date(),
+  });
+
+  setText("");
+};
+  useEffect(() => {
+    if (userType !== "host" && !hasSubmitted && highlightRSVPButtons) {
+      if (rsvpRef.current) {
+        rsvpRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      setTimeout(() => setHighlightRSVPButtons(false), 9000);
+    }
+  }, [highlightRSVPButtons, userType, hasSubmitted]);
+
+
   return (
     <>
       {!isLoggedIn ? (
@@ -943,6 +1156,9 @@ const InvitationCard = () => {
                       orderDetails={orderDetails}
                       handleClick={handleClick}
                       isHost={userType === "host"}
+                      openChat={() => setChatOpen(true)} 
+                      clearNewMessage={() => setHasNewMessage(false)} 
+                      hasNewMessage={hasNewMessage} 
                     />
                   </div>
 
@@ -966,7 +1182,7 @@ const InvitationCard = () => {
 
                           <button
                             className="btn-share"
-                            onClick={handleWhatsAppShare}
+                            onClick={goToSharePage}
                           >
                             <span>Share Invitation</span>
                             <span className="icon-bg">
@@ -982,41 +1198,6 @@ const InvitationCard = () => {
                     )}
                   </div>
 
-                  {/* {isHost || hasSubmitted ? (
-                    <GuestListPreview
-                      guestList={guestList}
-                      loading={loading}
-                      userType={userType}
-                      hostData={orderDetails}
-                      urlParams={urlParams}
-                    />
-                  ) : (
-                    <GuestRSVPForm
-                      hostData={orderDetails}
-                      userType={userType}
-                      guestList={guestList}
-                      loading={loading}
-                      userId={userID}
-                      eventId={urlParams.eventId}
-                      // fetchGuests={fetchGuests}
-                      hasSubmitted={hasSubmitted}
-                      setHasSubmitted={setHasSubmitted}
-                      setShowPopupGuest={setShowPopupGuest}
-                      onSubmit={(data) => {
-                        const payload = {
-                          ...data,
-                          rsvpId: id,
-                          userId: secondId,
-                        };
-                        // handleRSVPSubmit(payload);
-                        localStorage.setItem(
-                          `rsvp_submitted_${id}_${secondId}`,
-                          "true"
-                        );
-                        setHasSubmitted(true);
-                      }}
-                    />
-                  )} */}
                   {isHost ? (
                     <GuestListPreview
                       guestList={guestList}
@@ -1034,29 +1215,36 @@ const InvitationCard = () => {
                       urlParams={urlParams}
                     />
                   ) : (
-                    <GuestRSVPForm
-                      hostData={orderDetails}
-                      userType={userType}
-                      guestList={guestList}
-                      loading={loading}
-                      userId={userID}
-                      eventId={urlParams.eventId}
-                      hasSubmitted={hasSubmitted}
-                      setHasSubmitted={setHasSubmitted}
-                      setShowPopupGuest={setShowPopupGuest}
-                      onSubmit={(data) => {
-                        const payload = {
-                          ...data,
-                          rsvpId: id,
-                          userId: secondId,
-                        };
-                        localStorage.setItem(
-                          `rsvp_submitted_${id}_${secondId}`,
-                          "true"
-                        );
-                        setHasSubmitted(true);
-                      }}
-                    />
+                     <div
+                      ref={rsvpRef}
+                    >
+
+                      <GuestRSVPForm
+                        highlightRSVPButtons={highlightRSVPButtons}
+                        setHighlightRSVPButtons={setHighlightRSVPButtons}
+                        hostData={orderDetails}
+                        userType={userType}
+                        guestList={guestList}
+                        loading={loading}
+                        userId={userID}
+                        eventId={urlParams.eventId}
+                        hasSubmitted={hasSubmitted}
+                        setHasSubmitted={setHasSubmitted}
+                        setShowPopupGuest={setShowPopupGuest}
+                        onSubmit={(data) => {
+                          const payload = {
+                            ...data,
+                            rsvpId: id,
+                            userId: secondId,
+                          };
+                          localStorage.setItem(
+                            `rsvp_submitted_${id}_${secondId}`,
+                            "true"
+                          );
+                          setHasSubmitted(true);
+                        }}
+                      />
+                    </div>
                   )}
 
                   {/* 💌 Thank You Note Popup */}
@@ -1138,11 +1326,6 @@ const InvitationCard = () => {
                         }
                         setShowLuckyDrawPopup(true); // RSVP submit hua → normal behaviour
                       }}
-                      style={{
-                        ...(highlightRSVPButtons
-                          ? { border: "2px solid red", animation: "pulse 1.5s" }
-                          : {}),
-                      }}
                     >
                       Click Now
                     </button>
@@ -1208,47 +1391,36 @@ const InvitationCard = () => {
                       <span style={styles.buttonLabel}>{action.title}</span>
                     </button>
                   ))} */}
-                  {actions.map((action, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        // Guest ke liye: RSVP check
-                        if (userType !== "host" && !hasSubmitted) {
-                          setHighlightRSVPButtons(true);
-                          setTimeout(
-                            () => setHighlightRSVPButtons(false),
-                            1000
-                          );
-                          return; // RSVP submit nahi hua → button ka kaam nahi chalega
-                        }
+                    {actions.map((action, index) => (
+  <button
+    key={index}
+    onClick={() => {
+      // Guest ke liye: RSVP check
+      if (userType !== "host" && !hasSubmitted) {
+        setHighlightRSVPButtons(true);
+        setTimeout(() => setHighlightRSVPButtons(false), 1000);
+        return; // RSVP submit nahi hua → button ka kaam nahi chalega
+      }
 
-                        // Upload Pictures
-                        if (action.title === "Upload Pictures") {
-                          const input =
-                            document.getElementById("imageUploadInput");
-                          if (input) {
-                            input.value = "";
-                            input.click();
-                          }
-                        } else {
-                          handleActionClick(action.title);
-                        }
-                      }}
-                      style={{
-                        ...styles.actionButton,
-                        ...(highlightRSVPButtons
-                          ? { border: "2px solid red" }
-                          : {}),
-                      }}
-                    >
-                      <Image
-                        src={action.image}
-                        alt={action.title}
-                        style={styles.iconStyle}
-                      />
-                      <span style={styles.buttonLabel}>{action.title}</span>
-                    </button>
-                  ))}
+      // Upload Pictures
+      if (action.title === "Upload Pictures") {
+        const input = document.getElementById("imageUploadInput");
+        if (input) {
+          input.value = "";
+          input.click();
+        }
+      } else {
+        handleActionClick(action.title);
+      }
+    }}
+    style={{
+      ...styles.actionButton,
+    }}
+  >
+    <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+    <span style={styles.buttonLabel}>{action.title}</span>
+  </button>
+))}
 
                   <input
                     type="file"
@@ -1436,21 +1608,24 @@ const InvitationCard = () => {
                           </button>
 
                           {selectedImage.userId === userID && (
-                            <button
-                              className="lightbox-btn"
-                              onClick={() =>
-                                handleDeleteImage(
-                                  selectedImage._id,
-                                  selectedImage.imageType
-                                )
-                              }
-                            >
-                              <Image
-                                src={deletebtn}
-                                alt="Delete"
-                                style={{ width: 30, height: 30 }}
-                              />
-                            </button>
+                            // <button
+                            //   className="lightbox-btn"
+                            //   onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
+                            // >
+                             <button
+  className="lightbox-btn"
+  onClick={(e) => {
+    e.stopPropagation(); // click को overlay तक जाने से रोकता है
+    setDeleteTarget({
+      imageId: selectedImage._id,
+      imageType: selectedImage.imageType
+    });
+    setShowDeletePopup(true);
+  }}
+>
+  <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
+</button>
+
                           )}
                         </div>
                       </div>
@@ -1458,6 +1633,32 @@ const InvitationCard = () => {
                   </div>
                 )}
               </div>
+
+              {showDeletePopup && (
+  <div className="deletepopup-overlay">
+    <div className="deletepopup">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete this photo?</p>
+      <div className="deletepopup-buttons">
+        <button
+          className="deletecancel-btn"
+          onClick={() => setShowDeletePopup(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="deletedelete-btn"
+          onClick={() => {
+            handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
+            setShowDeletePopup(false);
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1515,11 +1716,109 @@ const InvitationCard = () => {
             onClick={() => setShowPopupGuest(false)}
           />
           <RSVPPopup
+          hostData={hostData}
             guestList={guestList}
             onClose={() => setShowPopupGuest(false)}
           />
         </>
       )}
+             <>
+    
+
+        {/* Chat UI */}
+        {chatOpen && (
+          <div className="chat-overlay">
+            <div className="chat-header">
+              {selectedMessages.length > 0 ? (
+                <div className="chat-actions">
+                  <button
+                    className="delete-icon"
+                    onClick={() => {
+                      selectedMessages.forEach(id => handleDeleteMessage(id));
+                      setSelectedMessages([]);
+                    }}
+                  >
+                    🗑️
+                  </button>
+                  <span>{selectedMessages.length} selected</span>
+                </div>
+              ) : (
+                <div className="chat-user-info">
+
+                  <h3>Group Chat</h3>
+                  <span>{orderDetails?.Name}</span>
+                  <span> {orderDetails?.eventType} party</span>
+                </div>
+              )}
+
+              <button className="chat-close-btn" onClick={() => setChatOpen(false)}>×</button>
+            </div>
+
+
+            <div className="chat-messages">
+              {messages.map((msg) => {
+                const isSender = msg.senderPhoneNumber === userPhoneNumber;
+
+                return (
+                  <div
+                    key={msg.id}
+                    className={`chat-message ${isSender ? "sender" : "receiver"} ${selectedMessages.includes(msg.id) ? "selected" : ""
+                      }`}
+                    onClick={() => {
+                      if (selectedMessages.includes(msg.id)) {
+                        setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
+                      } else {
+                        // ✅ Sirf apne message select karne ki condition
+                        if (msg.senderPhoneNumber === userPhoneNumber) {
+                          setSelectedMessages([...selectedMessages, msg.id]);
+                        }
+                      }
+                    }}
+                  >
+                    <div className="chat-bubble">
+                      <div className="chat-sender">
+                        +91 {msg.senderPhoneNumber}
+                      </div>
+                      <div className="chat-text">{msg.text}</div>
+                      <div className="chat-time">
+                        {msg.sentAt?.toDate
+                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                );
+              })}
+            </div>
+
+            <div className="chat-input-container">
+
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Type your message"
+                className="chat-input"
+                rows={1}
+                onInput={(e) => {
+                  e.target.style.height = "auto";
+                  const newHeight = Math.min(e.target.scrollHeight, 120);
+                  e.target.style.height = newHeight + "px";
+                }}
+              />
+
+
+              <button onClick={sendMessage} className="chat-send-btn">➤</button>
+            </div>
+          </div>
+        )}
+      </>
     </>
   );
 };
@@ -1558,15 +1857,16 @@ const styles = {
     fontSize: 26,
     fontWeight: 700,
     // marginBottom: 8,
-    color: "rgb(168, 50, 142)",
-    textAlign: "center",
+    color: '#97538C',
+    textAlign: 'center',
   },
   subheading: {
-    fontSize: 16,
+    fontSize: 15,
+    padding: "0px 10px 0px 10px",
     marginBottom: 20,
     fontWeight: 400,
-    color: "#97538C",
-    textAlign: "center",
+    color: '#97538C',
+    textAlign: 'center',
   },
   buttonRow: {
     display: "flex",

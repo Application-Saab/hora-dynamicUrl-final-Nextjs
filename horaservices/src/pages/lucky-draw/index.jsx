@@ -58,9 +58,8 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
 
       if (response.ok) {
         const data = await response.json();
-        alert("Lucky draw submitted successfully!");
-        setPreview(null); // Clear preview after success
-        onClose(); // Close the form on success
+        setPreview(null);
+        onClose();
       } else {
         const error = await response.json();
         alert("Submission failed: " + (error.message || error.error));
@@ -137,7 +136,11 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
             className="lucky-btn lucky-btn-submit"
             onClick={handleSubmit}
           >
-            {isLoading ? "Submitting..." : "Submit"}
+{isLoading ? (
+    <span className="loader"></span>
+  ) : (
+    "Submit"
+  )}
           </button>
         </div>
         <div style={{ marginTop: "50px" }}>

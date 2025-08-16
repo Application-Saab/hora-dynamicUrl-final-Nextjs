@@ -184,3 +184,44 @@ text-decoration-color:#FFF0D2;
   /* background-color: yellow; */
 }
 
+.video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.video-overlay video {
+  max-width: 100%;
+  max-height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #000;
+}
+
+
+
+.full-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 999; 
+}
+
+.guest-rsvp-box.highlight {
+  position: relative;
+  z-index: 1000; 
+  border: 3px solid #97538C;
+  box-shadow: 0 0 15px #97538C;
+  background: white; 
+  border-radius: 10px;
+  padding: 15px;
+}
