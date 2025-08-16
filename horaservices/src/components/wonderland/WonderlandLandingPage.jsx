@@ -121,7 +121,7 @@ const WonderlandLandingPage = ({ userId }) => {
     if (isUserLoggedIn && loggedinUserId && slug?.length === 0) {
       timer = setTimeout(() => {
         router.push(`/wonderland?id=${loggedinUserId}`);
-      }, 2500);
+      }, 3500);
     }
 
     return () => clearTimeout(timer);

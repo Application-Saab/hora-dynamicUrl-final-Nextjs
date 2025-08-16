@@ -94,11 +94,7 @@ const InvitationCard = () => {
 const [deleteTarget, setDeleteTarget] = useState(null);
   // const [showPicker, setShowPicker] = useState(false);
   const textareaRef = useRef(null);
-  console.log(
-    "%c [ guestDetails ]-60",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    guestDetails
-  );
+
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
@@ -113,11 +109,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     eventId: slug[1] || "",
     userType: slug[2] ? slug[2].toLowerCase() : "",
   });
-  console.log(
-    "%c [ urlParams ]-77",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    urlParams
-  );
 
   useEffect(() => {
     if (slug.length) {
