@@ -184,7 +184,7 @@ const CreateEventInvite = ({ slug }) => {
         // setShowModal(false);
 
         // ✅ Update the URL route to reflect changes
-        return router.replace(`/wonderland/${hostUserId}/${eventId}/host`);
+        return router.replace(`/wonderland?id=${hostUserId}/${eventId}/host`);
       } else {
         alert("Failed to save invitation.");
       }

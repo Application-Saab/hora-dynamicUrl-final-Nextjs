@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Image from "next/image";
 import "./FormComponent.css";
@@ -14,9 +13,11 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
     hostData
   );
   const router = useRouter();
-  const { id } = router.query;
-  const slug = router.query.slug || [];
-  let eventId = slug[1]
+  const { id : queryId } = router.query;
+  // const slug = router.query.slug || [];
+  // const queryId = router.query.id;
+  const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
+  let eventId = slug[1];
   const userId = localStorage.getItem("userID");
 
   const [preview, setPreview] = useState(null);
@@ -81,7 +82,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
         <p className="lucky-draw-description">
           Upload your photo with {hostData?.Name} <br />{" "}
           <span style={{ color: "rgba(151, 83, 140, 1)" }}>from the party</span>{" "}
-         to  Win the Lucky Ticket 
+          to Win the Lucky Ticket
         </p>
         <div
           className="file-upload"
@@ -96,10 +97,10 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "10px"
+                padding: "10px",
               }}
             >
-             <Image src={CamIcon} alt="camera icon" width={30} height={30} />
+              <Image src={CamIcon} alt="camera icon" width={30} height={30} />
 
               <p
                 className="img-label-upload"
@@ -116,13 +117,13 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
             onChange={handleFileChange}
           />
         </div>
-        <div style={{
-        display:"flex",
-        gap:"10px",
-        marginTop:"10px",
-        }}>
-
-      
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginTop: "10px",
+          }}
+        >
           <button
             disabled={isLoading}
             className="lucky-btn lucky-btn-cancel"

@@ -17,13 +17,15 @@ const InvitationModal = ({
   fileInputRef,
   orderDetails,
   imageBackground,
-  // slug,
 }) => {
   if (!showModal) return null;
   const router = useRouter();
-  const { page } = router.query;
+  const { page, id: queryId } = router.query;
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const slug = router.query.slug || [];
+  // const queryId = router.query.id;
+  const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
+
+  // const slug = router.query.slug || [];
   
   const filteredOptions = eventOptions.filter((opt) =>
     opt.toLowerCase().includes((formData.eventTypeSearch || "").toLowerCase())
@@ -39,7 +41,7 @@ const InvitationModal = ({
 
   const handleCancelClick = () => {
     if (page === "create-invite" && slug.length > 0) {
-      return router.push(`/wonderland/${slug[0]}`);
+      return router.push(`/wonderland?id=${slug[0]}`);
     } else {
       handleClose();
     }
