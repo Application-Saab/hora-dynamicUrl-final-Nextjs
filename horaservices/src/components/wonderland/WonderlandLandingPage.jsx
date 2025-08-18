@@ -3,7 +3,7 @@ import "./WonderlandLandingPage.css";
 import { useRouter } from "next/router";
 import CreateInviteModal from "./create-invite/CreateEventInvite";
 import { BASE_URL, GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
-import OtpLoginPopup from "@/components/OtpLoginPopup";
+import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 
 const WonderlandLandingPage = ({ userId }) => {
   const token = localStorage.getItem("token");
@@ -256,7 +256,7 @@ const WonderlandLandingPage = ({ userId }) => {
     <>
       {showLoginModal && (
         <div className="no-orders">
-          <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+          <WonderlandOtploginpopup setIsModalOpen={setIsModalOpen} />
         </div>
       )}
 

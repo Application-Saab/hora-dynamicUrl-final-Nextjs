@@ -217,7 +217,7 @@ useEffect(() => {
      { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/party-food-delivery-live-catering-buffet" || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
     || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
     || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/lucky-draw"
+    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/lucky-draw" || routerPathname === "/wonderland"
      ?  (
       <header style={styles.headerContainerhome} className="home-header">
       <div className="pageWidth">
@@ -281,7 +281,7 @@ useEffect(() => {
             {isHomePage   || routerPathname === "/photography-page" || routerPathname === "/photo-gallery" || routerPathname === "/party-food-delivery-live-catering-buffet" ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
     || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
     || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/lucky-draw"
+    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/lucky-draw" || routerPathname === "/wonderland"
      ?
             
             (
