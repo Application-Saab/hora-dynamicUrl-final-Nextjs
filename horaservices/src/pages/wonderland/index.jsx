@@ -486,9 +486,10 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     setShowModal(false);
   };
 
-  const handleClick = () => {
-    router.push("/templates");
-  };
+ const handleClick = () => {
+  router.push(`/templates?eventId=${urlParams.eventId}&eventUserId=${urlParams.eventUserId}&userType=${urlParams.userType}`);
+};
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const options = { year: "numeric", month: "short", day: "numeric" };
@@ -1173,12 +1174,12 @@ const sendMessage = async () => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                         <div className="invite-buttons">
-                          {/* <button className="btn-explore" onClick={handleClick}>
+                          <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button> */}
+                          </button>
 
                           <button
                             className="btn-share"

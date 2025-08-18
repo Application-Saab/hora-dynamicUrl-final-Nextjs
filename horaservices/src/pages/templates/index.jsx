@@ -75,14 +75,17 @@ import { useRouter } from "next/navigation";
 import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import "./template.css";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
-
+import { useSearchParams } from "next/navigation";
 const TemplateGrid = () => {
   const router = useRouter();
   const [templatesData, setTemplatesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
+const searchParams = useSearchParams();
+const eventId = searchParams.get("eventId");
+const eventUserId = searchParams.get("eventUserId");
+const userType = searchParams.get("userType");
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
@@ -105,7 +108,9 @@ const TemplateGrid = () => {
 
   const handleApplyClick = (templateId) => {
     setSelectedTemplate(templateId);
-    router.push(`/wonderland/create-invite-template?templateId=${templateId}`);
+ router.push(
+    `/wonderland/create-invite-template?eventId=${eventId}&eventUserId=${eventUserId}&userType=${userType}&templateId=${templateId}`
+  )
   };
 
   if (loading) return <div>Loading templates...</div>;
