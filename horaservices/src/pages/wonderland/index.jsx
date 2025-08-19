@@ -19,6 +19,7 @@ import {
   GET_GUEST_DETTAILS,
   UPLOAD_IMAGES_SELF,
   UPLOAD_THANKYOU_NOTE,
+  GET_ALL_TEMPLATES ,
 } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -661,7 +662,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   //     setShowModal(true);
   //   }
   // }, []);
-
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -702,16 +702,55 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
           userId: hostId,
           id: data._id || data.id || data.eventId,
           luckyDraws: data?.luckyDraws || [],
+          templateId: data.templateId,
         });
 
-        // ✅ Set host ID globally
         setSendCustomerId(hostId);
+    
       }
-    } catch (err) {
+     
+    }
+     catch (err) {
       console.error("❌ Fetch failed:", err);
-      // alert("Fetch failed.");
+   
     }
   };
+
+    const templateId = orderDetails?.templateId;
+useEffect(() => {
+  if (!templateId) return;
+
+  const fetchTemplate = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+      const data = await res.json();
+
+      if (!res.ok || data.error) throw new Error(data.message || "Failed");
+
+      // Find template by templateId
+      const selectedTemplate = data.templates.find(tpl => tpl._id === templateId);
+
+      if (!selectedTemplate) throw new Error("Template not found");
+
+      // backgroundUrl can be either in root or inside configs
+      const backgroundUrl = selectedTemplate.backgroundUrl || selectedTemplate.configs?.backgroundUrl || null;
+
+      setTemplate({
+        cssCode: selectedTemplate.configs?.cssCode || "",
+        jsCode: selectedTemplate.configs?.jsCode || "",
+        fontUrls: selectedTemplate.configs?.fontUrls ? JSON.parse(selectedTemplate.configs.fontUrls) : [],
+        backgroundUrl: backgroundUrl,
+      });
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching template");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTemplate();
+}, [templateId]);
 
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
@@ -800,51 +839,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       setWallUploading(false);
     }
   };
-  // const handleDeleteImage = async (imageId, imageType) => {
-  //   if (!confirm("Are you sure you want to delete this image?")) return;
-
-  //   try {
-  //     const res = await fetch(
-  //       `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: token, // ✅ token without "Bearer "
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ userId: userID, imageId, imageType }),
-  //       }
-  //     );
-
-  //     const data = await res.json();
-
-  //     if (!data.error) {
-  //       setEventAllImages((prev) => {
-  //         const newImages = prev.filter((img) => img._id !== imageId);
-
-  //         if (newImages.length === 0) {
-  //           setIsImageOpen(false);
-  //         } else {
-  //           let newIndex = selectedIndex;
-  //           if (selectedIndex >= newImages.length) {
-  //             newIndex = newImages.length - 1;
-  //           }
-  //           setSelectedIndex(newIndex);
-  //           setSelectedImage(newImages[newIndex]);
-  //         }
-
-  //         return newImages;
-  //       });
-
-  //       alert("Image deleted successfully");
-  //     } else {
-  //       alert(data.message || "Failed to delete image");
-  //     }
-  //   } catch (err) {
-  //     console.error("Delete error:", err);
-  //     alert("Server error while deleting");
-  //   }
-  // };
 const handleDeleteImage = async (imageId, imageType) => {
   try {
     const res = await fetch(
@@ -1106,6 +1100,11 @@ const sendMessage = async () => {
     }
   }, [highlightRSVPButtons, userType, hasSubmitted]);
 
+ const renderHTML = (jsCode, rawData) => {
+  console.log("Background URL:", template?.backgroundUrl);
+
+    return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
+  };
 
   return (
     <>
@@ -1163,58 +1162,47 @@ const sendMessage = async () => {
                       hasNewMessage={hasNewMessage} 
                     />
                   </div> */}
-                  {template?.jsCode ? (
-  <>
-    {/* Template Fonts */}
-    {template?.fontUrls?.map((url, idx) => (
-      <link key={idx} href={url} rel="stylesheet" />
-    ))}
+  <div style={{ padding: "20px" }}>
+      {/* Template Preview with Background */}
+     <div
+  style={{
+    backgroundImage: template?.backgroundUrl
+      ? `url('${template.backgroundUrl}')`
+      : "none",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "400px",
+    borderRadius: "12px",
+    position: "relative",
+    border: "5px solid red",   // <-- Temporary red border to see div outline
+  }}
+>
 
-    {/* Template CSS */}
-    {template?.cssCode && (
-      <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-    )}
+        {/* Fonts */}
+        {template?.fontUrls?.map((url, idx) => (
+          <link key={idx} href={url} rel="stylesheet" />
+        ))}
 
-    {/* Template HTML Rendered with Data */}
-    <div
-      className="invitation-container"
-      style={{
-        backgroundImage: template?.backgroundUrl
-          ? `url('${template.backgroundUrl}')`
-          : `url(${imageBackGround.src})`,
-      }}
-      dangerouslySetInnerHTML={{
-        __html: template.jsCode.replace(/{{(.*?)}}/g, (_, key) => {
-          return (
-            {
-              Name: orderDetails?.Name,
-              "Event Type": orderDetails?.["Event Type"],
-              Date: orderDetails?.Date,
-              Time: orderDetails?.Time,
-              Address: orderDetails?.Address,
-            }[key.trim()] || ""
-          );
-        }),
-      }}
-    />
-  </>
-) : (
-  <div
-    className="invitation-container"
-    style={{
-      backgroundImage: `url(${imageBackGround.src})`,
-    }}
-  >
-    <FinalInviteDisplay
-      orderDetails={orderDetails}
-      handleClick={handleClick}
-      isHost={userType === "host"}
-      openChat={() => setChatOpen(true)}
-      clearNewMessage={() => setHasNewMessage(false)}
-      hasNewMessage={hasNewMessage}
-    />
-  </div>
-)}
+        {/* CSS */}
+        {template?.cssCode && (
+          <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+        )}
+
+        {/* Template HTML */}
+        {template?.jsCode && (
+          <div
+            style={{ position: "relative", zIndex: 2 }}
+            dangerouslySetInnerHTML={{
+              __html: renderHTML(template.jsCode, formData),
+            }}
+          />
+        )}
+</div>
+
+
+
+
+</div>
 
 
                   <div>
