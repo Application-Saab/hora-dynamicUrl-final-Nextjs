@@ -1,5 +1,5 @@
 .guest-preview-card {
-  background: #FFDBDB;
+  background: white;
   text-align: center;
   max-width: 480px;
   margin: auto;
@@ -9,7 +9,7 @@
 
 .curve-container {
   position: relative;
-  background-color: #fdd;
+  background-color: white;
 
 }
 .curve-bg {

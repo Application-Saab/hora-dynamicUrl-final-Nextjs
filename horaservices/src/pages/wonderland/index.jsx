@@ -1147,62 +1147,67 @@ const sendMessage = async () => {
 
               {orderDetails ? (
                 <>
-                  {/* <div
-                    className="invitation-container"
-                    style={{
-                      backgroundImage: `url(${imageBackGround.src})`,
-                    }}
-                  >
-                    <FinalInviteDisplay
-                      orderDetails={orderDetails}
-                      handleClick={handleClick}
-                      isHost={userType === "host"}
-                      openChat={() => setChatOpen(true)} 
-                      clearNewMessage={() => setHasNewMessage(false)} 
-                      hasNewMessage={hasNewMessage} 
-                    />
-                  </div> */}
+
+ {templateId && template ? (
   <div style={{ padding: "20px" }}>
-      {/* Template Preview with Background */}
-     <div
-  style={{
-    backgroundImage: template?.backgroundUrl
-      ? `url('${template.backgroundUrl}')`
-      : "none",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    minHeight: "400px",
-    borderRadius: "12px",
-    position: "relative",
-    border: "5px solid red",   // <-- Temporary red border to see div outline
-  }}
->
 
-        {/* Fonts */}
-        {template?.fontUrls?.map((url, idx) => (
-          <link key={idx} href={url} rel="stylesheet" />
-        ))}
+    <div
+      style={{
+        backgroundImage: template.backgroundUrl
+          ? `url('${template.backgroundUrl}')`
+          : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "400px",
+        borderRadius: "12px",
+        position: "relative",
+        border: "5px solid red",
+      }}
+    >
+      {/* Fonts */}
+      {template.fontUrls?.map((url, idx) => (
+        <link key={idx} href={url} rel="stylesheet" />
+      ))}
 
-        {/* CSS */}
-        {template?.cssCode && (
-          <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-        )}
+      {/* Inject CSS from template */}
+      {template.cssCode && (
+        <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+      )}
 
-        {/* Template HTML */}
-        {template?.jsCode && (
-          <div
-            style={{ position: "relative", zIndex: 2 }}
-            dangerouslySetInnerHTML={{
-              __html: renderHTML(template.jsCode, formData),
-            }}
-          />
-        )}
-</div>
+      {/* Inject HTML with data */}
+      {template.jsCode && (
+        <div
+          style={{ position: "relative", zIndex: 2 }}
+          dangerouslySetInnerHTML={{
+            __html: renderHTML(template.jsCode, formData),
+          }}
+        />
+      )}
+    </div>
+  </div>
+) : (
+  <div
+    className="invitation-container"
+    style={{
+      backgroundImage: `url(${imageBackGround?.src})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      minHeight: "400px",
+      borderRadius: "12px",
+      position: "relative",
+    }}
+  >
+    <FinalInviteDisplay
+      orderDetails={orderDetails}
+      handleClick={handleClick}
+      isHost={userType === "host"}
+      openChat={() => setChatOpen(true)}
+      clearNewMessage={() => setHasNewMessage(false)}
+      hasNewMessage={hasNewMessage}
+    />
+  </div>
+)}
 
-
-
-
-</div>
 
 
                   <div>
@@ -1658,7 +1663,7 @@ const sendMessage = async () => {
                              <button
   className="lightbox-btn"
   onClick={(e) => {
-    e.stopPropagation(); // click को overlay तक जाने से रोकता है
+    e.stopPropagation();
     setDeleteTarget({
       imageId: selectedImage._id,
       imageType: selectedImage.imageType
@@ -1890,16 +1895,15 @@ const styles = {
   },
 
   wrapper: {
-    padding: 20,
+    padding: 5,
     fontFamily: "sans-serif",
     maxWidth: 480,
     margin: "auto",
-    backgroundColor: "#FFDBDB",
+    backgroundColor: "white",
   },
   heading: {
     fontSize: 26,
     fontWeight: 700,
-    // marginBottom: 8,
     color: '#97538C',
     textAlign: 'center',
   },
