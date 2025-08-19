@@ -288,6 +288,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [attendanceStatus, setAttendanceStatus] = useState("");
   const [currentEventId, setCurrentEventId] = useState("");
   const [currentGuestId, setCurrentGuestId] = useState("");
+ const [template, setTemplate] = useState(null);
 
   const [showPopupGuest, setShowPopupGuest] = useState(false);
   const [guestList, setGuestList] = useState([]);
@@ -1147,7 +1148,7 @@ const sendMessage = async () => {
 
               {orderDetails ? (
                 <>
-                  <div
+                  {/* <div
                     className="invitation-container"
                     style={{
                       backgroundImage: `url(${imageBackGround.src})`,
@@ -1161,7 +1162,60 @@ const sendMessage = async () => {
                       clearNewMessage={() => setHasNewMessage(false)} 
                       hasNewMessage={hasNewMessage} 
                     />
-                  </div>
+                  </div> */}
+                  {template?.jsCode ? (
+  <>
+    {/* Template Fonts */}
+    {template?.fontUrls?.map((url, idx) => (
+      <link key={idx} href={url} rel="stylesheet" />
+    ))}
+
+    {/* Template CSS */}
+    {template?.cssCode && (
+      <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+    )}
+
+    {/* Template HTML Rendered with Data */}
+    <div
+      className="invitation-container"
+      style={{
+        backgroundImage: template?.backgroundUrl
+          ? `url('${template.backgroundUrl}')`
+          : `url(${imageBackGround.src})`,
+      }}
+      dangerouslySetInnerHTML={{
+        __html: template.jsCode.replace(/{{(.*?)}}/g, (_, key) => {
+          return (
+            {
+              Name: orderDetails?.Name,
+              "Event Type": orderDetails?.["Event Type"],
+              Date: orderDetails?.Date,
+              Time: orderDetails?.Time,
+              Address: orderDetails?.Address,
+            }[key.trim()] || ""
+          );
+        }),
+      }}
+    />
+  </>
+) : (
+  <div
+    className="invitation-container"
+    style={{
+      backgroundImage: `url(${imageBackGround.src})`,
+    }}
+  >
+    <FinalInviteDisplay
+      orderDetails={orderDetails}
+      handleClick={handleClick}
+      isHost={userType === "host"}
+      openChat={() => setChatOpen(true)}
+      clearNewMessage={() => setHasNewMessage(false)}
+      hasNewMessage={hasNewMessage}
+    />
+  </div>
+)}
+
 
                   <div>
                     {isHost && (
@@ -1175,7 +1229,7 @@ const sendMessage = async () => {
                         </p>
                         <div className="invite-buttons">
                           <button className="btn-explore" onClick={handleClick}>
-                            <span className="icon-bg">
+                            <span className="icon-bg-explore">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
@@ -1186,7 +1240,7 @@ const sendMessage = async () => {
                             onClick={goToSharePage}
                           >
                             <span>Share Invitation</span>
-                            <span className="icon-bg">
+                            <span className="icon-bg-share">
                               <Image
                                 src={whatshare}
                                 alt="WhatsApp"

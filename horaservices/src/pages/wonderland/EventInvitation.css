@@ -851,85 +851,103 @@ background-color: none !important;
   display: block;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 .invite-section {
   text-align: center;
   background-color: #ffdbdb;
   padding: 10px;
   max-width: 480px;
   margin: auto;
+  border-radius: 8px;
 }
 
+/* Title Styles */
 .invite-titles {
-      font-family: 'Aclonica', cursive, sans-serif;
+  font-family: 'Aclonica', cursive, sans-serif;
   font-size: 18px;
   font-weight: bold;
   color: #97538c;
   margin-bottom: 10px;
-  padding: 0px 20px 0px 20px;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+  padding: 0 20px;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
 
+/* Subtitle */
 .invite-subtitles {
   font-size: 12px;
+  font-weight: 500;
   color: #000;
   margin-bottom: 20px;
-     font-weight: 500;
+  line-height: 1.4;
 }
 
+/* Button Container */
 .invite-buttons {
   display: flex;
-  gap: 10px;
   justify-content: center;
+  gap: 8px;
 }
 
+/* Common Button Styles */
 .btn-explore,
 .btn-share {
- display: flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
+  font-size: 11px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
- padding: 0px 0px 0px 10px;
-  font-size: 14px;
-  font-weight: bold;
   cursor: pointer;
   color: white;
-  background-color: #25D366; /* WhatsApp green */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap:5px;
 }
 
+/* Explore Button */
 .btn-explore {
   background-color: #00BFC1;
+  padding: 0 10px 0 0;
 }
 
+/* Share Button */
 .btn-share {
   background-color: #13A200;
+  padding: 0 0 0 10px;
 }
 
-.icon-bg {
+/* Icon Backgrounds */
+.icon-bg-explore,
+.icon-bg-share {
   background-color: white;
-  padding: 6px 8px; /* rectangle padding */
+  padding: 7px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-      border-radius: 0px 4px 4px 0px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* optional shadow for better look */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+/* Specific Border Radius for Icons */
+.icon-bg-explore {
+  border-radius: 4px 0 0 4px;
+}
+
+.icon-bg-share {
+  border-radius: 0 4px 4px 0;
+}
+
+/* Icon Image */
 .icon-img {
   width: 22px;
   height: 22px;
 }
 
-
+/* Hover Effects */
 .btn-explore:hover {
-  background-color: #00BFC1;
+  background-color: #00a5a7;
 }
 
 .btn-share:hover {
-  background-color: #13A200;
+  background-color: #0e8700;
 }
 
 

@@ -106,12 +106,13 @@ const userType = searchParams.get("userType");
     fetchTemplates();
   }, []);
 
-  const handleApplyClick = (templateId) => {
-    setSelectedTemplate(templateId);
- router.push(
-    `/wonderland/create-invite-template?eventId=${eventId}&eventUserId=${eventUserId}&userType=${userType}&templateId=${templateId}`
-  )
-  };
+  const handleApplyClick = (templateMongoId) => {
+  setSelectedTemplate(templateMongoId);
+  router.push(
+    `/wonderland/create-invite-template?id=${eventId}&templateId=${templateMongoId}`
+  );
+};
+
 
   if (loading) return <div>Loading templates...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -121,7 +122,8 @@ const userType = searchParams.get("userType");
       <h2 className="templateTitle">Choose From 50+ Invites</h2>
       <div className="templateGrid">
      {templatesData.map((template) => {
-  const isSelected = selectedTemplate === template.configs?.templateId;
+const isSelected = selectedTemplate === template._id;
+
   return (
     <div key={template._id} className="templateCard">
       <img
@@ -131,7 +133,8 @@ const userType = searchParams.get("userType");
       />
       <button
         className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
-        onClick={() => handleApplyClick(template.configs?.templateId)}
+       onClick={() => handleApplyClick(template._id)}
+
       >
         {isSelected ? (
           <>

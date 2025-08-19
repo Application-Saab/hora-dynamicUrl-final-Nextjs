@@ -9,9 +9,7 @@ const DynamicTemplateRenderer = () => {
   const searchParams = useSearchParams();
 
   const templateId = searchParams.get("templateId");
-  const eventId = searchParams.get("eventId");
-  const hostUserId = searchParams.get("eventUserId");
-  const userType = searchParams.get("userType");
+ const eventId = searchParams.get("id");
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -28,6 +26,7 @@ const DynamicTemplateRenderer = () => {
     date: "",
     time: "",
     address: "",
+     templateId: templateId || "",
   });
 
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -49,9 +48,10 @@ const DynamicTemplateRenderer = () => {
         if (result.error) {
           setError(result.message || "Failed to fetch template");
         } else {
-          const selectedTemplate = result.templates.find(
-            (tpl) => tpl.configs?.templateId === templateId
-          );
+       const selectedTemplate = result.templates.find(
+  (tpl) => tpl._id === templateId
+);
+
 
           if (selectedTemplate) {
 let { cssCode, jsCode, fontUrls, backgroundUrl } = selectedTemplate.configs;
@@ -69,6 +69,7 @@ setTemplate({
   jsCode: jsCode || "",
   fontUrls: fontUrls ? JSON.parse(fontUrls) : [],
   backgroundUrl: selectedTemplate.backgroundUrl || null,
+   isHeroImage: selectedTemplate.configs?.isHeroImage || false,
 });
 
           } else {
@@ -118,6 +119,8 @@ setTemplate({
           date: formattedDate,
           time: formattedTime,
           address: data.location || "",
+          templateId: templateId,
+          isHeroImage: template?.isHeroImage || false,
         });
 
         setUploadedImage(data.hostImage || null);
@@ -179,41 +182,51 @@ const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
 };
 
 
-  /** Save / Update */
-  const handleSave = async () => {
-    const payload = {
-      userId: hostUserId,
-      eventType: formData.eventType,
-      hostName: formData.name,
-      eventDate: formData.date ? new Date(formData.date).toISOString() : "",
-      eventTime: formData.time || "",
-      location: formData.address,
-      hostImage: uploadedImage,
-    };
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
-    try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`,
-        {
-          method: isEdit ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+const handleSave = async () => {
 
-      if (res.ok) {
-        router.replace(`/wonderland?id=${hostUserId}/${eventId || "new"}/host`);
-      } else {
-        alert("Failed to save invitation.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Something went wrong.");
-    }
+  if (!userId) {
+    alert("User not logged in or UserId missing.");
+    return;
+  }
+
+  const payload = {
+    userId: userId,
+    eventType: formData.eventType,
+    hostName: formData.name,
+    eventDate: formData.date ? new Date(formData.date).toISOString() : "",
+    eventTime: formData.time || "",
+    location: formData.address,
+    templateId: formData.templateId,
   };
+
+  try {
+    const res = await fetch(
+      `${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`,
+      {
+        method: isEdit ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (res.ok) {
+      router.replace(`/wonderland?id=${userId}/${eventId || "new"}/host`);
+    
+     } else {
+      const errData = await res.json();
+      alert(`Failed: ${errData.message || "Unknown error"}`);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Something went wrong.");
+  }
+};
+
 
   /** Replace variables inside template */
   const renderHTML = (jsCode, rawData) => {
