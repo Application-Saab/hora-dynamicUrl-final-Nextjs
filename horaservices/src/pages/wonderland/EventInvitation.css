@@ -691,20 +691,12 @@ background-color: none !important;
   background-repeat: no-repeat;
   background-position: center;
   background-color: black;
-
-  border-radius: 8px;
-  /* width: 90%; */
-  /* max-width: 400px; */
   height: 100%;
   width: 100%;
-  /* max-height: 70vh; */
-
   overflow-y: auto;
   position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+
 }
 
 .popup-luckdraw-close {
@@ -853,7 +845,7 @@ background-color: none !important;
 .invite-section {
   text-align: center;
   background-color: white;
-  padding: 10px;
+  padding: 30px 10px 30px 10px;
   max-width: 480px;
   margin: auto;
   border-radius: 8px;
@@ -876,7 +868,7 @@ background-color: none !important;
   font-weight: 500;
   color: #000;
   margin-bottom: 20px;
-  line-height: 1.4;
+  font-family: "Roboto", sans-serif;
 }
 
 /* Button Container */
@@ -897,7 +889,7 @@ background-color: none !important;
   border-radius: 8px;
   cursor: pointer;
   color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   gap:5px;
 }

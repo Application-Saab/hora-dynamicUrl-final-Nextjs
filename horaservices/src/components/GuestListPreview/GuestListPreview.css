@@ -22,7 +22,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 500;
   color: #351F79;
   font-family: 'Aclonica';
   white-space: nowrap;
@@ -58,10 +58,14 @@
 
 .confirmed {
   color: green;
+  font-family: 'Inter', sans-serif;
+
 }
 
 .try {
   color: #333;
+  font-family: 'Inter', sans-serif;
+
 }
 
 .separator {

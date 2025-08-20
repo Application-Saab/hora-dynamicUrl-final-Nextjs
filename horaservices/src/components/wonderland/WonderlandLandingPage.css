@@ -5,3 +5,105 @@
     min-height: 50vh;
     flex-direction: column;
 }
+.invite-banner {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Optional: control size */
+  margin: 0 auto;
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+  display: block;
+
+}
+
+.create-invite-btn {
+ position: absolute;
+    bottom: 10px;
+    left: 25%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, rgba(236, 188, 65, 0.8) 0%, #D2AF6D 100%);
+    color: white;
+    border: none;
+    padding: 5px 25px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.create-invite-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+
+.event-list-wrapper {
+  padding: 20px;
+}
+
+.section-heading {
+  text-align: center;
+  font-weight: bold;
+  color: #1E0F4A;
+  margin-bottom: 10px;
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  gap:30px
+}
+
+.event-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.event-icon {
+  font-size: 24px;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-meta {
+  font-size: 12px;
+  color: #555;
+}
+
+.event-role {
+  font-weight: bold;
+  color: #2e2e84;
+}
+
+.view-btn {
+  background-color: #97538C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.view-btn:hover {
+  background-color: #6922bb;
+}

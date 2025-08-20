@@ -1149,7 +1149,7 @@ const sendMessage = async () => {
               {orderDetails ? (
                 <>
 
- {templateId && template ? (
+ {/* {templateId && template ? (
   <div style={{ padding: "20px" }}>
 
     <div
@@ -1165,17 +1165,17 @@ const sendMessage = async () => {
         border: "5px solid red",
       }}
     >
-      {/* Fonts */}
+   
       {template.fontUrls?.map((url, idx) => (
         <link key={idx} href={url} rel="stylesheet" />
       ))}
 
-      {/* Inject CSS from template */}
+      
       {template.cssCode && (
         <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
       )}
 
-      {/* Inject HTML with data */}
+    
       {template.jsCode && (
         <div
           style={{ position: "relative", zIndex: 2 }}
@@ -1207,44 +1207,142 @@ const sendMessage = async () => {
       hasNewMessage={hasNewMessage}
     />
   </div>
-)}
+  
+)} */}
 
-<div
-      className="invite-image-wrapper"
-      onClick={() => {
-        setChatOpen(true);
-        setHasNewMessage(false);
-      }}
+{templateId && template ? (
+  <div style={{ padding: "20px" }}>
+    <div
       style={{
-        position:"absolute",
-        top: "90%",
-        right: "0px",
-        cursor: "pointer",
-        zIndex: 1000,
+        backgroundImage: template.backgroundUrl
+          ? `url('${template.backgroundUrl}')`
+          : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "300px",
+        borderRadius: "12px",
+        position: "relative", // key!
+        border: "5px solid red",
       }}
     >
-      <Image
-        src={chatIcon}
-        alt="chat"
-        className="invite-image"
-        width={40}
-        height={40}
-      />
+      {/* Fonts */}
+      {template.fontUrls?.map((url, idx) => (
+        <link key={idx} href={url} rel="stylesheet" />
+      ))}
 
-      {hasNewMessage && (
-        <span
-          style={{
-            position: "absolute",
-            top: "4px",
-            right: "4px",
-            width: "10px",
-            height: "10px",
-            backgroundColor: "red",
-            borderRadius: "50%",
+      {/* Inject template CSS */}
+      {template.cssCode && (
+        <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+      )}
+
+      {/* Inject template HTML */}
+      {template.jsCode && (
+        <div
+          style={{ position: "relative", zIndex: 2 }}
+          dangerouslySetInnerHTML={{
+            __html: renderHTML(template.jsCode, formData),
           }}
         />
       )}
+
+      {/* Chat Icon */}
+      <div
+        className="invite-image-wrapper"
+        onClick={() => {
+          setChatOpen(true);
+          setHasNewMessage(false);
+        }}
+        style={{
+          position: "absolute",
+          cursor: "pointer",
+          zIndex: 999,
+        }}
+      >
+        <Image
+          src={chatIcon}
+          alt="chat"
+          className="invite-image"
+          width={40}
+          height={40}
+        />
+
+        {hasNewMessage && (
+          <span
+            style={{
+              position: "absolute",
+              top: "4px",
+              right: "4px",
+              width: "10px",
+              height: "10px",
+              backgroundColor: "red",
+              borderRadius: "50%",
+            }}
+          />
+        )}
+      </div>
     </div>
+  </div>
+) : (
+  <div >
+    <div
+      className="invitation-container"
+      style={{
+        backgroundImage: `url(${imageBackGround?.src})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "400px",
+        borderRadius: "12px",
+        position: "relative", // key!
+      }}
+    >
+      <FinalInviteDisplay
+        orderDetails={orderDetails}
+        handleClick={handleClick}
+        isHost={userType === "host"}
+        openChat={() => setChatOpen(true)}
+        clearNewMessage={() => setHasNewMessage(false)}
+        hasNewMessage={hasNewMessage}
+      />
+
+      {/* Chat Icon */}
+      <div
+        className="invite-image-wrapper"
+        onClick={() => {
+          setChatOpen(true);
+          setHasNewMessage(false);
+        }}
+        style={{
+          position: "absolute",
+          cursor: "pointer",
+          zIndex: 999,
+        }}
+      >
+        <Image
+          src={chatIcon}
+          alt="chat"
+          className="invite-image"
+          width={40}
+          height={40}
+        />
+
+        {hasNewMessage && (
+          <span
+            style={{
+              position: "absolute",
+              top: "4px",
+              right: "4px",
+              width: "10px",
+              height: "10px",
+              backgroundColor: "red",
+              borderRadius: "50%",
+            }}
+          />
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
 
 
 
@@ -1756,10 +1854,7 @@ const sendMessage = async () => {
                     className="popup-luckdraw-container"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div
-                      className="popup-luckdraw-content"
-                      style={{ marginBlock: "30px" }}
-                    >
+                   
                       <LuckyDrawForm
                         hostData={orderDetails}
                         onClose={() => {
@@ -1769,7 +1864,7 @@ const sendMessage = async () => {
                       />
                     </div>
                   </div>
-                </div>
+              
               )}
 
               {/* 🛠 Invitation Modal */}

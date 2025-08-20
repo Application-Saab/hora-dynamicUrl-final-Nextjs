@@ -7,7 +7,7 @@
   transform: translate(-50%, -50%);
   width: 90%;
   max-width: 388px;
-  padding: 10px;
+  padding: 20px;
   background: linear-gradient(180deg, #A8E3FE 0%, #FED7F3 53.58%, #FEDFD7 88.89%, #FFDACE 100%);
   border: 1px solid #0000004D;
   border-radius: 20px;
@@ -126,3 +126,52 @@ input {
 
 
 
+/* Wrapper around textarea + emoji button */
+.textarea-with-emoji {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Emoji Picker container styling */
+.emoji-container {
+  position: absolute;
+  z-index: 999;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  max-width: 300px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Emoji button inside textarea wrapper */
+.emoji-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Responsive Fix */
+@media (max-width: 480px) {
+  .emoji-container {
+    left: 0;
+    right: 0;
+    max-width: 95vw;
+    margin: 0 auto;
+  }
+
+  .textareanote {
+    font-size: 14px;
+  }
+
+  .popup-thankyou {
+    padding: 25px;
+  }
+}

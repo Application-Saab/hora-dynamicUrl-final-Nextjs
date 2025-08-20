@@ -73,7 +73,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
   };
 
   return (
-    <div className="lucky-draw-wrapper">
+   
       <div className="lucky-draw-container">
         <h2 className="lucky-draw-title">
           Pose with {hostData?.Name} <br /> Win ₹10,000!
@@ -148,7 +148,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
           <span className="sponsored-txt">SPONCERED BY HORA</span>
         </div>
       </div>
-    </div>
+
   );
 };
 
