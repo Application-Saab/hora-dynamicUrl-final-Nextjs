@@ -372,7 +372,7 @@ const contactUsRedirection = () => {
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
-    event: 'food&livecateringselectdatepage_need_more_info_whatsapp_click',
+    event: 'food_livecateringselectdatepage_need_more_info_whatsapp_click',
     eventCategory: 'whatsapp_click',
     eventAction: 'click',
     eventLabel: 'need_more_info_section',

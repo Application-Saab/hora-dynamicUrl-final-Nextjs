@@ -241,11 +241,22 @@ function DecorationCatDetails() {
     }
   };
 
-  const handleWhatsApp = () => {
-    const phoneNumber = "7338584828";
-    const message = encodeURIComponent("I want to customize a decoration");
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
-  };
+const handleWhatsApp = () => {
+  // Fire GTM Event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "Customization_WhatsApp_Button",        
+    eventCategory: "Product Page",  
+    eventAction: "WhatsApp Click",  
+    eventLabel: "Customization WhatsApp Button"
+  });
+
+ 
+  const phoneNumber = "7338584828";
+  const message = encodeURIComponent("I want to customize a decoration");
+  window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+};
+
 
   useEffect(() => {
     if (apiProduct && !isFetched) {

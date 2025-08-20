@@ -342,9 +342,21 @@ const Checkout = () => {
   }
   }
 
-  const contactUsRedirection = () => {
-    window.open('https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20decoration%20services', '_blank');
-  };
+const contactUsRedirection = () => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "decoration-checkout_contact_us_click",
+    button_name: "Contact Us",
+  });
+
+  setTimeout(() => {
+    window.open(
+      "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20personal%20chef%20and%20for%20party%20service",
+      "_blank"
+    );
+  }, 300);
+};
+
 
   const [isMobile, setIsMobile] = useState(false);
 

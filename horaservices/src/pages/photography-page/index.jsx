@@ -216,16 +216,25 @@ const scriptTag = JSON.stringify(schemaOrg);
       }
     });
   };
-const firePoseClickEvent = (eventName) => {
+// const firePoseClickEvent = (eventName) => {
+//   window.dataLayer = window.dataLayer || [];
+//   window.dataLayer.push({
+//     event: eventName,
+//     eventCategory: "pose_click",
+//     eventAction: "click",
+//     eventLabel: eventName,
+//   });
+// };
+
+const firePoseClickEvent = (poseCategory) => {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
-    event: eventName,
+    event: "pose_card_click",   
     eventCategory: "pose_click",
     eventAction: "click",
-    eventLabel: eventName,
+    eventLabel: poseCategory,   
   });
 };
-
 
   const bannerImages = [
     Banner1,
@@ -418,7 +427,7 @@ const firePoseClickEvent = (eventName) => {
   className="pose-card"
   target="_blank"
   rel="noopener noreferrer"
-  onClick={() => firePoseClickEvent("wedding_pose_click")}
+  onClick={() => firePoseClickEvent("Wedding")}
 >
   <Image src={wedding} alt="Wedding" />
   <div className="TextBackground"><p>Wedding</p></div>
@@ -429,7 +438,7 @@ const firePoseClickEvent = (eventName) => {
   className="pose-card"
   target="_blank"
   rel="noopener noreferrer"
-  onClick={() => firePoseClickEvent("maternity_pose_click")}
+  onClick={() => firePoseClickEvent("Maternity")}
 >
   <Image src={Maternity} alt="Maternity" />
   <div className="TextBackground"><p>Maternity</p></div>
@@ -440,7 +449,7 @@ const firePoseClickEvent = (eventName) => {
   className="pose-card"
   target="_blank"
   rel="noopener noreferrer"
-  onClick={() => firePoseClickEvent("birthday_pose_click")}
+  onClick={() => firePoseClickEvent("Birthday")}
 >
   <Image src={Birthday} alt="Birthday" />
   <div className="TextBackground"><p>Birthday</p></div>
@@ -451,7 +460,7 @@ const firePoseClickEvent = (eventName) => {
   className="pose-card"
   target="_blank"
   rel="noopener noreferrer"
-  onClick={() => firePoseClickEvent("prewedding_pose_click")}
+  onClick={() => firePoseClickEvent("Pre-Wedding")}
 >
   <Image src={preWedding} alt="Pre-Wedding" />
   <div className="TextBackground"><p>Pre-Wedding</p></div>
@@ -462,7 +471,7 @@ const firePoseClickEvent = (eventName) => {
   className="pose-card"
   target="_blank"
   rel="noopener noreferrer"
-  onClick={() => firePoseClickEvent("haldi_mehendi_pose_click")}
+  onClick={() => firePoseClickEvent("Haldi/Mehndi")}
 >
   <Image src={HaldiMehndi} alt="HaldiMehndi" />
   <div className="TextBackground"><p>Haldi/Mehndi</p></div>
@@ -473,7 +482,7 @@ const firePoseClickEvent = (eventName) => {
   className="pose-card"
   target="_blank"
   rel="noopener noreferrer"
-  onClick={() => firePoseClickEvent("babyshower_pose_click")}
+  onClick={() => firePoseClickEvent("Babyshower")}
 >
   <Image src={Babyshower} alt="Baby Shower" />
   <div className="TextBackground"><p>Babyshower</p></div>
