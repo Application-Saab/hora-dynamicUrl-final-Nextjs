@@ -21,7 +21,7 @@ const ThankYouNotePopup = ({
 
   return (
 
-    <div className="popup">
+    <div className="popup-thankyou">
       <Head>
         <link
           rel="stylesheet"

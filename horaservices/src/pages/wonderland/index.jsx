@@ -49,8 +49,8 @@ import GuestRSVPForm from "@/components/GuestRSVPForm";
 import frame from "@/assets/Frame1.png";
 import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage";
 import { eventOptions } from "@/utils/constants";
-
-
+import chatIcon from "@/assets/chaticon.png"
+import EmojiPicker from "emoji-picker-react";
 import {
   collection,
   deleteDoc,
@@ -315,7 +315,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [userIdd, setUserIdd] = useState(null);
   const [role, setRole] = useState(null);
   const [hasNewMessage, setHasNewMessage] = useState(false);
-
+  const textareaRef = useRef(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -1158,7 +1159,7 @@ const sendMessage = async () => {
           : "none",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        minHeight: "400px",
+        minHeight: "300px",
         borderRadius: "12px",
         position: "relative",
         border: "5px solid red",
@@ -1207,6 +1208,43 @@ const sendMessage = async () => {
     />
   </div>
 )}
+
+<div
+      className="invite-image-wrapper"
+      onClick={() => {
+        setChatOpen(true);
+        setHasNewMessage(false);
+      }}
+      style={{
+        position:"absolute",
+        top: "90%",
+        right: "0px",
+        cursor: "pointer",
+        zIndex: 1000,
+      }}
+    >
+      <Image
+        src={chatIcon}
+        alt="chat"
+        className="invite-image"
+        width={40}
+        height={40}
+      />
+
+      {hasNewMessage && (
+        <span
+          style={{
+            position: "absolute",
+            top: "4px",
+            right: "4px",
+            width: "10px",
+            height: "10px",
+            backgroundColor: "red",
+            borderRadius: "50%",
+          }}
+        />
+      )}
+    </div>
 
 
 
@@ -1803,67 +1841,99 @@ const sendMessage = async () => {
             </div>
 
 
-            <div className="chat-messages">
-              {messages.map((msg) => {
-                const isSender = msg.senderPhoneNumber === userPhoneNumber;
-
-                return (
-                  <div
-                    key={msg.id}
-                    className={`chat-message ${isSender ? "sender" : "receiver"} ${selectedMessages.includes(msg.id) ? "selected" : ""
-                      }`}
-                    onClick={() => {
-                      if (selectedMessages.includes(msg.id)) {
-                        setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
-                      } else {
-                        // ✅ Sirf apne message select karne ki condition
-                        if (msg.senderPhoneNumber === userPhoneNumber) {
-                          setSelectedMessages([...selectedMessages, msg.id]);
-                        }
-                      }
-                    }}
-                  >
-                    <div className="chat-bubble">
-                      <div className="chat-sender">
-                        +91 {msg.senderPhoneNumber}
-                      </div>
-                      <div className="chat-text">{msg.text}</div>
-                      <div className="chat-time">
-                        {msg.sentAt?.toDate
-                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                          : ""}
-                      </div>
-                    </div>
-                  </div>
-
-
-
-                );
-              })}
+           <div className="chat-messages">
+      {messages.map((msg) => {
+        const isSender = msg.senderPhoneNumber === userPhoneNumber;
+        return (
+          <div
+            key={msg.id}
+            className={`chat-message ${isSender ? "sender" : "receiver"} ${
+              selectedMessages.includes(msg.id) ? "selected" : ""
+            }`}
+            onClick={() => {
+              if (selectedMessages.includes(msg.id)) {
+                setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
+              } else {
+                if (msg.senderPhoneNumber === userPhoneNumber) {
+                  setSelectedMessages([...selectedMessages, msg.id]);
+                }
+              }
+            }}
+          >
+            <div className="chat-bubble">
+              <div className="chat-sender">+91 {msg.senderPhoneNumber}</div>
+              <div className="chat-text">{msg.text}</div>
+              <div className="chat-time">
+                {msg.sentAt?.toDate
+                  ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                  : ""}
+              </div>
             </div>
+          </div>
+        );
+      })}
+    </div>
 
-            <div className="chat-input-container">
+    {/* Input + Emoji */}
+    <div className="chat-input-container">
+      <button
+        type="button"
+        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+        className="emoji-btn"
+      >
+        ☺
+      </button>
 
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Type your message"
-                className="chat-input"
-                rows={1}
-                onInput={(e) => {
-                  e.target.style.height = "auto";
-                  const newHeight = Math.min(e.target.scrollHeight, 120);
-                  e.target.style.height = newHeight + "px";
-                }}
-              />
+      <textarea
+     value={text}    
+        ref={textareaRef}  
+        className="chat-input"
+        rows={1}
+        onChange={(e) => {
+          setText(e.target.value);
+          if (e.target.value.length > 0) {
+            setShowEmojiPicker(false); 
+          }
+        }}
+        onInput={(e) => {
+          e.target.style.height = "auto";
+          const newHeight = Math.min(e.target.scrollHeight, 120);
+          e.target.style.height = newHeight + "px";
+        }}
+        placeholder="Type your message..."
+      />
 
+      <button onClick={sendMessage} className="chat-send-btn">➤</button>
+    </div>
 
-              <button onClick={sendMessage} className="chat-send-btn">➤</button>
-            </div>
+    {/* Emoji Picker */}
+    {showEmojiPicker && (
+      <div className="emoji-container">
+        <EmojiPicker
+          searchDisabled={true}
+          onEmojiClick={(emojiData) => {
+            const textarea = textareaRef.current;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+
+            const newText =
+              text.substring(0, start) +
+              emojiData.emoji +
+              text.substring(end);
+
+            setText(newText);
+            setTimeout(() => {
+              textarea.focus();
+              textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
+            }, 0);
+          }}
+        />
+      </div>
+    )}
           </div>
         )}
       </>

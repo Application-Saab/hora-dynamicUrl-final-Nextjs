@@ -71,7 +71,7 @@ import "./finalInvteDisplay.css";
 import Head from "next/head";
 import Image from "next/image";
 import imageBackground from "@/assets/imageBackground.jpg";
-import chatIcon from "@/assets/chaticon.png"
+// import chatIcon from "@/assets/chaticon.png"
 const formatDate = (isoDateString) => {
   const date = new Date(isoDateString);
   return date.toLocaleDateString("en-US", {
@@ -127,7 +127,7 @@ const FinalInviteDisplay = ({
         </div>
 
         {/* Chat Icon */}
-        <div
+        {/* <div
           className="invite-image-wrapper"
           onClick={() => {
             openChat();
@@ -155,7 +155,7 @@ const FinalInviteDisplay = ({
               }}
             />
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
