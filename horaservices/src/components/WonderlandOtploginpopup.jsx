@@ -10,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import loginImage from '../assets/login.png';
 
 
-const OtpLogin = ({setIsModalOpen}) => {
+const OtpLogin = ({setIsModalOpen, hostName}) => {
   const [mobileNumber, setMobileNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -190,13 +190,13 @@ const sendWelcomeMessage = async (mobileNumber) => {
 
 
 
-    
+      <div className="popup-overlay-login">
 <div className="wonderland-container">
   {!isUserLoggedIn ? (
     <>
       <div className="wonderland-top-text">
         <h3 className="wonderland-invite-text">You’ve Got an Invite from</h3>
-        <h1 className="wonderland-invite-name">Sahaj</h1>
+        <h1 className="wonderland-invite-name">{hostName}</h1>
       </div>
 
       <div className="wonderland-card">
@@ -271,7 +271,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
     </div>
   )}
 </div>
-
+</div>
 
 
   );

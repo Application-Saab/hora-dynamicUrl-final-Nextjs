@@ -56,3 +56,6 @@
 .inviteBtn .btnCircle {
   margin-left: 6px;
 }
+.template-upload input[type="file"] {
+  display: none;
+}

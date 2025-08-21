@@ -880,7 +880,7 @@ background-color: none !important;
 
 /* Common Button Styles */
 .btn-explore,
-.btn-share {
+.button-share {
   display: flex;
   align-items: center;
   font-size: 11px;
@@ -901,7 +901,7 @@ background-color: none !important;
 }
 
 /* Share Button */
-.btn-share {
+.button-share {
   background-color: #13A200;
   padding: 0 0 0 10px;
 }
@@ -933,11 +933,11 @@ background-color: none !important;
 }
 
 /* Hover Effects */
-.btn-explore:hover {
+.button-explore:hover {
   background-color: #00a5a7;
 }
 
-.btn-share:hover {
+.button-share:hover {
   background-color: #0e8700;
 }
 
@@ -1058,7 +1058,7 @@ background-color: none !important;
 
 .deletepopup {
   background: white;
-  border-radius: 8px;
+   border-radius: 10px;
   padding: 20px;
   text-align: center;
   width: 300px;
@@ -1067,34 +1067,42 @@ background-color: none !important;
 .deletepopup h3 {
   margin: 0 0 10px;
   color: #884b85;
+  font-family: "Aclonica", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .deletepopup p {
   margin-bottom: 20px;
   color: #884b85;
+  font-family: "Adamina", serif;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .deletepopup-buttons {
   display: flex;
   justify-content: space-around;
+   margin-top: 24px;
 }
 
 .deletecancel-btn {
-  background: #ffb6c1;
   border: none;
-  padding: 8px 16px;
   border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
+   background: rgba(151, 83, 140, 1);
+   padding: 10px 20px;
+  font-weight: 700;
+  color: white;
 }
 
 .deletedelete-btn {
-  background: #884b85;
+  background: rgba(151, 83, 140, 1);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: bold;
+  padding: 10px 20px;
+  font-family: 'inter', sans-serif;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -1276,7 +1284,10 @@ background-color: none !important;
   color:black
 }
 
-
+.emoji-container
+{
+  margin: auto;
+}
 .chat-send-btn {
   background: #97538C;
   color: white;

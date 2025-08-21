@@ -10,6 +10,7 @@ import LuckDrawTicketBanner from "@/assets/lucky_draw_ticket_bg.jpg";
 import Image from "next/image";
 import whatshare from "@/assets/whatshare.png";
 import shareinvitaion from "@/assets/shareinvitation.png";
+import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import {
   BASE_URL,
@@ -500,6 +501,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
  const handleClick = () => {
   router.push(`/templates?eventId=${urlParams.eventId}&eventUserId=${urlParams.eventUserId}&userType=${urlParams.userType}`);
 };
+
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -1441,7 +1444,7 @@ const sendMessage = async () => {
                           </button>
 
                           <button
-                            className="btn-share"
+                            className="button-share"
                             onClick={goToSharePage}
                           >
                             <span>Share Invitation</span>
@@ -1483,6 +1486,7 @@ const sendMessage = async () => {
                         highlightRSVPButtons={highlightRSVPButtons}
                         setHighlightRSVPButtons={setHighlightRSVPButtons}
                         hostData={orderDetails}
+                        rsvpGuestName={guestDetails?.name || ""}
                         userType={userType}
                         guestList={guestList}
                         loading={loading}
@@ -1520,6 +1524,11 @@ const sendMessage = async () => {
                         handleDownload={handleDownload}
                         handleClosePopup={handleClosePopup}
                         noteRef={noteRef}
+                         userName={
+                          userType === "host"
+                            ? orderDetails?.Name
+                            : guestDetails?.name
+                        }
                       />
                     </div>
                   )}
@@ -1857,7 +1866,7 @@ const sendMessage = async () => {
                           <button
                             className="lightbox-btn"
                             onClick={() =>
-                              handleDownload(selectedImage.imageUrl)
+                                downloadFile(selectedImage.imageUrl)
                             }
                           >
                             <Image
@@ -1896,29 +1905,33 @@ const sendMessage = async () => {
 
               {showDeletePopup && (
   <div className="deletepopup-overlay">
-    <div className="deletepopup">
-      <h3>Confirm Delete</h3>
-      <p>Are you sure you want to delete this photo?</p>
-      <div className="deletepopup-buttons">
-        <button
-          className="deletecancel-btn"
-          onClick={() => setShowDeletePopup(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="deletedelete-btn"
-          onClick={() => {
-            handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
-            setShowDeletePopup(false);
-          }}
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                  <div className="deletepopup">
+                    <h3>Confirm Delete</h3>
+                    <p>Are You Sure You Want To Delete This Photo?</p>
+                    <div className="deletepopup-buttons">
+                      <button
+                        className="deletecancel-btn"
+                        onClick={() => setShowDeletePopup(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="deletedelete-btn"
+                        onClick={() => {
+                          handleDeleteImage(
+                            deleteTarget.imageId,
+                            deleteTarget.imageType
+                          );
+                          setShowDeletePopup(false);
+                        }}
+
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1989,7 +2002,7 @@ const sendMessage = async () => {
       <div className="chat-user-info">
         <h3>Group Chat</h3>
         <span>{orderDetails?.Name}</span>
-        <span>{orderDetails?.eventType} party</span>
+        <span>{orderDetails?.eventType} </span>
       </div>
       <button className="chat-close-btn"  onClick={() => {
     setChatOpen(false);
@@ -2055,7 +2068,6 @@ const sendMessage = async () => {
       <button onClick={sendMessage} className="chat-send-btn">➤</button>
     </div>
 
-    {/* Emoji Picker */}
     {showEmojiPicker && (
       <div className="emoji-container">
         <EmojiPicker

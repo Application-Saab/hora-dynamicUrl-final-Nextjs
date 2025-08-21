@@ -4,13 +4,15 @@ import Header from "./Header";
 import Footer from "./Footer";
 import '../app/globals.css';
 import Head from "next/head"; 
+import { usePathname } from "next/navigation";
 
 const PageLayout = ({ children }) => {
 
     // document.addEventListener('contextmenu', function(event) {
     //     event.preventDefault();
     // });
- 
+  const pathname = usePathname();
+  const isWonderlandPath = pathname?.startsWith('/wonderland');
   
   return (
     <div className="page-container container-fluid p-0">
@@ -26,7 +28,7 @@ const PageLayout = ({ children }) => {
           {children}
         </section>
       </main>
-      <Footer />
+      {!isWonderlandPath && <Footer />}
     </div>
   );
 };

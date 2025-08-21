@@ -24,7 +24,8 @@ export default function ShareInvitation() {
 
     const handleWhatsAppShare = () => {
         if (!orderDetails) return;
-        const inviteURL = `https://horaservices.com/${orderDetails.userId}/${orderDetails.id}/guest`;
+        const inviteURL = `https://horaservices.com/wonderland?id=${orderDetails.userId}/${orderDetails.id}/guest&hostName=${orderDetails.Name.replace(/ /g, "%20")}`;
+       // const inviteURL = `https://horaservices.com/${orderDetails.userId}/${orderDetails.id}/guest`;
         const shareText = `You're invited to ${orderDetails.Name || "someone"}'s ${orderDetails["Event Type"] || "Birthday"}! 🎉
 📅 ${orderDetails.Date}
 ⏰ ${orderDetails.Time}

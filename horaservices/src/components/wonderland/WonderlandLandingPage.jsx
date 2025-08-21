@@ -348,14 +348,14 @@ import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
 import wonderlandBanner from "@/assets/wonderlandBanner.jpg"
 import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.png";
-import howitworks from "@/assets/howitworks.png"
+import howitworks from "@/assets/howitworks.jpg"
 import hostandGuest from "@/assets/hostandGuest.png"
 import yourcelebration from "@/assets/yourcelebration.png"
-
+import luckdrawBnaner from "@/assets/LuckdrawBanner.jpg"
 const WonderlandLandingPage = ({ userId }) => {
   const token = localStorage.getItem("token");
   const router = useRouter();
-  const { page, id: queryId } = router.query;
+  const { page, id: queryId ,hostName} = router.query;
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   console.log(
@@ -617,7 +617,7 @@ return (
   <>
     {showLoginModal && (
       <div className="no-orders">
-        <WonderlandOtploginpopup setIsModalOpen={setIsModalOpen} />
+        <WonderlandOtploginpopup setIsModalOpen={setIsModalOpen} hostName={hostName}/>
       </div>
     )}
 
@@ -631,7 +631,7 @@ return (
       <div className="logedin-container">
 
         <div className="invite-banner">
-          <Image src={wonderlandBanner} alt="Invite Banner" className="banner-image" />
+          <Image src={wonderlandBanner} alt="Invite Banner" className="banner-image-top" />
 
           <button
             type="button"
@@ -651,9 +651,6 @@ return (
   {allEventsData?.map((event) => (
     <li key={event._id} className="event-item">
       <div className="event-info">
-        <span className="event-icon">
-          {getEventIcon(event.eventType)}
-        </span>
         <div className="event-details">
           <strong>{event.eventType}</strong>
           <div className="event-meta">
@@ -668,7 +665,7 @@ return (
         className="view-btn"
         onClick={() => handleClickViewEvent(event)}
       >
-        View
+        View Event
       </button>
     </li>
   ))}
@@ -679,15 +676,33 @@ return (
           <Image src={wonderlandeventplanningBanner} alt="Invite Banner" className="banner-image" />
 </div>
   <div className="invite-banner">
+          <Image src={luckdrawBnaner} alt="Invite Banner" className="banner-image" />
+</div>
+<div
+  style={{
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 700,
+    fontStyle: 'normal', 
+    fontSize: '20px',
+    lineHeight: '100%', 
+    letterSpacing: '0%',
+    textAlign: 'center',
+    verticalAlign: 'middle',
+    margin:"10px",
+  }}
+>
+ How It Works Wonderland
+</div>
+  <div className="invite-banner">
           <Image src={howitworks} alt="Invite Banner" className="banner-image" />
 </div>
 <div
   style={{
     fontFamily: 'Inter, sans-serif',
     fontWeight: 700,
-    fontStyle: 'normal', // 'Bold' is not a valid font-style, use fontWeight for boldness
-    fontSize: '24px',
-    lineHeight: '100%', // or '1' works too
+    fontStyle: 'normal', 
+    fontSize: '21px',
+    lineHeight: '100%', 
     letterSpacing: '0%',
     textAlign: 'center',
     verticalAlign: 'middle',

@@ -17,11 +17,12 @@ const ThankYouNotePopup = ({
   handleDownload,
   handleClosePopup,
   noteRef,
-  hostData,
+ userName
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
 const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 const noteTextAreaRef = useRef(null);
+ noteBy = userName || "";
   return (
 
     <div className="popup-thankyou">
@@ -49,45 +50,6 @@ const noteTextAreaRef = useRef(null);
         alt="Sticky Note Sample"
         className="thankyou-image"
       />
-      {/* <div className="form-group">
-        <label className="label">Type Note</label>
-        <textarea
-          rows={5}
-          placeholder="Write Your thank You Message..."
-          value={noteTitle}
-          className="textareanote"
-          required
-          onChange={(e) => {
-            const input = e.target.value;
-            const charsCount = input.replace(/\s/g, "").length;
-
-            if (charsCount <= 125) {
-              setNoteTitle(input);
-            } else {
-              let count = 0;
-              let truncated = "";
-              for (const ch of input) {
-                if (ch !== " ") count++;
-                if (count > 125) break;
-                truncated += ch;
-              }
-              setNoteTitle(truncated);
-            }
-
-            if (input?.trim() !== "" && noteBy?.trim() !== "") {
-              setErrorMsg("");
-            }
-          }}
-        />
-        <p
-          className="word-limit"
-          style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
-        >
-          {charsWithoutSpaces >= 125
-            ? "You have reached the 125 character limit!"
-            : `${charsWithoutSpaces} / 125 characters`}
-        </p>
-      </div> */}
 <div className="form-group">
   <label className="label">Type Note</label>
   <div className="textarea-with-emoji">
@@ -173,6 +135,8 @@ const noteTextAreaRef = useRef(null);
     />
   </div>
 )}
+
+ 
 
       <div className="form-group">
         <label className="label">Type Your Name </label>

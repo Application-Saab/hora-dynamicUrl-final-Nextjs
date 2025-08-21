@@ -1,4 +1,16 @@
 
+.popup-overlay-login {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000042;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 111111;
+  }
 .wonderland-container {
   background: linear-gradient(180deg, #823394 46%, #D64DA4 100%);
   min-height: 100vh;

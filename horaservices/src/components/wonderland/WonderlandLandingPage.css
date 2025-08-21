@@ -11,12 +11,16 @@
   max-width: 600px; /* Optional: control size */
   margin: 0 auto;
 }
-
+.banner-image-top{
+   width: 100%;
+  height: auto;
+  display: block;
+}
 .banner-image {
   width: 100%;
   height: auto;
   display: block;
-
+    margin: 10px 0px 10px 0px;
 }
 
 .create-invite-btn {
@@ -24,13 +28,14 @@
     bottom: 10px;
     left: 25%;
     transform: translateX(-50%);
-    background: linear-gradient(90deg, rgba(236, 188, 65, 0.8) 0%, #D2AF6D 100%);
-    color: white;
+    background: white;
+    color: #97538C;
     border: none;
     padding: 5px 25px;
     font-size: 15px;
     font-weight: bold;
     border-radius: 30px;
+    text-decoration: underline;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -54,10 +59,19 @@
 }
 
 .event-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  max-height: 300px;       
+  overflow-y: auto;        
+  scrollbar-width: none;  
+  -ms-overflow-style: none; 
 }
+
+
+.event-list::-webkit-scrollbar {
+  display: none;         
+}
+
+
+
 
 .event-item {
   display: flex;
@@ -65,7 +79,7 @@
   align-items: center;
   border-bottom: 1px solid #eee;
   padding: 12px 0;
-  gap:30px
+  gap:80px
 }
 
 .event-info {
@@ -91,6 +105,7 @@
 .event-role {
   font-weight: bold;
   color: #2e2e84;
+  font-size: 14px;
 }
 
 .view-btn {

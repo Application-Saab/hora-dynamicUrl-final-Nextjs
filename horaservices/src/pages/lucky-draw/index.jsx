@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import "./FormComponent.css";
 import CamIcon from "../../assets/camera.png";
 import LogoHora from "../../assets/logo_small_lucky.svg";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
-
+import Confetti from "react-confetti";
+import { useWindowSize } from 'react-use';
 const LuckyDrawForm = ({ onClose, hostData }) => {
-  console.log(
-    "%c [ hostData ]-153",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    hostData
-  );
+  const { width, height } = useWindowSize();
+  const [showConfetti, setShowConfetti] = useState(true);
   const router = useRouter();
-  const { id : queryId } = router.query;
+  const { id: queryId } = router.query;
   // const slug = router.query.slug || [];
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
@@ -22,7 +20,14 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
 
   const [preview, setPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setShowConfetti(true); // Show confetti on mount
+    const timer = setTimeout(() => {
+      setShowConfetti(false); // Hide after 5 seconds
+    }, 9000);
 
+    return () => clearTimeout(timer); // Cleanup
+  }, []);
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -73,81 +78,91 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
   };
 
   return (
-   
-      <div className="lucky-draw-container">
-        <h2 className="lucky-draw-title">
-          Pose with {hostData?.Name} <br /> Win ₹10,000!
-        </h2>
-        <p className="lucky-draw-description">
-          Upload your photo with {hostData?.Name} <br />{" "}
-          <span style={{ color: "rgba(151, 83, 140, 1)" }}>from the party</span>{" "}
-          to Win the Lucky Ticket
-        </p>
-        <div
-          className="file-upload"
-          onClick={() => document.getElementById("luckyDrawImage").click()}
-        >
-          {preview ? (
-            <img src={preview?.url} alt="Preview" className="preview-image" />
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "10px",
-              }}
-            >
-              <Image src={CamIcon} alt="camera icon" width={30} height={30} />
 
-              <p
-                className="img-label-upload"
-                style={{ textTransform: "uppercase" }}
-              >
-                UPLOAD PHOTO WITH {hostData?.Name}
-              </p>
-            </div>
-          )}
-          <input
-            type="file"
-            id="luckyDrawImage"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginTop: "10px",
-          }}
-        >
-          <button
-            disabled={isLoading}
-            className="lucky-btn lucky-btn-cancel"
-            onClick={onClose}
-            type="button"
+    <div className="lucky-draw-container">
+      {showConfetti && (
+        <Confetti
+          width={width}
+          height={height}
+          numberOfPieces={1500}
+          gravity={0.4}
+          recycle={false}
+        />
+      )}
+
+      <h2 className="lucky-draw-title">
+        Pose with {hostData?.Name} <br /> Win ₹10,000!
+      </h2>
+      <p className="lucky-draw-description">
+        Upload your photo with {hostData?.Name} <br />{" "}
+        <span style={{ color: "rgba(151, 83, 140, 1)" }}>from the party</span>{" "}
+        to Win the Lucky Ticket
+      </p>
+      <div
+        className="file-upload"
+        onClick={() => document.getElementById("luckyDrawImage").click()}
+      >
+        {preview ? (
+          <img src={preview?.url} alt="Preview" className="preview-image" />
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "10px",
+            }}
           >
-            Cancel
-          </button>
-          <button
-            disabled={isLoading}
-            className="lucky-btn lucky-btn-submit"
-            onClick={handleSubmit}
-          >
-{isLoading ? (
-    <span className="loader"></span>
-  ) : (
-    "Submit"
-  )}
-          </button>
-        </div>
-        <div style={{ marginTop: "50px" }}>
-          <Image src={LogoHora} alt="logo hora" />
-          <span className="sponsored-txt">SPONCERED BY HORA</span>
-        </div>
+            <Image src={CamIcon} alt="camera icon" width={30} height={30} />
+
+            <p
+              className="img-label-upload"
+              style={{ textTransform: "uppercase" }}
+            >
+              UPLOAD PHOTO WITH {hostData?.Name}
+            </p>
+          </div>
+        )}
+        <input
+          type="file"
+          id="luckyDrawImage"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
       </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          margin: "10px auto",
+        }}
+      >
+        <button
+          disabled={isLoading}
+          className="lucky-btn lucky-btn-cancel"
+          onClick={onClose}
+          type="button"
+        >
+          Cancel
+        </button>
+        <button
+          disabled={isLoading}
+          className="lucky-btn lucky-btn-submit"
+          onClick={handleSubmit}
+        >
+          {isLoading ? (
+            <span className="loader"></span>
+          ) : (
+            "Submit"
+          )}
+        </button>
+      </div>
+      <div style={{ marginTop: "50px" }}>
+        <Image src={LogoHora} alt="logo hora" />
+        <span className="sponsored-txt">SPONCERED BY HORA</span>
+      </div>
+    </div>
 
   );
 };
