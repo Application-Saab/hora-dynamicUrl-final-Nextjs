@@ -23,8 +23,6 @@
   margin: 30px 30px 30px 30px;
 }
 
-
-
 .invite-Title {
   font-family: 'Aclonica', sans-serif;
   font-size: 25px;
@@ -79,9 +77,6 @@
     color: #00000099;
 }
 
-/* .input-field:focus {
-  border-color: #f472b6;
-} */
 
 .upload-box {
   display: flex;
@@ -208,15 +203,14 @@ input[type="text"].input-field {
   color: #000000;
 }
 
-/* Default style (when input is empty) */
+
 input[type="date"].input-field,
 input[type="time"].input-field {
-  color: #5f5e5e; /* light gray placeholder-like */
+  color: #5f5e5e; 
 }
 
-/* When user has selected a date/time */
 input[type="date"].input-field.has-value,
 input[type="time"].input-field.has-value {
-  color: #000; /* solid black for filled input */
+  color: #000; 
 }
 

@@ -1,5 +1,5 @@
 .guest-preview-card {
-  background: #FFDBDB;
+  background: #ffdbdb;
   text-align: center;
   max-width: 480px;
   margin: auto;
@@ -10,7 +10,6 @@
 .curve-container {
   position: relative;
   background-color: #fdd;
-
 }
 .curve-bg {
   width: 100%;
@@ -23,8 +22,8 @@
   transform: translateX(-50%);
   font-size: 18px;
   font-weight: bold;
-  color: #351F79;
-  font-family: 'Aclonica';
+  color: #351f79;
+  font-family: "Aclonica";
   white-space: nowrap;
   max-width: 90%;
   overflow: hidden;
@@ -33,16 +32,7 @@
   z-index: 5;
 }
 
-/* 
-.train-preview-wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}*/
 
-
-
-/* 🔢 Guest Count Overlay */
 .guest-count-overlay {
   position: absolute;
   bottom: 10px;
@@ -68,33 +58,45 @@
   margin: 0 6px;
 }
 
-/* 🔘 Button */
+
+
 .view-list-button {
-  margin-bottom: 10px;
-  background: linear-gradient(90deg, #ff984d, #fd5e8b);
-  color: white;
-  padding: 4px 14px;
-  border-radius: 25px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  font-weight: bold;
-  cursor: pointer;
+  gap: 24.5px;
+  border: none;
+  border-radius: 25px;
+  padding: 0px 24.5px 0px 0px;
   font-size: 14px;
+  font-weight: bold;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(90deg, #ff984d, #fd5e8b);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      position: relative;
-    /* bottom: 5px; */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.list-icon {
-  margin-right: 6px;
-  font-size: 16px;
+.view-list-icon-bg {
+  background-color: white;
+  padding: 10px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px 0px 0px 25px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
+.view-list-icon-img {
+  width: 18px;
+  height: 18px;
+}
+
 .train-preview-wrapper {
   position: relative;
   width: fit-content;
   margin: 0 auto;
 }
-
 
 .train-image {
   width: 150px;
@@ -103,7 +105,7 @@
   z-index: 1;
   bottom: 40px;
   display: block;
-} 
+}
 .balloon-letter {
   position: absolute;
   font-size: 20px;
@@ -113,13 +115,12 @@
   z-index: 99;
 }
 
-/* These positions are approximate — tweak as needed */
 .balloon-0 {
   bottom: 95px;
   left: 15%;
 }
 .balloon-1 {
-    bottom: 95px;
+  bottom: 95px;
   left: 34%;
 }
 .balloon-2 {
@@ -127,7 +128,7 @@
   left: 53%;
 }
 .balloon-3 {
-   bottom: 95px;
+  bottom: 95px;
   left: 71%;
 }
 .balloon-4 {

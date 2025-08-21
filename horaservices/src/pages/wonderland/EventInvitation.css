@@ -43,7 +43,6 @@ body {
  max-width: 380px;
   margin: 10px auto;
   text-align: center;
-    
   box-sizing: border-box;
 }
 
@@ -692,20 +691,12 @@ background-color: none !important;
   background-repeat: no-repeat;
   background-position: center;
   background-color: black;
-
-  border-radius: 8px;
-  /* width: 90%; */
-  /* max-width: 400px; */
   height: 100%;
   width: 100%;
-  /* max-height: 70vh; */
-
   overflow-y: auto;
   position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+
 }
 
 .popup-luckdraw-close {
@@ -851,85 +842,103 @@ background-color: none !important;
   display: block;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 .invite-section {
   text-align: center;
-  background-color: #ffdbdb;
-  padding: 10px;
+  background-color: white;
+  padding: 30px 10px 30px 10px;
   max-width: 480px;
   margin: auto;
+  border-radius: 8px;
 }
 
+/* Title Styles */
 .invite-titles {
-      font-family: 'Aclonica', cursive, sans-serif;
+  font-family: 'Aclonica', cursive, sans-serif;
   font-size: 18px;
   font-weight: bold;
   color: #97538c;
   margin-bottom: 10px;
-  padding: 0px 20px 0px 20px;
-      text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+  padding: 0 20px;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
 
+/* Subtitle */
 .invite-subtitles {
   font-size: 12px;
+  font-weight: 500;
   color: #000;
   margin-bottom: 20px;
-     font-weight: 500;
+  font-family: "Roboto", sans-serif;
 }
 
+/* Button Container */
 .invite-buttons {
   display: flex;
-  gap: 10px;
   justify-content: center;
+  gap: 8px;
 }
 
+/* Common Button Styles */
 .btn-explore,
-.btn-share {
- display: flex;
+.button-share {
+  display: flex;
   align-items: center;
-  gap: 10px;
+  font-size: 11px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
- padding: 0px 0px 0px 10px;
-  font-size: 14px;
-  font-weight: bold;
   cursor: pointer;
   color: white;
-  background-color: #25D366; /* WhatsApp green */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap:5px;
 }
 
+/* Explore Button */
 .btn-explore {
   background-color: #00BFC1;
+  padding: 0 10px 0 0;
 }
 
-.btn-share {
+/* Share Button */
+.button-share {
   background-color: #13A200;
+  padding: 0 0 0 10px;
 }
 
-.icon-bg {
+/* Icon Backgrounds */
+.icon-bg-explore,
+.icon-bg-share {
   background-color: white;
-  padding: 6px 8px; /* rectangle padding */
+  padding: 7px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-      border-radius: 0px 4px 4px 0px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* optional shadow for better look */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+/* Specific Border Radius for Icons */
+.icon-bg-explore {
+  border-radius: 4px 0 0 4px;
+}
+
+.icon-bg-share {
+  border-radius: 0 4px 4px 0;
+}
+
+/* Icon Image */
 .icon-img {
   width: 22px;
   height: 22px;
 }
 
-
-.btn-explore:hover {
-  background-color: #00BFC1;
+/* Hover Effects */
+.button-explore:hover {
+  background-color: #00a5a7;
 }
 
-.btn-share:hover {
-  background-color: #13A200;
+.button-share:hover {
+  background-color: #0e8700;
 }
 
 
@@ -1049,7 +1058,7 @@ background-color: none !important;
 
 .deletepopup {
   background: white;
-  border-radius: 8px;
+   border-radius: 10px;
   padding: 20px;
   text-align: center;
   width: 300px;
@@ -1058,34 +1067,43 @@ background-color: none !important;
 .deletepopup h3 {
   margin: 0 0 10px;
   color: #884b85;
+  font-family: "Aclonica", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .deletepopup p {
   margin-bottom: 20px;
   color: #884b85;
+  font-family: "Adamina", serif;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .deletepopup-buttons {
   display: flex;
   justify-content: space-around;
+   margin-top: 24px;
 }
 
 .deletecancel-btn {
-  background: #ffb6c1;
   border: none;
-  padding: 8px 16px;
   border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
+   background: rgba(151, 83, 140, 1);
+   padding: 10px 20px;
+  font-weight: 700;
+  color: white;
 }
 
 .deletedelete-btn {
-  background: #884b85;
+  background: rgba(151, 83, 140, 1);
   color: white;
   border: none;
-  padding: 8px 16px;
   border-radius: 6px;
-  font-weight: bold;
+  padding: 10px 20px;
+  font-family: 'inter', sans-serif;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -1097,13 +1115,11 @@ background-color: none !important;
 .chat-overlay {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 99999;
   background: #dee2e6;;
   display: flex;
   flex-direction: column;
   font-family: "Segoe UI", sans-serif;
-max-width: 480px;
-margin:auto
 }
 
 /* Header */
@@ -1269,7 +1285,10 @@ margin:auto
   color:black
 }
 
-
+.emoji-container
+{
+  margin: auto;
+}
 .chat-send-btn {
   background: #97538C;
   color: white;
@@ -1292,21 +1311,4 @@ margin:auto
 
 .emoji-btn:hover {
   transform: scale(1.2);
-}
-.emoji-picker-react {
-  width: 220px !important;   
-  height: 180px !important;  
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-  font-size: 12px;         
-}
-
-.emoji-container {
-  width: 320px;
-  height: 180px;
-  margin: auto;
-  overflow-y: auto;
-}
-.emoji-picker-react .emoji-search {
-  display: none !important;
 }

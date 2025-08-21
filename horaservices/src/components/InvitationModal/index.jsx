@@ -66,7 +66,6 @@ const InvitationModal = ({
           The people we love, we wish to have near. <br />
           So come join us and make memories dear.
         </p>
-
         <div className="dropdown-wrapper">
           <input
             type="text"

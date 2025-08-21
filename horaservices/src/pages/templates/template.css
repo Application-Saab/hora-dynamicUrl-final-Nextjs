@@ -1,27 +1,28 @@
-/* .templateWrapper {
-  padding: 20px;
-  background: transparent;
+.templateWrapper {
+  padding: 0px;
   text-align: center;
 }
 
 .templateTitle {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: bold;
   color: #97538C;
+  margin: 10px;
 }
 
 .templateGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr); /* Always 2 per row */
+  gap: 10px;
   justify-items: center;
+  margin:10px
 }
 
 .templateCard {
+  position: relative;
+  width: 100%;
+  max-width: 180px;
   border-radius: 12px;
-  overflow: hidden;
-  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,116 +30,32 @@
 
 .templatePreview {
   width: 100%;
-  object-fit: contain;
-  border-radius: 8px;
-  border: 2px solid #e5e7eb;
-  background-color: #fff;
-}
-
-.templateApplyBtn {
-  padding: 5px 15px;
-    background-color: #97538C;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.templateApplyBtn:hover {
-  background-color: #2563eb;
-}
-
-@media (max-width: 600px) {
-  .templateGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-.button-container{
-    margin-top: -20px;
-} */
-.templateWrapper {
-  padding: 20px;
-  text-align: center;
-}
-
-.templateTitle {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 24px;
-  color: #97538C;
-}
-
-.templateGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Bigger cards */
-  gap: 20px;
-}
-
-.templateCard {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-.templatePreview {
-  width: 100%;
-  height: 280px; /* Bigger image area */
+  height: 270px;
   object-fit: cover;
+  border-bottom: none;
   display: block;
 }
 
-/* Apply Button - between image and bottom */
 .inviteBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px ;
+  margin-top: -22px; /* pulls it up inside the card */
   background-color: #97538C;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 25px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.inviteBtn:hover {
-  background-color: #7d3f74;
-}
-
-.selectedBtn {
-  background-color: #fff;
-  color: #97538C;
-  border: 2px solid #97538C;
-}
-
-.btnCircle {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  background: white;
-  color: #97538C;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
+  padding: 5px 10px;
+  font-weight: 400;
   font-size: 12px;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
 }
 
-/* Mobile Adjustments */
-@media (max-width: 600px) {
-  .templateGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .templatePreview {
-    height: 200px;
-  }
+.inviteBtn .btnCircle {
+  margin-left: 6px;
+}
+.template-upload input[type="file"] {
+  display: none;
 }

@@ -10,6 +10,7 @@ import LuckDrawTicketBanner from "@/assets/lucky_draw_ticket_bg.jpg";
 import Image from "next/image";
 import whatshare from "@/assets/whatshare.png";
 import shareinvitaion from "@/assets/shareinvitation.png";
+import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import {
   BASE_URL,
@@ -19,6 +20,7 @@ import {
   GET_GUEST_DETTAILS,
   UPLOAD_IMAGES_SELF,
   UPLOAD_THANKYOU_NOTE,
+  GET_ALL_TEMPLATES ,
 } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -48,8 +50,8 @@ import GuestRSVPForm from "@/components/GuestRSVPForm";
 import frame from "@/assets/Frame1.png";
 import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage";
 import { eventOptions } from "@/utils/constants";
+import chatIcon from "@/assets/chaticon.png"
 import EmojiPicker from "emoji-picker-react";
-
 import {
   collection,
   deleteDoc,
@@ -60,6 +62,8 @@ import {
   onSnapshot,
   query,
   orderBy,
+  updateDoc,
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
@@ -69,12 +73,15 @@ const VAPID_KEY =
 
 
 const InvitationCard = () => {
+  const hasSeenMessages = useRef(true);
+const prevMessageLength = useRef(0);
+
   const rsvpRef = useRef(null);
   const router = useRouter();
   const { page, id : queryId } = router.query;
   // const slug = router.query.slug || [];
   const fileInputRef = useRef(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
 
@@ -92,9 +99,11 @@ const InvitationCard = () => {
   const [guestDetails, setGuestDetails] = useState({});
     const [showDeletePopup, setShowDeletePopup] = useState(false);
 const [deleteTarget, setDeleteTarget] = useState(null);
-  // const [showPicker, setShowPicker] = useState(false);
-  const textareaRef = useRef(null);
-
+  console.log(
+    "%c [ guestDetails ]-60",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    guestDetails
+  );
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
@@ -109,6 +118,11 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     eventId: slug[1] || "",
     userType: slug[2] ? slug[2].toLowerCase() : "",
   });
+  console.log(
+    "%c [ urlParams ]-77",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    urlParams
+  );
 
   useEffect(() => {
     if (slug.length) {
@@ -281,6 +295,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [attendanceStatus, setAttendanceStatus] = useState("");
   const [currentEventId, setCurrentEventId] = useState("");
   const [currentGuestId, setCurrentGuestId] = useState("");
+ const [template, setTemplate] = useState(null);
 
   const [showPopupGuest, setShowPopupGuest] = useState(false);
   const [guestList, setGuestList] = useState([]);
@@ -301,14 +316,21 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
    const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const chatOpenRef = useRef(false);
+  const [unreadCount, setUnreadCount] = useState(0);
     const [selectedMessages, setSelectedMessages] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [userIdd, setUserIdd] = useState(null);
   const [role, setRole] = useState(null);
   const [hasNewMessage, setHasNewMessage] = useState(false);
-
+  const textareaRef = useRef(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   useEffect(() => {
     if (!router.isReady) return;
+
+    // const queryId = router.query.id;
+    // const parts = Array.isArray(queryId) ? queryId : queryId?.split("/");
+
     if (urlParams && slug.length > 2) {
       const eventId = urlParams.eventId;
       const userId = urlParams.eventUserId;
@@ -469,15 +491,19 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     setNoteTitle("");
     setNoteBy("");
     setShowPopup(false);
+      setErrorMsg("");
   };
 
   const handleClose = () => {
     setShowModal(false);
   };
 
-  const handleClick = () => {
-    router.push("/templates");
-  };
+ const handleClick = () => {
+  router.push(`/templates?eventId=${urlParams.eventId}&eventUserId=${urlParams.eventUserId}&userType=${urlParams.userType}`);
+};
+
+
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const options = { year: "numeric", month: "short", day: "numeric" };
@@ -486,21 +512,21 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
    const goToSharePage = () => {
     router.push({
-      pathname: "/wonderland/ShareInvitation", 
+      pathname: "/wonderland/ShareInvitation", // tumhare ShareInvitation page ka route
       query: { data: JSON.stringify(orderDetails) }
     });
   };
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
 
-  
+    // Set the input value in formData
     if (name === "image") {
       setFormData({ ...formData, image: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
     }
 
-  
+    // ✅ Add/remove `has-value` class for date/time inputs
     if (type === "date" || type === "time") {
       if (value) {
         e.target.classList.add("has-value");
@@ -639,9 +665,19 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     }
   }, [orderDetails]);
 
- 
+  // useEffect(() => {
+  //   // Show modal if user visits /wonderland (no id in query)
+  //   if (
+  //     window.location.pathname === "/wonderland"
+  //     // !window.location.search.includes("id=")
+  //   ) {
+  //     setShowModal(true);
+  //   }
+  // }, []);
   useEffect(() => {
     if (!router.isReady) return;
+
+    // const queryId = router.query.id;
     const eventId = urlParams?.eventId;
     if (!eventId) return;
 
@@ -678,15 +714,55 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
           userId: hostId,
           id: data._id || data.id || data.eventId,
           luckyDraws: data?.luckyDraws || [],
+          templateId: data.templateId,
         });
 
-     
         setSendCustomerId(hostId);
+    
       }
-    } catch (err) {
+     
+    }
+     catch (err) {
       console.error("❌ Fetch failed:", err);
+   
     }
   };
+
+    const templateId = orderDetails?.templateId;
+useEffect(() => {
+  if (!templateId) return;
+
+  const fetchTemplate = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+      const data = await res.json();
+
+      if (!res.ok || data.error) throw new Error(data.message || "Failed");
+
+      // Find template by templateId
+      const selectedTemplate = data.templates.find(tpl => tpl._id === templateId);
+
+      if (!selectedTemplate) throw new Error("Template not found");
+
+      // backgroundUrl can be either in root or inside configs
+      const backgroundUrl = selectedTemplate.backgroundUrl || selectedTemplate.configs?.backgroundUrl || null;
+
+      setTemplate({
+        cssCode: selectedTemplate.configs?.cssCode || "",
+        jsCode: selectedTemplate.configs?.jsCode || "",
+        fontUrls: selectedTemplate.configs?.fontUrls ? JSON.parse(selectedTemplate.configs.fontUrls) : [],
+        backgroundUrl: backgroundUrl,
+      });
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching template");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTemplate();
+}, [templateId]);
 
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
@@ -709,7 +785,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       setSelectedIndex(prevIndex);
       setSelectedImage(eventAllImages[prevIndex]);
     },
-    trackMouse: true, 
+    trackMouse: true, // optional, mouse drag support bhi deta hai
   });
   const handleImageUpload = async (e) => {
     setUploading(true);
@@ -725,9 +801,9 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
     const formData = new FormData();
 
-
+    // Append all files with the same field name "files" (backend should handle array)
     Array.from(files).forEach((file, index) => {
-      formData.append("selfUploadedImages", file);
+      formData.append("selfUploadedImages", file); // Multiple files under "files" key
     });
 
     formData.append("userId", userID);
@@ -826,8 +902,8 @@ const handleDeleteImage = async (imageId, imageType) => {
 
 
   const handleDownload = async () => {
-    if (noteTitle.trim() === "" || noteBy.trim() === "") {
-      setErrorMsg("Please fill all required fields.");
+    if (noteTitle.trim() === "") {
+ setErrorMsg("Please write a thank you message.");
       return;
     }
     setErrorMsg("");
@@ -911,20 +987,16 @@ const handleDeleteImage = async (imageId, imageType) => {
   setRole(urlParams.userType);
 
   registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
-  listenToMessages(urlParams.eventId);
+
+    // listenToMessages(urlParams.eventId, urlParams.eventUserId);
 }, [urlParams]);
 
+useEffect(() => {
+  if (eventId && userIdd) {
+    listenToMessages(eventId, userIdd);
+  }
+}, [eventId, userIdd]);
 
-
-
-  const handleDeleteMessage = async (msgId) => {
-    try {
-      // Firebase document delete for message with id = msgId
-      await deleteDoc(doc(db, "groups", eventId, "messages", msgId));
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
-  };
 
 
   const hasSetUpMessageListener = useRef(false);
@@ -969,7 +1041,7 @@ const handleDeleteImage = async (imageId, imageType) => {
   }, [userIdd]);
 
 
-  //  Register user in Firebase
+
   const registerUser = async (eventId, userId, role) => {
     const groupRef = doc(db, "groups", eventId);
     const groupSnap = await getDoc(groupRef);
@@ -982,32 +1054,66 @@ const handleDeleteImage = async (imageId, imageType) => {
     const memberSnap = await getDoc(memberRef);
 
     if (!memberSnap.exists()) {
-      await setDoc(memberRef, {
-        role,
-        joinedAt: new Date(),
-      });
+   await setDoc(memberRef, {
+  role,
+  joinedAt: new Date(),
+  lastSeenAt: new Date(), // ✅ set initial lastSeen
+});
     }
   };
 
-  // Listen for new messages
-  const listenToMessages = (eventId) => {
-    const messagesRef = collection(db, "groups", eventId, "messages");
-    const q = query(messagesRef, orderBy("sentAt", "asc"));
+
+const listenToMessages = (eventId, userId) => {
+  const messagesRef = collection(db, "groups", eventId, "messages");
+  const q = query(messagesRef, orderBy("sentAt", "asc"));
+
+  const userRef = doc(db, "groups", eventId, "members", userId);
+
+  getDoc(userRef).then((memberSnap) => {
+    const lastSeenAt = memberSnap.exists() && memberSnap.data().lastSeenAt
+      ? memberSnap.data().lastSeenAt.toDate()
+      : null;
+console.log("lastSeenAt",lastSeenAt);
 
     onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
+      const msgs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      // Show red dot if new message and chat closed
-      if (msgs.length > messages.length && !chatOpen) {
-        setHasNewMessage(true);
+    const unreadMessages = msgs.filter(msg => {
+  if (!msg.sentAt || !msg.senderId) return false;
+
+  const msgDate = msg.sentAt.toDate?.() || msg.sentAt;
+console.log("msgDate",msgDate);
+  return (
+    lastSeenAt &&
+    msgDate > lastSeenAt &&
+msg.senderId !== userId // ✅ Use function argument, not outer scope
+
+  );
+  
+});
+
+
+   console.log("unreadMessages",unreadMessages );
+      if (chatOpenRef.current) {
+        setUnreadCount(0);
+      } else {
+        setUnreadCount(unreadMessages.length);
       }
 
       setMessages(msgs);
     });
-  };
+  });
+};
+
+
+
+
+
+
+
 
 // ✅ Send message with safe guards
 const sendMessage = async () => {
@@ -1036,6 +1142,11 @@ const sendMessage = async () => {
     }
   }, [highlightRSVPButtons, userType, hasSubmitted]);
 
+ const renderHTML = (jsCode, rawData) => {
+  console.log("Background URL:", template?.backgroundUrl);
+
+    return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
+  };
 
   return (
     <>
@@ -1078,21 +1189,241 @@ const sendMessage = async () => {
 
               {orderDetails ? (
                 <>
-                  <div
-                    className="invitation-container"
-                    style={{
-                      backgroundImage: `url(${imageBackGround.src})`,
-                    }}
-                  >
-                    <FinalInviteDisplay
-                      orderDetails={orderDetails}
-                      handleClick={handleClick}
-                      isHost={userType === "host"}
-                      openChat={() => setChatOpen(true)} 
-                      clearNewMessage={() => setHasNewMessage(false)} 
-                      hasNewMessage={hasNewMessage} 
-                    />
-                  </div>
+
+ {/* {templateId && template ? (
+  <div style={{ padding: "20px" }}>
+
+    <div
+      style={{
+        backgroundImage: template.backgroundUrl
+          ? `url('${template.backgroundUrl}')`
+          : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "300px",
+        borderRadius: "12px",
+        position: "relative",
+        border: "5px solid red",
+      }}
+    >
+   
+      {template.fontUrls?.map((url, idx) => (
+        <link key={idx} href={url} rel="stylesheet" />
+      ))}
+
+      
+      {template.cssCode && (
+        <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+      )}
+
+    
+      {template.jsCode && (
+        <div
+          style={{ position: "relative", zIndex: 2 }}
+          dangerouslySetInnerHTML={{
+            __html: renderHTML(template.jsCode, formData),
+          }}
+        />
+      )}
+    </div>
+  </div>
+) : (
+  <div
+    className="invitation-container"
+    style={{
+      backgroundImage: `url(${imageBackGround?.src})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      minHeight: "400px",
+      borderRadius: "12px",
+      position: "relative",
+    }}
+  >
+    <FinalInviteDisplay
+      orderDetails={orderDetails}
+      handleClick={handleClick}
+      isHost={userType === "host"}
+      openChat={() => setChatOpen(true)}
+      clearNewMessage={() => setHasNewMessage(false)}
+      hasNewMessage={hasNewMessage}
+    />
+  </div>
+  
+)} */}
+
+{templateId && template ? (
+  <div style={{ padding: "20px" }}>
+    <div
+      style={{
+        backgroundImage: template.backgroundUrl
+          ? `url('${template.backgroundUrl}')`
+          : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "300px",
+        borderRadius: "12px",
+        position: "relative", // key!
+        border: "5px solid red",
+      }}
+    >
+      {/* Fonts */}
+      {template.fontUrls?.map((url, idx) => (
+        <link key={idx} href={url} rel="stylesheet" />
+      ))}
+
+      {/* Inject template CSS */}
+      {template.cssCode && (
+        <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
+      )}
+
+      {/* Inject template HTML */}
+      {template.jsCode && (
+        <div
+          style={{ position: "relative", zIndex: 2 }}
+          dangerouslySetInnerHTML={{
+            __html: renderHTML(template.jsCode, formData),
+          }}
+        />
+      )}
+
+
+<div
+  className="invite-image-wrapper"
+ onClick={async () => {
+    setChatOpen(true);
+    chatOpenRef.current = true;
+    setUnreadCount(0);
+
+    // ✅ Update last seen
+    const userRef = doc(db, "groups", eventId, "members", userIdd);
+    await updateDoc(userRef, {
+      lastSeenAt: serverTimestamp(),
+    });
+  }}
+  style={{
+    position: "absolute",
+    cursor: "pointer",
+    zIndex: 999,
+  }}
+>
+  <Image
+    src={chatIcon}
+    alt="chat"
+    className="invite-image"
+    width={40}
+    height={40}
+  />
+
+  {/* ✅ Show badge only if chat is closed and there are unread messages */}
+  {!chatOpen && unreadCount > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        minWidth: "18px",
+        height: "18px",
+        backgroundColor: "red",
+        color: "white",
+        fontSize: "12px",
+        fontWeight: "bold",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2px",
+      }}
+    >
+      {unreadCount}
+    </span>
+  )}
+</div>
+
+
+    </div>
+  </div>
+) : (
+  <div >
+    <div
+      className="invitation-container"
+      style={{
+        backgroundImage: `url(${imageBackGround?.src})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "400px",
+        borderRadius: "12px",
+        position: "relative", // key!
+      }}
+    >
+      <FinalInviteDisplay
+        orderDetails={orderDetails}
+        handleClick={handleClick}
+        isHost={userType === "host"}
+        openChat={() => setChatOpen(true)}
+        clearNewMessage={() => setHasNewMessage(false)}
+        hasNewMessage={hasNewMessage}
+      />
+
+     
+     {/* Chat Icon */}
+<div
+  className="invite-image-wrapper"
+ onClick={async () => {
+    setChatOpen(true);
+    chatOpenRef.current = true;
+    setUnreadCount(0);
+
+    // ✅ Update last seen
+    const userRef = doc(db, "groups", eventId, "members", userIdd);
+    await updateDoc(userRef, {
+      lastSeenAt: serverTimestamp(),
+    });
+  }}
+  style={{
+    position: "absolute",
+    cursor: "pointer",
+    zIndex: 999,
+  }}
+>
+  <Image
+    src={chatIcon}
+    alt="chat"
+    className="invite-image"
+    width={40}
+    height={40}
+  />
+
+  {!chatOpen && unreadCount > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        minWidth: "18px",
+        height: "18px",
+        backgroundColor: "red",
+        color: "white",
+        fontSize: "12px",
+        fontWeight: "bold",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2px",
+      }}
+    >
+      {unreadCount}
+    </span>
+  )}
+</div>
+
+
+    </div>
+  </div>
+)}
+
+
+
 
                   <div>
                     {isHost && (
@@ -1105,19 +1436,19 @@ const sendMessage = async () => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                         <div className="invite-buttons">
-                          {/* <button className="btn-explore" onClick={handleClick}>
-                            <span className="icon-bg">
+                          <button className="btn-explore" onClick={handleClick}>
+                            <span className="icon-bg-explore">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button> */}
+                          </button>
 
                           <button
-                            className="btn-share"
+                            className="button-share"
                             onClick={goToSharePage}
                           >
                             <span>Share Invitation</span>
-                            <span className="icon-bg">
+                            <span className="icon-bg-share">
                               <Image
                                 src={whatshare}
                                 alt="WhatsApp"
@@ -1155,6 +1486,7 @@ const sendMessage = async () => {
                         highlightRSVPButtons={highlightRSVPButtons}
                         setHighlightRSVPButtons={setHighlightRSVPButtons}
                         hostData={orderDetails}
+                        rsvpGuestName={guestDetails?.name || ""}
                         userType={userType}
                         guestList={guestList}
                         loading={loading}
@@ -1192,6 +1524,11 @@ const sendMessage = async () => {
                         handleDownload={handleDownload}
                         handleClosePopup={handleClosePopup}
                         noteRef={noteRef}
+                         userName={
+                          userType === "host"
+                            ? orderDetails?.Name
+                            : guestDetails?.name
+                        }
                       />
                     </div>
                   )}
@@ -1238,20 +1575,25 @@ const sendMessage = async () => {
                       alt="Luck Draw Banner"
                       className="banner-img"
                     />
-                  
+                    {/* <button
+                      className="click-now-btn"
+                      onClick={() => setShowLuckyDrawPopup(true)}
+                    >
+                      Click Now
+                    </button> */}
                     <button
                       className="click-now-btn"
                       onClick={() => {
                         if (!hasSubmitted) {
-                        
+                          // RSVP submit nahi hua → highlight effect
                           setHighlightRSVPButtons(true);
                           setTimeout(
                             () => setHighlightRSVPButtons(false),
                             1500
-                          ); 
+                          ); // 1.5 sec highlight
                           return;
                         }
-                        setShowLuckyDrawPopup(true); 
+                        setShowLuckyDrawPopup(true); // RSVP submit hua → normal behaviour
                       }}
                     >
                       Click Now
@@ -1289,6 +1631,35 @@ const sendMessage = async () => {
 
                 {/* Action Buttons */}
                 <div className="tabs-container" style={styles.tabsContainer}>
+                  {/* {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (!hasSubmitted) {
+                          setHighlightRSVPButtons(true);
+                          setTimeout(() => setHighlightRSVPButtons(false), 1000);
+                          return; // RSVP submit nahi hua → button ka kaam nahi chalega
+                        }
+
+                        if (action.title === "Upload Pictures") {
+                          const input = document.getElementById("imageUploadInput");
+                          if (input) {
+                            input.value = "";
+                            input.click();
+                          }
+                        } else {
+                          handleActionClick(action.title);
+                        }
+                      }}
+                      style={{
+                        ...styles.actionButton,
+                        ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
+                      }}
+                    >
+                      <Image src={action.image} alt={action.title} style={styles.iconStyle} />
+                      <span style={styles.buttonLabel}>{action.title}</span>
+                    </button>
+                  ))} */}
                     {actions.map((action, index) => (
   <button
     key={index}
@@ -1428,8 +1799,8 @@ const sendMessage = async () => {
                             alt={`Event Image ${index + 1}`}
                             className="event-image"
                             onClick={() => {
-                              setSelectedImage(item); 
-                              setIsImageOpen(true);
+                              setSelectedImage(item); // Image select karo
+                              setIsImageOpen(true); // Lightbox open karo
                             }}
                           />
                         </div>
@@ -1495,7 +1866,7 @@ const sendMessage = async () => {
                           <button
                             className="lightbox-btn"
                             onClick={() =>
-                              handleDownload(selectedImage.imageUrl)
+                                downloadFile(selectedImage.imageUrl)
                             }
                           >
                             <Image
@@ -1506,11 +1877,14 @@ const sendMessage = async () => {
                           </button>
 
                           {selectedImage.userId === userID && (
-                        
+                            // <button
+                            //   className="lightbox-btn"
+                            //   onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
+                            // >
                              <button
   className="lightbox-btn"
   onClick={(e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     setDeleteTarget({
       imageId: selectedImage._id,
       imageType: selectedImage.imageType
@@ -1531,29 +1905,33 @@ const sendMessage = async () => {
 
               {showDeletePopup && (
   <div className="deletepopup-overlay">
-    <div className="deletepopup">
-      <h3>Confirm Delete</h3>
-      <p>Are you sure you want to delete this photo?</p>
-      <div className="deletepopup-buttons">
-        <button
-          className="deletecancel-btn"
-          onClick={() => setShowDeletePopup(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="deletedelete-btn"
-          onClick={() => {
-            handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
-            setShowDeletePopup(false);
-          }}
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                  <div className="deletepopup">
+                    <h3>Confirm Delete</h3>
+                    <p>Are You Sure You Want To Delete This Photo?</p>
+                    <div className="deletepopup-buttons">
+                      <button
+                        className="deletecancel-btn"
+                        onClick={() => setShowDeletePopup(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="deletedelete-btn"
+                        onClick={() => {
+                          handleDeleteImage(
+                            deleteTarget.imageId,
+                            deleteTarget.imageType
+                          );
+                          setShowDeletePopup(false);
+                        }}
+
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1565,10 +1943,7 @@ const sendMessage = async () => {
                     className="popup-luckdraw-container"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div
-                      className="popup-luckdraw-content"
-                      style={{ marginBlock: "30px" }}
-                    >
+                   
                       <LuckyDrawForm
                         hostData={orderDetails}
                         onClose={() => {
@@ -1578,7 +1953,7 @@ const sendMessage = async () => {
                       />
                     </div>
                   </div>
-                </div>
+              
               )}
 
               {/* 🛠 Invitation Modal */}
@@ -1620,53 +1995,28 @@ const sendMessage = async () => {
              <>
     
 
-      
-  {chatOpen && (
+        {/* Chat UI */}
+       {chatOpen && (
   <div className="chat-overlay">
-    {/* Header */}
     <div className="chat-header">
-      {selectedMessages.length > 0 ? (
-        <div className="chat-actions">
-          <button
-            className="delete-icon"
-            onClick={() => {
-              selectedMessages.forEach(id => handleDeleteMessage(id));
-              setSelectedMessages([]);
-            }}
-          >
-            🗑️
-          </button>
-          <span>{selectedMessages.length} selected</span>
-        </div>
-      ) : (
-        <div className="chat-user-info">
-          <h3>Group Chat</h3>
-          <span>{orderDetails?.Name}</span>
-          <span>{orderDetails?.eventType} party</span>
-        </div>
-      )}
-      <button className="chat-close-btn" onClick={() => setChatOpen(false)}>×</button>
+      <div className="chat-user-info">
+        <h3>Group Chat</h3>
+        <span>{orderDetails?.Name}</span>
+        <span>{orderDetails?.eventType} </span>
+      </div>
+      <button className="chat-close-btn"  onClick={() => {
+    setChatOpen(false);
+    chatOpenRef.current = false;
+  }}>×</button>
     </div>
 
-    {/* Messages */}
     <div className="chat-messages">
       {messages.map((msg) => {
         const isSender = msg.senderPhoneNumber === userPhoneNumber;
         return (
           <div
             key={msg.id}
-            className={`chat-message ${isSender ? "sender" : "receiver"} ${
-              selectedMessages.includes(msg.id) ? "selected" : ""
-            }`}
-            onClick={() => {
-              if (selectedMessages.includes(msg.id)) {
-                setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
-              } else {
-                if (msg.senderPhoneNumber === userPhoneNumber) {
-                  setSelectedMessages([...selectedMessages, msg.id]);
-                }
-              }
-            }}
+            className={`chat-message ${isSender ? "sender" : "receiver"}`}
           >
             <div className="chat-bubble">
               <div className="chat-sender">+91 {msg.senderPhoneNumber}</div>
@@ -1697,14 +2047,14 @@ const sendMessage = async () => {
       </button>
 
       <textarea
-     value={text}    
-        ref={textareaRef}  
+        value={text}
+        ref={textareaRef}
         className="chat-input"
         rows={1}
         onChange={(e) => {
           setText(e.target.value);
           if (e.target.value.length > 0) {
-            setShowEmojiPicker(false); 
+            setShowEmojiPicker(false);
           }
         }}
         onInput={(e) => {
@@ -1718,7 +2068,6 @@ const sendMessage = async () => {
       <button onClick={sendMessage} className="chat-send-btn">➤</button>
     </div>
 
-    {/* Emoji Picker */}
     {showEmojiPicker && (
       <div className="emoji-container">
         <EmojiPicker
@@ -1774,16 +2123,15 @@ const styles = {
   },
 
   wrapper: {
-    padding: 20,
+    padding: 5,
     fontFamily: "sans-serif",
     maxWidth: 480,
     margin: "auto",
-    backgroundColor: "#FFDBDB",
+    backgroundColor: "white",
   },
   heading: {
     fontSize: 26,
     fontWeight: 700,
-    // marginBottom: 8,
     color: '#97538C',
     textAlign: 'center',
   },

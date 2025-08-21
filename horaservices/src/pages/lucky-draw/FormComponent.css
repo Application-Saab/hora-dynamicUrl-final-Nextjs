@@ -1,11 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-.lucky-draw-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
 .lucky-draw-container {
   background: linear-gradient(
     180deg,
@@ -15,17 +8,16 @@
     #ffdace 100%
   );
   border-radius: 18px;
-  padding: 20px;
+  padding: 30px;
   margin-inline: 25px;
   text-align: center;
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
   z-index: 10;
- height:90%;
- /* overflow-y: scroll; */
+  margin:auto;
+  max-height: 90vh;
+  max-width:90%
 }
 
 .lucky-draw-title {
