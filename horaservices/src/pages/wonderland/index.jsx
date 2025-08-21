@@ -63,15 +63,15 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
+import { downloadFile } from "@/utils/downloadFile";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
 
-
 const InvitationCard = () => {
   const rsvpRef = useRef(null);
   const router = useRouter();
-  const { page, id : queryId } = router.query;
+  const { page, id: queryId } = router.query;
   // const slug = router.query.slug || [];
   const fileInputRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -90,16 +90,23 @@ const InvitationCard = () => {
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
-    const [showDeletePopup, setShowDeletePopup] = useState(false);
-const [deleteTarget, setDeleteTarget] = useState(null);
+  console.log(
+    "%c [ guestDetails ]-93",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    guestDetails
+  );
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   // const [showPicker, setShowPicker] = useState(false);
   const textareaRef = useRef(null);
 
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
- const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
-const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(false);
+  const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] =
+    useState(false);
+  const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] =
+    useState(false);
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
@@ -156,8 +163,13 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     };
 
     fetchEventImages();
-    }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw, refetchLuckyDrawHostDelete,
-  refetchLuckyDrawGuestDelete]);
+  }, [
+    urlParams.eventId,
+    refetchEventImages,
+    refetchLuckyDraw,
+    refetchLuckyDrawHostDelete,
+    refetchLuckyDrawGuestDelete,
+  ]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -198,7 +210,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     refetchLuckyDraw,
     refetchEventImages,
     refetchAddGuest,
-    refetchLuckyDrawGuestDelete
+    refetchLuckyDrawGuestDelete,
   ]);
 
   useEffect(() => {
@@ -254,6 +266,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState("");
+  console.log('%c [ selectedImage ]-269', 'font-size:13px; background:pink; color:#bf2c9f;', selectedImage)
   const [showModal, setShowModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -276,7 +289,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const noteRef = useRef(null);
 
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [guestName, setGuestName] = useState("");
   const [guestPhoneNumber, setGuestPhoneNumber] = useState("");
   const [attendanceStatus, setAttendanceStatus] = useState("");
   const [currentEventId, setCurrentEventId] = useState("");
@@ -297,11 +309,10 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
 
-  
-   const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
-    const [selectedMessages, setSelectedMessages] = useState([]);
+  const [selectedMessages, setSelectedMessages] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [userIdd, setUserIdd] = useState(null);
   const [role, setRole] = useState(null);
@@ -476,7 +487,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   };
 
   const handleClick = () => {
-    router.push("/templates");
+    router.push(`/templates?eventid=${urlParams.eventId}`);
   };
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -484,23 +495,21 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-   const goToSharePage = () => {
+  const goToSharePage = () => {
     router.push({
-      pathname: "/wonderland/ShareInvitation", 
-      query: { data: JSON.stringify(orderDetails) }
+      pathname: "/wonderland/ShareInvitation",
+      query: { data: JSON.stringify(orderDetails) },
     });
   };
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
 
-  
     if (name === "image") {
       setFormData({ ...formData, image: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
     }
 
-  
     if (type === "date" || type === "time") {
       if (value) {
         e.target.classList.add("has-value");
@@ -639,14 +648,19 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     }
   }, [orderDetails]);
 
- 
   useEffect(() => {
     if (!router.isReady) return;
     const eventId = urlParams?.eventId;
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw, refetchLuckyDrawHostDelete]);
+  }, [
+    router.isReady,
+    urlParams?.eventId,
+    urlParams,
+    refetchLuckyDraw,
+    refetchLuckyDrawHostDelete,
+  ]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -680,7 +694,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
           luckyDraws: data?.luckyDraws || [],
         });
 
-     
         setSendCustomerId(hostId);
       }
     } catch (err) {
@@ -709,7 +722,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       setSelectedIndex(prevIndex);
       setSelectedImage(eventAllImages[prevIndex]);
     },
-    trackMouse: true, 
+    trackMouse: true,
   });
   const handleImageUpload = async (e) => {
     setUploading(true);
@@ -724,7 +737,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     }
 
     const formData = new FormData();
-
 
     Array.from(files).forEach((file, index) => {
       formData.append("selfUploadedImages", file);
@@ -775,55 +787,53 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       setWallUploading(false);
     }
   };
-const handleDeleteImage = async (imageId, imageType) => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: userID, imageId, imageType }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (!data.error) {
-      setEventAllImages((prev) => {
-        const newImages = prev.filter((img) => img._id !== imageId);
-
-        if (newImages.length === 0) {
-          setIsImageOpen(false);
-        } else {
-          let newIndex = selectedIndex;
-          if (selectedIndex >= newImages.length) {
-            newIndex = newImages.length - 1;
-          }
-          setSelectedIndex(newIndex);
-          setSelectedImage(newImages[newIndex]);
+  const handleDeleteImage = async (imageId, imageType) => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: userID, imageId, imageType }),
         }
+      );
 
-        return newImages;
-      });
-     if (imageType === "luckyDraw") {
-  if (isHost) {
-    setRefetchLuckyDrawHostDelete(prev => !prev);
-  } else {
-    setRefetchLuckyDrawGuestDelete(prev => !prev);
-  }
-}
+      const data = await res.json();
 
-    } else {
-      console.error(data.message || "Failed to delete image");
+      if (!data.error) {
+        setEventAllImages((prev) => {
+          const newImages = prev.filter((img) => img._id !== imageId);
+
+          if (newImages.length === 0) {
+            setIsImageOpen(false);
+          } else {
+            let newIndex = selectedIndex;
+            if (selectedIndex >= newImages.length) {
+              newIndex = newImages.length - 1;
+            }
+            setSelectedIndex(newIndex);
+            setSelectedImage(newImages[newIndex]);
+          }
+
+          return newImages;
+        });
+        if (imageType === "luckyDraw") {
+          if (isHost) {
+            setRefetchLuckyDrawHostDelete((prev) => !prev);
+          } else {
+            setRefetchLuckyDrawGuestDelete((prev) => !prev);
+          }
+        }
+      } else {
+        console.error(data.message || "Failed to delete image");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
     }
-  } catch (err) {
-    console.error("Delete error:", err);
-  }
-};
-
+  };
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
@@ -902,20 +912,17 @@ const handleDeleteImage = async (imageId, imageType) => {
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, urlParams, userId, sendCustomerId]);
 
- useEffect(() => {
-  if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
-    return;
+  useEffect(() => {
+    if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
+      return;
 
-  setEventId(urlParams.eventId);
-  setUserIdd(urlParams.eventUserId);
-  setRole(urlParams.userType);
+    setEventId(urlParams.eventId);
+    setUserIdd(urlParams.eventUserId);
+    setRole(urlParams.userType);
 
-  registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
-  listenToMessages(urlParams.eventId);
-}, [urlParams]);
-
-
-
+    registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
+    listenToMessages(urlParams.eventId);
+  }, [urlParams]);
 
   const handleDeleteMessage = async (msgId) => {
     try {
@@ -926,7 +933,6 @@ const handleDeleteImage = async (imageId, imageType) => {
     }
   };
 
-
   const hasSetUpMessageListener = useRef(false);
   useEffect(() => {
     const chatContainer = document.querySelector(".chat-messages");
@@ -934,7 +940,6 @@ const handleDeleteImage = async (imageId, imageType) => {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);
-
 
   useEffect(() => {
     if (!userIdd || typeof window === "undefined") return;
@@ -945,16 +950,24 @@ const handleDeleteImage = async (imageId, imageType) => {
         if (permission !== "granted") return;
 
         const messagingInstance = getMessaging();
-        const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+        const token = await getToken(messagingInstance, {
+          vapidKey: VAPID_KEY,
+        });
         if (token) {
-          await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
+          await setDoc(
+            doc(db, "fcmTokens", userIdd),
+            { token },
+            { merge: true }
+          );
         }
 
         // ✅ Add listener only once
         if (!hasSetUpMessageListener.current) {
           onMessage(messagingInstance, (payload) => {
             if (!chatOpen) {
-              alert(`🔔 ${payload.notification?.title}\n${payload.notification?.body}`);
+              alert(
+                `🔔 ${payload.notification?.title}\n${payload.notification?.body}`
+              );
               setHasNewMessage(true);
             }
           });
@@ -967,7 +980,6 @@ const handleDeleteImage = async (imageId, imageType) => {
 
     requestPermissionAndSaveToken();
   }, [userIdd]);
-
 
   //  Register user in Firebase
   const registerUser = async (eventId, userId, role) => {
@@ -1009,23 +1021,23 @@ const handleDeleteImage = async (imageId, imageType) => {
     });
   };
 
-// ✅ Send message with safe guards
-const sendMessage = async () => {
-  if (!text.trim()) return;
-  if (!eventId || !userIdd) {
-    console.warn("Missing eventId or userId — cannot send message.");
-    return;
-  }
+  // ✅ Send message with safe guards
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+    if (!eventId || !userIdd) {
+      console.warn("Missing eventId or userId — cannot send message.");
+      return;
+    }
 
-  await addDoc(collection(db, "groups", eventId, "messages"), {
-    text,
-    senderId: userIdd,
-    senderPhoneNumber: localStorage.getItem("mobileNumber"),
-    sentAt: new Date(),
-  });
+    await addDoc(collection(db, "groups", eventId, "messages"), {
+      text,
+      senderId: userIdd,
+      senderPhoneNumber: localStorage.getItem("mobileNumber"),
+      sentAt: new Date(),
+    });
 
-  setText("");
-};
+    setText("");
+  };
   useEffect(() => {
     if (userType !== "host" && !hasSubmitted && highlightRSVPButtons) {
       if (rsvpRef.current) {
@@ -1035,7 +1047,6 @@ const sendMessage = async () => {
       setTimeout(() => setHighlightRSVPButtons(false), 9000);
     }
   }, [highlightRSVPButtons, userType, hasSubmitted]);
-
 
   return (
     <>
@@ -1088,9 +1099,9 @@ const sendMessage = async () => {
                       orderDetails={orderDetails}
                       handleClick={handleClick}
                       isHost={userType === "host"}
-                      openChat={() => setChatOpen(true)} 
-                      clearNewMessage={() => setHasNewMessage(false)} 
-                      hasNewMessage={hasNewMessage} 
+                      openChat={() => setChatOpen(true)}
+                      clearNewMessage={() => setHasNewMessage(false)}
+                      hasNewMessage={hasNewMessage}
                     />
                   </div>
 
@@ -1105,17 +1116,14 @@ const sendMessage = async () => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                         <div className="invite-buttons">
-                          {/* <button className="btn-explore" onClick={handleClick}>
+                          <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button> */}
+                          </button>
 
-                          <button
-                            className="btn-share"
-                            onClick={goToSharePage}
-                          >
+                          <button className="btn-share" onClick={goToSharePage}>
                             <span>Share Invitation</span>
                             <span className="icon-bg">
                               <Image
@@ -1147,14 +1155,12 @@ const sendMessage = async () => {
                       urlParams={urlParams}
                     />
                   ) : (
-                     <div
-                      ref={rsvpRef}
-                    >
-
+                    <div ref={rsvpRef}>
                       <GuestRSVPForm
                         highlightRSVPButtons={highlightRSVPButtons}
                         setHighlightRSVPButtons={setHighlightRSVPButtons}
                         hostData={orderDetails}
+                        rsvpGuestName={guestDetails?.name || ""}
                         userType={userType}
                         guestList={guestList}
                         loading={loading}
@@ -1192,6 +1198,11 @@ const sendMessage = async () => {
                         handleDownload={handleDownload}
                         handleClosePopup={handleClosePopup}
                         noteRef={noteRef}
+                        userName={
+                          userType === "host"
+                            ? orderDetails?.Name
+                            : guestDetails?.name
+                        }
                       />
                     </div>
                   )}
@@ -1238,20 +1249,19 @@ const sendMessage = async () => {
                       alt="Luck Draw Banner"
                       className="banner-img"
                     />
-                  
+
                     <button
                       className="click-now-btn"
                       onClick={() => {
                         if (!hasSubmitted) {
-                        
                           setHighlightRSVPButtons(true);
                           setTimeout(
                             () => setHighlightRSVPButtons(false),
                             1500
-                          ); 
+                          );
                           return;
                         }
-                        setShowLuckyDrawPopup(true); 
+                        setShowLuckyDrawPopup(true);
                       }}
                     >
                       Click Now
@@ -1289,36 +1299,44 @@ const sendMessage = async () => {
 
                 {/* Action Buttons */}
                 <div className="tabs-container" style={styles.tabsContainer}>
-                    {actions.map((action, index) => (
-  <button
-    key={index}
-    onClick={() => {
-      // Guest ke liye: RSVP check
-      if (userType !== "host" && !hasSubmitted) {
-        setHighlightRSVPButtons(true);
-        setTimeout(() => setHighlightRSVPButtons(false), 1000);
-        return; // RSVP submit nahi hua → button ka kaam nahi chalega
-      }
+                  {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        // Guest ke liye: RSVP check
+                        if (userType !== "host" && !hasSubmitted) {
+                          setHighlightRSVPButtons(true);
+                          setTimeout(
+                            () => setHighlightRSVPButtons(false),
+                            1000
+                          );
+                          return; // RSVP submit nahi hua → button ka kaam nahi chalega
+                        }
 
-      // Upload Pictures
-      if (action.title === "Upload Pictures") {
-        const input = document.getElementById("imageUploadInput");
-        if (input) {
-          input.value = "";
-          input.click();
-        }
-      } else {
-        handleActionClick(action.title);
-      }
-    }}
-    style={{
-      ...styles.actionButton,
-    }}
-  >
-    <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-    <span style={styles.buttonLabel}>{action.title}</span>
-  </button>
-))}
+                        // Upload Pictures
+                        if (action.title === "Upload Pictures") {
+                          const input =
+                            document.getElementById("imageUploadInput");
+                          if (input) {
+                            input.value = "";
+                            input.click();
+                          }
+                        } else {
+                          handleActionClick(action.title);
+                        }
+                      }}
+                      style={{
+                        ...styles.actionButton,
+                      }}
+                    >
+                      <Image
+                        src={action.image}
+                        alt={action.title}
+                        style={styles.iconStyle}
+                      />
+                      <span style={styles.buttonLabel}>{action.title}</span>
+                    </button>
+                  ))}
 
                   <input
                     type="file"
@@ -1428,7 +1446,7 @@ const sendMessage = async () => {
                             alt={`Event Image ${index + 1}`}
                             className="event-image"
                             onClick={() => {
-                              setSelectedImage(item); 
+                              setSelectedImage(item);
                               setIsImageOpen(true);
                             }}
                           />
@@ -1495,7 +1513,7 @@ const sendMessage = async () => {
                           <button
                             className="lightbox-btn"
                             onClick={() =>
-                              handleDownload(selectedImage.imageUrl)
+                              downloadFile(selectedImage.imageUrl)
                             }
                           >
                             <Image
@@ -1506,21 +1524,23 @@ const sendMessage = async () => {
                           </button>
 
                           {selectedImage.userId === userID && (
-                        
-                             <button
-  className="lightbox-btn"
-  onClick={(e) => {
-    e.stopPropagation(); 
-    setDeleteTarget({
-      imageId: selectedImage._id,
-      imageType: selectedImage.imageType
-    });
-    setShowDeletePopup(true);
-  }}
->
-  <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
-</button>
-
+                            <button
+                              className="lightbox-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget({
+                                  imageId: selectedImage._id,
+                                  imageType: selectedImage.imageType,
+                                });
+                                setShowDeletePopup(true);
+                              }}
+                            >
+                              <Image
+                                src={deletebtn}
+                                alt="Delete"
+                                style={{ width: 30, height: 30 }}
+                              />
+                            </button>
                           )}
                         </div>
                       </div>
@@ -1530,30 +1550,34 @@ const sendMessage = async () => {
               </div>
 
               {showDeletePopup && (
-  <div className="deletepopup-overlay">
-    <div className="deletepopup">
-      <h3>Confirm Delete</h3>
-      <p>Are you sure you want to delete this photo?</p>
-      <div className="deletepopup-buttons">
-        <button
-          className="deletecancel-btn"
-          onClick={() => setShowDeletePopup(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="deletedelete-btn"
-          onClick={() => {
-            handleDeleteImage(deleteTarget.imageId, deleteTarget.imageType);
-            setShowDeletePopup(false);
-          }}
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                <div className="deletepopup-overlay">
+                  <div className="deletepopup">
+                    <h3>Confirm Delete</h3>
+                    <p>Are You Sure You Want To Delete This Photo?</p>
+                    <div className="deletepopup-buttons">
+                      <button
+                        className="deletecancel-btn"
+                        onClick={() => setShowDeletePopup(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="deletedelete-btn"
+                        onClick={() => {
+                          handleDeleteImage(
+                            deleteTarget.imageId,
+                            deleteTarget.imageType
+                          );
+                          setShowDeletePopup(false);
+                        }}
+
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* 🎁 Lucky Draw Popup */}
               {showLuckyDrawPopup && (
@@ -1611,140 +1635,151 @@ const sendMessage = async () => {
             onClick={() => setShowPopupGuest(false)}
           />
           <RSVPPopup
-          hostData={hostData}
+            hostData={hostData}
             guestList={guestList}
             onClose={() => setShowPopupGuest(false)}
           />
         </>
       )}
-             <>
-    
-
-      
-  {chatOpen && (
-  <div className="chat-overlay">
-    {/* Header */}
-    <div className="chat-header">
-      {selectedMessages.length > 0 ? (
-        <div className="chat-actions">
-          <button
-            className="delete-icon"
-            onClick={() => {
-              selectedMessages.forEach(id => handleDeleteMessage(id));
-              setSelectedMessages([]);
-            }}
-          >
-            🗑️
-          </button>
-          <span>{selectedMessages.length} selected</span>
-        </div>
-      ) : (
-        <div className="chat-user-info">
-          <h3>Group Chat</h3>
-          <span>{orderDetails?.Name}</span>
-          <span>{orderDetails?.eventType} party</span>
-        </div>
-      )}
-      <button className="chat-close-btn" onClick={() => setChatOpen(false)}>×</button>
-    </div>
-
-    {/* Messages */}
-    <div className="chat-messages">
-      {messages.map((msg) => {
-        const isSender = msg.senderPhoneNumber === userPhoneNumber;
-        return (
-          <div
-            key={msg.id}
-            className={`chat-message ${isSender ? "sender" : "receiver"} ${
-              selectedMessages.includes(msg.id) ? "selected" : ""
-            }`}
-            onClick={() => {
-              if (selectedMessages.includes(msg.id)) {
-                setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
-              } else {
-                if (msg.senderPhoneNumber === userPhoneNumber) {
-                  setSelectedMessages([...selectedMessages, msg.id]);
-                }
-              }
-            }}
-          >
-            <div className="chat-bubble">
-              <div className="chat-sender">+91 {msg.senderPhoneNumber}</div>
-              <div className="chat-text">{msg.text}</div>
-              <div className="chat-time">
-                {msg.sentAt?.toDate
-                  ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })
-                  : ""}
-              </div>
+      <>
+        {chatOpen && (
+          <div className="chat-overlay">
+            {/* Header */}
+            <div className="chat-header">
+              {selectedMessages.length > 0 ? (
+                <div className="chat-actions">
+                  <button
+                    className="delete-icon"
+                    onClick={() => {
+                      selectedMessages.forEach((id) => handleDeleteMessage(id));
+                      setSelectedMessages([]);
+                    }}
+                  >
+                    🗑️
+                  </button>
+                  <span>{selectedMessages.length} selected</span>
+                </div>
+              ) : (
+                <div className="chat-user-info">
+                  <h3>Group Chat</h3>
+                  <span>{orderDetails?.Name}</span>
+                  <span>{orderDetails?.eventType} party</span>
+                </div>
+              )}
+              <button
+                className="chat-close-btn"
+                onClick={() => setChatOpen(false)}
+              >
+                ×
+              </button>
             </div>
+
+            {/* Messages */}
+            <div className="chat-messages">
+              {messages.map((msg) => {
+                const isSender = msg.senderPhoneNumber === userPhoneNumber;
+                return (
+                  <div
+                    key={msg.id}
+                    className={`chat-message ${
+                      isSender ? "sender" : "receiver"
+                    } ${selectedMessages.includes(msg.id) ? "selected" : ""}`}
+                    onClick={() => {
+                      if (selectedMessages.includes(msg.id)) {
+                        setSelectedMessages(
+                          selectedMessages.filter((id) => id !== msg.id)
+                        );
+                      } else {
+                        if (msg.senderPhoneNumber === userPhoneNumber) {
+                          setSelectedMessages([...selectedMessages, msg.id]);
+                        }
+                      }
+                    }}
+                  >
+                    <div className="chat-bubble">
+                      <div className="chat-sender">
+                        +91 {msg.senderPhoneNumber}
+                      </div>
+                      <div className="chat-text">{msg.text}</div>
+                      <div className="chat-time">
+                        {msg.sentAt?.toDate
+                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
+                              "en-IN",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Input + Emoji */}
+            <div className="chat-input-container">
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="emoji-btn"
+              >
+                ☺
+              </button>
+
+              <textarea
+                value={text}
+                ref={textareaRef}
+                className="chat-input"
+                rows={1}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  if (e.target.value.length > 0) {
+                    setShowEmojiPicker(false);
+                  }
+                }}
+                onInput={(e) => {
+                  e.target.style.height = "auto";
+                  const newHeight = Math.min(e.target.scrollHeight, 120);
+                  e.target.style.height = newHeight + "px";
+                }}
+                placeholder="Type your message..."
+              />
+
+              <button onClick={sendMessage} className="chat-send-btn">
+                ➤
+              </button>
+            </div>
+
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <div className="emoji-container">
+                <EmojiPicker
+                  searchDisabled={true}
+                  onEmojiClick={(emojiData) => {
+                    const textarea = textareaRef.current;
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+
+                    const newText =
+                      text.substring(0, start) +
+                      emojiData.emoji +
+                      text.substring(end);
+
+                    setText(newText);
+                    setTimeout(() => {
+                      textarea.focus();
+                      textarea.selectionStart = textarea.selectionEnd =
+                        start + emojiData.emoji.length;
+                    }, 0);
+                  }}
+                />
+              </div>
+            )}
           </div>
-        );
-      })}
-    </div>
-
-    {/* Input + Emoji */}
-    <div className="chat-input-container">
-      <button
-        type="button"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-        className="emoji-btn"
-      >
-        ☺
-      </button>
-
-      <textarea
-     value={text}    
-        ref={textareaRef}  
-        className="chat-input"
-        rows={1}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (e.target.value.length > 0) {
-            setShowEmojiPicker(false); 
-          }
-        }}
-        onInput={(e) => {
-          e.target.style.height = "auto";
-          const newHeight = Math.min(e.target.scrollHeight, 120);
-          e.target.style.height = newHeight + "px";
-        }}
-        placeholder="Type your message..."
-      />
-
-      <button onClick={sendMessage} className="chat-send-btn">➤</button>
-    </div>
-
-    {/* Emoji Picker */}
-    {showEmojiPicker && (
-      <div className="emoji-container">
-        <EmojiPicker
-          searchDisabled={true}
-          onEmojiClick={(emojiData) => {
-            const textarea = textareaRef.current;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-
-            const newText =
-              text.substring(0, start) +
-              emojiData.emoji +
-              text.substring(end);
-
-            setText(newText);
-            setTimeout(() => {
-              textarea.focus();
-              textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
-            }, 0);
-          }}
-        />
-      </div>
-    )}
-  </div>
-)}
-
+        )}
       </>
     </>
   );
@@ -1784,16 +1819,16 @@ const styles = {
     fontSize: 26,
     fontWeight: 700,
     // marginBottom: 8,
-    color: '#97538C',
-    textAlign: 'center',
+    color: "#97538C",
+    textAlign: "center",
   },
   subheading: {
     fontSize: 15,
     padding: "0px 10px 0px 10px",
     marginBottom: 20,
     fontWeight: 400,
-    color: '#97538C',
-    textAlign: 'center',
+    color: "#97538C",
+    textAlign: "center",
   },
   buttonRow: {
     display: "flex",

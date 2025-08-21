@@ -132,6 +132,10 @@
   font-weight: bold;
 }
 
+.template-upload input[type="file"] {
+  display: none;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 600px) {
   .templateGrid {

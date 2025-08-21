@@ -5,7 +5,10 @@ import RSVPPopup from "../RSVPPopup";
 import Image from "next/image";
 import train from "@/assets/train.png";
 import curveBg from "@/assets/train-background.png";
-import gif from "@/assets/luckdrawgif.mp4"
+import gif from "@/assets/luckdrawgif.mp4";
+import ListViewIcon from "@/assets/list_view_icon.png";
+import RightTickRSVP from "@/assets/right_tick_rsvp.png";
+import NotSureRSVP from "@/assets/not_sure_rsvp.png";
 const RSVP_STATUS = {
   WILL_COME: "will Come",
   WILL_TRY: "Sure, will try",
@@ -23,8 +26,9 @@ const GuestRSVPForm = ({
   setShowPopupGuest,
   highlightRSVPButtons,
   setHighlightRSVPButtons,
+  rsvpGuestName,
 }) => {
-  const [guestName, setGuestName] = useState("");
+  const [guestName, setGuestName] = useState(rsvpGuestName || "");
   const [status, setStatus] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);  
@@ -200,13 +204,27 @@ const GuestRSVPForm = ({
                 className="rsvp-btn"
                 onClick={() => handleClick(RSVP_STATUS.WILL_COME)}
               >
-                Will Come
+                <span className="rsvp-btn-icon-bg">
+                  <Image
+                    src={RightTickRSVP}
+                    alt="WhatsApp"
+                    className="rsvp-btn-icon-img"
+                  />
+                </span>
+                <span>Sure,Will Come</span>
               </button>
               <button
-                className="rsvp-btn"
+                className="rsvp-btn rsvp-btn-2"
                 onClick={() => handleClick(RSVP_STATUS.WILL_TRY)}
               >
-                Sure, will try
+                <span>Sure,Will Try</span>
+                <span className="rsvp-btn-icon-bg-2">
+                  <Image
+                    src={NotSureRSVP}
+                    alt="WhatsApp"
+                    className="rsvp-btn-icon-img-2"
+                  />
+                </span>
               </button>
             </div>
           </div>
@@ -227,8 +245,23 @@ const GuestRSVPForm = ({
             </div>
           </div>
 
-          <div className="view-list-button" onClick={handleViewFullListClick}>
-            <span className="list-icon">☰</span> Full Guest List
+          <div
+            className="d-flex justify-content-center"
+            style={{ marginBottom: "22.5px" }}
+          >
+            <button
+              className="view-list-button"
+              onClick={handleViewFullListClick}
+            >
+              <span className="view-list-icon-bg">
+                <Image
+                  src={ListViewIcon}
+                  alt="WhatsApp"
+                  className="view-list-icon-img"
+                />
+              </span>
+              <span>Full Guest List</span>
+            </button>
           </div>
         </div>
 
@@ -251,7 +284,7 @@ const GuestRSVPForm = ({
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
-                placeholder="Write Your Name Here"
+                placeholder="Enter Your Name"
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 required

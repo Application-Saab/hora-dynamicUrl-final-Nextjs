@@ -1,6 +1,7 @@
 /* General Font Setup */
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 body {
   font-family: 'Segoe UI', sans-serif;
 }
@@ -1049,7 +1050,7 @@ background-color: none !important;
 
 .deletepopup {
   background: white;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 20px;
   text-align: center;
   width: 300px;
@@ -1058,34 +1059,40 @@ background-color: none !important;
 .deletepopup h3 {
   margin: 0 0 10px;
   color: #884b85;
+  font-family: "Aclonica", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .deletepopup p {
   margin-bottom: 20px;
   color: #884b85;
+  font-family: "Adamina", serif;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .deletepopup-buttons {
   display: flex;
   justify-content: space-around;
+  margin-top: 24px;
 }
 
 .deletecancel-btn {
-  background: #ffb6c1;
+  background: rgba(151, 83, 140, 1);
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: bold;
+  padding: 10px 20px;
+  font-weight: 700;
   cursor: pointer;
 }
 
 .deletedelete-btn {
-  background: #884b85;
+  background: rgba(151, 83, 140, 1);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: bold;
+  padding: 10px 20px;
+  font-family: 'inter', sans-serif;
+  font-weight: 700;
   cursor: pointer;
 }
 

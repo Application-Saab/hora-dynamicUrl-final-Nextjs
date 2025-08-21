@@ -15,10 +15,10 @@ const ThankYouNotePopup = ({
   handleDownload,
   handleClosePopup,
   noteRef,
-  hostData,
+  userName
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
-
+  noteBy = userName || "";
   return (
 
     <div className="popup">

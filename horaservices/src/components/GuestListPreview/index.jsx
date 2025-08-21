@@ -5,12 +5,12 @@ import { useRouter } from "next/router";
 import { BASE_URL } from "@/utils/apiconstants";
 import train from "@/assets/train.png";
 import curveBg from "@/assets/train-background.png";
+import ListViewIcon from "@/assets/list_view_icon.png";
 import Image from "next/image";
 const RSVP_STATUS = {
   WILL_COME: "will Come",
   WILL_TRY: "Sure, will try",
 };
-
 
 const GuestListPreview = ({ hostData, urlParams }) => {
   const router = useRouter();
@@ -66,9 +66,9 @@ const GuestListPreview = ({ hostData, urlParams }) => {
   }, [urlParams?.eventId]);
 
   useEffect(() => {
-    const confirmed = guestData.filter(
-      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-    ).length + 1; 
+    const confirmed =
+      guestData.filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
+        .length + 1;
 
     const willTry = guestData.filter(
       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
@@ -83,10 +83,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
 
   if (loading) return <div>Loading...</div>;
 
-
-
   return (
-
     <div className="guest-preview-card">
       <div className="curve-container">
         <Image src={curveBg} alt="Curve Background" className="curve-bg" />
@@ -95,35 +92,42 @@ const GuestListPreview = ({ hostData, urlParams }) => {
         <div className="train-preview-wrapper">
           <Image src={train} alt="Train Guests" className="train-image" />
 
-          {
-            [
-              { name: hostData?.name || hostData?.Name },
-              ...guestData.filter(
-                (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
-              ),
-            ]
-              .slice(0, 5)
-              .map((guest, index) => {
-                const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
-                return (
-                  <span key={index} className={`balloon-letter balloon-${index}`}>
-                    {firstLetter}
-                  </span>
-                );
-              })
-          }
-
+          {[
+            { name: hostData?.name || hostData?.Name },
+            ...guestData.filter(
+              (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+            ),
+          ]
+            .slice(0, 5)
+            .map((guest, index) => {
+              const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
+              return (
+                <span key={index} className={`balloon-letter balloon-${index}`}>
+                  {firstLetter}
+                </span>
+              );
+            })}
 
           <div className="guest-count-overlay">
-            <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+            <span className="confirmed">
+              Confirm - {guestCounts?.confirmed || 0}
+            </span>
             <span className="separator">|</span>
             <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
           </div>
         </div>
 
-
-        <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
-          <span className="list-icon">☰</span> Full Guest List
+        {/* <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
+          <span className="list-icon"> <Image src={ListViewIcon} alt="List Icon" height={'30px'} width={'30px'}  /> </span>
+          <span> Full Guest List </span>
+        </div> */}
+        <div className="d-flex justify-content-center" style={{marginBottom: '22.5px'}}>
+          <button className="view-list-button" onClick={() => setOpenRsvpList(true)}>
+          <span className="view-list-icon-bg">
+            <Image src={ListViewIcon} alt="WhatsApp" className="view-list-icon-img" />
+          </span>
+          <span>Full Guest List</span>
+        </button>
         </div>
       </div>
       {openRsvpList && (
@@ -136,10 +140,6 @@ const GuestListPreview = ({ hostData, urlParams }) => {
         />
       )}
     </div>
-
-
-
-
   );
 };
 
