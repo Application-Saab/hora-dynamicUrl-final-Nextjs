@@ -5,7 +5,7 @@
   /* border: 1px solid #cba2af; */
   border: 1px solid rgba(203, 162, 175, 1);
   border-radius: 20px;
-  padding: 20px;
+  padding: 18px;
   text-align: center;
   max-width: 480px;
   width: 90%;
@@ -22,7 +22,7 @@
 .rsvp-button-group {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* .rsvp-btn {
