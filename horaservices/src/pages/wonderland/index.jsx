@@ -61,6 +61,8 @@ import {
   onSnapshot,
   query,
   orderBy,
+  updateDoc,
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
@@ -70,6 +72,9 @@ const VAPID_KEY =
 
 
 const InvitationCard = () => {
+  const hasSeenMessages = useRef(true);
+const prevMessageLength = useRef(0);
+
   const rsvpRef = useRef(null);
   const router = useRouter();
   const { page, id : queryId } = router.query;
@@ -310,6 +315,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
    const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const chatOpenRef = useRef(false);
+  const [unreadCount, setUnreadCount] = useState(0);
     const [selectedMessages, setSelectedMessages] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [userIdd, setUserIdd] = useState(null);
@@ -483,6 +490,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     setNoteTitle("");
     setNoteBy("");
     setShowPopup(false);
+      setErrorMsg("");
   };
 
   const handleClose = () => {
@@ -892,7 +900,7 @@ const handleDeleteImage = async (imageId, imageType) => {
 
   const handleDownload = async () => {
     if (noteTitle.trim() === "" || noteBy.trim() === "") {
-      setErrorMsg("Please fill all required fields.");
+ setErrorMsg("Please fill out both fields before saving.");
       return;
     }
     setErrorMsg("");
@@ -976,20 +984,16 @@ const handleDeleteImage = async (imageId, imageType) => {
   setRole(urlParams.userType);
 
   registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
-  listenToMessages(urlParams.eventId);
+
+    // listenToMessages(urlParams.eventId, urlParams.eventUserId);
 }, [urlParams]);
 
+useEffect(() => {
+  if (eventId && userIdd) {
+    listenToMessages(eventId, userIdd);
+  }
+}, [eventId, userIdd]);
 
-
-
-  const handleDeleteMessage = async (msgId) => {
-    try {
-      // Firebase document delete for message with id = msgId
-      await deleteDoc(doc(db, "groups", eventId, "messages", msgId));
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
-  };
 
 
   const hasSetUpMessageListener = useRef(false);
@@ -1034,7 +1038,7 @@ const handleDeleteImage = async (imageId, imageType) => {
   }, [userIdd]);
 
 
-  //  Register user in Firebase
+
   const registerUser = async (eventId, userId, role) => {
     const groupRef = doc(db, "groups", eventId);
     const groupSnap = await getDoc(groupRef);
@@ -1047,32 +1051,66 @@ const handleDeleteImage = async (imageId, imageType) => {
     const memberSnap = await getDoc(memberRef);
 
     if (!memberSnap.exists()) {
-      await setDoc(memberRef, {
-        role,
-        joinedAt: new Date(),
-      });
+   await setDoc(memberRef, {
+  role,
+  joinedAt: new Date(),
+  lastSeenAt: new Date(), // ✅ set initial lastSeen
+});
     }
   };
 
-  // Listen for new messages
-  const listenToMessages = (eventId) => {
-    const messagesRef = collection(db, "groups", eventId, "messages");
-    const q = query(messagesRef, orderBy("sentAt", "asc"));
+
+const listenToMessages = (eventId, userId) => {
+  const messagesRef = collection(db, "groups", eventId, "messages");
+  const q = query(messagesRef, orderBy("sentAt", "asc"));
+
+  const userRef = doc(db, "groups", eventId, "members", userId);
+
+  getDoc(userRef).then((memberSnap) => {
+    const lastSeenAt = memberSnap.exists() && memberSnap.data().lastSeenAt
+      ? memberSnap.data().lastSeenAt.toDate()
+      : null;
+console.log("lastSeenAt",lastSeenAt);
 
     onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
+      const msgs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      // Show red dot if new message and chat closed
-      if (msgs.length > messages.length && !chatOpen) {
-        setHasNewMessage(true);
+    const unreadMessages = msgs.filter(msg => {
+  if (!msg.sentAt || !msg.senderId) return false;
+
+  const msgDate = msg.sentAt.toDate?.() || msg.sentAt;
+console.log("msgDate",msgDate);
+  return (
+    lastSeenAt &&
+    msgDate > lastSeenAt &&
+msg.senderId !== userId // ✅ Use function argument, not outer scope
+
+  );
+  
+});
+
+
+   console.log("unreadMessages",unreadMessages );
+      if (chatOpenRef.current) {
+        setUnreadCount(0);
+      } else {
+        setUnreadCount(unreadMessages.length);
       }
 
       setMessages(msgs);
     });
-  };
+  });
+};
+
+
+
+
+
+
+
 
 // ✅ Send message with safe guards
 const sendMessage = async () => {
@@ -1245,41 +1283,60 @@ const sendMessage = async () => {
         />
       )}
 
-      {/* Chat Icon */}
-      <div
-        className="invite-image-wrapper"
-        onClick={() => {
-          setChatOpen(true);
-          setHasNewMessage(false);
-        }}
-        style={{
-          position: "absolute",
-          cursor: "pointer",
-          zIndex: 999,
-        }}
-      >
-        <Image
-          src={chatIcon}
-          alt="chat"
-          className="invite-image"
-          width={40}
-          height={40}
-        />
 
-        {hasNewMessage && (
-          <span
-            style={{
-              position: "absolute",
-              top: "4px",
-              right: "4px",
-              width: "10px",
-              height: "10px",
-              backgroundColor: "red",
-              borderRadius: "50%",
-            }}
-          />
-        )}
-      </div>
+<div
+  className="invite-image-wrapper"
+ onClick={async () => {
+    setChatOpen(true);
+    chatOpenRef.current = true;
+    setUnreadCount(0);
+
+    // ✅ Update last seen
+    const userRef = doc(db, "groups", eventId, "members", userIdd);
+    await updateDoc(userRef, {
+      lastSeenAt: serverTimestamp(),
+    });
+  }}
+  style={{
+    position: "absolute",
+    cursor: "pointer",
+    zIndex: 999,
+  }}
+>
+  <Image
+    src={chatIcon}
+    alt="chat"
+    className="invite-image"
+    width={40}
+    height={40}
+  />
+
+  {/* ✅ Show badge only if chat is closed and there are unread messages */}
+  {!chatOpen && unreadCount > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        minWidth: "18px",
+        height: "18px",
+        backgroundColor: "red",
+        color: "white",
+        fontSize: "12px",
+        fontWeight: "bold",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2px",
+      }}
+    >
+      {unreadCount}
+    </span>
+  )}
+</div>
+
+
     </div>
   </div>
 ) : (
@@ -1304,41 +1361,60 @@ const sendMessage = async () => {
         hasNewMessage={hasNewMessage}
       />
 
-      {/* Chat Icon */}
-      <div
-        className="invite-image-wrapper"
-        onClick={() => {
-          setChatOpen(true);
-          setHasNewMessage(false);
-        }}
-        style={{
-          position: "absolute",
-          cursor: "pointer",
-          zIndex: 999,
-        }}
-      >
-        <Image
-          src={chatIcon}
-          alt="chat"
-          className="invite-image"
-          width={40}
-          height={40}
-        />
+     
+     {/* Chat Icon */}
+<div
+  className="invite-image-wrapper"
+ onClick={async () => {
+    setChatOpen(true);
+    chatOpenRef.current = true;
+    setUnreadCount(0);
 
-        {hasNewMessage && (
-          <span
-            style={{
-              position: "absolute",
-              top: "4px",
-              right: "4px",
-              width: "10px",
-              height: "10px",
-              backgroundColor: "red",
-              borderRadius: "50%",
-            }}
-          />
-        )}
-      </div>
+    // ✅ Update last seen
+    const userRef = doc(db, "groups", eventId, "members", userIdd);
+    await updateDoc(userRef, {
+      lastSeenAt: serverTimestamp(),
+    });
+  }}
+  style={{
+    position: "absolute",
+    cursor: "pointer",
+    zIndex: 999,
+  }}
+>
+  <Image
+    src={chatIcon}
+    alt="chat"
+    className="invite-image"
+    width={40}
+    height={40}
+  />
+
+  {!chatOpen && unreadCount > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        minWidth: "18px",
+        height: "18px",
+        backgroundColor: "red",
+        color: "white",
+        fontSize: "12px",
+        fontWeight: "bold",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2px",
+      }}
+    >
+      {unreadCount}
+    </span>
+  )}
+</div>
+
+
     </div>
   </div>
 )}
@@ -1907,53 +1983,27 @@ const sendMessage = async () => {
     
 
         {/* Chat UI */}
-        {chatOpen && (
-          <div className="chat-overlay">
-            <div className="chat-header">
-              {selectedMessages.length > 0 ? (
-                <div className="chat-actions">
-                  <button
-                    className="delete-icon"
-                    onClick={() => {
-                      selectedMessages.forEach(id => handleDeleteMessage(id));
-                      setSelectedMessages([]);
-                    }}
-                  >
-                    🗑️
-                  </button>
-                  <span>{selectedMessages.length} selected</span>
-                </div>
-              ) : (
-                <div className="chat-user-info">
+       {chatOpen && (
+  <div className="chat-overlay">
+    <div className="chat-header">
+      <div className="chat-user-info">
+        <h3>Group Chat</h3>
+        <span>{orderDetails?.Name}</span>
+        <span>{orderDetails?.eventType} party</span>
+      </div>
+      <button className="chat-close-btn"  onClick={() => {
+    setChatOpen(false);
+    chatOpenRef.current = false;
+  }}>×</button>
+    </div>
 
-                  <h3>Group Chat</h3>
-                  <span>{orderDetails?.Name}</span>
-                  <span> {orderDetails?.eventType} party</span>
-                </div>
-              )}
-
-              <button className="chat-close-btn" onClick={() => setChatOpen(false)}>×</button>
-            </div>
-
-
-           <div className="chat-messages">
+    <div className="chat-messages">
       {messages.map((msg) => {
         const isSender = msg.senderPhoneNumber === userPhoneNumber;
         return (
           <div
             key={msg.id}
-            className={`chat-message ${isSender ? "sender" : "receiver"} ${
-              selectedMessages.includes(msg.id) ? "selected" : ""
-            }`}
-            onClick={() => {
-              if (selectedMessages.includes(msg.id)) {
-                setSelectedMessages(selectedMessages.filter(id => id !== msg.id));
-              } else {
-                if (msg.senderPhoneNumber === userPhoneNumber) {
-                  setSelectedMessages([...selectedMessages, msg.id]);
-                }
-              }
-            }}
+            className={`chat-message ${isSender ? "sender" : "receiver"}`}
           >
             <div className="chat-bubble">
               <div className="chat-sender">+91 {msg.senderPhoneNumber}</div>
@@ -1984,14 +2034,14 @@ const sendMessage = async () => {
       </button>
 
       <textarea
-     value={text}    
-        ref={textareaRef}  
+        value={text}
+        ref={textareaRef}
         className="chat-input"
         rows={1}
         onChange={(e) => {
           setText(e.target.value);
           if (e.target.value.length > 0) {
-            setShowEmojiPicker(false); 
+            setShowEmojiPicker(false);
           }
         }}
         onInput={(e) => {
@@ -2029,8 +2079,9 @@ const sendMessage = async () => {
         />
       </div>
     )}
-          </div>
-        )}
+  </div>
+)}
+
       </>
     </>
   );

@@ -134,7 +134,7 @@ input {
 }
 
 /* Emoji Picker container styling */
-.emoji-container {
+.emoji-container-thankyou {
   position: absolute;
   z-index: 999;
   bottom: 100%;
@@ -148,19 +148,20 @@ input {
 }
 
 /* Emoji button inside textarea wrapper */
-.emoji-btn {
+.emoji-button {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 0px;
+  right: 0px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 25px;
   cursor: pointer;
+  color: black;
 }
 
 /* Responsive Fix */
 @media (max-width: 480px) {
-  .emoji-container {
+  .emoji-container-thankyou {
     left: 0;
     right: 0;
     max-width: 95vw;

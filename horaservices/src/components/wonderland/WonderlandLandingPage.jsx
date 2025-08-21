@@ -351,6 +351,7 @@ import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanne
 import howitworks from "@/assets/howitworks.png"
 import hostandGuest from "@/assets/hostandGuest.png"
 import yourcelebration from "@/assets/yourcelebration.png"
+
 const WonderlandLandingPage = ({ userId }) => {
   const token = localStorage.getItem("token");
   const router = useRouter();
@@ -646,32 +647,33 @@ return (
 
         <div className="event-list-wrapper">
           <h3 className="section-heading">Past Events</h3>
-          <ul className="event-list">
-            {allEventsData?.map((event) => (
-              <li key={event._id} className="event-item">
-                <div className="event-info">
-                  <span className="event-icon">
-                    {getEventIcon(event.eventType)}
-                  </span>
-                  <div className="event-details">
-                    <strong>{event.eventType}</strong>
-                    <div className="event-meta">
-                      <span className="event-role">
-                        {event.eventRole === "Host" ? "Host" : "Guest"}
-                      </span>{" "}
-                      - {formatDate(event.eventDate)}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  className="view-btn"
-                  onClick={() => handleClickViewEvent(event)}
-                >
-                  View
-                </button>
-              </li>
-            ))}
-          </ul>
+        <ul className="event-list">
+  {allEventsData?.map((event) => (
+    <li key={event._id} className="event-item">
+      <div className="event-info">
+        <span className="event-icon">
+          {getEventIcon(event.eventType)}
+        </span>
+        <div className="event-details">
+          <strong>{event.eventType}</strong>
+          <div className="event-meta">
+            <span className="event-role">
+              {event.eventRole?.charAt(0).toUpperCase() + event.eventRole?.slice(1)}
+            </span>{" "}
+            - {formatDate(event.eventDate)}
+          </div>
+        </div>
+      </div>
+      <button
+        className="view-btn"
+        onClick={() => handleClickViewEvent(event)}
+      >
+        View
+      </button>
+    </li>
+  ))}
+</ul>
+
         </div>
    <div className="invite-banner">
           <Image src={wonderlandeventplanningBanner} alt="Invite Banner" className="banner-image" />

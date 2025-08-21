@@ -124,17 +124,7 @@ const noteTextAreaRef = useRef(null);
     <button
       type="button"
       onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-      className="emoji-btn"
-      style={{
-        position: "absolute",
-        right: "10px",
-        bottom: "10px",
-        background: "none",
-        border: "none",
-        fontSize: "25px",
-        cursor: "pointer",
-        color:"black"
-      }}
+      className="emoji-button"
     >
       ☺
     </button>
@@ -151,7 +141,7 @@ const noteTextAreaRef = useRef(null);
 </div>
  {showEmojiPicker && (
   <div
-    className="emoji-container"
+    className="emoji-container-thankyou"
     style={{
       position: window.innerWidth <= 480 ? "static" : "absolute",
       zIndex: 10,
@@ -200,16 +190,18 @@ const noteTextAreaRef = useRef(null);
         />
       </div>
 
-      {errorMsg && (
-        <p className="error-msg">
-          {errorMsg}
-        </p>
-      )}
+   {errorMsg && (
+  <p className="error-msg">
+    {errorMsg}
+  </p>
+)}
 
-      <div className="popup-buttons">
-        <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
-        <button className="save-btn" onClick={handleDownload}>SAVE</button>
-      </div>
+<div className="popup-buttons">
+  <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
+  <button className="save-btn" onClick={handleDownload}>SAVE</button>
+</div>
+
+
 
 
       {/* Hidden Canvas */}
