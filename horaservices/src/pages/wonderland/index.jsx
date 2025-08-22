@@ -1008,37 +1008,38 @@ useEffect(() => {
   }, [messages]);
 
 
-  useEffect(() => {
-    if (!userIdd || typeof window === "undefined") return;
+useEffect(() => {
+  if (!userIdd || typeof window === "undefined") return;
 
-    const requestPermissionAndSaveToken = async () => {
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
+  const requestPermissionAndSaveToken = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return;
 
-        const messagingInstance = getMessaging();
-        const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
-        if (token) {
-          await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
-        }
-
-        // ✅ Add listener only once
-        if (!hasSetUpMessageListener.current) {
-          onMessage(messagingInstance, (payload) => {
-            if (!chatOpen) {
-              alert(`🔔 ${payload.notification?.title}\n${payload.notification?.body}`);
-              setHasNewMessage(true);
-            }
-          });
-          hasSetUpMessageListener.current = true;
-        }
-      } catch (err) {
-        console.error("FCM Error:", err);
+      const messagingInstance = getMessaging();
+      const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+      if (token) {
+        await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
       }
-    };
 
-    requestPermissionAndSaveToken();
-  }, [userIdd]);
+      // ✅ Add listener only once
+      if (!hasSetUpMessageListener.current) {
+        onMessage(messagingInstance, (payload) => {
+          if (!chatOpen) {
+            alert(`🔔 ${payload.notification?.title}\n${payload.notification?.body}`);
+            setHasNewMessage(true);
+          }
+        });
+        hasSetUpMessageListener.current = true;
+      }
+    } catch (err) {
+      console.error("FCM Error:", err);
+    }
+  };
+
+  requestPermissionAndSaveToken();
+}, [userIdd]);
+
 
 
 
@@ -1066,47 +1067,51 @@ useEffect(() => {
 const listenToMessages = (eventId, userId) => {
   const messagesRef = collection(db, "groups", eventId, "messages");
   const q = query(messagesRef, orderBy("sentAt", "asc"));
-
   const userRef = doc(db, "groups", eventId, "members", userId);
 
-  getDoc(userRef).then((memberSnap) => {
+  // 🔴 Listen to member's lastSeenAt live
+  onSnapshot(userRef, (memberSnap) => {
     const lastSeenAt = memberSnap.exists() && memberSnap.data().lastSeenAt
       ? memberSnap.data().lastSeenAt.toDate()
       : null;
-console.log("lastSeenAt",lastSeenAt);
 
+    console.log("🔥 lastSeenAt:", lastSeenAt);
+
+    // 🔴 Listen to messages
     onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-    const unreadMessages = msgs.filter(msg => {
-  if (!msg.sentAt || !msg.senderId) return false;
+      const unreadMessages = msgs.filter(msg => {
+        if (!msg.sentAt || !msg.senderId) return false;
 
-  const msgDate = msg.sentAt.toDate?.() || msg.sentAt;
-console.log("msgDate",msgDate);
-  return (
-    lastSeenAt &&
-    msgDate > lastSeenAt &&
-msg.senderId !== userId // ✅ Use function argument, not outer scope
+        const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+        console.log("➡️ Comparing msgDate:", msgDate, "with lastSeenAt:", lastSeenAt);
+console.log("msg.senderId:", msg.senderId, "userId:", userId);
 
-  );
-  
-});
+        return (
+          lastSeenAt &&
+          msgDate > lastSeenAt 
+          
+        );
+        
+      });
 
-
-   console.log("unreadMessages",unreadMessages );
       if (chatOpenRef.current) {
         setUnreadCount(0);
       } else {
         setUnreadCount(unreadMessages.length);
       }
 
+      console.log("✅ unreadMessages:", unreadMessages);
+
       setMessages(msgs);
     });
   });
 };
+
 
 
 
@@ -1128,6 +1133,7 @@ const sendMessage = async () => {
     senderId: userIdd,
     senderPhoneNumber: localStorage.getItem("mobileNumber"),
     sentAt: new Date(),
+      sentAt: serverTimestamp(), 
   });
 
   setText("");
