@@ -1007,7 +1007,6 @@ useEffect(() => {
     }
   }, [messages]);
 
-
 useEffect(() => {
   if (!userIdd || typeof window === "undefined") return;
 
@@ -1018,20 +1017,34 @@ useEffect(() => {
 
       const messagingInstance = getMessaging();
       const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+
+      console.log("FCM Token:", token);
+
       if (token) {
         await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
       }
 
-      // ✅ Add listener only once
       if (!hasSetUpMessageListener.current) {
         onMessage(messagingInstance, (payload) => {
-          if (!chatOpen) {
-            alert(`🔔 ${payload.notification?.title}\n${payload.notification?.body}`);
-            setHasNewMessage(true);
-          }
+          console.log("Foreground message received:", payload);
+
+          // 🔹 Frontend-only notification
+          new Notification(payload.notification?.title || "New Message", {
+            body: payload.notification?.body || "You got a message!",
+            icon: "/new_logo_light.png",
+          });
         });
         hasSetUpMessageListener.current = true;
       }
+
+      // 🔹 Test manually in frontend
+      setTimeout(() => {
+        new Notification("Test Message", {
+          body: "This is a frontend-only test",
+          icon: "/new_logo_light.png",
+        });
+      }, 3000);
+
     } catch (err) {
       console.error("FCM Error:", err);
     }
@@ -1039,6 +1052,7 @@ useEffect(() => {
 
   requestPermissionAndSaveToken();
 }, [userIdd]);
+
 
 
 
@@ -1063,54 +1077,109 @@ useEffect(() => {
     }
   };
 
+const lastNotificationRef = useRef(null); 
+const lastSeenAtRef = useRef(null); // local tracker
 
 const listenToMessages = (eventId, userId) => {
   const messagesRef = collection(db, "groups", eventId, "messages");
   const q = query(messagesRef, orderBy("sentAt", "asc"));
   const userRef = doc(db, "groups", eventId, "members", userId);
 
-  // 🔴 Listen to member's lastSeenAt live
+  // Listen to member's lastSeenAt
   onSnapshot(userRef, (memberSnap) => {
-    const lastSeenAt = memberSnap.exists() && memberSnap.data().lastSeenAt
-      ? memberSnap.data().lastSeenAt.toDate()
-      : null;
+    const memberData = memberSnap.exists() ? memberSnap.data() : {};
+    lastSeenAtRef.current = memberData.lastSeenAt ? memberData.lastSeenAt.toDate() : null;
+  });
 
-    console.log("🔥 lastSeenAt:", lastSeenAt);
+  // Listen to messages
+  onSnapshot(q, (snapshot) => {
+    const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    // 🔴 Listen to messages
-    onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      const unreadMessages = msgs.filter(msg => {
-        if (!msg.sentAt || !msg.senderId) return false;
-
-        const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-        console.log("➡️ Comparing msgDate:", msgDate, "with lastSeenAt:", lastSeenAt);
-console.log("msg.senderId:", msg.senderId, "userId:", userId);
-
-        return (
-          lastSeenAt &&
-          msgDate > lastSeenAt 
-          
-        );
-        
-      });
-
-      if (chatOpenRef.current) {
-        setUnreadCount(0);
-      } else {
-        setUnreadCount(unreadMessages.length);
-      }
-
-      console.log("✅ unreadMessages:", unreadMessages);
-
-      setMessages(msgs);
+    const unreadMessages = msgs.filter(msg => {
+      if (!msg.sentAt || !msg.senderId) return false;
+      const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+      return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
     });
+
+    setMessages(msgs);
+
+    if (!chatOpenRef.current && unreadMessages.length > 0) {
+      const lastMsg = unreadMessages[unreadMessages.length - 1];
+
+      // 🔹 Only notify once per message
+      if (lastNotificationRef.current !== lastMsg.id) {
+        if (Notification.permission === "granted") {
+          new Notification(`New message from ${lastMsg.senderId}`, {
+            body: lastMsg.text,
+            icon: "/new_logo_light.png",
+          });
+        }
+
+        lastNotificationRef.current = lastMsg.id;
+
+        // 🔹 Mark seen AFTER notification
+        setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
+        lastSeenAtRef.current = new Date(); // update local ref
+      }
+    }
+
+    setUnreadCount(chatOpenRef.current ? 0 : unreadMessages.length);
   });
 };
+
+
+
+
+
+
+// const listenToMessages = (eventId, userId) => {
+//   const messagesRef = collection(db, "groups", eventId, "messages");
+//   const q = query(messagesRef, orderBy("sentAt", "asc"));
+//   const userRef = doc(db, "groups", eventId, "members", userId);
+
+//   // Listen to member's lastSeenAt live
+//   onSnapshot(userRef, (memberSnap) => {
+//     const lastSeenAt = memberSnap.exists() && memberSnap.data().lastSeenAt
+//       ? memberSnap.data().lastSeenAt.toDate()
+//       : null;
+
+//     onSnapshot(q, (snapshot) => {
+//       const msgs = snapshot.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data(),
+//       }));
+
+//       const unreadMessages = msgs.filter(msg => {
+//         if (!msg.sentAt || !msg.senderId) return false;
+
+//         const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+
+//         return lastSeenAt ? msgDate > lastSeenAt : true; // ✅ check against lastSeenAt
+//       });
+
+//       if (!chatOpenRef.current && unreadMessages.length > 0) {
+//         unreadMessages.forEach(msg => {
+//           // 🔹 Foreground notification
+//           if (Notification.permission === "granted") {
+//             new Notification(`New message from ${msg.senderId}`, {
+//               body: msg.text,
+//               icon: "/new_logo_light.png",
+//             });
+//           }
+//         });
+//       }
+
+//       if (chatOpenRef.current) {
+//         setUnreadCount(0);
+//       } else {
+//         setUnreadCount(unreadMessages.length);
+//       }
+
+//       setMessages(msgs);
+//     });
+//   });
+// };
+
 
 
 
