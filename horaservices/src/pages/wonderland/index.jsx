@@ -320,7 +320,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [unreadCount, setUnreadCount] = useState(0);
     const [selectedMessages, setSelectedMessages] = useState([]);
   const [eventId, setEventId] = useState(null);
-  const [userIdd, setUserIdd] = useState(null);
   const [role, setRole] = useState(null);
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const textareaRef = useRef(null);
@@ -983,19 +982,17 @@ const handleDeleteImage = async (imageId, imageType) => {
     return;
 
   setEventId(urlParams.eventId);
-  setUserIdd(urlParams.eventUserId);
   setRole(urlParams.userType);
 
   registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
 
-    // listenToMessages(urlParams.eventId, urlParams.eventUserId);
 }, [urlParams]);
 
 useEffect(() => {
-  if (eventId && userIdd) {
-    listenToMessages(eventId, userIdd);
+  if (eventId && userID) {
+    listenToMessages(eventId, userID);
   }
-}, [eventId, userIdd]);
+}, [eventId, userID]);
 
 
 
@@ -1008,7 +1005,7 @@ useEffect(() => {
   }, [messages]);
 
 useEffect(() => {
-  if (!userIdd || typeof window === "undefined") return;
+  if (!userID || typeof window === "undefined") return;
 
   const requestPermissionAndSaveToken = async () => {
     try {
@@ -1021,7 +1018,7 @@ useEffect(() => {
       console.log("FCM Token:", token);
 
       if (token) {
-        await setDoc(doc(db, "fcmTokens", userIdd), { token }, { merge: true });
+        await setDoc(doc(db, "fcmTokens", userID), { token }, { merge: true });
       }
 
       if (!hasSetUpMessageListener.current) {
@@ -1051,155 +1048,120 @@ useEffect(() => {
   };
 
   requestPermissionAndSaveToken();
-}, [userIdd]);
+}, [userID]);
 
 
 
 
 
-  const registerUser = async (eventId, userId, role) => {
-    const groupRef = doc(db, "groups", eventId);
-    const groupSnap = await getDoc(groupRef);
+const registerUser = async (eventId, userId, role) => {
+  const groupRef = doc(db, "groups", eventId);
+  const groupSnap = await getDoc(groupRef);
 
-    if (!groupSnap.exists()) {
-      await setDoc(groupRef, { createdAt: new Date() });
-    }
+  if (!groupSnap.exists()) {
+    await setDoc(groupRef, { createdAt: new Date() });
+  }
 
-    const memberRef = doc(db, "groups", eventId, "members", userId);
-    const memberSnap = await getDoc(memberRef);
+  const memberRef = doc(db, "groups", eventId, "members", userId);
+  const memberSnap = await getDoc(memberRef);
 
-    if (!memberSnap.exists()) {
-   await setDoc(memberRef, {
-  role,
-  joinedAt: new Date(),
-  lastSeenAt: new Date(), // ✅ set initial lastSeen
-});
-    }
-  };
+  if (!memberSnap.exists()) {
+    await setDoc(memberRef, {
+      role,
+      joinedAt: new Date(),
+      lastSeenAt: new Date(),
+    });
+  }
+};
 
-const lastNotificationRef = useRef(null); 
-const lastSeenAtRef = useRef(null); // local tracker
+useEffect(() => {
+  chatOpenRef.current = chatOpen;
+  if (chatOpen) setUnreadCount(0);
+}, [chatOpen]);
+
+useEffect(() => {
+  if (eventId && userId) {
+    const unsubscribe = listenToMessages(eventId, userId);
+    return () => unsubscribe();
+  }
+}, [eventId, userId]);
+
+
+const lastSeenAtRef = useRef(null);
+const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
 
 const listenToMessages = (eventId, userId) => {
   const messagesRef = collection(db, "groups", eventId, "messages");
   const q = query(messagesRef, orderBy("sentAt", "asc"));
   const userRef = doc(db, "groups", eventId, "members", userId);
 
-  // Listen to member's lastSeenAt
-  onSnapshot(userRef, (memberSnap) => {
-    const memberData = memberSnap.exists() ? memberSnap.data() : {};
-    lastSeenAtRef.current = memberData.lastSeenAt ? memberData.lastSeenAt.toDate() : null;
+  const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
+    lastSeenAtRef.current = memberSnap.exists() && memberSnap.data().lastSeenAt
+      ? memberSnap.data().lastSeenAt.toDate()
+      : null;
   });
 
-  // Listen to messages
-  onSnapshot(q, (snapshot) => {
-    const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const unsubscribeMessages = onSnapshot(q, (snapshot) => {
+    const msgs = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     const unreadMessages = msgs.filter(msg => {
       if (!msg.sentAt || !msg.senderId) return false;
+      if (msg.senderId === userId) return false;
+
       const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
       return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
     });
 
-    setMessages(msgs);
-
     if (!chatOpenRef.current && unreadMessages.length > 0) {
-      const lastMsg = unreadMessages[unreadMessages.length - 1];
+      unreadMessages.forEach(msg => {
+        const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
 
-      // 🔹 Only notify once per message
-      if (lastNotificationRef.current !== lastMsg.id) {
-        if (Notification.permission === "granted") {
-          new Notification(`New message from ${lastMsg.senderId}`, {
-            body: lastMsg.text,
+        if (
+          Notification.permission === "granted" &&
+          !alreadyNotified
+        ) {
+          new Notification(`New message from ${msg.senderId}`, {
+            body: msg.text,
             icon: "/new_logo_light.png",
           });
+
+          // ✅ Mark message as notified
+          notifiedMessageIdsRef.current.add(msg.id);
         }
-
-        lastNotificationRef.current = lastMsg.id;
-
-        // 🔹 Mark seen AFTER notification
-        setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
-        lastSeenAtRef.current = new Date(); // update local ref
-      }
+      });
     }
 
-    setUnreadCount(chatOpenRef.current ? 0 : unreadMessages.length);
+    if (chatOpenRef.current) {
+      setUnreadCount(0);
+    } else {
+      setUnreadCount(unreadMessages.length);
+    }
+
+    setMessages(msgs);
   });
+
+  return () => {
+    unsubscribeUser();
+    unsubscribeMessages();
+  };
 };
 
 
 
 
-
-
-// const listenToMessages = (eventId, userId) => {
-//   const messagesRef = collection(db, "groups", eventId, "messages");
-//   const q = query(messagesRef, orderBy("sentAt", "asc"));
-//   const userRef = doc(db, "groups", eventId, "members", userId);
-
-//   // Listen to member's lastSeenAt live
-//   onSnapshot(userRef, (memberSnap) => {
-//     const lastSeenAt = memberSnap.exists() && memberSnap.data().lastSeenAt
-//       ? memberSnap.data().lastSeenAt.toDate()
-//       : null;
-
-//     onSnapshot(q, (snapshot) => {
-//       const msgs = snapshot.docs.map(doc => ({
-//         id: doc.id,
-//         ...doc.data(),
-//       }));
-
-//       const unreadMessages = msgs.filter(msg => {
-//         if (!msg.sentAt || !msg.senderId) return false;
-
-//         const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-
-//         return lastSeenAt ? msgDate > lastSeenAt : true; // ✅ check against lastSeenAt
-//       });
-
-//       if (!chatOpenRef.current && unreadMessages.length > 0) {
-//         unreadMessages.forEach(msg => {
-//           // 🔹 Foreground notification
-//           if (Notification.permission === "granted") {
-//             new Notification(`New message from ${msg.senderId}`, {
-//               body: msg.text,
-//               icon: "/new_logo_light.png",
-//             });
-//           }
-//         });
-//       }
-
-//       if (chatOpenRef.current) {
-//         setUnreadCount(0);
-//       } else {
-//         setUnreadCount(unreadMessages.length);
-//       }
-
-//       setMessages(msgs);
-//     });
-//   });
-// };
-
-
-
-
-
-
-
-
-
-
-// ✅ Send message with safe guards
 const sendMessage = async () => {
   if (!text.trim()) return;
-  if (!eventId || !userIdd) {
+  if (!eventId || !userID) {
     console.warn("Missing eventId or userId — cannot send message.");
     return;
   }
 
   await addDoc(collection(db, "groups", eventId, "messages"), {
     text,
-    senderId: userIdd,
+    senderId: userID,
     senderPhoneNumber: localStorage.getItem("mobileNumber"),
     sentAt: new Date(),
       sentAt: serverTimestamp(), 
@@ -1370,7 +1332,7 @@ const sendMessage = async () => {
     setUnreadCount(0);
 
     // ✅ Update last seen
-    const userRef = doc(db, "groups", eventId, "members", userIdd);
+    const userRef = doc(db, "groups", eventId, "members", userID);
     await updateDoc(userRef, {
       lastSeenAt: serverTimestamp(),
     });
@@ -1390,8 +1352,10 @@ const sendMessage = async () => {
   />
 
   {/* ✅ Show badge only if chat is closed and there are unread messages */}
+
   {!chatOpen && unreadCount > 0 && (
     <span
+      aria-label={`${unreadCount} unread messages`}
       style={{
         position: "absolute",
         top: "-4px",
@@ -1413,6 +1377,7 @@ const sendMessage = async () => {
     </span>
   )}
 </div>
+
 
 
     </div>
@@ -1449,7 +1414,7 @@ const sendMessage = async () => {
     setUnreadCount(0);
 
     // ✅ Update last seen
-    const userRef = doc(db, "groups", eventId, "members", userIdd);
+    const userRef = doc(db, "groups", eventId, "members", userID);
     await updateDoc(userRef, {
       lastSeenAt: serverTimestamp(),
     });
