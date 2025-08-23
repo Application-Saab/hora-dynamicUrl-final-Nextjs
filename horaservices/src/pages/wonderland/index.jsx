@@ -1249,7 +1249,7 @@ const sendMessage = async () => {
           )}
           {slug.length === 3 && orderDetails && (
             <>
-              {/* {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />} */}
+              {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
 
               {orderDetails ? (
                 <>

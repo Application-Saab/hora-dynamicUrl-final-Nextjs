@@ -9,7 +9,7 @@ const FloatingEditButton = ({ onClick }) => {
       <Image
          src={editIcon}
         alt="Edit"
-        style={{height: '50px', width: '50px', borderRadius: '50%'  }}
+        style={{height: '40px', width: '40px', borderRadius: '50%'  }}
       />  </button>
   );
 };
