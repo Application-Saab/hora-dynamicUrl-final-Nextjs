@@ -107,6 +107,8 @@ const [deleteTarget, setDeleteTarget] = useState(null);
     guestDetails
   );
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
+      const [refetchLoginGuest, setRefectchLoginGuest] = useState(false);
+
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
  const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
@@ -278,7 +280,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
   const [sendCustomerId, setSendCustomerId] = useState("");
   const [sendCustomerPhoneNumber, setSendCustomerPhoneNumber] = useState("");
-
+ 
   const [eventData, setEventData] = useState([]);
   const [loadingThumbnails, setLoadingThumbnails] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -683,7 +685,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw, refetchLuckyDrawHostDelete]);
+  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw, refetchLuckyDrawHostDelete,refetchLoginGuest]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -903,8 +905,8 @@ const handleDeleteImage = async (imageId, imageType) => {
 
 
   const handleDownload = async () => {
-    if (noteTitle.trim() === "" || noteBy.trim() === "") {
- setErrorMsg("Please fill out both fields before saving.");
+  if (noteTitle.trim() === "") {
+ setErrorMsg("Please write a thank you message.");
       return;
     }
     setErrorMsg("");
@@ -1186,6 +1188,7 @@ const sendMessage = async () => {
   });
 
   setText("");
+  setShowEmojiPicker(false)
 };
   useEffect(() => {
     if (userType !== "host" && !hasSubmitted && highlightRSVPButtons) {
@@ -1206,7 +1209,8 @@ const sendMessage = async () => {
     <>
       {!isLoggedIn ? (
         <div className="no-orders">
-          <WonderlandLandingPage isLoggedIn={isLoggedIn} />
+                   <WonderlandLandingPage setRefectchLoginGuest={setRefectchLoginGuest} isLoggedIn={isLoggedIn} />
+
         </div>
       ) : (
         <>
@@ -1216,6 +1220,8 @@ const sendMessage = async () => {
                 isLoggedIn={isLoggedIn}
                 userId={userID}
                 slug={slug}
+                setRefectchLoginGuest={setRefectchLoginGuest}
+
               />
             </div>
           )}
@@ -1225,6 +1231,8 @@ const sendMessage = async () => {
                 isLoggedIn={isLoggedIn}
                 userId={userID}
                 slug={slug}
+                setRefectchLoginGuest={setRefectchLoginGuest}
+
               />
             </div>
           )}
@@ -1234,6 +1242,8 @@ const sendMessage = async () => {
                 isLoggedIn={isLoggedIn}
                 userId={userID}
                 slug={slug}
+                setRefectchLoginGuest={setRefectchLoginGuest}
+
               />
             </div>
           )}
@@ -1599,12 +1609,12 @@ const sendMessage = async () => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                         <div className="invite-buttons">
-                          <button className="btn-explore" onClick={handleClick}>
+                          {/* <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg-explore">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button>
+                          </button> */}
 
                           <button
                             className="button-share"

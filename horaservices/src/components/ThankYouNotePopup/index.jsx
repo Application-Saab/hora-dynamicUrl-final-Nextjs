@@ -77,9 +77,11 @@ const noteTextAreaRef = useRef(null);
           setNoteTitle(truncated);
         }
 
-        if (input?.trim() !== "" && noteBy?.trim() !== "") {
-          setErrorMsg("");
-        }
+        if (input?.trim() === "") {
+  setErrorMsg("Please write a thank you message.");
+} else {
+  setErrorMsg("");
+}
       }}
     />
 
@@ -147,9 +149,7 @@ const noteTextAreaRef = useRef(null);
           required
           onChange={(e) => {
             setNoteBy(e.target.value);
-            if (noteTitle?.trim() !== "" && e.target.value.trim() !== "") {
-              setErrorMsg("");
-            }
+           
           }}
         />
       </div>
@@ -165,10 +165,6 @@ const noteTextAreaRef = useRef(null);
   <button className="save-btn" onClick={handleDownload}>SAVE</button>
 </div>
 
-
-
-
-      {/* Hidden Canvas */}
       <div
         ref={noteRef}
         style={{
