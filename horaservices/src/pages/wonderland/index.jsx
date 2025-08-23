@@ -28,6 +28,8 @@ import OtpLoginPopup from "@/components/OtpLoginPopup";
 import html2canvas from "html2canvas";
 import LuckyDrawForm from "../lucky-draw/index";
 import LuckDrawBanner from "@/assets/LuckdrawBanner.jpg";
+import emojiIcon from "@/assets/Emoji.png";
+import sendIcon from "@/assets/sendicon.png";
 import photo1 from "@/assets/collage/photo1.png";
 import photo2 from "@/assets/collage/photo2.jpeg";
 import photo3 from "@/assets/collage/photo3.png";
@@ -1034,7 +1036,6 @@ useEffect(() => {
         hasSetUpMessageListener.current = true;
       }
 
-      // 🔹 Test manually in frontend
       setTimeout(() => {
         new Notification("Test Message", {
           body: payload.notification?.body || "You got a message!",
@@ -2143,8 +2144,12 @@ const sendMessage = async () => {
             className={`chat-message ${isSender ? "sender" : "receiver"}`}
           >
             <div className="chat-bubble">
-              
-              <div className="chat-sender"> {senderName}  +91 {msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}</div>
+              <div className="chat-sender">
+  {senderName
+    ? senderName
+    : `+91 ${msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}`}
+</div>
+              {/* <div className="chat-sender"> {senderName}  +91 {msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}</div> */}
               <div className="chat-text">{msg.text}</div>
               <div className="chat-time">
                 {msg.sentAt?.toDate
@@ -2160,7 +2165,7 @@ const sendMessage = async () => {
         );
       })}
     </div>
-    <div className="chat-input-container">
+    {/* <div className="chat-input-container">
       <button
         type="button"
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -2187,7 +2192,37 @@ const sendMessage = async () => {
         placeholder="Type your message..."
       />
       <button onClick={sendMessage} className="chat-send-btn">➤</button>
-    </div>
+    </div> */}
+<div className="chat-input-container">
+  <button
+    type="button"
+    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+    className="emoji-btn"
+  >
+   <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+  </button>
+
+  <textarea
+    value={text}
+    ref={textareaRef}
+    className="chat-input"
+    rows={1}
+    onChange={(e) => {
+      setText(e.target.value);
+      if (e.target.value.length > 0) {
+        setShowEmojiPicker(false);
+      }
+    }}
+    onInput={(e) => {
+      e.target.style.height = "auto";
+      const newHeight = Math.min(e.target.scrollHeight, 120);
+      e.target.style.height = newHeight + "px";
+    }}
+    placeholder="Type message here..."
+  />
+
+  <button onClick={sendMessage} className="chat-send-btn">  <Image src={sendIcon} alt="Send" className="send-icon" /></button>
+</div>
 
     {showEmojiPicker && (
       <div className="emoji-container">
