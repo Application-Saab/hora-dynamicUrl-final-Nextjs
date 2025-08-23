@@ -59,36 +59,7 @@ const FinalInviteDisplay = ({
           <div className="event-address">{orderDetails.Address}</div>
         </div>
 
-        {/* Chat Icon */}
-        {/* <div
-          className="invite-image-wrapper"
-          onClick={() => {
-            openChat();
-            clearNewMessage();
-          }}
-        >
-          <Image
-            src={chatIcon}
-            alt="chat"
-            className="invite-image"
-            width={40}
-            height={40}
-          />
-
-          {hasNewMessage && (
-            <span
-              style={{
-                position: "absolute",
-                top: "4px",
-                right: "4px",
-                width: "10px",
-                height: "10px",
-                backgroundColor: "red",
-                borderRadius: "50%",
-              }}
-            />
-          )}
-        </div> */}
+       
       </div>
     </div>
   );

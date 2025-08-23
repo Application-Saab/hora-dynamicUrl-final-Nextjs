@@ -4,7 +4,7 @@ import StickyImage from "../../assets/sticky5.png"; // adjust path
 import DummySticky from "@/assets/collage/photo2.jpeg";
 import "./Thankyounotepopup.css"
 import EmojiPicker from "emoji-picker-react";
-import { useState, useRef } from "react";
+import { useState ,useRef} from "react";
 
 import Head from "next/head";
 const ThankYouNotePopup = ({
@@ -17,12 +17,12 @@ const ThankYouNotePopup = ({
   handleDownload,
   handleClosePopup,
   noteRef,
-  userName
+ userName
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const noteTextAreaRef = useRef(null);
-  noteBy = userName || "";
+const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+const noteTextAreaRef = useRef(null);
+ noteBy = userName || "";
   return (
 
     <div className="popup-thankyou">
@@ -43,103 +43,102 @@ const ThankYouNotePopup = ({
 
       <h1 className="title">Thank You Note</h1>
       <h3 className="subtitlePopUp">
-        Celebrate the moment with few words of gratitude for { } and crew
+               Celebrate the moment with few words of gratitude for {} and crew
       </h3>
       <Image
         src={DummySticky}
         alt="Sticky Note Sample"
         className="thankyou-image"
       />
-      <div className="form-group">
-        <label className="label">Type Note</label>
-        <div className="textarea-with-emoji">
-          <textarea
-            ref={noteTextAreaRef}
-            rows={5}
-            placeholder="Write Your thank You Message..."
-            value={noteTitle}
-            className="textareanote"
-            required
-            onChange={(e) => {
-              const input = e.target.value;
-              const charsCount = input.replace(/\s/g, "").length;
+<div className="form-group">
+  <label className="label">Type Note</label>
+  <div className="textarea-with-emoji">
+    <textarea
+      ref={noteTextAreaRef}
+      rows={5}
+      placeholder="Write Your thank You Message..."
+      value={noteTitle}
+      className="textareanote"
+      required
+      onChange={(e) => {
+        const input = e.target.value;
+        const charsCount = input.replace(/\s/g, "").length;
 
-              if (charsCount <= 125) {
-                setNoteTitle(input);
-              } else {
-                let count = 0;
-                let truncated = "";
-                for (const ch of input) {
-                  if (ch !== " ") count++;
-                  if (count > 125) break;
-                  truncated += ch;
-                }
-                setNoteTitle(truncated);
-              }
+        if (charsCount <= 125) {
+          setNoteTitle(input);
+        } else {
+          let count = 0;
+          let truncated = "";
+          for (const ch of input) {
+            if (ch !== " ") count++;
+            if (count > 125) break;
+            truncated += ch;
+          }
+          setNoteTitle(truncated);
+        }
 
-             if (input?.trim() === "") {
+        if (input?.trim() === "") {
   setErrorMsg("Please write a thank you message.");
 } else {
   setErrorMsg("");
 }
+      }}
+    />
 
-            }}
-          />
+    <button
+      type="button"
+      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+      className="emoji-button"
+    >
+      ☺
+    </button>
+  </div>
 
-          <button
-            type="button"
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="emoji-button"
-          >
-            ☺
-          </button>
-        </div>
+  <p
+    className="word-limit"
+    style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
+  >
+    {charsWithoutSpaces >= 125
+      ? "You have reached the 125 character limit!"
+      : `${charsWithoutSpaces} / 125 characters`}
+  </p>
+</div>
+ {showEmojiPicker && (
+  <div
+    className="emoji-container-thankyou"
+    style={{
+      position: window.innerWidth <= 480 ? "static" : "absolute",
+      zIndex: 10,
+      marginTop: "10px"
+    }}
+  >
+    <EmojiPicker
+      onEmojiClick={(emojiData) => {
+        const textarea = noteTextAreaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
 
-        <p
-          className="word-limit"
-          style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
-        >
-          {charsWithoutSpaces >= 125
-            ? "You have reached the 125 character limit!"
-            : `${charsWithoutSpaces} / 125 characters`}
-        </p>
-      </div>
-      {showEmojiPicker && (
-        <div
-          className="emoji-container-thankyou"
-          style={{
-            position: window.innerWidth <= 480 ? "static" : "absolute",
-            zIndex: 10,
-            marginTop: "10px"
-          }}
-        >
-          <EmojiPicker
-            onEmojiClick={(emojiData) => {
-              const textarea = noteTextAreaRef.current;
-              const start = textarea.selectionStart;
-              const end = textarea.selectionEnd;
+        const newText =
+          noteTitle.substring(0, start) +
+          emojiData.emoji +
+          noteTitle.substring(end);
 
-              const newText =
-                noteTitle.substring(0, start) +
-                emojiData.emoji +
-                noteTitle.substring(end);
+        const newCharCount = newText.replace(/\s/g, "").length;
+        if (newCharCount <= 125) {
+          setNoteTitle(newText);
+          setTimeout(() => {
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
+          }, 0);
+        }
 
-              const newCharCount = newText.replace(/\s/g, "").length;
-              if (newCharCount <= 125) {
-                setNoteTitle(newText);
-                setTimeout(() => {
-                  textarea.focus();
-                  textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
-                }, 0);
-              }
+        setShowEmojiPicker(false);
+      }}
+    />
+  </div>
+)}
 
-              setShowEmojiPicker(false);
-            }}
-          />
-        </div>
-      )}
-
-
+ 
 
       <div className="form-group">
         <label className="label">Type Your Name </label>
@@ -150,25 +149,22 @@ const ThankYouNotePopup = ({
           required
           onChange={(e) => {
             setNoteBy(e.target.value);
+           
           }}
         />
       </div>
 
-      {errorMsg && (
-        <p className="error-msg">
-          {errorMsg}
-        </p>
-      )}
+   {errorMsg && (
+  <p className="error-msg">
+    {errorMsg}
+  </p>
+)}
 
-      <div className="popup-buttons">
-        <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
-        <button className="save-btn" onClick={handleDownload}>SAVE</button>
-      </div>
+<div className="popup-buttons">
+  <button className="cancel-btn" onClick={handleClosePopup}>CANCEL</button>
+  <button className="save-btn" onClick={handleDownload}>SAVE</button>
+</div>
 
-
-
-
-      {/* Hidden Canvas */}
       <div
         ref={noteRef}
         style={{
@@ -237,7 +233,7 @@ const ThankYouNotePopup = ({
         >
           - {noteBy}
         </div>
-
+    
 
       </div>
     </div>

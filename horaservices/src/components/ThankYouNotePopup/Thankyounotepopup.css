@@ -35,7 +35,10 @@
 .subtitlePopUp {
   font-size: 13px;
   color: #5A5858;
+  /* margin-bottom: 25px; */
   font-weight: 400;
+  /* letter-spacing: 0.4px; */
+  /* padding: 0 12px; */
   text-transform: uppercase;
 }
 
@@ -121,12 +124,16 @@ input {
   opacity: 0.9;
 }
 
+
+
+/* Wrapper around textarea + emoji button */
 .textarea-with-emoji {
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
+/* Emoji Picker container styling */
 .emoji-container-thankyou {
   position: absolute;
   z-index: 999;
@@ -140,6 +147,7 @@ input {
   overflow: hidden;
 }
 
+/* Emoji button inside textarea wrapper */
 .emoji-button {
   position: absolute;
   bottom: 0px;
@@ -151,7 +159,7 @@ input {
   color: black;
 }
 
-
+/* Responsive Fix */
 @media (max-width: 480px) {
   .emoji-container-thankyou {
     left: 0;
