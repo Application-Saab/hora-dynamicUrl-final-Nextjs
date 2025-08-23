@@ -95,6 +95,16 @@ const GuestRSVPForm = ({
 
   useEffect(() => {
     fetchGuestsInside();
+
+      // Initial call
+    fetchGuestsInside();
+
+  // Call every 3 minute
+  const interval = setInterval(fetchGuestsInside, 10000);
+
+  // Cleanup interval on unmount
+  return () => clearInterval(interval);
+
   }, []);
 
   useEffect(() => {
@@ -211,13 +221,13 @@ const GuestRSVPForm = ({
                     className="rsvp-btn-icon-img"
                   />
                 </span>
-                <span>Sure,Will Come</span>
+                <span className="rsvp-btn-txt">Sure,Will Come</span>
               </button>
               <button
                 className="rsvp-btn rsvp-btn-2"
                 onClick={() => handleClick(RSVP_STATUS.WILL_TRY)}
               >
-                <span>Sure,Will Try</span>
+                <span className="rsvp-btn-txt">Sure,Will Try</span>
                 <span className="rsvp-btn-icon-bg-2">
                   <Image
                     src={NotSureRSVP}

@@ -119,8 +119,11 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
       slug?.length === 3 &&
       slug[2] === "guest"
     ) {
-       setRefectchLoginGuest(true);
-
+      if(slug[0] === loggedinUserId){
+        router.push(`/wonderland?id=${slug[0]}/${slug[1]}/host`);
+        return;
+      }
+      setRefectchLoginGuest(true);
       router.push(`/wonderland?id=${slug[0]}/${slug[1]}/guest`);
     }
   }, [loggedinUserId, isUserLoggedIn, queryId]);

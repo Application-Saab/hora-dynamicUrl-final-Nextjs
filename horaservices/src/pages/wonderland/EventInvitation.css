@@ -1088,7 +1088,6 @@ background-color: none !important;
 
 .deletecancel-btn {
   border: none;
-  border-radius: 6px;
   cursor: pointer;
    background: rgba(151, 83, 140, 1);
    padding: 10px 20px;

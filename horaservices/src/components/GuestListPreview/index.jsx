@@ -63,6 +63,14 @@ const GuestListPreview = ({ hostData, urlParams }) => {
     };
 
     fetchGuests();
+      // Initial call
+    fetchGuests();
+
+  // Call every 3 minute
+  const interval = setInterval(fetchGuests, 10000);
+
+  // Cleanup interval on unmount
+  return () => clearInterval(interval);
   }, [urlParams?.eventId]);
 
   useEffect(() => {

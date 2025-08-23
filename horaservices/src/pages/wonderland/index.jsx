@@ -172,8 +172,14 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
         setLoadingEventImages(false);
       }
     };
-
+  // Initial call
     fetchEventImages();
+
+  // Call every 3 minute
+  const interval = setInterval(fetchEventImages, 180000);
+
+  // Cleanup interval on unmount
+  return () => clearInterval(interval);
     }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw, refetchLuckyDrawHostDelete,
   refetchLuckyDrawGuestDelete]);
 
@@ -252,6 +258,10 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       urlParams.eventUserId &&
       urlParams.userType === "guest"
     ) {
+      if(urlParams.eventUserId === userID){
+        router.push(`/wonderland?id=${urlParams.eventUserId}/${urlParams.eventId}/host`);
+        return;
+      }
       addGuest();
     }
   }, [
@@ -2042,7 +2052,7 @@ const sendMessage = async () => {
   <div className="deletepopup-overlay">
                   <div className="deletepopup">
                     <h3>Confirm Delete</h3>
-                    <p>Are You Sure You Want To Delete This Photo?</p>
+                    <p>Are you sure you want to delete this photo?</p>
                     <div className="deletepopup-buttons">
                       <button
                         className="deletecancel-btn"
