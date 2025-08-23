@@ -1037,7 +1037,7 @@ useEffect(() => {
       // 🔹 Test manually in frontend
       setTimeout(() => {
         new Notification("Test Message", {
-          body: "This is a frontend-only test",
+          body: payload.notification?.body || "You got a message!",
           icon: "/new_logo_light.png",
         });
       }, 3000);
@@ -1074,10 +1074,13 @@ const registerUser = async (eventId, userId, role) => {
   }
 };
 
+const chatMessagesRef = useRef(null);
 useEffect(() => {
-  chatOpenRef.current = chatOpen;
-  if (chatOpen) setUnreadCount(0);
-}, [chatOpen]);
+  if (chatOpen && chatMessagesRef.current) {
+    const container = chatMessagesRef.current;
+    container.scrollTop = container.scrollHeight;
+  }
+}, [messages, chatOpen]); // 🔁 Trigger when messages or chatOpen changes
 
 useEffect(() => {
   if (eventId && userId) {
@@ -1086,9 +1089,22 @@ useEffect(() => {
   }
 }, [eventId, userId]);
 
+useEffect(() => {
+  chatOpenRef.current = chatOpen;
+  if (chatOpen) {
+    setUnreadCount(0);
+
+    // ✅ Update lastSeenAt in Firestore
+    if (eventId && userId) {
+      const userRef = doc(db, "groups", eventId, "members", userId);
+      setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
+    }
+  }
+}, [chatOpen, eventId, userId]);
 
 const lastSeenAtRef = useRef(null);
 const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
+
 
 const listenToMessages = (eventId, userId) => {
   const messagesRef = collection(db, "groups", eventId, "messages");
@@ -1109,7 +1125,7 @@ const listenToMessages = (eventId, userId) => {
 
     const unreadMessages = msgs.filter(msg => {
       if (!msg.sentAt || !msg.senderId) return false;
-      if (msg.senderId === userId) return false;
+      if (msg.senderId === userID) return false;
 
       const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
       return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
@@ -1123,7 +1139,7 @@ const listenToMessages = (eventId, userId) => {
           Notification.permission === "granted" &&
           !alreadyNotified
         ) {
-          new Notification(`New message from ${msg.senderId}`, {
+          new Notification(`New message from ${msg.senderName}`, {
             body: msg.text,
             icon: "/new_logo_light.png",
           });
@@ -1162,6 +1178,7 @@ const sendMessage = async () => {
   await addDoc(collection(db, "groups", eventId, "messages"), {
     text,
     senderId: userID,
+    senderName: userType === "host" ? orderDetails?.Name : guestDetails?.name,
     senderPhoneNumber: localStorage.getItem("mobileNumber"),
     sentAt: new Date(),
       sentAt: serverTimestamp(), 
@@ -1184,7 +1201,6 @@ const sendMessage = async () => {
 
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
   };
-
   return (
     <>
       {!isLoggedIn ? (
@@ -1324,14 +1340,12 @@ const sendMessage = async () => {
       )}
 
 
-<div
+{/* <div
   className="invite-image-wrapper"
  onClick={async () => {
     setChatOpen(true);
     chatOpenRef.current = true;
     setUnreadCount(0);
-
-    // ✅ Update last seen
     const userRef = doc(db, "groups", eventId, "members", userID);
     await updateDoc(userRef, {
       lastSeenAt: serverTimestamp(),
@@ -1350,8 +1364,6 @@ const sendMessage = async () => {
     width={40}
     height={40}
   />
-
-  {/* ✅ Show badge only if chat is closed and there are unread messages */}
 
   {!chatOpen && unreadCount > 0 && (
     <span
@@ -1376,7 +1388,62 @@ const sendMessage = async () => {
       {unreadCount}
     </span>
   )}
+</div> */}
+<div
+  className="invite-image-wrapper"
+  onClick={async () => {
+    if (userType !== "host" && !hasSubmitted) {
+      setHighlightRSVPButtons(true);
+      setTimeout(() => setHighlightRSVPButtons(false), 1500);
+      return;
+    }
+    setChatOpen(true);
+    chatOpenRef.current = true;
+    setUnreadCount(0);
+
+    const userRef = doc(db, "groups", eventId, "members", userID);
+    await updateDoc(userRef, {
+      lastSeenAt: serverTimestamp(),
+    });
+  }}
+  style={{
+    position: "absolute",
+    cursor: hasSubmitted ? "pointer" : "not-allowed", // UX ke liye
+    zIndex: 999,
+  }}
+>
+  <Image
+    src={chatIcon}
+    alt="chat"
+    className="invite-image"
+    width={40}
+    height={40}
+  />
+
+  {!chatOpen && unreadCount > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        minWidth: "18px",
+        height: "18px",
+        backgroundColor: "red",
+        color: "white",
+        fontSize: "12px",
+        fontWeight: "bold",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2px",
+      }}
+    >
+      {unreadCount}
+    </span>
+  )}
 </div>
+
 
 
 
@@ -1405,8 +1472,8 @@ const sendMessage = async () => {
       />
 
      
-     {/* Chat Icon */}
-<div
+    
+{/* <div
   className="invite-image-wrapper"
  onClick={async () => {
     setChatOpen(true);
@@ -1455,7 +1522,62 @@ const sendMessage = async () => {
       {unreadCount}
     </span>
   )}
+</div> */}
+<div
+  className="invite-image-wrapper"
+  onClick={async () => {
+    if  (userType !== "host" && !hasSubmitted) {
+      setHighlightRSVPButtons(true);
+      setTimeout(() => setHighlightRSVPButtons(false), 1500);
+      return;
+    }
+    setChatOpen(true);
+    chatOpenRef.current = true;
+    setUnreadCount(0);
+
+    const userRef = doc(db, "groups", eventId, "members", userID);
+    await updateDoc(userRef, {
+      lastSeenAt: serverTimestamp(),
+    });
+  }}
+  style={{
+    position: "absolute",
+    cursor: hasSubmitted ? "pointer" : "not-allowed",
+    zIndex: 999,
+  }}
+>
+  <Image
+    src={chatIcon}
+    alt="chat"
+    className="invite-image"
+    width={40}
+    height={40}
+  />
+
+  {!chatOpen && unreadCount > 0 && (
+    <span
+      style={{
+        position: "absolute",
+        top: "-4px",
+        right: "-4px",
+        minWidth: "18px",
+        height: "18px",
+        backgroundColor: "red",
+        color: "white",
+        fontSize: "12px",
+        fontWeight: "bold",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2px",
+      }}
+    >
+      {unreadCount}
+    </span>
+  )}
 </div>
+
 
 
     </div>
@@ -1521,7 +1643,6 @@ const sendMessage = async () => {
                      <div
                       ref={rsvpRef}
                     >
-
                       <GuestRSVPForm
                         highlightRSVPButtons={highlightRSVPButtons}
                         setHighlightRSVPButtons={setHighlightRSVPButtons}
@@ -1615,25 +1736,18 @@ const sendMessage = async () => {
                       alt="Luck Draw Banner"
                       className="banner-img"
                     />
-                    {/* <button
-                      className="click-now-btn"
-                      onClick={() => setShowLuckyDrawPopup(true)}
-                    >
-                      Click Now
-                    </button> */}
                     <button
                       className="click-now-btn"
                       onClick={() => {
                         if (!hasSubmitted) {
-                          // RSVP submit nahi hua → highlight effect
                           setHighlightRSVPButtons(true);
                           setTimeout(
                             () => setHighlightRSVPButtons(false),
                             1500
-                          ); // 1.5 sec highlight
+                          ); 
                           return;
                         }
-                        setShowLuckyDrawPopup(true); // RSVP submit hua → normal behaviour
+                        setShowLuckyDrawPopup(true); 
                       }}
                     >
                       Click Now
@@ -1671,44 +1785,14 @@ const sendMessage = async () => {
 
                 {/* Action Buttons */}
                 <div className="tabs-container" style={styles.tabsContainer}>
-                  {/* {actions.map((action, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        if (!hasSubmitted) {
-                          setHighlightRSVPButtons(true);
-                          setTimeout(() => setHighlightRSVPButtons(false), 1000);
-                          return; // RSVP submit nahi hua → button ka kaam nahi chalega
-                        }
-
-                        if (action.title === "Upload Pictures") {
-                          const input = document.getElementById("imageUploadInput");
-                          if (input) {
-                            input.value = "";
-                            input.click();
-                          }
-                        } else {
-                          handleActionClick(action.title);
-                        }
-                      }}
-                      style={{
-                        ...styles.actionButton,
-                        ...(highlightRSVPButtons ? { border: "2px solid red" } : {}),
-                      }}
-                    >
-                      <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-                      <span style={styles.buttonLabel}>{action.title}</span>
-                    </button>
-                  ))} */}
                     {actions.map((action, index) => (
   <button
     key={index}
     onClick={() => {
-      // Guest ke liye: RSVP check
       if (userType !== "host" && !hasSubmitted) {
         setHighlightRSVPButtons(true);
         setTimeout(() => setHighlightRSVPButtons(false), 1000);
-        return; // RSVP submit nahi hua → button ka kaam nahi chalega
+        return; 
       }
 
       // Upload Pictures
@@ -2018,7 +2102,6 @@ const sendMessage = async () => {
         </>
       )}
 
-      {/* Guest List Modal Popup */}
       {showPopupGuest && (
         <>
           <div
@@ -2034,8 +2117,6 @@ const sendMessage = async () => {
       )}
              <>
     
-
-        {/* Chat UI */}
        {chatOpen && (
   <div className="chat-overlay">
     <div className="chat-header">
@@ -2050,16 +2131,20 @@ const sendMessage = async () => {
   }}>×</button>
     </div>
 
-    <div className="chat-messages">
+    <div className="chat-messages" ref={chatMessagesRef}>
       {messages.map((msg) => {
         const isSender = msg.senderPhoneNumber === userPhoneNumber;
+        const senderName = isSender
+  ? (userType === "host" ? orderDetails?.Name : guestDetails?.name)
+  : (userType === "host" ? guestDetails?.name : orderDetails?.Name);
         return (
           <div
             key={msg.id}
             className={`chat-message ${isSender ? "sender" : "receiver"}`}
           >
             <div className="chat-bubble">
-              <div className="chat-sender">+91 {msg.senderPhoneNumber}</div>
+              
+              <div className="chat-sender"> {senderName}  +91 {msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}</div>
               <div className="chat-text">{msg.text}</div>
               <div className="chat-time">
                 {msg.sentAt?.toDate
@@ -2075,8 +2160,6 @@ const sendMessage = async () => {
         );
       })}
     </div>
-
-    {/* Input + Emoji */}
     <div className="chat-input-container">
       <button
         type="button"
@@ -2085,7 +2168,6 @@ const sendMessage = async () => {
       >
         ☺
       </button>
-
       <textarea
         value={text}
         ref={textareaRef}
@@ -2104,7 +2186,6 @@ const sendMessage = async () => {
         }}
         placeholder="Type your message..."
       />
-
       <button onClick={sendMessage} className="chat-send-btn">➤</button>
     </div>
 
