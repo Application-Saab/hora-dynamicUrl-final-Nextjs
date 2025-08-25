@@ -242,18 +242,45 @@ ul.decoration-addons {
 
 
 
+
+
 .custom-banner-section {
-  width: 100%;
-  padding: 0;
-  margin: 10px 0px auto;
-  display: flex;
-  justify-content: center;
+  position: relative;
+  display: inline-block;
 }
 
-.custom-banner-image {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
+.custom-banner-section .custom-banner-image {
   display: block;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: auto;
+}
+
+.custom-banner-section button {
+  position: absolute;
+  bottom: 10%;
+  left: 10%;
+  font-size: 12px;
+  padding: 5px !important;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 3px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #97538C !important;
+   font-family: "Jost", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-offset: 0;
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: auto;
+}
+.custom-banner-section button:hover {
+  background: #fff;
 }

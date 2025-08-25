@@ -232,7 +232,7 @@ const [similarByName, setSimilarByName] = useState([]);
   const addonRef = useRef(null);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
-
+  const cityName = params?.city;
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -269,22 +269,6 @@ const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
 };
 
 
-// const filterSimilarByName = (product, productsArray = [], excludeId) => {
-//   if (!product?.name || !productsArray.length) return;
-
-//   const firstWord = product.name.toLowerCase().split(/\s+/)[0];  // ✅ सिर्फ पहला word
-
-//   const filtered = productsArray.filter(item => {
-//     if (item._id === excludeId) return false;
-
-//     const itemName = item.name?.toLowerCase() || "";
-
-//     return itemName.includes(firstWord);
-//   });
-
-//   console.log("Filtered by Name =>", filtered);
-//   setSimilarByName(filtered);
-// };
 const filterSimilarByName = (product, productsArray = [], excludeId) => {
   if (!product?.name || !productsArray.length) return;
 
@@ -480,6 +464,35 @@ const openCatItems = (item) => {
   router.push(path);
 };
 
+const handleCustomise = (type, cityName) => {
+  const messages = {
+    "kids-birthday-decoration": "Hi, I want to customize a kids birthday decoration design, can you help me",
+    "birthday-decoration": "Hi, I want to customize a birthday decoration design, can you help me",
+    "anniversary-decoration": "Hi, I want to customize an anniversary decoration design, can you help me",
+    "baby-shower-decoration": "Hi, I want to customize a baby shower decoration design, can you help me",
+    "welcome-baby-decoration": "Hi, I want to customize a baby welcome decoration design, can you help me",
+    "first-night-decoration": "Hi, I want to customize a first night decoration design, can you help me",
+    "premium-decoration": "Hi, I want to customize a premium decoration design, can you help me",
+    "haldi-mehendi-decoration": "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
+    "wedding-decoration": "Hi, I want to customize a wedding decoration design, can you help me",
+    "bachelorette-decoration": "Hi, I want to customize a bachelorette decoration design, can you help me"
+  };
+
+  const phoneNumber = "917338584828";
+
+  let message = messages[type] || "Hi, I want to customize a decoration design, can you help me";
+
+  if (cityName) {
+    message += ` for ${cityName}!`;
+  } else {
+    message += "!";
+  }
+
+  window.open(
+    `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
 
 
   const getDiscountedPrice = (price) => {
@@ -896,9 +909,23 @@ const openCatItems = (item) => {
             >
               {getItemInclusion(product.inclusion)}
 
-              <section className="custom-banner-section">
-      <Image src={BannerImage} alt="Change Something Banner" className="custom-banner-image" />
-    </section>
+<section className="relative custom-banner-section">
+  <Image
+    src={BannerImage}
+    alt="Change Something Banner"
+    className="custom-banner-image"
+  />
+
+  <div className="absolute inset-0 flex items-center justify-center"> 
+<button
+  className="customise-btn"
+  onClick={() => handleCustomise(catValue, cityName)} 
+>
+  CUSTOMISATION
+</button>
+  </div>
+</section>
+
 
             </div>
 
