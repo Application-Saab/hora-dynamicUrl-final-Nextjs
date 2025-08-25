@@ -48,7 +48,6 @@ import CardSkeleton from "@/components/CardSkeleton";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  //   let { city } = useParams();
   const [city, setCity] = useState("");
   const [catValue, setCatValue] = useState("");
   useEffect(() => {
@@ -343,17 +342,6 @@ useEffect(() => {
     }
   };
 
-  // const handleViewDetails = (subCategory, catValue, product) => {
-  //   const productName = product.name.replace(/ /g, "-");
-  //   dispatch(setState(subCategory, orderType, catValue, product));
-  //   if (hasCityPageParam) {
-  //     router.push(
-  //       `/${city}/balloon-decoration/${catValue}/product/${productName}`
-  //     );
-  //   } else {
-  //     router.push(`/balloon-decoration/${catValue}/product/${productName}`);
-  //   }
-  // };
 const categoryBannerMap = {
   "birthday-decoration": birthdayBanner,
   "premium-decoration": premiumBanner,
@@ -365,8 +353,6 @@ const categoryBannerMap = {
   "haldi-mehendi-decoration":haldimehndiBanner,
   "Wedding":WeddingBanner,
   "bachelorette-decoration":BacheloretteBanner
-  // fallback/default
-  // default: customize,
 };
   function trimText(text) {
     if (text.length > 60) {
@@ -374,10 +360,6 @@ const categoryBannerMap = {
     }
     return text;
   }
-
-//   const normalizeCatValue = (val) => {
-//   return val?.toLowerCase().replace(/ /g, "-");
-// };
 
 const normalizeCatValue = (val) => {
   if (!val) return "";
@@ -397,49 +379,72 @@ const shouldHideBanner = (name) => {
   const hideFor = ["Wedding", "haldi-mehendi-decoration"]; // jinke liye hide karna hai
   return hideFor.includes(normalizedCat) && ["makeItMemorable" ,"DidyouKnow","makeitmemorablebanner"].includes(name);
 };
-  const PageTitle = (cat) => {
-    if (cat === "kids-birthday" || cat === "kids-birthday-decoration") {
-      return "Kids' Birthday Balloon Decoration by Professionals Decorators, Starting at ₹1199";
-    } else if (cat === "birthday-decoration" || cat === "birthday") {
-      return "Birthday Balloon Decoration at Home by Professionals Decorators, Starting at ₹1199";
-    } else if (cat === "anniversary-decoration" || cat === "anniversary") {
-      return "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
-    } else if (cat === "first-night-decoration" || cat === "first-night") {
-      return "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
-    } else if (cat === "baby-shower-decoration" || cat === "baby-shower") {
-      return "Baby Shower with Latest Designs by Professionals Decorators Starting at ₹1199";
-    } else if (cat === "welcome-baby-decoration" || cat === "WelcomeBaby") {
-      return "Baby Welcome Decoration at home by Professionals Decorators, Starting at ₹1199";
-    } else if (cat === "haldi-mehendi-decoration" || cat === "haldi-mehandi") {
-      return "Haldi Decoration with Latest Designs starting at ₹3000";
-    } else if (cat === "bachelorette" || cat === "bachelorette") {
-      return "Bachelorette Decoration with Latest Designs starting at ₹3000";
-    } else if (cat === "premium-decoration" || cat === "premium-decoration") {
-      return "Premium-Decoration with Latest Designs starting at ₹3000";
-    } else {
-      return "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-    }
-  };
 
-  const getPageMetaDescription = (cat) => {
-    if (cat === "kids-birthday" || cat === "kids-birthday-decoration") {
-      return "At Hora, 🎉Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠, under the sea 🌊, Baby Boss 👔, Barbie 💖, and cars 🚗. Explore detailed pricing and inclusions, and let our professional team bring your chosen design to life. Book your perfect party decor today! 🎈✨";
-    } else if (cat === "birthday-decoration" || cat === "birthday") {
-      return "At Hora, 🎈 Explore our wide range of balloon and flower decorations for birthday parties, featuring ring, sequin, wall, and room designs. Discover pricing and inclusions for every balloon color and variety. Customise your celebration and make it unforgettable with our stunning decor. Book your perfect party setup today! 🎉🌟";
-    } else if (cat === "anniversary-decoration" || cat === "anniversary") {
-      return "🎉 Explore top-notch anniversary decoration designs and book directly from our website 💖. Find elegant and customizable decor options for your special event. Browse our selection to choose the perfect theme and make your anniversary memorable with seamless online booking. ✨";
-    } else if (cat === "first-night-decoration" || cat === "first-night") {
-      return "🌟 Explore our selection of elegant decoration designs for your first night event 💖. Choose from a variety of styles and themes, and book your perfect decor directly through our website. Make your special night unforgettable with seamless online booking and beautiful, personalised decorations. ✨";
-    } else if (cat === "baby-shower-decoration" || cat === "baby-shower") {
-      return "Celebrate the joy of motherhood with our beautiful Baby Shower decoration setups! 👶💐 Explore unique themes, elegant backdrops, and customizable balloon designs. Book online for professional setup and an unforgettable experience. 🌸🎈";
-    } else if (cat === "welcome-baby-decoration" || cat === "WelcomeBaby") {
-      return "Welcome your newborn with adorable and heartwarming balloon decorations! 🍼🎉 Explore our curated designs perfect for celebrating the arrival of your little one. Book your baby welcome decor with ease and joy. 💖👶";
-    } else if (cat === "haldi-mehendi-decoration" || cat === "haldi-mehandi") {
-      return "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups, featuring traditional elements, colorful floral arrangements, and custom designs to make your event unforgettable. 🌸💛";
-    } else {
-      return "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199. Book online for themed decorations with flowers, lights, backdrops & more. Available across major cities. 🎈💐";
-    }
-  };
+
+const PageTitle = (catValue, city) => {
+  if (catValue === "kids-birthday-decoration") {
+    return city
+      ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
+      : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
+  } else if (catValue === "birthday-decoration") {
+    return city
+      ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
+      : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
+  } else if (catValue === "anniversary-decoration") {
+    return city
+      ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
+      : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
+  } else if (catValue === "first-night-decoration") {
+    return city
+      ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
+      : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
+  } else if (catValue === "baby-shower-decoration") {
+    return city
+      ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
+      : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
+  } else if (catValue === "welcome-baby-decoration") {
+    return city
+      ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
+      : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
+  } else if (catValue === "haldi-mehendi-decoration") {
+    return city
+      ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
+      : "Haldi Decoration with Latest Designs, Starting at ₹3000";
+  } else {
+    return city
+      ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
+      : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+  }
+};
+
+const getPageMetaDescription = (catValue, city) => {
+  if (catValue === "kids-birthday-decoration") {
+    return city
+      ? `At Hora in ${city}, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨`
+      : "At Hora, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨";
+  }
+  if (catValue === "birthday-decoration") {
+    return city
+      ? `Celebrate birthdays in ${city} with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉`
+      : "Celebrate birthdays with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉";
+  }
+  if (catValue === "anniversary-decoration") {
+    return city
+      ? `Make your anniversary in ${city} magical with elegant balloon & rose petal decorations. Book directly online! 💖`
+      : "Make your anniversary magical with elegant balloon & rose petal decorations. Book directly online! 💖";
+  }
+  if (catValue === "haldi-mehendi-decoration") {
+    return city
+      ? `Brighten up your Haldi ceremony in ${city} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
+      : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
+  }
+  // default description
+  return city
+    ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
+    : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+};
+
+ 
 
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
@@ -448,20 +453,21 @@ const shouldHideBanner = (name) => {
 
 return (
   <div className="decCatPage">
-    <Head>
-      <title>{PageTitle(normalizedCat)}</title>
-      <meta name="description" content={getPageMetaDescription(normalizedCat)} />
-      <meta name="keywords" content="Balloon and Flower Decoration @999" />
-      <meta property="og:title" content={PageTitle(normalizedCat)} />
-      <meta property="og:description" content={getPageMetaDescription(normalizedCat)} />
-      <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-      <script type="application/ld+json">{scriptTag}</script>
-      <meta name="robots" content="index, follow" />
-      <meta name="author" content="Hora Services" />
-      <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-      <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
-      <meta property="og:type" content="website" />
-    </Head>
+   <Head>
+  <title>{PageTitle(normalizedCat, city)}</title>
+  <meta name="description" content={getPageMetaDescription(normalizedCat, city)} />
+  <meta name="keywords" content="Balloon and Flower Decoration @999" />
+  <meta property="og:title" content={PageTitle(normalizedCat, city)} />
+  <meta property="og:description" content={getPageMetaDescription(normalizedCat, city)} />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
+  <meta property="og:type" content="website" />
+</Head>
+
 
     {/* ✅ Show 6 card skeletons while loading */}
     {loading ? (

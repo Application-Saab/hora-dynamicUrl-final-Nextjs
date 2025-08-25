@@ -236,7 +236,64 @@ useEffect(() => {
 
   return (
     <div className="dec-landing-page">
-      {/* <div className="page-width"> */}
+      
+ 
+     
+     <Head>
+  <title>
+    {city && locality
+      ? `HORA Decorations in ${locality}, ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
+      : city
+      ? `HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
+      : `HORA Decorations : Professional Balloons & Flowers Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199`}
+  </title>
+
+  <meta
+    name="description"
+    content={
+      city && locality
+        ? `📸 Capture Every Moment in ${locality}, ${city}! ✨ HORA Decorations makes every celebration magical. Book your perfect Balloon & Flower decorations for birthdays, weddings, baby showers, and more.`
+        : city
+        ? `📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`
+        : `📸 Capture Every Moment, Forever! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, parties, weddings & more.`
+    }
+  />
+
+  <meta
+    name="keywords"
+    content={
+      city && locality
+        ? `balloon decoration in ${locality}, ${city}, birthday decoration, wedding decoration, baby shower decoration`
+        : city
+        ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
+        : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
+    }
+  />
+
+  <meta property="og:title" content="Balloon and Flower Decoration by Professional Decorators" />
+  <meta
+    property="og:description"
+    content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
+  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration" />
+  <script type="application/ld+json">{scriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta
+    property="og:url"
+    content={
+      city && locality
+        ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration`
+        : city
+        ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
+        : `https://horaservices.com/balloon-decoration`
+    }
+  />
+  <meta property="og:type" content="website" />
+</Head>
+
       <div className="top-slider">
         <BannerSlider images={bannerImages}  showSeeMore={true} />
       </div>

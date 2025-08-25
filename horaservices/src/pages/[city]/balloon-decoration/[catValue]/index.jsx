@@ -349,20 +349,6 @@ const DecorationCatCITYPage = () => {
 
   return (
     <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
-    <Head>
-      <title>{PageTitle(catValue)}</title>
-      <meta name="description" content={getPageMetaDescription()} />
-      <meta name="keywords" content="Balloon and Flower Decoration @999" />
-      <meta property="og:title" content={PageTitle(catValue)} />
-      <meta property="og:description" content={getPageMetaDescription()} />
-      <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-      <script type="application/ld+json">{scriptTag}</script>
-      <meta name="robots" content="index, follow" />
-      <meta name="author" content="Hora Services" />
-      <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-      <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${catValue}`} />
-      <meta property="og:type" content="website" />
-    </Head>
     <DecorationCatPage/>
    </div>)}
 

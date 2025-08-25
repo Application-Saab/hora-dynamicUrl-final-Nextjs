@@ -715,40 +715,43 @@ const handleCustomise = (type, cityName) => {
 
   return (
     <div className="App" style={{ backgroundColor: "white" }}>
-      <Head>
-        <title>Balloon and Flower Decoration @999</title>
-        <meta
-          name="description"
-          content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
-        />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
-        <meta
-          property="og:title"
-          content="Balloon and Flower Decoration by Professional Decorators"
-        />
-        <meta
-          property="og:description"
-          content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
-        />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
-        <script type="application/ld+json">{scriptTag}</script>
-        <script type="application/ld+json">{faqScriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`}
-        />
-        <meta property="og:type" content="website" />
-      </Head>
+     <Head>
+  <title>
+    {cityName
+      ? `Balloon and Flower Decoration @999 in ${cityName}`
+      : "Balloon and Flower Decoration @999"}
+  </title>
+
+  <meta
+    name="description"
+    content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
+  />
+  <meta name="keywords" content={cityName ? `Balloon and Flower Decoration @ ₹999 in ${cityName}` : "Balloon and Flower Decoration @ ₹999"} />
+  <meta property="og:title" content="Balloon and Flower Decoration by Professional Decorators" />
+  <meta
+    property="og:description"
+    content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
+  />
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
+  />
+  <script type="application/ld+json">{scriptTag}</script>
+  <script type="application/ld+json">{faqScriptTag}</script>
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+    type="image/x-icon"
+  />
+  <meta
+    property="og:url"
+    content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`}
+  />
+  <meta property="og:type" content="website" />
+</Head>
+
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div
           className="decDetails"
