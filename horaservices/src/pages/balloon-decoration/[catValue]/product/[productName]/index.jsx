@@ -715,42 +715,53 @@ const handleCustomise = (type, cityName) => {
 
   return (
     <div className="App" style={{ backgroundColor: "white" }}>
-     <Head>
+  <Head>
   <title>
     {cityName
-      ? `Balloon and Flower Decoration @999 in ${cityName}`
-      : "Balloon and Flower Decoration @999"}
+      ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName}`
+      : `${product?.name} | ${catValue.replace(/-/g, " ")} `}
   </title>
 
   <meta
     name="description"
-    content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
+    content={
+      cityName
+        ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
+        : `${product?.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`
+    }
   />
-  <meta name="keywords" content={cityName ? `Balloon and Flower Decoration @ ₹999 in ${cityName}` : "Balloon and Flower Decoration @ ₹999"} />
-  <meta property="og:title" content="Balloon and Flower Decoration by Professional Decorators" />
+
+  <meta
+    name="keywords"
+    content={
+      cityName
+        ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${cityName}, balloon decoration in ${cityName}, ${product?.name} decoration price`
+        : `${product?.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name} decoration price`
+    }
+  />
+
+  <meta property="og:title" content={`${product?.name} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
   <meta
     property="og:description"
-    content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
+    content={`Book ${product?.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
   />
-  <meta
-    property="og:image"
-    content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content={`${product?.name}, ${catValue.replace(/-/g, " ")} decoration`} />
+
   <script type="application/ld+json">{scriptTag}</script>
   <script type="application/ld+json">{faqScriptTag}</script>
+
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Hora Services" />
-  <link
-    rel="icon"
-    href="https://horaservices.com/api/uploads/logo-icon.png"
-    type="image/x-icon"
-  />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+
   <meta
     property="og:url"
-    content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`}
+    content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`}
   />
   <meta property="og:type" content="website" />
 </Head>
+
 
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div
