@@ -22,7 +22,7 @@ export const decCat = [
     id: "3",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/primumdecoration.webp	",
-    name: "Premium Decor",
+    name: "Big Clebrations ",
     subCategory: "PremiumDecoration",
     catValue: "premium-decoration",
     imgAlt: "Birthday party decoration ideas for adults",

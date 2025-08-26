@@ -1,4 +1,4 @@
-import React, { useState, useRef ,useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import { useParams } from "react-router-dom";
 import { getDecorationOrganizationSchema } from "../../utils/schema";
@@ -49,14 +49,11 @@ import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
-// import { Player } from "@lottiefiles/react-lottie-player";
-
 import uploadAnim from "@/assets/cloudstorage.mp4";
 import thankyouAnim from "@/assets/WritePaper.mp4";
 import giftAnim from "@/assets/Referralgift.mp4";
 import click from "@/assets/Handtap.mp4"
 
-import smallcardBackground from "../../assets/small-cardBackground.jpg";
 import {
   birthdayData,
   haldiAndMehndiData,
@@ -162,17 +159,17 @@ const Decoration = ({ city, locality }) => {
   const scriptTag = JSON.stringify(schemaOrg);
 
   const hasCityPageParam = city ? true : false;
-const buttonRefs = useRef([]);
-const [handStep, setHandStep] = useState(0);
-useEffect(() => {
-  const steps = features.length;
-  const interval = setInterval(() => {
-    setHandStep((prev) => (prev + 1) % steps);
-  }, 2000); // change every 2s
+  const buttonRefs = useRef([]);
+  const [handStep, setHandStep] = useState(0);
+  useEffect(() => {
+    const steps = features.length;
+    const interval = setInterval(() => {
+      setHandStep((prev) => (prev + 1) % steps);
+    }, 2000); // change every 2s
 
-  return () => clearInterval(interval);
-}, []);
- const handleWhatsApp = () => {
+    return () => clearInterval(interval);
+  }, []);
+  const handleWhatsApp = () => {
     const phoneNumber = "7338584828";
     const message = encodeURIComponent("I want to customize a decoration");
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
@@ -210,104 +207,104 @@ useEffect(() => {
     { name: "First Night", image: FirstNightImg },
     { name: "Anniversary", image: AnniversaryImg },
   ];
- const features = [
-  {
-    anim: uploadAnim,
-    title: "Upload Image",
-    btn: "Upload Now",
-    bg: "bgPurple",
-    btnBg: "btnPurple",
-  },
-  {
-    anim: thankyouAnim,
-    title: "Thank You Note",
-    btn: "Write Note",
-    bg: "bgGreen",
-    btnBg: "btnGreen",
-  },
-  {
-    anim: giftAnim,
-    title: "Lucky Draw",
-    btn: "Spin Now",
-    bg: "bgPink",
-    btnBg: "btnPink",
-  },
-];
+  const features = [
+    {
+      anim: uploadAnim,
+      title: "Upload Image",
+      btn: "Upload Now",
+      bg: "bgPurple",
+      btnBg: "btnPurple",
+    },
+    {
+      anim: thankyouAnim,
+      title: "Thank You Note",
+      btn: "Write Note",
+      bg: "bgGreen",
+      btnBg: "btnGreen",
+    },
+    {
+      anim: giftAnim,
+      title: "Lucky Draw",
+      btn: "Spin Now",
+      bg: "bgPink",
+      btnBg: "btnPink",
+    },
+  ];
 
   return (
     <div className="dec-landing-page">
-      
- 
-     
-     <Head>
-  <title>
-    {city && locality
-      ? `HORA Decorations in ${locality}, ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
-      : city
-      ? `HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
-      : `HORA Decorations : Professional Balloons & Flowers Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199`}
-  </title>
 
-  <meta
-    name="description"
-    content={
-      city && locality
-        ? `📸 Capture Every Moment in ${locality}, ${city}! ✨ HORA Decorations makes every celebration magical. Book your perfect Balloon & Flower decorations for birthdays, weddings, baby showers, and more.`
-        : city
-        ? `📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`
-        : `📸 Capture Every Moment, Forever! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, parties, weddings & more.`
-    }
-  />
 
-  <meta
-    name="keywords"
-    content={
-      city && locality
-        ? `balloon decoration in ${locality}, ${city}, birthday decoration, wedding decoration, baby shower decoration`
-        : city
-        ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
-        : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
-    }
-  />
 
-  <meta property="og:title" content="Balloon and Flower Decoration by Professional Decorators" />
-  <meta
-    property="og:description"
-    content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
-  />
-  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-  <meta property="og:image:alt" content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration" />
-  <script type="application/ld+json">{scriptTag}</script>
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="Hora Services" />
-  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-  <meta
-    property="og:url"
-    content={
-      city && locality
-        ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration`
-        : city
-        ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
-        : `https://horaservices.com/balloon-decoration`
-    }
-  />
-  <meta property="og:type" content="website" />
-</Head>
+      <Head>
+        <title>
+          {city && locality
+            ? `HORA Decorations in ${locality}, ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
+            : city
+              ? `HORA Decorations in ${city} | Balloon & Flower Decorations for Birthdays, Weddings, Baby Showers & More – Starting at ₹1199`
+              : `HORA Decorations : Professional Balloons & Flowers Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199`}
+        </title>
+
+        <meta
+          name="description"
+          content={
+            city && locality
+              ? `📸 Capture Every Moment in ${locality}, ${city}! ✨ HORA Decorations makes every celebration magical. Book your perfect Balloon & Flower decorations for birthdays, weddings, baby showers, and more.`
+              : city
+                ? `📸 Capture Every Moment in ${city}! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, weddings, baby showers & more.`
+                : `📸 Capture Every Moment, Forever! ✨ HORA Decorations — Professional Balloon & Flower decorators for birthdays, parties, weddings & more.`
+          }
+        />
+
+        <meta
+          name="keywords"
+          content={
+            city && locality
+              ? `balloon decoration in ${locality}, ${city}, birthday decoration, wedding decoration, baby shower decoration`
+              : city
+                ? `balloon decoration in ${city}, birthday decoration, wedding decoration, baby shower decoration`
+                : `birthday decoration, anniversary decoration, party themes decorations, balloon room decoration`
+          }
+        />
+
+        <meta property="og:title" content="Balloon and Flower Decoration by Professional Decorators" />
+        <meta
+          property="og:description"
+          content="🎉 Explore a wide range of stunning decoration designs for every event and party. Book your ideal design directly through our website for a seamless experience. Need help? Contact us at 7338584828."
+        />
+        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+        <meta property="og:image:alt" content="balloon decoration, birthday decoration, wedding decoration, baby shower decoration" />
+        <script type="application/ld+json">{scriptTag}</script>
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Hora Services" />
+        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+        <meta
+          property="og:url"
+          content={
+            city && locality
+              ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration`
+              : city
+                ? `https://horaservices.com/${city.toLowerCase()}/balloon-decoration`
+                : `https://horaservices.com/balloon-decoration`
+          }
+        />
+        <meta property="og:type" content="website" />
+      </Head>
 
       <div className="top-slider">
-        <BannerSlider images={bannerImages}  showSeeMore={true} />
+        <BannerSlider images={bannerImages} showSeeMore={true} />
       </div>
       {/* CIRCLE TABS */}
       <div className="category-tabs-outer">
-      <CategoryTabs 
-  data={decCat} 
-  onSelect={openCatItems} 
-  city={city} 
-  hasCityPageParam={hasCityPageParam} 
-  locality={locality} 
-  variant="circle" 
-/>
-   </div>
+        <CategoryTabs
+          data={decCat}
+          onSelect={openCatItems}
+          city={city}
+          hasCityPageParam={hasCityPageParam}
+          locality={locality}
+          variant="circle"
+        />
+      </div>
 
       <div className="CategoryGrid-outer">
         <div className="page-width">
@@ -359,21 +356,21 @@ useEffect(() => {
         </div>
       </section>
 
-     
- <div className="whatsapp-support-box">
-      <ul className="whatsapp-feature-list">
-       <li> 🛠️  Easy Customize</li>
-        <li>💬 Customer Support</li>
-      </ul>
-      <button onClick={handleWhatsApp} className="whatsapp-btn">
-        <img
-          src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
-          alt="WhatsApp"
-        />
-        Chat Now on WhatsApp
-      </button>
-    </div>
-  
+
+      <div className="whatsapp-support-box">
+        <ul className="whatsapp-feature-list">
+          <li> 🛠️  Easy Customize</li>
+          <li>💬 Customer Support</li>
+        </ul>
+        <button onClick={handleWhatsApp} className="whatsapp-btn">
+          <img
+            src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
+            alt="WhatsApp"
+          />
+          Chat Now on WhatsApp
+        </button>
+      </div>
+
 
 
       <div ref={smallCardRef}>
@@ -398,7 +395,7 @@ useEffect(() => {
       </section>
 
       <DecorSlider
-        title="Premium Decoration"
+        title="Big Clebrations"
         viewAllLink="/balloon-decoration/premium-decoration"
         data={PremiumData}
         showDiscount={true}
@@ -408,8 +405,8 @@ useEffect(() => {
         decCat={decCat}
         locality={locality}
       />
- 
-{/* <FeatureAnimation features={features} clickAnim={click} />
+
+      {/* <FeatureAnimation features={features} clickAnim={click} />
 {buttonRefs.current[handStep] && (
   <video
     src="/hand-click.webm" // replace with your hand animation
@@ -473,7 +470,6 @@ useEffect(() => {
         viewAllLink="/balloon-decoration/anniversary-decoration"
         data={AnniversaryData}
         showDiscount={true}
-        // discountAmount={972}
         imageSize={{ width: 120, height: 120 }}
         city={city}
         locality={locality}
@@ -508,10 +504,10 @@ useEffect(() => {
           priority
         />
       </section>
- <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+      <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
 
-<ReviewSlider reviews={ballonReview} title="Customer Reviews" />
+      <ReviewSlider reviews={ballonReview} title="Customer Reviews" />
     </div>
   );
 };

@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
-// import { useParams } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Plus, ArrowDown, ArrowUp } from "lucide-react";
-import buynowImage from "../../../../../assets/experts.png";
-import buynowImage1 from "../../../../../assets/secured.png";
-import buynowImage2 from "../../../../../assets/service.png";
 import checkImage from "../../../../../assets/tick.jpeg";
 import "./Decorproduct.css"
 import {
@@ -487,6 +481,13 @@ const handleCustomise = (type, cityName) => {
   } else {
     message += "!";
   }
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "Customization_WhatsApp_Button",        
+    eventCategory: "Product Page",  
+    eventAction: "WhatsApp Click",  
+    eventLabel: "Customization WhatsApp Button"
+  });
 
   window.open(
     `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,

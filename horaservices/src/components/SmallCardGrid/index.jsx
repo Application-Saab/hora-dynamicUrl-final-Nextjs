@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useDecorationEvents } from "@/utils/decorationEvents";
-import smallcardBackground from "../../assets/small-cardBackground.jpg";
+import smallcardBackground from "@/assets/small-cardBackground.png";
 import "./SmallCardGrid.css"
 const SmallCardGrid = ({ city, hasCityPageParam, decCat, categories ,locality}) => {
   const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat,locality);

@@ -1,12 +1,13 @@
 .premium-slide-decor {
   background: #fbe6d3;
-  padding: 2rem 1rem;
+  padding: 10px 0px 10px 10px;
 
 }
 
 .premium-slide-decor-header {
   display: flex;
   justify-content: space-between;
+  padding:10px
 }
 
 .premium-slide-decor-header h2 {

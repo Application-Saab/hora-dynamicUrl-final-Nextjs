@@ -39,8 +39,8 @@
 }
 
 .category-tabs__circle {
-  width: 75px;
-  height: 75px;
+  width: 77px;
+  height: 77px;
   border-radius: 72.71px;
   background-size: cover;
   background-position: center;
@@ -71,7 +71,7 @@
     text-shadow: 1px 9px 4.55px rgba(0, 0, 0, 0.155);
     font-family: Inter, sans-serif;
     font-weight: 800;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 100%;
     text-align: center;
     /* max-width: 100px; */
