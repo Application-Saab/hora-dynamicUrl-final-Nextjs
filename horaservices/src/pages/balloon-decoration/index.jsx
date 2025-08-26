@@ -32,12 +32,12 @@ import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.webp";
 import whatApp from "../../assets/WhatAppBanner.webp";
-import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.webp";
+import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.png";
 import BabyShowerImg from "../../assets/BabyShowerIMG.webp";
-import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.webp";
+import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
 import BabyWelcomeImg from "../../assets/WelcomBabyIMG.webp";
 import PremiumDecorImg from "../../assets/PremiumDecorIMG.webp";
-import BacheloretteImg from "../../assets/BacheloretteIMG.webp";
+import BacheloretteImg from "../../assets/BacheloretteIMG.png";
 import HaldiMehandiImg from "../../assets/HaldiMehandiIMG.webp";
 import FirstNightImg from "../../assets/FirstNightIMG.webp";
 import AnniversaryImg from "../../assets/AnniversaryDecorIMG.webp";
@@ -49,6 +49,9 @@ import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
+import decorationWedding from "@/assets/decorationwedding.webp"
+import decorationBridetobe from"@/assets/decorationBride-tobe.webp"
+import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp"
 import {
   birthdayData,
   haldiAndMehndiData,
@@ -85,7 +88,7 @@ const cardsData = [
 ];
 
 const largeCard = {
-  image: "/decorationwedding.png",
+  image: decorationWedding,
   title: "Wedding",
   description: "DECORATIONS",
   link: "balloon-decoration/wedding-decoration",
@@ -99,7 +102,7 @@ const brandItems = [
 ];
 const smallCards = [
   {
-    image: "/assets/decorationhaldi-Mhendi.webp",
+    image: decorationhaldi,
     title: "Haldi-Mehandi",
     link: "balloon-decoration/haldi-mehendi-decoration",
     categoryName: "Haldi Mhendi",
@@ -108,7 +111,7 @@ const smallCards = [
     imgAlt: "Haldi Mehendi Decoration",
   },
   {
-    image: "/assets/decorationBride-tobe.webp",
+    image: decorationBridetobe,
     title: "Bride To-be",
     link: "balloon-decoration/bachelorette-decoration",
     categoryName: "bachelorette",
@@ -187,7 +190,7 @@ const Decoration = ({ city, locality }) => {
     { name: "Baby Shower", image: BabyShowerImg },
     { name: "Kids Birthday", image: kidsBirthdayImg },
     { name: "Welcome Baby", image: BabyWelcomeImg },
-    { name: "premium Decor", image: PremiumDecorImg },
+    { name: "Big Celebration", image: PremiumDecorImg },
     { name: "Bachelorette", image: BacheloretteImg },
     { name: "Haldi Mehandi", image: HaldiMehandiImg },
     { name: "First Night", image: FirstNightImg },
@@ -381,7 +384,7 @@ const Decoration = ({ city, locality }) => {
       </section>
 
       <DecorSlider
-        title="Big Clebrations"
+        title="Big Celebration"
         viewAllLink="/balloon-decoration/premium-decoration"
         data={PremiumData}
         showDiscount={true}
