@@ -1,0 +1,51 @@
+/* localitiesSection.css */
+
+.container {
+  margin-bottom: 0.5rem; /* smaller bottom spacing */
+}
+
+.localities-card {
+  border: 1px solid #333; /* dark border */
+  border-radius: 8px;      /* smooth corners */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* subtle shadow */
+  padding: 1rem;
+}
+
+.localities-card h2 {
+  font-size: 1rem; /* slightly smaller heading */
+  color: rgb(151, 83, 140); /* purple color */
+  border-bottom: 1px solid rgb(151, 83, 140);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.localities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.localities-list li button {
+  font-size: 0.7rem; /* small text */
+  font-weight: 600;
+  color: rgb(151, 83, 140);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.localities-list li button:hover {
+  color: rgb(151, 83, 140); /* darker purple on hover */
+}
+
+.no-localities {
+  color: #777;
+  font-style: italic;
+  font-size: 0.8rem;
+}

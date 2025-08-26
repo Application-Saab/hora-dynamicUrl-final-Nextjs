@@ -1,7 +1,6 @@
 .banner-slider-container {
   width: 100%;
   position: relative;
-  margin-top: 10px;
 }
 
 .banner-image {
@@ -16,8 +15,8 @@
 
 /* Pagination bullet styling */
 .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   background: rgb(159, 158, 158);
   opacity: 1;
   margin: 0 3px;
@@ -27,6 +26,44 @@
 
 .swiper-pagination-bullet-active {
   background:#9f6695;
-  transform: scale(1.2);
+  /* transform: scale(1.2); */
 }
 
+.banner-slide-wrapper {
+  position: relative;
+}
+.see-button {
+    font-size: 10px;
+    position: absolute;
+    bottom: 30px;
+    left: 25px;
+    background-color: transparent;
+    color: #97538C;
+    border: 1.5px solid #97538C;
+    padding: 5px 5px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px #6c757d;
+    transition: all 0.3s ease;
+}
+
+.see-more-button:hover {
+  background-color: #97538C;
+  color: white;
+}
+
+@media (max-width: 320px) {
+  .swiper-pagination-bullet {
+    width: 5px;
+    height: 5px;
+  }
+}
+
+
+@media (max-width: 360px) and (min-width: 321px) {
+  .swiper-pagination-bullet {
+    width: 7px;
+    height: 7px;
+  }
+}

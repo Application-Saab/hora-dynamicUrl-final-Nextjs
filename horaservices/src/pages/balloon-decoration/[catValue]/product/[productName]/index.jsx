@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from "react";
-// import { useParams } from 'react-router-dom';
-// import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Plus, ArrowDown, ArrowUp } from "lucide-react";
-import buynowImage from "../../../../../assets/experts.png";
-import buynowImage1 from "../../../../../assets/secured.png";
-import buynowImage2 from "../../../../../assets/service.png";
+import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import checkImage from "../../../../../assets/tick.jpeg";
+import "./Decorproduct.css"
 import {
   getDecorationProductOrganizationSchema,
   getProductFAQSchemaProductDetails,
@@ -21,15 +17,45 @@ import {
   GET_DECORATION_CAT_ID,
 } from "@/utils/apiconstants";
 import axios from "axios";
-import faqData from "../../../../../utils/faqData.json";
+import FAQSection from "@/components/FAQSection";
+import faqData from "../../../../../utils/FaqData.json";
 import Tabs from "../../../../../components/Tabs";
 import addOnProductsData from "../../../../../utils/addOnProduct.json";
-// Skeleton Loader Component
+import HowitWork from "../../../../../assets/howitwork.jpg"
+import { useParams } from "next/navigation";
+import Brand from "../../../../../assets/Brand.png"
+import ExpertsDecoration from "../../../../../assets/ExpertsDecoration.png";
+import SecureTransactions from "../../../../../assets/SecureTransactions.png";
+import ServiceGuarantee from "../../../../../assets/ServiceGuarantee.png";
+import { PremiumData } from "@/utils/DecorationData";
+import CategoryTabs from "../../../../../components/CategoryTabs/index.jsx";
+import { decCat } from "@/utils/decorationCategories";
+import "../../../../../components/CategoryTabs/CategoryTabs.css"
+import { themeFilters } from "@/utils/themeFilters";
+import Candle from "../../../../../assets/candle.png";
+import HappyBithday from "../../../../../assets/HappyBirthDay.png"
+import Ballons from "../../../../../assets/Ballons.png"
+import { ballonReview } from "@/utils/ReviewsData";
+import AddonModal from "@/components/AddonModal";
+import customiseIcon from "@/assets/customisationicon.png"
+import AdditionalServices from "@/components/AdditionalServices";
+
+import BannerImage from "../../../../../assets/customised.webp";
+import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
+import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
+import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
+import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
+import BrandBanner from "@/components/BrandBanner";
+import UniversalDecorSlider from "@/components/UniversalDecorSlider";
+import ReviewSlider from "@/components/ReviewSection";
+import VideoTestimonial from "@/components/VideoTestimonial";
+import VideoClint from "@/assets/ourclientvideo.mp4"
+
 const SkeletonLoader = () => {
   return (
     <div
       className="skeleton-loader"
-      style={{ maxWidth: "1200px", margin: "0 auto" }}
+      style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "white" }}
     >
       <div
         style={{
@@ -166,7 +192,7 @@ const SkeletonLoader = () => {
   );
 };
 
-function DecorationCatDetails() {
+function DecorationCatDetails({ city, locality }) {
   const [selCat, setSelCat] = useState("");
   const [orderType, setOrderType] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -174,75 +200,286 @@ function DecorationCatDetails() {
   const [itemQuantities, setItemQuantities] = useState({});
   const [totalAmount, setTotalAmount] = useState();
   const [buttonClickCount, setButtonClickCount] = useState(0);
-  const router = useRouter();
   const [product, setProduct] = useState("");
   const [apiProduct, setApiProduct] = useState("");
   const [isFetched, setIsFetched] = useState(false);
   const [subCategory, setSubCategory] = useState("");
   const [catValue, setCatValue] = useState("");
-  const altTagCatValue = catValue.replace(/-/g, " ");
   const [discountInfo, setDiscountInfo] = useState(null);
   const [isArrowDown, setIsArrowDown] = useState(true);
-  const [loading, setLoading] = useState(true); // Add a loading state
-
+  const [loading, setLoading] = useState(true);
   const [similar, setSimilar] = useState([]);
-  const [expensive, setExpensive] = useState([]);
   const [loadingSP, setLoadingSP] = useState(false);
   const [sendCategoryId, setSendCategoryId] = useState("");
   const [passCategoryId, setPassCategoryId] = useState("");
-
   const [openProductUrl, setOpenProductUrl] = useState("");
-
   const [extraProduct, setExtraProduct] = useState([]);
+  const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
+  const searchParams = useSearchParams();
+const [similarByPrice, setSimilarByPrice] = useState([]);
+const [similarByName, setSimilarByName] = useState([]);
 
-  console.log(selCat, "selCat");
-  console.log(router, "router1");
+  const router = useRouter();
+  const params = useParams();
+  const customizationRef = useRef(null);
+  const addonRef = useRef(null);
+  const altTagCatValue = catValue.replace(/-/g, " ");
+  const hasCityPageParam = city ? true : false;
+  const cityName = params?.city;
+  const brandItems = [
+    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+    { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
+    { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+    { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+  ];
+  console.log("Slider Data =>", similar);
+ // 1️⃣ Set CatValue if coming from params (optional case)
+useEffect(() => {
+  if (params?.catValue) {
+    setCatValue(params.catValue);
+  }
+}, [params]);
 
-  // Use useEffect to handle router query
-  useEffect(() => {
-    if (router.isReady) {
-      console.log("router.query:", router.query);
-      const {
-        subCategory: urlSubCategory,
-        catValue: urlCatValue,
-        productName,
-      } = router.query;
-      console.log("urlCatValue:", urlCatValue);
-      setSendCategoryId(urlCatValue);
-      const formattedProduct = productName
-        ? productName.replace(/-/g, " ")
-        : "";
-      setApiProduct(formattedProduct);
-      setSubCategory(urlSubCategory || "");
-      setCatValue(urlCatValue || "");
+// 2️⃣ Get URL params when router is ready
+
+const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
+  if (!price || !productsArray.length) return;
+
+  const min = Math.floor(price / 1000) * 1000;
+  const max = Math.ceil(price / 1000) * 1000 + 1000;
+
+  const filtered = productsArray.filter(item => {
+    const itemPrice = Number(item.price);
+    return (
+      itemPrice >= min &&
+      itemPrice <= max &&
+      item._id !== excludeId
+    );
+  });
+
+  console.log(`Filtered by Rounded Range ${min} - ${max}:`, filtered);
+  setSimilarByPrice(filtered);
+};
+
+
+const filterSimilarByName = (product, productsArray = [], excludeId) => {
+  if (!product?.name || !productsArray.length) return;
+
+  const mainWords = product.name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '') // Remove special chars
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const filtered = productsArray
+    .filter(item => item._id !== excludeId)
+    .map(item => {
+      const itemName = (item.name || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '');
+
+      const itemWords = itemName.split(/\s+/).filter(Boolean);
+
+      // Count how many words match
+      const matchCount = mainWords.filter(word => itemWords.includes(word)).length;
+
+      // Is it a strong match? (both words exist)
+      const isStrongMatch = mainWords.every(word => itemWords.includes(word));
+
+      // Optional: Order match
+      const isExactPhrase = itemName.includes(mainWords.join(' '));
+
+      return {
+        ...item,
+        matchCount,
+        isStrongMatch,
+        isExactPhrase
+      };
+    })
+    // Sort by exact phrase > strong match > matchCount
+    .sort((a, b) => {
+      if (b.isExactPhrase !== a.isExactPhrase) return b.isExactPhrase - a.isExactPhrase;
+      if (b.isStrongMatch !== a.isStrongMatch) return b.isStrongMatch - a.isStrongMatch;
+      return b.matchCount - a.matchCount;
+    });
+
+  console.log("Filtered by Name =>", filtered);
+  setSimilarByName(filtered);
+};
+
+
+
+
+useEffect(() => {
+  if (router.isReady) {
+    const { subCategory, catValue: urlCatValue, productName } = router.query;
+
+    setSubCategory(subCategory || "");
+    setCatValue(urlCatValue || "");
+    setSendCategoryId(urlCatValue || "");  
+
+    if (productName) {
+      const formattedProduct = productName.replace(/-/g, " ");
+      setApiProduct(formattedProduct);  
     }
-  }, [router.isReady, router.query]);
+  }
+}, [router.isReady, router.query]);
 
-  useEffect(() => {
-    if (sendCategoryId) {
-      getSubCatId(sendCategoryId);
-    }
-  }, [sendCategoryId]);
 
-  const getSubCatId = async (sendCategoryId) => {
-    console.log(sendCategoryId, "sendCategoryId");
-    try {
-      const response = await axios.get(
-        BASE_URL + GET_DECORATION_CAT_ID + sendCategoryId
-      );
-      console.log(response, "cafdsklfjds respones");
-      console.log(response.data.data.name, "name response");
-      setOpenProductUrl(response.data.data.name);
-      const categoryId = response.data.data?._id;
-      console.log("Category ID:", categoryId);
-      setPassCategoryId(categoryId);
-    } catch (error) {
-      console.log("Error:", error.message);
+useEffect(() => {
+  if (apiProduct) {
+    fetchDecorationDetails();
+  }
+}, [apiProduct]);
+
+const fetchDecorationDetails = async () => {
+  try {
+    const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
+    const response = await axios.get(url);
+    const fetchedProduct = response.data.data[0];
+    setProduct(fetchedProduct);
+    setIsFetched(true);
+
+    if (fetchedProduct?.price) {
+      const discountDetails = getDiscountedPrice(fetchedProduct.price);
+      setDiscountInfo(discountDetails);
     }
+
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching product details:", error.message);
+    setLoading(false);
+  }
+};
+
+
+
+useEffect(() => {
+  if (router.isReady && router.query.catValue) {
+    const rawCatValue = router.query.catValue;
+    setCatValue(rawCatValue); // For UI
+    setSendCategoryId(rawCatValue); // For API calls
+  }
+}, [router.isReady, router.query.catValue]);
+
+
+useEffect(() => {
+  if (!router.isReady || !router.query.catValue) return;
+
+  const rawCatValue = router.query.catValue;
+  
+  const mappedCat = getMappedCatValue(rawCatValue);  // ✅ Your map function
+  
+  setCatValue(rawCatValue);      // For showing on UI — can be slug like 'birthday-decoration'
+  setSendCategoryId(mappedCat);  // For API calls — mapped to your DB slug
+
+}, [router.isReady, router.query.catValue]);
+
+useEffect(() => {
+  if (product?.categoryId) {
+    getCategoryProducts(product.categoryId);
+    
+  } else if (catValue) {
+    getSubCatId(catValue);   
+  }
+}, [product, catValue]);
+
+useEffect(() => {
+  if (product?.price && similar.length > 0) {
+    filterSimilarByPrice(product.price, similar, product._id);
+       filterSimilarByName(product, similar, product._id);
+  }
+}, [product, similar]);
+
+useEffect(() => {
+  if (passCategoryId) {
+    getCategoryProducts(passCategoryId);
+  }
+}, [passCategoryId]);
+
+
+const getCategoryProducts = async (categoryId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
+    );
+    setSimilar(response.data.data || []);
+  } catch (error) {
+    console.error("Error fetching category products:", error.message);
+  }
+};
+
+const getMappedCatValue = (slug) => {
+  const map = {
+    "birthday-decoration": "Birthday",
+    "anniversary-decoration": "Anniversary",
+    "haldi-mehendi-decoration": "Haldi-Mehandi",
+    "first-night-decoration": "FirstNight",
+    "baby-shower-decoration": "BabyShower",
+    "welcome-baby-decoration": "WelcomeBaby",
+    "premium-decoration": "PremiumDecoration",
+    "bachelorette-decoration": "bachelorette",
+    "kids-birthday-decoration":"KidsBirthday"
+  };
+  return map[slug] || slug;  // If not mapped, return the same slug
+};
+
+
+
+useEffect(() => {
+  if (sendCategoryId) {
+    getSubCatId(sendCategoryId);
+  }
+}, [sendCategoryId]);
+
+const getSubCatId = async (catSlug) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
+    const categoryData = response.data.data;
+    if (categoryData) {
+      setPassCategoryId(categoryData._id);
+      setOpenProductUrl(categoryData.name);
+    } else {
+      console.warn(`Sub Category Not Found for: ${catSlug}`);
+    }
+  } catch (error) {
+    console.error("Error getting SubCat ID:", error.message);
+  }
+};
+
+
+
+// 6️⃣ Category Navigation Click (Same as before)
+const openCatItems = (item) => {
+  const path = hasCityPageParam
+    ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
+    : `/balloon-decoration/${item.catValue}`;
+  router.push(path);
+};
+
+const handleCustomise = (type, cityName) => {
+  const messages = {
+    "kids-birthday-decoration": "Hi, I want to customize a kids birthday decoration design, can you help me",
+    "birthday-decoration": "Hi, I want to customize a birthday decoration design, can you help me",
+    "anniversary-decoration": "Hi, I want to customize an anniversary decoration design, can you help me",
+    "baby-shower-decoration": "Hi, I want to customize a baby shower decoration design, can you help me",
+    "welcome-baby-decoration": "Hi, I want to customize a baby welcome decoration design, can you help me",
+    "first-night-decoration": "Hi, I want to customize a first night decoration design, can you help me",
+    "premium-decoration": "Hi, I want to customize a premium decoration design, can you help me",
+    "haldi-mehendi-decoration": "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
+    "wedding-decoration": "Hi, I want to customize a wedding decoration design, can you help me",
+    "bachelorette-decoration": "Hi, I want to customize a bachelorette decoration design, can you help me"
   };
 
-const handleWhatsApp = () => {
-  // Fire GTM Event
+  const phoneNumber = "917338584828";
+
+  let message = messages[type] || "Hi, I want to customize a decoration design, can you help me";
+
+  if (cityName) {
+    message += ` for ${cityName}!`;
+  } else {
+    message += "!";
+  }
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "Customization_WhatsApp_Button",        
@@ -251,90 +488,12 @@ const handleWhatsApp = () => {
     eventLabel: "Customization WhatsApp Button"
   });
 
- 
-  const phoneNumber = "7338584828";
-  const message = encodeURIComponent("I want to customize a decoration");
-  window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  window.open(
+    `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
 };
 
-
-  useEffect(() => {
-    if (apiProduct && !isFetched) {
-      const fetchDecorationDetails = async () => {
-        try {
-          const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
-          const response = await axios.get(url);
-          console.log("API Response:", response.data);
-
-          // Assuming the product has a price property
-          const fetchedProduct = response.data.data[0];
-          setProduct(fetchedProduct);
-          setSubCategory(getSubCategory(catValue || ""));
-          console.log(fetchedProduct, "fetchedProduct");
-
-          // Calculate discount info if price is available
-          if (fetchedProduct && fetchedProduct.price) {
-            const price = fetchedProduct.price;
-
-            const discountDetails = getDiscountedPrice(price);
-            setDiscountInfo(discountDetails);
-          } else {
-            console.error("Price is not available in the fetched product.");
-          }
-
-          setLoading(false); // Stop loading when data is fetched
-        } catch (error) {
-          console.error("Error:", error.message);
-          setLoading(false); // Stop loading even if there is an error
-        }
-      };
-
-      fetchDecorationDetails();
-    }
-  }, [apiProduct, catValue, isFetched]);
-
-  console.log(product._id, "fetchedProductfetchedProduct");
-
-  // similar product function
-  const fetchSimilar = async () => {
-    if (!product?._id || !passCategoryId) {
-      console.log("Missing product ID or category ID");
-      return;
-    }
-
-    if (loadingSP) return;
-    setLoadingSP(true);
-
-    try {
-      const res = await axios.post(
-        "http://fcaf-2409-40c4-274-21e9-e555-8915-6bd1-14ae.ngrok-free.app/get-similar",
-        {
-          product_id: product._id,
-          themeFilterId: passCategoryId,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      console.log("Similar Products:", res.data.similar_products);
-      console.log("Expensive Products:", res.data.expensive_products);
-      console.log("extra product", res.data.extra_products);
-      setSimilar(res.data.similar_products);
-      setExpensive(res.data.expensive_products);
-      setExtraProduct(res.data.extra_products);
-    } catch (err) {
-      console.error("Error fetching similar products:", err);
-    }
-
-    setLoadingSP(false);
-  };
-
-  useEffect(() => {
-    if (product?._id && passCategoryId) {
-      fetchSimilar();
-    }
-  }, [product?._id, passCategoryId]);
 
   const getDiscountedPrice = (price) => {
     let discount;
@@ -362,10 +521,14 @@ const handleWhatsApp = () => {
   const [isClient, setIsClient] = useState(false);
 
   const showAddOnmodal = () => {
-    setIsModalOpen((prevState) => !prevState);
-    setIsArrowDown(!isArrowDown);
-  };
+    setIsModalOpen((prev) => !prev);
+    setIsArrowDown((prev) => !prev);
 
+    setTimeout(() => {
+      addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+  
   const updateTotalAmount = () => {
     let newTotalAmount = Number(product.price);
     selectedAddOnProduct.forEach((item) => {
@@ -433,190 +596,41 @@ const handleWhatsApp = () => {
     return totalPrice;
   };
 
-  const handleContinue = () => {
+
+
+  const handleAddToCartAndScrollBack = (item) => {
+    handleAddToCart(item);  // You already have this function
+
     setIsModalOpen(false);
+
+    setTimeout(() => {
+      customizationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
   };
 
-  const handleButtonClick = (subCategory, product) => {
-    handleCheckout(subCategory, product);
-
-    setButtonClickCount(buttonClickCount + 1);
-  };
-  const handleAddOnClick = (subCategory, product) => {
-    showAddOnmodal(subCategory, product);
-  };
-
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  const FAQSection = ({ faqData }) => {
-    const [openIndex, setOpenIndex] = useState(null);
-
-    const handleToggle = (index) => {
-      setOpenIndex(openIndex === index ? null : index);
-    };
-
-    return (
-      <div className="faqSection">
-        {faqData.map((item, index) => (
-          <div key={index} className="faqItem">
-            <div
-              onClick={() => handleToggle(index)}
-              style={{ cursor: "pointer" }}
-            >
-              <h3>{item.name}</h3>
-              <span>{openIndex === index ? "-" : "+"}</span>
-            </div>
-            {openIndex === index && (
-              <div>
-                <p>{item.acceptedAnswer.text}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const tabs = [
-    {
-      id: "faq",
-      title: "FAQ",
-      content: <FAQSection faqData={faqData} />,
-    },
-    {
-      id: "whyHora",
-      title: "Why Hora",
-      content: (
-        <div className="whyHoraSec">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-            className="whyHoraSecInner"
-          >
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                Experts Decorations
-              </p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage1}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                Secured Transactions
-              </p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage2}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                100% Service Guaranteed
-              </p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "cancellationPolicy",
-      title: "Cancellation Policy",
-      content: (
-        <div className="canceltionPolicy">
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className=" text-left m-1"
-          >
-            Cancellation and order change policy
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            1. If the order is beyong 48 Hours: You are eligible for a 100%
-            refund of the advance payment
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            2. If the order is cancelled more than 24 hours before the scheduled
-            delivery: You will not receive refund of the advance payment.
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            3. If the order is cancelled within 24 hours: The full advance
-            amount will be non-refundable, and 100% of the payment for
-            decoration has to be paid by customer.
-          </p>
-        </div>
-      ),
-    },
-  ];
 
   const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
-    const stateData = {
-      from: window.location.pathname,
-      subCategory,
-      product: JSON.stringify(product),
-      orderType,
-      catValue,
-      selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-      itemQuantities: JSON.stringify(itemQuantities),
-      totalAmount: totalAmount,
-    };
+    const totalPrice = calculateTotalPrice(product.price); // ✅ Calculate total
 
-    // if (localStorage.getItem("isLoggedIn") !== "true") {
-    //   router.push({
-    //     pathname: '/login',
-    //     query: {
-    //       from: window.location.pathname,
-    //       subCategory,
-    //       product: JSON.stringify(product),
-    //       orderType,
-    //       catValue,
-    //       selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-    //       itemQuantities: JSON.stringify(itemQuantities),
-    //       totalAmount: totalAmount,
-    //     }
-    //   });
-    // } else {
+    // ✅ Fire GTM event
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "book_now_click",
+      product_name: product.name,
+    });
+
+    // ✅ Redirect to /checkout with query params
     router.push({
       pathname: "/checkout",
       query: {
         from: window.location.pathname,
         subCategory,
         product: JSON.stringify(product),
-        orderType,
+        orderType: "decoration",
         catValue,
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
-        totalAmount: totalAmount,
+        totalAmount: totalPrice,
       },
     });
   };
@@ -693,87 +707,82 @@ const handleWhatsApp = () => {
     );
   };
 
-  // Function to generate a random number between min and max (inclusive)
-  const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  // Function to generate a random rating between 4.1 to 4.8
-  const getRandomRating = () => {
-    return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
-  };
+ 
 
   if (loading) {
     return <SkeletonLoader />; // Show skeleton loader while loading
   }
 
   return (
-    <div className="App" style={{ backgroundColor: "#EDEDED" }}>
-      <Head>
-        <title>Balloon and Flower Decoration @999</title>
-        <meta
-          name="description"
-          content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
-        />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
-        <meta
-          property="og:title"
-          content="Balloon and Flower Decoration by Professional Decorators"
-        />
-        <meta
-          property="og:description"
-          content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"
-        />
-        <meta
-          property="og:image"
-          content="https://horaservices.com/api/uploads/attachment-1706520980436.png"
-        />
-        <script type="application/ld+json">{scriptTag}</script>
-        <script type="application/ld+json">{faqScriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="icon"
-          href="https://horaservices.com/api/uploads/logo-icon.png"
-          type="image/x-icon"
-        />
-        <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`}
-        />
-        <meta property="og:type" content="website" />
-      </Head>
+    <div className="App" style={{ backgroundColor: "white" }}>
+  <Head>
+  <title>
+    {cityName
+      ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName}`
+      : `${product?.name} | ${catValue.replace(/-/g, " ")} `}
+  </title>
+
+  <meta
+    name="description"
+    content={
+      cityName
+        ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
+        : `${product?.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`
+    }
+  />
+
+  <meta
+    name="keywords"
+    content={
+      cityName
+        ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${cityName}, balloon decoration in ${cityName}, ${product?.name} decoration price`
+        : `${product?.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name} decoration price`
+    }
+  />
+
+  <meta property="og:title" content={`${product?.name} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
+  <meta
+    property="og:description"
+    content={`Book ${product?.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
+  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content={`${product?.name}, ${catValue.replace(/-/g, " ")} decoration`} />
+
+  <script type="application/ld+json">{scriptTag}</script>
+  <script type="application/ld+json">{faqScriptTag}</script>
+
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+
+  <meta
+    property="og:url"
+    content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`}
+  />
+  <meta property="og:type" content="website" />
+</Head>
+
+
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            paddingTop: "10px",
-            position: "relative",
-          }}
           className="decDetails"
         >
           <div
-            style={{ width: "50%", textAlign: "center" }}
             className="decDetailsLeft"
           >
             <div
-              style={{
-                width: "80%",
-                boxShadow: "0 1px 8px rgba(0,0,0,.1)",
-                padding: "10px",
-                margin: "0 auto",
-                position: "relative",
-              }}
+
               className="decDetailsImage"
             >
               <div>
                 <Image
-                  src={`https://horaservices.com/api/uploads/compressed_webp/${
-                    product.featured_image.split(".")[0]
-                  }.webp`}
-                  alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
+                  src={
+                    product?.featured_image
+                      ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                      }.webp`
+                      : "/default-image.webp" // fallback image
+                  }
+                  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
                   style={{ width: "100%", height: "auto" }}
                   width={300}
                   height={300}
@@ -803,75 +812,16 @@ const handleWhatsApp = () => {
                 </div>
               </div>
             </div>
-            <div
-              style={{
-                border: "1px solid rgb(220, 53, 69)",
-                backgroundColor: "rgb(248, 215, 218)",
-                margin: "13px auto 7px",
-                padding: "10px 10px 11px 16px",
-                borderRadius: 10,
-                width: "80%",
-                textAlign: "left",
-              }}
-              className="inclusiton-details desktop-view"
-            >
-              <p
-                style={{ marginBottom: "0", fontWeight: "bold", fontSize: 12 }}
-              >
-                Note:
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Balloons color can be changed as per your choice.*
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Neon lights can be changed for the event (if included in the
-                design).*
-              </p>
-              <p
-                style={{
-                  margin: "4px 0 0 0",
-                  padding: 0,
-                  fontWeight: "700",
-                  fontSize: 12,
-                  color: "#444",
-                  fontWeight: 700,
-                }}
-              >
-                *Age numbers and name are customizable (if included in the
-                design).*
-              </p>
-            </div>
 
-            
+
+
           </div>
           <div
-            style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
             className="decDetailsRight"
           >
             <div
               style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
                 padding: "10px",
-                marginBottom: "12px",
-                backgroundColor: "#fff",
               }}
             >
               <h2
@@ -937,453 +887,290 @@ const handleWhatsApp = () => {
                 </div>
               </div>
 
-              {selectedAddOnProduct.length == 0 && (
-                <button
-                  style={styles.Buttonstyle}
-                  id="continueButton"
-                  className="dec-continueButton"
-                  onClick={() => handleButtonClick(subCategory, product)}
-                >
-                  Continue
-                </button>
-              )}
+              <div className='addon-prices' ref={customizationRef}>
 
-              {/* <div className="d-flex align-items-center pro-rating-sec">
-              <p className="m-0 p-0 pe-3 pro-rating-sec1" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color:"#9252AA" }}>{getRandomRating()}<span className='px-1 m-0 py-0 img-fluid' style={{ color: '#FFBF00' }}><FontAwesomeIcon style={{ margin: 0 }} icon={faStar} /></span></p>
-              <p className="m-0 p-0" style={{ color: '#9252AA', fontWeight: '500', fontSize: 17, margin: "0px", padding: "0 0 0 10px" }}>({getRandomNumber(20, 500)})</p>
-            </div> */}
+                <div className="photodetails-inclusions">
+                  {selectedAddOnProduct.length > 0 && (
+                    <>
+                      <label>Customisations</label>
+                      <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
+                        < svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg" style={{ color: "rgb(146, 82, 170)", verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
+                      </span>
+                      {selectedAddOnProduct.map((item, index) => (
+                        <li key={index}>
+                          <div className="itemline">
+                            {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+
+                          </div>
+
+                        </li>
+                      ))}
+
+                    </>
+                  )}
+                </div>
+              </div>
+
+
             </div>
 
-            {selectedAddOnProduct.length > 0 && (
-              <ul className="decoration-addons">
-                <>
-                  <div className="addon-sec">
-                    <h1
-                      style={{
-                        color: "#222",
-                        fontSize: "16px",
-                        fontWeight: "#222",
-                      }}
-                    >
-                      {product.name} :{" "}
-                    </h1>
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        color: "#222",
-                        fontWeight: "600",
-                      }}
-                    >
-                      {" "}
-                      ₹ {product.price}
-                    </div>
-                  </div>
-                  <h6>
-                    Customisations
-                    <span
-                      onClick={showAddOnmodal}
-                      style={{ marginLeft: "6px", cursor: "pointer" }}
-                    >
-                      <svg
-                        stroke="currentColor"
-                        fill="currentColor"
-                        stroke-width="0"
-                        viewBox="0 0 576 512"
-                        height="1em"
-                        width="1em"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"></path>
-                      </svg>
-                    </span>
-                  </h6>
-                  {selectedAddOnProduct.map((item, index) => (
-                    <li key={index} className="addon-sec">
-                      <div>{item.title} :</div>
-                      <div>
-                        ₹ {item.price} x {itemQuantities[item.title]} = ₹{" "}
-                        {item.price * itemQuantities[item.title]}
-                      </div>
-                    </li>
-                  ))}
-                  <p
-                    style={{
-                      fontSize: "18px",
-                      color: "#9252AA",
-                      fontWeight: "600",
-                    }}
-                    className="addon-sec"
-                  >
-                    <div>Total:</div>
-                    <div>₹ {totalAmount}</div>
-                  </p>
 
-                  <button
-                    style={styles.Buttonstyle}
-                    id="continueButton"
-                    className="dec-continueButton"
-                    onClick={() =>
-                      handleCheckout(subCategory, product, selectedAddOnProduct)
-                    }
-                  >
-                    Continue
-                  </button>
-                </>
-              </ul>
-            )}
 
             <div
               style={{
-                boxShadow: "0 1px 8px rgba(0,0,0,.18)",
                 padding: "10px",
-                marginBottom: "12px",
-                backgroundColor: "#fff",
               }}
             >
               {getItemInclusion(product.inclusion)}
 
-              <div
-                style={{
-                  border: "1px solid rgb(220, 53, 69)",
-                  backgroundColor: "rgb(248, 215, 218)",
-                  margin: "13px 2px 7px",
-                  padding: "7px 7px",
-                  borderRadius: 10,
-                  textAlign: "left",
-                  margin: "10px auto",
-                  width: "100%",
-                }}
-                className="inclusiton-details mobile-view"
-              >
-                <p
-                  style={{
-                    marginBottom: "0",
-                    fontWeight: "bold",
-                    fontSize: 12,
-                  }}
-                >
-                  Note:
-                </p>
-                <p
-                  style={{
-                    margin: "4px 0 0 0",
-                    padding: 0,
-                    fontWeight: "700",
-                    fontSize: 12,
-                    color: "#444",
-                    fontWeight: 700,
-                  }}
-                >
-                  *Balloons color can be changed as per your choice.*
-                </p>
-                <p
-                  style={{
-                    margin: "4px 0 0 0",
-                    padding: 0,
-                    fontWeight: "700",
-                    fontSize: 12,
-                    color: "#444",
-                    fontWeight: 700,
-                  }}
-                >
-                  *Neon lights can be changed for the event (if included in the
-                  design).*
-                </p>
-                <p
-                  style={{
-                    margin: "4px 0 0 0",
-                    padding: 0,
-                    fontWeight: "700",
-                    fontSize: 12,
-                    color: "#444",
-                    fontWeight: 700,
-                  }}
-                >
-                  *Age numbers and name are customizable (if included in the
-                  design).*
-                </p>
-              </div>
+<section className="relative custom-banner-section">
+  <Image
+    src={BannerImage}
+    alt="Change Something Banner"
+    className="custom-banner-image"
+  />
+
+  <div className="absolute inset-0 flex items-center justify-center"> 
+{/* <button
+  className="customise-btn gap-1"
+  onClick={() => handleCustomise(catValue, cityName)} 
+>
+  CUSTOMISATION 
+  <Image
+    src={customiseIcon}
+    alt="Customisation Icon"
+    width={14}  
+    height={14}
+  />
+</button> */}
+<button
+  className="customise-btn d-flex align-items-center gap-1"
+  onClick={() => handleCustomise(catValue, cityName)}
+>
+  CUSTOMISATION
+  <Image
+    src={customiseIcon}
+    alt="Customisation Icon"
+    width={14}  
+    height={14}
+  />
+</button>
+  </div>
+</section>
+
+
             </div>
 
-            <div className="card-container-cta">
-              <div className="header-section-cta">
-                <div className="addon-section-buttons">
-                  <div className="icon-wrapper-cta">
-                    <span className="user-icon-cta">👤</span>
-                  </div>
-                  <p className="header-text-cta">
-                    Want to <span className="highlight-cta">customize</span>{" "}
-                    this decoration?
-                    {/* <p className="subtext-cta">Talk with our Experts!</p> */}
-                  </p>
+
+
+            <AddonModal
+              isOpen={isModalOpen}
+              setIsOpen={setIsModalOpen}
+              addOnProducts={addOnProductsData.addOnProducts}
+              itemQuantities={itemQuantities}
+              onAdd={handleAddToCartAndScrollBack}
+              onRemove={handleRemoveFromCart}
+            />
+
+            <div className="decorke-why-section">
+              <h2 className="decorke-why-title">Why Hora Decoration</h2>
+
+              <div className="decorke-why-features">
+                <div className="decorke-why-item">
+                  <Image src={ExpertsDecoration} alt="Experts Decoration" className="decorke-why-icon" />
+                  <p className="decorke-why-text">EXPERTS<br />DECORATION</p>
+                </div>
+                <div className="decorke-why-item">
+                  <Image src={SecureTransactions} alt="Secure Transactions" className="decorke-why-icon" />
+                  <p className="decorke-why-text">SECURE<br />TRANSACTIONS</p>
+                </div>
+                <div className="decorke-why-item">
+                  <Image src={ServiceGuarantee} alt="Service Guarantee" className="decorke-why-icon" />
+                  <p className="decorke-why-text">100% SERVICE<br />GUARANTEED</p>
                 </div>
               </div>
-
-              <div className="button-group-cta">
-                <button
-                  onClick={showAddOnmodal}
-                  className="button-cta call-cta"
-                >
-                  {isArrowDown ? (
-                    <ArrowDown className="icon-cta down-icon" />
-                  ) : (
-                    <ArrowUp className="icon-cta up-icon" />
-                  )}
-                  Decor Upgrade's
-                </button>
-                <button
-                  onClick={handleWhatsApp}
-                  className="button-cta whatsapp-cta"
-                >
-                  <MessageCircle className="icon-cta" />
-                  Whatsapp
-                </button>
+            </div>
+            <UniversalDecorSlider
+              title="Similar Decorations"
+              data={similar}   // ✅ Fetched data pass karo
+              showDiscount={true}
+              imageSize={{ width: 120, height: 120 }}
+              city={city}
+              hasCityPageParam={hasCityPageParam}
+              locality={locality}
+              catValue={getMappedCatValue(router.query.catValue)}  // ✅ Use your map function here
+ 
+            />
+             {catValue?.toLowerCase() === "kidsbirthday" && (
+              <div className="category-tabs-outer">
+                <CategoryTabs
+                  data={themeFilters.map((item) => ({
+                    id: item.value,
+                    name: item.label,
+                    image: item.image,
+                    value: item.value,
+                    catValue: "KidsBirthday",
+                  }))}
+                  onSelect={(item) => openCatItems(item, themeFilter)}
+                  city={city}
+                  hasCityPageParam={hasCityPageParam}
+                  locality={locality}
+                  variant="grid"
+                  catValue="KidsBirthday"
+                   heading="Other Popular Themes"
+  hasBg={true}
+                />
               </div>
-              <div className="addon-sec">
-                {isModalOpen && (
-                  <div
-                    className="modal-overlay11"
-                    onClick={() => setIsModalOpen(false)}
-                    style={{ maxHeight: "500px", overflowY: "scroll" }}
-                  >
-                    <div
-                      className="modal-content`11"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ marginTop: "10px" }}
-                    >
-                      {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
-                      <div className="modal-top-box11">
-                        <h2
-                          style={{ fontSize: 16, fontWeight: 600 }}
-                          className="select-heading-sec"
-                        >
-                          Please select here to add in your decoration
-                        </h2>
-                      </div>
-                      <div className="modal-middle-box 11">
-                        <div className="modal-card-container">
-                          {addOnProductsData.addOnProducts.map(
-                            (item, index) => (
-                              <div key={index} className="modal-card">
-                                <img
-                                  style={{ width: "120px", height: "120px" }}
-                                  src={item.image}
-                                  alt={item.title}
-                                  className="model-image"
-                                />
-                                <h3>{item.title}</h3>
-                                <p>{item.description}</p>
+            )}
 
-                                <div className="price-container">
-                                  <span className="price">₹ {item.price}</span>
-                                  {itemQuantities[item.title] ? (
-                                    <div>
-                                      <button
-                                        onClick={() =>
-                                          handleRemoveFromCart(item)
-                                        }
-                                        className="quantity-button"
-                                      >
-                                        -
-                                      </button>
-                                      <span>{itemQuantities[item.title]}</span>
-                                      <button
-                                        onClick={() => handleAddToCart(item)}
-                                        className="quantity-button"
-                                      >
-                                        +
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={() => handleAddToCart(item)}
-                                      className="add-button"
-                                    >
-                                      Add
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </div>
-                      <div className="modal-bottom-box">
-                        <p>
-                          Total: ₹ {calculateTotalPrice(Number(product.price))}
-                        </p>
-                        <button
-                          className="book-now-button"
-                          onClick={handleContinue}
-                        >
-                          Continue
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+{similarByPrice.length > 0 && (
+  <UniversalDecorSlider
+    title="You May Also Like"
+    data={similarByPrice}
+    showDiscount={true}
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    locality={locality}
+    catValue={getMappedCatValue(router.query.catValue)}
+  />
+)}
+
+{similarByName.length > 0 && (
+  <UniversalDecorSlider
+    data={similarByName}
+    showDiscount={true}
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    locality={locality}
+    catValue={getMappedCatValue(router.query.catValue)}
+  />
+)}
+
+           
+
+            <div className="decorke-celebrate-banner">
+              <Image
+                src={HowitWork}
+                alt="Customize Your Celebration"
+                className="decorke-banner-img"
+              />
+            </div>
+
+            <div className="media-section">
+              <h2 className="media-heading">Hora in Media</h2>
+              <div className="media-logos">
+                <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
               </div>
             </div>
-  {/* <div style={{ padding: "20px", textAlign: "left" }}>
-     
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#52c41a")}>Top 5</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Similar Products</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {similar.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
 
-    
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#ff4d4f")}>₹800+</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Premium Products</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {expensive.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
 
-      
-      <div style={sectionHeadingStyle}>
-        <span style={badgeStyle("#faad14")}>Extra</span>
-        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Kids Add-Ons</h2>
-      </div>
-      <div style={scrollContainerStyle}>
-        {extraProduct.map((item) => (
-          <div style={productCardWrapperStyle} key={item._id}>
-            <ProductCard item={item} openProductUrl={openProductUrl} />
-          </div>
-        ))}
-      </div>
-    </div> */}
+
+      <VideoTestimonial videoSrc={VideoClint} />
+
+<ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
+
+
+
+
+          
+            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+          
+           
+               <AdditionalServices/>
 
             <div className="tab-section-details-productpage">
-              <Tabs tabs={tabs} defaultTab="faq" className="faqtabs" />
+              <FAQSection faqData={faqData} />
             </div>
+
+
           </div>
         </div>
+
+
+        <div className="confirm-button-wrapper">
+          <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black" }}>
+            Total: ₹ {calculateTotalPrice(Number(product?.price))}
+          </p>
+          <button
+            className="confirm-button"
+            onClick={() => handleCheckout(subCategory, product, selectedAddOnProduct)}
+          >
+            Continue
+          </button>
+        </div>
+
       </div>
     </div>
   );
 }
 
-function ProductCard({ item, openProductUrl }) {
-  const formattedName = item.name
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9\-]/g, "")
-    .replace(/-+/g, "-");
+// function ProductCard({ item, openProductUrl }) {
+//   const formattedName = item.name
+//     .trim()
+//     .replace(/\s+/g, "-")
+//     .replace(/[^a-zA-Z0-9\-]/g, "")
+//     .replace(/-+/g, "-");
 
-  const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
+//   const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
 
-  return (
-    <a
-      href={productUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ textDecoration: "none", color: "inherit" }}
-    >
-      <div
-        style={{
-          width: "180px",          // ✅ Same width
-          height: "270px",         // ✅ Same height
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          background: "#fff",
-          padding: "10px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          transition: "transform 0.2s ease",
-          cursor: "pointer",
-        }}
-      >
-        <img
-          src={`https://horaservices.com/api/uploads/compressed_webp/${
-            item?.featured_image?.split(".")[0]
-          }.webp`}
-          alt={item.name}
-          style={{
-            width: "100%",
-            height: "140px",
-            objectFit: "cover",
-            borderRadius: "6px"
-          }}
-        />
-        <h3
-          style={{
-            fontSize: "0.9rem",
-            marginTop: "10px",
-            marginBottom: "6px",
-            height: "2.5em", // force uniform text area height
-            overflow: "hidden"
-          }}
-        >
-          {item.name}
-        </h3>
-        <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
-      </div>
-    </a>
-  );
-}
+//   return (
+//     <a
+//       href={productUrl}
+//       target="_blank"
+//       rel="noopener noreferrer"
+//       style={{ textDecoration: "none", color: "inherit" }}
+//     >
+//       <div
+//         style={{
+//           width: "180px",          // ✅ Same width
+//           height: "270px",         // ✅ Same height
+//           border: "1px solid #ddd",
+//           borderRadius: "10px",
+//           background: "#fff",
+//           padding: "10px",
+//           boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+//           display: "flex",
+//           flexDirection: "column",
+//           justifyContent: "space-between",
+//           transition: "transform 0.2s ease",
+//           cursor: "pointer",
+//         }}
+//       >
+//         <img
+//           src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image?.split(".")[0]
+//             }.webp`}
+//           alt={item.name}
+//           style={{
+//             width: "100%",
+//             height: "140px",
+//             objectFit: "cover",
+//             borderRadius: "6px"
+//           }}
+//         />
+//         <h3
+//           style={{
+//             fontSize: "0.9rem",
+//             marginTop: "10px",
+//             marginBottom: "6px",
+//             height: "2.5em", // force uniform text area height
+//             overflow: "hidden"
+//           }}
+//         >
+//           {item.name}
+//         </h3>
+//         <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
+//       </div>
+//     </a>
+//   );
+// }
 
-const styles = {
-  Buttonstyle: {
-    border: "2px solid rgb(157, 74, 147)",
-    backgroundColor: "rgb(157, 74, 147)",
-    color: "#fff",
-    fontSize: "16px",
-    padding: "10px",
-    borderRadius: "5px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    // margin: "23px auto 14px",
-    width: "93%",
-  },
-};
-
-
-
-const scrollContainerStyle = {
-  display: "flex",
-  overflowX: "auto",
-  gap: "16px",
-  // paddingBottom: "12px",
-  scrollSnapType: "x mandatory"
-};
-
-const productCardWrapperStyle = {
-  flex: "0 0 auto",
-  scrollSnapAlign: "start"
-};
-
-const sectionHeadingStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  marginTop: "3rem",
-  // marginBottom: "1rem",
-  // paddingBottom: "0.5rem",
-  borderBottom: "2px solid #eee"
-};
-
-const badgeStyle = (color = "#1890ff") => ({
-  backgroundColor: color,
-  color: "#fff",
-  fontSize: "0.8rem",
-  padding: "4px 12px",
-  borderRadius: "20px",
-  fontWeight: "bold"
-});
+// const badgeStyle = (color = "#1890ff") => ({
+//   backgroundColor: color,
+//   color: "#fff",
+//   fontSize: "0.8rem",
+//   padding: "4px 12px",
+//   borderRadius: "20px",
+//   fontWeight: "bold"
+// });
 
 export default DecorationCatDetails;

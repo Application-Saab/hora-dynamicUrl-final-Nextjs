@@ -1,0 +1,64 @@
+.brandBanner {
+  text-align: center;
+}
+
+.brandBanner-heading {
+  font-size: 20px;
+  font-weight: 600;
+  color: #97538C;
+  margin-top: 20px;
+}
+
+.brandBanner-grid {
+    display: flex;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+   gap:5px
+}
+
+
+.brandBanner-card {
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid #6c757d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+.brandBanner-card:hover {
+  transform: translateY(-4px);
+}
+
+.brandBanner-bold {
+  font-size: 8px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 0 !important;
+}
+
+.brandBanner-sub {
+ font-size: 8px;
+  font-weight: bold;
+  margin-bottom: 0 !important;
+}
+@media (max-width: 320px) {
+  /* Brand grid responsiveness */
+  .brandBanner-grid {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .brandBanner-card {
+    flex: 0 0 45%;
+    padding: 8px;
+  } 
+
+  .brandBanner-bold,
+  .brandBanner-sub {
+    font-size: 13px;
+  } }

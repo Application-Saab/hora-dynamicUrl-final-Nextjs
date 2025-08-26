@@ -18,6 +18,7 @@ import Image from "next/image";
 import faqData from '../../../../../../utils/faqData.json'
 import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
+import DecorationCatDetails from "@/pages/balloon-decoration/[catValue]/product/[productName]";
 
 // Skeleton Loader Component
 const SkeletonLoader = () => {
@@ -45,7 +46,7 @@ const SkeletonLoader = () => {
 };
 
 
-function DecorationCatDetails() {
+function DecorationCatCityDetails() {
   const [selCat, setSelCat] = useState("");
   const [city, setCity] = useState("");
   const [isArrowDown, setIsArrowDown] = useState(true);
@@ -375,10 +376,7 @@ function DecorationCatDetails() {
     }
   }
 
-  function getSimilarProducts(product){
-    console.log("product" , product);
-  }
-
+ 
 
   useEffect(() => {
     addSpaces(subCategory);
@@ -388,50 +386,64 @@ function DecorationCatDetails() {
     setIsClient(true);
   }, []);
 
-  const getItemInclusion = (inclusion) => {
-    if (!Array.isArray(inclusion) || inclusion.length === 0) {
-      return null;
+
+
+ const PageTitle = (e) =>{
+    if(catValue === "kids-birthday-decoration"){
+      return `Kids Birthday Balloon Decoration in ${city} by Professionals Decorators, Starting at ₹1199`
     }
-    const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, ''); // Remove HTML tags
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, ' '); // Replace &# sequences with space
-    const statements = withoutSpecialChars.split('<div>');
-    const inclusionItems = statements.flatMap(statement => statement.split("-").filter(item => item.trim() !== ''));
-    const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        <Image src={checkImage} alt="Info" style={{ height: 13, width: 13, marginRight: 10 }} />
-        {item.trim()}
-      </li>
-    ));
-    return (
-      <div>
-        <div style={{ fontSize: "21px", borderBottom: "1px solid #e7eff9", marginBottom: "10px" }}>Inclusions</div>
-        <ul>
-          {inclusionList}
-        </ul>
-      </div>
-
-    );
-  };
-
-  // Function to generate a random number between min and max (inclusive)
-  const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  // Function to generate a random rating between 4.1 to 4.8
-  const getRandomRating = () => {
-    return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
-  };
-
-  if (loading) {
-    return <SkeletonLoader />; // Show skeleton loader while loading
+    else if(catValue === "birthday-decoration"){
+      return `Birthday Balloon Decoration ${city} at Home by Professionals  Decorators, Starting at ₹1199`;
+    }
+    else if(catValue === "anniversary-decoration"){
+      return `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`;
+    }
+    else if(catValue === "first-night-decoration"){
+      return `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`;
+    }
+    else if(catValue === "baby-shower-decoration") {
+      return `Baby Shower in ${city} with Latest Designs by Professionals  Decorators Starting at ₹1199`;
+    }
+    else if (catValue === "welcome-baby-decoration"){
+      return `Baby Welcome Decoration in ${city} at home by Professionals  Decorators, Starting at ₹1199`;
+    }
+    else if (catValue === "haldi-mehendi-decoration"){
+      return `Haldi Decoration in ${city} with Latest Designs starting at ₹3000`
+    }
+    else{
+     return(`Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`)
+    }
   }
+
+  const getPageMetaDescription = () =>{
+    if(catValue === "kids-birthday-decoration"){
+      return "At Hora, 🎉Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠, under the sea 🌊, Baby Boss 👔, Barbie 💖, and cars 🚗. Explore detailed pricing and inclusions, and let our professional team bring your chosen design to life. Book your perfect party decor today! 🎈✨"
+    }
+    else if(catValue === "birthday-decoration"){
+      return "At Hora, 🎈 Explore our wide range of balloon and flower decorations for birthday parties, featuring ring, sequin, wall, and room designs. Discover pricing and inclusions for every balloon color and variety. Customise your celebration and make it unforgettable with our stunning decor. Book your perfect party setup today! 🎉🌟";
+    }
+    else if(catValue === "anniversary-decoration"){
+      return "🎉 Explore top-notch anniversary decoration designs and book directly from our website 💖. Find elegant and customizable decor options for your special event. Browse our selection to choose the perfect theme and make your anniversary memorable with seamless online booking. ✨"
+    }
+    else if(catValue === "first-night-decoration"){
+      return "🌟 Explore our selection of elegant decoration designs for your first night event 💖. Choose from a variety of styles and themes, and book your perfect decor directly through our website. Make your special night unforgettable with seamless online booking and beautiful, personalised decorations. ✨"
+    }
+    else if (catValue === "haldi-mehendi-decoration"){
+      return "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups, featuring traditional elements, colorful floral arrangements, and custom designs to make your event unforgettable. 🌸💛"
+    }
+    else{
+     return("Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199")
+    }
+  }
+
+ 
+console.log(city);
 
 
   return (
     <div className="App" style={{ backgroundColor: "#EDEDED" }}>
-    <Head>
+   
+     <Head>
       <title>Balloon and Flower Decoration @999 in {city}</title>
       <meta name="description" content="Celebrate Anniversary, Birthday & other Occasions with Candlelight Dinners, Surprises & Balloon Decorations"  />
       <meta name="keywords" content="Balloon and Flower Decoration @ ₹999" />
@@ -446,229 +458,7 @@ function DecorationCatDetails() {
       <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product.name}`} />
       <meta property="og:type" content="website" />
     </Head>
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", paddingTop: "10px", position: "relative" }} className="decDetails">
-        <div style={{ width: "50%", textAlign: "center" }} className="decDetailsLeft">
-          <div style={{ width: "80%", boxShadow: "0 1px 8px rgba(0,0,0,.1)", padding: "10px", margin: "0 auto", position: "relative" }} className="decDetailsImage">
-            <div>
- <Image
-          src={`https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split('.')[0]}.webp`}
-          alt={`balloon decoration ${altTagCatValue} ${product.name} ${product.price}`}
-          style={{ width: "100%", height: "auto" }}
-          width={300}
-          height={300}
-/>                          
-            
-            <div style={{ position: "absolute", bottom: 3, right: 3, borderRadius: "50%", padding: 10 }}>
-                      <span style={{ color: "rgba(157, 74, 147, 0.6)", fontWeight: "600" }}>
-                      <Image src={logo} style={{ width:"70px" , height:"80px"}} className="hora-watermark-image"/>  
-                      </span>
-                    </div>
-            </div>
-           
-          </div>
-          <div style={{ border:"1px solid rgb(220, 53, 69)", backgroundColor:"rgb(248, 215, 218)" , margin:"13px auto 7px" , padding:"10px 10px 11px 16px" , borderRadius:10 , width:"80%" , textAlign:"left"}} className="inclusiton-details desktop-view">
-        <p style={{ marginBottom:"0" , fontWeight:"bold" , fontSize:12}}>Note:</p>
-        <p style={{ margin:"4px 0 0 0" , padding:0 , fontWeight:"700" , fontSize:13 , color:"#444" , fontWeight:700}}>*Balloons color can be changed as per your choice.*</p>
-        <p style={{ margin:"4px 0 0 0" , padding:0 , fontWeight:"700" , fontSize:13 , color:"#444" , fontWeight:700}}>*Neon lights can be changed for the event (if  included in the design).*</p>
-        <p style={{ margin:"4px 0 0 0" , padding:0 , fontWeight:"700" , fontSize:13 , color:"#444" , fontWeight:700}}>*Age numbers and name are customizable (if included in the design).*</p>
-
-        </div>
-        </div>
-        <div style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }} className="decDetailsRight">
-          <div style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18)", padding: "10px", marginBottom: "12px", backgroundColor: "#fff" }}>
-            <h2 style={{ fontSize: "13px", color: "#222" , margin:"5px 0 5px 0" , fontWeight:"500" }}>
-            <a style={{ color: "#9252AA", textDecoration: "none" }} href="/">Home</a>
-            {' > '}
-            <a style={{ color: "#9252AA", textDecoration: "none" }} href={`/balloon-decoration/${catValue}`}>
-            {subCategory}</a>
-
-            {' > '}
-            <span>{product.name}</span>
-            </h2>
-            <h1 style={{ fontSize: "16px", color: "#222", fontSize: "21px", fontWeight: "#222" }}>{product.name}</h1>
-            <div className="pro-details-price">
-            <p  style={{ fontSize: "18px", color: "#9252AA", fontWeight: "600" }}> ₹ {product.price}</p>
-            <p style={{
-                          color: '#444',
-                          fontWeight: '700',
-                          fontSize: 18,
-                          textAlign: "left",
-                          margin: "10px 0px 7px",
-                          textDecoration: 'line-through'
-                        }}
-                        >
-                           ₹ {Math.floor(discountInfo?.discountedPrice)}
-                        </p>
-                        <div className="decorationdiscount-details">
-                    ₹ {Math.floor(discountInfo?.discountDifference || 0)} {'off'}
-                    </div>
-            </div>
-
-            {selectedAddOnProduct.length == 0 && (
-              <button style={styles.Buttonstyle} id="continueButton" className="dec-continueButton" onClick={() => handleButtonClick(subCategory, product)}>Continue</button>
-            )}
-            
-                      
-            {/* <div className="d-flex align-items-center pro-rating-sec">
-            <p className="m-0 p-0 pe-3 pro-rating-sec1" style={{ fontWeight: '500', fontSize: 17, margin: "0px", color:"#9252AA" }}>{getRandomRating()}<span className='px-1 m-0 py-0 img-fluid' style={{ color: '#FFBF00' }}><FontAwesomeIcon style={{ margin: 0 }} icon={faStar} /></span></p>
-            <p className="m-0 p-0" style={{ color: '#9252AA', fontWeight: '500', fontSize: 17, margin: "0px", padding: "0 0 0 10px" }}>({getRandomNumber(20, 500)})</p>
-          </div> */}
-         
-          </div>
-
-
-          {selectedAddOnProduct.length > 0 && (
-            <ul className="decoration-addons">
-              <>
-                <div className="addon-sec">
-                  <h1 style={{ color: "#222", fontSize: "16px", fontWeight: "#222" }}>{product.name} : </h1>
-                  <div style={{ fontSize: "16px", color: "#222", fontWeight: "600" }}> ₹ {product.price}</div>
-                </div>
-                <h6>Customisations
-                  <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
-                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z"></path></svg>
-                  </span>
-                </h6>
-                {selectedAddOnProduct.map((item, index) => (
-                  <li key={index} className="addon-sec">
-                    <div>
-                      {item.title} :
-                    </div>
-                    <div>
-                      ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-                    </div>
-                  </li>
-                ))}
-                <p style={{ fontSize: "18px", color: "#9252AA", fontWeight: "600" }} className="addon-sec">
-                  <div>
-                    Total:
-                  </div>
-                  <div>
-                    ₹ {totalAmount}
-                  </div>
-
-                </p>
-                
-                <button style={styles.Buttonstyle}  id="continueButton"  className="dec-continueButton" onClick={() => handleCheckout(subCategory, product, selectedAddOnProduct)}>Continue</button>
-                  
-                </>
-            </ul>
-          )}
-
-
-
-
-
-
-          <div style={{ boxShadow: "0 1px 8px rgba(0,0,0,.18)", padding: "10px", marginBottom: "12px", backgroundColor: "#fff" }}>
-            {getItemInclusion(product.inclusion)}
-
-            <div style={{ border:"1px solid rgb(220, 53, 69)", backgroundColor:"rgb(248, 215, 218)" , margin:"13px 2px 7px" , padding:"7px 7px" , borderRadius:10 , textAlign:"left" , margin:"10px auto" , width:"100%"}} className="inclusiton-details mobile-view">
-        <p style={{ marginBottom:"0" , fontWeight:"bold" , fontSize:12}}>Note:</p>
-        <p style={{ margin:"4px 0 0 0" , padding:0 , fontWeight:"700" , fontSize:12 , color:"#444" , fontWeight:700}}>*Balloons color can be changed as per your choice.*</p>
-        <p style={{ margin:"4px 0 0 0" , padding:0 , fontWeight:"700" , fontSize:12 , color:"#444" , fontWeight:700}}>*Neon lights can be changed for the event (if  included in the design).*</p>
-        <p style={{ margin:"4px 0 0 0" , padding:0 , fontWeight:"700" , fontSize:12 , color:"#444" , fontWeight:700}}>*Age numbers and name are customizable (if included in the design).*</p>
-
-        </div>
-            
-         
-          </div>
-
-    <div className="card-container-cta">
-    <div className="header-section-cta">
-      <div className="addon-section-buttons">
-      <div className="icon-wrapper-cta">
-        <span className="user-icon-cta">👤</span>
-      </div>
-      <p className="header-text-cta">
-        Want to <span className="highlight-cta">customize</span> this decoration?
-        {/* <p className="subtext-cta">Talk with our Experts!</p> */}
-      </p>
-      </div>
-            
-     
-    </div>
-   
-    <div className="button-group-cta">
-      <button onClick={showAddOnmodal} className="button-cta call-cta">
-          
-              
-      {isArrowDown ? (
-        <ArrowDown className="icon-cta down-icon" />
-      ) : (
-        <ArrowUp className="icon-cta up-icon" />
-      )}
-          Decor Upgrade's
-        </button>
-        <button onClick={handleWhatsApp} className="button-cta whatsapp-cta">
-          <MessageCircle className="icon-cta" />
-          Whatsapp
-        </button>           
-      
-      
-      </div>
-      <div className="addon-sec">
-             {isModalOpen && (
-             <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight:"500px" , overflowY:"scroll"}}>
-          <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop:"10px"}}>
-            {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
-            <div className="modal-top-box11">
-              <h2 style={{ fontSize:16 , fontWeight:600}} className="select-heading-sec">Please select here to add in your decoration</h2>
-            </div>
-            <div className="modal-middle-box 11">
-              <div className="modal-card-container">
-                {addOnProductsData.addOnProducts.map((item, index) => (
-                  <div key={index} className="modal-card">
-                    <img style={{ width: "120px", height: "120px" }} src={item.image} alt={item.title} className="model-image" />
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-
-                    <div className="price-container">
-                      <span className="price">₹ {item.price}</span>
-                      {itemQuantities[item.title] ? (
-                        <div>
-                          <button onClick={() => handleRemoveFromCart(item)} className="quantity-button">-</button>
-                          <span>{itemQuantities[item.title]}</span>
-                          <button onClick={() => handleAddToCart(item)} className="quantity-button">+</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => handleAddToCart(item)} className="add-button">Add</button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="modal-bottom-box">
-
-              <p>Total: ₹ {calculateTotalPrice(Number(product.price))}</p>
-              <button className="book-now-button" onClick={handleContinue}>Continue</button>
-            </div>
-          </div>
-        </div>
-       )} 
-        </div>
-  </div>
-
-
-
-          <div className="tab-section-details-productpage">
-            <Tabs
-              tabs={tabs}
-              defaultTab="faq"
-              className="faqtabs"
-            />
-          </div>
-
-          {/* <div className="similar-products">
-            <h2>Similar Products</h2>
-            {getSimilarProducts(product)}
-          </div> */}
-
-        </div>
-      </div>
-    </div>
+   <DecorationCatDetails/>
 
   
 
@@ -677,20 +467,6 @@ function DecorationCatDetails() {
   );
 };
 
-const styles = {
-  Buttonstyle: {
-    border: "2px solid rgb(157, 74, 147)",
-    backgroundColor: "rgb(157, 74, 147)",
-    color: "#fff",
-    fontSize: "16px",
-    padding: "10px",
-    borderRadius: "5px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    margin: "23px auto 14px",
-    width: "93%",
-  },
-};
 
-export default DecorationCatDetails;
+
+export default DecorationCatCityDetails;
