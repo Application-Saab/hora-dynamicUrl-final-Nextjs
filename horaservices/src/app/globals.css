@@ -2620,8 +2620,8 @@ f.product-add-ons ul {
 
 .whatappicon {
   position: fixed;
-  right: 20px;
-  bottom: 30px;
+     right: 10px;
+    bottom: 70px;
   z-index: 11111111;
   width: 50px;
   height: 50px;

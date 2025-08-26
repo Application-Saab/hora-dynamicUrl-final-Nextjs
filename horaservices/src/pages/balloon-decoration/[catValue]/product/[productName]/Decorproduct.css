@@ -253,6 +253,8 @@ ul.decoration-addons {
   display: block;
   width: 100%;
   height: auto;
+  margin-top: 15px;
+
 }
 
 .custom-banner-section button {
@@ -280,6 +282,7 @@ ul.decoration-addons {
   text-decoration-offset: 0;
   text-decoration-thickness: 1px;
   text-decoration-skip-ink: auto;
+  gap:10px
 }
 .custom-banner-section button:hover {
   background: #fff;

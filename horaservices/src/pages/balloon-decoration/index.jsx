@@ -511,7 +511,7 @@ useEffect(() => {
  <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
 
-<ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
+<ReviewSlider reviews={ballonReview} title="Customer Reviews" />
     </div>
   );
 };

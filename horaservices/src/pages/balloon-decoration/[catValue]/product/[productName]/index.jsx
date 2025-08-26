@@ -44,7 +44,7 @@ import HappyBithday from "../../../../../assets/HappyBirthDay.png"
 import Ballons from "../../../../../assets/Ballons.png"
 import { ballonReview } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
-
+import customiseIcon from "@/assets/customisationicon.png"
 import AdditionalServices from "@/components/AdditionalServices";
 
 import BannerImage from "../../../../../assets/customised.webp";
@@ -931,11 +931,29 @@ const handleCustomise = (type, cityName) => {
   />
 
   <div className="absolute inset-0 flex items-center justify-center"> 
-<button
-  className="customise-btn"
+{/* <button
+  className="customise-btn gap-1"
   onClick={() => handleCustomise(catValue, cityName)} 
 >
+  CUSTOMISATION 
+  <Image
+    src={customiseIcon}
+    alt="Customisation Icon"
+    width={14}  
+    height={14}
+  />
+</button> */}
+<button
+  className="customise-btn d-flex align-items-center gap-1"
+  onClick={() => handleCustomise(catValue, cityName)}
+>
   CUSTOMISATION
+  <Image
+    src={customiseIcon}
+    alt="Customisation Icon"
+    width={14}  
+    height={14}
+  />
 </button>
   </div>
 </section>

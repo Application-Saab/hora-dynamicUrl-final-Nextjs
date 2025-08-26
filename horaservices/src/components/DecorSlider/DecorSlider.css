@@ -23,11 +23,11 @@
 
 .premium-scroll-wrapper {
   display: flex;
-  gap: 11px;
+  gap: 8px;
   overflow-x: auto;
   padding-bottom: 0.5rem;
   scroll-snap-type: x mandatory;
-   scrollbar-width: none;        /* Firefox */
+   scrollbar-width: none;     
   -ms-overflow-style: none; 
 }
 

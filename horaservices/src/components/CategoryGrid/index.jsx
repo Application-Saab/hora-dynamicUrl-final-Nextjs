@@ -42,7 +42,7 @@ const CategoryGrid = ({ cardsData, city, locality }) => {
                     className="category-grid__button"
                     onClick={() => handleSliderViewMore(card.link, card.title)}
                   >
-                    View All
+                    View More
                   </button>
                 )}
               </div>

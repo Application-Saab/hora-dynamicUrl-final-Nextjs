@@ -1,7 +1,7 @@
 /* === Main Wrapper & Title === */
 .decor-grid-wrapper {
   background-color: #fff2dd;
-  padding: 2rem 1rem;
+  padding: 10px;
 }
 
 .decor-title-heading {
@@ -15,7 +15,7 @@
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-style: normal;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 100%;
   letter-spacing: 0;
   text-align: center;
