@@ -125,10 +125,6 @@ const GuestListPreview = ({ hostData, urlParams }) => {
           </div>
         </div>
 
-        {/* <div className="view-list-button" onClick={() => setOpenRsvpList(true)}>
-          <span className="list-icon"> <Image src={ListViewIcon} alt="List Icon" height={'30px'} width={'30px'}  /> </span>
-          <span> Full Guest List </span>
-        </div> */}
         <div className="d-flex justify-content-center" style={{marginBottom: '22.5px'}}>
           <button className="view-list-button" onClick={() => setOpenRsvpList(true)}>
           <span className="view-list-icon-bg">

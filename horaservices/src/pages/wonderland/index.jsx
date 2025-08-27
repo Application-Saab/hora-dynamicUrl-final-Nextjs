@@ -57,6 +57,7 @@ import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage
 import { eventOptions } from "@/utils/constants";
 import chatIcon from "@/assets/chaticon.png";
 import EmojiPicker from "emoji-picker-react";
+import { FaRegKeyboard } from "react-icons/fa6";
 import {
   collection,
   deleteDoc,
@@ -149,6 +150,26 @@ const InvitationCard = () => {
     }
   }, [queryId]);
 
+  const [emojiWidth, setEmojiWidth] = useState(400);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth > 450) {
+        setEmojiWidth(450);
+      } else if (screenWidth <= 450) {
+        setEmojiWidth(screenWidth - 20);
+      } else {
+        setEmojiWidth(screenWidth - 50);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
   useEffect(() => {
     const fetchEventImages = async () => {
       if (!urlParams.eventId) {
@@ -221,6 +242,13 @@ const InvitationCard = () => {
           setErrorGetGuest(data.message || "Failed to fetch guest");
         } else {
           setGuestDetails(data.data || []);
+          if(data?.data?.rsvpStatus){
+            setHasSubmitted(true);
+            localStorage.setItem(
+              `rsvp_submitted_${urlParams.eventId}_${userID}`,
+              "true"
+            );
+          }
           if (urlParams.userType === "guest" && data.data && data.data.name) {
             localStorage.setItem("wonderLandUserName", data.data?.name || "");
           }
@@ -360,6 +388,18 @@ const InvitationCard = () => {
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const textareaRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // ✅ jab bhi viewport change hoga, input ko visible rakho
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -1477,7 +1517,7 @@ const InvitationCard = () => {
                               userType === "host" || hasSubmitted
                                 ? "pointer"
                                 : "not-allowed", // UX ke liye
-                            zIndex: 999,
+                            zIndex: 990,
                           }}
                         >
                           <Image
@@ -1617,7 +1657,7 @@ const InvitationCard = () => {
                               userType === "host" || hasSubmitted
                                 ? "pointer"
                                 : "not-allowed",
-                            zIndex: 999,
+                            zIndex: 990,
                           }}
                         >
                           <Image
@@ -2204,19 +2244,6 @@ const InvitationCard = () => {
                 <span className="mx-2">{`${orderDetails?.Name}'s`}</span>{" "}
                 <span>{orderDetails?.eventType} </span>
               </div>
-              {/* <div>
-                <button
-                className="chat-close-btn"
-                onClick={() => {
-                  setChatOpen(false);
-                  chatOpenRef.current = false;
-                }}
-              >
-                x
-              </button>
-                      <NotificationToggleButton />
-
-              </div> */}
             </div>
 
             <div className="chat-messages" ref={chatMessagesRef}>
@@ -2266,52 +2293,57 @@ const InvitationCard = () => {
                 );
               })}
             </div>
-            {/* <div className="chat-input-container">
-      <button
-        type="button"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-        className="emoji-btn"
-      >
-        ☺
-      </button>
-      <textarea
-        value={text}
-        ref={textareaRef}
-        className="chat-input"
-        rows={1}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (e.target.value.length > 0) {
-            setShowEmojiPicker(false);
-          }
-        }}
-        onInput={(e) => {
-          e.target.style.height = "auto";
-          const newHeight = Math.min(e.target.scrollHeight, 120);
-          e.target.style.height = newHeight + "px";
-        }}
-        placeholder="Type your message..."
-      />
-      <button onClick={sendMessage} className="chat-send-btn">➤</button>
-    </div> */}
             <div className="chat-input-container">
               <button
                 type="button"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                onClick={() => {
+                  if (showEmojiPicker) {
+                    // Emoji picker open hai, ab keyboard button dikh raha hoga
+                    setShowEmojiPicker(false);
+                    // Force mobile keyboard to open
+                    setTimeout(() => {
+                      textareaRef.current?.focus();
+                    }, 0);
+                  } else {
+                    // Emoji picker open karo
+                    setShowEmojiPicker(true);
+                    // Keyboard band karo
+                    textareaRef.current?.blur();
+                  }
+                }}
                 className="emoji-btn"
               >
-                <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                {showEmojiPicker ? (
+                  <FaRegKeyboard fontSize={20} />
+                ) : (
+                  <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                )}
               </button>
-
               <textarea
                 value={text}
                 ref={textareaRef}
                 className="chat-input"
                 rows={1}
+                onFocus={() => {
+                  // ✅ Agar emoji picker open hai aur user text area tap kare → picker band karo
+                  if (showEmojiPicker) {
+                    setShowEmojiPicker(false);
+                  }
+                  // ✅ focus karte hi input ko viewport me le aa
+                  setTimeout(() => {
+                    textareaRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "end",
+                    });
+
+                    // ✅ Extra offset ke liye manual scroll adjust
+                    window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
+                  }, 300);
+                }}
                 onChange={(e) => {
                   setText(e.target.value);
                   if (e.target.value.length > 0) {
-                    setShowEmojiPicker(false);
+                    setShowEmojiPicker(false); // typing se emoji picker band ho jaye
                   }
                 }}
                 onInput={(e) => {
@@ -2323,7 +2355,6 @@ const InvitationCard = () => {
               />
 
               <button onClick={sendMessage} className="chat-send-btn">
-                {" "}
                 <Image src={sendIcon} alt="Send" className="send-icon" />
               </button>
             </div>
@@ -2331,6 +2362,7 @@ const InvitationCard = () => {
             {showEmojiPicker && (
               <div className="emoji-container">
                 <EmojiPicker
+                  width={emojiWidth}
                   searchDisabled={true}
                   onEmojiClick={(emojiData) => {
                     const textarea = textareaRef.current;
@@ -2343,11 +2375,17 @@ const InvitationCard = () => {
                       text.substring(end);
 
                     setText(newText);
-                    setTimeout(() => {
-                      textarea.focus();
+                    requestAnimationFrame(() => {
                       textarea.selectionStart = textarea.selectionEnd =
                         start + emojiData.emoji.length;
-                    }, 0);
+                    });
+                    // ✅ emoji picker open hone par bhi input ko viewport me le aao
+                    setTimeout(() => {
+                      textarea.scrollIntoView({
+                        behavior: "smooth",
+                        block: "end",
+                      });
+                    }, 100);
                   }}
                 />
               </div>

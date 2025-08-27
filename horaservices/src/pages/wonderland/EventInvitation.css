@@ -1287,7 +1287,7 @@ background-color: none !important;
 .emoji-container{
   margin:10px auto;
   height:300px;
- 
+  /* width: 100%; */
 }
 .emoji-btn {
   font-size: 22px;

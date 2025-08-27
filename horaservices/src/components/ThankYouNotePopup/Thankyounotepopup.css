@@ -140,7 +140,7 @@ input {
   bottom: 100%;
   left: 0;
   width: 100%;
-  max-width: 300px;
+  /* max-width: 300px; */
   background: white;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   border-radius: 8px;
@@ -153,8 +153,10 @@ input {
   bottom: 0px;
   right: 0px;
   background: none;
+  padding: 5px 5px;
+  margin: 0px;
   border: none;
-  font-size: 25px;
+  /* font-size: 25px; */
   cursor: pointer;
   color: black;
 }
