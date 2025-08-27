@@ -496,7 +496,7 @@ const Decoration = ({ city, locality }) => {
       <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
 
-      <ReviewSlider reviews={ballonReview} title="Customer Reviews" />
+      {/* <ReviewSlider reviews={ballonReview} title="Customer Reviews" /> */}
     </div>
   );
 };

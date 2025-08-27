@@ -12,6 +12,9 @@ import whatshare from "@/assets/whatshare.png";
 import shareinvitaion from "@/assets/shareinvitation.png";
 import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
+import { FaArrowLeft } from "react-icons/fa";
+import { IoIosNotificationsOff } from "react-icons/io";
+import { IoIosNotifications } from "react-icons/io";
 import {
   BASE_URL,
   CREATE_GUEST_BY_EVENTID,
@@ -20,7 +23,7 @@ import {
   GET_GUEST_DETTAILS,
   UPLOAD_IMAGES_SELF,
   UPLOAD_THANKYOU_NOTE,
-  GET_ALL_TEMPLATES ,
+  GET_ALL_TEMPLATES,
 } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -52,8 +55,9 @@ import GuestRSVPForm from "@/components/GuestRSVPForm";
 import frame from "@/assets/Frame1.png";
 import WonderlandLandingPage from "@/components/wonderland/WonderlandLandingPage";
 import { eventOptions } from "@/utils/constants";
-import chatIcon from "@/assets/chaticon.png"
+import chatIcon from "@/assets/chaticon.png";
 import EmojiPicker from "emoji-picker-react";
+import { FaRegKeyboard } from "react-icons/fa6";
 import {
   collection,
   deleteDoc,
@@ -65,22 +69,23 @@ import {
   query,
   orderBy,
   updateDoc,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
+import A2HSPrompt from "@/components/wonderland/AddToHomeScreen";
+import NotificationToggleButton from "@/components/wonderland/NotificationToggleButton";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
 
-
 const InvitationCard = () => {
   const hasSeenMessages = useRef(true);
-const prevMessageLength = useRef(0);
+  const prevMessageLength = useRef(0);
 
   const rsvpRef = useRef(null);
   const router = useRouter();
-  const { page, id : queryId } = router.query;
+  const { page, id: queryId } = router.query;
   // const slug = router.query.slug || [];
   const fileInputRef = useRef(null);
 
@@ -99,20 +104,23 @@ const prevMessageLength = useRef(0);
   const [openRsvpList, setOpenRsvpList] = useState(false);
   const [errorGetGuest, setErrorGetGuest] = useState(null);
   const [guestDetails, setGuestDetails] = useState({});
-    const [showDeletePopup, setShowDeletePopup] = useState(false);
-const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
     guestDetails
   );
   const [refetchAddGuest, setRefetchAddGuest] = useState(false);
-      const [refetchLoginGuest, setRefectchLoginGuest] = useState(false);
+  const [refetchLoginGuest, setRefectchLoginGuest] = useState(false);
 
   const [refetchLuckyDraw, setRefetchLuckyDraw] = useState(false);
   const [eventAllImages, setEventAllImages] = useState([]);
- const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] = useState(false);
-const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(false);
+  const [refetchLuckyDrawHostDelete, setRefetchLuckyDrawHostDelete] =
+    useState(false);
+  const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] =
+    useState(false);
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
@@ -141,6 +149,26 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       }
     }
   }, [queryId]);
+
+  const [emojiWidth, setEmojiWidth] = useState(400);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth > 450) {
+        setEmojiWidth(450);
+      } else if (screenWidth <= 450) {
+        setEmojiWidth(screenWidth - 20);
+      } else {
+        setEmojiWidth(screenWidth - 50);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   useEffect(() => {
     const fetchEventImages = async () => {
@@ -172,16 +200,21 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
         setLoadingEventImages(false);
       }
     };
-  // Initial call
+    // Initial call
     fetchEventImages();
 
-  // Call every 3 minute
-  const interval = setInterval(fetchEventImages, 180000);
+    // Call every 3 minute
+    const interval = setInterval(fetchEventImages, 180000);
 
-  // Cleanup interval on unmount
-  return () => clearInterval(interval);
-    }, [urlParams.eventId, refetchEventImages, refetchLuckyDraw, refetchLuckyDrawHostDelete,
-  refetchLuckyDrawGuestDelete]);
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [
+    urlParams.eventId,
+    refetchEventImages,
+    refetchLuckyDraw,
+    refetchLuckyDrawHostDelete,
+    refetchLuckyDrawGuestDelete,
+  ]);
 
   useEffect(() => {
     const fetchGuestDetails = async () => {
@@ -209,6 +242,16 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
           setErrorGetGuest(data.message || "Failed to fetch guest");
         } else {
           setGuestDetails(data.data || []);
+          if(data?.data?.rsvpStatus){
+            setHasSubmitted(true);
+            localStorage.setItem(
+              `rsvp_submitted_${urlParams.eventId}_${userID}`,
+              "true"
+            );
+          }
+          if (urlParams.userType === "guest" && data.data && data.data.name) {
+            localStorage.setItem("wonderLandUserName", data.data?.name || "");
+          }
         }
       } catch (err) {
         setErrorGetGuest("Error fetching guest: " + err.message);
@@ -222,7 +265,8 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     refetchLuckyDraw,
     refetchEventImages,
     refetchAddGuest,
-    refetchLuckyDrawGuestDelete
+    refetchLuckyDrawGuestDelete,
+    hasSubmitted,
   ]);
 
   useEffect(() => {
@@ -258,8 +302,10 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
       urlParams.eventUserId &&
       urlParams.userType === "guest"
     ) {
-      if(urlParams.eventUserId === userID){
-        router.push(`/wonderland?id=${urlParams.eventUserId}/${urlParams.eventId}/host`);
+      if (urlParams.eventUserId === userID) {
+        router.push(
+          `/wonderland?id=${urlParams.eventUserId}/${urlParams.eventId}/host`
+        );
         return;
       }
       addGuest();
@@ -290,7 +336,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
 
   const [sendCustomerId, setSendCustomerId] = useState("");
   const [sendCustomerPhoneNumber, setSendCustomerPhoneNumber] = useState("");
- 
+
   const [eventData, setEventData] = useState([]);
   const [loadingThumbnails, setLoadingThumbnails] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -309,7 +355,7 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [attendanceStatus, setAttendanceStatus] = useState("");
   const [currentEventId, setCurrentEventId] = useState("");
   const [currentGuestId, setCurrentGuestId] = useState("");
- const [template, setTemplate] = useState(null);
+  const [template, setTemplate] = useState(null);
 
   const [showPopupGuest, setShowPopupGuest] = useState(false);
   const [guestList, setGuestList] = useState([]);
@@ -326,18 +372,34 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   const [userType, setUserType] = useState("");
   const [loadingUser, setLoadingUser] = useState(true);
 
-  
-   const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
+  console.log(
+    "%c [ messages ]-332",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    messages
+  );
   const [text, setText] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
   const chatOpenRef = useRef(false);
   const [unreadCount, setUnreadCount] = useState(0);
-    const [selectedMessages, setSelectedMessages] = useState([]);
+  const [selectedMessages, setSelectedMessages] = useState([]);
   const [eventId, setEventId] = useState(null);
   const [role, setRole] = useState(null);
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const textareaRef = useRef(null);
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // ✅ jab bhi viewport change hoga, input ko visible rakho
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -398,7 +460,6 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
   // determine from props or state
   const [highlightRSVPButtons, setHighlightRSVPButtons] = useState(false);
 
-  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     date: "",
@@ -504,18 +565,18 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     setNoteTitle("");
     setNoteBy("");
     setShowPopup(false);
-      setErrorMsg("");
+    setErrorMsg("");
   };
 
   const handleClose = () => {
     setShowModal(false);
   };
 
- const handleClick = () => {
-  router.push(`/templates?eventId=${urlParams.eventId}&eventUserId=${urlParams.eventUserId}&userType=${urlParams.userType}`);
-};
-
-
+  const handleClick = () => {
+    router.push(
+      `/templates?eventId=${urlParams.eventId}&eventUserId=${urlParams.eventUserId}&userType=${urlParams.userType}`
+    );
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -523,10 +584,10 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-   const goToSharePage = () => {
+  const goToSharePage = () => {
     router.push({
       pathname: "/wonderland/ShareInvitation", // tumhare ShareInvitation page ka route
-      query: { data: JSON.stringify(orderDetails) }
+      query: { data: JSON.stringify(orderDetails) },
     });
   };
   const handleChange = (e) => {
@@ -695,7 +756,14 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
     if (!eventId) return;
 
     fetchOrderDetails(eventId);
-  }, [router.isReady, urlParams?.eventId, urlParams, refetchLuckyDraw, refetchLuckyDrawHostDelete,refetchLoginGuest]);
+  }, [
+    router.isReady,
+    urlParams?.eventId,
+    urlParams,
+    refetchLuckyDraw,
+    refetchLuckyDrawHostDelete,
+    refetchLoginGuest,
+  ]);
 
   const fetchOrderDetails = async (eventId) => {
     try {
@@ -731,51 +799,54 @@ const [refetchLuckyDrawGuestDelete, setRefetchLuckyDrawGuestDelete] = useState(f
         });
 
         setSendCustomerId(hostId);
-    
       }
-     
-    }
-     catch (err) {
-      console.error("❌ Fetch failed:", err);
-   
-    }
-  };
-
-    const templateId = orderDetails?.templateId;
-useEffect(() => {
-  if (!templateId) return;
-
-  const fetchTemplate = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
-      const data = await res.json();
-
-      if (!res.ok || data.error) throw new Error(data.message || "Failed");
-
-      // Find template by templateId
-      const selectedTemplate = data.templates.find(tpl => tpl._id === templateId);
-
-      if (!selectedTemplate) throw new Error("Template not found");
-
-      // backgroundUrl can be either in root or inside configs
-      const backgroundUrl = selectedTemplate.backgroundUrl || selectedTemplate.configs?.backgroundUrl || null;
-
-      setTemplate({
-        cssCode: selectedTemplate.configs?.cssCode || "",
-        jsCode: selectedTemplate.configs?.jsCode || "",
-        fontUrls: selectedTemplate.configs?.fontUrls ? JSON.parse(selectedTemplate.configs.fontUrls) : [],
-        backgroundUrl: backgroundUrl,
-      });
     } catch (err) {
-      console.error(err);
-      setError("Error fetching template");
-    } finally {
-      setLoading(false);
+      console.error("❌ Fetch failed:", err);
     }
   };
 
-  fetchTemplate();
-}, [templateId]);
+  const templateId = orderDetails?.templateId;
+  useEffect(() => {
+    if (!templateId) return;
+
+    const fetchTemplate = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+        const data = await res.json();
+
+        if (!res.ok || data.error) throw new Error(data.message || "Failed");
+
+        // Find template by templateId
+        const selectedTemplate = data.templates.find(
+          (tpl) => tpl._id === templateId
+        );
+
+        if (!selectedTemplate) throw new Error("Template not found");
+
+        // backgroundUrl can be either in root or inside configs
+        const backgroundUrl =
+          selectedTemplate.backgroundUrl ||
+          selectedTemplate.configs?.backgroundUrl ||
+          null;
+
+        setTemplate({
+          cssCode: selectedTemplate.configs?.cssCode || "",
+          jsCode: selectedTemplate.configs?.jsCode || "",
+          fontUrls: selectedTemplate.configs?.fontUrls
+            ? JSON.parse(selectedTemplate.configs.fontUrls)
+            : [],
+          backgroundUrl: backgroundUrl,
+        });
+      } catch (err) {
+        console.error(err);
+        setError("Error fetching template");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTemplate();
+  }, [templateId]);
 
   const handleActionClick = (title) => {
     if (title === "Upload Pictures") {
@@ -864,59 +935,57 @@ useEffect(() => {
       setWallUploading(false);
     }
   };
-const handleDeleteImage = async (imageId, imageType) => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: userID, imageId, imageType }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (!data.error) {
-      setEventAllImages((prev) => {
-        const newImages = prev.filter((img) => img._id !== imageId);
-
-        if (newImages.length === 0) {
-          setIsImageOpen(false);
-        } else {
-          let newIndex = selectedIndex;
-          if (selectedIndex >= newImages.length) {
-            newIndex = newImages.length - 1;
-          }
-          setSelectedIndex(newIndex);
-          setSelectedImage(newImages[newIndex]);
+  const handleDeleteImage = async (imageId, imageType) => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-images/${urlParams.eventId}/delete`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: userID, imageId, imageType }),
         }
+      );
 
-        return newImages;
-      });
-     if (imageType === "luckyDraw") {
-  if (isHost) {
-    setRefetchLuckyDrawHostDelete(prev => !prev);
-  } else {
-    setRefetchLuckyDrawGuestDelete(prev => !prev);
-  }
-}
+      const data = await res.json();
 
-    } else {
-      console.error(data.message || "Failed to delete image");
+      if (!data.error) {
+        setEventAllImages((prev) => {
+          const newImages = prev.filter((img) => img._id !== imageId);
+
+          if (newImages.length === 0) {
+            setIsImageOpen(false);
+          } else {
+            let newIndex = selectedIndex;
+            if (selectedIndex >= newImages.length) {
+              newIndex = newImages.length - 1;
+            }
+            setSelectedIndex(newIndex);
+            setSelectedImage(newImages[newIndex]);
+          }
+
+          return newImages;
+        });
+        if (imageType === "luckyDraw") {
+          if (isHost) {
+            setRefetchLuckyDrawHostDelete((prev) => !prev);
+          } else {
+            setRefetchLuckyDrawGuestDelete((prev) => !prev);
+          }
+        }
+      } else {
+        console.error(data.message || "Failed to delete image");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
     }
-  } catch (err) {
-    console.error("Delete error:", err);
-  }
-};
-
+  };
 
   const handleDownload = async () => {
-  if (noteTitle.trim() === "") {
- setErrorMsg("Please write a thank you message.");
+    if (noteTitle.trim() === "") {
+      setErrorMsg("Please write a thank you message.");
       return;
     }
     setErrorMsg("");
@@ -991,24 +1060,21 @@ const handleDeleteImage = async (imageId, imageType) => {
     router.replace(`/wonderland?id=${newRoute}`);
   }, [router.isReady, urlParams, userId, sendCustomerId]);
 
- useEffect(() => {
-  if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
-    return;
+  useEffect(() => {
+    if (!urlParams?.eventId || !urlParams?.eventUserId || !urlParams?.userType)
+      return;
 
-  setEventId(urlParams.eventId);
-  setRole(urlParams.userType);
+    setEventId(urlParams.eventId);
+    setRole(urlParams.userType);
 
-  registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
+    registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
+  }, [urlParams]);
 
-}, [urlParams]);
-
-useEffect(() => {
-  if (eventId && userID) {
-    listenToMessages(eventId, userID);
-  }
-}, [eventId, userID]);
-
-
+  useEffect(() => {
+    if (eventId && userID) {
+      listenToMessages(eventId, userID);
+    }
+  }, [eventId, userID]);
 
   const hasSetUpMessageListener = useRef(false);
   useEffect(() => {
@@ -1018,188 +1084,195 @@ useEffect(() => {
     }
   }, [messages]);
 
-useEffect(() => {
-  if (!userID || typeof window === "undefined") return;
+  useEffect(() => {
+    if (!userID || typeof window === "undefined") return;
 
-  const requestPermissionAndSaveToken = async () => {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
+    const requestPermissionAndSaveToken = async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
 
-      const messagingInstance = getMessaging();
-      const token = await getToken(messagingInstance, { vapidKey: VAPID_KEY });
+        const messagingInstance = getMessaging();
+        const token = await getToken(messagingInstance, {
+          vapidKey: VAPID_KEY,
+        });
 
-      console.log("FCM Token:", token);
+        console.log("FCM Token:", token);
 
-      if (token) {
-        await setDoc(doc(db, "fcmTokens", userID), { token }, { merge: true });
-      }
+        if (token) {
+          await setDoc(
+            doc(db, "fcmTokens", userID),
+            { token },
+            { merge: true }
+          );
+        }
 
-      if (!hasSetUpMessageListener.current) {
-        onMessage(messagingInstance, (payload) => {
-          console.log("Foreground message received:", payload);
+        if (!hasSetUpMessageListener.current) {
+          onMessage(messagingInstance, (payload) => {
+            console.log("Foreground message received:", payload);
 
-          // 🔹 Frontend-only notification
-          new Notification(payload.notification?.title || "New Message", {
+            // 🔹 Frontend-only notification
+            new Notification(payload.notification?.title || "New Message", {
+              body: payload.notification?.body || "You got a message!",
+              icon: "/new_logo_light.png",
+            });
+          });
+          hasSetUpMessageListener.current = true;
+        }
+
+        setTimeout(() => {
+          new Notification("Test Message", {
             body: payload.notification?.body || "You got a message!",
             icon: "/new_logo_light.png",
           });
-        });
-        hasSetUpMessageListener.current = true;
+        }, 3000);
+      } catch (err) {
+        console.error("FCM Error:", err);
       }
+    };
 
-      setTimeout(() => {
-        new Notification("Test Message", {
-          body: payload.notification?.body || "You got a message!",
-          icon: "/new_logo_light.png",
-        });
-      }, 3000);
+    requestPermissionAndSaveToken();
+  }, [userID]);
 
-    } catch (err) {
-      console.error("FCM Error:", err);
+  const registerUser = async (eventId, userId, role) => {
+    const groupRef = doc(db, "groups", eventId);
+    const groupSnap = await getDoc(groupRef);
+
+    if (!groupSnap.exists()) {
+      await setDoc(groupRef, { createdAt: new Date() });
     }
-  };
 
-  requestPermissionAndSaveToken();
-}, [userID]);
+    const memberRef = doc(db, "groups", eventId, "members", userId);
+    const memberSnap = await getDoc(memberRef);
 
-
-
-
-
-const registerUser = async (eventId, userId, role) => {
-  const groupRef = doc(db, "groups", eventId);
-  const groupSnap = await getDoc(groupRef);
-
-  if (!groupSnap.exists()) {
-    await setDoc(groupRef, { createdAt: new Date() });
-  }
-
-  const memberRef = doc(db, "groups", eventId, "members", userId);
-  const memberSnap = await getDoc(memberRef);
-
-  if (!memberSnap.exists()) {
-    await setDoc(memberRef, {
-      role,
-      joinedAt: new Date(),
-      lastSeenAt: new Date(),
-    });
-  }
-};
-
-const chatMessagesRef = useRef(null);
-useEffect(() => {
-  if (chatOpen && chatMessagesRef.current) {
-    const container = chatMessagesRef.current;
-    container.scrollTop = container.scrollHeight;
-  }
-}, [messages, chatOpen]); // 🔁 Trigger when messages or chatOpen changes
-
-useEffect(() => {
-  if (eventId && userId) {
-    const unsubscribe = listenToMessages(eventId, userId);
-    return () => unsubscribe();
-  }
-}, [eventId, userId]);
-
-useEffect(() => {
-  chatOpenRef.current = chatOpen;
-  if (chatOpen) {
-    setUnreadCount(0);
-
-    // ✅ Update lastSeenAt in Firestore
-    if (eventId && userId) {
-      const userRef = doc(db, "groups", eventId, "members", userId);
-      setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
-    }
-  }
-}, [chatOpen, eventId, userId]);
-
-const lastSeenAtRef = useRef(null);
-const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
-
-
-const listenToMessages = (eventId, userId) => {
-  const messagesRef = collection(db, "groups", eventId, "messages");
-  const q = query(messagesRef, orderBy("sentAt", "asc"));
-  const userRef = doc(db, "groups", eventId, "members", userId);
-
-  const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
-    lastSeenAtRef.current = memberSnap.exists() && memberSnap.data().lastSeenAt
-      ? memberSnap.data().lastSeenAt.toDate()
-      : null;
-  });
-
-  const unsubscribeMessages = onSnapshot(q, (snapshot) => {
-    const msgs = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    const unreadMessages = msgs.filter(msg => {
-      if (!msg.sentAt || !msg.senderId) return false;
-      if (msg.senderId === userID) return false;
-
-      const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-      return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
-    });
-
-    if (!chatOpenRef.current && unreadMessages.length > 0) {
-      unreadMessages.forEach(msg => {
-        const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
-
-        if (
-          Notification.permission === "granted" &&
-          !alreadyNotified
-        ) {
-          new Notification(`New message from ${msg.senderName}`, {
-            body: msg.text,
-            icon: "/new_logo_light.png",
-          });
-
-          // ✅ Mark message as notified
-          notifiedMessageIdsRef.current.add(msg.id);
-        }
+    if (!memberSnap.exists()) {
+      await setDoc(memberRef, {
+        role,
+        joinedAt: new Date(),
+        lastSeenAt: new Date(),
       });
     }
-
-    if (chatOpenRef.current) {
-      setUnreadCount(0);
-    } else {
-      setUnreadCount(unreadMessages.length);
-    }
-
-    setMessages(msgs);
-  });
-
-  return () => {
-    unsubscribeUser();
-    unsubscribeMessages();
   };
-};
 
+  const chatMessagesRef = useRef(null);
+  useEffect(() => {
+    if (chatOpen && chatMessagesRef.current) {
+      const container = chatMessagesRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages, chatOpen]); // 🔁 Trigger when messages or chatOpen changes
 
+  useEffect(() => {
+    if (eventId && userId) {
+      const unsubscribe = listenToMessages(eventId, userId);
+      return () => unsubscribe();
+    }
+  }, [eventId, userId]);
 
+  useEffect(() => {
+    chatOpenRef.current = chatOpen;
+    if (chatOpen) {
+      setUnreadCount(0);
 
-const sendMessage = async () => {
-  if (!text.trim()) return;
-  if (!eventId || !userID) {
-    console.warn("Missing eventId or userId — cannot send message.");
-    return;
-  }
+      // ✅ Update lastSeenAt in Firestore
+      if (eventId && userId) {
+        const userRef = doc(db, "groups", eventId, "members", userId);
+        setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
+      }
+    }
+  }, [chatOpen, eventId, userId]);
 
-  await addDoc(collection(db, "groups", eventId, "messages"), {
-    text,
-    senderId: userID,
-    senderName: userType === "host" ? orderDetails?.Name : guestDetails?.name,
-    senderPhoneNumber: localStorage.getItem("mobileNumber"),
-    sentAt: new Date(),
-      sentAt: serverTimestamp(), 
-  });
+  const lastSeenAtRef = useRef(null);
+  const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
 
-  setText("");
-  setShowEmojiPicker(false)
-};
+  const listenToMessages = (eventId, userId) => {
+    const messagesRef = collection(db, "groups", eventId, "messages");
+    const q = query(messagesRef, orderBy("sentAt", "asc"));
+    const userRef = doc(db, "groups", eventId, "members", userId);
+
+    const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
+      lastSeenAtRef.current =
+        memberSnap.exists() && memberSnap.data().lastSeenAt
+          ? memberSnap.data().lastSeenAt.toDate()
+          : null;
+    });
+
+    const unsubscribeMessages = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(
+        "%c [ msgs ]-1137",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        msgs
+      );
+
+      const unreadMessages = msgs.filter((msg) => {
+        if (!msg.sentAt || !msg.senderId) return false;
+        if (msg.senderId === userID) return false;
+
+        const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+        return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
+      });
+
+      if (!chatOpenRef.current && unreadMessages.length > 0) {
+        unreadMessages.forEach((msg) => {
+          const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
+
+          if (Notification.permission === "granted" && !alreadyNotified) {
+            new Notification(`New message from ${msg.senderName}`, {
+              body: msg.text,
+              icon: "/new_logo_light.png",
+            });
+
+            // ✅ Mark message as notified
+            notifiedMessageIdsRef.current.add(msg.id);
+          }
+        });
+      }
+
+      if (chatOpenRef.current) {
+        setUnreadCount(0);
+      } else {
+        setUnreadCount(unreadMessages.length);
+      }
+
+      setMessages(msgs);
+    });
+
+    return () => {
+      unsubscribeUser();
+      unsubscribeMessages();
+    };
+  };
+
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+    if (!eventId || !userID) {
+      console.warn("Missing eventId or userId — cannot send message.");
+      return;
+    }
+    const localSenderName = localStorage.getItem("wonderLandUserName") || "";
+
+    await addDoc(collection(db, "groups", eventId, "messages"), {
+      text,
+      senderId: userID,
+      senderName:
+        urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
+      senderPhoneNumber: localStorage.getItem("mobileNumber"),
+      sentAt: new Date(),
+      sentAt: serverTimestamp(),
+    });
+    console.log(
+      "%c [ addDoc ]-1195",
+      "font-size:13px; background:pink; color:#bf2c9f;",
+      addDoc
+    );
+
+    setText("");
+    setShowEmojiPicker(false);
+  };
   useEffect(() => {
     if (userType !== "host" && !hasSubmitted && highlightRSVPButtons) {
       if (rsvpRef.current) {
@@ -1210,8 +1283,8 @@ const sendMessage = async () => {
     }
   }, [highlightRSVPButtons, userType, hasSubmitted]);
 
- const renderHTML = (jsCode, rawData) => {
-  console.log("Background URL:", template?.backgroundUrl);
+  const renderHTML = (jsCode, rawData) => {
+    console.log("Background URL:", template?.backgroundUrl);
 
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
   };
@@ -1219,8 +1292,10 @@ const sendMessage = async () => {
     <>
       {!isLoggedIn ? (
         <div className="no-orders">
-                   <WonderlandLandingPage setRefectchLoginGuest={setRefectchLoginGuest} isLoggedIn={isLoggedIn} />
-
+          <WonderlandLandingPage
+            setRefectchLoginGuest={setRefectchLoginGuest}
+            isLoggedIn={isLoggedIn}
+          />
         </div>
       ) : (
         <>
@@ -1231,7 +1306,6 @@ const sendMessage = async () => {
                 userId={userID}
                 slug={slug}
                 setRefectchLoginGuest={setRefectchLoginGuest}
-
               />
             </div>
           )}
@@ -1242,7 +1316,6 @@ const sendMessage = async () => {
                 userId={userID}
                 slug={slug}
                 setRefectchLoginGuest={setRefectchLoginGuest}
-
               />
             </div>
           )}
@@ -1253,18 +1326,17 @@ const sendMessage = async () => {
                 userId={userID}
                 slug={slug}
                 setRefectchLoginGuest={setRefectchLoginGuest}
-
               />
             </div>
           )}
           {slug.length === 3 && orderDetails && (
             <>
               {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
+              {/* <A2HSPrompt /> */}
 
               {orderDetails ? (
                 <>
-
- {/* {templateId && template ? (
+                  {/* {templateId && template ? (
   <div style={{ padding: "20px" }}>
 
     <div
@@ -1325,43 +1397,46 @@ const sendMessage = async () => {
   
 )} */}
 
-{templateId && template ? (
-  <div style={{ padding: "20px" }}>
-    <div
-      style={{
-        backgroundImage: template.backgroundUrl
-          ? `url('${template.backgroundUrl}')`
-          : "none",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        minHeight: "300px",
-        borderRadius: "12px",
-        position: "relative", // key!
-        border: "5px solid red",
-      }}
-    >
-      {/* Fonts */}
-      {template.fontUrls?.map((url, idx) => (
-        <link key={idx} href={url} rel="stylesheet" />
-      ))}
+                  {templateId && template ? (
+                    <div style={{ padding: "20px" }}>
+                      <div
+                        style={{
+                          backgroundImage: template.backgroundUrl
+                            ? `url('${template.backgroundUrl}')`
+                            : "none",
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          minHeight: "300px",
+                          borderRadius: "12px",
+                          position: "relative", // key!
+                          border: "5px solid red",
+                        }}
+                      >
+                        {/* Fonts */}
+                        {template.fontUrls?.map((url, idx) => (
+                          <link key={idx} href={url} rel="stylesheet" />
+                        ))}
 
-      {/* Inject template CSS */}
-      {template.cssCode && (
-        <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-      )}
+                        {/* Inject template CSS */}
+                        {template.cssCode && (
+                          <style
+                            dangerouslySetInnerHTML={{
+                              __html: template.cssCode,
+                            }}
+                          />
+                        )}
 
-      {/* Inject template HTML */}
-      {template.jsCode && (
-        <div
-          style={{ position: "relative", zIndex: 2 }}
-          dangerouslySetInnerHTML={{
-            __html: renderHTML(template.jsCode, formData),
-          }}
-        />
-      )}
+                        {/* Inject template HTML */}
+                        {template.jsCode && (
+                          <div
+                            style={{ position: "relative", zIndex: 2 }}
+                            dangerouslySetInnerHTML={{
+                              __html: renderHTML(template.jsCode, formData),
+                            }}
+                          />
+                        )}
 
-
-{/* <div
+                        {/* <div
   className="invite-image-wrapper"
  onClick={async () => {
     setChatOpen(true);
@@ -1410,91 +1485,97 @@ const sendMessage = async () => {
     </span>
   )}
 </div> */}
-<div
-  className="invite-image-wrapper"
-  onClick={async () => {
-    if (userType !== "host" && !hasSubmitted) {
-      setHighlightRSVPButtons(true);
-      setTimeout(() => setHighlightRSVPButtons(false), 1500);
-      return;
-    }
-    setChatOpen(true);
-    chatOpenRef.current = true;
-    setUnreadCount(0);
+                        <div
+                          className="invite-image-wrapper"
+                          onClick={async () => {
+                            if (userType !== "host" && !hasSubmitted) {
+                              setHighlightRSVPButtons(true);
+                              setTimeout(
+                                () => setHighlightRSVPButtons(false),
+                                1500
+                              );
+                              return;
+                            }
+                            setChatOpen(true);
+                            chatOpenRef.current = true;
+                            setUnreadCount(0);
 
-    const userRef = doc(db, "groups", eventId, "members", userID);
-    await updateDoc(userRef, {
-      lastSeenAt: serverTimestamp(),
-    });
-  }}
-  style={{
-    position: "absolute",
-    cursor: hasSubmitted ? "pointer" : "not-allowed", // UX ke liye
-    zIndex: 999,
-  }}
->
-  <Image
-    src={chatIcon}
-    alt="chat"
-    className="invite-image"
-    width={40}
-    height={40}
-  />
+                            const userRef = doc(
+                              db,
+                              "groups",
+                              eventId,
+                              "members",
+                              userID
+                            );
+                            await updateDoc(userRef, {
+                              lastSeenAt: serverTimestamp(),
+                            });
+                          }}
+                          style={{
+                            position: "absolute",
+                            cursor:
+                              userType === "host" || hasSubmitted
+                                ? "pointer"
+                                : "not-allowed", // UX ke liye
+                            zIndex: 990,
+                          }}
+                        >
+                          <Image
+                            src={chatIcon}
+                            alt="chat"
+                            className="invite-image"
+                            width={40}
+                            height={40}
+                          />
 
-  {!chatOpen && unreadCount > 0 && (
-    <span
-      style={{
-        position: "absolute",
-        top: "-4px",
-        right: "-4px",
-        minWidth: "18px",
-        height: "18px",
-        backgroundColor: "red",
-        color: "white",
-        fontSize: "12px",
-        fontWeight: "bold",
-        borderRadius: "50%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "2px",
-      }}
-    >
-      {unreadCount}
-    </span>
-  )}
-</div>
+                          {!chatOpen && unreadCount > 0 && (
+                            <span
+                              style={{
+                                position: "absolute",
+                                top: "-4px",
+                                right: "-4px",
+                                minWidth: "18px",
+                                height: "18px",
+                                backgroundColor: "red",
+                                color: "white",
+                                fontSize: "12px",
+                                fontWeight: "bold",
+                                borderRadius: "50%",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: "2px",
+                              }}
+                            >
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div
+                        className="invitation-container"
+                        style={{
+                          backgroundImage: `url(${imageBackGround?.src})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          minHeight: "400px",
+                          borderRadius: "12px",
+                          position: "relative", // key!
+                        }}
+                      >
+                        <FinalInviteDisplay
+                          orderDetails={orderDetails}
+                          handleClick={handleClick}
+                          isHost={userType === "host"}
+                          openChat={() => setChatOpen(true)}
+                          clearNewMessage={() => setHasNewMessage(false)}
+                          hasNewMessage={hasNewMessage}
+                        />
 
-
-
-
-    </div>
-  </div>
-) : (
-  <div >
-    <div
-      className="invitation-container"
-      style={{
-        backgroundImage: `url(${imageBackGround?.src})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        minHeight: "400px",
-        borderRadius: "12px",
-        position: "relative", // key!
-      }}
-    >
-      <FinalInviteDisplay
-        orderDetails={orderDetails}
-        handleClick={handleClick}
-        isHost={userType === "host"}
-        openChat={() => setChatOpen(true)}
-        clearNewMessage={() => setHasNewMessage(false)}
-        hasNewMessage={hasNewMessage}
-      />
-
-     
-    
-{/* <div
+                        {/* <div
   className="invite-image-wrapper"
  onClick={async () => {
     setChatOpen(true);
@@ -1544,69 +1625,75 @@ const sendMessage = async () => {
     </span>
   )}
 </div> */}
-<div
-  className="invite-image-wrapper"
-  onClick={async () => {
-    if  (userType !== "host" && !hasSubmitted) {
-      setHighlightRSVPButtons(true);
-      setTimeout(() => setHighlightRSVPButtons(false), 1500);
-      return;
-    }
-    setChatOpen(true);
-    chatOpenRef.current = true;
-    setUnreadCount(0);
+                        <div
+                          className="invite-image-wrapper"
+                          onClick={async () => {
+                            if (userType !== "host" && !hasSubmitted) {
+                              setHighlightRSVPButtons(true);
+                              setTimeout(
+                                () => setHighlightRSVPButtons(false),
+                                1500
+                              );
+                              return;
+                            }
+                            setChatOpen(true);
+                            chatOpenRef.current = true;
+                            setUnreadCount(0);
 
-    const userRef = doc(db, "groups", eventId, "members", userID);
-    await updateDoc(userRef, {
-      lastSeenAt: serverTimestamp(),
-    });
-  }}
-  style={{
-    position: "absolute",
-    cursor: hasSubmitted ? "pointer" : "not-allowed",
-    zIndex: 999,
-  }}
->
-  <Image
-    src={chatIcon}
-    alt="chat"
-    className="invite-image"
-    width={40}
-    height={40}
-  />
+                            const userRef = doc(
+                              db,
+                              "groups",
+                              eventId,
+                              "members",
+                              userID
+                            );
+                            await updateDoc(userRef, {
+                              lastSeenAt: serverTimestamp(),
+                            });
+                          }}
+                          style={{
+                            position: "absolute",
+                            cursor:
+                              userType === "host" || hasSubmitted
+                                ? "pointer"
+                                : "not-allowed",
+                            zIndex: 990,
+                          }}
+                        >
+                          <Image
+                            src={chatIcon}
+                            alt="chat"
+                            className="invite-image"
+                            width={40}
+                            height={40}
+                          />
 
-  {!chatOpen && unreadCount > 0 && (
-    <span
-      style={{
-        position: "absolute",
-        top: "-4px",
-        right: "-4px",
-        minWidth: "18px",
-        height: "18px",
-        backgroundColor: "red",
-        color: "white",
-        fontSize: "12px",
-        fontWeight: "bold",
-        borderRadius: "50%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "2px",
-      }}
-    >
-      {unreadCount}
-    </span>
-  )}
-</div>
-
-
-
-    </div>
-  </div>
-)}
-
-
-
+                          {!chatOpen && unreadCount > 0 && (
+                            <span
+                              style={{
+                                position: "absolute",
+                                top: "-4px",
+                                right: "-4px",
+                                minWidth: "18px",
+                                height: "18px",
+                                backgroundColor: "red",
+                                color: "white",
+                                fontSize: "12px",
+                                fontWeight: "bold",
+                                borderRadius: "50%",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: "2px",
+                              }}
+                            >
+                              {unreadCount}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     {isHost && (
@@ -1661,9 +1748,7 @@ const sendMessage = async () => {
                       urlParams={urlParams}
                     />
                   ) : (
-                     <div
-                      ref={rsvpRef}
-                    >
+                    <div ref={rsvpRef}>
                       <GuestRSVPForm
                         highlightRSVPButtons={highlightRSVPButtons}
                         setHighlightRSVPButtons={setHighlightRSVPButtons}
@@ -1706,7 +1791,7 @@ const sendMessage = async () => {
                         handleDownload={handleDownload}
                         handleClosePopup={handleClosePopup}
                         noteRef={noteRef}
-                         userName={
+                        userName={
                           userType === "host"
                             ? orderDetails?.Name
                             : guestDetails?.name
@@ -1765,10 +1850,10 @@ const sendMessage = async () => {
                           setTimeout(
                             () => setHighlightRSVPButtons(false),
                             1500
-                          ); 
+                          );
                           return;
                         }
-                        setShowLuckyDrawPopup(true); 
+                        setShowLuckyDrawPopup(true);
                       }}
                     >
                       Click Now
@@ -1806,35 +1891,43 @@ const sendMessage = async () => {
 
                 {/* Action Buttons */}
                 <div className="tabs-container" style={styles.tabsContainer}>
-                    {actions.map((action, index) => (
-  <button
-    key={index}
-    onClick={() => {
-      if (userType !== "host" && !hasSubmitted) {
-        setHighlightRSVPButtons(true);
-        setTimeout(() => setHighlightRSVPButtons(false), 1000);
-        return; 
-      }
+                  {actions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (userType !== "host" && !hasSubmitted) {
+                          setHighlightRSVPButtons(true);
+                          setTimeout(
+                            () => setHighlightRSVPButtons(false),
+                            1000
+                          );
+                          return;
+                        }
 
-      // Upload Pictures
-      if (action.title === "Upload Pictures") {
-        const input = document.getElementById("imageUploadInput");
-        if (input) {
-          input.value = "";
-          input.click();
-        }
-      } else {
-        handleActionClick(action.title);
-      }
-    }}
-    style={{
-      ...styles.actionButton,
-    }}
-  >
-    <Image src={action.image} alt={action.title} style={styles.iconStyle} />
-    <span style={styles.buttonLabel}>{action.title}</span>
-  </button>
-))}
+                        // Upload Pictures
+                        if (action.title === "Upload Pictures") {
+                          const input =
+                            document.getElementById("imageUploadInput");
+                          if (input) {
+                            input.value = "";
+                            input.click();
+                          }
+                        } else {
+                          handleActionClick(action.title);
+                        }
+                      }}
+                      style={{
+                        ...styles.actionButton,
+                      }}
+                    >
+                      <Image
+                        src={action.image}
+                        alt={action.title}
+                        style={styles.iconStyle}
+                      />
+                      <span style={styles.buttonLabel}>{action.title}</span>
+                    </button>
+                  ))}
 
                   <input
                     type="file"
@@ -1985,7 +2078,7 @@ const sendMessage = async () => {
                         </button>
 
                         <img
-                          src={selectedImage.imageUrl}
+                          src={selectedImage.webpUrl}
                           alt=""
                           className="lightbox-img"
                         />
@@ -2010,9 +2103,7 @@ const sendMessage = async () => {
                         <div className="lightbox-toolbar">
                           <button
                             className="lightbox-btn"
-                            onClick={() =>
-                                downloadFile(selectedImage.imageUrl)
-                            }
+                            onClick={() => downloadFile(selectedImage.imageUrl)}
                           >
                             <Image
                               src={downloadicon}
@@ -2026,20 +2117,23 @@ const sendMessage = async () => {
                             //   className="lightbox-btn"
                             //   onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
                             // >
-                             <button
-  className="lightbox-btn"
-  onClick={(e) => {
-    e.stopPropagation();
-    setDeleteTarget({
-      imageId: selectedImage._id,
-      imageType: selectedImage.imageType
-    });
-    setShowDeletePopup(true);
-  }}
->
-  <Image src={deletebtn} alt="Delete" style={{ width: 30, height: 30 }} />
-</button>
-
+                            <button
+                              className="lightbox-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget({
+                                  imageId: selectedImage._id,
+                                  imageType: selectedImage.imageType,
+                                });
+                                setShowDeletePopup(true);
+                              }}
+                            >
+                              <Image
+                                src={deletebtn}
+                                alt="Delete"
+                                style={{ width: 30, height: 30 }}
+                              />
+                            </button>
                           )}
                         </div>
                       </div>
@@ -2049,7 +2143,7 @@ const sendMessage = async () => {
               </div>
 
               {showDeletePopup && (
-  <div className="deletepopup-overlay">
+                <div className="deletepopup-overlay">
                   <div className="deletepopup">
                     <h3>Confirm Delete</h3>
                     <p>Are you sure you want to delete this photo?</p>
@@ -2069,7 +2163,6 @@ const sendMessage = async () => {
                           );
                           setShowDeletePopup(false);
                         }}
-
                       >
                         Delete
                       </button>
@@ -2088,17 +2181,15 @@ const sendMessage = async () => {
                     className="popup-luckdraw-container"
                     onClick={(e) => e.stopPropagation()}
                   >
-                   
-                      <LuckyDrawForm
-                        hostData={orderDetails}
-                        onClose={() => {
-                          setShowLuckyDrawPopup(false);
-                          setRefetchLuckyDraw(!refetchLuckyDraw);
-                        }}
-                      />
-                    </div>
+                    <LuckyDrawForm
+                      hostData={orderDetails}
+                      onClose={() => {
+                        setShowLuckyDrawPopup(false);
+                        setRefetchLuckyDraw(!refetchLuckyDraw);
+                      }}
+                    />
                   </div>
-              
+                </div>
               )}
 
               {/* 🛠 Invitation Modal */}
@@ -2130,146 +2221,177 @@ const sendMessage = async () => {
             onClick={() => setShowPopupGuest(false)}
           />
           <RSVPPopup
-          hostData={hostData}
+            hostData={hostData}
             guestList={guestList}
             onClose={() => setShowPopupGuest(false)}
           />
         </>
       )}
-             <>
-    
-       {chatOpen && (
-  <div className="chat-overlay">
-    <div className="chat-header">
-      <div className="chat-user-info">
-        <h3>Group Chat</h3>
-        <span>{orderDetails?.Name}</span>
-        <span>{orderDetails?.eventType} </span>
-      </div>
-      <button className="chat-close-btn"  onClick={() => {
-    setChatOpen(false);
-    chatOpenRef.current = false;
-  }}>×</button>
-    </div>
-
-    <div className="chat-messages" ref={chatMessagesRef}>
-      {messages.map((msg) => {
-        const isSender = msg.senderPhoneNumber === userPhoneNumber;
-        const senderName = isSender
-  ? (userType === "host" ? orderDetails?.Name : guestDetails?.name)
-  : (userType === "host" ? guestDetails?.name : orderDetails?.Name);
-        return (
-          <div
-            key={msg.id}
-            className={`chat-message ${isSender ? "sender" : "receiver"}`}
-          >
-            <div className="chat-bubble">
-              <div className="chat-sender">
-  {senderName
-    ? senderName
-    : `+91 ${msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}`}
-</div>
-              {/* <div className="chat-sender"> {senderName}  +91 {msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}</div> */}
-              <div className="chat-text">{msg.text}</div>
-              <div className="chat-time">
-                {msg.sentAt?.toDate
-                  ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })
-                  : ""}
+      <>
+        {chatOpen && (
+          <div className="chat-overlay">
+            <div className="chat-header">
+              <div className="chat-user-info">
+                <button
+                  className="btn back-arrow-chat"
+                  onClick={() => {
+                    setChatOpen(false);
+                    chatOpenRef.current = false;
+                  }}
+                >
+                  <FaArrowLeft fontSize={16} />
+                </button>
+                <span className="mx-2">{`${orderDetails?.Name}'s`}</span>{" "}
+                <span>{orderDetails?.eventType} </span>
               </div>
             </div>
+
+            <div className="chat-messages" ref={chatMessagesRef}>
+              {messages.map((msg) => {
+                const isSender = msg.senderPhoneNumber === userPhoneNumber;
+                //       const senderName = isSender
+                // ? (userType === "host" ? orderDetails?.Name : guestDetails?.name)
+                // : (userType === "host" ? guestDetails?.name : orderDetails?.Name);
+                const senderName =
+                  msg.senderName ||
+                  (isSender &&
+                    (userType === "host"
+                      ? orderDetails?.Name
+                      : guestDetails?.name));
+
+                return (
+                  <div
+                    key={msg.id}
+                    className={`chat-message ${
+                      isSender ? "sender" : "receiver"
+                    }`}
+                  >
+                    <div className="chat-bubble">
+                      <div className="chat-sender">
+                        {senderName
+                          ? senderName
+                          : `+91 ${
+                              msg.senderPhoneNumber.slice(0, -4) + "XXXX"
+                            }`}
+                      </div>
+                      {/* <div className="chat-sender"> {senderName}  +91 {msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}</div> */}
+                      <div className="chat-text">{msg.text}</div>
+                      <div className="chat-time">
+                        {msg.sentAt?.toDate
+                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
+                              "en-IN",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="chat-input-container">
+              <button
+                type="button"
+                onClick={() => {
+                  if (showEmojiPicker) {
+                    // Emoji picker open hai, ab keyboard button dikh raha hoga
+                    setShowEmojiPicker(false);
+                    // Force mobile keyboard to open
+                    setTimeout(() => {
+                      textareaRef.current?.focus();
+                    }, 0);
+                  } else {
+                    // Emoji picker open karo
+                    setShowEmojiPicker(true);
+                    // Keyboard band karo
+                    textareaRef.current?.blur();
+                  }
+                }}
+                className="emoji-btn"
+              >
+                {showEmojiPicker ? (
+                  <FaRegKeyboard fontSize={20} />
+                ) : (
+                  <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                )}
+              </button>
+              <textarea
+                value={text}
+                ref={textareaRef}
+                className="chat-input"
+                rows={1}
+                onFocus={() => {
+                  // ✅ Agar emoji picker open hai aur user text area tap kare → picker band karo
+                  if (showEmojiPicker) {
+                    setShowEmojiPicker(false);
+                  }
+                  // ✅ focus karte hi input ko viewport me le aa
+                  setTimeout(() => {
+                    textareaRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "end",
+                    });
+
+                    // ✅ Extra offset ke liye manual scroll adjust
+                    window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
+                  }, 300);
+                }}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  if (e.target.value.length > 0) {
+                    setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                  }
+                }}
+                onInput={(e) => {
+                  e.target.style.height = "auto";
+                  const newHeight = Math.min(e.target.scrollHeight, 120);
+                  e.target.style.height = newHeight + "px";
+                }}
+                placeholder="Type message here..."
+              />
+
+              <button onClick={sendMessage} className="chat-send-btn">
+                <Image src={sendIcon} alt="Send" className="send-icon" />
+              </button>
+            </div>
+
+            {showEmojiPicker && (
+              <div className="emoji-container">
+                <EmojiPicker
+                  width={emojiWidth}
+                  searchDisabled={true}
+                  onEmojiClick={(emojiData) => {
+                    const textarea = textareaRef.current;
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+
+                    const newText =
+                      text.substring(0, start) +
+                      emojiData.emoji +
+                      text.substring(end);
+
+                    setText(newText);
+                    requestAnimationFrame(() => {
+                      textarea.selectionStart = textarea.selectionEnd =
+                        start + emojiData.emoji.length;
+                    });
+                    // ✅ emoji picker open hone par bhi input ko viewport me le aao
+                    setTimeout(() => {
+                      textarea.scrollIntoView({
+                        behavior: "smooth",
+                        block: "end",
+                      });
+                    }, 100);
+                  }}
+                />
+              </div>
+            )}
           </div>
-        );
-      })}
-    </div>
-    {/* <div className="chat-input-container">
-      <button
-        type="button"
-        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-        className="emoji-btn"
-      >
-        ☺
-      </button>
-      <textarea
-        value={text}
-        ref={textareaRef}
-        className="chat-input"
-        rows={1}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (e.target.value.length > 0) {
-            setShowEmojiPicker(false);
-          }
-        }}
-        onInput={(e) => {
-          e.target.style.height = "auto";
-          const newHeight = Math.min(e.target.scrollHeight, 120);
-          e.target.style.height = newHeight + "px";
-        }}
-        placeholder="Type your message..."
-      />
-      <button onClick={sendMessage} className="chat-send-btn">➤</button>
-    </div> */}
-<div className="chat-input-container">
-  <button
-    type="button"
-    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-    className="emoji-btn"
-  >
-   <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-  </button>
-
-  <textarea
-    value={text}
-    ref={textareaRef}
-    className="chat-input"
-    rows={1}
-    onChange={(e) => {
-      setText(e.target.value);
-      if (e.target.value.length > 0) {
-        setShowEmojiPicker(false);
-      }
-    }}
-    onInput={(e) => {
-      e.target.style.height = "auto";
-      const newHeight = Math.min(e.target.scrollHeight, 120);
-      e.target.style.height = newHeight + "px";
-    }}
-    placeholder="Type message here..."
-  />
-
-  <button onClick={sendMessage} className="chat-send-btn">  <Image src={sendIcon} alt="Send" className="send-icon" /></button>
-</div>
-
-    {showEmojiPicker && (
-      <div className="emoji-container">
-        <EmojiPicker
-          searchDisabled={true}
-          onEmojiClick={(emojiData) => {
-            const textarea = textareaRef.current;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-
-            const newText =
-              text.substring(0, start) +
-              emojiData.emoji +
-              text.substring(end);
-
-            setText(newText);
-            setTimeout(() => {
-              textarea.focus();
-              textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
-            }, 0);
-          }}
-        />
-      </div>
-    )}
-  </div>
-)}
-
+        )}
       </>
     </>
   );
@@ -2308,16 +2430,16 @@ const styles = {
   heading: {
     fontSize: 26,
     fontWeight: 700,
-    color: '#97538C',
-    textAlign: 'center',
+    color: "#97538C",
+    textAlign: "center",
   },
   subheading: {
     fontSize: 15,
     padding: "0px 10px 0px 10px",
     marginBottom: 20,
     fontWeight: 400,
-    color: '#97538C',
-    textAlign: 'center',
+    color: "#97538C",
+    textAlign: "center",
   },
   buttonRow: {
     display: "flex",

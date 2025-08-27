@@ -1129,7 +1129,10 @@ background-color: none !important;
   justify-content: space-between;
   align-items: center;
 }
-
+.chat-user-info{
+  display: flex;
+  align-items: center;
+}
 .chat-user-info h3 {
   margin: 0;
   font-size: 18px;
@@ -1137,7 +1140,7 @@ background-color: none !important;
 
 .chat-user-info span {
   font-size: 16px;
-  color: #e0e0e0;
+  color: #FFFFFF;
 }
 
 .chat-close-btn {
@@ -1324,4 +1327,10 @@ background-color: none !important;
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+.back-arrow-chat{
+  color: white;
+  border: none;
+  padding: 0px;
+  margin: 0px;
 }

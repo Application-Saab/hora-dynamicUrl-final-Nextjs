@@ -10,6 +10,7 @@ import Image from 'next/image';
 import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from 'next/router'; // Import useRouter
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
+import A2HSPrompt from "@/components/wonderland/AddToHomeScreen";
 
 
 function MyApp({ Component, pageProps }) {
@@ -112,6 +113,7 @@ useEffect(() => {
       <PersistGate loading={null} persistor={persistor}>
         <PageLayout>
           <Component {...pageProps} />
+          <A2HSPrompt />
           <div>
             <noscript>
               <iframe

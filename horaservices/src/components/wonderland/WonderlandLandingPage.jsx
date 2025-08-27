@@ -11,6 +11,7 @@ import howitworks from "@/assets/howitworks.jpg"
 import hostandGuest from "@/assets/hostandGuest.png"
 import yourcelebration from "@/assets/yourcelebration.png"
 import luckdrawBnaner from "@/assets/lucky.jpg"
+import OtpLogin from "../OtpLoginPopup";
 const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   const token = localStorage.getItem("token");
   const router = useRouter();
@@ -395,7 +396,7 @@ return (
 
       {
             showHostLoginModal && (
-              <OtpLoginPopup
+              <OtpLogin
                 setIsModalOpen={() => {
                   setShowHostLoginModal(false);
                   handleClickCreateInvite();

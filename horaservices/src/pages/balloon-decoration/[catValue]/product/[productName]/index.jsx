@@ -1067,7 +1067,7 @@ const handleCustomise = (type, cityName) => {
 
       <VideoTestimonial videoSrc={VideoClint} />
 
-<ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
+{/* <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" /> */}
 
 
 
