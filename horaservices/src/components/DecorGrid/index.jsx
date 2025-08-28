@@ -5,44 +5,41 @@ import { useRouter } from "next/navigation";
 import "./DecorGrid.css";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 
-const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) => {
+const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat ,locality}) => {
   const router = useRouter();
-  const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat);
+  const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat ,locality);
 
 
   const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
-  const handleClick = (card) => {
+ const handleClick = (card) => {
+  const matched = decCat.find(
+    (cat) => normalize(cat.catValue) === normalize(card.catValue)
+  );
 
-    const matched = decCat.find(
-      (cat) => normalize(cat.catValue) === normalize(card.catValue)
-    );
+  if (!matched) {
+    console.warn("No matching category in decCat for:", card.title);
+    return;
+  }
 
-    if (!matched) {
-      console.warn("No matching category in decCat for:", card.title);
-      return;
-    }
-
-    const eventData = {
-      title: card.title,
-      categoryName: matched.name || "N/A",
-      subCategory: matched.subCategory || "N/A",
-      catValue: matched.catValue || "N/A",
-      imgAlt: matched.imgAlt || "N/A",
-    };
-
-    handleItemClick(eventData);
-    openCatItems(matched);
-
-    // Optional navigation
-    if (card.link) {
-      router.push(`/${card.link}`);
-    }
+  const eventData = {
+    title: card.title,
+    categoryName: matched.name || "N/A",
+    subCategory: matched.subCategory || "N/A",
+    catValue: matched.catValue || "N/A",
+    imgAlt: matched.imgAlt || "N/A",
   };
+
+  handleItemClick(eventData);      // ✅ Push GTM event
+  openCatItems(matched);           // ✅ Correct dynamic routing
+};
+
 
   return (
     <div className="decor-grid-wrapper">
       <div className="decor-card-grid">
+      <h4 className="decorke-wedding-heading">Your Dream Wedding Starts Here</h4>
+
         {/* 🔶 Large Card */}
         <div className="decor-large-card">
           <div className="decor-large-image-box">
@@ -78,7 +75,7 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat }) =>
                     src={card.image}
                     alt={card.title}
                     width={400}
-                    height={100}
+                    height={120}
                     className="decor-small-img"
                   />
                 </div>

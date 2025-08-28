@@ -22,7 +22,7 @@ export const decCat = [
     id: "3",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/primumdecoration.webp	",
-    name: "Premium Decor",
+    name: "Big Celebration",
     subCategory: "PremiumDecoration",
     catValue: "premium-decoration",
     imgAlt: "Birthday party decoration ideas for adults",
@@ -51,7 +51,7 @@ export const decCat = [
     id: "6",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Anniversary.webp",
-    name: "Anniversary Decor",
+    name: "Anniversary",
     subCategory: "Anniversary",
     catValue: "anniversary-decoration",
     imgAlt:
@@ -62,7 +62,7 @@ export const decCat = [
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Firstnight.webp",
     name: "First Night",
-    subCategory: "First Night",
+    subCategory: "FirstNight",
     catValue: "first-night-decoration",
     imgAlt:
       "Add extra happiness quotient to your wedding night with our exclusive décor package",

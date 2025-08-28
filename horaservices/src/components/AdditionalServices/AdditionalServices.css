@@ -1,0 +1,97 @@
+.services-section {
+  text-align: center;
+}
+
+.section-title {
+  color: #97538C;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.section-subtitle {
+  color: #97538C;
+  font-size: 12px;
+  margin-bottom: 30px;
+}
+
+.services-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  
+}
+
+.service-card {
+  flex: 1 1 clamp(90px, 25%, 220px);
+  border: 2px solid;
+  border-radius: 8px;
+  background: #fff;
+  padding: 40px 5px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  text-align: center;
+  font-size: 10px;
+  box-sizing: border-box;
+  min-width: 90px;
+  max-width: 220px;
+}
+
+.icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.icon-box img {
+  width: 40px;
+  height: 40px;
+}
+
+.service-card h3 {
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.service-card ul {
+  text-align: left;
+  padding-left: 15px;
+  font-size: 10px;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.view-more {
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 10px;
+}
+
+/* Optional: Adjust for very small screens if needed */
+@media (max-width: 360px) {
+  .service-card {
+    font-size: 9px;
+    padding: 30px 5px 10px;
+  }
+
+  .service-card h3 {
+    font-size: 10px;
+  }
+
+  .service-card ul {
+    font-size: 8px;
+  }
+
+  .view-more {
+    font-size: 9px;
+  }
+}

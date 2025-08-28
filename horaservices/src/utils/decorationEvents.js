@@ -1,44 +1,70 @@
 "use client";
+import {useState } from "react";
 import { useRouter } from "next/navigation";
-
-export const useDecorationEvents = (city, hasCityPageParam, decCat) => {
+import { useDispatch } from "react-redux";
+import { setState } from "@/actions/action";
+export const useDecorationEvents = (
+  city,
+  hasCityPageParam = false,
+  decCat = [],
+  locality = ""
+) => {
+    const [orderType, setOrderType] = useState(1);
   const router = useRouter();
-
-  const openCatItems = (item) => {
-    console.log("Opening Category Items:", item);
-    console.log(item.catValue, "catValue2");
-    if (hasCityPageParam) {
-      router.push(`/${city}/balloon-decoration/${item.catValue}`);
-    } else {
-      router.push(`/balloon-decoration/${item.catValue}`);
-    }
+  const dispatch = useDispatch();
+  const formatPath = (path) => {
+    let basePath = "";
+    if (city) basePath += `/${city.toLowerCase()}`;
+    if (locality) basePath += `/${locality.toLowerCase()}`;
+    return `${basePath}${path}`;
   };
 
-  const handleViewMore = (category) => {
-    const categoryItem = decCat.find((cat) => cat.subCategory === category);
-    console.log("Category Item:", categoryItem);
+  const openCatItems = (item) => {
+    if (!item?.catValue) return;
+    const path = formatPath(`/balloon-decoration/${item.catValue}`);
+    router.push(path);
+  };
 
+  const handleViewMore = (categoryTitle) => {
+    const categoryItem = decCat.find(
+      (cat) => cat.subCategory === categoryTitle || cat.name === categoryTitle
+    );
     if (categoryItem) {
+      const eventName = hasCityPageParam
+        ? "title_and_viewmore_decoration_citypage_clicked"
+        : "title_and_viewmore_decoration_page_clicked";
+
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
-        event: "title_and_viewmore_decoration_page_clicked",
+        event: eventName,
         categoryName: categoryItem.name,
         subCategory: categoryItem.subCategory,
         catValue: categoryItem.catValue,
         imgAlt: categoryItem.imgAlt,
+        city: city || "default",
+        locality: locality || "default",
       });
+
       openCatItems(categoryItem);
-    } else {
-      console.log("No matching category item found.");
     }
   };
 
-  const handleSliderViewMore = (link) => {
-    if (city) {
-      router.push(`/${city}/${link}`);
-    } else {
-      router.push(`/${link}`);
-    }
+  const handleSliderViewMore = (link, title) => {
+    const normalizedLink = link.startsWith("/") ? link : `/${link}`;
+    const path = formatPath(normalizedLink);
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: hasCityPageParam
+        ? "slider_view_all_citypage_clicked"
+        : "slider_view_all_clicked",
+      viewAllTitle: title,
+      viewAllLink: path,
+      city: city || "default",
+      locality: locality || "default",
+    });
+
+    router.push(path);
   };
 
   const handleItemClick = (item) => {
@@ -47,19 +73,53 @@ export const useDecorationEvents = (city, hasCityPageParam, decCat) => {
       event: "decoration_item_clicked",
       event_category: "SliderSection",
       event_label: item.title,
-      categoryName: item.categoryName,
-      subCategory: item.subCategory,
-      catValue: item.catValue,
-      imgAlt: item.imgAlt,
+      categoryName: item.categoryName || item.title,
+      subCategory: item.subCategory || "unknown",
+      catValue: item.catValue || "unknown",
+      imgAlt: item.imgAlt || "",
+      city: city || "default",
+      locality: locality || "default",
     });
 
-    console.log("Last Event:", window.dataLayer[window.dataLayer.length - 1]);
+    if (item?.link) {
+      const path = formatPath(item.link);
+      router.push(path);
+    } else if (item?.catValue) {
+      openCatItems(item);
+    }
   };
+const handleViewDetails = (subCategory, catValue, product) => {
+  const productName = product.name.replace(/ /g, "-");
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: hasCityPageParam
+      ? "product_view_details_citypage_clicked"
+      : "product_view_details_clicked",
+    event_category: "ProductCard",
+    event_label: productName,
+    productName: product.name,
+    subCategory,
+    catValue,
+    city: city || "default",
+    locality: locality || "default",
+    price: product.price || "unknown",
+    imgAlt: product.imgAlt || "",
+  });
+
+  const path = hasCityPageParam
+    ? `/${city}/balloon-decoration/${catValue}/product/${productName}`
+    : `/balloon-decoration/${catValue}/product/${productName}`;
+
+  dispatch(setState(subCategory, orderType, catValue, product));
+  router.push(path);
+};
 
   return {
     openCatItems,
     handleViewMore,
     handleSliderViewMore,
     handleItemClick,
+    handleViewDetails,
   };
 };

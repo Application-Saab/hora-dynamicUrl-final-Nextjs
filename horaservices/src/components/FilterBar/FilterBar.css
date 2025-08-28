@@ -1,0 +1,17 @@
+.filterBarContainer {
+  gap: 1rem;
+  justify-content: center;
+  text-align: center;
+ margin: 0px 0px 10px 0px;
+}
+
+
+
+.filterSelect {
+  font-size: 16px;
+  color: rgb(157, 74, 147);
+  padding: 7px 10px;
+  border: 1px solid rgb(157, 74, 147) !important;
+  border-radius: 5px;
+  background-color: #fff;
+}
