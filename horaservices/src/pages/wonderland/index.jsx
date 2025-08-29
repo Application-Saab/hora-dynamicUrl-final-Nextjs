@@ -107,6 +107,7 @@ const InvitationCard = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [showNotifyPermissionMsg, setNotifyPermissionMsg] = useState(false);
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -1154,6 +1155,16 @@ const InvitationCard = () => {
     }
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission === "denied" || Notification.permission === "default") {
+        setNotifyPermissionMsg(true);
+      } else {
+        setNotifyPermissionMsg(false);
+      }
+    }
+  }, []);
+
   const chatMessagesRef = useRef(null);
   useEffect(() => {
     if (chatOpen && chatMessagesRef.current) {
@@ -1202,11 +1213,6 @@ const InvitationCard = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(
-        "%c [ msgs ]-1137",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        msgs
-      );
 
       const unreadMessages = msgs.filter((msg) => {
         if (!msg.sentAt || !msg.senderId) return false;
@@ -1223,7 +1229,7 @@ const InvitationCard = () => {
           if (Notification.permission === "granted" && !alreadyNotified) {
             new Notification(`New message from ${msg.senderName}`, {
               body: msg.text,
-              icon: "/new_logo_light.png",
+              icon: "../../assets/new_logo_light.png",
             });
 
             // ✅ Mark message as notified
@@ -2293,6 +2299,15 @@ const InvitationCard = () => {
                 );
               })}
             </div>
+         {showNotifyPermissionMsg && (
+    <div className="notify-msg-ctn">
+      <span>
+        Please go to your phone's Settings → App Permissions and enable
+        notifications for chat.
+      </span>
+    </div>
+  )}
+<div className="chat-input-wrapper">
             <div className="chat-input-container">
               <button
                 type="button"
@@ -2390,6 +2405,7 @@ const InvitationCard = () => {
                 />
               </div>
             )}
+            </div>
           </div>
         )}
       </>
