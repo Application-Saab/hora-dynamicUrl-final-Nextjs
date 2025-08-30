@@ -1457,3 +1457,13 @@ background-color: none !important;
   padding: 0px;
   margin: 0px;
 }
+
+.notification-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-size: 14px;
+}
