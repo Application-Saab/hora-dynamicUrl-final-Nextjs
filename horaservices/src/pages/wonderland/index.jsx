@@ -15,6 +15,7 @@ import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import { FaArrowLeft } from "react-icons/fa";
 import { IoIosNotificationsOff } from "react-icons/io";
 import { IoIosNotifications } from "react-icons/io";
+import "../photo-gallery/gallery.css";
 import {
   BASE_URL,
   CREATE_GUEST_BY_EVENTID,
@@ -58,6 +59,7 @@ import { eventOptions } from "@/utils/constants";
 import chatIcon from "@/assets/chaticon.png";
 import EmojiPicker from "emoji-picker-react";
 import { FaRegKeyboard } from "react-icons/fa6";
+import SuccessIconImage from "@/assets/success_image_upload.png";
 import {
   collection,
   deleteDoc,
@@ -75,9 +77,24 @@ import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
 import A2HSPrompt from "@/components/wonderland/AddToHomeScreen";
 import NotificationToggleButton from "@/components/wonderland/NotificationToggleButton";
+import LazyImage from "@/components/LazyImage";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
+
+const dummayImageGallery = [
+  photo1,
+  photo2,
+  photo3,
+  photo4,
+  photo5,
+  photo6,
+  photo7,
+  photo8,
+  photo2,
+  photo5,
+  photo6,
+];
 
 const InvitationCard = () => {
   const hasSeenMessages = useRef(true);
@@ -191,6 +208,7 @@ const InvitationCard = () => {
         );
         const data = await response.json();
         if (data.error) {
+          setEventAllImages([]);
           setErrorEventImages(data.message || "Failed to fetch guests");
         } else {
           setEventAllImages(data.data || []);
@@ -210,7 +228,9 @@ const InvitationCard = () => {
     // Cleanup interval on unmount
     return () => clearInterval(interval);
   }, [
+    urlParams.eventUserId,
     urlParams.eventId,
+    urlParams.userType,
     refetchEventImages,
     refetchLuckyDraw,
     refetchLuckyDrawHostDelete,
@@ -240,10 +260,11 @@ const InvitationCard = () => {
         );
         const data = await response.json();
         if (data.error) {
+          setGuestDetails([]);
           setErrorGetGuest(data.message || "Failed to fetch guest");
         } else {
           setGuestDetails(data.data || []);
-          if(data?.data?.rsvpStatus){
+          if (data?.data?.rsvpStatus) {
             setHasSubmitted(true);
             localStorage.setItem(
               `rsvp_submitted_${urlParams.eventId}_${userID}`,
@@ -362,6 +383,7 @@ const InvitationCard = () => {
   const [guestList, setGuestList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [wallUploading, setWallUploading] = useState(false);
+  const [showImageUploadInfo, setShowImageUploadInfo] = useState(false);
   const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbyU06csCT5OIJzO3F9VGTjCIli74-k2puAp8AhybJGHPYvyEmuQmJlvPf60wHsy--NGGg/exec"; // no query params
 
@@ -399,7 +421,6 @@ const InvitationCard = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -875,6 +896,7 @@ const InvitationCard = () => {
   const handleImageUpload = async (e) => {
     setUploading(true);
     setWallUploading(true);
+    setShowImageUploadInfo(true);
 
     const files = e.target.files;
     if (!files || files.length === 0) {
@@ -1157,7 +1179,10 @@ const InvitationCard = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
-      if (Notification.permission === "denied" || Notification.permission === "default") {
+      if (
+        Notification.permission === "denied" ||
+        Notification.permission === "default"
+      ) {
         setNotifyPermissionMsg(true);
       } else {
         setNotifyPermissionMsg(false);
@@ -1580,57 +1605,6 @@ const InvitationCard = () => {
                           clearNewMessage={() => setHasNewMessage(false)}
                           hasNewMessage={hasNewMessage}
                         />
-
-                        {/* <div
-  className="invite-image-wrapper"
- onClick={async () => {
-    setChatOpen(true);
-    chatOpenRef.current = true;
-    setUnreadCount(0);
-
-    // ✅ Update last seen
-    const userRef = doc(db, "groups", eventId, "members", userID);
-    await updateDoc(userRef, {
-      lastSeenAt: serverTimestamp(),
-    });
-  }}
-  style={{
-    position: "absolute",
-    cursor: "pointer",
-    zIndex: 999,
-  }}
->
-  <Image
-    src={chatIcon}
-    alt="chat"
-    className="invite-image"
-    width={40}
-    height={40}
-  />
-
-  {!chatOpen && unreadCount > 0 && (
-    <span
-      style={{
-        position: "absolute",
-        top: "-4px",
-        right: "-4px",
-        minWidth: "18px",
-        height: "18px",
-        backgroundColor: "red",
-        color: "white",
-        fontSize: "12px",
-        fontWeight: "bold",
-        borderRadius: "50%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "2px",
-      }}
-    >
-      {unreadCount}
-    </span>
-  )}
-</div> */}
                         <div
                           className="invite-image-wrapper"
                           onClick={async () => {
@@ -1947,7 +1921,7 @@ const InvitationCard = () => {
 
                 {/* Images Grid */}
                 <div style={{ position: "relative", marginTop: "auto" }}>
-                  {wallUploading && (
+                  {/* {wallUploading && (
                     <div
                       style={{
                         position: "absolute",
@@ -1963,92 +1937,43 @@ const InvitationCard = () => {
                     >
                       <div className="spinner" />
                     </div>
-                  )}
+                  )} */}
 
                   <div
-                    className="event-grid"
+                    className="thumbnail-gallery"
                     style={{
-                      opacity: wallUploading ? 0.5 : 1,
-                      margin: "10px auto",
+                      // opacity: wallUploading ? 0.5 : 1,
+                      margin: "20px auto",
                     }}
                   >
                     {eventAllImages.length === 0 ? (
-                      <>
-                        <div className="collage-item">
-                          <Image
-                            src={photo1}
-                            className="collage-image"
-                            alt="img1"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo4}
-                            className="collage-image"
-                            alt="sticky note"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo3}
-                            className="collage-image"
-                            alt="img2"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo7}
-                            className="collage-image"
-                            alt="img2"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo8}
-                            className="collage-image"
-                            alt="img5"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo2}
-                            className="collage-image"
-                            alt="img3"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo5}
-                            className="collage-image"
-                            alt="img4"
-                          />
-                        </div>
-                        <div className="collage-item">
-                          <Image
-                            src={photo6}
-                            className="collage-image"
-                            alt="img5"
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      eventAllImages.map((item, index) => (
-                        <div
-                          key={item._id || index}
-                          className="collage-item"
-                          style={{ position: "relative" }}
-                        >
-                          <img
-                            src={item.webpUrl}
+                      <div className="event-grid">
+                        {dummayImageGallery?.map((item, index) => (
+                          <LazyImage
+                            key={index + 1}
+                            src={item.src}
                             alt={`Event Image ${index + 1}`}
-                            className="event-image"
-                            onClick={() => {
-                              setSelectedImage(item); // Image select karo
-                              setIsImageOpen(true); // Lightbox open karo
-                            }}
+                            wrapperClassName="masonry-item"
                           />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="thumbnail-gallery">
+                        <div className="event-grid">
+                          {eventAllImages.map((thumbnail, indexOnPage) => (
+                            <LazyImage
+                              key={thumbnail._id}
+                              src={thumbnail.webpUrl}
+                              alt={`Event Image ${indexOnPage + 1}`}
+                              wrapperClassName="masonry-item"
+                              onClick={() => {
+                                setSelectedImage(thumbnail); // Image select karo
+                                setIsImageOpen(true); // Lightbox open karo
+                              }}
+                            />
+                          ))}
                         </div>
-                      ))
+                      </div>
                     )}
                   </div>
                 </div>
@@ -2299,116 +2224,138 @@ const InvitationCard = () => {
                 );
               })}
             </div>
-         {showNotifyPermissionMsg && (
-    <div className="notify-msg-ctn">
-      <span>
-        Please go to your phone's Settings → App Permissions and enable
-        notifications for chat.
-      </span>
-    </div>
-  )}
-<div className="chat-input-wrapper">
-            <div className="chat-input-container">
-              <button
-                type="button"
-                onClick={() => {
-                  if (showEmojiPicker) {
-                    // Emoji picker open hai, ab keyboard button dikh raha hoga
-                    setShowEmojiPicker(false);
-                    // Force mobile keyboard to open
+            {showNotifyPermissionMsg && (
+              <div className="notify-msg-ctn">
+                <span>
+                  Please go to your phone's Settings → App Permissions and
+                  enable notifications for chat.
+                </span>
+              </div>
+            )}
+            <div className="chat-input-wrapper">
+              <div className="chat-input-container">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (showEmojiPicker) {
+                      // Emoji picker open hai, ab keyboard button dikh raha hoga
+                      setShowEmojiPicker(false);
+                      // Force mobile keyboard to open
+                      setTimeout(() => {
+                        textareaRef.current?.focus();
+                      }, 0);
+                    } else {
+                      // Emoji picker open karo
+                      setShowEmojiPicker(true);
+                      // Keyboard band karo
+                      textareaRef.current?.blur();
+                    }
+                  }}
+                  className="emoji-btn"
+                >
+                  {showEmojiPicker ? (
+                    <FaRegKeyboard fontSize={20} />
+                  ) : (
+                    <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                  )}
+                </button>
+                <textarea
+                  value={text}
+                  ref={textareaRef}
+                  className="chat-input"
+                  rows={1}
+                  onFocus={() => {
+                    // ✅ Agar emoji picker open hai aur user text area tap kare → picker band karo
+                    if (showEmojiPicker) {
+                      setShowEmojiPicker(false);
+                    }
+                    // ✅ focus karte hi input ko viewport me le aa
                     setTimeout(() => {
-                      textareaRef.current?.focus();
-                    }, 0);
-                  } else {
-                    // Emoji picker open karo
-                    setShowEmojiPicker(true);
-                    // Keyboard band karo
-                    textareaRef.current?.blur();
-                  }
-                }}
-                className="emoji-btn"
-              >
-                {showEmojiPicker ? (
-                  <FaRegKeyboard fontSize={20} />
-                ) : (
-                  <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-                )}
-              </button>
-              <textarea
-                value={text}
-                ref={textareaRef}
-                className="chat-input"
-                rows={1}
-                onFocus={() => {
-                  // ✅ Agar emoji picker open hai aur user text area tap kare → picker band karo
-                  if (showEmojiPicker) {
-                    setShowEmojiPicker(false);
-                  }
-                  // ✅ focus karte hi input ko viewport me le aa
-                  setTimeout(() => {
-                    textareaRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "end",
-                    });
-
-                    // ✅ Extra offset ke liye manual scroll adjust
-                    window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
-                  }, 300);
-                }}
-                onChange={(e) => {
-                  setText(e.target.value);
-                  if (e.target.value.length > 0) {
-                    setShowEmojiPicker(false); // typing se emoji picker band ho jaye
-                  }
-                }}
-                onInput={(e) => {
-                  e.target.style.height = "auto";
-                  const newHeight = Math.min(e.target.scrollHeight, 120);
-                  e.target.style.height = newHeight + "px";
-                }}
-                placeholder="Type message here..."
-              />
-
-              <button onClick={sendMessage} className="chat-send-btn">
-                <Image src={sendIcon} alt="Send" className="send-icon" />
-              </button>
-            </div>
-
-            {showEmojiPicker && (
-              <div className="emoji-container">
-                <EmojiPicker
-                  width={emojiWidth}
-                  searchDisabled={true}
-                  onEmojiClick={(emojiData) => {
-                    const textarea = textareaRef.current;
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-
-                    const newText =
-                      text.substring(0, start) +
-                      emojiData.emoji +
-                      text.substring(end);
-
-                    setText(newText);
-                    requestAnimationFrame(() => {
-                      textarea.selectionStart = textarea.selectionEnd =
-                        start + emojiData.emoji.length;
-                    });
-                    // ✅ emoji picker open hone par bhi input ko viewport me le aao
-                    setTimeout(() => {
-                      textarea.scrollIntoView({
+                      textareaRef.current?.scrollIntoView({
                         behavior: "smooth",
                         block: "end",
                       });
-                    }, 100);
+
+                      // ✅ Extra offset ke liye manual scroll adjust
+                      window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
+                    }, 300);
                   }}
+                  onChange={(e) => {
+                    setText(e.target.value);
+                    if (e.target.value.length > 0) {
+                      setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                    }
+                  }}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    const newHeight = Math.min(e.target.scrollHeight, 120);
+                    e.target.style.height = newHeight + "px";
+                  }}
+                  placeholder="Type message here..."
                 />
+
+                <button onClick={sendMessage} className="chat-send-btn">
+                  <Image src={sendIcon} alt="Send" className="send-icon" />
+                </button>
               </div>
-            )}
+
+              {showEmojiPicker && (
+                <div className="emoji-container">
+                  <EmojiPicker
+                    width={emojiWidth}
+                    searchDisabled={true}
+                    onEmojiClick={(emojiData) => {
+                      const textarea = textareaRef.current;
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+
+                      const newText =
+                        text.substring(0, start) +
+                        emojiData.emoji +
+                        text.substring(end);
+
+                      setText(newText);
+                      requestAnimationFrame(() => {
+                        textarea.selectionStart = textarea.selectionEnd =
+                          start + emojiData.emoji.length;
+                      });
+                      // ✅ emoji picker open hone par bhi input ko viewport me le aao
+                      setTimeout(() => {
+                        textarea.scrollIntoView({
+                          behavior: "smooth",
+                          block: "end",
+                        });
+                      }, 100);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
       </>
+      {showImageUploadInfo && (
+        <div className="image-upload-popup-overlay">
+          <div className="upload-image-popup">
+            <h3>Upload Complete</h3>
+            <div className="d-flex justify-content-center my-2">
+              <Image src={SuccessIconImage} alt="Success" />
+            </div>
+            <p>
+              Your images are uploading will be reflect on event wall after some
+              time.
+            </p>
+            <div className="d-flex justify-content-center">
+              <button
+                className="upload-image-popup-btn"
+                onClick={() => setShowImageUploadInfo(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

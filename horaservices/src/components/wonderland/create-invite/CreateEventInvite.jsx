@@ -206,21 +206,60 @@ const CreateEventInvite = ({ slug }) => {
     }
   };
 
+  const formatDate = (isoDateString) => {
+    const date = new Date(isoDateString);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   return (
-    <InvitationModal
-      showModal={showModal}
-      handleClose={() => setShowModal(false)}
-      handleSave={handleSave}
-      formData={formData}
-      setFormData={setFormData}
-      handleChange={handleChange}
-      handleImageChange={handleImageChange}
-      uploadedImage={uploadedImage}
-      eventOptions={eventOptions}
-      fileInputRef={fileInputRef}
-      orderDetails={""}
-      imageBackground={imageBackground}
-    />
+    <>
+      <div>
+        <InvitationModal
+          showModal={showModal}
+          handleClose={() => setShowModal(false)}
+          handleSave={handleSave}
+          formData={formData}
+          setFormData={setFormData}
+          handleChange={handleChange}
+          handleImageChange={handleImageChange}
+          uploadedImage={uploadedImage}
+          eventOptions={eventOptions}
+          fileInputRef={fileInputRef}
+          orderDetails={""}
+          imageBackground={imageBackground}
+        />
+      </div>
+      <div className="invite-card" style={{
+        border: "1px solid rgba(0, 0, 0, 0.53)",
+        marginTop: "-20px",
+        background: "white",
+        marginBottom: '30px'
+      }}> 
+        <h2 className="invite-heading party-title">It's Time To Party!</h2>
+
+        <div className="cake-image-wrapper">
+          <img src={uploadedImage} alt="Your image" className="cake-image" />
+        </div>
+
+        <h3 className="invite-title highlight-title">
+          {formData.name || "Someone"}’s {formData.eventType || ""}
+        </h3>
+
+        <div className="event-info-wrapper">
+          <div className="event-details">
+            <div className="event-line">
+              📅 Date : {formatDate(formData.date)}
+            </div>
+            <div className="event-line">⏰ Time : {formData.time}</div>
+          </div>
+          <div className="event-address">{formData.address}</div>
+        </div>
+      </div>
+    </>
   );
 };
 
