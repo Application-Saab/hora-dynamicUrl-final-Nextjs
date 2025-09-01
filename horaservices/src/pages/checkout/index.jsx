@@ -39,7 +39,6 @@ import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/DecorBackgorundImgDetails.png"
 import Infoicon from "../../assets/info-icon.png"
 import "./checkout.css"
-
 const Checkout = () => {
   const router = useRouter();
 
@@ -50,8 +49,8 @@ const Checkout = () => {
     selectedCount,
     peopleCount,
     totalAmount,
-  } = router.query; 
-  let { subCategory, product } = router.query; 
+  } = router.query;
+  let { subCategory, product } = router.query;
   const urlParams = new URLSearchParams(window.location.search);
   const category = urlParams.get("catValue");
   const selectedAddOnProduct = router.query.selectedAddOnProduct
@@ -81,8 +80,8 @@ const Checkout = () => {
   const phoneNumber = localStorage.getItem("mobileNumber");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-const fromPath = router.query.from || "";
-const cityName = fromPath.split("/")[1] || "";
+  const fromPath = router.query.from || "";
+  const cityName = fromPath.split("/")[1] || "";
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
     const loggedInStatus = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -389,43 +388,43 @@ const cityName = fromPath.split("/")[1] || "";
       "_blank"
     );
   };
-const contactUsRedirection = (category, cityName) => {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "decoration-checkout_contact_us_click",
-    button_name: "Contact Us",
-    category: category,
-  });
+  const contactUsRedirection = (category, cityName) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "decoration-checkout_contact_us_click",
+      button_name: "Contact Us",
+      category: category,
+    });
 
-  const messages = {
-    "kids-birthday-decoration": "Hi, I want to book kids birthday decor design & need more info",
-    "birthday-decoration": "Hi, I want to book birthday decor design & need more info",
-    "anniversary-decoration": "Hi, I want to book anniversary decor design & need more info",
-    "baby-shower-decoration": "Hi, I want to book baby shower decor design & need more info",
-    "welcome-baby-decoration": "Hi, I want to book baby welcome decor design & need more info",
-    "first-night-decoration": "Hi, I want to book first night decor design & need more info",
-    "premium-decoration": "Hi, I want to book premium decor design & need more info",
-    "haldi-mehendi-decoration": "Hi, I want to book haldi & mehendi decor design & need more info",
-    "Wedding": "Hi, I want to book wedding decor design & need more info",
-    "bachelorette-decoration": "Hi, I want to book bachelorette decor design & need more info",
+    const messages = {
+      "kids-birthday-decoration": "Hi, I want to book kids birthday decor design & need more info",
+      "birthday-decoration": "Hi, I want to book birthday decor design & need more info",
+      "anniversary-decoration": "Hi, I want to book anniversary decor design & need more info",
+      "baby-shower-decoration": "Hi, I want to book baby shower decor design & need more info",
+      "welcome-baby-decoration": "Hi, I want to book baby welcome decor design & need more info",
+      "first-night-decoration": "Hi, I want to book first night decor design & need more info",
+      "premium-decoration": "Hi, I want to book premium decor design & need more info",
+      "haldi-mehendi-decoration": "Hi, I want to book haldi & mehendi decor design & need more info",
+      "Wedding": "Hi, I want to book wedding decor design & need more info",
+      "bachelorette-decoration": "Hi, I want to book bachelorette decor design & need more info",
+    };
+
+    let message = messages[category] || "Hi, I want to book a decoration design & need more info";
+
+    // append city if available
+    if (cityName) {
+      message += ` for ${cityName}!`;
+    } else {
+      message += "!";
+    }
+
+    setTimeout(() => {
+      window.open(
+        `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
+        "_blank"
+      );
+    }, 300);
   };
-
-  let message = messages[category] || "Hi, I want to book a decoration design & need more info";
-
-  // append city if available
-  if (cityName) {
-    message += ` for ${cityName}!`;
-  } else {
-    message += "!";
-  }
-
-  setTimeout(() => {
-    window.open(
-      `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
-  }, 300);
-};
 
 
 
@@ -472,8 +471,8 @@ const contactUsRedirection = (category, cityName) => {
           backgroundPosition: ' left -160px top 100px',
           backgroundRepeat: 'no-repeat',
         }} >
-  
-  
+
+
           {/* Transparent Foreground Form Layer */}
           <div className="booking-form with-bg-shapes" >
             <div className="background-shape top-left" />
@@ -519,15 +518,15 @@ const contactUsRedirection = (category, cityName) => {
             </div>
 
             {combinedDateTimeError && (
-               <div className="support-box">
-              <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
-              <button className="support-button" onClick={contactUsRedirect}>
-                Contact Support
-              </button>
-            </div>
+              <div className="support-box">
+                <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
+                <button className="support-button" onClick={contactUsRedirect}>
+                  Contact Support
+                </button>
+              </div>
             )}
 
-          
+
 
 
 
@@ -606,7 +605,7 @@ const contactUsRedirection = (category, cityName) => {
           />
         </div>
         <div className='rightsecdecinner photography'>
-          <h3 style={{ fontSize: "18px", fontWeight: "600", color: "rgb(157, 74, 147)",     margin: "33px 0px 15px 15px", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
+          <h3 style={{ fontSize: "18px", fontWeight: "600", color: "rgb(157, 74, 147)", margin: "33px 0px 15px 15px", lineHeight: "35px", width: "100%", textAlign: "center" }}>Product Details</h3>
           <div className=''>
             <Image
               className="checkoutRightImg"
@@ -629,14 +628,10 @@ const contactUsRedirection = (category, cityName) => {
             <div className='prod-details'>
 
               <div className='detailitem'>
-                <label>Product Amount:</label>
-                <p>₹{product?.price}</p>
+                <label style={{ color: "black" }}> Product Amount: </label>
+                <p style={{ color: "black" }}> ₹{product?.price}</p>
               </div>
-              <div className='detailitem'>
-                <label >Advance Amount:</label>
-                {/* style={{ color: "rgb(157, 74, 147)" }} */}
-                <p >₹ {Math.round(totalAmount * 0.4)}</p>
-              </div>
+
               <div className='addon-prices'>
 
                 <div >
@@ -656,26 +651,26 @@ const contactUsRedirection = (category, cityName) => {
 
                 </div>
               </div>
-
-              <div className='detailitem'>
+                <div className='detailitem'>
                 <label style={{ color: "rgb(157, 74, 147)" }}>Total Amount:</label>
                 <p style={{ color: "rgb(157, 74, 147)" }}>₹{totalAmount}</p>
               </div>
-
-              
-
+              <div className='detailitem'>
+                <label >Advance Amount:</label>
+                <p >₹ {Math.round(totalAmount * 0.4)}</p>
+              </div>
 
             </div>
-          
+
           </div>
         </div>
-  <div className="payment-note">
-                <Image src={Infoicon} alt="info icon" className="info-icon" />
-                <div className="note-text">
-                  Balance payment is to be paid 
-                  to executor after order completion.
-                </div>
-              </div>
+        {/* <div className="payment-note">
+          <Image src={Infoicon} alt="info icon" className="info-icon" />
+          <div className="note-text">
+            Balance payment is to be paid
+            to executor after order completion.
+          </div>
+        </div> */}
         <div className="needmore">
           <div
             style={{
@@ -690,29 +685,29 @@ const contactUsRedirection = (category, cityName) => {
             <p style={{ fontSize: 14, fontWeight: 500, color: "black", marginBottom: 0 }}>
               Need more info?
             </p>
-<button
-  className="button-cta whatsapp-cta"
-  onClick={() => contactUsRedirection(category,cityName)}
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="25"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="lucide lucide-message-circle icon-cta"
-  >
-    <path
-      d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"
-      className="whatsapp-iconimg"
-    ></path>
-  </svg>
-  Whatsapp
-</button>
+            <button
+              className="button-cta whatsapp-cta"
+              onClick={() => contactUsRedirection(category, cityName)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="25"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-message-circle icon-cta"
+              >
+                <path
+                  d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"
+                  className="whatsapp-iconimg"
+                ></path>
+              </svg>
+              Whatsapp
+            </button>
 
           </div>
         </div>

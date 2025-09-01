@@ -24,7 +24,6 @@
     border-radius: 37.91px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 24px 20px;
-    
     width: 90%;
     margin: 20px auto;
 }
@@ -302,7 +301,7 @@
   padding: 10px;
   text-align: left;
 border-top: 1px solid #00000066;
-border-bottom: 1px solid #00000066;
+/* border-bottom: 1px solid #00000066; */
 }
 .policy-wrapper {
     border-radius: 20px;
@@ -476,10 +475,10 @@ select.formcontrol {
   font-family: 'Inter', sans-serif;
 }
 
-.detailitem label {
+/* .detailitem label {
   font-weight: 600;
   font-size: 14px;
-}
+} */
 
 
 
@@ -528,7 +527,7 @@ border:1px solid #7e7c7c ;
      line-height: 0.5;
 }
 .detailitem label {
-  color: black;
+  color:rgb(157, 74, 147);
   font-size: 16px;
   margin: 16px 0 6px;
     font-weight: bold;
@@ -554,30 +553,30 @@ border:1px solid #7e7c7c ;
 }
 
 .addon-item {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  padding: 6px 0 !important;
-  border-bottom: 1px dashed #ccc !important;
-  gap:20px;
-  flex-direction: row !important;
+ display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 6px 0 !important;
+    border-bottom: 1px dashed #ccc !important;
+    gap: 20px;
+    flex-direction: row !important;
 }
 
 .addon-title {
-  font-family: 'Inter', sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  color: black !important;
-  flex: 1 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: black !important;
+    flex: 1 1 !important;
 }
 
 .addon-price {
   font-family: 'Inter', sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  color: black !important;
-  white-space: nowrap !important;
-  text-align: right !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: black !important;
+    white-space: nowrap !important;
+    text-align: right !important;
 }
 
 .detailitem p {
@@ -585,8 +584,8 @@ border:1px solid #7e7c7c ;
     /* margin-left: 10px; */
     font-size: 16px !important;
     margin-top: 10px !important;
-    font-weight: 500;
-    color: black;
+    font-weight: 700;
+    color: rgb(157, 74, 147);
 }
 
 
