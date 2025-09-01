@@ -50,7 +50,7 @@ const InvitationModal = ({
   return (
     <div
       className="modal-overlay"
-      style={{ backgroundImage: `url(${imageBackground?.src || ""})` }}
+      style={{ backgroundImage: `url(${imageBackground?.src || ""})`, position: page === "create-invite" ? '' : 'fixed' }}
     >
       <Head>
         <link
