@@ -22,7 +22,7 @@ import Anniversary from "../../assets/AnniversaryIMG.png";
 import arrowIcon from "../../assets/arrow-down.png";
 import CategoryTabs from "@/components/CategoryTabs";
 import ReviewSlider from "@/components/ReviewSection";
-import { ballonReview } from "@/utils/ReviewsData";
+import {balloonreviews} from "@/utils/balloonReviews";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import BannerSlider from "@/components/BannerSlider";
@@ -495,8 +495,7 @@ const Decoration = ({ city, locality }) => {
       </section>
       <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
-
-      {/* <ReviewSlider reviews={ballonReview} title="Customer Reviews" /> */}
+<ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
     </div>
   );
 };

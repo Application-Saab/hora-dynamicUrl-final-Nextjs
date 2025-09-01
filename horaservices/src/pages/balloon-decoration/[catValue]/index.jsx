@@ -26,8 +26,8 @@ import FilterBar from "@/components/FilterBar";
 import customize from "../../../assets/customize.jpg";
 import DidyouKnow from "../../../assets/didyouknow.jpg";
 import makeItMemorable from "../../../assets/makeitmemorable.png";
-import steps from "../../../assets/steps.jpg";
-import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.jpg";
+import steps from "../../../assets/steps.webp";
+import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.png";
 import googleRating from "../../../assets/goglerating.png";
 import Gurantee from "../../../assets/gurantee.jpg";
 import ontime from "../../../assets/ontime.png"

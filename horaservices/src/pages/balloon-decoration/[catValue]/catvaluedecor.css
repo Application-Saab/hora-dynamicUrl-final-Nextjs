@@ -99,10 +99,10 @@
 .highlight-card {
   background: #f9f9f9;
   border-radius: 10px;
-  width: calc((100% - 16px) / 3); /* 3 cards with 2 gaps of 8px */
+  width: calc((100% - 16px) / 3);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
-  padding: 10px 5px;
+  padding:  5px;
   box-sizing: border-box;
 }
 

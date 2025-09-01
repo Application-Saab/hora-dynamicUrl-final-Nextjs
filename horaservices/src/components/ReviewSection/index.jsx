@@ -1,18 +1,7 @@
-// import React, { useEffect, useRef } from 'react';
-// import allReviewsData from '@/utils/ReviewsData';
-// import './ReviewSection.css';
-
-
-
-
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
- import allReviewsData from '@/utils/ReviewsData';
 import './ReviewSection.css';
-
-
-
 import "swiper/css";
 
 
@@ -22,19 +11,21 @@ const getStars = (rating) => {
   return [...filled, ...blank];
 };
 
-const ReviewSlider = () => {
+const ReviewSlider = ({ reviews = [], title = "Customer Reviews" }) => {
   return (
     <div className="review-section">
-      <h2 className="review-heading">Customer Review</h2>
+    <h2 className="review-heading">{title}</h2>
 
       <Swiper
         modules={[Autoplay]}
         autoplay={{ delay: 4000 }}
         loop={true}
-        spaceBetween={30}
-        slidesPerView={1}
+        spaceBetween={6}
+         slidesPerView={1.2} 
+  centeredSlides={true}
+        
       >
-        {allReviewsData.map((review, idx) => (
+        {reviews.map((review, idx) => (
           <SwiperSlide key={idx}>
             <div className="review-card final-card">
               <div className="top-row">
