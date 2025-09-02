@@ -350,7 +350,7 @@ console.log("advanceAmount",advanceAmount);
       user_id: storedUserID,
       price:advanceAmount,
       phone: phoneNumber,
-      name: '',
+      name: `user_${merchantTransactionId}`,
       merchantTransactionId: merchantTransactionId
     };
     try {

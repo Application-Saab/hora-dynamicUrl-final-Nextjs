@@ -339,7 +339,7 @@ const cityName = fromPath.split("/")[1] || "";
       user_id: storedUserID,
       price: Math.round(totalAmount * 0.4),
       phone: phoneNumber,
-      name: "",
+      name: `user_${merchantTransactionId}`,
       merchantTransactionId: merchantTransactionId,
     };
     try {
