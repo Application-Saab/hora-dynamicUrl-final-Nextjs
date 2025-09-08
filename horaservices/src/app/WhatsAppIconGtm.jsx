@@ -85,7 +85,7 @@ window.open(
   productNameEvent = 'decoration page whatsapp button clicked';
 
  
-  const message = `Hi, I saw your website and want to know more about the services in ${cityName}`;
+  const message = `Hi, I saw your website and want to know more about decoration services in ${cityName}`;
   const encodedMsg = encodeURIComponent(message);
 
   window.open(

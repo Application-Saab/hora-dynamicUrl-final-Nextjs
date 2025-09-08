@@ -375,19 +375,39 @@ const Checkout = () => {
         }
       }
     } catch (error) {
-      // Handle errors
       console.error("API error:", error);
     } finally {
-      setLoading(false); // Hide loader
+      setLoading(false); 
     }
   };
 
-  const contactUsRedirect = () => {
-    window.open(
-      "https://wa.me/917338584828?text=Hello%20I%20have%20some%20queries%20for%20decoration%20services",
-      "_blank"
-    );
+const contactUsRedirect = (category, cityName) => {
+  const categoryMessages = {
+    "kids-birthday-decoration": "kids birthday decoration",
+    "birthday-decoration": "birthday decoration",
+    "anniversary-decoration": "anniversary decoration",
+    "baby-shower-decoration": "baby shower decoration",
+    "welcome-baby-decoration": "welcome baby decoration",
+    "first-night-decoration": "first night decoration",
+    "premium-decoration": "premium decoration",
+    "haldi-mehendi-decoration": "haldi & mehendi decoration",
+    "Wedding": "wedding decoration",
+    "bachelorette-decoration": "bachelorette decoration",
   };
+  let categoryText = categoryMessages[category] || "decoration";
+  let message = `Hi, I want to place ${categoryText} order urgently`;
+  if (cityName) {
+    message += ` for ${cityName}, can you help me pls!`;
+  } else {
+    message += ", can you help me pls!";
+  }
+  window.open(
+    `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
+
+
   const contactUsRedirection = (category, cityName) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -520,9 +540,13 @@ const Checkout = () => {
             {combinedDateTimeError && (
               <div className="support-box">
                 <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
-                <button className="support-button" onClick={contactUsRedirect}>
-                  Contact Support
-                </button>
+                <button
+  className="support-button"
+  onClick={() => contactUsRedirect(category, cityName)}
+>
+  Contact Support
+</button>
+
               </div>
             )}
 
@@ -664,13 +688,6 @@ const Checkout = () => {
 
           </div>
         </div>
-        {/* <div className="payment-note">
-          <Image src={Infoicon} alt="info icon" className="info-icon" />
-          <div className="note-text">
-            Balance payment is to be paid
-            to executor after order completion.
-          </div>
-        </div> */}
         <div className="needmore">
           <div
             style={{
@@ -678,7 +695,7 @@ const Checkout = () => {
               flexDirection: "row",
               alignItems: " center",
               justifyContent: "space-evenly",
-              // padding: "0px 12px 10px",
+            
               width: "100%",
             }}
           >

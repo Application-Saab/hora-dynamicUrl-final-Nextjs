@@ -56,16 +56,15 @@ const DecorationCatPage = ({ locality }) => {
 
       if (queryCatValue) {
         setCatValue(queryCatValue);
-        //alert(`catValue: ${queryCatValue}`);
       }
 
       if (queryCity) {
         setCity(queryCity);
-        ///alert(`city: ${queryCity}`);
+ 
       }
     } else {
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split("/"); // Split by '/'
+      const path = window.location.pathname; 
+      const parts = path.split("/"); 
       const dynamicValue = parts[2];
       setCatValue(dynamicValue);
     }
@@ -98,7 +97,7 @@ const DecorationCatPage = ({ locality }) => {
   const scriptTag = JSON.stringify(schemaOrg);
  const searchParams = useSearchParams();
   const selectedTheme = searchParams.get("theme");
-  const isThemePage = !!selectedTheme; // true if theme param exists
+  const isThemePage = !!selectedTheme; 
 const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat, locality,orderType);
 
 
@@ -137,11 +136,9 @@ const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat
     }
   }
 
-  // UseSelector to get state from Redux
   const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector(
     (state) => state.state || {}
   );
-  // Determine the value for subCategory and imgAlt
   const subCategory = getSubCategory(catValue) || stateSubCategory;
   const imgAlt = stateImgAlt || "default alt text"; // Replace with a default alt text if needed
   const getRandomNumber = (min, max) => {
@@ -381,40 +378,78 @@ const shouldHideBanner = (name) => {
 };
 
 
-const PageTitle = (catValue, city) => {
+// const PageTitle = (catValue, city) => {
+//   if (catValue === "kids-birthday-decoration") {
+//     return city
+//       ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
+//       : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
+//   } else if (catValue === "birthday-decoration") {
+//     return city
+//       ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
+//       : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
+//   } else if (catValue === "anniversary-decoration") {
+//     return city
+//       ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
+//       : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
+//   } else if (catValue === "first-night-decoration") {
+//     return city
+//       ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
+//       : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
+//   } else if (catValue === "baby-shower-decoration") {
+//     return city
+//       ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
+//       : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
+//   } else if (catValue === "welcome-baby-decoration") {
+//     return city
+//       ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
+//       : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
+//   } else if (catValue === "haldi-mehendi-decoration") {
+//     return city
+//       ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
+//       : "Haldi Decoration with Latest Designs, Starting at ₹3000";
+//   } else {
+//     return city
+//       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
+//       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+//   }
+// };
+const PageTitle = (catValue, city, theme) => {
+  let baseTitle;
+
   if (catValue === "kids-birthday-decoration") {
-    return city
+    baseTitle = city
       ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
       : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
   } else if (catValue === "birthday-decoration") {
-    return city
+    baseTitle = city
       ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
       : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
   } else if (catValue === "anniversary-decoration") {
-    return city
+    baseTitle = city
       ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
       : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
   } else if (catValue === "first-night-decoration") {
-    return city
+    baseTitle = city
       ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
       : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
   } else if (catValue === "baby-shower-decoration") {
-    return city
+    baseTitle = city
       ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
       : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
   } else if (catValue === "welcome-baby-decoration") {
-    return city
+    baseTitle = city
       ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
       : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
   } else if (catValue === "haldi-mehendi-decoration") {
-    return city
+    baseTitle = city
       ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
       : "Haldi Decoration with Latest Designs, Starting at ₹3000";
   } else {
-    return city
+    baseTitle = city
       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
   }
+  return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
 };
 
 const getPageMetaDescription = (catValue, city) => {
@@ -454,7 +489,8 @@ const getPageMetaDescription = (catValue, city) => {
 return (
   <div className="decCatPage">
    <Head>
-  <title>{PageTitle(normalizedCat, city)}</title>
+  <title>{PageTitle(normalizedCat, city, theme)}</title>
+
   <meta name="description" content={getPageMetaDescription(normalizedCat, city)} />
   <meta name="keywords" content="Balloon and Flower Decoration @999" />
   <meta property="og:title" content={PageTitle(normalizedCat, city)} />
@@ -511,7 +547,7 @@ return (
               </div>
             )}
 
-            <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+            <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}  catValue={catValue} />
 
             <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
 
@@ -519,7 +555,7 @@ return (
               <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
             </section>
 
-            <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+            <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}  catValue={catValue}/>
 
             {!shouldHideBanner("DidyouKnow") && (
               <section className="decorationBanner">
@@ -527,7 +563,7 @@ return (
               </section>
             )}
 
-            <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+            <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
 
             {!shouldHideBanner("makeItMemorable") && (
               <section className="decorationBanner">
@@ -535,13 +571,13 @@ return (
               </section>
             )}
 
-            <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+            <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
 
             <section className="decorationBanner">
               <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
             </section>
 
-            <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+            <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}  catValue={catValue}/>
 
             {!shouldHideBanner("makeitmemorablebanner") && (
               <section className="decorationBanner">
@@ -549,7 +585,7 @@ return (
               </section>
             )}
 
-            <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
+            <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}  catValue={catValue} />
 
             <div className="highlight-wrapper">
               <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
@@ -572,12 +608,12 @@ return (
         )}
 
         {/* ✅ Infinite scroll grid */}
-        <ProductGrid
+        <ProductGrid 
           data={catalogueData.slice(isThemePage ? 0 : 32)}
           onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+           catValue={catValue}
         />
 
-        {/* ✅ Category Description Section */}
         <div className="category-content">
           {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 ? (
             <>
