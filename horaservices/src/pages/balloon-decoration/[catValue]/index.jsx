@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-// import { useParams } from "react-router-dom";
+import React from 'react';
+
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -379,42 +380,7 @@ const DecorationCatPage = ({ locality }) => {
   };
 
 
-  // const PageTitle = (catValue, city) => {
-  //   if (catValue === "kids-birthday-decoration") {
-  //     return city
-  //       ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
-  //       : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
-  //   } else if (catValue === "birthday-decoration") {
-  //     return city
-  //       ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
-  //       : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
-  //   } else if (catValue === "anniversary-decoration") {
-  //     return city
-  //       ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
-  //       : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
-  //   } else if (catValue === "first-night-decoration") {
-  //     return city
-  //       ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
-  //       : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
-  //   } else if (catValue === "baby-shower-decoration") {
-  //     return city
-  //       ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
-  //       : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
-  //   } else if (catValue === "welcome-baby-decoration") {
-  //     return city
-  //       ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
-  //       : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
-  //   } else if (catValue === "haldi-mehendi-decoration") {
-  //     return city
-  //       ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
-  //       : "Haldi Decoration with Latest Designs, Starting at ₹3000";
-  //   } else {
-  //     return city
-  //       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
-  //       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-  //   }
-  // };
-  const PageTitle = (catValue, city, theme) => {
+   const PageTitle = (catValue, city, theme) => {
     let baseTitle;
 
     if (catValue === "kids-birthday-decoration") {
@@ -487,6 +453,10 @@ const DecorationCatPage = ({ locality }) => {
   };
 
 
+const highPriceProducts = catalogueData.filter(item => item.price > 11000);
+
+console.log("highPriceProducts",highPriceProducts);
+
   return (
     <div className="decCatPage">
       <Head>
@@ -546,11 +516,11 @@ const DecorationCatPage = ({ locality }) => {
               )}
 
               <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-     <HighPriceProduct
-  data={catalogueData.filter(item => item.price > 15000)}
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+ 
+<HighPriceProduct 
+  data={highPriceProducts.slice(0, 1)} 
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
 />
-
               <div className="filterBar">
                 <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
               </div>
@@ -559,7 +529,11 @@ const DecorationCatPage = ({ locality }) => {
               </section>
 
               <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-
+         
+<HighPriceProduct 
+  data={highPriceProducts.slice(1, 2)} 
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
+/>
               {!shouldHideBanner("DidyouKnow") && (
                 <section className="decorationBanner">
                   <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
@@ -567,7 +541,10 @@ const DecorationCatPage = ({ locality }) => {
               )}
 
               <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-
+       <HighPriceProduct
+data={highPriceProducts.slice(2, 3)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
               {!shouldHideBanner("makeItMemorable") && (
                 <section className="decorationBanner">
                   <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
@@ -575,13 +552,19 @@ const DecorationCatPage = ({ locality }) => {
               )}
 
               <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-
+     <HighPriceProduct
+data={highPriceProducts.slice(3, 4)} 
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
               <section className="decorationBanner">
                 <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
               </section>
 
               <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-
+                <HighPriceProduct
+ data={highPriceProducts.slice(4, 5)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
               {!shouldHideBanner("makeitmemorablebanner") && (
                 <section className="decorationBanner">
                   <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
@@ -589,7 +572,10 @@ const DecorationCatPage = ({ locality }) => {
               )}
 
               <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-
+                 <HighPriceProduct
+ data={highPriceProducts.slice(5, 6)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
               <div className="highlight-wrapper">
                 <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
                 <div className="highlight-cards">
@@ -615,7 +601,10 @@ const DecorationCatPage = ({ locality }) => {
             onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
             catValue={catValue}
           />
-
+           <HighPriceProduct
+ data={highPriceProducts.slice(6, 7)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
 
           <div className="category-content">
             {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
@@ -639,7 +628,7 @@ const DecorationCatPage = ({ locality }) => {
               </>
             )}
           </div>
-
+      
         </>
       )}
     </div>
