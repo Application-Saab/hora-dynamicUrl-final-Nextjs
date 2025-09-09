@@ -2,11 +2,11 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
 import "./productGrid.css";
-
+import { useEffect } from "react";
 const ProductGrid = ({ data = [], onCardClick }) => {
   return (
     <div className="decContainer">
-      {data.length > 0 ? (
+      {data.length > 0 &&
         data.map((item) => (
           <div
             key={item._id}
@@ -42,12 +42,12 @@ const ProductGrid = ({ data = [], onCardClick }) => {
               </div>
             </div>
           </div>
-        ))
-      ) : (
-        <p>No products found.</p>
-      )}
+        ))}
     </div>
   );
 };
+
+
+
 
 export default ProductGrid;

@@ -144,7 +144,7 @@ const stats = [
   },
 ];
 
-const Decoration = ({ city, locality }) => {
+const Decoration = ({ city, locality  }) => {
 
   const [showMoreCards, setShowMoreCards] = useState(false);
   const smallCardRef = useRef(null); // 👈 ref for SmallCardGrid

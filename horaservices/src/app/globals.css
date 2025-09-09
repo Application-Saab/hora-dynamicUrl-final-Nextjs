@@ -1387,7 +1387,7 @@ button.view-details.order-details {
 
   .decDetailsRight {
     width: 100% !important;
-    padding: 17px 9px 0 !important;
+    /* padding: 17px 9px 0 !important; */
     box-sizing: border-box;
   }
 

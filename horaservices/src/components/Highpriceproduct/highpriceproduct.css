@@ -1,0 +1,88 @@
+.highdecContainer {
+  gap: 16px;
+  padding: 10px;
+}
+.highPriceCard {
+ border-radius: 12px;
+  margin: 0px;
+  cursor: pointer;
+  background: #fff;
+
+}
+
+.highPriceImageWrapper {
+  position: relative;
+}
+
+.highPriceImage {
+    border-radius: 6px 6px 0px 0px;
+}
+
+.highdiscountBadge {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: orange;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.highPriceContent {
+      padding: 10px;
+  margin:auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px #97538C80 solid;
+    border-radius: 0px 0px 10px 10px;
+    box-shadow: 0px 4px 4px 0px #00000040;
+
+}
+
+.highproductName {
+  font-weight: 500;
+  font-size: 20px;
+  color: #97538C;
+  text-align: left;
+  margin-bottom: 8px !important;
+}
+
+.highpriceRow {
+    text-align: left;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.highdiscountedPrice {
+ font-weight: 400;
+    font-size: 18px;
+    color: #97538C;
+    margin-bottom: 0px;
+   margin-bottom: 8px !important;
+}
+
+.highoriginalPrice {
+    font-weight: 400;
+    font-size: 18px;
+    color: #343a40;
+    text-decoration: line-through;
+  margin-bottom: 8px !important;
+}
+
+.highcustomization {
+  font-size: 15px;
+    color: #343a40;
+    margin-bottom: 4px;
+    text-align: left;
+}
+
+.highviewMore {
+      font-weight: 600;
+    color: #97538C;
+    font-size: 18px;
+    text-decoration: underline;
+    text-align: center;
+}

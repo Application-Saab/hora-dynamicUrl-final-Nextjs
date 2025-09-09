@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-// import { useParams } from "react-router-dom";
+import React from 'react';
+
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -45,6 +46,7 @@ import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp"
 import { useDecorationEvents } from "@/utils/decorationEvents";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
+import HighPriceProduct from "@/components/Highpriceproduct";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -56,16 +58,15 @@ const DecorationCatPage = ({ locality }) => {
 
       if (queryCatValue) {
         setCatValue(queryCatValue);
-        //alert(`catValue: ${queryCatValue}`);
       }
 
       if (queryCity) {
         setCity(queryCity);
-        ///alert(`city: ${queryCity}`);
+
       }
     } else {
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split("/"); // Split by '/'
+      const path = window.location.pathname;
+      const parts = path.split("/");
       const dynamicValue = parts[2];
       setCatValue(dynamicValue);
     }
@@ -78,9 +79,9 @@ const DecorationCatPage = ({ locality }) => {
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState("");
   const [showAll, setShowAll] = useState(false);
- const [currentCategoryContent, setCurrentCategoryContent] = useState(
-  DecorationCatDescriptionData[catValue] || []
-);
+  const [currentCategoryContent, setCurrentCategoryContent] = useState(
+    DecorationCatDescriptionData[catValue] || []
+  );
   const { theme } = router.query;
   const [loading, setLoading] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
@@ -96,10 +97,10 @@ const DecorationCatPage = ({ locality }) => {
   const [sortFilter, setSortFilter] = useState("asc");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
- const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const selectedTheme = searchParams.get("theme");
-  const isThemePage = !!selectedTheme; // true if theme param exists
-const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat, locality,orderType);
+  const isThemePage = !!selectedTheme;
+  const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat, locality, orderType);
 
 
   function getSubCategory(catValue) {
@@ -137,11 +138,9 @@ const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat
     }
   }
 
-  // UseSelector to get state from Redux
   const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector(
     (state) => state.state || {}
   );
-  // Determine the value for subCategory and imgAlt
   const subCategory = getSubCategory(catValue) || stateSubCategory;
   const imgAlt = stateImgAlt || "default alt text"; // Replace with a default alt text if needed
   const getRandomNumber = (min, max) => {
@@ -225,20 +224,20 @@ const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat
 
   // Filter change
   useEffect(() => {
-  if (catValue) {
-    setCatalogueData([]);
-    setCurrentPage(1);
-    getSubCatItems(1);
-  }
-}, [catValue, priceFilter, themeFilter]);
+    if (catValue) {
+      setCatalogueData([]);
+      setCurrentPage(1);
+      getSubCatItems(1);
+    }
+  }, [catValue, priceFilter, themeFilter]);
 
-useEffect(() => {
-  if (catValue) {
-    const content = DecorationCatDescriptionData[catValue] || [];
-    console.log("Setting category content for", catValue, content);
-    setCurrentCategoryContent(content);
-  }
-}, [catValue]);
+  useEffect(() => {
+    if (catValue) {
+      const content = DecorationCatDescriptionData[catValue] || [];
+      console.log("Setting category content for", catValue, content);
+      setCurrentCategoryContent(content);
+    }
+  }, [catValue]);
 
   function addSpaces(subCategory) {
     let result = "";
@@ -253,21 +252,21 @@ useEffect(() => {
   }
 
   console.log(subCategory, "subCategory");
- const getSubCatId = async (subCategory) => {
-  try {
-    const response = await axios.get(
-      BASE_URL + GET_DECORATION_CAT_ID + subCategory
-    );
-    const categoryId = response.data.data?._id;
-    console.log("Category ID:", categoryId);
-    if (categoryId) {
-      setCatId(categoryId); // ✅ only this
-      // remove setCatValue(subCategory)
+  const getSubCatId = async (subCategory) => {
+    try {
+      const response = await axios.get(
+        BASE_URL + GET_DECORATION_CAT_ID + subCategory
+      );
+      const categoryId = response.data.data?._id;
+      console.log("Category ID:", categoryId);
+      if (categoryId) {
+        setCatId(categoryId); // ✅ only this
+        // remove setCatValue(subCategory)
+      }
+    } catch (error) {
+      console.log("Error:", error.message);
     }
-  } catch (error) {
-    console.log("Error:", error.message);
-  }
-};
+  };
 
 
   const getDiscountedPrice = (price) => {
@@ -342,18 +341,18 @@ useEffect(() => {
     }
   };
 
-const categoryBannerMap = {
-  "birthday-decoration": birthdayBanner,
-  "premium-decoration": premiumBanner,
-  "kids-birthday-decoration": kidsBanner,
-  "welcome-baby-decoration":welcomeBanner,
-  "baby-shower-decoration":babyshowerBanner,
-  "anniversary-decoration":anniversaryBanner,
-  "first-night-decoration":firstNightBanner,
-  "haldi-mehendi-decoration":haldimehndiBanner,
-  "Wedding":WeddingBanner,
-  "bachelorette-decoration":BacheloretteBanner
-};
+  const categoryBannerMap = {
+    "birthday-decoration": birthdayBanner,
+    "premium-decoration": premiumBanner,
+    "kids-birthday-decoration": kidsBanner,
+    "welcome-baby-decoration": welcomeBanner,
+    "baby-shower-decoration": babyshowerBanner,
+    "anniversary-decoration": anniversaryBanner,
+    "first-night-decoration": firstNightBanner,
+    "haldi-mehendi-decoration": haldimehndiBanner,
+    "Wedding": WeddingBanner,
+    "bachelorette-decoration": BacheloretteBanner
+  };
   function trimText(text) {
     if (text.length > 60) {
       return text.slice(0, 60) + "...";
@@ -361,251 +360,279 @@ const categoryBannerMap = {
     return text;
   }
 
-const normalizeCatValue = (val) => {
-  if (!val) return "";
+  const normalizeCatValue = (val) => {
+    if (!val) return "";
 
-  // Check if exact match (case-sensitive) exists in the map
-  const exactMatch = Object.keys(categoryBannerMap).find(
-    (key) => key.toLowerCase() === val.toLowerCase()
-  );
+    // Check if exact match (case-sensitive) exists in the map
+    const exactMatch = Object.keys(categoryBannerMap).find(
+      (key) => key.toLowerCase() === val.toLowerCase()
+    );
 
-  return exactMatch || val.toLowerCase().replace(/ /g, "-");
-};
+    return exactMatch || val.toLowerCase().replace(/ /g, "-");
+  };
 
   const normalizedCat = normalizeCatValue(catValue);
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
-  
-const shouldHideBanner = (name) => {
-  const hideFor = ["Wedding", "haldi-mehendi-decoration"]; // jinke liye hide karna hai
-  return hideFor.includes(normalizedCat) && ["makeItMemorable" ,"DidyouKnow","makeitmemorablebanner"].includes(name);
-};
+
+  const shouldHideBanner = (name) => {
+    const hideFor = ["Wedding", "haldi-mehendi-decoration"]; // jinke liye hide karna hai
+    return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
+  };
 
 
-const PageTitle = (catValue, city) => {
-  if (catValue === "kids-birthday-decoration") {
-    return city
-      ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
-      : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "birthday-decoration") {
-    return city
-      ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
-      : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "anniversary-decoration") {
-    return city
-      ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
-      : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
-  } else if (catValue === "first-night-decoration") {
-    return city
-      ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
-      : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
-  } else if (catValue === "baby-shower-decoration") {
-    return city
-      ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
-      : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "welcome-baby-decoration") {
-    return city
-      ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
-      : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "haldi-mehendi-decoration") {
-    return city
-      ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
-      : "Haldi Decoration with Latest Designs, Starting at ₹3000";
-  } else {
+   const PageTitle = (catValue, city, theme) => {
+    let baseTitle;
+
+    if (catValue === "kids-birthday-decoration") {
+      baseTitle = city
+        ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
+        : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
+    } else if (catValue === "birthday-decoration") {
+      baseTitle = city
+        ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
+        : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
+    } else if (catValue === "anniversary-decoration") {
+      baseTitle = city
+        ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
+        : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
+    } else if (catValue === "first-night-decoration") {
+      baseTitle = city
+        ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
+        : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
+    } else if (catValue === "baby-shower-decoration") {
+      baseTitle = city
+        ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
+        : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
+    } else if (catValue === "welcome-baby-decoration") {
+      baseTitle = city
+        ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
+        : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
+    } else if (catValue === "haldi-mehendi-decoration") {
+      baseTitle = city
+        ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
+        : "Haldi Decoration with Latest Designs, Starting at ₹3000";
+    } else {
+      baseTitle = city
+        ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
+        : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
+    }
+    return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
+  };
+
+  const getPageMetaDescription = (catValue, city) => {
+    if (catValue === "kids-birthday-decoration") {
+      return city
+        ? `At Hora in ${city}, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨`
+        : "At Hora, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨";
+    }
+    if (catValue === "birthday-decoration") {
+      return city
+        ? `Celebrate birthdays in ${city} with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉`
+        : "Celebrate birthdays with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉";
+    }
+    if (catValue === "anniversary-decoration") {
+      return city
+        ? `Make your anniversary in ${city} magical with elegant balloon & rose petal decorations. Book directly online! 💖`
+        : "Make your anniversary magical with elegant balloon & rose petal decorations. Book directly online! 💖";
+    }
+    if (catValue === "haldi-mehendi-decoration") {
+      return city
+        ? `Brighten up your Haldi ceremony in ${city} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
+        : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
+    }
+    // default description
     return city
       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-  }
-};
+  };
 
-const getPageMetaDescription = (catValue, city) => {
-  if (catValue === "kids-birthday-decoration") {
-    return city
-      ? `At Hora in ${city}, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨`
-      : "At Hora, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨";
-  }
-  if (catValue === "birthday-decoration") {
-    return city
-      ? `Celebrate birthdays in ${city} with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉`
-      : "Celebrate birthdays with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉";
-  }
-  if (catValue === "anniversary-decoration") {
-    return city
-      ? `Make your anniversary in ${city} magical with elegant balloon & rose petal decorations. Book directly online! 💖`
-      : "Make your anniversary magical with elegant balloon & rose petal decorations. Book directly online! 💖";
-  }
-  if (catValue === "haldi-mehendi-decoration") {
-    return city
-      ? `Brighten up your Haldi ceremony in ${city} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
-      : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
-  }
-  // default description
-  return city
-    ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
-    : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-};
 
- 
 
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
 
 
-return (
-  <div className="decCatPage">
-   <Head>
-  <title>{PageTitle(normalizedCat, city)}</title>
-  <meta name="description" content={getPageMetaDescription(normalizedCat, city)} />
-  <meta name="keywords" content="Balloon and Flower Decoration @999" />
-  <meta property="og:title" content={PageTitle(normalizedCat, city)} />
-  <meta property="og:description" content={getPageMetaDescription(normalizedCat, city)} />
-  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-  <script type="application/ld+json">{scriptTag}</script>
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="Hora Services" />
-  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-  <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
-  <meta property="og:type" content="website" />
-</Head>
+const highPriceProducts = catalogueData.filter(item => item.price > 11000);
 
+console.log("highPriceProducts",highPriceProducts);
 
-    {/* ✅ Show 6 card skeletons while loading */}
-    {loading ? (
-      <div className="skeleton-wrapper">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <CardSkeleton key={index}  />
-        ))}
-      </div>
-    ) : (
-      <>
-        {!isThemePage && (
-          <>
-            <section className="decorationBanner">
-              <Image
-                src={bannerToShow}
-                alt="Decoration Banner"
-                width={1200}
-                height={400}
-                className="decorationBanner-image"
-                priority
-              />
-            </section>
+  return (
+    <div className="decCatPage">
+      <Head>
+        <title>{PageTitle(normalizedCat, city, theme)}</title>
+        <meta name="description" content={getPageMetaDescription(normalizedCat, city)} />
+        <meta name="keywords" content="Balloon and Flower Decoration @999" />
+        <meta property="og:title" content={PageTitle(normalizedCat, city)} />
+        <meta property="og:description" content={getPageMetaDescription(normalizedCat, city)} />
+        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+        <script type="application/ld+json">{scriptTag}</script>
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Hora Services" />
+        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+        <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
+        <meta property="og:type" content="website" />
+      </Head>
 
-            {catValue?.toLowerCase() === "kids-birthday-decoration" && (
-              <div className="category-tabs-outer">
-                <CategoryTabs
-                  data={themeFilters.map((item) => ({
-                    id: item.value,
-                    name: item.label,
-                    image: item.image,
-                    value: item.value,
-                    catValue: "kids-birthday-decoration",
-                  }))}
-                  onSelect={(item) => openCatItems(item, themeFilter)}
-                  city={city}
-                  hasCityPageParam={hasCityPageParam}
-                  locality={locality}
-                  variant="grid"
-                  catValue="kids-birthday-decoration"
-                />
-              </div>
-            )}
-
-            <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-            <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
-
-            <section className="decorationBanner">
-              <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-            </section>
-
-            <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-            {!shouldHideBanner("DidyouKnow") && (
-              <section className="decorationBanner">
-                <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-              </section>
-            )}
-
-            <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-            {!shouldHideBanner("makeItMemorable") && (
-              <section className="decorationBanner">
-                <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-              </section>
-            )}
-
-            <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-            <section className="decorationBanner">
-              <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-            </section>
-
-            <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-            {!shouldHideBanner("makeitmemorablebanner") && (
-              <section className="decorationBanner">
-                <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-              </section>
-            )}
-
-            <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} />
-
-            <div className="highlight-wrapper">
-              <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
-              <div className="highlight-cards">
-                <div className="highlight-card">
-                  <Image src={googleRating} alt="Google Rating" width={60} height={60} />
-                  <p>4.7+ GOOGLE RATING</p>
-                </div>
-                <div className="highlight-card">
-                  <Image src={ontime} alt="On Time Completion" width={60} height={60} />
-                  <p>ON TIME COMPLETION</p>
-                </div>
-                <div className="highlight-card">
-                  <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
-                  <p>100% FULL FILL GUARANTEE</p>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* ✅ Infinite scroll grid */}
-        <ProductGrid
-          data={catalogueData.slice(isThemePage ? 0 : 32)}
-          onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-        />
-
-        {/* ✅ Category Description Section */}
-        <div className="category-content">
-          {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 ? (
-            <>
-              {currentCategoryContent
-                .slice(0, showAll ? currentCategoryContent.length : 2)
-                .map((item, index) => (
-                  <div key={index} className="category-item">
-                    <h1>{item.title}</h1>
-                    <div
-                      className="item-content"
-                      dangerouslySetInnerHTML={{ __html: item.htmlContent }}
-                    />
-                  </div>
-                ))}
-              {currentCategoryContent.length > 2 && (
-                <button onClick={toggleShowAll} className="toggle-btn">
-                  {showAll ? 'See Less' : 'See More'}
-                </button>
-              )}
-            </>
-          ) : (
-            <p className="no-content-message">No content available for this category.</p>
-          )}
+      {loading ? (
+        <div className="skeleton-wrapper">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <CardSkeleton key={index} />
+          ))}
         </div>
-      </>
-    )}
-  </div>
-);
+      ) : (
+        <>
+          {!isThemePage && (
+            <>
+              <section className="decorationBanner">
+                <Image
+                  src={bannerToShow}
+                  alt="Decoration Banner"
+                  width={1200}
+                  height={400}
+                  className="decorationBanner-image"
+                  priority
+                />
+              </section>
+
+              {catValue?.toLowerCase() === "kids-birthday-decoration" && (
+                <div className="category-tabs-outer">
+                  <CategoryTabs
+                    data={themeFilters.map((item) => ({
+                      id: item.value,
+                      name: item.label,
+                      image: item.image,
+                      value: item.value,
+                      catValue: "kids-birthday-decoration",
+                    }))}
+                    onSelect={(item) => openCatItems(item, themeFilter)}
+                    city={city}
+                    hasCityPageParam={hasCityPageParam}
+                    locality={locality}
+                    variant="grid"
+                    catValue="kids-birthday-decoration"
+                  />
+                </div>
+              )}
+
+              <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+ 
+<HighPriceProduct 
+  data={highPriceProducts.slice(0, 1)} 
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
+/>
+              <div className="filterBar">
+                <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
+              </div>
+              <section className="decorationBanner">
+                <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+              </section>
+
+              <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+         
+<HighPriceProduct 
+  data={highPriceProducts.slice(1, 2)} 
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
+/>
+              {!shouldHideBanner("DidyouKnow") && (
+                <section className="decorationBanner">
+                  <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                </section>
+              )}
+
+              <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+       <HighPriceProduct
+data={highPriceProducts.slice(2, 3)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
+              {!shouldHideBanner("makeItMemorable") && (
+                <section className="decorationBanner">
+                  <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                </section>
+              )}
+
+              <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+     <HighPriceProduct
+data={highPriceProducts.slice(3, 4)} 
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
+              <section className="decorationBanner">
+                <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+              </section>
+
+              <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+                <HighPriceProduct
+ data={highPriceProducts.slice(4, 5)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
+              {!shouldHideBanner("makeitmemorablebanner") && (
+                <section className="decorationBanner">
+                  <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                </section>
+              )}
+
+              <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+                 <HighPriceProduct
+ data={highPriceProducts.slice(5, 6)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
+              <div className="highlight-wrapper">
+                <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
+                <div className="highlight-cards">
+                  <div className="highlight-card">
+                    <Image src={googleRating} alt="Google Rating" width={60} height={60} />
+                    <p>4.7+ GOOGLE RATING</p>
+                  </div>
+                  <div className="highlight-card">
+                    <Image src={ontime} alt="On Time Completion" width={60} height={60} />
+                    <p>ON TIME COMPLETION</p>
+                  </div>
+                  <div className="highlight-card">
+                    <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
+                    <p>100% FULL FILL GUARANTEE</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          <ProductGrid
+            data={catalogueData.slice(isThemePage ? 0 : 32)}
+            onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+            catValue={catValue}
+          />
+           <HighPriceProduct
+ data={highPriceProducts.slice(6, 7)}
+  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+/>
+
+          <div className="category-content">
+            {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
+              <>
+                {currentCategoryContent
+                  .slice(0, showAll ? currentCategoryContent.length : 2)
+                  .map((item, index) => (
+                    <div key={index} className="category-item">
+                      <h1>{item.title}</h1>
+                      <div
+                        className="item-content"
+                        dangerouslySetInnerHTML={{ __html: item.htmlContent }}
+                      />
+                    </div>
+                  ))}
+                {currentCategoryContent.length > 2 && (
+                  <button onClick={toggleShowAll} className="toggle-btn">
+                    {showAll ? 'See Less' : 'See More'}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+      
+        </>
+      )}
+    </div>
+  );
 
 
 }
