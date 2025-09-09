@@ -828,7 +828,7 @@ const handleCustomise = (type, cityName) => {
                 style={{
                   fontSize: "13px",
                   color: "#222",
-                  margin: "5px 0 5px 0",
+                  margin: "8px 0 8px 0",
                   fontWeight: "500",
                 }}
               >
@@ -843,11 +843,11 @@ const handleCustomise = (type, cityName) => {
                   style={{ color: "#9252AA", textDecoration: "none" }}
                   href={`/balloon-decoration/${catValue}`}
                 >
-                  {subCategory}
+                  {catValue}
                 </a>
 
                 {" > "}
-                <span>{product.name}</span>
+                {/* <span>{product.name}</span> */}
               </h2>
               <h1
                 style={{
@@ -876,7 +876,7 @@ const handleCustomise = (type, cityName) => {
                     fontWeight: "700",
                     fontSize: 18,
                     textAlign: "left",
-                    margin: "10px 0px 7px",
+                    margin: "7px 0px 7px",
                     textDecoration: "line-through",
                   }}
                 >

@@ -118,8 +118,7 @@
   line-height: 1.3;
 }
 /* ======================================================================================================= */
-/* categoryFooterData */
-.category-content {
+/* .category-content {
   margin-top: 20px;
   padding: 20px;
   border: 1px solid #e0e0e0;
@@ -127,7 +126,7 @@
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Roboto', sans-serif;
-}
+} */
 
 .category-content h1 {
   font-size: 21px;
@@ -223,3 +222,12 @@
   padding: 10px 20px;
 }
 
+.filterBar {
+  position: -webkit-sticky; /* Safari ke liye */
+  position: sticky;
+  top: 70px; /* header ki height ke hisaab se adjust karo */
+  z-index: 999;
+  background: #fff; /* neeche ke content overlap na ho */
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
