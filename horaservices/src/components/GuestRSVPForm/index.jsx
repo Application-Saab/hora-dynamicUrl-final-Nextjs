@@ -59,6 +59,7 @@ const GuestRSVPForm = ({
   }, [guestData]);
 
   const fetchGuestsInside = async () => {
+    setGuestData([]);
     if (!eventId) {
       setError("Event ID not found in URL");
       setLoading(false);
@@ -82,11 +83,13 @@ const GuestRSVPForm = ({
       );
       const data = await response.json();
       if (data.error) {
+        setGuestData([]);
         setError(data.message || "Failed to fetch guests");
       } else {
         setGuestData(data.data || []);
       }
     } catch (err) {
+      setGuestData([]);
       setError("Error fetching guests: " + err.message);
     } finally {
       setLoading(false);
@@ -94,9 +97,7 @@ const GuestRSVPForm = ({
   };
 
   useEffect(() => {
-    fetchGuestsInside();
-
-      // Initial call
+    // Initial call
     fetchGuestsInside();
 
   // Call every 3 minute
@@ -105,7 +106,7 @@ const GuestRSVPForm = ({
   // Cleanup interval on unmount
   return () => clearInterval(interval);
 
-  }, []);
+  }, [eventId, userId]);
 
   useEffect(() => {
     if (!hasSubmitted && eventId && userId) {

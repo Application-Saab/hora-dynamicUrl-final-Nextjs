@@ -338,7 +338,7 @@ const Checkout = () => {
       user_id: storedUserID,
       price: Math.round(totalAmount * 0.4),
       phone: phoneNumber,
-      name: "",
+      name: `user_${merchantTransactionId}`,
       merchantTransactionId: merchantTransactionId,
     };
     try {

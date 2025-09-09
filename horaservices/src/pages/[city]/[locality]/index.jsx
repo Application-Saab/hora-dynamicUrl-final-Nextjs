@@ -118,6 +118,9 @@ export default function Home() {
 
     const queryParams = new URLSearchParams(window.location.search);
     const transactionId = queryParams.get("transaction")
+    if(transactionId) {
+      router.replace(`/?transaction=${transactionId}`)
+    }
 
     if (transactionId) {
       checkPaymentStatus(transactionId);

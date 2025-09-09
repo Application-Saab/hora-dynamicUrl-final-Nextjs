@@ -16,6 +16,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
   const router = useRouter();
 
   const [guestData, setGuestData] = useState([]);
+  const [guestDataRSVP, setGuestDataRSVP] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openRsvpList, setOpenRsvpList] = useState(false);
@@ -27,6 +28,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
 
   useEffect(() => {
     const fetchGuests = async () => {
+      setGuestData([]);
       if (!urlParams?.eventId) {
         setError("Event ID not found in URL");
         setLoading(false);
@@ -51,27 +53,28 @@ const GuestListPreview = ({ hostData, urlParams }) => {
         );
         const data = await response.json();
         if (data.error) {
+          setGuestData([]);
           setError(data.message || "Failed to fetch guests");
         } else {
           setGuestData(data.data || []);
         }
       } catch (err) {
+        setGuestData([]);
         setError("Error fetching guests: " + err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGuests();
-      // Initial call
+    // Initial call
     fetchGuests();
 
-  // Call every 3 minute
-  const interval = setInterval(fetchGuests, 10000);
+    // Call every 3 minute
+    const interval = setInterval(fetchGuests, 10000);
 
-  // Cleanup interval on unmount
-  return () => clearInterval(interval);
-  }, [urlParams?.eventId]);
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [urlParams, urlParams?.eventId]);
 
   useEffect(() => {
     const confirmed =
@@ -89,9 +92,16 @@ const GuestListPreview = ({ hostData, urlParams }) => {
     setGuestCounts({ confirmed, willTry, notAnswered });
   }, [guestData]);
 
+  const handleListViewClick = () => {
+    setGuestDataRSVP(guestData);
+    // Open the RSVP popup
+    setOpenRsvpList(true);
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
+    <>
     <div className="guest-preview-card">
       <div className="curve-container">
         <Image src={curveBg} alt="Curve Background" className="curve-bg" />
@@ -125,25 +135,36 @@ const GuestListPreview = ({ hostData, urlParams }) => {
           </div>
         </div>
 
-        <div className="d-flex justify-content-center" style={{marginBottom: '22.5px'}}>
-          <button className="view-list-button" onClick={() => setOpenRsvpList(true)}>
-          <span className="view-list-icon-bg">
-            <Image src={ListViewIcon} alt="WhatsApp" className="view-list-icon-img" />
-          </span>
-          <span>Full Guest List</span>
-        </button>
+        <div
+          className="d-flex justify-content-center"
+          style={{ marginBottom: "22.5px" }}
+        >
+          <button
+            className="view-list-button"
+            onClick={() => handleListViewClick()}
+          >
+            <span className="view-list-icon-bg">
+              <Image
+                src={ListViewIcon}
+                alt="WhatsApp"
+                className="view-list-icon-img"
+              />
+            </span>
+            <span>Full Guest List</span>
+          </button>
         </div>
       </div>
-      {openRsvpList && (
+    </div>
+    {openRsvpList && (
         <RSVPPopup
           hostData={hostData}
-          guestData={guestData}
+          guestData={guestDataRSVP}
           loading={loading}
           error={error}
           onClose={() => setOpenRsvpList(false)}
         />
       )}
-    </div>
+    </>
   );
 };
 

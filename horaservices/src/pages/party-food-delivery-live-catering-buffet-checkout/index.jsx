@@ -541,7 +541,7 @@ const FoodDeliveryCheckout = () => {
             user_id: storedUserID,
             price: advance,
             phone: phoneNumber,
-            name: '',
+            name: `user_${merchantTransactionId}`,
             merchantTransactionId: merchantTransactionId
         };
         try {

@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8mkyjHXX_fGcdENJJnU3GWI60YWMItl0",
@@ -8,7 +9,7 @@ const firebaseConfig = {
   storageBucket: "wonderland-inapp-chat.firebasestorage.app",
   messagingSenderId: "336745779010",
   appId: "1:336745779010:web:0f2125b937da40189942db",
-  measurementId: "G-QF6S6NZQL6"
+  measurementId: "G-QF6S6NZQL6",
 };
 
 const app = initializeApp(firebaseConfig);
