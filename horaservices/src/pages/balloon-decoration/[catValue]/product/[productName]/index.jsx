@@ -216,13 +216,12 @@ function DecorationCatDetails({ city, locality }) {
   const [extraProduct, setExtraProduct] = useState([]);
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
   const searchParams = useSearchParams();
-  const [similarByPrice, setSimilarByPrice] = useState([]);
-  const [similarByName, setSimilarByName] = useState([]);
+const [similarByPrice, setSimilarByPrice] = useState([]);
+const [similarByName, setSimilarByName] = useState([]);
 
   const router = useRouter();
   const params = useParams();
   const customizationRef = useRef(null);
-   const similarRef = useRef(null);
   const addonRef = useRef(null);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
@@ -234,266 +233,266 @@ function DecorationCatDetails({ city, locality }) {
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
   console.log("Slider Data =>", similar);
-  // 1️⃣ Set CatValue if coming from params (optional case)
-  useEffect(() => {
-    if (params?.catValue) {
-      setCatValue(params.catValue);
-    }
-  }, [params]);
+ // 1️⃣ Set CatValue if coming from params (optional case)
+useEffect(() => {
+  if (params?.catValue) {
+    setCatValue(params.catValue);
+  }
+}, [params]);
 
-  // 2️⃣ Get URL params when router is ready
+// 2️⃣ Get URL params when router is ready
 
-  const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
-    if (!price || !productsArray.length) return;
+const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
+  if (!price || !productsArray.length) return;
 
-    const min = Math.floor(price / 1000) * 1000;
-    const max = Math.ceil(price / 1000) * 1000 + 1000;
+  const min = Math.floor(price / 1000) * 1000;
+  const max = Math.ceil(price / 1000) * 1000 + 1000;
 
-    const filtered = productsArray.filter(item => {
-      const itemPrice = Number(item.price);
-      return (
-        itemPrice >= min &&
-        itemPrice <= max &&
-        item._id !== excludeId
-      );
-    });
-
-    console.log(`Filtered by Rounded Range ${min} - ${max}:`, filtered);
-    setSimilarByPrice(filtered);
-  };
-
-
-  const filterSimilarByName = (product, productsArray = [], excludeId) => {
-    if (!product?.name || !productsArray.length) return;
-
-    const mainWords = product.name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Remove special chars
-      .split(/\s+/)
-      .filter(Boolean);
-
-    const filtered = productsArray
-      .filter(item => item._id !== excludeId)
-      .map(item => {
-        const itemName = (item.name || "")
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, '');
-
-        const itemWords = itemName.split(/\s+/).filter(Boolean);
-
-        // Count how many words match
-        const matchCount = mainWords.filter(word => itemWords.includes(word)).length;
-
-        // Is it a strong match? (both words exist)
-        const isStrongMatch = mainWords.every(word => itemWords.includes(word));
-
-        // Optional: Order match
-        const isExactPhrase = itemName.includes(mainWords.join(' '));
-
-        return {
-          ...item,
-          matchCount,
-          isStrongMatch,
-          isExactPhrase
-        };
-      })
-      // Sort by exact phrase > strong match > matchCount
-      .sort((a, b) => {
-        if (b.isExactPhrase !== a.isExactPhrase) return b.isExactPhrase - a.isExactPhrase;
-        if (b.isStrongMatch !== a.isStrongMatch) return b.isStrongMatch - a.isStrongMatch;
-        return b.matchCount - a.matchCount;
-      });
-
-    console.log("Filtered by Name =>", filtered);
-    setSimilarByName(filtered);
-  };
-
-
-
-
-  useEffect(() => {
-    if (router.isReady) {
-      const { subCategory, catValue: urlCatValue, productName } = router.query;
-
-      setSubCategory(subCategory || "");
-      setCatValue(urlCatValue || "");
-      setSendCategoryId(urlCatValue || "");
-
-      if (productName) {
-        const formattedProduct = productName.replace(/-/g, " ");
-        setApiProduct(formattedProduct);
-      }
-    }
-  }, [router.isReady, router.query]);
-
-
-  useEffect(() => {
-    if (apiProduct) {
-      fetchDecorationDetails();
-    }
-  }, [apiProduct]);
-
-  const fetchDecorationDetails = async () => {
-    try {
-      const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
-      const response = await axios.get(url);
-      const fetchedProduct = response.data.data[0];
-      setProduct(fetchedProduct);
-      setIsFetched(true);
-
-      if (fetchedProduct?.price) {
-        const discountDetails = getDiscountedPrice(fetchedProduct.price);
-        setDiscountInfo(discountDetails);
-      }
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching product details:", error.message);
-      setLoading(false);
-    }
-  };
-
-
-
-  useEffect(() => {
-    if (router.isReady && router.query.catValue) {
-      const rawCatValue = router.query.catValue;
-      setCatValue(rawCatValue); // For UI
-      setSendCategoryId(rawCatValue); // For API calls
-    }
-  }, [router.isReady, router.query.catValue]);
-
-
-  useEffect(() => {
-    if (!router.isReady || !router.query.catValue) return;
-
-    const rawCatValue = router.query.catValue;
-
-    const mappedCat = getMappedCatValue(rawCatValue);  // ✅ Your map function
-
-    setCatValue(rawCatValue);      // For showing on UI — can be slug like 'birthday-decoration'
-    setSendCategoryId(mappedCat);  // For API calls — mapped to your DB slug
-
-  }, [router.isReady, router.query.catValue]);
-
-  useEffect(() => {
-    if (product?.categoryId) {
-      getCategoryProducts(product.categoryId);
-
-    } else if (catValue) {
-      getSubCatId(catValue);
-    }
-  }, [product, catValue]);
-
-  useEffect(() => {
-    if (product?.price && similar.length > 0) {
-      filterSimilarByPrice(product.price, similar, product._id);
-      filterSimilarByName(product, similar, product._id);
-    }
-  }, [product, similar]);
-
-  useEffect(() => {
-    if (passCategoryId) {
-      getCategoryProducts(passCategoryId);
-    }
-  }, [passCategoryId]);
-
-
-  const getCategoryProducts = async (categoryId) => {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
-      );
-      setSimilar(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching category products:", error.message);
-    }
-  };
-
-  const getMappedCatValue = (slug) => {
-    const map = {
-      "birthday-decoration": "Birthday",
-      "anniversary-decoration": "Anniversary",
-      "haldi-mehendi-decoration": "Haldi-Mehandi",
-      "first-night-decoration": "FirstNight",
-      "baby-shower-decoration": "BabyShower",
-      "welcome-baby-decoration": "WelcomeBaby",
-      "premium-decoration": "PremiumDecoration",
-      "bachelorette-decoration": "bachelorette",
-      "kids-birthday-decoration": "KidsBirthday"
-    };
-    return map[slug] || slug;  // If not mapped, return the same slug
-  };
-
-
-
-  useEffect(() => {
-    if (sendCategoryId) {
-      getSubCatId(sendCategoryId);
-    }
-  }, [sendCategoryId]);
-
-  const getSubCatId = async (catSlug) => {
-    try {
-      const response = await axios.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
-      const categoryData = response.data.data;
-      if (categoryData) {
-        setPassCategoryId(categoryData._id);
-        setOpenProductUrl(categoryData.name);
-      } else {
-        console.warn(`Sub Category Not Found for: ${catSlug}`);
-      }
-    } catch (error) {
-      console.error("Error getting SubCat ID:", error.message);
-    }
-  };
-
-
-
-  // 6️⃣ Category Navigation Click (Same as before)
-  const openCatItems = (item) => {
-    const path = hasCityPageParam
-      ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
-      : `/balloon-decoration/${item.catValue}`;
-    router.push(path);
-  };
-
-  const handleCustomise = (type, cityName) => {
-    const messages = {
-      "kids-birthday-decoration": "Hi, I want to customize a kids birthday decoration design, can you help me",
-      "birthday-decoration": "Hi, I want to customize a birthday decoration design, can you help me",
-      "anniversary-decoration": "Hi, I want to customize an anniversary decoration design, can you help me",
-      "baby-shower-decoration": "Hi, I want to customize a baby shower decoration design, can you help me",
-      "welcome-baby-decoration": "Hi, I want to customize a baby welcome decoration design, can you help me",
-      "first-night-decoration": "Hi, I want to customize a first night decoration design, can you help me",
-      "premium-decoration": "Hi, I want to customize a premium decoration design, can you help me",
-      "haldi-mehendi-decoration": "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
-      "wedding-decoration": "Hi, I want to customize a wedding decoration design, can you help me",
-      "bachelorette-decoration": "Hi, I want to customize a bachelorette decoration design, can you help me"
-    };
-
-    const phoneNumber = "917338584828";
-
-    let message = messages[type] || "Hi, I want to customize a decoration design, can you help me";
-
-    if (cityName) {
-      message += ` for ${cityName}!`;
-    } else {
-      message += "!";
-    }
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "Customization_WhatsApp_Button",
-      eventCategory: "Product Page",
-      eventAction: "WhatsApp Click",
-      eventLabel: "Customization WhatsApp Button"
-    });
-
-    window.open(
-      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
+  const filtered = productsArray.filter(item => {
+    const itemPrice = Number(item.price);
+    return (
+      itemPrice >= min &&
+      itemPrice <= max &&
+      item._id !== excludeId
     );
+  });
+
+  console.log(`Filtered by Rounded Range ${min} - ${max}:`, filtered);
+  setSimilarByPrice(filtered);
+};
+
+
+const filterSimilarByName = (product, productsArray = [], excludeId) => {
+  if (!product?.name || !productsArray.length) return;
+
+  const mainWords = product.name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '') // Remove special chars
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const filtered = productsArray
+    .filter(item => item._id !== excludeId)
+    .map(item => {
+      const itemName = (item.name || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '');
+
+      const itemWords = itemName.split(/\s+/).filter(Boolean);
+
+      // Count how many words match
+      const matchCount = mainWords.filter(word => itemWords.includes(word)).length;
+
+      // Is it a strong match? (both words exist)
+      const isStrongMatch = mainWords.every(word => itemWords.includes(word));
+
+      // Optional: Order match
+      const isExactPhrase = itemName.includes(mainWords.join(' '));
+
+      return {
+        ...item,
+        matchCount,
+        isStrongMatch,
+        isExactPhrase
+      };
+    })
+    // Sort by exact phrase > strong match > matchCount
+    .sort((a, b) => {
+      if (b.isExactPhrase !== a.isExactPhrase) return b.isExactPhrase - a.isExactPhrase;
+      if (b.isStrongMatch !== a.isStrongMatch) return b.isStrongMatch - a.isStrongMatch;
+      return b.matchCount - a.matchCount;
+    });
+
+  console.log("Filtered by Name =>", filtered);
+  setSimilarByName(filtered);
+};
+
+
+
+
+useEffect(() => {
+  if (router.isReady) {
+    const { subCategory, catValue: urlCatValue, productName } = router.query;
+
+    setSubCategory(subCategory || "");
+    setCatValue(urlCatValue || "");
+    setSendCategoryId(urlCatValue || "");  
+
+    if (productName) {
+      const formattedProduct = productName.replace(/-/g, " ");
+      setApiProduct(formattedProduct);  
+    }
+  }
+}, [router.isReady, router.query]);
+
+
+useEffect(() => {
+  if (apiProduct) {
+    fetchDecorationDetails();
+  }
+}, [apiProduct]);
+
+const fetchDecorationDetails = async () => {
+  try {
+    const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
+    const response = await axios.get(url);
+    const fetchedProduct = response.data.data[0];
+    setProduct(fetchedProduct);
+    setIsFetched(true);
+
+    if (fetchedProduct?.price) {
+      const discountDetails = getDiscountedPrice(fetchedProduct.price);
+      setDiscountInfo(discountDetails);
+    }
+
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching product details:", error.message);
+    setLoading(false);
+  }
+};
+
+
+
+useEffect(() => {
+  if (router.isReady && router.query.catValue) {
+    const rawCatValue = router.query.catValue;
+    setCatValue(rawCatValue); // For UI
+    setSendCategoryId(rawCatValue); // For API calls
+  }
+}, [router.isReady, router.query.catValue]);
+
+
+useEffect(() => {
+  if (!router.isReady || !router.query.catValue) return;
+
+  const rawCatValue = router.query.catValue;
+  
+  const mappedCat = getMappedCatValue(rawCatValue);  // ✅ Your map function
+  
+  setCatValue(rawCatValue);      // For showing on UI — can be slug like 'birthday-decoration'
+  setSendCategoryId(mappedCat);  // For API calls — mapped to your DB slug
+
+}, [router.isReady, router.query.catValue]);
+
+useEffect(() => {
+  if (product?.categoryId) {
+    getCategoryProducts(product.categoryId);
+    
+  } else if (catValue) {
+    getSubCatId(catValue);   
+  }
+}, [product, catValue]);
+
+useEffect(() => {
+  if (product?.price && similar.length > 0) {
+    filterSimilarByPrice(product.price, similar, product._id);
+       filterSimilarByName(product, similar, product._id);
+  }
+}, [product, similar]);
+
+useEffect(() => {
+  if (passCategoryId) {
+    getCategoryProducts(passCategoryId);
+  }
+}, [passCategoryId]);
+
+
+const getCategoryProducts = async (categoryId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
+    );
+    setSimilar(response.data.data || []);
+  } catch (error) {
+    console.error("Error fetching category products:", error.message);
+  }
+};
+
+const getMappedCatValue = (slug) => {
+  const map = {
+    "birthday-decoration": "Birthday",
+    "anniversary-decoration": "Anniversary",
+    "haldi-mehendi-decoration": "Haldi-Mehandi",
+    "first-night-decoration": "FirstNight",
+    "baby-shower-decoration": "BabyShower",
+    "welcome-baby-decoration": "WelcomeBaby",
+    "premium-decoration": "PremiumDecoration",
+    "bachelorette-decoration": "bachelorette",
+    "kids-birthday-decoration":"KidsBirthday"
   };
+  return map[slug] || slug;  // If not mapped, return the same slug
+};
+
+
+
+useEffect(() => {
+  if (sendCategoryId) {
+    getSubCatId(sendCategoryId);
+  }
+}, [sendCategoryId]);
+
+const getSubCatId = async (catSlug) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
+    const categoryData = response.data.data;
+    if (categoryData) {
+      setPassCategoryId(categoryData._id);
+      setOpenProductUrl(categoryData.name);
+    } else {
+      console.warn(`Sub Category Not Found for: ${catSlug}`);
+    }
+  } catch (error) {
+    console.error("Error getting SubCat ID:", error.message);
+  }
+};
+
+
+
+// 6️⃣ Category Navigation Click (Same as before)
+const openCatItems = (item) => {
+  const path = hasCityPageParam
+    ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
+    : `/balloon-decoration/${item.catValue}`;
+  router.push(path);
+};
+
+const handleCustomise = (type, cityName) => {
+  const messages = {
+    "kids-birthday-decoration": "Hi, I want to customize a kids birthday decoration design, can you help me",
+    "birthday-decoration": "Hi, I want to customize a birthday decoration design, can you help me",
+    "anniversary-decoration": "Hi, I want to customize an anniversary decoration design, can you help me",
+    "baby-shower-decoration": "Hi, I want to customize a baby shower decoration design, can you help me",
+    "welcome-baby-decoration": "Hi, I want to customize a baby welcome decoration design, can you help me",
+    "first-night-decoration": "Hi, I want to customize a first night decoration design, can you help me",
+    "premium-decoration": "Hi, I want to customize a premium decoration design, can you help me",
+    "haldi-mehendi-decoration": "Hi, I want to customize a haldi & mehendi decoration design, can you help me",
+    "wedding-decoration": "Hi, I want to customize a wedding decoration design, can you help me",
+    "bachelorette-decoration": "Hi, I want to customize a bachelorette decoration design, can you help me"
+  };
+
+  const phoneNumber = "917338584828";
+
+  let message = messages[type] || "Hi, I want to customize a decoration design, can you help me";
+
+  if (cityName) {
+    message += ` for ${cityName}!`;
+  } else {
+    message += "!";
+  }
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "Customization_WhatsApp_Button",        
+    eventCategory: "Product Page",  
+    eventAction: "WhatsApp Click",  
+    eventLabel: "Customization WhatsApp Button"
+  });
+
+  window.open(
+    `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
 
 
   const getDiscountedPrice = (price) => {
@@ -529,7 +528,7 @@ function DecorationCatDetails({ city, locality }) {
       addonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
-
+  
   const updateTotalAmount = () => {
     let newTotalAmount = Number(product.price);
     selectedAddOnProduct.forEach((item) => {
@@ -708,7 +707,7 @@ function DecorationCatDetails({ city, locality }) {
     );
   };
 
-
+ 
 
   if (loading) {
     return <SkeletonLoader />; // Show skeleton loader while loading
@@ -716,52 +715,52 @@ function DecorationCatDetails({ city, locality }) {
 
   return (
     <div className="App" style={{ backgroundColor: "white" }}>
-      <Head>
-        <title>
-          {cityName
-            ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName}`
-            : `${product?.name} | ${catValue.replace(/-/g, " ")} `}
-        </title>
+  <Head>
+  <title>
+    {cityName
+      ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName}`
+      : `${product?.name} | ${catValue.replace(/-/g, " ")} `}
+  </title>
 
-        <meta
-          name="description"
-          content={
-            cityName
-              ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
-              : `${product?.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`
-          }
-        />
+  <meta
+    name="description"
+    content={
+      cityName
+        ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
+        : `${product?.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`
+    }
+  />
 
-        <meta
-          name="keywords"
-          content={
-            cityName
-              ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${cityName}, balloon decoration in ${cityName}, ${product?.name} decoration price`
-              : `${product?.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name} decoration price`
-          }
-        />
+  <meta
+    name="keywords"
+    content={
+      cityName
+        ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${cityName}, balloon decoration in ${cityName}, ${product?.name} decoration price`
+        : `${product?.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name} decoration price`
+    }
+  />
 
-        <meta property="og:title" content={`${product?.name} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
-        <meta
-          property="og:description"
-          content={`Book ${product?.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
-        />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <meta property="og:image:alt" content={`${product?.name}, ${catValue.replace(/-/g, " ")} decoration`} />
+  <meta property="og:title" content={`${product?.name} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
+  <meta
+    property="og:description"
+    content={`Book ${product?.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
+  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content={`${product?.name}, ${catValue.replace(/-/g, " ")} decoration`} />
 
-        <script type="application/ld+json">{scriptTag}</script>
-        <script type="application/ld+json">{faqScriptTag}</script>
+  <script type="application/ld+json">{scriptTag}</script>
+  <script type="application/ld+json">{faqScriptTag}</script>
 
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
 
-        <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`}
-        />
-        <meta property="og:type" content="website" />
-      </Head>
+  <meta
+    property="og:url"
+    content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`}
+  />
+  <meta property="og:type" content="website" />
+</Head>
 
 
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -825,62 +824,41 @@ function DecorationCatDetails({ city, locality }) {
                 padding: "10px",
               }}
             >
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2
-                  style={{
-                    fontSize: "13px",
-                    color: "#222",
-                    margin: "8px 0 8px 0",
-                    fontWeight: "500",
-                  }}
+              <h2
+                style={{
+                  fontSize: "13px",
+                  color: "#222",
+                  margin: "5px 0 5px 0",
+                  fontWeight: "500",
+                }}
+              >
+                <a
+                  style={{ color: "#9252AA", textDecoration: "none" }}
+                  href="/"
                 >
-                  <a
-                    style={{ color: "#9252AA", textDecoration: "none" ,fontSize: "13px"}}
-                    href="/"
-                  >
-                    Home
-                  </a>
-                  {" > "}
-                  <a
-                    style={{ color: "#9252AA", textDecoration: "none",fontSize: "13px" }}
-                    href={`/balloon-decoration/${catValue}`}
-                  >
-                    {catValue}
-                  </a>
-                  {" > "}
-                </h2>
-
-                <button
-                   onClick={() => {
-    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
-  }}
-                  style={{
-                    fontSize: "14px",
-                    color: "#9252AA",
-                    background: "none",
-                    border: "none",
-                    textDecoration: "underline",
-                    cursor: "pointer",
-                    fontWeight: "#550",
-                  }}
+                  Home
+                </a>
+                {" > "}
+                <a
+                  style={{ color: "#9252AA", textDecoration: "none" }}
+                  href={`/balloon-decoration/${catValue}`}
                 >
-                  View Similar
-                </button>
-           
+                  {subCategory}
+                </a>
 
-              </div>
-
+                {" > "}
+                <span>{product.name}</span>
+              </h2>
               <h1
                 style={{
-                  fontSize: "18px",
+                  fontSize: "16px",
                   color: "#222",
-                  fontWeight: "#500",
+                  fontSize: "21px",
+                  fontWeight: "#222",
                 }}
               >
                 {product.name}
               </h1>
-
               <div className="pro-details-price">
                 <p
                   style={{
@@ -898,7 +876,7 @@ function DecorationCatDetails({ city, locality }) {
                     fontWeight: "700",
                     fontSize: 18,
                     textAlign: "left",
-                    margin: "7px 0px 7px",
+                    margin: "10px 0px 7px",
                     textDecoration: "line-through",
                   }}
                 >
@@ -945,15 +923,15 @@ function DecorationCatDetails({ city, locality }) {
             >
               {getItemInclusion(product.inclusion)}
 
-              <section className="relative custom-banner-section">
-                <Image
-                  src={BannerImage}
-                  alt="Change Something Banner"
-                  className="custom-banner-image"
-                />
+<section className="relative custom-banner-section">
+  <Image
+    src={BannerImage}
+    alt="Change Something Banner"
+    className="custom-banner-image"
+  />
 
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {/* <button
+  <div className="absolute inset-0 flex items-center justify-center"> 
+{/* <button
   className="customise-btn gap-1"
   onClick={() => handleCustomise(catValue, cityName)} 
 >
@@ -965,20 +943,20 @@ function DecorationCatDetails({ city, locality }) {
     height={14}
   />
 </button> */}
-                  <button
-                    className="customise-btn d-flex align-items-center gap-1"
-                    onClick={() => handleCustomise(catValue, cityName)}
-                  >
-                    CUSTOMISATION
-                    <Image
-                      src={customiseIcon}
-                      alt="Customisation Icon"
-                      width={14}
-                      height={14}
-                    />
-                  </button>
-                </div>
-              </section>
+<button
+  className="customise-btn d-flex align-items-center gap-1"
+  onClick={() => handleCustomise(catValue, cityName)}
+>
+  CUSTOMISATION
+  <Image
+    src={customiseIcon}
+    alt="Customisation Icon"
+    width={14}  
+    height={14}
+  />
+</button>
+  </div>
+</section>
 
 
             </div>
@@ -1012,7 +990,6 @@ function DecorationCatDetails({ city, locality }) {
                 </div>
               </div>
             </div>
-            <div ref={similarRef}>
             <UniversalDecorSlider
               title="Similar Decorations"
               data={similar}   // ✅ Fetched data pass karo
@@ -1022,10 +999,9 @@ function DecorationCatDetails({ city, locality }) {
               hasCityPageParam={hasCityPageParam}
               locality={locality}
               catValue={getMappedCatValue(router.query.catValue)}  // ✅ Use your map function here
-
+ 
             />
-            </div>
-            {catValue?.toLowerCase() === "kidsbirthday" && (
+             {catValue?.toLowerCase() === "kidsbirthday" && (
               <div className="category-tabs-outer">
                 <CategoryTabs
                   data={themeFilters.map((item) => ({
@@ -1041,36 +1017,36 @@ function DecorationCatDetails({ city, locality }) {
                   locality={locality}
                   variant="grid"
                   catValue="KidsBirthday"
-                  heading="Other Popular Themes"
-                  hasBg={true}
+                   heading="Other Popular Themes"
+  hasBg={true}
                 />
               </div>
             )}
 
-            {similarByPrice.length > 0 && (
-              <UniversalDecorSlider
-                title="You May Also Like"
-                data={similarByPrice}
-                showDiscount={true}
-                city={city}
-                hasCityPageParam={hasCityPageParam}
-                locality={locality}
-                catValue={getMappedCatValue(router.query.catValue)}
-              />
-            )}
+{similarByPrice.length > 0 && (
+  <UniversalDecorSlider
+    title="You May Also Like"
+    data={similarByPrice}
+    showDiscount={true}
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    locality={locality}
+    catValue={getMappedCatValue(router.query.catValue)}
+  />
+)}
 
-            {similarByName.length > 0 && (
-              <UniversalDecorSlider
-                data={similarByName}
-                showDiscount={true}
-                city={city}
-                hasCityPageParam={hasCityPageParam}
-                locality={locality}
-                catValue={getMappedCatValue(router.query.catValue)}
-              />
-            )}
+{similarByName.length > 0 && (
+  <UniversalDecorSlider
+    data={similarByName}
+    showDiscount={true}
+    city={city}
+    hasCityPageParam={hasCityPageParam}
+    locality={locality}
+    catValue={getMappedCatValue(router.query.catValue)}
+  />
+)}
 
-
+           
 
             <div className="decorke-celebrate-banner">
               <Image
@@ -1089,18 +1065,18 @@ function DecorationCatDetails({ city, locality }) {
 
 
 
-            <VideoTestimonial videoSrc={VideoClint} />
+      <VideoTestimonial videoSrc={VideoClint} />
 
-            {/* <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" /> */}
-
-
+{/* <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" /> */}
 
 
 
+
+          
             <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
-
-
-            <AdditionalServices />
+          
+           
+               <AdditionalServices/>
 
             <div className="tab-section-details-productpage">
               <FAQSection faqData={faqData} />
@@ -1128,6 +1104,73 @@ function DecorationCatDetails({ city, locality }) {
   );
 }
 
+// function ProductCard({ item, openProductUrl }) {
+//   const formattedName = item.name
+//     .trim()
+//     .replace(/\s+/g, "-")
+//     .replace(/[^a-zA-Z0-9\-]/g, "")
+//     .replace(/-+/g, "-");
 
+//   const productUrl = `https://horaservices.com/balloon-decoration/${openProductUrl}/product/${formattedName}`;
+
+//   return (
+//     <a
+//       href={productUrl}
+//       target="_blank"
+//       rel="noopener noreferrer"
+//       style={{ textDecoration: "none", color: "inherit" }}
+//     >
+//       <div
+//         style={{
+//           width: "180px",          // ✅ Same width
+//           height: "270px",         // ✅ Same height
+//           border: "1px solid #ddd",
+//           borderRadius: "10px",
+//           background: "#fff",
+//           padding: "10px",
+//           boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+//           display: "flex",
+//           flexDirection: "column",
+//           justifyContent: "space-between",
+//           transition: "transform 0.2s ease",
+//           cursor: "pointer",
+//         }}
+//       >
+//         <img
+//           src={`https://horaservices.com/api/uploads/compressed_webp/${item?.featured_image?.split(".")[0]
+//             }.webp`}
+//           alt={item.name}
+//           style={{
+//             width: "100%",
+//             height: "140px",
+//             objectFit: "cover",
+//             borderRadius: "6px"
+//           }}
+//         />
+//         <h3
+//           style={{
+//             fontSize: "0.9rem",
+//             marginTop: "10px",
+//             marginBottom: "6px",
+//             height: "2.5em", // force uniform text area height
+//             overflow: "hidden"
+//           }}
+//         >
+//           {item.name}
+//         </h3>
+//         <p style={{ fontWeight: "bold", fontSize: "1rem" }}>₹{item.price}</p>
+//       </div>
+//     </a>
+//   );
+// }
+
+// const badgeStyle = (color = "#1890ff") => ({
+//   backgroundColor: color,
+//   color: "#fff",
+//   fontSize: "0.8rem",
+//   padding: "4px 12px",
+//   borderRadius: "20px",
+//   fontWeight: "bold"
+// });
 
 export default DecorationCatDetails;

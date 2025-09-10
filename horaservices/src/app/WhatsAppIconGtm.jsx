@@ -25,9 +25,7 @@ const cityName = queryCity
         console.log('inside');
         eventName = 'decoration_page_whatsappclick';
         productNameEvent = 'decoration page whatsapp button clicked';
-window.open(
-  "https://wa.me/+917338584828/?text=Hi%2C%20I%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20decoration%20services."
-);
+        window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services")
         break;
       case '/book-chef-cook-for-party':
         eventName = 'chefforparty_page_whatsappclick';
@@ -85,7 +83,7 @@ window.open(
   productNameEvent = 'decoration page whatsapp button clicked';
 
  
-  const message = `Hi, I saw your website and want to know more about decoration services in ${cityName}`;
+  const message = `Hi, I saw your website and want to know more about the services in ${cityName}`;
   const encodedMsg = encodeURIComponent(message);
 
   window.open(
@@ -357,7 +355,8 @@ case '/[city]/balloon-decoration/[catValue]/product/[productName]':
       !router.asPath.startsWith('/wonderland') &&
       router.asPath !== '/order-details' &&
       router.asPath !== '/orderlist' &&
-      router.asPath !== '/photo-gallery'
+      router.asPath !== '/photo-gallery' &&
+      !router.asPath.startsWith('/chat')
     );
   };
   return (

@@ -22,7 +22,7 @@ import Anniversary from "../../assets/AnniversaryIMG.png";
 import arrowIcon from "../../assets/arrow-down.png";
 import CategoryTabs from "@/components/CategoryTabs";
 import ReviewSlider from "@/components/ReviewSection";
-import {balloonreviews} from "@/utils/balloonReviews";
+import { ballonReview } from "@/utils/ReviewsData";
 import SmallCardGrid from "@/components/SmallCardGrid";
 import CategoryGrid from "@/components/CategoryGrid";
 import BannerSlider from "@/components/BannerSlider";
@@ -144,7 +144,7 @@ const stats = [
   },
 ];
 
-const Decoration = ({ city, locality  }) => {
+const Decoration = ({ city, locality }) => {
 
   const [showMoreCards, setShowMoreCards] = useState(false);
   const smallCardRef = useRef(null); // 👈 ref for SmallCardGrid
@@ -495,7 +495,8 @@ const Decoration = ({ city, locality  }) => {
       </section>
       <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
-<ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
+
+      {/* <ReviewSlider reviews={ballonReview} title="Customer Reviews" /> */}
     </div>
   );
 };

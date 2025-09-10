@@ -14,22 +14,17 @@ import "../../../css/decoration.css"
 import FAQSection from "@/components/FAQSection";
 function DecorationCityPage() {
   const router = useRouter();
-  let { city, catValue } = router.query;
+  let { city } = router.query;
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
   }
-  if (catValue) {
-    catValue = catValue.toLowerCase(); // optional formatting
-  }
+  
 
   const cityDecorationFAQ = decorationCityFAQData(city);
   const cityDescription = decorationCityDescription(city);
-
   const decorationCategory = decCat.map((item) => ({
     name: `${item.name} in ${city}`,
-    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, "-"), // ✅ generate slug
   }));
-
   const localities =
     cityData[city?.toLocaleLowerCase()]?.cityLocalitiesList || [];
 
@@ -41,29 +36,32 @@ function DecorationCityPage() {
       pathname: `/${city.toLowerCase()}/${formattedLocalityName}/balloon-decoration`,
     });
   };
-const handleCategoryClick = (slug) => {
-  router.push(`/${city.toLowerCase()}/balloon-decoration/${slug}`);
-};
+
+  const decorationCategoryClick = (localityName) => {
+    router.push({
+      pathname: `/balloon-decoration`,
+    });
+  };
+
+
   return (
     <>
-      <Decoration city={city} />
+      <Decoration city={city}/>
       <LocalitiesSection
         title={`${city} localities`}
         localities={localities}
         handleClick={localityHandleClick}
       />
-
-
-      <div className="tab-section-details-productpage">
-        <FAQSection faqData={cityDecorationFAQ} />
-      </div>
+     
+    
+     <div className="tab-section-details-productpage">
+              <FAQSection faqData={cityDecorationFAQ} />
+            </div>
       <SectionDescription paragraphs={cityDescription} />
-
       <LocalitiesSection
         title={`Explore Other Decoration Category In ${city}`}
         localities={decorationCategory}
-        city={city}
-handleClick={handleCategoryClick}
+        handleClick={decorationCategoryClick}
       />
       <div className="my-4 container">
         <DecorationSEOKeywords city={city} />

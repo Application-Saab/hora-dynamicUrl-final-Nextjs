@@ -21,10 +21,9 @@ const GridhandleClick = (cat) => {
     themeValue: cat.value,
     catValue: catValue,
   });
-     const cityPath = city ? `/${city}` : "";
     router.push(
-    `${cityPath}/balloon-decoration/${catValue}?theme=${encodeURIComponent(cat.value)}`
-  );
+      `/balloon-decoration/${catValue}?theme=${encodeURIComponent(cat.value)}`
+    );
   };
   const handleClick = (cat) => {
     window.dataLayer.push({

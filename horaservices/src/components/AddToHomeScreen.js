@@ -7,31 +7,68 @@ export default function A2HSPrompt() {
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem('a2hsDismissed1');
-    if (dismissed === 'true') return;
+  const dismissed = localStorage.getItem('a2hsDismissed1');
+  if (dismissed === 'true') return;
 
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isiOS = /iphone|ipad|ipod/.test(userAgent);
-    const isChromeIOS = /crios/.test(userAgent);    
-    const isSafariIOS = isiOS && !isChromeIOS && /safari/.test(userAgent);
-    const isStandalone = window.navigator.standalone === true;
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const isiOS = /iphone|ipad|ipod/.test(userAgent);
+  const isChromeIOS = /crios/.test(userAgent);
+  const isSafariIOS = isiOS && !isChromeIOS && /safari/.test(userAgent);
+  const isStandalone = window.navigator.standalone === true;
 
-    if ((isiOS && isChromeIOS) || isSafariIOS) {
-      if (!isStandalone) {
-        setShowIOSPrompt(true);
-      }
-      return; 
+  if ((isiOS && isChromeIOS) || isSafariIOS) {
+    if (!isStandalone) {
+      setShowIOSPrompt(true);
     }
+    return;
+  }
 
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowPrompt(true);
-    };
+  const handleBeforeInstallPrompt = (e) => {
+    e.preventDefault();
+    setDeferredPrompt(e);
+    setShowPrompt(true);
+  };
 
+  // ✅ Wait for user gesture before attaching the listener
+  const waitForInteraction = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-  }, []);
+    document.removeEventListener('click', waitForInteraction);
+  };
+
+  document.addEventListener('click', waitForInteraction); // wait for first click
+
+  return () => {
+    document.removeEventListener('click', waitForInteraction);
+    window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  };
+}, []);
+
+  // useEffect(() => {
+  //   const dismissed = localStorage.getItem('a2hsDismissed1');
+  //   if (dismissed === 'true') return;
+
+  //   const userAgent = window.navigator.userAgent.toLowerCase();
+  //   const isiOS = /iphone|ipad|ipod/.test(userAgent);
+  //   const isChromeIOS = /crios/.test(userAgent);    
+  //   const isSafariIOS = isiOS && !isChromeIOS && /safari/.test(userAgent);
+  //   const isStandalone = window.navigator.standalone === true;
+
+  //   if ((isiOS && isChromeIOS) || isSafariIOS) {
+  //     if (!isStandalone) {
+  //       setShowIOSPrompt(true);
+  //     }
+  //     return; 
+  //   }
+
+  //   const handleBeforeInstallPrompt = (e) => {
+  //     e.preventDefault();
+  //     setDeferredPrompt(e);
+  //     setShowPrompt(true);
+  //   };
+
+  //   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  //   return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  // }, []);
 
   const handleAddToHomeScreen = async () => {
     if (deferredPrompt) {
