@@ -307,15 +307,12 @@ const CreateEventInvite = ({ slug }) => {
           imageBackground={imageBackground}
         />
       </div>
-      <div
-        className="invite-card"
-        style={{
-          border: "1px solid rgba(0, 0, 0, 0.53)",
-          marginTop: "-20px",
-          background: "white",
-          marginBottom: "30px",
-        }}
-      >
+      {/* <div className="invite-card" style={{
+        border: "1px solid rgba(0, 0, 0, 0.53)",
+        marginTop: "-20px",
+        background: "white",
+        marginBottom: '30px'
+      }}> 
         <h2 className="invite-heading party-title">It's Time To Party!</h2>
 
         <div className="cake-image-wrapper">
@@ -335,7 +332,7 @@ const CreateEventInvite = ({ slug }) => {
           </div>
           <div className="event-address">{formData.address}</div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

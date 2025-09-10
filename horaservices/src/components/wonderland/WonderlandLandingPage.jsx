@@ -6,12 +6,12 @@ import CreateInviteModal from "./create-invite/CreateEventInvite";
 import { BASE_URL, GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
-import wonderlandBanner from "@/assets/wonderlandBanner.jpg";
-import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.png";
-import howitworks from "@/assets/howitworks.jpg";
-import hostandGuest from "@/assets/hostandGuest.png";
-import yourcelebration from "@/assets/yourcelebration.png";
-import luckdrawBnaner from "@/assets/lucky.jpg";
+import wonderlandBanner from "@/assets/wonderlandBanner.jpg"
+import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
+import howitworks from "@/assets/howitworks.jpg"
+import hostandGuest from "@/assets/hostandGuest.png"
+import yourcelebration from "@/assets/yourcelebration.png"
+import luckdrawBnaner from "@/assets/lucky.jpg"
 import OtpLogin from "../OtpLoginPopup";
 import {
   FaHome,
@@ -253,6 +253,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   }, [loggedinUserId, isUserLoggedIn]);
 
   const formatDate = (dateString) => {
+    if(!dateString) return 'Event Date'
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
         day: "numeric",
@@ -350,31 +351,38 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 <h3 className="section-heading">Past Events</h3>
                 <ul className="event-list">
                   {allEventsData?.map((event) => (
-                    <li key={event._id} className="event-item">
-                      <div className="event-info">
-                        <div className="event-details">
-                          <strong>{event.eventType} {event.hostName}</strong>
-                          <div className="event-meta">
-                            <span className="event-role">
-                              {event.eventRole?.charAt(0).toUpperCase() +
-                                event.eventRole?.slice(1)}
-                            </span>{" "}
-                            - {formatDate(event.eventDate)}
+                    <>
+                      <li key={event._id} className="event-item">
+                        <div className="event-info-list">
+                          <div className="event-details-list">
+                            <div className="event-meta">
+                              <span className="event-role">
+                                {event.eventRole?.charAt(0).toUpperCase() +
+                                  event.eventRole?.slice(1)}
+                              </span>
+                            </div>
+                            <span className="list-event-title">
+                              {event.hostName ? `${event.hostName}'s` : 'Host Name'} {" "} {event.eventType ? `${event.eventType}` : 'Event Type'}
+                            </span>
+                            <div className="list-event-date">
+                              <span>{formatDate(event.eventDate)}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <button
-                        className="view-btn"
-                        onClick={() => handleClickViewEvent(event)}
-                      >
-                        View Event
-                      </button>
-                    </li>
+                        <div className="btn-ctn-event">
+                          <button
+                            className="view-btn"
+                            onClick={() => handleClickViewEvent(event)}
+                          >
+                            View Event
+                          </button>
+                        </div>
+                      </li>
+                    </>
                   ))}
                 </ul>
               </div>
             )}
-           
             <div className="invite-banner">
               <Image
                 src={wonderlandeventplanningBanner}
