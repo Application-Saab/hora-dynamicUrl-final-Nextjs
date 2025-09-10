@@ -142,7 +142,7 @@ const InvitationModal = ({
             <input
               type="date"
               name="date"
-              className="input-field"
+              className="input-field date-time-field"
               value={formData.date}
               onChange={handleChange}
             />
@@ -153,7 +153,7 @@ const InvitationModal = ({
             <input
               type="time"
               name="time"
-              className="input-field"
+              className="input-field date-time-field"
               value={formData.time}
               onChange={handleChange}
             />
