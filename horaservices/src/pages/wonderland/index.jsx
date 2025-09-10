@@ -68,6 +68,9 @@ import {
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
 import LazyImage from "@/components/LazyImage";
+import { FaImage } from "react-icons/fa";
+
+import A2HSPrompt from "../../components/AddToHomeScreen";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
@@ -94,6 +97,71 @@ const InvitationCard = () => {
   const router = useRouter();
   const { page, id: queryId } = router.query;
   const fileInputRef = useRef(null);
+
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+
+  // Trigger the hidden file input
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  // Handle file selection and upload
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("image", file);
+
+      // 🔁 Upload to first API
+      const response1 = await fetch("https://your-first-api.com/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response1.ok) throw new Error("First upload failed");
+
+      console.log("Uploaded to first API");
+
+      // 🔁 Upload to second API
+      const response2 = await fetch("https://your-second-api.com/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response2.ok) throw new Error("Second upload failed");
+
+      console.log("Uploaded to second API");
+      alert("Image uploaded to both APIs!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Upload failed. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault(); // Prevent Chrome auto prompt
+      setDeferredPrompt(e);
+      setShowInstall(true); // Show your custom button
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt(); // Show install prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log("User choice:", outcome);
+    setDeferredPrompt(null);
+    setShowInstall(false);
+  };
 
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
@@ -533,7 +601,11 @@ const InvitationCard = () => {
 
   const handleEdit = () => {
     alert("Edit button clicked");
-    console.log('%c [ orderDetails.... ]-537', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
+    console.log(
+      "%c [ orderDetails.... ]-537",
+      "font-size:13px; background:pink; color:#bf2c9f;",
+      orderDetails
+    );
     if (!orderDetails) return;
 
     let formattedTime = "";
@@ -869,6 +941,7 @@ const InvitationCard = () => {
     },
     trackMouse: true, // optional, mouse drag support bhi deta hai
   });
+
   const handleImageUpload = async (e) => {
     setUploading(true);
     setWallUploading(true);
@@ -1226,9 +1299,14 @@ const InvitationCard = () => {
           const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
 
           if (Notification.permission === "granted" && !alreadyNotified) {
-            new Notification(`New message from ${msg.senderName}`, {
-              body: msg.text,
-              icon: "../../assets/new_logo_light.png",
+            navigator.serviceWorker.ready.then((registration) => {
+              registration.showNotification(
+                `New message from ${msg.senderName}`,
+                {
+                  body: msg.text,
+                  icon: "/new_logo_light.png", // ensure correct path
+                }
+              );
             });
 
             // ✅ Mark message as notified
@@ -2021,6 +2099,7 @@ const InvitationCard = () => {
           />
         </>
       )}
+
       <>
         {chatOpen && (
           <div className="chat-overlay">
@@ -2043,9 +2122,6 @@ const InvitationCard = () => {
             <div className="chat-messages" ref={chatMessagesRef}>
               {messages.map((msg) => {
                 const isSender = msg.senderPhoneNumber === userPhoneNumber;
-                //       const senderName = isSender
-                // ? (userType === "host" ? orderDetails?.Name : guestDetails?.name)
-                // : (userType === "host" ? guestDetails?.name : orderDetails?.Name);
                 const senderName =
                   msg.senderName ||
                   (isSender &&
@@ -2054,21 +2130,50 @@ const InvitationCard = () => {
                       : guestDetails?.name));
 
                 return (
+                  // <div
+                  //   key={msg.id}
+                  //   className={`chat-message ${isSender ? "sender" : "receiver"}`}
+                  // >
+                  //   <div className="chat-bubble">
+                  //     <div className="chat-sender">
+                  //       {senderName
+                  //         ? senderName
+                  //         : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
+                  //     </div>
+                  //     <div className="chat-text">{msg.text}</div>
+                  //     <div className="chat-time">
+                  //       {msg.sentAt?.toDate
+                  //         ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+                  //             hour: "2-digit",
+                  //             minute: "2-digit",
+                  //             hour12: true,
+                  //           })
+                  //         : ""}
+                  //     </div>
+                  //   </div>
+                  // </div>
                   <div
                     key={msg.id}
                     className={`chat-message ${
                       isSender ? "sender" : "receiver"
                     }`}
                   >
+                    {/* Receiver avatar (left side) */}
+                    {!isSender && (
+                      <div className="chat-avatar">
+                        {senderName
+                          ? senderName.charAt(0).toUpperCase()
+                          : msg.senderPhoneNumber.charAt(3)}
+                      </div>
+                    )}
+
+                    {/* Chat bubble */}
                     <div className="chat-bubble">
                       <div className="chat-sender">
                         {senderName
                           ? senderName
-                          : `+91 ${
-                              msg.senderPhoneNumber.slice(0, -4) + "XXXX"
-                            }`}
+                          : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
                       </div>
-                      {/* <div className="chat-sender"> {senderName}  +91 {msg.senderPhoneNumber.slice(0, -4) + 'XXXX'}</div> */}
                       <div className="chat-text">{msg.text}</div>
                       <div className="chat-time">
                         {msg.sentAt?.toDate
@@ -2083,118 +2188,179 @@ const InvitationCard = () => {
                           : ""}
                       </div>
                     </div>
+
+                    {/* Sender avatar (right side) */}
+                    {isSender && (
+                      <div className="chat-avatar">
+                        {senderName
+                          ? senderName.charAt(0).toUpperCase()
+                          : msg.senderPhoneNumber.charAt(3)}
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
-            {showNotifyPermissionMsg && (
-              <div className="notify-msg-ctn">
-                <span>
-                  Please go to your phone's Settings → App Permissions and
-                  enable notifications for chat.
-                </span>
-              </div>
-            )}
-              <div className="chat-input-container">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (showEmojiPicker) {
-                      // Emoji picker open hai, ab keyboard button dikh raha hoga
-                      setShowEmojiPicker(false);
-                      // Force mobile keyboard to open
-                      setTimeout(() => {
-                        textareaRef.current?.focus();
-                      }, 0);
-                    } else {
-                      // Emoji picker open karo
-                      setShowEmojiPicker(true);
-                      // Keyboard band karo
-                      textareaRef.current?.blur();
-                    }
-                  }}
-                  className="emoji-btn"
-                >
-                  {showEmojiPicker ? (
-                    <FaRegKeyboard fontSize={20} />
-                  ) : (
-                    <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-                  )}
-                </button>
-                <textarea
-                  value={text}
-                  ref={textareaRef}
-                  className="chat-input"
-                  rows={1}
-                  onFocus={() => {
-                    // ✅ Agar emoji picker open hai aur user text area tap kare → picker band karo
-                    if (showEmojiPicker) {
-                      setShowEmojiPicker(false);
-                    }
-                    // ✅ focus karte hi input ko viewport me le aa
-                    setTimeout(() => {
-                      textareaRef.current?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "end",
-                      });
 
-                      // ✅ Extra offset ke liye manual scroll adjust
-                      window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
-                    }, 300);
-                  }}
-                  onChange={(e) => {
-                    setText(e.target.value);
-                    if (e.target.value.length > 0) {
-                      setShowEmojiPicker(false); // typing se emoji picker band ho jaye
-                    }
-                  }}
-                  onInput={(e) => {
-                    e.target.style.height = "auto";
-                    const newHeight = Math.min(e.target.scrollHeight, 120);
-                    e.target.style.height = newHeight + "px";
-                  }}
-                  placeholder="Type message here..."
-                />
+            <div className="chat-input-container">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEmojiPicker((prev) => !prev);
+                  // don't blur/focus here; let user type & select emojis freely
+                }}
+                className="emoji-btn"
+              >
+                {showEmojiPicker ? (
+                  <FaRegKeyboard fontSize={20} />
+                ) : (
+                  <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                )}
 
-                <button onClick={sendMessage} className="chat-send-btn">
-                  <Image src={sendIcon} alt="Send" className="send-icon" />
-                </button>
-              </div>
+                <div>
+                  {/* Hidden file input */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                  />
 
-              {showEmojiPicker && (
-                <div className="emoji-container">
-                  <EmojiPicker
-                    width={emojiWidth}
-                    searchDisabled={true}
-                    onEmojiClick={(emojiData) => {
-                      const textarea = textareaRef.current;
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
+                  {/* Upload button */}
+                  {/* <button
+        onClick={handleButtonClick}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '10px 20px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+        }}
+      >
+        <FaImage style={{ marginRight: '8px' }} />
+        Upload Image
+      </button> */}
+                </div>
+              </button>
 
+              <textarea
+                value={text}
+                ref={textareaRef}
+                className="chat-input"
+                rows={1}
+                onFocus={() => {
+                  // don't hide emoji picker when focusing textarea
+                }}
+                onChange={(e) => setText(e.target.value)}
+                onInput={(e) => {
+                  e.target.style.height = "auto"; // reset height first
+                  e.target.style.height =
+                    Math.min(e.target.scrollHeight, 120) + "px"; // grow up to 120px max
+                }}
+                placeholder="Type message here..."
+              />
+
+              <button
+                onClick={() => {
+                  sendMessage();
+                  if (textareaRef.current) {
+                    textareaRef.current.style.height = "auto"; // reset size after send
+                  }
+                }}
+                className="chat-send-btn"
+              >
+                <Image src={sendIcon} alt="Send" className="send-icon" />
+              </button>
+
+              {/* <textarea
+          value={text}
+          ref={textareaRef}
+          className="chat-input"
+          rows={1}
+          onFocus={() => {
+            // don't hide emoji picker when focusing textarea
+          }}
+          onChange={(e) => setText(e.target.value)}
+          onInput={(e) => {
+            e.target.style.height = "auto";
+            e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+          }}
+          placeholder="Type message here..."
+        />
+
+        <button onClick={sendMessage} className="chat-send-btn">
+          <Image src={sendIcon} alt="Send" className="send-icon" />
+        </button> */}
+            </div>
+
+            {showEmojiPicker && (
+              <div
+                className="emoji-container"
+                onMouseDown={(e) => e.preventDefault()}
+                onTouchStart={(e) => e.preventDefault()}
+              >
+                {/* <EmojiPicker
+  width={emojiWidth}
+  searchDisabled={true}
+  onEmojiClick={(emojiData) => {
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    // Use functional state update to prevent race conditions
+    setText((prevText) => {
+      const newText =
+        prevText.substring(0, start) +
+        emojiData.emoji +
+        prevText.substring(end);
+
+      // Update cursor position after inserting emoji
+      requestAnimationFrame(() => {
+        textarea.selectionStart = textarea.selectionEnd =
+          start + emojiData.emoji.length;
+        textarea.focus();
+      });
+
+      return newText;
+    });
+  }}
+/> */}
+
+                <EmojiPicker
+                  width={emojiWidth}
+                  searchDisabled={true}
+                  onEmojiClick={(emojiData) => {
+                    const textarea = textareaRef.current;
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+
+                    setText((prevText) => {
                       const newText =
-                        text.substring(0, start) +
+                        prevText.substring(0, start) +
                         emojiData.emoji +
-                        text.substring(end);
+                        prevText.substring(end);
 
-                      setText(newText);
+                      // Update cursor position without focusing (prevents keyboard)
                       requestAnimationFrame(() => {
                         textarea.selectionStart = textarea.selectionEnd =
                           start + emojiData.emoji.length;
                       });
-                      // ✅ emoji picker open hone par bhi input ko viewport me le aao
-                      setTimeout(() => {
-                        textarea.scrollIntoView({
-                          behavior: "smooth",
-                          block: "end",
-                        });
-                      }, 100);
-                    }}
-                  />
-                </div>
-              )}
+
+                      return newText;
+                    });
+                  }}
+                />
+              </div>
+            )}
           </div>
         )}
       </>
+
       {showImageUploadInfo && (
         <div className="image-upload-popup-overlay">
           <div className="upload-image-popup">
@@ -2217,6 +2383,15 @@ const InvitationCard = () => {
           </div>
         </div>
       )}
+
+      {/* <div>
+      <h1>Wonderland Page 🌸</h1>
+      {showInstall && (
+        <button onClick={handleInstallClick} style={{ padding: "10px 20px" }}>
+          Add to Home Screen
+        </button>
+      )}
+    </div> */}
     </>
   );
 };

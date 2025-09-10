@@ -10,7 +10,14 @@ import Image from "next/image";
 import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from "next/router"; // Import useRouter
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
-import A2HSPrompt from "@/components/wonderland/AddToHomeScreen";
+import A2HSPrompt from "@/components/AddToHomeScreen";
+import Head from "next/head";
+import { getMessaging, getToken } from "firebase/messaging";
+import { messaging } from "../firebase"; 
+
+const VAPID_KEY =
+  "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
+
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -71,27 +78,6 @@ function MyApp({ Component, pageProps }) {
     };
   }, []);
 
-  // ✅ Disable image dragging & text selection
-  // useEffect(() => {
-  //   const style = document.createElement('style');
-  //   style.innerHTML = `
-  //     * {
-  //       -webkit-user-select: none !important;
-  //       -moz-user-select: none !important;
-  //       -ms-user-select: none !important;
-  //       user-select: none !important;
-  //       -webkit-touch-callout: none !important;
-  //     }
-  //     img {
-  //       pointer-events: none !important;
-  //       -webkit-user-drag: none !important;
-  //     }
-  //   `;
-  //   document.head.appendChild(style);
-  //   return () => {
-  //     document.head.removeChild(style);
-  //   };
-  // }, []);
 
   useEffect(() => {
     setCurrentUrl(router.asPath);
@@ -114,7 +100,34 @@ function MyApp({ Component, pageProps }) {
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, [router.asPath]);
 
+
+  useEffect(() => {
+  if (typeof window !== "undefined") {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        getToken(messaging, { vapidKey: VAPID_KEY })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log("FCM Token:", currentToken);
+              // Send token to server
+            }
+          })
+          .catch((err) => console.error("Error getting token:", err));
+      }
+    });
+  }
+}, []);
+
+
+
   return (
+    <>
+      <Head>
+        <link rel="manifest" href="/manifest.json" />
+        <title>Hora Services</title>
+        <link rel="icon" href="/new_logo_light.png" />
+      </Head>
+    
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <PageLayout>
@@ -138,6 +151,7 @@ function MyApp({ Component, pageProps }) {
         </PageLayout>
       </PersistGate>
     </Provider>
+    </>
   );
 }
 

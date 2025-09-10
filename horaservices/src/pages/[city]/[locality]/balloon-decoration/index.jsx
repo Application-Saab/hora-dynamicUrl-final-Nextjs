@@ -10,34 +10,32 @@ import { decCat } from "@/utils/decorationCategories";
 
 function DecorationLocalityPage() {
   const router = useRouter();
-  let { city, locality, catValue } = router.query;
+    let { city, locality } = router.query;
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
   }
-  if (catValue) {
-    catValue = catValue.toLowerCase();
-  }
+
   const cityDecorationFAQ = decorationCityFAQData(city);
   const cityDescription = decorationCityDescription(city);
   const decorationCategory = decCat.map((item) => ({
     name: `${item.name} in ${city}`,
-    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, "-"),
   }));
 
-  const handleCategoryClick = (slug) => {
-    router.push(`/${city.toLowerCase()}/balloon-decoration/${slug}`);
+  const decorationCategoryClick = () => {
+    router.push({
+      pathname: `/balloon-decoration`,
+    });
   };
 
   return (
     <>
-      <Decoration city={city} locality={locality} />
+      <Decoration city={city} locality={locality}/>
       <FAQAccordion faqData={cityDecorationFAQ} />
       <SectionDescription paragraphs={cityDescription} />
       <LocalitiesSection
         title={`Explore Other Decoration Category In ${city}`}
         localities={decorationCategory}
-        city={city}
-        handleClick={handleCategoryClick}
+        handleClick={decorationCategoryClick}
       />
       <div className="my-4 container">
         <DecorationSEOKeywords city={city} />

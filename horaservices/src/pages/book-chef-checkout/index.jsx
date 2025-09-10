@@ -364,7 +364,7 @@ const contactUsRedirection = () => {
             user_id: storedUserID,
             price: Math.round(totalPrice * 0.2),
             phone: phoneNumber,
-            name: `user_${merchantTransactionId}`,
+            name: '',
             merchantTransactionId: merchantTransactionId
         };
         try {
