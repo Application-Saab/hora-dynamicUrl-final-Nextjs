@@ -1,480 +1,397 @@
-/* Main container styles */
-.invitation-container {
-  max-width: 480px;
-  margin: 0 auto;
-  /* background: linear-gradient(to bottom, #c4b5db, #d8caec, #fde8c8); */
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  /* background-image: url('../../assets/background_wonderland.png'); */
+.body {
+    
+    background-color: #fdf7f1;
 }
 
-/* Background starry effects */
-.starry-bg {
-  position: absolute;
-  inset: 0;
-  opacity: 0.3;
-}
-
-.star {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background-color: #fef08a;
-  border-radius: 50%;
-}
-
-/* String lights at the top */
-.string-lights {
-  position: absolute;
-  top: 1rem;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-}
-
-.light-string {
-  width: 75%;
-  height: 1.5rem;
-  border-top: 2px dashed #fcd34d;
-  display: flex;
-  justify-content: space-around;
-}
-
-.light-bulb {
-  width: 8px;
-  height: 8px;
-  background-color: #fcd34d;
-  border-radius: 50%;
-  margin-top: -4px;
-  box-shadow: 0 0 8px 2px rgba(255, 222, 173, 0.6);
-}
-
-/* Profile image styles */
-.profile-container {
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
-.profile-image {
-  width: 8rem;
-  height: 8rem;
-  margin: 0 auto;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 4px solid #fef3c7;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  background-color: white;
-}
-
-.profile-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.profile-name {
-  font-family: 'Serif', Georgia, serif;
-  font-size: 1.25rem;
-  margin-top: 0.5rem;
-  color: white;
-}
-
-/* Invitation title styles */
-.invitation-title {
-  margin-bottom: 2rem;
-}
-
-.invitation-title h1 {
-  font-family: 'Serif', Georgia, serif;
-  font-size: 2.25rem;
-  line-height: 1.25;
-  color: white;
-  margin-bottom: 0.25rem;
-}
-
-/* Event details card styles */
-.event-details-card {
-  background-color: #fffbeb;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.event-location {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.event-location-text {
-  color: #374151;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.event-time {
-  margin-left: auto;
-  color: #374151;
-}
-
-.event-divider {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 0.75rem;
-}
-
-.event-description {
-  display: flex;
-  align-items: center;
-}
-
-.event-description-text {
-  color: #374151;
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.icon {
-  color: #9ca3af;
-  margin-right: 0.75rem;
-}
-
-/* RSVP button styles */
-.rsvp-button {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(to right, #fda4af, #fcd34d);
-  border-radius: 0.75rem;
-  font-weight: 600;
-  color: white;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1rem;
-  border: none;
-  cursor: pointer;
-}
-
-.rsvp-button:hover {
-  opacity: 0.9;
-}
-
-.waiting-text {
-  color: #374151;
-  font-size: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Additional info grid styles */
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.info-card {
-  background-color: white;
-  border-radius: 0.75rem;
-  padding: 1rem;
-}
-
-.info-card-title {
-  color: #374151;
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-}
-
-.info-card-text {
-  color: #4b5563;
-}
-
-.full-width {
-  grid-column: span 2;
-}
-
-/* Photo gallery styles */
-.photo-gallery {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.gallery-item {
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Footer button styles */
-.footer-buttons {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.footer-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  background-color: white;
-  border-radius: 0.75rem;
-  color: #374151;
-  border: none;
-  cursor: pointer;
-}
-
-.footer-button:hover {
-  background-color: #f9fafb;
-}
-
-/* Animation for twinkling stars */
-@keyframes twinkle {
-  0%, 100% { 
-    opacity: 0.2; 
-  }
-  50% { 
-    opacity: 1; 
-  }
-}
-
-/* Font settings */
-@font-face {
-  font-family: 'Serif';
-  src: local('Georgia'), local('Times New Roman');
-}
-
-/* Media query for tablets (768px) */
-@media (max-width: 768px) {
-  .invitation-container {
-    max-width: 440px;
-    padding: 1.25rem;
+/* Wrapper with classic border */
+.invite-wrapper {
+    max-width: 600px;
+    margin: 6px auto;
+    border: 1px solid #d2955d;
+    padding: 20px;
+    border-radius: 15px;
+    /* background-color: #fdf7f1; */
+    position: relative;
+    font-family: 'Georgia', serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    /* background-image: url('../../../assets/background_image.png'); */
   }
   
-  .profile-image {
-    width: 7rem;
-    height: 7rem;
+  /* Wonderland title at bottom */
+  .invite-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 25px;
   }
   
-  .invitation-title h1 {
-    font-size: 2rem;
+  /* Flex layout */
+  .invite-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
   }
   
-  .event-location-text,
-  .event-description-text,
-  .waiting-text,
-  .info-card-title {
-    font-size: 1.125rem;
+  /* Left section (Image + Name) */
+  /* .invite-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+  } */
+  
+  .invite-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #c98251;
   }
   
-  .rsvp-button {
-    font-size: 1.25rem;
-    padding: 0.875rem;
+  .invite-name {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
   }
   
-  .photo-gallery {
-    gap: 0.4rem;
+  /* Right section (Invitation box) */
+  .invite-right {
+    flex: 1;
+    border: 2px solid #c98251;
+    border-radius: 12px;
+    /* padding: 15px; */
+    padding: 4px;
+    /* background-color: #fffaf3; */
+    min-width: 220px;
   }
   
-  .light-string {
-    width: 80%;
-  }
-}
-
-/* Media query for mobile (468px) */
-@media (max-width: 468px) {
-  .invitation-container {
-    max-width: 100%;
-    padding: 1rem;
-    border-radius: 0.5rem;
+  .invite-heading {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f50707;
+    text-align: center;
+    margin-bottom: 12px;
   }
   
-  .profile-image {
-    width: 6rem;
-    height: 6rem;
-    border-width: 3px;
+  .invite-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
   
-  .profile-name {
-    font-size: 1.125rem;
-  }
-  
-  .invitation-title {
-    margin-bottom: 1.5rem;
-  }
-  
-  .invitation-title h1 {
-    font-size: 1.75rem;
-  }
-  
-  .event-details-card {
-    padding: 0.875rem;
-    margin-bottom: 1.25rem;
-  }
-  
-  .event-location-text,
-  .event-description-text {
-    font-size: 1rem;
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 15px;
+    color: #fff;
   }
   
   .icon {
-    margin-right: 0.5rem;
+    font-size: 16px;
   }
   
-  .rsvp-button {
-    font-size: 1.125rem;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
+  /* Mobile responsiveness */
+  @media (max-width: 480px) {
+    .invite-card {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  
+    .invite-left {
+      width: auto;
+      align-items: flex-start;
+    }
+  
+    .invite-image {
+      width: 90px;
+      height: 90px;
+      margin-top: 7px;
+    }
+  
+    .invite-name {
+      font-size: 16px;
+    }
+  
+    .invite-heading {
+      font-size: 16px;
+    }
+  
+    .info-row {
+      font-size: 14px;
+      gap: 6px;
+    }
+  
+    .invite-wrapper {
+      padding: 3px;
+    }
+  
+    .invite-title {
+      font-size: 24px;
+    }
   }
   
-  .waiting-text {
-    font-size: 1rem;
-    margin-bottom: 1.25rem;
+
+  .party-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    /* padding: 12px;
+    gap: 8px; */
+    padding: 4px;
+    gap: 4px;
   }
   
-  .info-grid {
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
+  .action-card {
+    width: 32%;
+    /* background-color: #ffffff; */
+    
+    /* background-color: #fdf7f1; */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
   }
   
-  .info-card {
-    padding: 0.75rem;
+  .top-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
   }
   
-  .info-card-title {
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
+  .icon {
+    font-size: 24px;
+    color: #fff;
   }
   
-  .info-card-text {
-    font-size: 0.875rem;
+  .title-text {
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.1;
+    margin-top: 8px;
   }
   
-  .photo-gallery {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.35rem;
-    margin-bottom: 1.25rem;
+  .subtitle {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #fff;
   }
   
-  .footer-buttons {
-    gap: 0.5rem;
-  }
   
-  .footer-button {
-    padding: 0.625rem;
-    font-size: 0.722rem;
-  }
-  
-  .star {
-    width: 3px;
-    height: 3px;
-  }
-  
-  .light-bulb {
-    width: 6px;
-    height: 6px;
-    margin-top: -3px;
-  }
-  
-  .light-string {
-    width: 90%;
-    height: 1.25rem;
-  }
+
+
+
+  /*  */
+
+  @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.event-wall {
+  /* background-color: #fdf6ec; */
+  padding: 16px;
+  font-family: 'Pacifico', cursive;
+  min-height: 100vh;
 }
 
+.event-heading {
+  text-align: center;
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 24px;
+}
 
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* 2-column layout even on mobile */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.event-image {
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-text {
+  background-color: #ffe97f;
+  color: #3b3b3b;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 16px;
+  text-align: center;
+  line-height: 1.5;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  min-height: 100px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.08);
 }
 
-/* Modal Content */
-.modal-content {
-  background: #fff;
-  padding: 25px;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s ease;
+/* Disable single column on small devices */
+@media (max-width: 480px) {
+  .event-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
 }
 
-.modal-content h2 {
-  margin-bottom: 15px;
+
+/* floating action button */
+/* Floating Action Button */
+.fab-edit-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background: #fff;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-content h2 {
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+  
+  .modal-content label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  
+  .modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .close-btn,
+  .save-btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .close-btn {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  .save-btn {
+    background-color: #1976d2;
+    color: white;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+
+
+  .wonderland-page-bg {
+    background-image: url('../../../assets/background_wonderland.png');
+    }
+
+
+    /* fdsf */
+
+    /* Mobile-first styling */
+.event-wall {
+  padding: 16px;
+  /* background-color: #fff; */
+}
+
+.event-heading {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 16px;
   font-weight: 600;
 }
 
-.modal-content label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
   gap: 10px;
 }
 
-.close-btn,
-.save-btn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
+.event-image {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
 }
 
-.close-btn {
-  background-color: #ccc;
-  color: #333;
+/* Optional: for square thumbnails */
+.event-image {
+  aspect-ratio: 1 / 1;
 }
 
-.save-btn {
-  background-color: #1976d2;
-  color: white;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+/* You can remove this section if you ONLY want mobile styling */
+@media (min-width: 600px) {
+  .event-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+}
+
+@media (min-width: 900px) {
+  .event-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
