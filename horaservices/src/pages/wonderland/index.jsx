@@ -532,8 +532,6 @@ const InvitationCard = () => {
   };
 
   const handleEdit = () => {
-    alert("Edit button clicked");
-    console.log('%c [ orderDetails.... ]-537', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
     if (!orderDetails) return;
 
     let formattedTime = "";
@@ -1418,8 +1416,8 @@ const InvitationCard = () => {
                             src={chatIcon}
                             alt="chat"
                             className="invite-image"
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                           />
 
                           {!chatOpen && unreadCount > 0 && (
@@ -1507,8 +1505,8 @@ const InvitationCard = () => {
                             src={chatIcon}
                             alt="chat"
                             className="invite-image"
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                           />
 
                           {!chatOpen && unreadCount > 0 && (

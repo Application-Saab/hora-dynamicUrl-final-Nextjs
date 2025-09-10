@@ -233,7 +233,7 @@ const CreateEventInvite = ({ slug }) => {
           imageBackground={imageBackground}
         />
       </div>
-      <div className="invite-card" style={{
+      {/* <div className="invite-card" style={{
         border: "1px solid rgba(0, 0, 0, 0.53)",
         marginTop: "-20px",
         background: "white",
@@ -258,7 +258,7 @@ const CreateEventInvite = ({ slug }) => {
           </div>
           <div className="event-address">{formData.address}</div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };
