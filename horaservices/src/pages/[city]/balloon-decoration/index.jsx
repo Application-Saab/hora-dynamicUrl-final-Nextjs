@@ -25,10 +25,16 @@ function DecorationCityPage() {
   const cityDecorationFAQ = decorationCityFAQData(city);
   const cityDescription = decorationCityDescription(city);
 
-  const decorationCategory = decCat.map((item) => ({
-    name: `${item.name} in ${city}`,
-    slug: item.slug || item.name.toLowerCase().replace(/\s+/g, "-"), // ✅ generate slug
-  }));
+  // const decorationCategory = decCat.map((item) => ({
+  //   name: `${item.name} in ${city}`,
+  //   slug: item.slug || item.name.toLowerCase().replace(/\s+/g, "-"), // ✅ generate slug
+  // }));
+const decorationCategory = decCat.map((item) => ({
+  name: `${item.catValue} in ${city}`, // ✅ use catValue instead of name
+  slug: item.slug || item.catValue.toLowerCase().replace(/\s+/g, "-"), // generate slug from catValue
+  image: item.image,
+  imgAlt: item.imgAlt,
+}));
 
   const localities =
     cityData[city?.toLocaleLowerCase()]?.cityLocalitiesList || [];

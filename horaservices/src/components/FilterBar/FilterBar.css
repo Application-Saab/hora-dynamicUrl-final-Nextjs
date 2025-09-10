@@ -1,17 +1,72 @@
+
+.filterWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.filterWrapper.fixed .filterBarContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+} 
+
 .filterBarContainer {
-  gap: 1rem;
+  padding: 10px;
+  background: #fff;
+  z-index: 1000;
+  display: flex;
   justify-content: center;
   text-align: center;
- margin: 0px 0px 10px 0px;
+}
+
+/* wrapper for arrow */
+.customSelectWrapper {
+  position: relative;
+  display: inline-block;
 }
 
 
 
+/* custom arrow */
+.customSelectWrapper::after {
+  content: "▼";
+  font-size: 14px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  pointer-events: none;
+}
 .filterSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   font-size: 16px;
-  color: rgb(157, 74, 147);
-  padding: 7px 10px;
-  border: 1px solid rgb(157, 74, 147) !important;
-  border-radius: 5px;
-  background-color: #fff;
+  font-weight: 500;
+  color: #fff;
+  background-color: rgb(157, 74, 147);
+  padding: 10px 30px 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  outline: none;
+}
+
+
+.filterSelect option {
+  background-color: #fff; 
+  color: rgb(157, 74, 147);                         /* white text */
+  font-weight: 500;
+  padding: 10px;
+}
+
+.filterSelect option:checked,
+.filterSelect option:hover {
+  background-color: #a24392; /* darker purple */
+  color: #fff;
 }

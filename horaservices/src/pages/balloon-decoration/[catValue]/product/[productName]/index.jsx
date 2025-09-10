@@ -836,14 +836,14 @@ function DecorationCatDetails({ city, locality }) {
                   }}
                 >
                   <a
-                    style={{ color: "#9252AA", textDecoration: "none" ,fontSize: "13px"}}
+                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none" ,fontSize: "13px"}}
                     href="/"
                   >
                     Home
                   </a>
                   {" > "}
                   <a
-                    style={{ color: "#9252AA", textDecoration: "none",fontSize: "13px" }}
+                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none",fontSize: "13px" }}
                     href={`/balloon-decoration/${catValue}`}
                   >
                     {catValue}
@@ -855,15 +855,20 @@ function DecorationCatDetails({ city, locality }) {
                    onClick={() => {
     similarRef?.current?.scrollIntoView({ behavior: "smooth" });
   }}
-                  style={{
-                    fontSize: "14px",
-                    color: "#9252AA",
-                    background: "none",
-                    border: "none",
-                    textDecoration: "underline",
-                    cursor: "pointer",
-                    fontWeight: "#550",
-                  }}
+               style={{
+  fontFamily: "Inter, sans-serif",
+  fontSize: "14px",
+  fontWeight: 700, // numeric value
+  color: "rgb(157, 74, 147)",
+  background: "none",
+  border: "none",
+  textDecoration: "underline",
+  textDecorationStyle: "solid",
+  textAlign: "center",
+  lineHeight: "100%",
+  cursor: "pointer",
+}}
+
                 >
                   View Similar
                 </button>

@@ -222,12 +222,12 @@
   padding: 10px 20px;
 }
 
-.filterBar {
-  position: -webkit-sticky; /* Safari ke liye */
+.filterBar { /* wrapper — only spacing */
+  margin:auto;
+}
+.filterBarInner {
   position: sticky;
-  top: 70px; /* header ki height ke hisaab se adjust karo */
+  top: 70px;  /* aapke header ki height ke hisaab se */
+  background: #fff;
   z-index: 999;
-  background: #fff; /* neeche ke content overlap na ho */
-  padding: 10px;
-  border-bottom: 1px solid #eee;
 }

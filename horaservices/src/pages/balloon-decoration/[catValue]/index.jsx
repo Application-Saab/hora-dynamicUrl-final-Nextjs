@@ -353,6 +353,7 @@ const DecorationCatPage = ({ locality }) => {
     "Wedding": WeddingBanner,
     "bachelorette-decoration": BacheloretteBanner
   };
+  
   function trimText(text) {
     if (text.length > 60) {
       return text.slice(0, 60) + "...";
@@ -521,9 +522,11 @@ console.log("highPriceProducts",highPriceProducts);
   data={highPriceProducts.slice(0, 1)} 
   onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
 />
-              <div className="filterBar">
-                <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
-              </div>
+             <div className="filterBar">
+  <div className="filterBarInner">
+    <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
+  </div>
+</div>
               <section className="decorationBanner">
                 <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
               </section>
