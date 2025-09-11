@@ -1234,96 +1234,163 @@ background-color: none !important;
   flex-direction: column;
 }
 
-/* .chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-} */
-
-
+/* Each chat row (bubble + avatar) */
 .chat-message {
+  display: flex;
+  align-items: flex-end;
   margin: 4px 0;
-  border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
+
 .chat-message.selected {
   background: rgba(0, 0, 0, 0.4); 
   color: #fff; 
-    padding: 8px 12px;
-    border-radius: 0px;
-    z-index: 999;
+  padding: 8px 12px;
+  border-radius: 0px;
+  z-index: 999;
 }
+
+/* Align sender on right */
 .chat-message.sender {
-  align-self: flex-end;
+  justify-content: flex-end;
 }
 
+/* Align receiver on left */
 .chat-message.receiver {
-  align-self: flex-start;
+  justify-content: flex-start;
 }
 
+/* Avatar circle */
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #4caf50; /* WhatsApp green */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0 6px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+/* Chat bubble default (sender) */
 .chat-bubble {
   background: #97538C;
   padding: 8px 40px 14px 10px;
- border-radius: 20px 20px 20px 0px;
+  border-radius: 20px 20px 20px 0px;
   position: relative;
   word-wrap: break-word;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  max-width: 60%;
 }
 
+/* Receiver bubble */
 .chat-message.receiver .chat-bubble {
   background: white;
-  color:black;
-       border-radius: 20px 20px 0px 20px;
-    position: relative;
-  word-wrap: break-word;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  color: black;
+  border-radius: 20px 20px 0px 20px;
 }
+
+/* Receiver text */
 .chat-message.receiver .chat-text {
   font-size: 14px;
   margin-right: 45px; /* space for time */
   display: inline;
-  color:black
-}
-.chat-message.receiver 
-.chat-sender {
-     font-size: 10px;
-    font-weight: 400;
-    color: black;
-    margin-bottom: 3px;
-}
-.chat-message.receiver
-.chat-time {
-     position: absolute;
-    bottom: 8px;
-    right: 8px;
-    font-size: 9px;
-    color: black;
+  color: black;
 }
 
-.chat-sender {
-     font-size: 10px;
-    font-weight: 400;
-    color: white;
-    margin-bottom: 3px;
+/* Receiver sender name */
+.chat-message.receiver .chat-sender {
+  font-size: 10px;
+  font-weight: 400;
+  color: black;
+  margin-bottom: 3px;
 }
+
+/* Receiver time */
+.chat-message.receiver .chat-time {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 9px;
+  color: black;
+}
+
+/* Sender name */
+.chat-sender {
+  font-size: 10px;
+  font-weight: 400;
+  color: white;
+  margin-bottom: 3px;
+}
+
 /* Message text */
 .chat-text {
   font-size: 14px;
   margin-right: 45px; /* space for time */
   display: inline;
-  color:white
+  color: white;
 }
 
 /* Time in bubble corner */
 .chat-time {
-     position: absolute;
-    bottom: 8px;
-    right: 8px;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 9px;
+  color: white;
+}
+/* ===================== */
+/* 📱 Mobile View Styles */
+/* ===================== */
+@media (max-width: 600px) {
+  .chat-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+    margin: 0 4px;
+    margin-bottom: 15px;
+  }
+
+  .chat-bubble {
+    max-width: 75%;   /* allow more width on small screens */
+    padding: 6px 30px 12px 8px;
+    font-size: 13px;
+  }
+
+  .chat-text {
+    font-size: 13px;
+    margin-right: 38px;
+  }
+
+  .chat-sender {
     font-size: 9px;
-    color: white;
+  }
+
+  .chat-time {
+    font-size: 8px;
+    right: 6px;
+    bottom: 6px;
+  }
+
+  .chat-message.receiver .chat-text {
+    font-size: 13px;
+    margin-right: 38px;
+  }
+
+  .chat-message.receiver .chat-sender {
+    font-size: 9px;
+  }
+
+  .chat-message.receiver .chat-time {
+    font-size: 8px;
+    right: 6px;
+    bottom: 6px;
+  }
 }
 
 /* Delete button (only for sender) */

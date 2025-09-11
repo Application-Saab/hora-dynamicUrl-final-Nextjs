@@ -4,6 +4,17 @@ import React, { useEffect, useRef, useState } from "react";
 import imageBackground from "../../../assets/imageBackground.jpg";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
+import {
+  doc,
+  updateDoc,
+  getDoc,
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
+// doc, getDoc, updateDoc,
+import { db } from "../../../firebase";
 
 const CreateEventInvite = ({ slug }) => {
   const fileInputRef = useRef(null);
@@ -166,6 +177,7 @@ const CreateEventInvite = ({ slug }) => {
     };
 
     try {
+      //  1. Update your backend
       const res = await fetch(
         `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
         {
@@ -178,18 +190,81 @@ const CreateEventInvite = ({ slug }) => {
         }
       );
 
-      //   const result = await res.json();
+      if (res.ok && eventId && hostUserId) {
+        // 2. Check if group exists — update only `hostName`
+        const groupRef = doc(db, "groups", eventId);
+        const groupSnap = await getDoc(groupRef);
 
-      if (res.ok && eventId) {
-        // setShowModal(false);
+        if (groupSnap.exists()) {
+          // const finalName =
+          //   (formData.eventType ? " " + formData.eventType : "") +
+          //   (formData.name ? formData.name : "");
+          const finalName =
+            (formData.eventType || "") +
+            (formData.eventType && formData.name ? " " : "") +
+            (formData.name || "");
 
-        // ✅ Update the URL route to reflect changes
+          await updateDoc(groupRef, {
+            name: finalName.trim() || "Unnamed",
+            imageUrl: finalImage || "",
+          });
+          console.log(" Group hostName updated.");
+
+          //  Check if messages collection is empty before adding defaults
+          const messagesCol = collection(db, "groups", eventId, "messages");
+          const existingMessagesSnapshot = await getDocs(messagesCol);
+
+          if (existingMessagesSnapshot.empty) {
+            // const defaultMessages = [
+            //   { text: "Hi", timestamp: serverTimestamp(), sender: "system" },
+            //   { text: "Good Morning", timestamp: serverTimestamp(), sender: "system" },
+            // ];
+            const defaultMessages = [
+              {
+                senderId: hostUserId,
+                senderName: "You",
+                sentAt: new Date().toISOString(),
+                text: " What’s on your mind? !",
+              },
+              {
+                senderId: hostUserId,
+                senderName: "You",
+                sentAt: new Date().toISOString(),
+                text: "Welcome to Wonderland chat — where the fun begins even before the party!",
+              },
+            ];
+
+            // Add first message
+            await addDoc(messagesCol, defaultMessages[0]);
+            console.log("First default message added.");
+
+            // Add a small delay before sending the second message (e.g., 2 seconds)
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // Add second message
+            await addDoc(messagesCol, defaultMessages[1]);
+            console.log("Second default message added.");
+
+            // for (const msg of defaultMessages) {
+            //   await addDoc(messagesCol, msg);
+            // }
+            // console.log(" Default messages added.");
+          } else {
+            console.log(
+              "ℹ️ Messages already exist — skipping default messages."
+            );
+          }
+        } else {
+          console.log("ℹ️ Group does not exist — skipping update.");
+        }
+
+        // Redirect
         return router.replace(`/wonderland?id=${hostUserId}/${eventId}/host`);
       } else {
         alert("Failed to save invitation.");
       }
 
-      // ✅ Reset form
+      // Reset form
       setFormData({
         name: "",
         date: "",
@@ -199,7 +274,6 @@ const CreateEventInvite = ({ slug }) => {
         eventTypeSearch: "",
       });
       setUploadedImage(null);
-      //   setSelectedImage("");
     } catch (err) {
       console.error("Error:", err);
       alert("Something went wrong.");
@@ -233,12 +307,15 @@ const CreateEventInvite = ({ slug }) => {
           imageBackground={imageBackground}
         />
       </div>
-      {/* <div className="invite-card" style={{
-        border: "1px solid rgba(0, 0, 0, 0.53)",
-        marginTop: "-20px",
-        background: "white",
-        marginBottom: '30px'
-      }}> 
+      <div
+        className="invite-card"
+        style={{
+          border: "1px solid rgba(0, 0, 0, 0.53)",
+          marginTop: "-20px",
+          background: "white",
+          marginBottom: "30px",
+        }}
+      >
         <h2 className="invite-heading party-title">It's Time To Party!</h2>
 
         <div className="cake-image-wrapper">
@@ -258,7 +335,7 @@ const CreateEventInvite = ({ slug }) => {
           </div>
           <div className="event-address">{formData.address}</div>
         </div>
-      </div> */}
+      </div>
     </>
   );
 };

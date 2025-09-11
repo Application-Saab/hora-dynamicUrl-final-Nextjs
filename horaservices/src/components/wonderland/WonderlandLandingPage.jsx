@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./WonderlandLandingPage.css";
 import { useRouter } from "next/router";
@@ -5,17 +6,34 @@ import CreateInviteModal from "./create-invite/CreateEventInvite";
 import { BASE_URL, GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
-import wonderlandBanner from "@/assets/wonderlandBanner.jpg"
+import wonderlandBanner from "@/assets/wonderlandBanner.jpg";
 import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
-import howitworks from "@/assets/howitworks.jpg"
-import hostandGuest from "@/assets/hostandGuest.png"
-import yourcelebration from "@/assets/yourcelebration.png"
-import luckdrawBnaner from "@/assets/lucky.jpg"
+import howitworks from "@/assets/howitworks.jpg";
+import hostandGuest from "@/assets/hostandGuest.png";
+import yourcelebration from "@/assets/yourcelebration.png";
+import luckdrawBnaner from "@/assets/lucky.jpg";
 import OtpLogin from "../OtpLoginPopup";
+import {
+  FaHome,
+  FaComments,
+  FaServicestack,
+  FaFolderOpen,
+  FaGlassCheers,
+  FaSearch,
+  FaUser,
+  FaImage,
+} from "react-icons/fa";
+import Link from "next/link";
+import eventIcon from "../../assets/nav_icon/events.png";
+import messageIcon from "../../assets/nav_icon/message.png";
+import servicesIcon from "../../assets/nav_icon/services.png";
+import accountIcon from "../../assets/nav_icon/account.png";
+
 const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   const token = localStorage.getItem("token");
   const router = useRouter();
-  const { page, id: queryId ,hostName} = router.query;
+  const { page, id: queryId, hostName } = router.query;
+  const { id } = router.query;
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   console.log(
@@ -120,7 +138,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
       slug?.length === 3 &&
       slug[2] === "guest"
     ) {
-      if(slug[0] === loggedinUserId){
+      if (slug[0] === loggedinUserId) {
         router.push(`/wonderland?id=${slug[0]}/${slug[1]}/host`);
         return;
       }
@@ -235,7 +253,6 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   }, [loggedinUserId, isUserLoggedIn]);
 
   const formatDate = (dateString) => {
-    if(!dateString) return 'Event Date'
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
         day: "numeric",
@@ -288,15 +305,20 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
     }
   };
 
-return (
-  <>
-    {showLoginModal && (
-      <div className="no-orders">
-        <WonderlandOtploginpopup setIsModalOpen={setIsModalOpen} hostName={hostName}/>
-      </div>
-    )}
+  console.log(allEventsData,"allEventsData");
 
-    {/* {!loggedinUserId && slug?.length <= 0 && (
+  return (
+    <>
+      {showLoginModal && (
+        <div className="no-orders">
+          <WonderlandOtploginpopup
+            setIsModalOpen={setIsModalOpen}
+            hostName={hostName}
+          />
+        </div>
+      )}
+
+      {/* {!loggedinUserId && slug?.length <= 0 && (
       <div className="no-orders">
         <div>Wonderland Public Landing Page</div>
       </div>
@@ -328,38 +350,31 @@ return (
                 <h3 className="section-heading">Past Events</h3>
                 <ul className="event-list">
                   {allEventsData?.map((event) => (
-                    <>
-                      <li key={event._id} className="event-item">
-                        <div className="event-info-list">
-                          <div className="event-details-list">
-                            <div className="event-meta">
-                              <span className="event-role">
-                                {event.eventRole?.charAt(0).toUpperCase() +
-                                  event.eventRole?.slice(1)}
-                              </span>
-                            </div>
-                            <span className="list-event-title">
-                              {event.hostName ? `${event.hostName}'s` : 'Host Name'} {" "} {event.eventType ? `${event.eventType}` : 'Event Type'}
-                            </span>
-                            <div className="list-event-date">
-                              <span>{formatDate(event.eventDate)}</span>
-                            </div>
+                    <li key={event._id} className="event-item">
+                      <div className="event-info">
+                        <div className="event-details">
+                          <strong>{event.eventType} {event.hostName}</strong>
+                          <div className="event-meta">
+                            <span className="event-role">
+                              {event.eventRole?.charAt(0).toUpperCase() +
+                                event.eventRole?.slice(1)}
+                            </span>{" "}
+                            - {formatDate(event.eventDate)}
                           </div>
                         </div>
-                        <div className="btn-ctn-event">
-                          <button
-                            className="view-btn"
-                            onClick={() => handleClickViewEvent(event)}
-                          >
-                            View Event
-                          </button>
-                        </div>
-                      </li>
-                    </>
+                      </div>
+                      <button
+                        className="view-btn"
+                        onClick={() => handleClickViewEvent(event)}
+                      >
+                        View Event
+                      </button>
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
+           
             <div className="invite-banner">
               <Image
                 src={wonderlandeventplanningBanner}
@@ -438,6 +453,28 @@ return (
           )}
         </>
       )}
+
+      
+      {/* <div className="bottom-nav">
+        <div className="nav-item">
+          <Image src={eventIcon} alt="Events Icon" className="nav-icon" />
+          <span className="nav-text">Events</span>
+        </div>
+        <Link href={{ pathname: "/chat", query: { id } }}>
+          <div className="nav-item">
+            <Image src={messageIcon} alt="Message Icon" className="nav-icon" />
+            <span className="nav-text">Chats</span>
+          </div>
+        </Link>
+        <div className="nav-item">
+          <Image src={servicesIcon} alt="Services Icon" className="nav-icon" />
+          <span className="nav-text">Services</span>
+        </div>
+        <div className="nav-item">
+          <Image src={accountIcon} alt="Account Icon" className="nav-icon" />
+          <span className="nav-text">Accounts</span>
+        </div>
+      </div> */}
     </>
   );
 };
