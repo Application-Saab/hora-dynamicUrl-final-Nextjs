@@ -500,11 +500,11 @@ const contactUsRedirect = (category, cityName) => {
 
             <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
             <div className="photographer-note">
-              <Image
+              {/* <Image
                 src={Infoicon}
                 alt="info icon"
                 className="info-icon"
-              />
+              /> */}
               The decorator requires approximately 40–90 minutes to fulfill the service.
             </div>
             <div className="form-row">
@@ -549,10 +549,16 @@ const contactUsRedirect = (category, cityName) => {
 
               </div>
             )}
-
-
-
-
+<div className="amountBox">
+  <div className="amountRow">
+    <span className="labels">TOTAL AMOUNT :</span>
+    <span className="value">₹ {totalAmount}</span>
+  </div>
+  <div className="amountRow">
+    <span className="labels">ADVANCE AMOUNT :</span>
+    <span className="value">₹ {Math.round(totalAmount * 0.4)}</span>
+  </div>
+</div>
 
             <div className="form-group input-with-icon">
               <label className="form-label">Share comments</label>
