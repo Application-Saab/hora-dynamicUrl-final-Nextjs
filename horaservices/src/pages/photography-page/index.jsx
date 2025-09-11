@@ -7,11 +7,21 @@ import { useRouter } from 'next/router';
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
 import photographyBanner from "../../assets/photography-landing.svg";
 import HaldiMehndi from "../../assets/HaldiMehndi.png";
-import wedding from "../../assets/wedding.png";
-import Maternity from "../../assets/maternity.png";
-import Birthday from "../../assets/Sbirthday.png";
-import preWedding from "../../assets/prewedding.png";
-import Babyshower from "../../assets/babyshower.png"
+import pose1 from "@/assets/poseimages/pose1.png"
+import pose2 from "@/assets/poseimages/pose2.png"
+import pose3 from "@/assets/poseimages/pose3.jpg"
+import pose4 from "@/assets/poseimages/pose4.jpg"
+import pose5 from "@/assets/poseimages/pose5.jpg"
+import pose6 from "@/assets/poseimages/pose6.jpg"
+import pose7 from "@/assets/poseimages/pose7.png"
+import pose8 from "@/assets/poseimages/pose8.png"
+import pose9 from "@/assets/poseimages/pose9.jpg"
+import pose10 from "@/assets/poseimages/pose10.jpg"
+import pose11 from "@/assets/poseimages/pose11.png"
+import pose12 from "@/assets/poseimages/pose12.jpg"
+import pose13 from "@/assets/poseimages/pose13.png"
+import pose14 from "@/assets/poseimages/pose14.jpg"
+import pose15 from "@/assets/poseimages/pose15.jpg"
 import PhotoBanner from "../../assets/PhotoBanner.webp"
 import Banner1 from "../../assets/banner1.webp"
 import Banner2 from "../../assets/Banner2.webp"
@@ -26,6 +36,23 @@ import haldiMehendiImg from "../../assets/haldiMehendi.webp";
 import PreWeddingImg from "../../assets/PreWeddingImg.webp" ;
 import weddingAffairImg from "../../assets/weddingAffair.webp";
 import grandWeddingAffairImg from "../../assets/grandWeddingAffair.webp"
+import photo1 from "@/assets/cardphoto/photo1.jpg"
+import photo2 from "@/assets/cardphoto/photo2.jpg"
+import photo3 from "@/assets/cardphoto/photo3.jpg"
+import photo4 from "@/assets/cardphoto/photo4.jpg"
+import photo5 from "@/assets/cardphoto/photo5.jpg"
+import photo6 from "@/assets/cardphoto/photo6.jpg"
+import photo7 from "@/assets/cardphoto/photo7.jpg"
+import photo8 from "@/assets/cardphoto/photo8.jpg"
+import photo9 from "@/assets/cardphoto/photo9.jpg"
+import photo10 from "@/assets/cardphoto/photo10.png"
+import GalleryImage from "@/assets/GalleryImage.jpg"
+import wedding from "@/assets/wedding.jpeg"
+import prewedding from "@/assets/pre-wedding.jpeg"
+import corporateshoot from "@/assets/corporate-shoot.jpeg"
+import babyshowershoot from "@/assets/babyshower-shoot.jpg"
+import maternityshoot from "@/assets/maternity-shoot.jpeg"
+import birthdayshoot from "@/assets/birthday-shoot.jpeg"
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -37,6 +64,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import Tabs from '@/components/Tabs';
 import google from "../../assets/google.jpg";
+import PhotoGraphyCard from '@/components/PhotoGraphyCard';
+import PhotoGraphyCardgrid from '@/components/photoGraphyCardGrid';
 const index = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
 const scriptTag = JSON.stringify(schemaOrg);
@@ -216,15 +245,7 @@ const scriptTag = JSON.stringify(schemaOrg);
       }
     });
   };
-// const firePoseClickEvent = (eventName) => {
-//   window.dataLayer = window.dataLayer || [];
-//   window.dataLayer.push({
-//     event: eventName,
-//     eventCategory: "pose_click",
-//     eventAction: "click",
-//     eventLabel: eventName,
-//   });
-// };
+
 
 const firePoseClickEvent = (poseCategory) => {
   window.dataLayer = window.dataLayer || [];
@@ -284,6 +305,21 @@ const firePoseClickEvent = (poseCategory) => {
       author: "Anusha Battiprolu"
     }
   ];
+  
+const cards = [
+  { src:photo1, title: "Birthday Photography" },
+  { src: photo2, title: "Anniversary Photography" },
+  { src: photo3, title: "House warming Photography" },
+  { src: photo4, title: "Naming ceremony Photography" },
+  { src: photo5, title: "Bachelorette Photography" },
+  { src: photo6, title: "Baby Shower Photography" },
+];
+const cardsgrid = [
+  { src: photo7, title: "Engagement Photography" },
+  { src: photo8, title: "Wedding Photography" },
+  { src: photo9, title: "Maternity Photography" },
+  { src: photo10, title: "New Born Baby Photography" },
+];
   return (
     <>
       {/* Image Slider */}
@@ -348,7 +384,11 @@ const firePoseClickEvent = (poseCategory) => {
           </div>
         </div>
 
-
+    <div className="gridContainer">
+      {cards.map((card, index) => (
+        <PhotoGraphyCard key={index} src={card.src} title={card.title} />
+      ))}
+    </div>
         <Tabs
           tabs={tabs}
           defaultTab="intimate"
@@ -357,11 +397,15 @@ const firePoseClickEvent = (poseCategory) => {
         />
         <div>{renderProducts(heading[activeTab])}</div>
 
+  <div className="gridContainersec">
+      {cardsgrid.map((cardsgrid, index) => (
+        <PhotoGraphyCardgrid key={index} src={cardsgrid.src} title={cardsgrid.title} />
+      ))}
+    </div>
 
-
-        {/* <h2 className="gallery-heading">
-        <img
-          src="/GalleryImage.jpg"
+        <h2 className="gallery-heading">
+        <Image
+          src={GalleryImage}
           alt="camera"
           style={{ width: '40px', height: '40px' }}
         />
@@ -370,31 +414,31 @@ const firePoseClickEvent = (poseCategory) => {
       <div >
         <section className="collage-flex-row">
           <div className="side-img image-box">
-            <img src="/wedding.jpeg" alt="Wedding" />
+            <Image src={wedding} alt="Wedding" />
             <div className="image-label">Wedding</div>
           </div>
 
           <div className="center-grid">
             <div className="image-box">
-              <img src="/pre-wedding.jpeg" alt="pre-Wedding" />
+              <Image src={prewedding} alt="pre-Wedding" />
               <div className="image-label">pre-Wedding</div>
             </div>
             <div className="image-box" >
-              <img src="/corporate-shoot.jpeg" alt="Corporate" />
+              <Image src={corporateshoot} alt="Corporate" />
               <div className="image-label">Corporate</div>
             </div>
             <div className="image-box">
-              <img src="/maternity-shoot.jpeg" alt="Maternity" />
+              <Image src={maternityshoot} alt="Maternity" />
               <div className="image-label">Maternity</div>
             </div>
             <div className="image-box">
-              <img src="/babyshower-shoot.jpg" alt="baby shower" />
+              <Image src={babyshowershoot} alt="baby shower" />
               <div className="image-label">Baby Shower</div>
             </div>
           </div>
 
           <div className="side-img image-box">
-            <img src="/birthday-shoot.jpeg" alt="Maternity" />
+            <Image src={birthdayshoot} alt="Maternity" />
             <div className="image-label">Birthday</div>
           </div>
         </section>
@@ -403,7 +447,7 @@ const firePoseClickEvent = (poseCategory) => {
         <a href="/gallery" className="see-more-btn">
           See More <span className="arrow-circle">&gt;</span>
         </a>
-      </div> */}
+      </div>
 
 
 
@@ -421,6 +465,7 @@ const firePoseClickEvent = (poseCategory) => {
 
 
         <div class="poses">
+
           <div class="pose-grid">
            <a
   href="https://horaservices.com/photo-gallery?folderName=Wedding&customerId=6683e5d43e33c54c0ebde8f2"
@@ -429,7 +474,7 @@ const firePoseClickEvent = (poseCategory) => {
   rel="noopener noreferrer"
   onClick={() => firePoseClickEvent("Wedding")}
 >
-  <Image src={wedding} alt="Wedding" />
+  <Image src={pose1} alt="Wedding" />
   <div className="TextBackground"><p>Wedding</p></div>
 </a>
 
@@ -440,7 +485,7 @@ const firePoseClickEvent = (poseCategory) => {
   rel="noopener noreferrer"
   onClick={() => firePoseClickEvent("Maternity")}
 >
-  <Image src={Maternity} alt="Maternity" />
+  <Image src={pose2} alt="Maternity" />
   <div className="TextBackground"><p>Maternity</p></div>
 </a>
 
@@ -451,7 +496,7 @@ const firePoseClickEvent = (poseCategory) => {
   rel="noopener noreferrer"
   onClick={() => firePoseClickEvent("Birthday")}
 >
-  <Image src={Birthday} alt="Birthday" />
+  <Image src={pose3} alt="Birthday" />
   <div className="TextBackground"><p>Birthday</p></div>
 </a>
 
@@ -462,7 +507,7 @@ const firePoseClickEvent = (poseCategory) => {
   rel="noopener noreferrer"
   onClick={() => firePoseClickEvent("Pre-Wedding")}
 >
-  <Image src={preWedding} alt="Pre-Wedding" />
+  <Image src={pose4} alt="Pre-Wedding" />
   <div className="TextBackground"><p>Pre-Wedding</p></div>
 </a>
 
@@ -473,7 +518,7 @@ const firePoseClickEvent = (poseCategory) => {
   rel="noopener noreferrer"
   onClick={() => firePoseClickEvent("Haldi/Mehndi")}
 >
-  <Image src={HaldiMehndi} alt="HaldiMehndi" />
+  <Image src={pose5} alt="HaldiMehndi" />
   <div className="TextBackground"><p>Haldi/Mehndi</p></div>
 </a>
 
@@ -484,8 +529,99 @@ const firePoseClickEvent = (poseCategory) => {
   rel="noopener noreferrer"
   onClick={() => firePoseClickEvent("Babyshower")}
 >
-  <Image src={Babyshower} alt="Baby Shower" />
+  <Image src={pose6} alt="Baby Shower" />
   <div className="TextBackground"><p>Babyshower</p></div>
+</a>
+
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Naming Ceremony")}
+>
+  <Image src={pose7} alt="Naming Ceremony" />
+  <div className="TextBackground"><p>Naming Ceremony</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Couple shoot")}
+>
+  <Image src={pose8} alt="Couple shoot" />
+  <div className="TextBackground"><p>Couple shoot</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("New Born Baby")}
+>
+  <Image src={pose9} alt="New Born Baby" />
+  <div className="TextBackground"><p>New Born Baby</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Engagement")}
+>
+  <Image src={pose10} alt="Engagementr" />
+  <div className="TextBackground"><p>Engagement</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Anniversary")}
+>
+  <Image src={pose11} alt="Anniversary" />
+  <div className="TextBackground"><p>Anniversary</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("House warming")}
+>
+  <Image src={pose12} alt="House warming" />
+  <div className="TextBackground"><p>House warming</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Bachelorate")}
+>
+  <Image src={pose13} alt="Bachelorate" />
+  <div className="TextBackground"><p>Bachelorate</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Corporate")}
+>
+  <Image src={pose14} alt="Corporate" />
+  <div className="TextBackground"><p>Corporate</p></div>
+</a>
+<a
+  href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+  className="pose-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={() => firePoseClickEvent("Model shoot")}
+>
+  <Image src={pose15} alt="Model shoot" />
+  <div className="TextBackground"><p>Model shoot</p></div>
 </a>
 
           </div>
