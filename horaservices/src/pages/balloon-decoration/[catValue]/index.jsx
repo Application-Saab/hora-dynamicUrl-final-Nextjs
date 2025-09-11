@@ -353,7 +353,7 @@ const DecorationCatPage = ({ locality }) => {
     "Wedding": WeddingBanner,
     "bachelorette-decoration": BacheloretteBanner
   };
-  
+
   function trimText(text) {
     if (text.length > 60) {
       return text.slice(0, 60) + "...";
@@ -381,7 +381,7 @@ const DecorationCatPage = ({ locality }) => {
   };
 
 
-   const PageTitle = (catValue, city, theme) => {
+  const PageTitle = (catValue, city, theme) => {
     let baseTitle;
 
     if (catValue === "kids-birthday-decoration") {
@@ -454,9 +454,7 @@ const DecorationCatPage = ({ locality }) => {
   };
 
 
-const highPriceProducts = catalogueData.filter(item => item.price > 11000);
-
-console.log("highPriceProducts",highPriceProducts);
+  const highPriceProducts = catalogueData.filter(item => item.price > 11000);
 
   return (
     <div className="decCatPage">
@@ -517,26 +515,26 @@ console.log("highPriceProducts",highPriceProducts);
               )}
 
               <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
- 
-<HighPriceProduct 
-  data={highPriceProducts.slice(0, 1)} 
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
-/>
-             <div className="filterBar">
-  <div className="filterBarInner">
-    <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
-  </div>
-</div>
+
+              <HighPriceProduct
+                data={highPriceProducts.slice(0, 1)}
+                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+              />
+              <div className="filterBar">
+                <div className="filterBarInner">
+                  <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
+                </div>
+              </div>
               <section className="decorationBanner">
                 <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
               </section>
 
               <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-         
-<HighPriceProduct 
-  data={highPriceProducts.slice(1, 2)} 
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} 
-/>
+
+              <HighPriceProduct
+                data={highPriceProducts.slice(1, 2)}
+                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+              />
               {!shouldHideBanner("DidyouKnow") && (
                 <section className="decorationBanner">
                   <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
@@ -544,10 +542,10 @@ console.log("highPriceProducts",highPriceProducts);
               )}
 
               <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-       <HighPriceProduct
-data={highPriceProducts.slice(2, 3)}
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-/>
+              <HighPriceProduct
+                data={highPriceProducts.slice(2, 3)}
+                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+              />
               {!shouldHideBanner("makeItMemorable") && (
                 <section className="decorationBanner">
                   <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
@@ -555,19 +553,19 @@ data={highPriceProducts.slice(2, 3)}
               )}
 
               <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-     <HighPriceProduct
-data={highPriceProducts.slice(3, 4)} 
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-/>
+              <HighPriceProduct
+                data={highPriceProducts.slice(3, 4)}
+                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+              />
               <section className="decorationBanner">
                 <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
               </section>
 
               <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-                <HighPriceProduct
- data={highPriceProducts.slice(4, 5)}
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-/>
+              <HighPriceProduct
+                data={highPriceProducts.slice(4, 5)}
+                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+              />
               {!shouldHideBanner("makeitmemorablebanner") && (
                 <section className="decorationBanner">
                   <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
@@ -575,10 +573,10 @@ data={highPriceProducts.slice(3, 4)}
               )}
 
               <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
-                 <HighPriceProduct
- data={highPriceProducts.slice(5, 6)}
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-/>
+              <HighPriceProduct
+                data={highPriceProducts.slice(5, 6)}
+                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+              />
               <div className="highlight-wrapper">
                 <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
                 <div className="highlight-cards">
@@ -598,16 +596,42 @@ data={highPriceProducts.slice(3, 4)}
               </div>
             </>
           )}
-
+          {/* 
           <ProductGrid
             data={catalogueData.slice(isThemePage ? 0 : 32)}
             onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
             catValue={catValue}
+          /> */}
+{Array.from(
+  { length: Math.ceil(catalogueData.slice(32).length / 6) },
+  (_, groupIndex) => {
+    const start = 32 + groupIndex * 6;
+    const end = start + 6;
+    const groupProducts = catalogueData.slice(start, end);
+
+    const highPriceIndex = groupIndex + 6; 
+
+    return (
+      <React.Fragment key={groupIndex}>
+        <ProductGrid
+          data={groupProducts}
+          onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+          catValue={catValue}
+        />
+
+        {/* Ab index 6 se aage continue karega */}
+        {highPriceProducts[highPriceIndex] && (
+          <HighPriceProduct
+            data={highPriceProducts.slice(highPriceIndex, highPriceIndex + 1)}
+            onCardClick={(item) =>
+              handleViewDetails(subCategory, catValue, item)
+            }
           />
-           <HighPriceProduct
- data={highPriceProducts.slice(6, 7)}
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-/>
+        )}
+      </React.Fragment>
+    );
+  }
+)}
 
           <div className="category-content">
             {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
@@ -631,7 +655,7 @@ data={highPriceProducts.slice(3, 4)}
               </>
             )}
           </div>
-      
+
         </>
       )}
     </div>
