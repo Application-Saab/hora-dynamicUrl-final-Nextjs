@@ -1496,8 +1496,8 @@ const InvitationCard = () => {
                             src={chatIcon}
                             alt="chat"
                             className="invite-image"
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                           />
 
                           {!chatOpen && unreadCount > 0 && (
@@ -1585,8 +1585,8 @@ const InvitationCard = () => {
                             src={chatIcon}
                             alt="chat"
                             className="invite-image"
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                           />
 
                           {!chatOpen && unreadCount > 0 && (

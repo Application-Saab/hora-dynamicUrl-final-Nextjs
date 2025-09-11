@@ -47,25 +47,27 @@
 }
 
 .event-list-wrapper {
-  padding: 20px;
+  padding: 10px;
+  max-width: 600px;
 }
 
 .section-heading {
   text-align: center;
   font-weight: bold;
-  color: #1e0f4a;
+  color: #1E0F4A;
   margin-bottom: 10px;
 }
 
 .event-list {
-  max-height: 300px;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  max-height: 300px;       
+  overflow-y: auto;        
+  scrollbar-width: none;  
+  -ms-overflow-style: none; 
 }
 
+
 .event-list::-webkit-scrollbar {
-  display: none;
+  display: none;         
 }
 
 .event-item {
@@ -74,37 +76,58 @@
   align-items: center;
   border-bottom: 1px solid #eee;
   padding: 12px 0;
-  gap: 80px;
+  width: 100%;
+  gap: 35px
 }
 
-.event-info {
+.event-info-list {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  justify-content: flex-start;
 }
-
+.btn-ctn-event{
+  flex-shrink: 0;
+  margin-left: auto;
+}
 .event-icon {
   font-size: 24px;
 }
 
-.event-details {
+.event-details-list {
   display: flex;
   flex-direction: column;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .event-meta {
-  font-size: 12px;
-  color: #555;
+  margin-bottom: 8px;
 }
 
 .event-role {
-  font-weight: bold;
-  color: #2e2e84;
+  color: #2D2D2D;
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+}
+.list-event-title{
+  font-size: 20px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  color: #646464;
+}
+.list-event-date{
   font-size: 14px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  color: #646464;
 }
 
 .view-btn {
-  background-color: #97538c;
+  background-color: #97538C;
   color: white;
   border: none;
   border-radius: 8px;
@@ -117,6 +140,7 @@
 .view-btn:hover {
   background-color: #6922bb;
 }
+
 
 /* tab code  */
 .tabs-box {
