@@ -596,33 +596,38 @@ const DecorationCatPage = ({ locality }) => {
               </div>
             </>
           )}
-          {/* 
-          <ProductGrid
-            data={catalogueData.slice(isThemePage ? 0 : 32)}
-            onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-            catValue={catValue}
-          /> */}
-{Array.from(
-  { length: Math.ceil(catalogueData.slice(32).length / 6) },
+         
+   {Array.from(
+  {
+    length: Math.ceil(
+      catalogueData.slice(isThemePage ? 0 : 32).length / 6
+    ),
+  },
   (_, groupIndex) => {
-    const start = 32 + groupIndex * 6;
+    const start = (isThemePage ? 0 : 32) + groupIndex * 6;
     const end = start + 6;
     const groupProducts = catalogueData.slice(start, end);
 
-    const highPriceIndex = groupIndex + 6; 
+    // highPrice index only when NOT theme
+    const highPriceIndex = groupIndex + 6;
 
     return (
       <React.Fragment key={groupIndex}>
         <ProductGrid
           data={groupProducts}
-          onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+          onCardClick={(item) =>
+            handleViewDetails(subCategory, catValue, item)
+          }
           catValue={catValue}
         />
 
-        {/* Ab index 6 se aage continue karega */}
-        {highPriceProducts[highPriceIndex] && (
+        {/* Agar theme page hai to skip kare */}
+        {!isThemePage && highPriceProducts[highPriceIndex] && (
           <HighPriceProduct
-            data={highPriceProducts.slice(highPriceIndex, highPriceIndex + 1)}
+            data={highPriceProducts.slice(
+              highPriceIndex,
+              highPriceIndex + 1
+            )}
             onCardClick={(item) =>
               handleViewDetails(subCategory, catValue, item)
             }
