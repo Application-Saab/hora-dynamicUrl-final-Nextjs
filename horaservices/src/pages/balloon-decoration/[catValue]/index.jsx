@@ -599,16 +599,46 @@ data={highPriceProducts.slice(3, 4)}
             </>
           )}
 
-          <ProductGrid
-            data={catalogueData.slice(isThemePage ? 0 : 32)}
-            onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-            catValue={catValue}
-          />
-           <HighPriceProduct
- data={highPriceProducts.slice(6, 7)}
-  onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-/>
+        {Array.from(
+  {
+    length: Math.ceil(
+      catalogueData.slice(isThemePage ? 0 : 32).length / 6
+    ),
+  },
+  (_, groupIndex) => {
+    const start = (isThemePage ? 0 : 32) + groupIndex * 6;
+    const end = start + 6;
+    const groupProducts = catalogueData.slice(start, end);
 
+    // highPrice index only when NOT theme
+    const highPriceIndex = groupIndex + 6;
+
+    return (
+      <React.Fragment key={groupIndex}>
+        <ProductGrid
+          data={groupProducts}
+          onCardClick={(item) =>
+            handleViewDetails(subCategory, catValue, item)
+          }
+          catValue={catValue}
+        />
+
+        {/* Agar theme page hai to skip kare */}
+        {!isThemePage && highPriceProducts[highPriceIndex] && (
+          <HighPriceProduct
+            data={highPriceProducts.slice(
+              highPriceIndex,
+              highPriceIndex + 1
+            )}
+            onCardClick={(item) =>
+              handleViewDetails(subCategory, catValue, item)
+            }
+          />
+        )}
+      </React.Fragment>
+    );
+  }
+)}
           <div className="category-content">
             {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
               <>
