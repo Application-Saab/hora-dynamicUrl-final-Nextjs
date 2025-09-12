@@ -16,6 +16,12 @@ import EmojiPicker from "emoji-picker-react";
 import emojiIcon from "../../assets/emojiIcon.png";
 import Image from "next/image";
 import Linkify from "react-linkify";
+import { FaArrowLeft } from "react-icons/fa";
+import "../wonderland/EventInvitation.css";
+import { FaRegKeyboard } from "react-icons/fa6";
+import sendIcon from "@/assets/sendicon.png";
+
+import { BASE_URL, GET_GUEST_DETTAILS } from "@/utils/apiconstants";
 
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -26,13 +32,143 @@ const GroupsList = () => {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  // const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const emojiPickerRef = useRef(null);
   const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
   const chatBodyRef = useRef(null);
   const userId = getUserIdFromUrl();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const [text, setText] = useState("");
+
+  const textareaRef = useRef(null);
+
+  const token = localStorage.getItem("token");
+
+  const [orderDetails, setOrderDetails] = useState(null);
+
+  const [guestDetails, setGuestDetails] = useState(null);
+  const fetchOrderDetails = async (eventId) => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        }
+      );
+
+      const result = await res.json();
+      console.log(result.data.hostName, "result11");
+
+      if (res.status === 200 && result.data) {
+        const data = result.data;
+        setOrderDetails({
+          Name: data.hostName,
+        });
+      }
+    } catch (err) {
+      console.error("❌ Fetch failed:", err);
+    }
+  };
+
+  // Fetch guest details for a given eventId and userId
+  const fetchGuestDetails = async (eventId, userId) => {
+    try {
+      const endpoint = `${BASE_URL}${GET_GUEST_DETTAILS}/${eventId}/user/${userId}`;
+      const response = await fetch(endpoint, {
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      console.log("Guest Details Response11:", data.data.name);
+      if (data && data.data) {
+        setGuestDetails({ name: data.data.name });
+      }
+    } catch (err) {
+      console.error("Error fetching guest:", err);
+    }
+  };
+
+  // Check Firestore for role and call appropriate fetch function when selectedGroup changes
+  useEffect(() => {
+    const checkRoleAndFetch = async () => {
+      if (selectedGroup && selectedGroup.id) {
+        const userIdFromStorage = localStorage.getItem("userID");
+        if (!userIdFromStorage) {
+          console.warn("No userId found in localStorage");
+          return;
+        }
+        try {
+          const memberDocRef = doc(
+            db,
+            "groups",
+            selectedGroup.id,
+            "members",
+            userIdFromStorage
+          );
+          const memberSnap = await getDocs(
+            query(collection(db, "groups", selectedGroup.id, "members"))
+          );
+          let role = null;
+          memberSnap.forEach((docSnap) => {
+            if (docSnap.id === userIdFromStorage) {
+              role = docSnap.data().role;
+            }
+          });
+          if (role === "host") {
+            fetchOrderDetails(selectedGroup.id).then((orderDetails) => {
+              console.log("Order Details:", orderDetails);
+            });
+          } else {
+            fetchGuestDetails(selectedGroup.id, userIdFromStorage).then(
+              (guestDetails) => {
+                console.log("Guest Details:", guestDetails);
+              }
+            );
+          }
+
+          // if (role === "host") {
+          //   fetchOrderDetails(selectedGroup.id).then(() => {
+          //     console.log('Order Details:', orderDetails);
+          //   });
+          // } else {
+          //   fetchGuestDetails(selectedGroup.id, userIdFromStorage);
+          // }
+        } catch (err) {
+          console.error("Error checking member role:", err);
+        }
+      }
+    };
+    checkRoleAndFetch();
+  }, [selectedGroup]);
+
+  const [emojiWidth, setEmojiWidth] = useState(400);
+  useEffect(() => {
+    const updateWidth = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth > 450) {
+        setEmojiWidth(450);
+      } else if (screenWidth <= 450) {
+        setEmojiWidth(screenWidth - 20);
+      } else {
+        setEmojiWidth(screenWidth - 50);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   const toggleEmojiPicker = () => {
     setIsEmojiPickerOpen((prev) => {
@@ -176,6 +312,8 @@ const GroupsList = () => {
     );
   };
 
+  const handleImageUpload = async (e) => {};
+
   const handleOpenMessages = (group) => {
     setSelectedGroup(group);
     markAsRead(group.id);
@@ -198,7 +336,7 @@ const GroupsList = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedGroup) return;
+    if (!text.trim() || !selectedGroup) return;
 
     try {
       const messagesRef = collection(
@@ -208,21 +346,31 @@ const GroupsList = () => {
         "messages"
       );
 
+      // Prefer orderDetails.Name, then guestDetails.name, then fallback to member name or "Guest"
+      let senderName = "Guest";
+      if (orderDetails && orderDetails.Name) {
+        senderName = orderDetails.Name;
+      } else if (guestDetails && guestDetails.name) {
+        senderName = guestDetails.name;
+      } else {
+        const currentUser = selectedGroup.members.find((m) => m.id === userId);
+        if (currentUser?.name) senderName = currentUser.name;
+      }
+
       const newMsg = {
-        text: newMessage,
+        text: text,
         senderId: userId,
-        senderName: "You",
+        senderName: senderName, // ✅ real name, not "You"
         sentAt: serverTimestamp(),
       };
 
       await addDoc(messagesRef, newMsg);
 
       const groupRef = doc(db, "groups", selectedGroup.id);
-      await updateDoc(groupRef, {
-        lastMessage: newMsg,
-      });
+      await updateDoc(groupRef, { lastMessage: newMsg });
 
-      setNewMessage("");
+      setText("");
+      setShowEmojiPicker(false);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -328,35 +476,28 @@ const GroupsList = () => {
       </div>
 
       {selectedGroup && (
-        <div className="chat-popup mobile-full">
+        <div className="chat-overlay">
           <div className="chat-header">
-            {/* <button className="back-btn" onClick={() => setSelectedGroup(null)}>
-              ←
-            </button> */}
-            <button className="back-btn" onClick={() => setSelectedGroup(null)}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="25"
-                height="25"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <div className="chat-user-info">
+              <button
+                className="btn back-arrow-chat"
+                // onClick={() => {
+                // setChatOpen(false);
+                // chatOpenRef.current = false;
+                onClick={() => setSelectedGroup(null)}
+                // }}
               >
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-              </svg>
-            </button>
-
-            <span className="chat-title">{selectedGroup.name}</span>
+                <FaArrowLeft fontSize={16} />
+              </button>
+              <span className="mx-2">{`${selectedGroup.name}'s`}</span>{" "}
+              {/* <span>{orderDetails?.eventType} </span> */}
+            </div>
           </div>
 
-          <div className="chat-body" ref={chatBodyRef}>
+          <div className="chat-messages" ref={chatBodyRef}>
             {messages.map((msg) => {
               const isMe = msg.senderId === userId;
-              const displayName =
+              const senderName =
                 msg.senderName?.length > 15
                   ? msg.senderName.slice(0, 15) + "..."
                   : msg.senderName;
@@ -364,81 +505,142 @@ const GroupsList = () => {
               return (
                 <div
                   key={msg.id}
-                  className={`chat-row ${isMe ? "me" : "other"}`}
+                  className={`chat-message ${isMe ? "sender" : "receiver"}`}
                 >
+                  {/* className={`chat-row ${isMe ? "me" : "other"}`} */}
+                  {/* Receiver avatar (left side) */}
                   {!isMe && (
-                    <div className="profile-circle">
-                      {msg.senderName?.charAt(0).toUpperCase() || "U"}
+                    <div className="chat-avatar">
+                      {senderName
+                        ? senderName.charAt(0).toUpperCase()
+                        : msg.senderPhoneNumber.charAt(3)}
                     </div>
                   )}
 
-                  <div
-                    className={`chat-bubble ${
-                      isMe ? "me-bubble" : "other-bubble"
-                    }`}
-                  >
-                    {!isMe && (
-                      <div className="receiver-name">{displayName}</div>
-                    )}
-                    <Linkify componentDecorator={customDecorator}>
-                      <p>{msg.text}</p>
-                    </Linkify>
+                  {/* Chat bubble */}
+                  <div className="chat-bubble">
+                    <div className="chat-sender">
+                      {senderName
+                        ? senderName
+                        : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
+                    </div>
+                    <div className="chat-text">{msg.text}</div>
+                    <div className="chat-time">
+                      {msg.sentAt?.toDate
+                        ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
+                            "en-IN",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )
+                        : ""}
+                    </div>
                   </div>
+
+                  {/* Sender avatar (right side) */}
+                  {isMe && (
+                    <div className="chat-avatar">
+                      {senderName
+                        ? senderName.charAt(0).toUpperCase()
+                        : msg.senderPhoneNumber.charAt(3)}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
-          <div className="chat-input-first">
-            <div className="input-wrapper">
-              <button className="emoji-btn" onClick={toggleEmojiPicker}>
-                <Image
-                  src={emojiIcon}
-                  alt="emoji icon"
-                  className="emoji-icon"
-                />
-              </button>
+          <div className="chat-input-container">
+            <button
+              type="button"
+              onClick={() => {
+                setShowEmojiPicker((prev) => !prev);
+                // don't blur/focus here; let user type & select emojis freely
+              }}
+              className="emoji-btn"
+            >
+              {showEmojiPicker ? (
+                <FaRegKeyboard fontSize={20} />
+              ) : (
+                <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+              )}
 
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Type message here..."
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                onFocus={() => setIsEmojiPickerOpen(false)}
-              />
-
-              <button className="send-btn" onClick={handleSendMessage}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22 2 15 22 11 13 2 9 2 9"></polygon>
-                </svg>
-              </button>
-            </div>
-
-            {isEmojiPickerOpen && (
-              <div className="emoji-picker-container" ref={emojiPickerRef}>
-                <EmojiPicker
-                  onEmojiClick={onEmojiClick}
-                  height={280}
-                  width="100%"
-                  previewConfig={{ showPreview: false }}
-                  skinTonesDisabled={true}
+              <div>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
                 />
               </div>
-            )}
+            </button>
+
+            <textarea
+              value={text}
+              ref={textareaRef}
+              className="chat-input"
+              rows={1}
+              onFocus={() => {
+                // don't hide emoji picker when focusing textarea
+              }}
+              onChange={(e) => setText(e.target.value)}
+              onInput={(e) => {
+                e.target.style.height = "auto"; // reset height first
+                e.target.style.height =
+                  Math.min(e.target.scrollHeight, 120) + "px"; // grow up to 120px max
+              }}
+              placeholder="Type message here..."
+            />
+
+            <button
+              onClick={() => {
+                handleSendMessage();
+                if (textareaRef.current) {
+                  textareaRef.current.style.height = "auto"; // reset size after send
+                }
+              }}
+              className="chat-send-btn"
+            >
+              <Image src={sendIcon} alt="Send" className="send-icon" />
+            </button>
           </div>
+
+          {showEmojiPicker && (
+            <div
+              className="emoji-container"
+              onMouseDown={(e) => e.preventDefault()}
+              onTouchStart={(e) => e.preventDefault()}
+            >
+              <EmojiPicker
+                width={emojiWidth}
+                searchDisabled={true}
+                onEmojiClick={(emojiData) => {
+                  const textarea = textareaRef.current;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+
+                  setText((prevText) => {
+                    const newText =
+                      prevText.substring(0, start) +
+                      emojiData.emoji +
+                      prevText.substring(end);
+
+                    // Update cursor position without focusing (prevents keyboard)
+                    requestAnimationFrame(() => {
+                      textarea.selectionStart = textarea.selectionEnd =
+                        start + emojiData.emoji.length;
+                    });
+
+                    return newText;
+                  });
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

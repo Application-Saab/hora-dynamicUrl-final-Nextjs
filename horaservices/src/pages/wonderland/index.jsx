@@ -69,6 +69,7 @@ import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
 import LazyImage from "@/components/LazyImage";
 import { FaImage } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 import A2HSPrompt from "../../components/AddToHomeScreen";
 
@@ -98,47 +99,35 @@ const InvitationCard = () => {
   const { page, id: queryId } = router.query;
   const fileInputRef = useRef(null);
 
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
 
-  // Trigger the hidden file input
-  const handleButtonClick = () => {
-    fileInputRef.current.click();
-  };
+  useEffect(() => {
+    if (pathname === "/wonderland") {
+      if (typeof window !== "undefined") {
+        if (localStorage.getItem("addToHomeScreenPopup") !== "true") {
+          setShowInstall(true);
+        }
+      }
+      const handler = (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+      };
+      window.addEventListener("beforeinstallprompt", handler);
+      return () => window.removeEventListener("beforeinstallprompt", handler);
+    }
+  }, [pathname]);
 
-  // Handle file selection and upload
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      // Prepare form data
-      const formData = new FormData();
-      formData.append("image", file);
-
-      // 🔁 Upload to first API
-      const response1 = await fetch("https://your-first-api.com/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response1.ok) throw new Error("First upload failed");
-
-      console.log("Uploaded to first API");
-
-      // 🔁 Upload to second API
-      const response2 = await fetch("https://your-second-api.com/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response2.ok) throw new Error("Second upload failed");
-
-      console.log("Uploaded to second API");
-      alert("Image uploaded to both APIs!");
-    } catch (error) {
-      console.error("Upload error:", error);
-      alert("Upload failed. Please try again.");
+  const handleInstallClick = async () => {
+    setShowInstall(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("addToHomeScreenPopup", "true");
+    }
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
     }
   };
 
@@ -154,23 +143,7 @@ const InvitationCard = () => {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt(); // Show install prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log("User choice:", outcome);
-    setDeferredPrompt(null);
-    setShowInstall(false);
-  };
-
-  // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
-
-  console.log(
-    "%c [ slug ]-54",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    slug
-  );
   const userID = localStorage.getItem("userID");
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const token = localStorage.getItem("token");
@@ -2130,28 +2103,6 @@ const InvitationCard = () => {
                       : guestDetails?.name));
 
                 return (
-                  // <div
-                  //   key={msg.id}
-                  //   className={`chat-message ${isSender ? "sender" : "receiver"}`}
-                  // >
-                  //   <div className="chat-bubble">
-                  //     <div className="chat-sender">
-                  //       {senderName
-                  //         ? senderName
-                  //         : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-                  //     </div>
-                  //     <div className="chat-text">{msg.text}</div>
-                  //     <div className="chat-time">
-                  //       {msg.sentAt?.toDate
-                  //         ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
-                  //             hour: "2-digit",
-                  //             minute: "2-digit",
-                  //             hour12: true,
-                  //           })
-                  //         : ""}
-                  //     </div>
-                  //   </div>
-                  // </div>
                   <div
                     key={msg.id}
                     className={`chat-message ${
@@ -2383,15 +2334,59 @@ const InvitationCard = () => {
           </div>
         </div>
       )}
-
-      {/* <div>
-      <h1>Wonderland Page 🌸</h1>
-      {showInstall && (
-        <button onClick={handleInstallClick} style={{ padding: "10px 20px" }}>
-          Add to Home Screen
-        </button>
+      
+      {pathname === "/wonderland" && showInstall && (
+        <div
+          className="add-to-home-popup"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.4)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: 32,
+              borderRadius: 12,
+              boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+              textAlign: "center",
+            }}
+          >
+            <h2>Add to Home Screen</h2>
+            <p>Install this app on your device for a better experience.</p>
+            <button
+              onClick={handleInstallClick}
+              style={{ padding: "10px 20px", marginTop: 16 }}
+            >
+              Add to Home Screen
+            </button>
+            <br />
+            <button
+              onClick={() => {
+                setShowInstall(false);
+                localStorage.setItem("addToHomeScreenPopup", "true");
+              }}
+              style={{
+                marginTop: 12,
+                background: "none",
+                border: "none",
+                color: "#888",
+                cursor: "pointer",
+              }}
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
       )}
-    </div> */}
     </>
   );
 };
