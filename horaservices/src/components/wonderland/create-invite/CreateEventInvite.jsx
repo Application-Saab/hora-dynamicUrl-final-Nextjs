@@ -82,7 +82,7 @@ const CreateEventInvite = ({ slug }) => {
       setFormData({ ...formData, [name]: value });
     }
 
-    // ✅ Add/remove `has-value` class for date/time inputs
+    // Add/remove `has-value` class for date/time inputs
     if (type === "date" || type === "time") {
       if (value) {
         e.target.classList.add("has-value");
@@ -103,7 +103,7 @@ const CreateEventInvite = ({ slug }) => {
 
       try {
         const compressed = await compressBase64Image(base64String, 500, 0.4); // 👈 compress karo
-        setUploadedImage(compressed); // ✅ use compressed base64
+        setUploadedImage(compressed); //  use compressed base64
         console.log("Compressed Base64:", compressed);
         console.log(
           "Size (approx):",
@@ -116,7 +116,7 @@ const CreateEventInvite = ({ slug }) => {
       }
     };
 
-    reader.readAsDataURL(file); // ✅ Converts file to base64 string
+    reader.readAsDataURL(file); //  Converts file to base64 string
   };
 
   const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
@@ -196,14 +196,14 @@ const CreateEventInvite = ({ slug }) => {
         const groupSnap = await getDoc(groupRef);
 
         if (groupSnap.exists()) {
-          // const finalName =
-          //   (formData.eventType ? " " + formData.eventType : "") +
-          //   (formData.name ? formData.name : "");
           const finalName =
-            (formData.eventType || "") +
-            (formData.eventType && formData.name ? " " : "") +
-            (formData.name || "");
+            (
+              (formData.name || "") +
+              (formData.name && formData.eventType ? " " : "") +
+              (formData.eventType || "")
+            ).trim() || "Unnamed";
 
+          console.log(finalName, "finalname");
           await updateDoc(groupRef, {
             name: finalName.trim() || "Unnamed",
             imageUrl: finalImage || "",
@@ -215,21 +215,17 @@ const CreateEventInvite = ({ slug }) => {
           const existingMessagesSnapshot = await getDocs(messagesCol);
 
           if (existingMessagesSnapshot.empty) {
-            // const defaultMessages = [
-            //   { text: "Hi", timestamp: serverTimestamp(), sender: "system" },
-            //   { text: "Good Morning", timestamp: serverTimestamp(), sender: "system" },
-            // ];
             const defaultMessages = [
               {
                 senderId: hostUserId,
                 senderName: "You",
-                sentAt: new Date().toISOString(),
+                sentAt: serverTimestamp(),
                 text: " What’s on your mind? !",
               },
               {
                 senderId: hostUserId,
                 senderName: "You",
-                sentAt: new Date().toISOString(),
+                sentAt: serverTimestamp(),
                 text: "Welcome to Wonderland chat — where the fun begins even before the party!",
               },
             ];

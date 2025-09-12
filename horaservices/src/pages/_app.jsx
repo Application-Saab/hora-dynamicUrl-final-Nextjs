@@ -132,7 +132,7 @@ function MyApp({ Component, pageProps }) {
       <PersistGate loading={null} persistor={persistor}>
         <PageLayout>
           <Component {...pageProps} />
-          <A2HSPrompt />
+          {/* <A2HSPrompt /> */}
           <div>
             <noscript>
               <iframe

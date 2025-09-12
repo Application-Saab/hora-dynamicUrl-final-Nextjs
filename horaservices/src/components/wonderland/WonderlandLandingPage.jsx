@@ -468,26 +468,6 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
         </>
       )}
 
-      {/* <div className="bottom-nav">
-        <div className="nav-item">
-          <Image src={eventIcon} alt="Events Icon" className="nav-icon" />
-          <span className="nav-text">Events</span>
-        </div>
-        <Link href={{ pathname: "/chat", query: { id } }}>
-          <div className="nav-item">
-            <Image src={messageIcon} alt="Message Icon" className="nav-icon" />
-            <span className="nav-text">Chats</span>
-          </div>
-        </Link>
-        <div className="nav-item">
-          <Image src={servicesIcon} alt="Services Icon" className="nav-icon" />
-          <span className="nav-text">Services</span>
-        </div>
-        <div className="nav-item">
-          <Image src={accountIcon} alt="Account Icon" className="nav-icon" />
-          <span className="nav-text">Accounts</span>
-        </div>
-      </div> */}
     </>
   );
 };
