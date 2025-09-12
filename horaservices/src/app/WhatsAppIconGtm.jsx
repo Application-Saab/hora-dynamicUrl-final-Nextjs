@@ -358,7 +358,8 @@ case '/[city]/balloon-decoration/[catValue]/product/[productName]':
       router.asPath !== '/order-details' &&
       router.asPath !== '/orderlist' &&
       router.asPath !== '/photo-gallery' &&
-      !router.asPath.startsWith('/chat')
+      !router.asPath.startsWith('/chat') &&
+      !router.asPath.startsWith('/accounts')
     );
   };
   return (
