@@ -5,8 +5,6 @@ import Image from 'next/image'
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
-import photographyBanner from "../../assets/photography-landing.svg";
-import HaldiMehndi from "../../assets/HaldiMehndi.png";
 import pose1 from "@/assets/poseimages/pose1.png"
 import pose2 from "@/assets/poseimages/pose2.png"
 import pose3 from "@/assets/poseimages/pose3.jpg"
@@ -26,16 +24,7 @@ import PhotoBanner from "../../assets/PhotoBanner.webp"
 import Banner1 from "../../assets/banner1.webp"
 import Banner2 from "../../assets/Banner2.webp"
 import Banner3 from "../../assets/banner3.webp"
-import magician from "../../assets/magician.jpg";
-import traditionalImg from "../../assets/traditionalphoto.webp";
-import candidImg from "../../assets/CandidphotoImg.webp";
-import proImg from "../../assets/Prophotography.webp";
-import videoImg from "../../assets/Videography.webp";
-import defaultImg from "../../assets/traditionalphoto.webp"
-import haldiMehendiImg from "../../assets/haldiMehendi.webp";
-import PreWeddingImg from "../../assets/PreWeddingImg.webp" ;
-import weddingAffairImg from "../../assets/weddingAffair.webp";
-import grandWeddingAffairImg from "../../assets/grandWeddingAffair.webp"
+
 import photo1 from "@/assets/cardphoto/photo1.jpg"
 import photo2 from "@/assets/cardphoto/photo2.jpg"
 import photo3 from "@/assets/cardphoto/photo3.jpg"
@@ -53,106 +42,27 @@ import corporateshoot from "@/assets/corporate-shoot.jpeg"
 import babyshowershoot from "@/assets/babyshower-shoot.jpg"
 import maternityshoot from "@/assets/maternity-shoot.jpeg"
 import birthdayshoot from "@/assets/birthday-shoot.jpeg"
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import whatsppicon from "../../assets/whatsapp-new.webp";
-import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import Tabs from '@/components/Tabs';
 import google from "../../assets/google.jpg";
 import PhotoGraphyCard from '@/components/PhotoGraphyCard';
 import PhotoGraphyCardgrid from '@/components/photoGraphyCardGrid';
+import PhotographysliderSection from '@/components/photographysliderSection';
 const index = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
 const scriptTag = JSON.stringify(schemaOrg);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false); // State to store product
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
-  const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
+  const [discountPercentage, setDiscountPercentage] = useState(0); 
+  const [discountedPrice, setDiscountedPrice] = useState(0); 
   const [discountDifference, setDiscountDifference] = useState(0);
-  const [activeTab, setActiveTab] = useState('intimate');
   const router = useRouter();
   const { catvalue } = router.query;
  let { city } = router.query;
-  const imageMap = {
-  '6710f33c21847b9ca0554940': traditionalImg,
-  '67c9af0c4bee1b66f0aac35d': candidImg,
-  '67c9af224bee1b66f0aac35e': proImg,
-  '67c9b0564bee1b66f0aac35f': videoImg,
-  // Grand 
-  "683abe22fdfcb315ad5b02b0": traditionalImg,
-  "683abe69fdfcb315ad5b02b1": candidImg,
-  "68411d34fdfcb315ad5b02bf": proImg,
-  "68411d61fdfcb315ad5b02c0":videoImg, 
-  //Mega 
-  "683ac1bcfdfcb315ad5b02b4": haldiMehendiImg,
-  "683ac1d1fdfcb315ad5b02b5": PreWeddingImg,
- "68411cc3fdfcb315ad5b02bd": weddingAffairImg,
- "68411cd8fdfcb315ad5b02be": grandWeddingAffairImg
-};
 
-  const renderProducts = (heading) => {
-    if (loading) {
-      return (
-        <div className="loader-container">
-          <div className="spinner"></div>
-        </div>
-      );
-    }
-    return (
-      <div className="featured-works">
-        <div className="works-container products">
-          <p className="ProductHeading">{heading}</p>
-          <div className="work-container">
-            {products.map((work, index) => {
-              // const imageUrl = imageList[index % imageList.length]; 
-               const imageUrl = imageMap[work._id] || defaultImg;
-              return (
-                <div className="work-item" key={index}>
-                  <div className="discount-badge">
-                    ₹ {work.discountDifference.toFixed(0)} off
-                  </div>
-                  {/* <div className="work-image-wrapper">
-                    
-                    <div
-                      className="work-image"
-                      // style={{ backgroundImage: `url("${imageUrl}")` }}
-                     
-                    >
-                   
-                      <h5 className="work-title">{work.name}</h5>
-                    </div>
-                  </div> */}
-                  
-            <div className="work-image-wrapper">
-   <div className="work-image">
-    <Image src={imageUrl} alt={work.name} className="work-img" />
-    <div className="work-image-overlay" />
-    <h5 className="work-title">{work.name}</h5>
-  </div>
-</div>
-                  <div className="work-card-info">
-                    <p className="Prefred-occ">
-                      <span >₹ {work.price}</span><span> ₹{Math.floor(work.discountedPrice.toFixed(2))} </span>
-
-                    </p>
-                    <button onClick={() => viewMoreProduct(work, activeTab)} className="photograpy-book-now">View More</button>
-
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-    );
-  }
  const viewMoreProduct = (work, activeTab) => {
    router.push({
       pathname: `/photography-page/product/${work._id}`,
@@ -216,18 +126,7 @@ const scriptTag = JSON.stringify(schemaOrg);
     }
   }, []);
 
-  const tagIds = {
-    intimate: '66c96b4e22ed47b72117e09a', // Intimate tab
-    grand: '66c96b6922ed47b72117e0b4',    // Grand tab
-    // mega: '66c96b5922ed47b72117e0a7'      // Mega tab
-  };
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-    fetchData(tagIds[tabId]);
-  };
-  useEffect(() => {
-    fetchData('66c96b4e22ed47b72117e09a');
-  }, []);
+
 
   const sendToCheckoutPage = (product) => {
     window.dataLayer = window.dataLayer || [];
@@ -261,31 +160,7 @@ const firePoseClickEvent = (poseCategory) => {
     Banner1,
     Banner2,
     Banner3,
-
   ];
-
-  // const images = [
-  //   { title: "Wedding", image: "/wedding-shoot.jpg" },
-  //   { title: "Pre-Wedding", image: "/pre-wedding.jpg" },
-  //   { title: "Corporate", image: "/corporate-shoot.jpg" },
-  //   { title: "Maternity", image: "/maternity-shoot.jpg" },
-  //   { title: "Baby Shower", image: "/babyshower-shoot.jpg" },
-  //   { title: "Birthday", image: "/birthday-shoot.jpg" },
-  //   { title: "SeeMore", image: "/see-more.jpg" }
-  // ];
-
-  const tabs = [
-    { id: 'intimate', title: 'Intimate\nGathering' },
-    { id: 'grand', title: 'Grand\nCelebrations' },
-// { id: 'mega', title: 'Mega\nOccasions' },
-
-  ];
-
-  const heading = {
-    intimate: 'Perfect for intimate events and moments with under 100 - 150 guests',
-    grand: 'Specially Designed for all Wedding Rituals',
-    // mega: 'For Mega occasions (100-250 guests) needing 2 professional photographers'
-  };
 
   const reviews = [
     {
@@ -307,7 +182,7 @@ const firePoseClickEvent = (poseCategory) => {
   ];
   
 const cards = [
-  { src:photo1, title: "Birthday Photography" },
+  { src: photo1, title: "Birthday Photography" },
   { src: photo2, title: "Anniversary Photography" },
   { src: photo3, title: "House warming Photography" },
   { src: photo4, title: "Naming ceremony Photography" },
@@ -322,7 +197,6 @@ const cardsgrid = [
 ];
   return (
     <>
-      {/* Image Slider */}
       <div>
         <Head>
   <title>
@@ -389,13 +263,11 @@ const cardsgrid = [
         <PhotoGraphyCard key={index} src={card.src} title={card.title} />
       ))}
     </div>
-        <Tabs
-          tabs={tabs}
-          defaultTab="intimate"
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-        />
-        <div>{renderProducts(heading[activeTab])}</div>
+      
+         <PhotographysliderSection
+        title="Standard Packages"
+        tagId="66c96b4e22ed47b72117e09a" 
+      />
 
   <div className="gridContainersec">
       {cardsgrid.map((cardsgrid, index) => (

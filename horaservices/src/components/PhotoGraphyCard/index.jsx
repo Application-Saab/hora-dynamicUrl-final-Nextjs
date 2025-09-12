@@ -1,7 +1,13 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
 import "./photoGraphycard.css";
 
 export default function PhotoGraphyCard({ src, title }) {
+    const router = useRouter();
+     const handleViewMore = () => {
+     const slug = title.trim().replace(/\s+/g, "-");
+      router.push(`/photography-page/${slug}`);
+    };
   return (
     <div className="card">
       <div className="imageWrapper">
@@ -12,7 +18,7 @@ export default function PhotoGraphyCard({ src, title }) {
         </div>
       </div>
       <div className="footer">
-        <button className="viewMore">View more</button>
+        <button className="viewMore" onClick={handleViewMore}>View more</button>
       </div>
     </div>
   );

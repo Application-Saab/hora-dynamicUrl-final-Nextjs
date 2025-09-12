@@ -1,0 +1,239 @@
+.featured-works {
+  background: #F0F0F0;
+  border-radius: 0 0 10px 10px;
+  padding: 8px;
+      margin-left: 7px;
+    margin-right: 7px;
+        max-width: 800px;
+    margin: auto;
+}
+
+/* Tab content wrapper */
+.tab-content {
+  padding: 2px !important;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header */
+.section-small-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #6c2eb9;
+}
+
+.section-separator {
+  display: block;
+  margin: 0 auto 2px auto;
+  width: 40%;
+}
+
+/* Responsive grid container */
+.work-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 15px;
+}
+
+/* Individual card */
+
+.work-item {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 18.26px;
+  /* Updated to match your new requirement */
+  border: 2px solid #BABABA;
+  overflow: hidden; 
+  height: 240px;
+  transition: transform 0.3s ease;
+}
+
+.work-item:hover {
+  transform: translateY(-4px);
+}
+
+.discount-badge {
+  font-family: Inter, sans-serif;
+  position: absolute;
+  /* top: 1px;
+  left: 2px; */
+  background: #f99e1f;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 0px 5px 5px 0px;
+  font-size: 13.5px;
+  font-weight: 500;
+  z-index: 2;
+}
+
+.work-image-wrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.work-image {
+  position: relative;
+     height: 140px;
+  width: 95%;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 2px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: white;
+}
+
+.work-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(0.3px);
+  z-index: 0;
+}
+
+.work-image-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  mix-blend-mode: multiply;
+  z-index: 1;
+}
+
+.work-title {
+  position: relative;
+  z-index: 2;
+  font-family: 'Mada', sans-serif !important;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 20px;
+  text-align: center;
+  color: white;
+  padding: 6px 12px;
+  width: 100%;
+  text-shadow:
+    -1px -1px 0 #525151,
+    1px -1px 0 #525151,
+    -1px 1px 0 #525151,
+    1px 1px 0 #525151;
+}
+
+
+
+/* Card info text */
+.work-card-info {
+  padding: 6px 10px;
+  text-align: center;
+}
+
+/* Pricing */
+.Prefred-occ {
+  font-size: 15.61px;
+  /* margin: 8px 0; */
+  color: #97538C;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-family: Inter, sans-serif;
+  margin-top: 5px;
+  /* margin-bottom: 10px; */
+}
+
+
+
+
+
+.Prefred-occ span {
+  display: block;
+  font-size: 15.61px;
+  margin: 2px 0;
+  line-height: 100%;
+  color: #97538C;
+  font-weight: 600;
+}
+
+.Prefred-occ span:nth-child(2),
+
+.original-price {
+  text-decoration: line-through;
+  color: #333333;
+  font-weight: 600;
+  font-size: 14.61px;
+}
+
+/* Button */
+
+
+.photograpy-book-now {
+  width: 115.09px;
+  gap: 9.13px;
+  border-radius: 6.39px;
+  border: 1px solid #97538C;
+  padding: 6px 12px;
+  box-shadow: 0px 2px 4px 0px #00000040;
+  background-color: white;
+  color: #97538c;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: all 0.3s ease;
+  font-size: 14.61px;
+  /* margin-top: 5px ; */
+}
+
+
+/* Product heading */
+
+.ProductHeading {
+  font-family: Inter, sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  /* line-height: 100%; */
+  letter-spacing: 2%;
+  text-align: center;
+  margin-bottom: 6px;
+  color: black;
+  margin-top: 10px;
+}
+
+
+
+/* MOBILE */
+@media (max-width: 480px) {
+  .work-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .work-image {
+    height: 120px;
+    width: 95%;
+  }
+
+  .discount-badge {
+    padding: 4px 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+
+  }
+
+   .ProductHeading {
+    font-size: 1rem;
+  } 
+  .original-price {
+    font-weight: 500;
+    font-size: 50px;
+  }
+}
