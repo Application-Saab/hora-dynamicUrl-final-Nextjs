@@ -573,12 +573,6 @@ const InvitationCard = () => {
   };
 
   const handleEdit = () => {
-    alert("Edit button clicked");
-    console.log(
-      "%c [ orderDetails.... ]-537",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      orderDetails
-    );
     if (!orderDetails) return;
 
     let formattedTime = "";

@@ -110,14 +110,16 @@ export default function BottomNav({ id }) {
           </div>
         </Link>
 
-        <div
-          className="nav-item"
-          onClick={handleAccountClick}
-          style={{ cursor: "pointer" }}
-        >
-          <Image src={accountIcon} alt="Account Icon" className="nav-icon" />
-          <span className="nav-text">Accounts</span>
-        </div>
+        <Link href={`/accounts?userid=${id}`}>
+          <div
+            className="nav-item"
+            // onClick={handleAccountClick}
+            style={{ cursor: "pointer" }}
+          >
+            <Image src={accountIcon} alt="Account Icon" className="nav-icon" />
+            <span className="nav-text">Accounts</span>
+          </div>
+        </Link>
       </div>
     </>
   );

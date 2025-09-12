@@ -23,7 +23,7 @@ const PageLayout = ({ children }) => {
   const showBottomNav =
     pathname === "/wonderland" ||
     pathname?.startsWith("/chat") || // covers /chat?id=123 also
-    pathname === "/about";
+    pathname === "/about" || pathname === '/accounts';
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");
 
