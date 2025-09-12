@@ -25,16 +25,19 @@ export default function BottomNav({ id }) {
   </div>
 </Link>
 
-
+<Link href={`/`}>
       <div className="nav-item">
         <Image src={servicesIcon} alt="Services Icon" className="nav-icon" />
         <span className="nav-text">Services</span>
       </div>
+      </Link>
 
+<Link href={`/accounts?userid=${id}`}>
       <div className="nav-item">
         <Image src={accountIcon} alt="Account Icon" className="nav-icon" />
         <span className="nav-text">Accounts</span>
       </div>
+      </Link>
     </div>
   );
 }

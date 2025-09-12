@@ -1,0 +1,39 @@
+.account-ctn{
+    padding: 20px;
+    height: 100vh;
+}
+
+.details-ctn{
+    display: flex;
+    flex-direction: column;
+}
+.contact-ctn{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 20px;
+}
+.contact-ctn p {
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    font-size: 18px;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    margin-left: 5px;
+}
+.contact-item{
+    display: flex;
+    align-items: center;
+}
+.account-name{
+    color: #97538C;
+    font-size: 18px;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    margin-top: 20px;
+}
+.user-img{
+    border-radius: 50%;
+    border: 0.7px solid black;
+}
