@@ -31,12 +31,6 @@
   display: block;
 }
 
-.works-container.products {
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: initial;
-  margin-bottom: 30px;
-}
 
 .image-banner-slider {
   width: 100%;

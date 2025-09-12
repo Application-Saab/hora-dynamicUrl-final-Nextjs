@@ -96,7 +96,6 @@ const handleViewMore = (work) => {
 
   return (
     <div className="featured-works">
-      <div className="works-container products">
         <p className="ProductHeading">{catValue} Products</p>
 
         {loading ? (
@@ -124,7 +123,6 @@ const handleViewMore = (work) => {
                   </div>
                 </div>
 
-                {/* Card Info */}
                 <div className="work-card-info">
                   <p className="Prefred-occ">
                     <span className="old-price">₹ {work.price}</span>
@@ -146,6 +144,5 @@ const handleViewMore = (work) => {
           <p>No products found.</p>
         )}
       </div>
-    </div>
   );
 }

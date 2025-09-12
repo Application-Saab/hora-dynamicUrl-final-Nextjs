@@ -1,4 +1,4 @@
-.featured-works {
+.featured-works{
   background: #F0F0F0;
   border-radius: 0 0 10px 10px;
   padding: 8px;
@@ -7,47 +7,19 @@
         max-width: 800px;
     margin: auto;
 }
-
-/* Tab content wrapper */
-.tab-content {
-  padding: 2px !important;
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Header */
-.section-small-header {
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-  color: #6c2eb9;
-}
-
-.section-separator {
-  display: block;
-  margin: 0 auto 2px auto;
-  width: 40%;
-}
-
-/* Responsive grid container */
 .work-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+ grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
   margin-top: 15px;
 }
-
-/* Individual card */
-
 .work-item {
   position: relative;
   background: #FFFFFF;
   border-radius: 18.26px;
-  /* Updated to match your new requirement */
   border: 2px solid #BABABA;
   overflow: hidden; 
   height: 240px;
@@ -61,8 +33,6 @@
 .discount-badge {
   font-family: Inter, sans-serif;
   position: absolute;
-  /* top: 1px;
-  left: 2px; */
   background: #f99e1f;
   color: white;
   padding: 4px 8px;
@@ -128,18 +98,13 @@
     1px 1px 0 #525151;
 }
 
-
-
-/* Card info text */
 .work-card-info {
   padding: 6px 10px;
   text-align: center;
 }
 
-/* Pricing */
 .Prefred-occ {
   font-size: 15.61px;
-  /* margin: 8px 0; */
   color: #97538C;
   font-weight: 600;
   display: flex;
@@ -148,7 +113,6 @@
   gap: 6px;
   font-family: Inter, sans-serif;
   margin-top: 5px;
-  /* margin-bottom: 10px; */
 }
 
 

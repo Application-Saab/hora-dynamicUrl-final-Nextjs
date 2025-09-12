@@ -8,22 +8,22 @@ import proImg from "@/assets/Prophotography.webp";
 import videoImg from "@/assets/Videography.webp";
 import {useRouter} from "next/router";
 // helper fn
-const getDiscountedPrice = (price) => {
-  let discount;
+  const getDiscountedPrice = (price) => {
+    let discount;
 
-  if (price < 3000) {
-    discount = 20;
-  } else if (price >= 3000 && price <= 5000) {
-    discount = 27;
-  } else {
-    discount = 35;
-  }
+    // Determine the discount percentage based on the item price
+    if (price < 3000) {
+      discount = 20; // 20% discount
+    } else if (price >= 3000 && price <= 5000) {
+      discount = 27; // 27% discount
+    } else {
+      discount = 35; // 35% discount for prices above 5000
+    }
 
-  const discountedPrice = price - (price * discount) / 100; // correct calc
-  const discountDifference = price - discountedPrice;
-
-  return { discount, discountedPrice, discountDifference };
-};
+    const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
+    const discountDifference = Math.abs(price - discountedPrice);;
+    return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
+  };
 
 export default function PhotographysliderSection({ title, tagId }) {
       const router = useRouter();
@@ -40,11 +40,11 @@ export default function PhotographysliderSection({ title, tagId }) {
   const imageSize = { width: 200, height: 150 };
   const showDiscount = true;
 
-const viewMoreProduct = (work) => {
+const viewMoreProduct = (item) => {
   router.push({
-    pathname: `/photography-page/product/${work._id}`,
+    pathname: `/photography-page/product/${item._id}`,
     query: {
-      product: JSON.stringify(work),
+      product: JSON.stringify(item),
       tagId: tagId,  // use the prop directly
     },
   });
@@ -54,8 +54,8 @@ const viewMoreProduct = (work) => {
     event: 'photography_view_more_click',
     eventCategory: 'photography',
     eventAction: 'view_more_click',
-    eventLabel: work?.title || work?.name || 'Unknown Product',
-    productId: work?._id,
+    eventLabel: item?.title || item?.name || 'Unknown Product',
+    productId: item?._id,
     tagId: tagId, // track which tag this product belongs to
   });
 };
@@ -91,8 +91,8 @@ const viewMoreProduct = (work) => {
   }, [tagId, fetchData]);
 
   return (
-    <section className="premium-slide-decor">
-      <div className="premium-slide-decor-header">
+    <section className="premium-slide-decor-slider">
+      <div className="premium-slide-decor-header-slider">
         <h2>{title}</h2>
       </div>
 
@@ -101,43 +101,46 @@ const viewMoreProduct = (work) => {
           <div className="spinner"></div>
         </div>
       ) : (
-        <div className="premium-scroll-wrapper">
+        <div className="premium-scroll-wrapper-slider">
         {products.map((item, index) => {
   const imageUrl = imageMap[item._id] || traditionalImg; // fallback if no image found
   return (
-    <div key={index} className="premium-card">
-      <div className="premium-img-wrapper">
-        <Image
-          src={imageUrl}
-          alt={item.name}
-          width={imageSize.width}
-          height={imageSize.height}
-          className="premium-img"
-        />
-        {showDiscount && (
-          <div className="premium-discount">
-            ₹{item.discountDifference.toFixed(0)} off
-          </div>
-        )}
-      </div>
-
-      <div className="premium-content">
-        <p className="premium-title">
-          {item.name.length > 20 ? `${item.name.slice(0, 20)}...` : item.name}
-        </p>
-      </div>
-
-      <div className="premium-price-wrapper">
-        <span className="premium-price">₹{item.discountedPrice}</span>
-        {showDiscount && <span className="premium-original">₹{item.price}</span>}
-      </div>
-<button
-  className="photograpy-book-now"
-  onClick={() => viewMoreProduct(item)}
->
-  View More
-</button>
-    </div>
+    <div className="work-container-slider">
+             <div className="work-item-slider" key={index}>
+                   <div className="discount-badge-slider">
+                     ₹ {item.discountDifference.toFixed(0)} off
+                   </div>
+                   <div className="work-image-wrapper-slider">
+                     <div className="work-image-slider">
+                       <Image
+                         src={imageUrl}
+                         alt={item.name}
+                         width={300}
+                         height={200}
+                         className="work-img-slider"
+                       />
+                       <div className="work-image-overlay-slider" />
+                       <h5 className="work-title-slider">{item.name}</h5>
+                     </div>
+                   </div>
+   
+                   {/* Card Info */}
+                   <div className="work-card-info-slider">
+                     <p className="Prefred-occ-slider">
+                       <span className="old-price-slider">₹ {item.price}</span>
+                       <span className="new-price-slider">
+                         ₹{Math.floor(item.discountedPrice)}
+                       </span>
+                     </p>
+                     <button
+                        onClick={() => viewMoreProduct(item)}
+                       className="photograpy-book-now-slider"
+                     >
+                       View More
+                     </button>
+                   </div>
+                 </div>
+             </div>
   );
 })}
 
