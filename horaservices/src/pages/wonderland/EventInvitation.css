@@ -1167,7 +1167,7 @@ background-color: none !important;
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #dee2e6;;
+  background: white;
   display: flex;
   flex-direction: column;
   font-family: "Segoe UI", sans-serif;
@@ -1238,7 +1238,7 @@ background-color: none !important;
 .chat-message {
   display: flex;
   align-items: flex-end;
-  margin: 4px 0;
+  margin: 10px 0;
   cursor: pointer;
   transition: background 0.3s ease;
 }
@@ -1262,11 +1262,25 @@ background-color: none !important;
 }
 
 /* Avatar circle */
-.chat-avatar {
+.chat-avatar-receiver{
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #4caf50; /* WhatsApp green */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0 6px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.chat-avatar{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #97538C;
   color: white;
   display: flex;
   align-items: center;
@@ -1280,58 +1294,78 @@ background-color: none !important;
 /* Chat bubble default (sender) */
 .chat-bubble {
   background: #97538C;
-  padding: 8px 40px 14px 10px;
-  border-radius: 20px 20px 20px 0px;
+  padding: 6px 45px 5px 8px;
+  border-radius: 10px 10px 0px 10px;
   position: relative;
   word-wrap: break-word;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  max-width: 60%;
+  max-width: 70%;
 }
 
 /* Receiver bubble */
 .chat-message.receiver .chat-bubble {
-  background: white;
-  color: black;
-  border-radius: 20px 20px 0px 20px;
+ background: none;
+    color: black;
+    border: 1px solid #00000066;
+    border-radius: 10px 10px 10px 0px;
+      position: relative;
 }
-
+   
 /* Receiver text */
 .chat-message.receiver .chat-text {
   font-size: 14px;
-  margin-right: 45px; /* space for time */
+  margin-right: 10px; /* space for time */
   display: inline;
   color: black;
 }
 
 /* Receiver sender name */
 .chat-message.receiver .chat-sender {
+ position: absolute;
+  top: -10px;      
+  left: 5px;     
+  background: white;  
+  padding: 0px;  
   font-size: 10px;
   font-weight: 400;
-  color: black;
-  margin-bottom: 3px;
+  color: #377300;  
+  max-width: 60px;       
+  white-space: nowrap;     
+  overflow: hidden;        
+  text-overflow: ellipsis; 
 }
 
 /* Receiver time */
 .chat-message.receiver .chat-time {
   position: absolute;
-  bottom: 8px;
+  bottom: 6px;
   right: 8px;
   font-size: 9px;
   color: black;
 }
 
-/* Sender name */
+
 .chat-sender {
-  font-size: 10px;
+  position: absolute;
+  top: -10px;      
+  left: 5px;     
+  background: white; 
+  padding: 0px;  
+  font-size: 10px !important;
   font-weight: 400;
-  color: white;
-  margin-bottom: 3px;
+  color: green;    
+max-width: 60px;        
+  white-space: nowrap;    
+  overflow: hidden;        
+  text-overflow: ellipsis; 
 }
+
+
 
 /* Message text */
 .chat-text {
   font-size: 14px;
-  margin-right: 45px; /* space for time */
+  margin-right: 10px; /* space for time */
   display: inline;
   color: white;
 }
@@ -1353,23 +1387,11 @@ background-color: none !important;
     height: 26px;
     font-size: 12px;
     margin: 0 4px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
   }
 
-  .chat-bubble {
-    max-width: 75%;   /* allow more width on small screens */
-    padding: 6px 30px 12px 8px;
-    font-size: 13px;
-  }
 
-  .chat-text {
-    font-size: 13px;
-    margin-right: 38px;
-  }
 
-  .chat-sender {
-    font-size: 9px;
-  }
 
   .chat-time {
     font-size: 8px;
@@ -1377,23 +1399,9 @@ background-color: none !important;
     bottom: 6px;
   }
 
-  .chat-message.receiver .chat-text {
-    font-size: 13px;
-    margin-right: 38px;
-  }
 
-  .chat-message.receiver .chat-sender {
-    font-size: 9px;
-  }
-
-  .chat-message.receiver .chat-time {
-    font-size: 8px;
-    right: 6px;
-    bottom: 6px;
-  }
 }
 
-/* Delete button (only for sender) */
 .delete-btn {
   position: absolute;
   top: -12px;
@@ -1535,4 +1543,82 @@ background-color: none !important;
 
 .edit-icon{
   /* z-index: 10000; */
+}
+
+/* =========================================================================================================== */
+
+.addhome-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+}
+
+.addhome-popup-container {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  border: 2px solid #130B0BDB
+}
+
+.addhome-phone-image {
+     width: 100%;
+    max-width: 160px;
+    margin-bottom: 10px;
+    height: 230px;
+}
+.addhome-popup-text{
+  margin-bottom: 24px;
+}
+.addhome-popup-text .addhome-headline {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14.85px;
+  line-height: 100%;
+  text-align: center;
+  letter-spacing: 0;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+
+.addhome-popup-text .addhome-subtext {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.addhome-add-button {
+  background-color: #0F723F;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.addhome-add-button:hover {
+  background-color: #095f2f;
+}
+
+.addhome-later-button {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  margin-top: 16px;
+  cursor: pointer;
 }

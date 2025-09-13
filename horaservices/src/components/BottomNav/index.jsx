@@ -2,6 +2,7 @@ import React from "react";
 // components/BottomNav.jsx
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from 'next/router';
 import eventIcon from "../../assets/nav_icon/events.png";
 import messageIcon from "../../assets/nav_icon/message.png";
 import servicesIcon from "../../assets/nav_icon/services.png";
@@ -9,6 +10,8 @@ import accountIcon from "../../assets/nav_icon/account.png";
 import "./bottomNav.css";
 
 export default function BottomNav({ id }) {
+    const router = useRouter();
+    const currentPath = router.pathname;
   const [showPopup, setShowPopup] = React.useState(false);
   const handleAccountClick = () => {
     setShowPopup(true);
@@ -84,7 +87,7 @@ export default function BottomNav({ id }) {
           </div>
         </div>
       )}
-      <div className="bottom-nav">
+      {/* <div className="bottom-nav">
         <Link href={`/wonderland?id=${id || ""}`}>
           <div className="nav-item">
             <Image src={eventIcon} alt="Events Icon" className="nav-icon" />
@@ -120,7 +123,36 @@ export default function BottomNav({ id }) {
             <span className="nav-text">Accounts</span>
           </div>
         </Link>
-      </div>
+      </div> */}
+        <div className="bottom-nav">
+      <Link href={`/wonderland?id=${id || ""}`}>
+        <div className={`nav-item ${currentPath.includes('wonderland') ? 'active' : ''}`}>
+          <Image src={eventIcon} alt="Events Icon" className="nav-icon" />
+          <span className="nav-text">Events</span>
+        </div>
+      </Link>
+
+      <Link href={`/chat?id=${id || ""}`}>
+        <div className={`nav-item ${currentPath.includes('chat') ? 'active' : ''}`}>
+          <Image src={messageIcon} alt="Message Icon" className="nav-icon" />
+          <span className="nav-text">Chats</span>
+        </div>
+      </Link>
+
+      <Link href="/">
+        <div className={`nav-item ${currentPath === '/' ? 'active' : ''}`}>
+          <Image src={servicesIcon} alt="Services Icon" className="nav-icon" />
+          <span className="nav-text">Services</span>
+        </div>
+      </Link>
+
+      <Link href={`/accounts?userid=${id}`}>
+        <div className={`nav-item ${currentPath.includes('accounts') ? 'active' : ''}`}>
+          <Image src={accountIcon} alt="Account Icon" className="nav-icon" />
+          <span className="nav-text">Accounts</span>
+        </div>
+      </Link>
+    </div>
     </>
   );
 }

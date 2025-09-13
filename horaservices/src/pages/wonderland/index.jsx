@@ -12,6 +12,7 @@ import whatshare from "@/assets/whatshare.png";
 import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import { FaArrowLeft } from "react-icons/fa";
+import phoneImage from "@/assets/phoneImage.jpeg"
 import "../photo-gallery/gallery.css";
 import {
   BASE_URL,
@@ -1338,6 +1339,28 @@ const InvitationCard = () => {
 
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
   };
+  // helper function to generate a color from string
+const getAvatarColor = (name) => {
+  const colors = [
+    "#F44336", // red
+    "#E91E63", // pink
+    "#9C27B0", // purple
+    "#673AB7", // deep purple
+    "#3F51B5", // indigo
+    "#2196F3", // blue
+    "#009688", // teal
+    "#4CAF50", // green
+    "#FF9800", // orange
+    "#795548"  // brown
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
+
   return (
     <>
       {!isLoggedIn ? (
@@ -1350,7 +1373,7 @@ const InvitationCard = () => {
       ) : (
         <>
           {slug.length === 0 && (
-            <div>
+            <div style={{ marginBottom: "50px" }}>
               <WonderlandLandingPage
                 isLoggedIn={isLoggedIn}
                 userId={userID}
@@ -1360,7 +1383,7 @@ const InvitationCard = () => {
             </div>
           )}
           {slug.length === 1 && (
-            <div>
+            <div style={{ marginBottom: "50px" }}>
               <WonderlandLandingPage
                 isLoggedIn={isLoggedIn}
                 userId={userID}
@@ -2105,12 +2128,20 @@ const InvitationCard = () => {
                   >
                     {/* Receiver avatar (left side) */}
                     {!isSender && (
-                      <div className="chat-avatar">
-                        {senderName
-                          ? senderName.charAt(0).toUpperCase()
-                          : msg.senderPhoneNumber.charAt(3)}
-                      </div>
-                    )}
+  <div
+    className="chat-avatar-receiver"
+    style={{
+      backgroundColor: getAvatarColor(
+        senderName || msg.senderPhoneNumber
+      )
+    }}
+  >
+    {senderName
+      ? senderName.charAt(0).toUpperCase()
+      : msg.senderPhoneNumber.charAt(3)}
+  </div>
+)}
+
 
                     {/* Chat bubble */}
                     <div className="chat-bubble">
@@ -2330,56 +2361,33 @@ const InvitationCard = () => {
       )}
       
       {pathname === "/wonderland" && showInstall && (
-        <div
-          className="add-to-home-popup"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.4)",
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              padding: 32,
-              borderRadius: 12,
-              boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
-              textAlign: "center",
-            }}
-          >
-            <h2>Add to Home Screen</h2>
-            <p>Install this app on your device for a better experience.</p>
-            <button
-              onClick={handleInstallClick}
-              style={{ padding: "10px 20px", marginTop: 16 }}
-            >
-              Add to Home Screen
-            </button>
-            <br />
-            <button
-              onClick={() => {
-                setShowInstall(false);
-                localStorage.setItem("addToHomeScreenPopup", "true");
-              }}
-              style={{
-                marginTop: 12,
-                background: "none",
-                border: "none",
-                color: "#888",
-                cursor: "pointer",
-              }}
-            >
-              Maybe later
-            </button>
-          </div>
-        </div>
+
+<div className="addhome-popup-overlay">
+  <div className="addhome-popup-container">
+    <Image src={phoneImage} alt="Phone Preview" className="addhome-phone-image" />
+
+    <div className="addhome-popup-text">
+      <p className="addhome-headline">Your parties, one tap away</p>
+      <p className="addhome-headline">Pin to your screen.</p>
+    </div>
+
+    <button className="addhome-add-button" onClick={handleInstallClick}>
+      Add To Screen
+    </button>
+
+    <button
+      className="addhome-later-button"
+      onClick={() => {
+        setShowInstall(false);
+        localStorage.setItem("addToHomeScreenPopup", "true");
+      }}
+    >
+      Maybe later
+    </button>
+  </div>
+</div>
+
+
       )}
     </>
   );

@@ -1,21 +1,14 @@
-
-/* neo bar */
-
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
-  background-color: #97538c;
+  right: 0;
+  height: 60px;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 12px 0;
-  /* border-top-left-radius: 20px;
-  border-top-right-radius: 20px; */
-  border-bottom-left-radius: 27px;
-  border-bottom-right-radius: 27px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
 
@@ -23,74 +16,28 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
-  font-size: 13px; /* slightly bigger text */
-  cursor: pointer;
-}
-
-.nav-item span {
-  margin-top: 5px;
+  justify-content: center;
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
   font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  height: 100%;
+  width: 70px;
 }
 
 .nav-icon {
-  width: 28px; /* bigger default */
-  height: 28px;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
 }
 
-.nav-text {
-  font-size: 12px;
+/* Highlight active tab */
+.nav-item.active {
+  color: #8a3a78; /* your purple color */
 }
 
-/* 📱 For screens ≤ 600px */
-@media (max-width: 600px) {
-  .bottom-nav {
-    padding: 14px 0;
-  }
-  .nav-item {
-    font-size: 12px;
-  }
-  .nav-icon {
-    width: 26px;
-    height: 26px;
-  }
-
-  .nav-text {
-    font-size: 12px;
-  }
-}
-
-/* 📱 For screens ≤ 468px */
-@media (max-width: 468px) {
-  .bottom-nav {
-    padding: 14px 0;
-  }
-  .nav-item {
-    font-size: 11px;
-  }
-  .nav-icon {
-    width: 42px;
-    height: 42px;
-  }
-  .nav-text {
-    font-size: 12px;
-  }
-}
-
-/*  For screens ≤ 368px */
-@media (max-width: 368px) {
-  .bottom-nav {
-    padding: 12px 0;
-  }
-  .nav-item {
-    font-size: 11px;
-  }
-  .nav-icon {
-    width: 42px;
-    height: 42px;
-  }
-
-  .nav-text {
-    font-size: 12px;
-  }
+.nav-item.active .nav-icon {
+  filter: brightness(0) saturate(100%) invert(25%) sepia(33%) saturate(733%) hue-rotate(266deg) brightness(94%) contrast(88%);
 }

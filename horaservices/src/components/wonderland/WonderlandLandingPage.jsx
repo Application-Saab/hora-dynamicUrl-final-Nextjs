@@ -6,7 +6,7 @@ import CreateInviteModal from "./create-invite/CreateEventInvite";
 import { BASE_URL, GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
-import wonderlandBanner from "@/assets/wonderlandBanner.jpg";
+import wonderlandBanner from "@/assets/wonderlandBanner.png";
 import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
 import howitworks from "@/assets/howitworks.jpg";
 import hostandGuest from "@/assets/hostandGuest.png";
