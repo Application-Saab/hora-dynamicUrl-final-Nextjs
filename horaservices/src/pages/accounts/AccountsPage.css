@@ -11,7 +11,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-block: 20px;
+    padding-block: 10px;
 }
 .contact-ctn p {
     margin: 0;

@@ -24,10 +24,7 @@ import {
   FaImage,
 } from "react-icons/fa";
 import Link from "next/link";
-import eventIcon from "../../assets/nav_icon/events.png";
-import messageIcon from "../../assets/nav_icon/message.png";
-import servicesIcon from "../../assets/nav_icon/services.png";
-import accountIcon from "../../assets/nav_icon/account.png";
+
 
 const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   const token = localStorage.getItem("token");

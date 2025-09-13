@@ -2143,36 +2143,36 @@ const getAvatarColor = (name) => {
 )}
 
 
-                    {/* Chat bubble */}
-                    <div className="chat-bubble">
-                      <div className="chat-sender">
-                        {senderName
-                          ? senderName
-                          : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-                      </div>
-                      <div className="chat-text">{msg.text}</div>
-                      <div className="chat-time">
-                        {msg.sentAt?.toDate
-                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-                              "en-IN",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }
-                            )
-                          : ""}
-                      </div>
-                    </div>
+                    <div className={`chat-bubble ${isSender ? "sender" : "receiver"}`}>
+      {/* Sirf receiver ka naam/number */}
+      {!isSender && (
+        <div className="chat-sender">
+          {senderName
+            ? senderName
+            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
+        </div>
+      )}
 
-                    {/* Sender avatar (right side) */}
-                    {isSender && (
+      <div className="chat-text">{msg.text}</div>
+
+      <div className="chat-time">
+        {msg.sentAt?.toDate
+          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          : ""}
+      </div>
+    </div>
+
+                    {/* {isSender && (
                       <div className="chat-avatar">
                         {senderName
                           ? senderName.charAt(0).toUpperCase()
                           : msg.senderPhoneNumber.charAt(3)}
                       </div>
-                    )}
+                    )} */}
                   </div>
                 );
               })}

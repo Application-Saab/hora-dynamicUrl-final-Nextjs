@@ -5,6 +5,7 @@ import "./AccountsPage.css";
 import ArrowIcon from "@/assets/forward_arrow.svg";
 import CallIcon from "@/assets/call_icon.svg";
 import LogoutIcon from "@/assets/logout_icon.svg";
+import myordericon from "@/assets/Myordersicon.png"
 import Avatar from "@/assets/avtar.jpg";
 const AccountPage = () => {
   const [userData, setUserData] = useState({});
@@ -36,6 +37,8 @@ const AccountPage = () => {
           }
         );
         const data = await response.json();
+        console.log(data);
+        
         if (data.error) {
           setUserData({});
           setErrorFetchUser(data.message || "Failed to fetch guests");
@@ -51,7 +54,11 @@ const AccountPage = () => {
     // Initial call
     fetchEventImages();
   }, [userId]);
-
+const handleOrderClick = () => {
+    window.location.href = "https://horaservices.com/orderlist";
+    // ya agar naya tab chahiye:
+    // window.open("https://horaservices.com/orderlist", "_blank");
+  };
   return (
     <>
     <div className="account-ctn">
@@ -62,6 +69,19 @@ const AccountPage = () => {
         <div>
           <p className="account-name">{userData?.name}</p>
         </div>
+            <div
+          className="contact-ctn"
+          style={{ cursor: "pointer" }}
+          onClick={handleOrderClick}
+        >
+          <div className="contact-item">
+            <Image src={myordericon} height={18} width={18} />
+            <p>My Order</p>
+          </div>
+          <div>
+            <Image src={ArrowIcon} />
+          </div>
+        </div>
         <div className="contact-ctn">
           <div className="contact-item">
             <Image src={CallIcon} height={18} width={18} />
@@ -71,6 +91,7 @@ const AccountPage = () => {
             <Image src={ArrowIcon} />
           </div>
         </div>
+        
         <div
           className="contact-ctn"
           style={{ cursor: "pointer" }}

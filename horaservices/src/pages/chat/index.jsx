@@ -97,7 +97,26 @@ const GroupsList = () => {
       console.error("Error fetching guest:", err);
     }
   };
-
+const getAvatarColor = (name) => {
+  const colors = [
+    "#F44336", // red
+    "#E91E63", // pink
+    "#9C27B0", // purple
+    "#673AB7", // deep purple
+    "#3F51B5", // indigo
+    "#2196F3", // blue
+    "#009688", // teal
+    "#4CAF50", // green
+    "#FF9800", // orange
+    "#795548"  // brown
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
   // Check Firestore for role and call appropriate fetch function when selectedGroup changes
   useEffect(() => {
     const checkRoleAndFetch = async () => {
@@ -360,6 +379,7 @@ const GroupsList = () => {
       const newMsg = {
         text: text,
         senderId: userId,
+        senderPhoneNumber: localStorage.getItem("mobileNumber"),
         senderName: senderName, // ✅ real name, not "You"
         sentAt: serverTimestamp(),
       };
@@ -375,7 +395,7 @@ const GroupsList = () => {
       console.error("Error sending message:", error);
     }
   };
-
+const userPhoneNumber = localStorage.getItem("mobileNumber");
   const getUnreadCount = (group) => {
     const member = group.members.find((m) => m.id === userId);
     if (!member?.lastSeen) return group.messages?.length || 0;
@@ -495,13 +515,20 @@ const GroupsList = () => {
           </div>
 
           <div className="chat-messages" ref={chatBodyRef}>
-            {messages.map((msg) => {
+            {/* {messages.map((msg) => {
               const isMe = msg.senderId === userId;
               const senderName =
                 msg.senderName?.length > 15
                   ? msg.senderName.slice(0, 15) + "..."
-                  : msg.senderName;
-
+                  : msg.senderName; */}
+ {messages.map((msg) => {
+                const isMe = msg.senderPhoneNumber === userPhoneNumber;
+                const senderName =
+                  msg.senderName ||
+                  (isSender &&
+                    (userType === "host"
+                      ? orderDetails?.Name
+                      : guestDetails?.name));
               return (
                 <div
                   key={msg.id}
@@ -509,16 +536,30 @@ const GroupsList = () => {
                 >
                   {/* className={`chat-row ${isMe ? "me" : "other"}`} */}
                   {/* Receiver avatar (left side) */}
-                  {!isMe && (
+                  {/* {!isMe && (
                     <div className="chat-avatar">
                       {senderName
                         ? senderName.charAt(0).toUpperCase()
                         : msg.senderPhoneNumber.charAt(3)}
                     </div>
-                  )}
+                  )} */}
 
+ {!isMe && (
+  <div
+    className="chat-avatar-receiver"
+    style={{
+      backgroundColor: getAvatarColor(
+        senderName || msg.senderPhoneNumber
+      )
+    }}
+  >
+    {senderName
+      ? senderName.charAt(0).toUpperCase()
+      : msg.senderPhoneNumber.charAt(3)}
+  </div>
+)}
                   {/* Chat bubble */}
-                  <div className="chat-bubble">
+                  {/* <div className="chat-bubble">
                     <div className="chat-sender">
                       {senderName
                         ? senderName
@@ -537,16 +578,38 @@ const GroupsList = () => {
                           )
                         : ""}
                     </div>
-                  </div>
+                  </div> */}
+                    <div className={`chat-bubble ${isMe ? "sender" : "receiver"}`}>
+      {/* Sirf receiver ka naam/number */}
+      {!isMe && (
+        <div className="chat-sender">
+          {senderName
+            ? senderName
+            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
+        </div>
+      )}
+
+      <div className="chat-text">{msg.text}</div>
+
+      <div className="chat-time">
+        {msg.sentAt?.toDate
+          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          : ""}
+      </div>
+    </div>
 
                   {/* Sender avatar (right side) */}
-                  {isMe && (
+                  {/* {isMe && (
                     <div className="chat-avatar">
                       {senderName
                         ? senderName.charAt(0).toUpperCase()
                         : msg.senderPhoneNumber.charAt(3)}
                     </div>
-                  )}
+                  )} */}
                 </div>
               );
             })}
