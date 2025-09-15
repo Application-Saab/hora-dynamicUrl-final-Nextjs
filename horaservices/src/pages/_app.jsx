@@ -102,7 +102,7 @@ function MyApp({ Component, pageProps }) {
 
 
   useEffect(() => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && "Notification" in window) {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
         getToken(messaging, { vapidKey: VAPID_KEY })

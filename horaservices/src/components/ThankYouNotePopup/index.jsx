@@ -23,19 +23,8 @@ const ThankYouNotePopup = ({
 }) => {
   const charsWithoutSpaces = noteTitle.replace(/\s/g, "").length;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  console.log(
-    "%c [ showEmojiPicker ]-26",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    showEmojiPicker
-  );
   const noteTextAreaRef = useRef(null);
-  noteBy = userName || "";
   const [isMobile, setIsMobile] = useState(false);
-  console.log(
-    "%c [ isMobile ]-30",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    isMobile
-  );
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 480);

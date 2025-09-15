@@ -25,7 +25,7 @@
 //     e.stopPropagation();
 //     setShowPopup(false);
 //   };
-  
+
 //   const [userId, setUserId] = useState("");
 
 //   // Fetch userId from localStorage
@@ -103,9 +103,9 @@
 //           </div>
 //         </div>
 //       )}
-      
+
 //         <div className="bottom-nav">
-     
+
 //    <Link href={`/wonderland?id=${id || ""}`}>
 //   <div className={`nav-item ${currentPath.includes("wonderland") ? "active" : ""}`}>
 //     <Image
@@ -137,7 +137,7 @@
 //     <span className="nav-text">Services</span>
 //   </div>
 // </Link>
-   
+
 //  <Link href={`/accounts?userid=${id}`}>
 //   <div className={`nav-item ${currentPath.includes('accounts') ? 'active' : ''}`}>   <Image
 //       src={currentPath.includes("accounts") ? accountIconFill : accountIcon}
@@ -166,25 +166,31 @@ import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 import "./bottomNav.css";
 
-export default function BottomNav({ id ,groups = [] }) {
+export default function BottomNav({ id, groups = [] }) {
   const router = useRouter();
   const currentPath = router.pathname;
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
   const [showServices, setShowServices] = useState(false);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(localStorage.getItem("totalUnread") || 0);
 
-const getUnreadCount = (group) => group.unreadCount || 0;
-const totalUnread = groups.reduce((sum, group) => sum + getUnreadCount(group), 0);
-const [loadingGroups, setLoadingGroups] = useState(true);
+  // const getUnreadCount = (group) => group.unreadCount || 0;
+  // const totalUnread = localStorage.getItem("totalUnread");
+  // console.log(
+  //   "%c [ totalUnread.... ]-178",
+  //   "font-size:13px; background:pink; color:#bf2c9f;",
+  //   totalUnread
+  // );
+  const [loadingGroups, setLoadingGroups] = useState(true);
 
-useEffect(() => {
-  if (!userId) return;
-  setLoadingGroups(true);
-  fetch(`/api/chat/groups?userId=${userId}`)
-    .then(res => res.json())
-    .then(data => setGroups(data))
-    .finally(() => setLoadingGroups(false));
-}, [userId]);
+  useEffect(() => {
+    if (!userId) return;
+    setLoadingGroups(true);
+    fetch(`/api/chat/groups?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => setGroups(data))
+      .finally(() => setLoadingGroups(false));
+  }, [userId]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -203,6 +209,23 @@ useEffect(() => {
     e.stopPropagation();
     setShowPopup(false);
   };
+
+  // 🔹 LocalStorage changes listen karo
+  useEffect(() => {
+    const syncLoginState = () => {
+      setTotalUnreadCount(localStorage.getItem("totalUnread"));
+    };
+
+    window.addEventListener("storage", syncLoginState);
+
+    // Same tab ke liye bhi run karo jab login success ke baad tum manually set karte ho
+    window.addEventListener("unreadCountChange", syncLoginState);
+
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("unreadCountChange", syncLoginState);
+    };
+  }, []);
 
   return (
     <>
@@ -272,111 +295,115 @@ useEffect(() => {
 
       {/* Services iframe overlay */}
       {showServices && (
-  <div className="iframe-overlay">
-    <iframe
-      src="/"
-      style={{
-        border: "none",
-        width: "100%",
-        height: "100vh",
-      }}
-    />
-  </div>
-)}
+        <div className="iframe-overlay">
+          <iframe
+            src="/"
+            style={{
+              border: "none",
+              width: "100%",
+              height: "100vh",
+            }}
+          />
+        </div>
+      )}
 
-  <div className="bottom-nav">
-  <Link href={`/wonderland?id=${id || ""}`}>
-    <div
-      className={`nav-item ${
-        !showServices && currentPath.includes("wonderland") ? "active" : ""
-      }`}
-    >
-      <Image
-        src={
-          !showServices && currentPath.includes("wonderland")
-            ? eventsIconFill
-            : eventIcon
-        }
-        alt="Events"
-        className="nav-icon"
-      />
-      <span className="nav-text">Events</span>
-    </div>
-  </Link>
+      <div className="bottom-nav">
+        <Link href={`/wonderland?id=${id || ""}`}>
+          <div
+            className={`nav-item ${
+              !showServices && currentPath.includes("wonderland")
+                ? "active"
+                : ""
+            }`}
+          >
+            <Image
+              src={
+                !showServices && currentPath.includes("wonderland")
+                  ? eventsIconFill
+                  : eventIcon
+              }
+              alt="Events"
+              className="nav-icon"
+            />
+            <span className="nav-text">Events</span>
+          </div>
+        </Link>
 
-<Link href={`/chat?id=${id || ""}`}>
-  <div
-    className={`nav-item ${!showServices && currentPath.includes("chat") ? "active" : ""}`}
-    onClick={() => setShowServices(false)} // close overlay immediately
-    style={{ position: "relative" }} // needed for absolute badge
-  >
-    <Image
-      src={!showServices && currentPath.includes("chat") ? messageIconFill : messageIcon}
-      alt="Chats"
-      className="nav-icon"
-    />
-    <span className="nav-text">Chats</span>
+        <Link href={`/chat?id=${id || ""}`}>
+          <div
+            className={`nav-item ${
+              !showServices && currentPath.includes("chat") ? "active" : ""
+            }`}
+            onClick={() => setShowServices(false)} // close overlay immediately
+            style={{ position: "relative" }} // needed for absolute badge
+          >
+            <Image
+              src={
+                !showServices && currentPath.includes("chat")
+                  ? messageIconFill
+                  : messageIcon
+              }
+              alt="Chats"
+              className="nav-icon"
+            />
+            <span className="nav-text">Chats</span>
 
-    {/* ✅ Badge */}
-    {totalUnread > 0 && (
-      <span
-        style={{
-          position: "absolute",
-          top: "-4px",
-          right: "-4px",
-          background: "red",
-          color: "#fff",
-          borderRadius: "50%",
-          padding: "2px 6px",
-          fontSize: "12px",
-          fontWeight: "600",
-          lineHeight: "1",
-          minWidth: "18px",
-          textAlign: "center",
-        }}
-      >
-        {totalUnread}
-      </span>
-    )}
-  </div>
-</Link>
+            {/* ✅ Badge */}
+            {totalUnreadCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-4px",
+                  right: "-4px",
+                  background: "red",
+                  color: "#fff",
+                  borderRadius: "50%",
+                  padding: "2px 6px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  lineHeight: "1",
+                  minWidth: "18px",
+                  textAlign: "center",
+                }}
+              >
+                {totalUnreadCount}
+              </span>
+            )}
+          </div>
+        </Link>
 
+        {/* Services iframe trigger */}
+        <div
+          className={`nav-item ${showServices ? "active" : ""}`}
+          onClick={() => setShowServices(true)}
+        >
+          <Image
+            src={showServices ? serviceIconFill : servicesIcon}
+            alt="Services"
+            className="nav-icon"
+          />
+          <span className="nav-text">Services</span>
+        </div>
 
-
-
-  {/* Services iframe trigger */}
-  <div
-    className={`nav-item ${showServices ? "active" : ""}`}
-    onClick={() => setShowServices(true)}
-  >
-    <Image
-      src={showServices ? serviceIconFill : servicesIcon}
-      alt="Services"
-      className="nav-icon"
-    />
-    <span className="nav-text">Services</span>
-  </div>
-
-  <Link href={`/accounts?userid=${id}`}>
-    <div
-      className={`nav-item ${
-        !showServices && currentPath.includes("accounts") ? "active" : ""
-      }`}
-    >
-      <Image
-        src={
-          !showServices && currentPath.includes("accounts")
-            ? accountIconFill
-            : accountIcon
-        }
-        alt="Account"
-        className="nav-icon"
-      />
-      <span className="nav-text">Account</span>
-    </div>
-  </Link>
-</div>
-
+        <Link href={`/accounts?userid=${id}`}>
+          <div
+            className={`nav-item ${
+              !showServices && currentPath.includes("accounts") ? "active" : ""
+            }`}
+          >
+            <Image
+              src={
+                !showServices && currentPath.includes("accounts")
+                  ? accountIconFill
+                  : accountIcon
+              }
+              alt="Account"
+              className="nav-icon"
+            />
+            <span className="nav-text">Account</span>
+          </div>
+        </Link>
+      </div>
     </>
   );
 }

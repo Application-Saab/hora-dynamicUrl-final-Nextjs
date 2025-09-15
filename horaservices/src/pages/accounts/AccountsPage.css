@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 .account-ctn{
     padding: 20px;
     /* height: 100vh; */
@@ -11,7 +12,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-block: 10px;
+    padding-block: 20px;
 }
 .contact-ctn p {
     margin: 0;
@@ -32,8 +33,133 @@
     font-family: "Inter", sans-serif;
     font-weight: 700;
     margin-top: 15px;
+    cursor: pointer;
 }
 .user-img{
     border-radius: 50%;
     border: 0.7px solid black;
+    cursor: pointer;
+}
+
+/* Modal Styles */
+.modal-overlay-edit-form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content-edit-form {
+  background: white;
+  padding-inline: 22px;
+  padding-block: 30px;
+  /* padding-inline: 14px; */
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-edit-form {
+  position: absolute;
+  right: 12px;
+  top: 0px;
+  background: none;
+  font-size: 25px;
+  border: none;
+  cursor: pointer;
+  /* color: #999; */
+}
+
+.edit-modal-heading {
+  font-size: 22px;
+  font-weight: 400;
+  color: #97538C;
+  margin: 10px;
+  font-family: "Aclonica", sans-serif;
+}
+
+.modal-content-edit-form input {
+  width: 100%;
+  margin: 12px 0;
+  padding: 14px;
+  border-radius: 7px;
+  border: 1px solid rgba(151, 83, 140, 0.5);
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  color: #863d82;
+}
+
+.modal-content-edit-form input::placeholder {
+  color: #b88fb8;
+}
+.edit-form-btn-ctn{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.submit-edit-btn {
+  width: 50%;
+  padding: 12px;
+  background: #9b4f96;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 32px;
+}
+
+.submit-btn:hover {
+  background: #863d82;
+}
+
+.cancel-edit-btn {
+  width: 50%;
+  padding: 12px;
+  background: #FF9CAD;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 32px;
+}
+
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid rgba(151, 83, 140, 1);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.user-img-ctn input[type="file"] {
+  display: none;
+}
+.user-img-ctn label {
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
 }

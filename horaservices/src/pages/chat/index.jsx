@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
-import emojiIcon from "../../assets/emojiIcon.png";
+import emojiIcon from "../../assets/Emoji.png";
 import Image from "next/image";
 import Linkify from "react-linkify";
 import { FaArrowLeft } from "react-icons/fa";
@@ -21,7 +21,7 @@ import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/sendicon.png";
 
-import { BASE_URL, GET_GUEST_DETTAILS } from "@/utils/apiconstants";
+import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
 
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -30,6 +30,7 @@ const getUserIdFromUrl = () => {
 
 const GroupsList = () => {
   const [groups, setGroups] = useState([]);
+  console.log('%c [ groups ]-33', 'font-size:13px; background:pink; color:#bf2c9f;', groups)
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
   // const [newMessage, setNewMessage] = useState("");
@@ -41,6 +42,20 @@ const GroupsList = () => {
   const chatBodyRef = useRef(null);
   const userId = getUserIdFromUrl();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+const [totalUnread, setTotalUnread] = useState(0);
+console.log('%c [ totalUnread ]-45', 'font-size:13px; background:pink; color:#bf2c9f;', totalUnread)
+
+
+  
+  useEffect(() => {
+    const handleResize = () => {
+      // ✅ jab bhi viewport change hoga, input ko visible rakho
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const [text, setText] = useState("");
 
@@ -51,6 +66,39 @@ const GroupsList = () => {
   const [orderDetails, setOrderDetails] = useState(null);
 
   const [guestDetails, setGuestDetails] = useState(null);
+
+    const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const fetchUserAccountDetails = async () => {
+      if (!userId) {
+        console.log('User id not available')
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`, {
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (data.error) {
+          setUserData({});
+          console.log(data.message || "Failed to fetch guests");
+        } else {
+          setUserData(data.data || {});
+        }
+      } catch (err) {
+        console.log("Error fetching guests: " + err.message);
+      }
+    };
+    // Initial call
+    fetchUserAccountDetails();
+  }, [userId]);
+
+
   const fetchOrderDetails = async (eventId) => {
     try {
       const res = await fetch(
@@ -366,21 +414,21 @@ const getAvatarColor = (name) => {
       );
 
       // Prefer orderDetails.Name, then guestDetails.name, then fallback to member name or "Guest"
-      let senderName = "Guest";
-      if (orderDetails && orderDetails.Name) {
-        senderName = orderDetails.Name;
-      } else if (guestDetails && guestDetails.name) {
-        senderName = guestDetails.name;
-      } else {
-        const currentUser = selectedGroup.members.find((m) => m.id === userId);
-        if (currentUser?.name) senderName = currentUser.name;
-      }
+      let senderName = userData?.name || 'Guest';
+      // if (orderDetails && orderDetails.Name) {
+      //   senderName = orderDetails.Name;
+      // } else if (guestDetails && guestDetails.name) {
+      //   senderName = guestDetails.name;
+      // } else {
+      //   const currentUser = selectedGroup.members.find((m) => m.id === userId);
+      //   if (currentUser?.name) senderName = currentUser.name;
+      // }
 
       const newMsg = {
         text: text,
         senderId: userId,
         senderPhoneNumber: localStorage.getItem("mobileNumber"),
-        senderName: senderName, // ✅ real name, not "You"
+        senderName: senderName,
         sentAt: serverTimestamp(),
       };
 
@@ -397,14 +445,21 @@ const getAvatarColor = (name) => {
   };
 const userPhoneNumber = localStorage.getItem("mobileNumber");
   const getUnreadCount = (group) => {
+    console.log('%c [ group ]-444', 'font-size:13px; background:pink; color:#bf2c9f;', group)
     const member = group.members.find((m) => m.id === userId);
     if (!member?.lastSeen) return group.messages?.length || 0;
 
     const lastSeen = member.lastSeen?.toDate?.() || new Date(0);
-
-    return (group.messages || []).filter(
+    let totalCount = (group.messages || []).filter(
       (msg) => msg.sentAt?.toDate?.() > lastSeen
     ).length;
+    console.warn('%c [ totalCount ]-453', 'font-size:13px; background:pink; color:#bf2c9f;', totalCount)
+
+    return totalCount;
+
+    // return (group.messages || []).filter(
+    //   (msg) => msg.sentAt?.toDate?.() > lastSeen
+    // ).length;
   };
 
   const customDecorator = (href, text, key) => (
@@ -418,6 +473,20 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
       {text}
     </a>
   );
+
+  useEffect(() => {
+  if (groups && groups.length > 0) {
+    // har group ka unread count calculate karke sum le
+    const total = groups.reduce((acc, group) => {
+      const unread = getUnreadCount(group);
+      return acc + unread;
+    }, 0);
+
+    localStorage.setItem("totalUnread", total.toString());
+    window.dispatchEvent(new Event("unreadCountChange"));
+    setTotalUnread(total);
+  }
+}, [groups]);
 
   return (
     <div className="groups-container">
@@ -442,6 +511,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
           )
           .map((group) => {
             const unread = getUnreadCount(group);
+            console.log('%c [ unread ]-495', 'font-size:13px; background:pink; color:#bf2c9f;', unread)
             return (
               <div
                 key={group.id}
@@ -509,7 +579,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
               >
                 <FaArrowLeft fontSize={16} />
               </button>
-              <span className="mx-2">{`${selectedGroup.name}'s`}</span>{" "}
+              <span className="mx-2">{`${selectedGroup.name}`}</span>{" "}
               {/* <span>{orderDetails?.eventType} </span> */}
             </div>
           </div>
@@ -518,11 +588,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
  {messages.map((msg) => {
                 const isMe = msg.senderPhoneNumber === userPhoneNumber;
                 const senderName =
-                  msg.senderName ||
-                  (isSender &&
-                    (userType === "host"
-                      ? orderDetails?.Name
-                      : guestDetails?.name));
+                  msg.senderName
               return (
                 <div
                   key={msg.id}
@@ -603,8 +669,15 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
             <button
               type="button"
               onClick={() => {
-                setShowEmojiPicker((prev) => !prev);
-                // don't blur/focus here; let user type & select emojis freely
+                if (showEmojiPicker) {
+                  setShowEmojiPicker(false);
+                  setTimeout(() => {
+                    textareaRef.current?.focus();
+                  }, 0);
+                } else {
+                  setShowEmojiPicker(true);
+                  textareaRef.current?.blur();
+                }
               }}
               className="emoji-btn"
             >
@@ -632,9 +705,25 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
               className="chat-input"
               rows={1}
               onFocus={() => {
-                // don't hide emoji picker when focusing textarea
+                if (showEmojiPicker) {
+                  setShowEmojiPicker(false);
+                }
+                // ✅ focus karte hi input ko viewport me le aa
+                setTimeout(() => {
+                  textareaRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "end",
+                  });
+
+                  window.scrollBy(0, -180);
+                }, 300);
               }}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                if (e.target.value.length > 0) {
+                  setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                }
+              }}
               onInput={(e) => {
                 e.target.style.height = "auto"; // reset height first
                 e.target.style.height =
