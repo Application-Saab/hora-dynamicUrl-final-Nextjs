@@ -21,6 +21,7 @@ import {
   UPLOAD_IMAGES_SELF,
   UPLOAD_THANKYOU_NOTE,
   GET_ALL_TEMPLATES,
+  GET_USER_BY_ID,
 } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import html2canvas from "html2canvas";
@@ -54,7 +55,6 @@ import { FaRegKeyboard } from "react-icons/fa6";
 import SuccessIconImage from "@/assets/success_image_upload.png";
 import {
   collection,
-  deleteDoc,
   doc,
   getDoc,
   setDoc,
@@ -155,6 +155,8 @@ const InvitationCard = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showNotifyPermissionMsg, setNotifyPermissionMsg] = useState(false);
+  const [userData, setUserData] = useState({});
+  console.log('%c [ userData ]-159', 'font-size:13px; background:pink; color:#bf2c9f;', userData)
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -301,9 +303,9 @@ const InvitationCard = () => {
               "true"
             );
           }
-          if (urlParams.userType === "guest" && data.data && data.data.name) {
-            localStorage.setItem("wonderLandUserName", data.data?.name || "");
-          }
+          // if (urlParams.userType === "guest" && data.data && data.data.name) {
+          //   localStorage.setItem("wonderLandUserName", data.data?.name || "");
+          // }
         }
       } catch (err) {
         setErrorGetGuest("Error fetching guest: " + err.message);
@@ -320,6 +322,45 @@ const InvitationCard = () => {
     refetchLuckyDrawGuestDelete,
     hasSubmitted,
   ]);
+
+
+    useEffect(() => {
+      const fetchUserAccountDetails = async () => {
+        if (!userID) {
+          console.log('User id not available')
+          return;
+        }
+  
+        try {
+          const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
+            headers: {
+              Authorization: `${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          const data = await response.json();
+          if (data.error) {
+            setUserData({});
+            console.log(data.message || "Failed to fetch guests");
+          } else {
+            setUserData(data.data || {});
+            if (data.data && data.data.name) {
+              localStorage.setItem("wonderLandUserName", data.data?.name || "");
+            }
+          }
+        } catch (err) {
+          console.log("Error fetching guests: " + err.message);
+        }
+      };
+      // Initial call
+      fetchUserAccountDetails();
+    }, [
+      userID,
+      urlParams.eventId,
+      hasSubmitted,
+      refetchAddGuest
+    ]);
+
 
   useEffect(() => {
     const addGuest = async () => {
@@ -889,6 +930,7 @@ const InvitationCard = () => {
     if (title === "Upload Pictures") {
       document.getElementById("imageUploadInput").click();
     } else if (title === "Thank You Note") {
+      setNoteBy(userType === "host" ? orderDetails?.Name : guestDetails?.name)
       setShowPopup(true);
     } else if (title === "Lucky Draw") {
       setShowLuckyDrawPopup(true);
@@ -1308,8 +1350,9 @@ const InvitationCard = () => {
     await addDoc(collection(db, "groups", eventId, "messages"), {
       text,
       senderId: userID,
-      senderName:
-        urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
+      // senderName:
+      //   urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
+      senderName: localSenderName ? localSenderName : userData?.name,
       senderPhoneNumber: localStorage.getItem("mobileNumber"),
       sentAt: new Date(),
       sentAt: serverTimestamp(),
@@ -2090,11 +2133,7 @@ const InvitationCard = () => {
               {messages.map((msg) => {
                 const isSender = msg.senderPhoneNumber === userPhoneNumber;
                 const senderName =
-                  msg.senderName ||
-                  (isSender &&
-                    (userType === "host"
-                      ? orderDetails?.Name
-                      : guestDetails?.name));
+                  msg.senderName
 
                 return (
                   <div
@@ -2151,8 +2190,15 @@ const InvitationCard = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowEmojiPicker((prev) => !prev);
-                  // don't blur/focus here; let user type & select emojis freely
+                  if (showEmojiPicker) {
+                      setShowEmojiPicker(false);
+                      setTimeout(() => {
+                        textareaRef.current?.focus();
+                      }, 0);
+                    } else {
+                      setShowEmojiPicker(true);
+                      textareaRef.current?.blur();
+                    }
                 }}
                 className="emoji-btn"
               >
@@ -2199,9 +2245,26 @@ const InvitationCard = () => {
                 className="chat-input"
                 rows={1}
                 onFocus={() => {
-                  // don't hide emoji picker when focusing textarea
+                 if (showEmojiPicker) {
+                      setShowEmojiPicker(false);
+                    }
+                     // ✅ focus karte hi input ko viewport me le aa
+                    setTimeout(() => {
+                      textareaRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "end",
+                      });
+
+                      // ✅ Extra offset ke liye manual scroll adjust
+                      window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
+                    }, 300);
                 }}
-                onChange={(e) => setText(e.target.value)}
+                onChange={(e) => {
+                  setText(e.target.value);
+                  if (e.target.value.length > 0) {
+                      setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                    }
+                }}
                 onInput={(e) => {
                   e.target.style.height = "auto"; // reset height first
                   e.target.style.height =

@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
-import emojiIcon from "../../assets/emojiIcon.png";
+import emojiIcon from "../../assets/Emoji.png";
 import Image from "next/image";
 import Linkify from "react-linkify";
 import { FaArrowLeft } from "react-icons/fa";
@@ -21,7 +21,7 @@ import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/sendicon.png";
 
-import { BASE_URL, GET_GUEST_DETTAILS } from "@/utils/apiconstants";
+import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
 
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -40,17 +40,55 @@ const GroupsList = () => {
   const fileInputRef = useRef(null);
   const chatBodyRef = useRef(null);
   const userId = getUserIdFromUrl();
+  const localMobile = localStorage.getItem("mobileNumber");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+  useEffect(() => {
+    const handleResize = () => {
+      // ✅ jab bhi viewport change hoga, input ko visible rakho
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [text, setText] = useState("");
-
   const textareaRef = useRef(null);
-
   const token = localStorage.getItem("token");
-
   const [orderDetails, setOrderDetails] = useState(null);
-
   const [guestDetails, setGuestDetails] = useState(null);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const fetchUserAccountDetails = async () => {
+      if (!userId) {
+        console.log('User id not available')
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`, {
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (data.error) {
+          setUserData({});
+          console.log(data.message || "Failed to fetch guests");
+        } else {
+          setUserData(data.data || {});
+        }
+      } catch (err) {
+        console.log("Error fetching guests: " + err.message);
+      }
+    };
+    // Initial call
+    fetchUserAccountDetails();
+  }, [userId]);
+
   const fetchOrderDetails = async (eventId) => {
     try {
       const res = await fetch(
@@ -347,20 +385,20 @@ const GroupsList = () => {
       );
 
       // Prefer orderDetails.Name, then guestDetails.name, then fallback to member name or "Guest"
-      let senderName = "Guest";
-      if (orderDetails && orderDetails.Name) {
-        senderName = orderDetails.Name;
-      } else if (guestDetails && guestDetails.name) {
-        senderName = guestDetails.name;
-      } else {
-        const currentUser = selectedGroup.members.find((m) => m.id === userId);
-        if (currentUser?.name) senderName = currentUser.name;
-      }
+      let senderName = userData?.name || 'Guest';
+      // if (orderDetails && orderDetails.Name) {
+      //   senderName = orderDetails.Name;
+      // } else if (guestDetails && guestDetails.name) {
+      //   senderName = guestDetails.name;
+      // } else {
+      //   const currentUser = selectedGroup.members.find((m) => m.id === userId);
+      //   if (currentUser?.name) senderName = currentUser.name;
+      // }
 
       const newMsg = {
         text: text,
         senderId: userId,
-        senderName: senderName, // ✅ real name, not "You"
+        senderName: senderName,
         sentAt: serverTimestamp(),
       };
 
@@ -489,14 +527,14 @@ const GroupsList = () => {
               >
                 <FaArrowLeft fontSize={16} />
               </button>
-              <span className="mx-2">{`${selectedGroup.name}'s`}</span>{" "}
+              <span className="mx-2">{`${selectedGroup.name}`}</span>{" "}
               {/* <span>{orderDetails?.eventType} </span> */}
             </div>
           </div>
 
           <div className="chat-messages" ref={chatBodyRef}>
             {messages.map((msg) => {
-              const isMe = msg.senderId === userId;
+              const isMe = msg.senderPhoneNumber === localMobile;
               const senderName =
                 msg.senderName?.length > 15
                   ? msg.senderName.slice(0, 15) + "..."
@@ -556,8 +594,15 @@ const GroupsList = () => {
             <button
               type="button"
               onClick={() => {
-                setShowEmojiPicker((prev) => !prev);
-                // don't blur/focus here; let user type & select emojis freely
+                if (showEmojiPicker) {
+                  setShowEmojiPicker(false);
+                  setTimeout(() => {
+                    textareaRef.current?.focus();
+                  }, 0);
+                } else {
+                  setShowEmojiPicker(true);
+                  textareaRef.current?.blur();
+                }
               }}
               className="emoji-btn"
             >
@@ -585,9 +630,25 @@ const GroupsList = () => {
               className="chat-input"
               rows={1}
               onFocus={() => {
-                // don't hide emoji picker when focusing textarea
+                if (showEmojiPicker) {
+                  setShowEmojiPicker(false);
+                }
+                // ✅ focus karte hi input ko viewport me le aa
+                setTimeout(() => {
+                  textareaRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "end",
+                  });
+
+                  window.scrollBy(0, -180);
+                }, 300);
               }}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                if (e.target.value.length > 0) {
+                  setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                }
+              }}
               onInput={(e) => {
                 e.target.style.height = "auto"; // reset height first
                 e.target.style.height =

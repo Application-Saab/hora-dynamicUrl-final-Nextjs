@@ -160,6 +160,7 @@
   color: white;
   font-weight: 600;
   font-size: 16px;
+  /* position: fixed; */
   box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
 }
 
@@ -299,17 +300,16 @@
 }
 
 .emoji-btn {
-  color: #ff6b35;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
+  /* width: 32px; */
+  /* height: 32px; */
+  /* border-radius: 50%; */
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 22px;
   transition: all 0.3s ease;
 }
 
@@ -353,8 +353,8 @@
 }
 
 .emoji-icon {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 
@@ -445,16 +445,16 @@
     height: 32px;
   }
 
-  .emoji-btn {
+  /* .emoji-btn {
     width: 28px;
     height: 28px;
-  }
+  } */
 
-  .emoji-icon {
+  /* .emoji-icon {
     width: 32px;
     height: 32px;
     object-fit: contain;
-  }
+  } */
 }
 
 @media (min-width: 369px) and (max-width: 468px) {
@@ -535,11 +535,11 @@
     width: 34px;
     height: 34px;
   }
-
+/* 
   .emoji-btn {
     width: 28px;
     height: 28px;
-  }
+  } */
 }
 
 @media (min-width: 469px) and (max-width: 600px) {
@@ -620,17 +620,17 @@
     width: 36px;
     height: 36px;
   }
-
+/* 
   .emoji-btn {
     width: 32px;
     height: 32px;
-  }
+  } */
 
-  .emoji-icon {
+  /* .emoji-icon {
     width: 20px;
     height: 20px;
     object-fit: contain;
-  }
+  } */
 }
 
 @media (min-width: 601px) and (max-width: 768px) {
@@ -725,11 +725,11 @@
     height: 40px;
   }
 
-  .emoji-btn {
+  /* .emoji-btn {
     width: 36px;
     height: 36px;
     font-size: 20px;
-  }
+  } */
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -828,11 +828,11 @@
     height: 44px;
   }
 
-  .emoji-btn {
+  /* .emoji-btn {
     width: 40px;
     height: 40px;
     font-size: 22px;
-  }
+  } */
 }
 
 @media (min-width: 1025px) {
@@ -932,9 +932,9 @@
     height: 48px;
   }
 
-  .emoji-btn {
+  /* .emoji-btn {
     width: 44px;
     height: 44px;
     font-size: 24px;
-  }
+  } */
 }
