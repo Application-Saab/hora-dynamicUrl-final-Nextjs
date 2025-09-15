@@ -515,12 +515,6 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
           </div>
 
           <div className="chat-messages" ref={chatBodyRef}>
-            {/* {messages.map((msg) => {
-              const isMe = msg.senderId === userId;
-              const senderName =
-                msg.senderName?.length > 15
-                  ? msg.senderName.slice(0, 15) + "..."
-                  : msg.senderName; */}
  {messages.map((msg) => {
                 const isMe = msg.senderPhoneNumber === userPhoneNumber;
                 const senderName =
@@ -534,16 +528,6 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
                   key={msg.id}
                   className={`chat-message ${isMe ? "sender" : "receiver"}`}
                 >
-                  {/* className={`chat-row ${isMe ? "me" : "other"}`} */}
-                  {/* Receiver avatar (left side) */}
-                  {/* {!isMe && (
-                    <div className="chat-avatar">
-                      {senderName
-                        ? senderName.charAt(0).toUpperCase()
-                        : msg.senderPhoneNumber.charAt(3)}
-                    </div>
-                  )} */}
-
  {!isMe && (
   <div
     className="chat-avatar-receiver"

@@ -11,7 +11,7 @@
     width: 100%;
     max-width: 380px;
     text-align: center;
-    height: 400px;
+    height: auto;
     box-shadow: 0 6px 20px #cebac436;
     /* border: 2px solid #cebac436; */
     margin: auto;

@@ -41,3 +41,26 @@
 .nav-item.active .nav-icon {
   filter: brightness(0) saturate(100%) invert(25%) sepia(33%) saturate(733%) hue-rotate(266deg) brightness(94%) contrast(88%);
 }
+.iframe-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4); /* halka dark overlay */
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

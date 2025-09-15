@@ -179,12 +179,15 @@ const GuestRSVPForm = ({
 
     setShowForm(false);
   };
-
+  const [timer, setTimer] = useState(0);
   useEffect(() => {
     if (!showVideo || !videoRef.current) return;
 
     const video = videoRef.current;
-
+const handleTimeUpdate = () => {
+    // Countdown: total duration minus currentTime
+    setTimer(Math.ceil(video.duration - video.currentTime));
+  };
     const handleEnded = async () => {
       setShowVideo(false);
       setSubmitting(true);
@@ -192,11 +195,14 @@ const GuestRSVPForm = ({
       setSubmitting(false);
     };
 
+   video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
+
     video.currentTime = 0;
     video.play();
 
     return () => {
+      video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("ended", handleEnded);
     };
   }, [showVideo]);
@@ -317,6 +323,25 @@ const GuestRSVPForm = ({
             autoPlay
             playsInline
           />
+            <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          background: "rgba(0,0,0,0.6)",
+          color: "#fff",
+          borderRadius: "50%",
+          width: "30px",
+          height: "30px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: "bold",
+          fontSize: "16px",
+        }}
+      >
+        {timer}
+      </div>
         </div>
       )}
     </>
