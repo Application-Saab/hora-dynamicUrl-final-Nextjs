@@ -20,7 +20,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/sendicon.png";
-
+import PinBanner from "../../assets/pinBanner.jpg";
 import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
 
 const getUserIdFromUrl = () => {
@@ -45,6 +45,21 @@ const GroupsList = () => {
 const [totalUnread, setTotalUnread] = useState(0);
 console.log('%c [ totalUnread ]-45', 'font-size:13px; background:pink; color:#bf2c9f;', totalUnread)
 
+useEffect(() => {
+  const handleBackButton = (e) => {
+    if (selectedGroup) {
+      e.preventDefault();
+      setSelectedGroup(null); // 👈 back press par list khol do
+      window.history.pushState(null, "", window.location.href); 
+    }
+  };
+
+  window.addEventListener("popstate", handleBackButton);
+
+  return () => {
+    window.removeEventListener("popstate", handleBackButton);
+  };
+}, [selectedGroup]);
 
   
   useEffect(() => {
@@ -487,6 +502,19 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
     setTotalUnread(total);
   }
 }, [groups]);
+function linkify(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlRegex).map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
 
   return (
     <div className="groups-container">
@@ -503,6 +531,14 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
           />
         </div>
       </div>
+<div className="chat-banner">
+  <Image
+    src={PinBanner}
+    alt="Banner"
+    className="chat-banner-img"
+  />
+  <button className="chat-banner-btn">Add To Phone Screen</button>
+</div>
 
       <div className="groups-list">
         {groups
@@ -583,6 +619,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
               {/* <span>{orderDetails?.eventType} </span> */}
             </div>
           </div>
+ 
 
           <div className="chat-messages" ref={chatBodyRef}>
  {messages.map((msg) => {
@@ -639,7 +676,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
         </div>
       )}
 
-      <div className="chat-text">{msg.text}</div>
+      <div className="chat-text">{linkify(msg.text)}</div>
 
       <div className="chat-time">
         {msg.sentAt?.toDate

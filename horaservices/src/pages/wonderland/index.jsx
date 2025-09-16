@@ -591,6 +591,36 @@ const InvitationCard = () => {
 
     reader.readAsDataURL(file); // ✅ Converts file to base64 string
   };
+  useEffect(() => {
+  if (orderDetails && eventId && userID && hasSubmitted) {
+    const userRef = doc(db, "groups", eventId, "members", userID);
+
+    setDoc(
+      userRef,
+      {
+        userId: userID,
+        name: guestDetails?.name || orderDetails?.Name || "Guest",
+        phoneNumber: userPhoneNumber,
+        lastSeenAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
+}, [orderDetails, eventId, userID, hasSubmitted]);
+function linkify(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlRegex).map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 
   const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
     return new Promise((resolve, reject) => {
@@ -2197,8 +2227,9 @@ const getAvatarColor = (name) => {
             : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
         </div>
       )}
-
-      <div className="chat-text">{msg.text}</div>
+{/* 
+      <div className="chat-text">{msg.text}</div> */}
+<div className="chat-text">{linkify(msg.text)}</div>
 
       <div className="chat-time">
         {msg.sentAt?.toDate

@@ -1294,7 +1294,7 @@ background-color: none !important;
 
 
 .chat-bubble {
- padding: 6px 10px;
+ padding: 11px 10px;
   background: #97538C;
   border-radius: 10px 10px 0px 10px;
   position: relative;
@@ -1312,14 +1312,21 @@ background-color: none !important;
   max-width: 212px;       
   white-space: pre-wrap;  
   word-break: break-word; 
-  margin-right: 28px;     
+  margin-right: 28px; 
+   user-select: text; /* allow text selection */
+  -webkit-user-select: text; /* Safari */
+  -moz-user-select: text; /* Firefox */
+  -ms-user-select: text; /* IE */
+  
+  touch-action: auto; /* important for mobile long press */
+  -webkit-user-drag: auto;    
 }
 
 .chat-time {
   font-size: 8px;
   color: #f1f1f1;
   position: absolute;
-  bottom: 1px;
+  bottom:0px;
   right: 6px;
 }
 
@@ -1361,7 +1368,7 @@ background-color: none !important;
 /* Receiver time */
 .chat-message.receiver .chat-time {
   position: absolute;
-  bottom: 1px;
+  bottom: 0px;
   right: 8px;
   font-size: 8px;
   color: black;
