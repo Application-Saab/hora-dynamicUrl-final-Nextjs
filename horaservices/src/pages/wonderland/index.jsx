@@ -13,6 +13,7 @@ import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import { FaArrowLeft } from "react-icons/fa";
 import phoneImage from "@/assets/phoneImage.jpeg"
+import shareinvitaion from "@/assets/shareinvitation.png"
 import "../photo-gallery/gallery.css";
 import {
   BASE_URL,
@@ -1666,12 +1667,12 @@ const getAvatarColor = (name) => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                         <div className="invite-buttons">
-                          {/* <button className="btn-explore" onClick={handleClick}>
+                          <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg-explore">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button> */}
+                          </button>
 
                           <button
                             className="button-share"
