@@ -77,143 +77,131 @@ const [charCount, setCharCount] = useState(0);
         alt="Sticky Note Sample"
         className="thankyou-image"
       />
-      <div className="form-group">
-        <label className="label">Type Note</label>
-        <div className="textarea-with-emoji">
-          <textarea
-            ref={noteTextAreaRef}
-            rows={5}
-            placeholder="Write Your thank You Message..."
-            value={noteTitle}
-            className="textareanote"
-            required
-            onFocus={() => {
-              // ✅ Textarea focus hote hi emoji picker band ho jaye
-              if (showEmojiPicker) {
-                setShowEmojiPicker(false);
-              }
-            }}
-            
-onChange={(e) => {
-  let input = e.target.value;
+    <div className="form-group">
+  <label className="label">Type Note</label>
+  <div className="textarea-with-emoji">
+    <textarea
+      ref={noteTextAreaRef}
+      rows={4}
+      placeholder="Write Your Thank You Message..."
+      value={noteTitle}
+      className="textareanote"
+      onFocus={() => {
+        if (showEmojiPicker) setShowEmojiPicker(false);
+      }}
+      onChange={(e) => {
+        let input = e.target.value;
 
-  // Split by user-entered lines
-  const lines = input.split("\n");
-  let adjustedLines = [];
+        // Split by user-entered lines
+        const lines = input.split("\n");
+        let adjustedLines = [];
 
-  for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
-    let line = lines[i];
+        for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+          let line = lines[i];
 
-    if (!line) {
-      // Preserve blank line
-      adjustedLines.push("");
-      continue;
-    }
+          if (!line) {
+            adjustedLines.push("");
+            continue;
+          }
 
-    let words = line.split(" ");
-    let currentLine = "";
+          let words = line.split(" ");
+          let currentLine = "";
 
-    for (let j = 0; j < words.length; j++) {
-      if (adjustedLines.length >= 8) break;
+          for (let j = 0; j < words.length; j++) {
+            if (adjustedLines.length >= 8) break;
+            let word = words[j];
 
-      let word = words[j];
+            if ((currentLine + (currentLine ? " " : "") + word).length > 26) {
+              if (currentLine) adjustedLines.push(currentLine);
+              currentLine = word;
+            } else {
+              currentLine += (currentLine ? " " : "") + word;
+            }
+          }
 
-      // Check if current line + word exceeds 26 chars
-      if ((currentLine + (currentLine ? " " : "") + word).length > 26) {
-        if (currentLine) adjustedLines.push(currentLine);
-        currentLine = word; // start new line with this word
-      } else {
-        currentLine += (currentLine ? " " : "") + word;
-      }
-    }
+          if (currentLine && adjustedLines.length < 8) {
+            adjustedLines.push(currentLine);
+          }
+        }
 
-    // Push remaining part of the line
-    if (currentLine && adjustedLines.length < 8) {
-      adjustedLines.push(currentLine);
-    }
-  }
+        const finalText = adjustedLines.join("\n");
+        const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
 
-  const finalText = adjustedLines.join("\n");
-  const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+        setNoteTitle(finalText);
+        setCharCount(totalChars);
 
-  setNoteTitle(finalText);
-  setCharCount(totalChars);
+        if (finalText.trim() === "") {
+          setErrorMsg("Please write a thank you message.");
+        } else {
+          setErrorMsg("");
+        }
 
-  if (finalText.trim() === "") {
-    setErrorMsg("Please write a thank you message.");
-  } else {
-    setErrorMsg("");
-  }
-}}
+        if (showEmojiPicker) setShowEmojiPicker(false); // typing hides emoji picker
+      }}
+      onInput={(e) => {
+        e.target.style.height = "auto";
+        e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+      }}
+    />
 
+    {/* Emoji toggle button */}
+    <button
+      type="button"
+      onClick={() => {
+        setShowEmojiPicker((prev) => !prev);
+        if (showEmojiPicker) {
+          noteTextAreaRef.current?.focus();
+        } else {
+          noteTextAreaRef.current?.blur();
+        }
+      }}
+      className="btn emoji-button"
+    >
+      <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+    </button>
+  </div>
 
-          />
-
-          <button
-            type="button"
-            onClick={() => {
-              setShowEmojiPicker(!showEmojiPicker);
-            }}
-            className="btn emoji-button"
-          >
-            <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-          </button>
-        </div>
-
-        {/* <p
-          className="word-limit"
-          style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
-        >
-          {charsWithoutSpaces >= 125
-            ? "You have reached the 125 character limit!"
-            : `${charsWithoutSpaces} / 125 characters`}
-        </p> */}
   <p
-  className="word-limit"
-  style={{ color: charCount >= 184 ? "red" : "#4A4A4A" }} // 8 lines × 23 chars = 184
->
-  {charCount >= 184
-    ? "You have reached the 8 line / 23 character per line limit!"
-    : `${charCount} / 184 characters (excluding spaces)`}
-</p>
+    className="word-limit"
+    style={{ color: charCount >= 184 ? "red" : "#4A4A4A" }}
+  >
+    {charCount >= 184
+      ? "You have reached the 8 line / 26 character per line limit!"
+      : `${charCount} / 184 characters`}
+  </p>
 
+  {/* Emoji Picker */}
+  {showEmojiPicker && (
+    <div className="emoji-container-thankyou" style={{ position: "static", zIndex: 10, marginTop: "10px" }}>
+      <EmojiPicker
+        width={emojiWidth}
+        searchDisabled={true}
+        onEmojiClick={(emojiData) => {
+          const textarea = noteTextAreaRef.current;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
 
-      </div>
-      {showEmojiPicker && (
-        <div
-          className="emoji-container-thankyou"
-          style={{
-            position: "static",
-            zIndex: 10,
-            marginTop: "10px",
-          }}
-        >
-           <EmojiPicker
-                          width={emojiWidth}
-                          searchDisabled={true}
-                          onEmojiClick={(emojiData) => {
-                            const textarea = textareaRef.current;
-                            const start = textarea.selectionStart;
-                            const end = textarea.selectionEnd;
-          
-                            setText((prevText) => {
-                              const newText =
-                                prevText.substring(0, start) +
-                                emojiData.emoji +
-                                prevText.substring(end);
-          
-                              // Update cursor position without focusing (prevents keyboard)
-                              requestAnimationFrame(() => {
-                                textarea.selectionStart = textarea.selectionEnd =
-                                  start + emojiData.emoji.length;
-                              });
-          
-                              return newText;
-                            });
-                          }}
-                        />
-        </div>
-      )}
+          setNoteTitle((prevText) => {
+            const newText =
+              prevText.substring(0, start) +
+              emojiData.emoji +
+              prevText.substring(end);
+
+            // Update cursor position
+            requestAnimationFrame(() => {
+              textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
+            });
+
+            return newText;
+          });
+
+          setShowEmojiPicker(false); // hide picker after emoji click
+        }}
+      />
+    </div>
+  )}
+</div>
+
 
       <div className="form-group">
         <label className="label">Type Your Name </label>
