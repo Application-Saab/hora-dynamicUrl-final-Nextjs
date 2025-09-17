@@ -128,12 +128,14 @@ import ArrowIcon from "@/assets/forward_arrow.svg";
 import CallIcon from "@/assets/call_icon.svg";
 import LogoutIcon from "@/assets/logout_icon.svg";
 import myordericon from "@/assets/Myordersicon.png";
+import OtpLogin from "@/components/OtpLoginPopup";
 
 const AccountPage = () => {
   const [userData, setUserData] = useState({});
   const [errorFetchUser, setErrorFetchUser] = useState(false);
   const [loadingUser, setLoadingUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [showOtpLogin, setShowOtpLogin] = useState(false);
 
   const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -153,9 +155,10 @@ const AccountPage = () => {
      window.location.href = "/wonderland";
   };
 
-  const handleLogin = () => {
-    window.location.href = "/login"; 
-  };
+ const handleLogin = () => {
+  setShowOtpLogin(true);   // ✅ redirect ke jagah OTP popup khulega
+};
+
 
   useEffect(() => {
     const fetchEventImages = async () => {
@@ -259,6 +262,19 @@ const AccountPage = () => {
             <p>{isLoggedIn ? "Logout" : "Login"}</p>
           </div>
         </div>
+
+        {showOtpLogin && (
+  <OtpLogin
+    setIsModalOpen={() => setShowOtpLogin(false)}
+    onSuccess={(user) => {
+      localStorage.setItem("userID", user.id);
+      localStorage.setItem("token", user.token);
+      setIsLoggedIn(true);
+      setUserData(user);
+      setShowOtpLogin(false);
+    }}
+  />
+)}
       </div>
     </div>
   );

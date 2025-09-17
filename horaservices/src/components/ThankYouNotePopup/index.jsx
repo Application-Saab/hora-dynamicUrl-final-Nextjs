@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
-import StickyImage from "../../assets/sticky5.png"; // adjust path
+import StickyImage from "../../assets/sticky1.png"; // adjust path
 import DummySticky from "@/assets/collage/photo2.jpeg";
 import "./Thankyounotepopup.css";
 import EmojiPicker from "emoji-picker-react";
@@ -25,13 +25,32 @@ const ThankYouNotePopup = ({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const noteTextAreaRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
-
+const [charCount, setCharCount] = useState(0);
+ const [emojiWidth, setEmojiWidth] = useState(400);
+ 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 480);
     handleResize(); // initial run
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+    useEffect(() => {
+      const updateWidth = () => {
+        const screenWidth = window.innerWidth;
+        if (screenWidth > 450) {
+          setEmojiWidth(450);
+        } else if (screenWidth <= 450) {
+          setEmojiWidth(screenWidth - 20);
+        } else {
+          setEmojiWidth(screenWidth - 50);
+        }
+      };
+  
+      updateWidth();
+      window.addEventListener("resize", updateWidth);
+  
+      return () => window.removeEventListener("resize", updateWidth);
+    }, []);
   return (
     <div className="popup-thankyou">
       <Head>
@@ -74,29 +93,60 @@ const ThankYouNotePopup = ({
                 setShowEmojiPicker(false);
               }
             }}
-            onChange={(e) => {
-              const input = e.target.value;
-              const charsCount = input.replace(/\s/g, "").length;
+            
+onChange={(e) => {
+  let input = e.target.value;
 
-              if (charsCount <= 125) {
-                setNoteTitle(input);
-              } else {
-                let count = 0;
-                let truncated = "";
-                for (const ch of input) {
-                  if (ch !== " ") count++;
-                  if (count > 125) break;
-                  truncated += ch;
-                }
-                setNoteTitle(truncated);
-              }
+  // Split by user-entered lines
+  const lines = input.split("\n");
+  let adjustedLines = [];
 
-              if (input?.trim() === "") {
-                setErrorMsg("Please write a thank you message.");
-              } else {
-                setErrorMsg("");
-              }
-            }}
+  for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+    let line = lines[i];
+
+    if (!line) {
+      // Preserve blank line
+      adjustedLines.push("");
+      continue;
+    }
+
+    let words = line.split(" ");
+    let currentLine = "";
+
+    for (let j = 0; j < words.length; j++) {
+      if (adjustedLines.length >= 8) break;
+
+      let word = words[j];
+
+      // Check if current line + word exceeds 26 chars
+      if ((currentLine + (currentLine ? " " : "") + word).length > 26) {
+        if (currentLine) adjustedLines.push(currentLine);
+        currentLine = word; // start new line with this word
+      } else {
+        currentLine += (currentLine ? " " : "") + word;
+      }
+    }
+
+    // Push remaining part of the line
+    if (currentLine && adjustedLines.length < 8) {
+      adjustedLines.push(currentLine);
+    }
+  }
+
+  const finalText = adjustedLines.join("\n");
+  const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+
+  setNoteTitle(finalText);
+  setCharCount(totalChars);
+
+  if (finalText.trim() === "") {
+    setErrorMsg("Please write a thank you message.");
+  } else {
+    setErrorMsg("");
+  }
+}}
+
+
           />
 
           <button
@@ -110,51 +160,58 @@ const ThankYouNotePopup = ({
           </button>
         </div>
 
-        <p
+        {/* <p
           className="word-limit"
           style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
         >
           {charsWithoutSpaces >= 125
             ? "You have reached the 125 character limit!"
             : `${charsWithoutSpaces} / 125 characters`}
-        </p>
+        </p> */}
+  <p
+  className="word-limit"
+  style={{ color: charCount >= 184 ? "red" : "#4A4A4A" }} // 8 lines × 23 chars = 184
+>
+  {charCount >= 184
+    ? "You have reached the 8 line / 23 character per line limit!"
+    : `${charCount} / 184 characters (excluding spaces)`}
+</p>
+
+
       </div>
       {showEmojiPicker && (
         <div
           className="emoji-container-thankyou"
           style={{
-            // position: isMobile ? "static" : "absolute",
             position: "static",
             zIndex: 10,
             marginTop: "10px",
           }}
         >
-          <EmojiPicker
-            searchDisabled={true}
-            height={350}
-            // width={300}
-            onEmojiClick={(emojiData) => {
-              const textarea = noteTextAreaRef.current;
-              const start = textarea.selectionStart;
-              const end = textarea.selectionEnd;
-
-              const newText =
-                noteTitle.substring(0, start) +
-                emojiData.emoji +
-                noteTitle.substring(end);
-
-              const newCharCount = newText.replace(/\s/g, "").length;
-              if (newCharCount <= 125) {
-                setNoteTitle(newText);
-
-                // ✅ Cursor update karo but focus dobara mat do → keyboard auto open nahi hoga
-                requestAnimationFrame(() => {
-                  textarea.selectionStart = textarea.selectionEnd =
-                    start + emojiData.emoji.length;
-                });
-              }
-            }}
-          />
+           <EmojiPicker
+                          width={emojiWidth}
+                          searchDisabled={true}
+                          onEmojiClick={(emojiData) => {
+                            const textarea = textareaRef.current;
+                            const start = textarea.selectionStart;
+                            const end = textarea.selectionEnd;
+          
+                            setText((prevText) => {
+                              const newText =
+                                prevText.substring(0, start) +
+                                emojiData.emoji +
+                                prevText.substring(end);
+          
+                              // Update cursor position without focusing (prevents keyboard)
+                              requestAnimationFrame(() => {
+                                textarea.selectionStart = textarea.selectionEnd =
+                                  start + emojiData.emoji.length;
+                              });
+          
+                              return newText;
+                            });
+                          }}
+                        />
         </div>
       )}
 
@@ -166,7 +223,6 @@ const ThankYouNotePopup = ({
           value={noteBy}
           required
           onFocus={() => {
-            // ✅ Agar emoji picker open hai to band kar do
             if (showEmojiPicker) {
               setShowEmojiPicker(false);
             }
@@ -199,7 +255,7 @@ const ThankYouNotePopup = ({
           backgroundColor: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          padding: "15px",
+          padding: "10px",
           boxSizing: "border-box",
         }}
       >
@@ -224,38 +280,40 @@ const ThankYouNotePopup = ({
             transform: "translate(-50%, -50%)",
             width: "70%",
             zIndex: 1,
-            textAlign: "center",
+            textAlign: "left",
           }}
+          
         >
           <div
             style={{
-              fontWeight: "bold",
-              fontSize: "20px",
+              fontWeight: "500",
+              fontSize: "15px",
               color: "black",
               fontFamily: "'Montserrat', sans-serif",
               wordWrap: "break-word",
               whiteSpace: "pre-wrap",
-              lineHeight: 1.1,
             }}
           >
             {noteTitle}
           </div>
+         
         </div>
 
         <div
-          style={{
-            position: "absolute",
-            bottom: 45,
-            left: 100,
-            fontWeight: "bold",
-            fontSize: "20px",
-            color: "black",
-            fontFamily: "'Montserrat', sans-serif",
-            zIndex: 1,
-          }}
-        >
-          - {noteBy}
-        </div>
+  style={{
+    position: "absolute",
+    bottom: 20,
+    left: 140,
+    fontWeight: "500",
+    fontSize: "15px",
+    color: "black",
+    fontFamily: "'Montserrat', sans-serif",
+    zIndex: 1,
+  }}
+>
+  :- {noteBy.length > 15 ? noteBy.substring(0, 15) + "..." : noteBy}
+</div>
+
       </div>
     </div>
   );
