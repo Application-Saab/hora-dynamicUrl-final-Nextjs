@@ -2447,13 +2447,12 @@ const getAvatarColor = (name) => {
       {showImageUploadInfo && (
         <div className="image-upload-popup-overlay">
           <div className="upload-image-popup">
-            <h3>Upload Complete</h3>
+            <h3>Uploading your memories…</h3>
             <div className="d-flex justify-content-center my-2">
-              <Image src={SuccessIconImage} alt="Success" />
+              <Image src={SuccessIconImage} alt="Success" width={80} height={80}/>
             </div>
             <p>
-              Your images are uploading will be reflect on event wall after some
-              time.
+           Sit back and relax — this may take a few moments.
             </p>
             <div className="d-flex justify-content-center">
               <button

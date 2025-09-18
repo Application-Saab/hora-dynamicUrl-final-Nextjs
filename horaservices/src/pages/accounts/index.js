@@ -163,16 +163,17 @@ const handleOrderClick = () => {
           },
         }
       );
-
-      if (response.ok) {
-        setLoadingUpload(false);
-        const data = await response.json();
-        if (data) {
-          setPreview(null);
-          setRefetchUserData(!refetchUserData);
-        }
-        setPreview(null);
-      } else {
+if (response.ok) {
+  const data = await response.json();
+  if (data?.data?.avatar) {
+    setUserData((prev) => ({
+      ...prev,
+      avatar: data.data.avatar,
+    }));
+  }
+  setPreview(null);
+}
+ else {
         setLoadingUpload(false);
         const error = await response.json();
         alert("Submission failed: " + (error.message || error.error));
@@ -190,26 +191,30 @@ const handleOrderClick = () => {
     <>
       <div className="account-ctn">
         <div className="details-ctn">
+       
           <div className="user-img-ctn">
-            <img
-              src={
-                userData?.avatar
-                  ? userData?.avatar
-                  : "https://avatar.iran.liara.run/public/12"
-              }
-              height={100}
-              width={100}
-              className="user-img"
-              onClick={() => document.getElementById("userAvatarImage").click()}
-            />
-            {loadingUpload && <span className="loader"></span>}
-            <input
-              type="file"
-              id="userAvatarImage"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </div>
+  <img
+    src={
+      preview?.url
+        ? preview.url
+        : userData?.avatar
+        ? userData.avatar
+        : "https://avatar.iran.liara.run/public/12"
+    }
+    height={100}
+    width={100}
+    className="user-img"
+    onClick={() => document.getElementById("userAvatarImage").click()}
+  />
+  {/* {loadingUpload && <span className="loader"></span>} */}
+  <input
+    type="file"
+    id="userAvatarImage"
+    accept="image/*"
+    onChange={handleFileChange}
+  />
+</div>
+
              {isLoggedIn && (
           <div>
             <p
@@ -220,7 +225,7 @@ const handleOrderClick = () => {
               }}
             >
               {userData?.name || "Your Name"}
-              <span className="ms-1"><Image src={ArrowIconColoured} height={18} width={18} /></span>
+              <span className="ms-1"></span>
             </p>
           </div>
              )}
@@ -250,9 +255,9 @@ const handleOrderClick = () => {
                   : `+91${userData?.phone}`}
               </p>
             </div>
-            <div>
+            {/* <div>
               <Image src={ArrowIcon} />
-            </div>
+            </div> */}
           </div>
              )}
            <div
