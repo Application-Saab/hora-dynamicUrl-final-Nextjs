@@ -22,9 +22,33 @@ export default function BottomNav({ id, groups = [] }) {
 
  
   const [loadingGroups, setLoadingGroups] = useState(true);
- const [userId, setUserId] = useState(router.query.id || router.query.userid || "");
+const [userId, setUserId] = useState("");
 
-  // Ensure id is always present in URL
+useEffect(() => {
+  let queryId = router.query.id || router.query.userid;
+
+  // Agar queryId slug hai (jaise uid/eventid/host), to sirf uid nikalo
+  if (queryId && queryId.includes("/")) {
+    queryId = queryId.split("/")[0];
+  }
+
+  if (!queryId && typeof window !== "undefined") {
+    queryId = localStorage.getItem("userID");
+  }
+
+  if (queryId) {
+    setUserId(queryId);
+
+    if (!router.query.id && typeof window !== "undefined") {
+      router.replace({
+        pathname: router.pathname,
+        query: { ...router.query, id: queryId },
+      });
+    }
+  }
+}, [router.query]);
+
+
   useEffect(() => {
     if (!userId && typeof window !== "undefined") {
       const storedId = localStorage.getItem("userID");
@@ -158,7 +182,7 @@ export default function BottomNav({ id, groups = [] }) {
       )}
 
       <div className="bottom-nav">
-        <Link href={`/wonderland?id=${id || ""}`}>
+        <Link href={`/wonderland?id=${userId || ""}`}  onClick={() => setShowServices(false)} >
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("wonderland")
@@ -179,7 +203,7 @@ export default function BottomNav({ id, groups = [] }) {
           </div>
         </Link>
 
-        <Link href={`/chat?id=${id || ""}`}>
+        <Link href={`/chat?id=${userId || ""}`}>
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("chat") ? "active" : ""
@@ -235,7 +259,7 @@ export default function BottomNav({ id, groups = [] }) {
           <span className="nav-text">Services</span>
         </div>
 
-        <Link href={`/accounts?userid=${id}`}>
+        <Link href={`/accounts?userid=${userId}`}>
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("accounts") ? "active" : ""
