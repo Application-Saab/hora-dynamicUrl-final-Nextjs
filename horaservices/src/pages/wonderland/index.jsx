@@ -2257,6 +2257,7 @@ const getAvatarColor = (name) => {
             <div className="chat-input-container">
               <button
                 type="button"
+                onPointerDown={(e) => e.preventDefault()}
                 onClick={() => {
                   if (showEmojiPicker) {
                     setShowEmojiPicker(false);
@@ -2264,8 +2265,12 @@ const getAvatarColor = (name) => {
                       textareaRef.current?.focus();
                     }, 0);
                   } else {
-                      setShowEmojiPicker(true);
-                      textareaRef.current?.blur();
+                      // setShowEmojiPicker(true);
+                      // textareaRef.current?.blur();
+                        textareaRef.current?.blur();
+    setTimeout(() => {
+      setShowEmojiPicker(true);
+    }, 50);
                   }
                 }}
                 className="emoji-btn"
@@ -2377,8 +2382,10 @@ const getAvatarColor = (name) => {
             {showEmojiPicker && (
               <div
                 className="emoji-container"
-                onMouseDown={(e) => e.preventDefault()}
-                onTouchStart={(e) => e.preventDefault()}
+                  onPointerDown={(e) => e.preventDefault()} // keep textarea focused
+
+                // onMouseDown={(e) => e.preventDefault()}
+                // onTouchStart={(e) => e.preventDefault()}
               >
                 {/* <EmojiPicker
   width={emojiWidth}

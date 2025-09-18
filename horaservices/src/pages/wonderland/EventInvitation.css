@@ -1431,7 +1431,8 @@ max-width: 60px;
     padding: 1px 9px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    margin: 5px;
+    margin: 5px 10px;
+      margin-bottom: 10px;
     max-width: 720px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }

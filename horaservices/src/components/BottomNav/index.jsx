@@ -17,51 +17,28 @@ export default function BottomNav({ id, groups = [] }) {
   const router = useRouter();
   const currentPath = router.pathname;
   const [showPopup, setShowPopup] = useState(false);
+  const [userId, setUserId] = useState("");
   const [showServices, setShowServices] = useState(false);
   const [totalUnreadCount, setTotalUnreadCount] = useState(localStorage.getItem("totalUnread") || 0);
-
- 
   const [loadingGroups, setLoadingGroups] = useState(true);
-const [userId, setUserId] = useState("");
-
-useEffect(() => {
-  let queryId = router.query.id || router.query.userid;
-
-  // Agar queryId slug hai (jaise uid/eventid/host), to sirf uid nikalo
-  if (queryId && queryId.includes("/")) {
-    queryId = queryId.split("/")[0];
-  }
-
-  if (!queryId && typeof window !== "undefined") {
-    queryId = localStorage.getItem("userID");
-  }
-
-  if (queryId) {
-    setUserId(queryId);
-
-    if (!router.query.id && typeof window !== "undefined") {
-      router.replace({
-        pathname: router.pathname,
-        query: { ...router.query, id: queryId },
-      });
-    }
-  }
-}, [router.query]);
-
 
   useEffect(() => {
-    if (!userId && typeof window !== "undefined") {
+    const loadUserId = () => {
       const storedId = localStorage.getItem("userID");
-      if (storedId) {
-        setUserId(storedId);
-        router.replace({
-          pathname: router.pathname,
-          query: { ...router.query, id: storedId },
-        });
-      }
-    }
-  }, [userId, router]);
+      setUserId(storedId || "");
+    };
 
+    loadUserId();
+
+    // Listen for OTP login success
+    window.addEventListener("loginSuccess", loadUserId);
+
+    return () => {
+      window.removeEventListener("loginSuccess", loadUserId);
+    };
+  }, []);
+
+  // 🔹 Update u
   useEffect(() => {
     if (!userId) return;
     setLoadingGroups(true);
@@ -71,7 +48,12 @@ useEffect(() => {
       .finally(() => setLoadingGroups(false));
   }, [userId]);
 
-
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedId = localStorage.getItem("userID");
+      if (storedId) setUserId(storedId);
+    }
+  }, []);
 
   useEffect(() => {
     if (showServices) {
