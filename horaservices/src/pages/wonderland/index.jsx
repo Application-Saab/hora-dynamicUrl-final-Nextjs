@@ -12,8 +12,8 @@ import whatshare from "@/assets/whatshare.png";
 import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import { FaArrowLeft } from "react-icons/fa";
-import phoneImage from "@/assets/phoneImage.jpeg"
-import shareinvitaion from "@/assets/shareinvitation.png"
+import phoneImage from "@/assets/phoneImage.jpeg";
+import shareinvitaion from "@/assets/shareinvitation.png";
 import "../photo-gallery/gallery.css";
 import {
   BASE_URL,
@@ -159,7 +159,11 @@ const InvitationCard = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showNotifyPermissionMsg, setNotifyPermissionMsg] = useState(false);
   const [userData, setUserData] = useState({});
-  console.log('%c [ userData ]-159', 'font-size:13px; background:pink; color:#bf2c9f;', userData)
+  console.log(
+    "%c [ userData ]-159",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    userData
+  );
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -326,45 +330,37 @@ const InvitationCard = () => {
     hasSubmitted,
   ]);
 
-  
+  useEffect(() => {
+    const fetchUserAccountDetails = async () => {
+      if (!userID) {
+        console.log("User id not available");
+        return;
+      }
 
-    useEffect(() => {
-      const fetchUserAccountDetails = async () => {
-        if (!userID) {
-          console.log('User id not available')
-          return;
-        }
-  
-        try {
-          const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
-            headers: {
-              Authorization: `${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-          const data = await response.json();
-          if (data.error) {
-            setUserData({});
-            console.log(data.message || "Failed to fetch guests");
-          } else {
-            setUserData(data.data || {});
-            if (data.data && data.data.name) {
-              localStorage.setItem("wonderLandUserName", data.data?.name || "");
-            }
+      try {
+        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (data.error) {
+          setUserData({});
+          console.log(data.message || "Failed to fetch guests");
+        } else {
+          setUserData(data.data || {});
+          if (data.data && data.data.name) {
+            localStorage.setItem("wonderLandUserName", data.data?.name || "");
           }
-        } catch (err) {
-          console.log("Error fetching guests: " + err.message);
         }
-      };
-      // Initial call
-      fetchUserAccountDetails();
-    }, [
-      userID,
-      urlParams.eventId,
-      hasSubmitted,
-      refetchAddGuest
-    ]);
-
+      } catch (err) {
+        console.log("Error fetching guests: " + err.message);
+      }
+    };
+    // Initial call
+    fetchUserAccountDetails();
+  }, [userID, urlParams.eventId, hasSubmitted, refetchAddGuest]);
 
   useEffect(() => {
     const addGuest = async () => {
@@ -878,6 +874,7 @@ const InvitationCard = () => {
           id: data._id || data.id || data.eventId,
           luckyDraws: data?.luckyDraws || [],
           templateId: data.templateId,
+          externalTemplateImageUrl: data.externalTemplateImageUrl || "",
         });
 
         setSendCustomerId(hostId);
@@ -1173,46 +1170,46 @@ const InvitationCard = () => {
     const requestPermissionAndSaveToken = async () => {
       try {
         if ("Notification" in window) {
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") return;
 
-        const messagingInstance = getMessaging();
-        const token = await getToken(messagingInstance, {
-          vapidKey: VAPID_KEY,
-        });
+          const messagingInstance = getMessaging();
+          const token = await getToken(messagingInstance, {
+            vapidKey: VAPID_KEY,
+          });
 
-        console.log("FCM Token:", token);
+          console.log("FCM Token:", token);
 
-        if (token) {
-          await setDoc(
-            doc(db, "fcmTokens", userID),
-            { token },
-            { merge: true }
-          );
-        }
+          if (token) {
+            await setDoc(
+              doc(db, "fcmTokens", userID),
+              { token },
+              { merge: true }
+            );
+          }
 
-        if (!hasSetUpMessageListener.current) {
-          onMessage(messagingInstance, (payload) => {
-            console.log("Foreground message received:", payload);
+          if (!hasSetUpMessageListener.current) {
+            onMessage(messagingInstance, (payload) => {
+              console.log("Foreground message received:", payload);
 
-            // 🔹 Frontend-only notification
-            new Notification(payload.notification?.title || "New Message", {
+              // 🔹 Frontend-only notification
+              new Notification(payload.notification?.title || "New Message", {
+                body: payload.notification?.body || "You got a message!",
+                icon: "/new_logo_light.png",
+              });
+            });
+            hasSetUpMessageListener.current = true;
+          }
+
+          setTimeout(() => {
+            new Notification("Test Message", {
               body: payload.notification?.body || "You got a message!",
               icon: "/new_logo_light.png",
             });
-          });
-          hasSetUpMessageListener.current = true;
+          }, 3000);
+        } else {
+          console.log("Notifications are not supported on this browser");
         }
-
-        setTimeout(() => {
-          new Notification("Test Message", {
-            body: payload.notification?.body || "You got a message!",
-            icon: "/new_logo_light.png",
-          });
-        }, 3000);
-        }else {
-  console.log("Notifications are not supported on this browser");
-}
       } catch (err) {
         console.error("FCM Error:", err);
       }
@@ -1315,7 +1312,11 @@ const InvitationCard = () => {
         unreadMessages.forEach((msg) => {
           const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
 
-          if (Notification.permission === "granted" && !alreadyNotified && "Notification" in window) {
+          if (
+            Notification.permission === "granted" &&
+            !alreadyNotified &&
+            "Notification" in window
+          ) {
             navigator.serviceWorker.ready.then((registration) => {
               registration.showNotification(
                 `New message from ${msg.senderName}`,
@@ -1390,26 +1391,26 @@ const InvitationCard = () => {
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
   };
   // helper function to generate a color from string
-const getAvatarColor = (name) => {
-  const colors = [
-    "#F44336", // red
-    "#E91E63", // pink
-    "#9C27B0", // purple
-    "#673AB7", // deep purple
-    "#3F51B5", // indigo
-    "#2196F3", // blue
-    "#009688", // teal
-    "#4CAF50", // green
-    "#FF9800", // orange
-    "#795548"  // brown
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash % colors.length);
-  return colors[index];
-};
+  const getAvatarColor = (name) => {
+    const colors = [
+      "#F44336", // red
+      "#E91E63", // pink
+      "#9C27B0", // purple
+      "#673AB7", // deep purple
+      "#3F51B5", // indigo
+      "#2196F3", // blue
+      "#009688", // teal
+      "#4CAF50", // green
+      "#FF9800", // orange
+      "#795548", // brown
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash % colors.length);
+    return colors[index];
+  };
 
   return (
     <>
@@ -1459,44 +1460,22 @@ const getAvatarColor = (name) => {
 
               {orderDetails ? (
                 <>
-                  {templateId && template ? (
+                  {orderDetails?.externalTemplateImageUrl ? (
                     <div style={{ padding: "20px" }}>
                       <div
                         style={{
-                          backgroundImage: template.backgroundUrl
-                            ? `url('${template.backgroundUrl}')`
-                            : "none",
-                          backgroundSize: "cover",
+                          backgroundImage:
+                            orderDetails?.externalTemplateImageUrl
+                              ? `url('${orderDetails.externalTemplateImageUrl}')`
+                              : "none",
+                          backgroundSize: "contain",
+                          backgroundRepeat: "no-repeat",
                           backgroundPosition: "center",
-                          minHeight: "300px",
-                          borderRadius: "12px",
-                          position: "relative", // key!
-                          border: "5px solid red",
+                          minHeight: "530px",
+                          // borderRadius: "12px",
+                          position: "relative",
                         }}
                       >
-                        {/* Fonts */}
-                        {template.fontUrls?.map((url, idx) => (
-                          <link key={idx} href={url} rel="stylesheet" />
-                        ))}
-
-                        {/* Inject template CSS */}
-                        {template.cssCode && (
-                          <style
-                            dangerouslySetInnerHTML={{
-                              __html: template.cssCode,
-                            }}
-                          />
-                        )}
-
-                        {/* Inject template HTML */}
-                        {template.jsCode && (
-                          <div
-                            style={{ position: "relative", zIndex: 2 }}
-                            dangerouslySetInnerHTML={{
-                              __html: renderHTML(template.jsCode, formData),
-                            }}
-                          />
-                        )}
                         <div
                           className="invite-image-wrapper"
                           onClick={async () => {
@@ -1669,7 +1648,11 @@ const getAvatarColor = (name) => {
                         <div className="invite-buttons">
                           <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg-explore">
-                              <Image src={shareinvitaion} alt="Explore" className="icon-img" />
+                              <Image
+                                src={shareinvitaion}
+                                alt="Explore"
+                                className="icon-img"
+                              />
                             </span>
                             <span>Explore Themes</span>
                           </button>
@@ -2162,8 +2145,7 @@ const getAvatarColor = (name) => {
             <div className="chat-messages" ref={chatMessagesRef}>
               {messages.map((msg) => {
                 const isSender = msg.senderPhoneNumber === userPhoneNumber;
-                const senderName =
-                  msg.senderName
+                const senderName = msg.senderName;
 
                 return (
                   <div
@@ -2174,43 +2156,49 @@ const getAvatarColor = (name) => {
                   >
                     {/* Receiver avatar (left side) */}
                     {!isSender && (
-  <div
-    className="chat-avatar-receiver"
-    style={{
-      backgroundColor: getAvatarColor(
-        senderName || msg.senderPhoneNumber
-      )
-    }}
-  >
-    {senderName
-      ? senderName.charAt(0).toUpperCase()
-      : msg.senderPhoneNumber.charAt(3)}
-  </div>
-)}
+                      <div
+                        className="chat-avatar-receiver"
+                        style={{
+                          backgroundColor: getAvatarColor(
+                            senderName || msg.senderPhoneNumber
+                          ),
+                        }}
+                      >
+                        {senderName
+                          ? senderName.charAt(0).toUpperCase()
+                          : msg.senderPhoneNumber.charAt(3)}
+                      </div>
+                    )}
 
+                    <div
+                      className={`chat-bubble ${
+                        isSender ? "sender" : "receiver"
+                      }`}
+                    >
+                      {/* Sirf receiver ka naam/number */}
+                      {!isSender && (
+                        <div className="chat-sender">
+                          {senderName
+                            ? senderName
+                            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
+                        </div>
+                      )}
 
-                    <div className={`chat-bubble ${isSender ? "sender" : "receiver"}`}>
-      {/* Sirf receiver ka naam/number */}
-      {!isSender && (
-        <div className="chat-sender">
-          {senderName
-            ? senderName
-            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-        </div>
-      )}
+                      <div className="chat-text">{msg.text}</div>
 
-      <div className="chat-text">{msg.text}</div>
-
-      <div className="chat-time">
-        {msg.sentAt?.toDate
-          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })
-          : ""}
-      </div>
-    </div>
+                      <div className="chat-time">
+                        {msg.sentAt?.toDate
+                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
+                              "en-IN",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : ""}
+                      </div>
+                    </div>
 
                     {/* {isSender && (
                       <div className="chat-avatar">
@@ -2234,8 +2222,8 @@ const getAvatarColor = (name) => {
                       textareaRef.current?.focus();
                     }, 0);
                   } else {
-                      setShowEmojiPicker(true);
-                      textareaRef.current?.blur();
+                    setShowEmojiPicker(true);
+                    textareaRef.current?.blur();
                   }
                 }}
                 className="emoji-btn"
@@ -2283,25 +2271,25 @@ const getAvatarColor = (name) => {
                 className="chat-input"
                 rows={1}
                 onFocus={() => {
-                 if (showEmojiPicker) {
-                      setShowEmojiPicker(false);
-                    }
-                     // ✅ focus karte hi input ko viewport me le aa
-                    setTimeout(() => {
-                      textareaRef.current?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "end",
-                      });
+                  if (showEmojiPicker) {
+                    setShowEmojiPicker(false);
+                  }
+                  // ✅ focus karte hi input ko viewport me le aa
+                  setTimeout(() => {
+                    textareaRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "end",
+                    });
 
-                      // ✅ Extra offset ke liye manual scroll adjust
-                      window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
-                    }, 300);
+                    // ✅ Extra offset ke liye manual scroll adjust
+                    window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
+                  }, 300);
                 }}
                 onChange={(e) => {
                   setText(e.target.value);
                   if (e.target.value.length > 0) {
-                      setShowEmojiPicker(false); // typing se emoji picker band ho jaye
-                    }
+                    setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                  }
                 }}
                 onInput={(e) => {
                   e.target.style.height = "auto"; // reset height first
@@ -2429,35 +2417,36 @@ const getAvatarColor = (name) => {
           </div>
         </div>
       )}
-      
+
       {pathname === "/wonderland" && showInstall && (
+        <div className="addhome-popup-overlay">
+          <div className="addhome-popup-container">
+            <Image
+              src={phoneImage}
+              alt="Phone Preview"
+              className="addhome-phone-image"
+            />
 
-<div className="addhome-popup-overlay">
-  <div className="addhome-popup-container">
-    <Image src={phoneImage} alt="Phone Preview" className="addhome-phone-image" />
+            <div className="addhome-popup-text">
+              <p className="addhome-headline">Your parties, one tap away</p>
+              <p className="addhome-headline">Pin to your screen.</p>
+            </div>
 
-    <div className="addhome-popup-text">
-      <p className="addhome-headline">Your parties, one tap away</p>
-      <p className="addhome-headline">Pin to your screen.</p>
-    </div>
+            <button className="addhome-add-button" onClick={handleInstallClick}>
+              Add To Screen
+            </button>
 
-    <button className="addhome-add-button" onClick={handleInstallClick}>
-      Add To Screen
-    </button>
-
-    <button
-      className="addhome-later-button"
-      onClick={() => {
-        setShowInstall(false);
-        localStorage.setItem("addToHomeScreenPopup", "true");
-      }}
-    >
-      Maybe later
-    </button>
-  </div>
-</div>
-
-
+            <button
+              className="addhome-later-button"
+              onClick={() => {
+                setShowInstall(false);
+                localStorage.setItem("addToHomeScreenPopup", "true");
+              }}
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
       )}
     </>
   );
