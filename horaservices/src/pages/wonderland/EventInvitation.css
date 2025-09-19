@@ -1171,20 +1171,14 @@ background-color: none !important;
   display: flex;
   flex-direction: column;
   font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+    height: 100dvh;        
 }
 
-/* .chat-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: #dee2e6;
-  display: flex;
-  flex-direction: column;
-  font-family: "Segoe UI", sans-serif;
-} */
-
-/* Header */
 .chat-header {
+    flex-shrink: 0;
+    position: sticky;        
+  top: 0;
   background: #97538C;
   color: white;
   padding: 12px 16px;
@@ -1193,15 +1187,6 @@ background-color: none !important;
   align-items: center;
 }
 
-/* .chat-header {
-  flex-shrink: 0;
-  background: #97538C;
-  color: white;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-} */
 
 .chat-user-info{
   display: flex;
@@ -1228,10 +1213,11 @@ background-color: none !important;
 /* Messages list */
 .chat-messages {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto;  
   padding: 16px 15px 0px 10px;
   display: flex;
   flex-direction: column;
+  padding-bottom: 20px;
 }
 
 /* Each chat row (bubble + avatar) */
@@ -1373,7 +1359,13 @@ background-color: none !important;
   font-size: 8px;
   color: black;
 }
-
+.chat-message.sender .chat-time {
+  font-size: 8px;
+  color: #f1f1f1;
+  position: absolute;
+  bottom:0px;
+  right: 6px;
+}
 
 .chat-sender {
   position: absolute;
@@ -1425,6 +1417,8 @@ max-width: 60px;
 }
 
 .chat-input-container {
+   flex-shrink: 0;
+    position: sticky;  
      display: flex;
     align-items: center;
     background: white;
@@ -1481,9 +1475,10 @@ max-width: 60px;
   text-align: center;
   font-size: 12px;
 }
+
 .emoji-container{
   margin:10px auto;
-  height:300px;
+  height:250px;
   /* width: 100%; */
 }
 .emoji-btn {
@@ -1533,19 +1528,7 @@ max-width: 60px;
   margin: 0px;
 }
 
-/* .notification-message {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 10px;
-  text-align: center;
-  border-radius: 5px;
-  margin: 10px 0;
-  font-size: 14px;
-} */
 
-.edit-icon{
-  /* z-index: 10000; */
-}
 
 /* =========================================================================================================== */
 

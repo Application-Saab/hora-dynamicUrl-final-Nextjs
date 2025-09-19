@@ -105,45 +105,63 @@ const InvitationCard = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
 
-  useEffect(() => {
-    if (pathname === "/wonderland") {
-      if (typeof window !== "undefined") {
-        if (localStorage.getItem("addToHomeScreenPopup") !== "true") {
-          setShowInstall(true);
-        }
-      }
-      const handler = (e) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-      };
-      window.addEventListener("beforeinstallprompt", handler);
-      return () => window.removeEventListener("beforeinstallprompt", handler);
-    }
-  }, [pathname]);
-
-  const handleInstallClick = async () => {
-    setShowInstall(false);
+useEffect(() => {
+  if (pathname === "/wonderland") {
     if (typeof window !== "undefined") {
-      localStorage.setItem("addToHomeScreenPopup", "true");
-    }
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      setDeferredPrompt(null);
-    }
-  };
 
-  useEffect(() => {
+         const popupStatus = localStorage.getItem("addToHomeScreenPopup");
+
+      if (popupStatus !== "true" && popupStatus !== "false") {
+        setShowInstall(true);
+      }
+    }
+
     const handler = (e) => {
-      e.preventDefault(); // Prevent Chrome auto prompt
-      setDeferredPrompt(e);
-      setShowInstall(true); // Show your custom button
+      e.preventDefault();
+      setDeferredPrompt(e);  // Store the deferred prompt for later
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }
+}, [pathname]); 
+
+const handleInstallClick = async () => {
+   setShowInstall(false);
+
+   if (typeof window !== "undefined") {
+     localStorage.setItem("addToHomeScreenPopup", "true");
+   }
+
+   if (deferredPrompt) {
+     // Show the install prompt
+     deferredPrompt.prompt();
+     const { outcome } = await deferredPrompt.userChoice;
+     if (outcome === 'accepted') {
+       localStorage.setItem("addToHomeScreenPopup", "true");
+     } else {
+       localStorage.setItem("addToHomeScreenPopup", "false");
+     }
+
+     setDeferredPrompt(null);
+   }
+};
+
+
+   useEffect(() => {
+     const handler = (e) => {
+       e.preventDefault(); // Prevent Chrome auto prompt
+       setDeferredPrompt(e);
+       setShowInstall(true); // Show your custom button
+     };
+ 
+     window.addEventListener("beforeinstallprompt", handler);
+ 
+     return () => window.removeEventListener("beforeinstallprompt", handler);
+   }, []);
 
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   const userID = localStorage.getItem("userID");
@@ -2485,7 +2503,7 @@ const getAvatarColor = (name) => {
       className="addhome-later-button"
       onClick={() => {
         setShowInstall(false);
-        localStorage.setItem("addToHomeScreenPopup", "true");
+        localStorage.setItem("addToHomeScreenPopup", "false");
       }}
     >
       Maybe later

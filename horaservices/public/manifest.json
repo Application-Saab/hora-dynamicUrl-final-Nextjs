@@ -2,6 +2,7 @@
   "name": "Hora Services",
   "short_name": "Wonderland",
   "start_url": "/wonderland",
+    "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",

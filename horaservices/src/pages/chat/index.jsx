@@ -505,40 +505,63 @@ function linkify(text) {
   });
 }
 
-
 useEffect(() => {
-    if (pathname === "/wonderland") {
-      if (typeof window !== "undefined") {
-        if (localStorage.getItem("addToHomeScreenPopup") !== "true") {
-          setShowInstall(true);
-        }
-      }
-      const handler = (e) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-      };
-      window.addEventListener("beforeinstallprompt", handler);
-      return () => window.removeEventListener("beforeinstallprompt", handler);
-    }
-  }, [pathname]);
-
-  const handleInstallClick = async () => {
-    setShowInstall(false);
+  if (pathname === "/chat") {
     if (typeof window !== "undefined") {
-      localStorage.setItem("addToHomeScreenPopup", "true");
+      const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
+    console.log("addToHomeScreenPopup",addToHomeScreenPopup);
+    
+      if (addToHomeScreenPopup !== "true") {
+        setShowInstall(true);  
+      }
     }
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      setDeferredPrompt(null);
-    }
-  };
+
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }
+}, [pathname]); 
+
+
+
+
+const handleInstallClick = async () => {
+   setShowInstall(false);
+
+   if (typeof window !== "undefined") {
+     localStorage.setItem("addToHomeScreenPopup", "true");
+   }
+ 
+   
+
+   if (deferredPrompt) {
+     deferredPrompt.prompt();
+     const { outcome } = await deferredPrompt.userChoice;
+     if (outcome === 'accepted') {
+       localStorage.setItem("addToHomeScreenPopup", "true");
+       console.log("outcome",outcome,localStorage.getItem("addToHomeScreenPopup"));
+       
+     } else {
+       localStorage.setItem("addToHomeScreenPopup", "false");
+     }
+
+     setDeferredPrompt(null);
+   }
+};
+
 
   useEffect(() => {
     const handler = (e) => {
-      e.preventDefault(); // Prevent Chrome auto prompt
+      e.preventDefault(); 
       setDeferredPrompt(e);
-      setShowInstall(true); // Show your custom button
+      setShowInstall(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);

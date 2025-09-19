@@ -21,6 +21,24 @@ export default function BottomNav({ id, groups = [] }) {
   const [showServices, setShowServices] = useState(false);
   const [totalUnreadCount, setTotalUnreadCount] = useState(localStorage.getItem("totalUnread") || 0);
   const [loadingGroups, setLoadingGroups] = useState(true);
+useEffect(() => {
+  const handleRouteChange = (url) => {
+    // Route change ke baad latest data fetch karo
+    const storedUserId = localStorage.getItem("userID") || "";
+    const unread = localStorage.getItem("totalUnread") || 0;
+
+    setUserId(storedUserId);
+    setTotalUnreadCount(unread);
+    setShowServices(false);  // Overlay hata do agar open hai
+    // Add any other state reset here
+  };
+
+  router.events.on("routeChangeComplete", handleRouteChange);
+
+  return () => {
+    router.events.off("routeChangeComplete", handleRouteChange);
+  };
+}, [router]);
 
   useEffect(() => {
     const loadUserId = () => {
@@ -190,8 +208,12 @@ export default function BottomNav({ id, groups = [] }) {
             className={`nav-item ${
               !showServices && currentPath.includes("chat") ? "active" : ""
             }`}
-            onClick={() => setShowServices(false)} // close overlay immediately
-            style={{ position: "relative" }} // needed for absolute badge
+            // onClick={() => setShowServices(false)} 
+              onClick={(e) => {
+      e.preventDefault(); // 🛑 Prevent default navigation
+      window.location.href = `/chat?id=${userId || ""}`; // 🔁 Force full reload
+    }}
+            style={{ position: "relative" }} 
           >
             <Image
               src={

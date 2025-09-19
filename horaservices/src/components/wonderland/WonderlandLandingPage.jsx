@@ -8,7 +8,7 @@ import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
 import wonderlandBanner from "@/assets/wonderlandBanner1.jpg";
 import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
-import howitworks from "@/assets/howitworks.jpg";
+import howitworks from "@/assets/howitworks.webp";
 import hostandGuest from "@/assets/hostandGuest.png";
 import yourcelebration from "@/assets/yourcelebration.png";
 import luckdrawBnaner from "@/assets/lucky.jpg";
@@ -413,7 +413,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 margin: "10px",
               }}
             >
-              How It Works Wonderland
+              How It Works 
             </div>
             <div className="invite-banner">
               <Image
