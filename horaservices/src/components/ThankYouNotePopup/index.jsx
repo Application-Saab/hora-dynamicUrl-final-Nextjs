@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
-import StickyImage from "../../assets/sticky5.png"; // adjust path
+import StickyImage from "../../assets/sticky1.png"; // adjust path
 import DummySticky from "@/assets/collage/photo2.jpeg";
 import "./Thankyounotepopup.css";
 import EmojiPicker from "emoji-picker-react";
@@ -25,13 +25,32 @@ const ThankYouNotePopup = ({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const noteTextAreaRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
-
+const [charCount, setCharCount] = useState(0);
+ const [emojiWidth, setEmojiWidth] = useState(400);
+ 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 480);
     handleResize(); // initial run
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+    useEffect(() => {
+      const updateWidth = () => {
+        const screenWidth = window.innerWidth;
+        if (screenWidth > 450) {
+          setEmojiWidth(450);
+        } else if (screenWidth <= 450) {
+          setEmojiWidth(screenWidth - 20);
+        } else {
+          setEmojiWidth(screenWidth - 50);
+        }
+      };
+  
+      updateWidth();
+      window.addEventListener("resize", updateWidth);
+  
+      return () => window.removeEventListener("resize", updateWidth);
+    }, []);
   return (
     <div className="popup-thankyou">
       <Head>
@@ -58,105 +77,131 @@ const ThankYouNotePopup = ({
         alt="Sticky Note Sample"
         className="thankyou-image"
       />
-      <div className="form-group">
-        <label className="label">Type Note</label>
-        <div className="textarea-with-emoji">
-          <textarea
-            ref={noteTextAreaRef}
-            rows={5}
-            placeholder="Write Your thank You Message..."
-            value={noteTitle}
-            className="textareanote"
-            required
-            onFocus={() => {
-              // ✅ Textarea focus hote hi emoji picker band ho jaye
-              if (showEmojiPicker) {
-                setShowEmojiPicker(false);
-              }
-            }}
-            onChange={(e) => {
-              const input = e.target.value;
-              const charsCount = input.replace(/\s/g, "").length;
+    <div className="form-group">
+  <label className="label">Type Note</label>
+  <div className="textarea-with-emoji">
+    <textarea
+      ref={noteTextAreaRef}
+      rows={4}
+      placeholder="Write Your Thank You Message..."
+      value={noteTitle}
+      className="textareanote"
+      onFocus={() => {
+        if (showEmojiPicker) setShowEmojiPicker(false);
+      }}
+      onChange={(e) => {
+        let input = e.target.value;
 
-              if (charsCount <= 125) {
-                setNoteTitle(input);
-              } else {
-                let count = 0;
-                let truncated = "";
-                for (const ch of input) {
-                  if (ch !== " ") count++;
-                  if (count > 125) break;
-                  truncated += ch;
-                }
-                setNoteTitle(truncated);
-              }
+        // Split by user-entered lines
+        const lines = input.split("\n");
+        let adjustedLines = [];
 
-              if (input?.trim() === "") {
-                setErrorMsg("Please write a thank you message.");
-              } else {
-                setErrorMsg("");
-              }
-            }}
-          />
+        for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+          let line = lines[i];
 
-          <button
-            type="button"
-            onClick={() => {
-              setShowEmojiPicker(!showEmojiPicker);
-            }}
-            className="btn emoji-button"
-          >
-            <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-          </button>
-        </div>
+          if (!line) {
+            adjustedLines.push("");
+            continue;
+          }
 
-        <p
-          className="word-limit"
-          style={{ color: charsWithoutSpaces >= 125 ? "red" : "#4A4A4A" }}
-        >
-          {charsWithoutSpaces >= 125
-            ? "You have reached the 125 character limit!"
-            : `${charsWithoutSpaces} / 125 characters`}
-        </p>
-      </div>
-      {showEmojiPicker && (
-        <div
-          className="emoji-container-thankyou"
-          style={{
-            // position: isMobile ? "static" : "absolute",
-            position: "static",
-            zIndex: 10,
-            marginTop: "10px",
-          }}
-        >
-          <EmojiPicker
-            searchDisabled={true}
-            height={350}
-            // width={300}
-            onEmojiClick={(emojiData) => {
-              const textarea = noteTextAreaRef.current;
-              const start = textarea.selectionStart;
-              const end = textarea.selectionEnd;
+          let words = line.split(" ");
+          let currentLine = "";
 
-              const newText =
-                noteTitle.substring(0, start) +
-                emojiData.emoji +
-                noteTitle.substring(end);
+          for (let j = 0; j < words.length; j++) {
+            if (adjustedLines.length >= 8) break;
+            let word = words[j];
 
-              const newCharCount = newText.replace(/\s/g, "").length;
-              if (newCharCount <= 125) {
-                setNoteTitle(newText);
+            if ((currentLine + (currentLine ? " " : "") + word).length > 26) {
+              if (currentLine) adjustedLines.push(currentLine);
+              currentLine = word;
+            } else {
+              currentLine += (currentLine ? " " : "") + word;
+            }
+          }
 
-                // ✅ Cursor update karo but focus dobara mat do → keyboard auto open nahi hoga
-                requestAnimationFrame(() => {
-                  textarea.selectionStart = textarea.selectionEnd =
-                    start + emojiData.emoji.length;
-                });
-              }
-            }}
-          />
-        </div>
-      )}
+          if (currentLine && adjustedLines.length < 8) {
+            adjustedLines.push(currentLine);
+          }
+        }
+
+        const finalText = adjustedLines.join("\n");
+        const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+
+        setNoteTitle(finalText);
+        setCharCount(totalChars);
+
+        if (finalText.trim() === "") {
+          setErrorMsg("Please write a thank you message.");
+        } else {
+          setErrorMsg("");
+        }
+
+        if (showEmojiPicker) setShowEmojiPicker(false); // typing hides emoji picker
+      }}
+      onInput={(e) => {
+        e.target.style.height = "auto";
+        e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+      }}
+    />
+
+    {/* Emoji toggle button */}
+    <button
+      type="button"
+      onClick={() => {
+        setShowEmojiPicker((prev) => !prev);
+        if (showEmojiPicker) {
+          noteTextAreaRef.current?.focus();
+        } else {
+          noteTextAreaRef.current?.blur();
+        }
+      }}
+      className="btn emoji-button"
+    >
+      <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+    </button>
+  </div>
+
+  <p
+    className="word-limit"
+    style={{ color: charCount >= 184 ? "red" : "#4A4A4A" }}
+  >
+    {charCount >= 184
+      ? "You have reached the 8 line / 26 character per line limit!"
+      : `${charCount} / 184 characters`}
+  </p>
+
+  {/* Emoji Picker */}
+  {showEmojiPicker && (
+    <div className="emoji-container-thankyou" style={{ position: "static", zIndex: 10, marginTop: "10px" }}>
+      <EmojiPicker
+        width={emojiWidth}
+        searchDisabled={true}
+        onEmojiClick={(emojiData) => {
+          const textarea = noteTextAreaRef.current;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+
+          setNoteTitle((prevText) => {
+            const newText =
+              prevText.substring(0, start) +
+              emojiData.emoji +
+              prevText.substring(end);
+
+            // Update cursor position
+            requestAnimationFrame(() => {
+              textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
+            });
+
+            return newText;
+          });
+
+          setShowEmojiPicker(false); // hide picker after emoji click
+        }}
+      />
+    </div>
+  )}
+</div>
+
 
       <div className="form-group">
         <label className="label">Type Your Name </label>
@@ -166,7 +211,6 @@ const ThankYouNotePopup = ({
           value={noteBy}
           required
           onFocus={() => {
-            // ✅ Agar emoji picker open hai to band kar do
             if (showEmojiPicker) {
               setShowEmojiPicker(false);
             }
@@ -199,7 +243,7 @@ const ThankYouNotePopup = ({
           backgroundColor: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          padding: "15px",
+          padding: "10px",
           boxSizing: "border-box",
         }}
       >
@@ -224,38 +268,40 @@ const ThankYouNotePopup = ({
             transform: "translate(-50%, -50%)",
             width: "70%",
             zIndex: 1,
-            textAlign: "center",
+            textAlign: "left",
           }}
+          
         >
           <div
             style={{
-              fontWeight: "bold",
-              fontSize: "20px",
+              fontWeight: "500",
+              fontSize: "15px",
               color: "black",
               fontFamily: "'Montserrat', sans-serif",
               wordWrap: "break-word",
               whiteSpace: "pre-wrap",
-              lineHeight: 1.1,
             }}
           >
             {noteTitle}
           </div>
+         
         </div>
 
         <div
-          style={{
-            position: "absolute",
-            bottom: 45,
-            left: 100,
-            fontWeight: "bold",
-            fontSize: "20px",
-            color: "black",
-            fontFamily: "'Montserrat', sans-serif",
-            zIndex: 1,
-          }}
-        >
-          - {noteBy}
-        </div>
+  style={{
+    position: "absolute",
+    bottom: 20,
+    left: 140,
+    fontWeight: "500",
+    fontSize: "15px",
+    color: "black",
+    fontFamily: "'Montserrat', sans-serif",
+    zIndex: 1,
+  }}
+>
+  :- {noteBy.length > 15 ? noteBy.substring(0, 15) + "..." : noteBy}
+</div>
+
       </div>
     </div>
   );

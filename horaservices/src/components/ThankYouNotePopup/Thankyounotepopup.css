@@ -7,7 +7,7 @@
   transform: translate(-50%, -50%);
   width: 90%;
   max-width: 388px;
-  padding: 20px;
+  padding: 10px;
   background: linear-gradient(180deg, #A8E3FE 0%, #FED7F3 53.58%, #FEDFD7 88.89%, #FFDACE 100%);
   border: 1px solid #0000004D;
   border-radius: 20px;
@@ -134,18 +134,27 @@ input {
 }
 
 /* Emoji Picker container styling */
-.emoji-container-thankyou {
+/* .emoji-container-thankyou {
   position: absolute;
   z-index: 999;
   bottom: 100%;
   left: 0;
   width: 100%;
-  /* max-width: 300px; */
   background: white;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   border-radius: 8px;
   overflow: hidden;
+} */
+ .emoji-container-thankyou {
+  position: absolute; /* ya relative jahan aapko picker dikhana hai */
+  z-index: 10;
+  margin-top: 10px;
+  max-height: 300px;   /* vertical scroll limit */
+  width: 100%;          /* adjust as needed */
+  overflow-y: auto;     /* vertical scroll enabled */
+  overflow-x: hidden;   /* horizontal scroll hidden */
 }
+
 
 /* Emoji button inside textarea wrapper */
 .emoji-button {
@@ -175,6 +184,7 @@ input {
   }
 
   .popup-thankyou {
-    padding: 25px;
+    padding: 10px;
   }
 }
+

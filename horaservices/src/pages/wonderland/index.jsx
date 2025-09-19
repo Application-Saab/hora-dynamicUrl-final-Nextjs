@@ -12,9 +12,9 @@ import whatshare from "@/assets/whatshare.png";
 import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import { FaArrowLeft } from "react-icons/fa";
-import phoneImage from "@/assets/phoneImage.jpeg";
-import shareinvitaion from "@/assets/shareinvitation.png";
+import phoneImage from "@/assets/phoneImage.jpeg"
 import "../photo-gallery/gallery.css";
+import shareinvitaion from "@/assets/shareinvitation.png"
 import {
   BASE_URL,
   CREATE_GUEST_BY_EVENTID,
@@ -106,45 +106,63 @@ const InvitationCard = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
 
-  useEffect(() => {
-    if (pathname === "/wonderland") {
-      if (typeof window !== "undefined") {
-        if (localStorage.getItem("addToHomeScreenPopup") !== "true") {
-          setShowInstall(true);
-        }
-      }
-      const handler = (e) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-      };
-      window.addEventListener("beforeinstallprompt", handler);
-      return () => window.removeEventListener("beforeinstallprompt", handler);
-    }
-  }, [pathname]);
-
-  const handleInstallClick = async () => {
-    setShowInstall(false);
+useEffect(() => {
+  if (pathname === "/wonderland") {
     if (typeof window !== "undefined") {
-      localStorage.setItem("addToHomeScreenPopup", "true");
-    }
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      setDeferredPrompt(null);
-    }
-  };
 
-  useEffect(() => {
+         const popupStatus = localStorage.getItem("addToHomeScreenPopup");
+
+      if (popupStatus !== "true" && popupStatus !== "false") {
+        setShowInstall(true);
+      }
+    }
+
     const handler = (e) => {
-      e.preventDefault(); // Prevent Chrome auto prompt
-      setDeferredPrompt(e);
-      setShowInstall(true); // Show your custom button
+      e.preventDefault();
+      setDeferredPrompt(e);  // Store the deferred prompt for later
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }
+}, [pathname]); 
+
+const handleInstallClick = async () => {
+   setShowInstall(false);
+
+   if (typeof window !== "undefined") {
+     localStorage.setItem("addToHomeScreenPopup", "true");
+   }
+
+   if (deferredPrompt) {
+     // Show the install prompt
+     deferredPrompt.prompt();
+     const { outcome } = await deferredPrompt.userChoice;
+     if (outcome === 'accepted') {
+       localStorage.setItem("addToHomeScreenPopup", "true");
+     } else {
+       localStorage.setItem("addToHomeScreenPopup", "false");
+     }
+
+     setDeferredPrompt(null);
+   }
+};
+
+
+   useEffect(() => {
+     const handler = (e) => {
+       e.preventDefault(); // Prevent Chrome auto prompt
+       setDeferredPrompt(e);
+       setShowInstall(true); // Show your custom button
+     };
+ 
+     window.addEventListener("beforeinstallprompt", handler);
+ 
+     return () => window.removeEventListener("beforeinstallprompt", handler);
+   }, []);
 
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   const userID = localStorage.getItem("userID");
@@ -159,11 +177,7 @@ const InvitationCard = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showNotifyPermissionMsg, setNotifyPermissionMsg] = useState(false);
   const [userData, setUserData] = useState({});
-  console.log(
-    "%c [ userData ]-159",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    userData
-  );
+  console.log('%c [ userData ]-159', 'font-size:13px; background:pink; color:#bf2c9f;', userData)
   console.log(
     "%c [ guestDetails ]-60",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -330,37 +344,45 @@ const InvitationCard = () => {
     hasSubmitted,
   ]);
 
-  useEffect(() => {
-    const fetchUserAccountDetails = async () => {
-      if (!userID) {
-        console.log("User id not available");
-        return;
-      }
+  
 
-      try {
-        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
-          headers: {
-            Authorization: `${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        if (data.error) {
-          setUserData({});
-          console.log(data.message || "Failed to fetch guests");
-        } else {
-          setUserData(data.data || {});
-          if (data.data && data.data.name) {
-            localStorage.setItem("wonderLandUserName", data.data?.name || "");
-          }
+    useEffect(() => {
+      const fetchUserAccountDetails = async () => {
+        if (!userID) {
+          console.log('User id not available')
+          return;
         }
-      } catch (err) {
-        console.log("Error fetching guests: " + err.message);
-      }
-    };
-    // Initial call
-    fetchUserAccountDetails();
-  }, [userID, urlParams.eventId, hasSubmitted, refetchAddGuest]);
+  
+        try {
+          const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
+            headers: {
+              Authorization: `${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          const data = await response.json();
+          if (data.error) {
+            setUserData({});
+            console.log(data.message || "Failed to fetch guests");
+          } else {
+            setUserData(data.data || {});
+            if (data.data && data.data.name) {
+              localStorage.setItem("wonderLandUserName", data.data?.name || "");
+            }
+          }
+        } catch (err) {
+          console.log("Error fetching guests: " + err.message);
+        }
+      };
+      // Initial call
+      fetchUserAccountDetails();
+    }, [
+      userID,
+      urlParams.eventId,
+      hasSubmitted,
+      refetchAddGuest
+    ]);
+
 
   useEffect(() => {
     const addGuest = async () => {
@@ -588,6 +610,36 @@ const InvitationCard = () => {
 
     reader.readAsDataURL(file); // ✅ Converts file to base64 string
   };
+  useEffect(() => {
+  if (orderDetails && eventId && userID && hasSubmitted) {
+    const userRef = doc(db, "groups", eventId, "members", userID);
+
+    setDoc(
+      userRef,
+      {
+        userId: userID,
+        name: guestDetails?.name || orderDetails?.Name || "Guest",
+        phoneNumber: userPhoneNumber,
+        lastSeenAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
+}, [orderDetails, eventId, userID, hasSubmitted]);
+function linkify(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlRegex).map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 
   const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
     return new Promise((resolve, reject) => {
@@ -1170,46 +1222,46 @@ const InvitationCard = () => {
     const requestPermissionAndSaveToken = async () => {
       try {
         if ("Notification" in window) {
-          const permission = await Notification.requestPermission();
-          if (permission !== "granted") return;
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
 
-          const messagingInstance = getMessaging();
-          const token = await getToken(messagingInstance, {
-            vapidKey: VAPID_KEY,
-          });
+        const messagingInstance = getMessaging();
+        const token = await getToken(messagingInstance, {
+          vapidKey: VAPID_KEY,
+        });
 
-          console.log("FCM Token:", token);
+        console.log("FCM Token:", token);
 
-          if (token) {
-            await setDoc(
-              doc(db, "fcmTokens", userID),
-              { token },
-              { merge: true }
-            );
-          }
+        if (token) {
+          await setDoc(
+            doc(db, "fcmTokens", userID),
+            { token },
+            { merge: true }
+          );
+        }
 
-          if (!hasSetUpMessageListener.current) {
-            onMessage(messagingInstance, (payload) => {
-              console.log("Foreground message received:", payload);
+        if (!hasSetUpMessageListener.current) {
+          onMessage(messagingInstance, (payload) => {
+            console.log("Foreground message received:", payload);
 
-              // 🔹 Frontend-only notification
-              new Notification(payload.notification?.title || "New Message", {
-                body: payload.notification?.body || "You got a message!",
-                icon: "/new_logo_light.png",
-              });
-            });
-            hasSetUpMessageListener.current = true;
-          }
-
-          setTimeout(() => {
-            new Notification("Test Message", {
+            // 🔹 Frontend-only notification
+            new Notification(payload.notification?.title || "New Message", {
               body: payload.notification?.body || "You got a message!",
               icon: "/new_logo_light.png",
             });
-          }, 3000);
-        } else {
-          console.log("Notifications are not supported on this browser");
+          });
+          hasSetUpMessageListener.current = true;
         }
+
+        setTimeout(() => {
+          new Notification("Test Message", {
+            body: payload.notification?.body || "You got a message!",
+            icon: "/new_logo_light.png",
+          });
+        }, 3000);
+        }else {
+  console.log("Notifications are not supported on this browser");
+}
       } catch (err) {
         console.error("FCM Error:", err);
       }
@@ -1312,11 +1364,7 @@ const InvitationCard = () => {
         unreadMessages.forEach((msg) => {
           const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
 
-          if (
-            Notification.permission === "granted" &&
-            !alreadyNotified &&
-            "Notification" in window
-          ) {
+          if (Notification.permission === "granted" && !alreadyNotified && "Notification" in window) {
             navigator.serviceWorker.ready.then((registration) => {
               registration.showNotification(
                 `New message from ${msg.senderName}`,
@@ -1391,26 +1439,26 @@ const InvitationCard = () => {
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
   };
   // helper function to generate a color from string
-  const getAvatarColor = (name) => {
-    const colors = [
-      "#F44336", // red
-      "#E91E63", // pink
-      "#9C27B0", // purple
-      "#673AB7", // deep purple
-      "#3F51B5", // indigo
-      "#2196F3", // blue
-      "#009688", // teal
-      "#4CAF50", // green
-      "#FF9800", // orange
-      "#795548", // brown
-    ];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash % colors.length);
-    return colors[index];
-  };
+const getAvatarColor = (name) => {
+  const colors = [
+    "#F44336", // red
+    "#E91E63", // pink
+    "#9C27B0", // purple
+    "#673AB7", // deep purple
+    "#3F51B5", // indigo
+    "#2196F3", // blue
+    "#009688", // teal
+    "#4CAF50", // green
+    "#FF9800", // orange
+    "#795548"  // brown
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
 
   return (
     <>
@@ -1461,7 +1509,7 @@ const InvitationCard = () => {
               {orderDetails ? (
                 <>
                   {orderDetails?.externalTemplateImageUrl ? (
-                    <div style={{padding: "15px"}}>
+                    <div style={{ padding: "20px" }}>
                       <div
                         className="invitation-container-image-ctn"
                         style={{
@@ -1645,11 +1693,7 @@ const InvitationCard = () => {
                         <div className="invite-buttons">
                           <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg-explore">
-                              <Image
-                                src={shareinvitaion}
-                                alt="Explore"
-                                className="icon-img"
-                              />
+                              <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
                           </button>
@@ -2142,7 +2186,8 @@ const InvitationCard = () => {
             <div className="chat-messages" ref={chatMessagesRef}>
               {messages.map((msg) => {
                 const isSender = msg.senderPhoneNumber === userPhoneNumber;
-                const senderName = msg.senderName;
+                const senderName =
+                  msg.senderName
 
                 return (
                   <div
@@ -2153,49 +2198,44 @@ const InvitationCard = () => {
                   >
                     {/* Receiver avatar (left side) */}
                     {!isSender && (
-                      <div
-                        className="chat-avatar-receiver"
-                        style={{
-                          backgroundColor: getAvatarColor(
-                            senderName || msg.senderPhoneNumber
-                          ),
-                        }}
-                      >
-                        {senderName
-                          ? senderName.charAt(0).toUpperCase()
-                          : msg.senderPhoneNumber.charAt(3)}
-                      </div>
-                    )}
+  <div
+    className="chat-avatar-receiver"
+    style={{
+      backgroundColor: getAvatarColor(
+        senderName || msg.senderPhoneNumber
+      )
+    }}
+  >
+    {senderName
+      ? senderName.charAt(0).toUpperCase()
+      : msg.senderPhoneNumber.charAt(3)}
+  </div>
+)}
 
-                    <div
-                      className={`chat-bubble ${
-                        isSender ? "sender" : "receiver"
-                      }`}
-                    >
-                      {/* Sirf receiver ka naam/number */}
-                      {!isSender && (
-                        <div className="chat-sender">
-                          {senderName
-                            ? senderName
-                            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-                        </div>
-                      )}
 
-                      <div className="chat-text">{msg.text}</div>
+                    <div className={`chat-bubble ${isSender ? "sender" : "receiver"}`}>
+      {/* Sirf receiver ka naam/number */}
+      {!isSender && (
+        <div className="chat-sender">
+          {senderName
+            ? senderName
+            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
+        </div>
+      )}
+{/* 
+      <div className="chat-text">{msg.text}</div> */}
+<div className="chat-text">{linkify(msg.text)}</div>
 
-                      <div className="chat-time">
-                        {msg.sentAt?.toDate
-                          ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-                              "en-IN",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              }
-                            )
-                          : ""}
-                      </div>
-                    </div>
+      <div className="chat-time">
+        {msg.sentAt?.toDate
+          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })
+          : ""}
+      </div>
+    </div>
 
                     {/* {isSender && (
                       <div className="chat-avatar">
@@ -2212,6 +2252,7 @@ const InvitationCard = () => {
             <div className="chat-input-container">
               <button
                 type="button"
+                onPointerDown={(e) => e.preventDefault()}
                 onClick={() => {
                   if (showEmojiPicker) {
                     setShowEmojiPicker(false);
@@ -2219,8 +2260,12 @@ const InvitationCard = () => {
                       textareaRef.current?.focus();
                     }, 0);
                   } else {
-                    setShowEmojiPicker(true);
-                    textareaRef.current?.blur();
+                      // setShowEmojiPicker(true);
+                      // textareaRef.current?.blur();
+                        textareaRef.current?.blur();
+    setTimeout(() => {
+      setShowEmojiPicker(true);
+    }, 50);
                   }
                 }}
                 className="emoji-btn"
@@ -2268,25 +2313,25 @@ const InvitationCard = () => {
                 className="chat-input"
                 rows={1}
                 onFocus={() => {
-                  if (showEmojiPicker) {
-                    setShowEmojiPicker(false);
-                  }
-                  // ✅ focus karte hi input ko viewport me le aa
-                  setTimeout(() => {
-                    textareaRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "end",
-                    });
+                 if (showEmojiPicker) {
+                      setShowEmojiPicker(false);
+                    }
+                     // ✅ focus karte hi input ko viewport me le aa
+                    setTimeout(() => {
+                      textareaRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "end",
+                      });
 
-                    // ✅ Extra offset ke liye manual scroll adjust
-                    window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
-                  }, 300);
+                      // ✅ Extra offset ke liye manual scroll adjust
+                      window.scrollBy(0, -180); // 80px upar le ja (adjust kar sakta hai device ke hisaab se)
+                    }, 300);
                 }}
                 onChange={(e) => {
                   setText(e.target.value);
                   if (e.target.value.length > 0) {
-                    setShowEmojiPicker(false); // typing se emoji picker band ho jaye
-                  }
+                      setShowEmojiPicker(false); // typing se emoji picker band ho jaye
+                    }
                 }}
                 onInput={(e) => {
                   e.target.style.height = "auto"; // reset height first
@@ -2332,8 +2377,10 @@ const InvitationCard = () => {
             {showEmojiPicker && (
               <div
                 className="emoji-container"
-                onMouseDown={(e) => e.preventDefault()}
-                onTouchStart={(e) => e.preventDefault()}
+                  onPointerDown={(e) => e.preventDefault()} // keep textarea focused
+
+                // onMouseDown={(e) => e.preventDefault()}
+                // onTouchStart={(e) => e.preventDefault()}
               >
                 {/* <EmojiPicker
   width={emojiWidth}
@@ -2395,13 +2442,12 @@ const InvitationCard = () => {
       {showImageUploadInfo && (
         <div className="image-upload-popup-overlay">
           <div className="upload-image-popup">
-            <h3>Upload Complete</h3>
+            <h3>Uploading your memories…</h3>
             <div className="d-flex justify-content-center my-2">
-              <Image src={SuccessIconImage} alt="Success" />
+              <Image src={SuccessIconImage} alt="Success" width={80} height={80}/>
             </div>
             <p>
-              Your images are uploading will be reflect on event wall after some
-              time.
+           Sit back and relax — this may take a few moments.
             </p>
             <div className="d-flex justify-content-center">
               <button
@@ -2414,36 +2460,35 @@ const InvitationCard = () => {
           </div>
         </div>
       )}
-
+      
       {pathname === "/wonderland" && showInstall && (
-        <div className="addhome-popup-overlay">
-          <div className="addhome-popup-container">
-            <Image
-              src={phoneImage}
-              alt="Phone Preview"
-              className="addhome-phone-image"
-            />
 
-            <div className="addhome-popup-text">
-              <p className="addhome-headline">Your parties, one tap away</p>
-              <p className="addhome-headline">Pin to your screen.</p>
-            </div>
+<div className="addhome-popup-overlay">
+  <div className="addhome-popup-container">
+    <Image src={phoneImage} alt="Phone Preview" className="addhome-phone-image" />
 
-            <button className="addhome-add-button" onClick={handleInstallClick}>
-              Add To Screen
-            </button>
+    <div className="addhome-popup-text">
+      <p className="addhome-headline">Your parties, one tap away</p>
+      <p className="addhome-headline">Pin to your screen.</p>
+    </div>
 
-            <button
-              className="addhome-later-button"
-              onClick={() => {
-                setShowInstall(false);
-                localStorage.setItem("addToHomeScreenPopup", "true");
-              }}
-            >
-              Maybe later
-            </button>
-          </div>
-        </div>
+    <button className="addhome-add-button" onClick={handleInstallClick}>
+      Add To Screen
+    </button>
+
+    <button
+      className="addhome-later-button"
+      onClick={() => {
+        setShowInstall(false);
+        localStorage.setItem("addToHomeScreenPopup", "false");
+      }}
+    >
+      Maybe later
+    </button>
+  </div>
+</div>
+
+
       )}
     </>
   );

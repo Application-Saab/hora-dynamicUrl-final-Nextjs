@@ -20,9 +20,9 @@ import { FaArrowLeft } from "react-icons/fa";
 import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/sendicon.png";
-
+import PinBanner from "../../assets/pinBanner.jpg";
 import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
-
+import { usePathname } from "next/navigation";
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
@@ -43,21 +43,10 @@ const GroupsList = () => {
   const userId = getUserIdFromUrl();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 const [totalUnread, setTotalUnread] = useState(0);
-console.log('%c [ totalUnread ]-45', 'font-size:13px; background:pink; color:#bf2c9f;', totalUnread)
-
-
-  
-  useEffect(() => {
-    const handleResize = () => {
-      // ✅ jab bhi viewport change hoga, input ko visible rakho
-      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const [text, setText] = useState("");
+ const pathname = usePathname(); // ✅ Current route
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+const [text, setText] = useState("");
 
   const textareaRef = useRef(null);
 
@@ -68,6 +57,31 @@ console.log('%c [ totalUnread ]-45', 'font-size:13px; background:pink; color:#bf
   const [guestDetails, setGuestDetails] = useState(null);
 
     const [userData, setUserData] = useState({});
+useEffect(() => {
+  const handleBackButton = (e) => {
+    if (selectedGroup) {
+      e.preventDefault();
+      setSelectedGroup(null); 
+      window.history.pushState(null, "", window.location.href); 
+    }
+  };
+
+  window.addEventListener("popstate", handleBackButton);
+
+  return () => {
+    window.removeEventListener("popstate", handleBackButton);
+  };
+}, [selectedGroup]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  
 
   useEffect(() => {
     const fetchUserAccountDetails = async () => {
@@ -165,7 +179,7 @@ const getAvatarColor = (name) => {
   const index = Math.abs(hash % colors.length);
   return colors[index];
 };
-  // Check Firestore for role and call appropriate fetch function when selectedGroup changes
+
   useEffect(() => {
     const checkRoleAndFetch = async () => {
       if (selectedGroup && selectedGroup.id) {
@@ -202,14 +216,6 @@ const getAvatarColor = (name) => {
               }
             );
           }
-
-          // if (role === "host") {
-          //   fetchOrderDetails(selectedGroup.id).then(() => {
-          //     console.log('Order Details:', orderDetails);
-          //   });
-          // } else {
-          //   fetchGuestDetails(selectedGroup.id, userIdFromStorage);
-          // }
         } catch (err) {
           console.error("Error checking member role:", err);
         }
@@ -237,26 +243,24 @@ const getAvatarColor = (name) => {
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
-  const toggleEmojiPicker = () => {
-    setIsEmojiPickerOpen((prev) => {
-      const next = !prev;
+  // const toggleEmojiPicker = () => {
+  //   setIsEmojiPickerOpen((prev) => {
+  //     const next = !prev;
 
-      if (next) {
-        // Opening emoji picker → blur input (hides keyboard on mobile)
-        inputRef.current?.blur();
-      } else {
-        // Closing emoji picker → focus input (reopens keyboard)
-        inputRef.current?.focus();
-      }
+  //     if (next) {
+  //       inputRef.current?.blur();
+  //     } else {
+  //       inputRef.current?.focus();
+  //     }
 
-      return next;
-    });
-  };
+  //     return next;
+  //   });
+  // };
 
-  const onEmojiClick = (emojiObject) => {
-    setNewMessage((prev) => prev + emojiObject.emoji);
-    // Don't refocus input here
-  };
+  // const onEmojiClick = (emojiObject) => {
+  //   setNewMessage((prev) => prev + emojiObject.emoji);
+  //   // Don't refocus input here
+  // };
 
   const scrollToBottom = () => {
     if (chatBodyRef.current) {
@@ -487,6 +491,83 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
     setTotalUnread(total);
   }
 }, [groups]);
+function linkify(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlRegex).map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
+useEffect(() => {
+  if (pathname === "/chat") {
+    if (typeof window !== "undefined") {
+      const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
+    console.log("addToHomeScreenPopup",addToHomeScreenPopup);
+    
+      if (addToHomeScreenPopup !== "true") {
+        setShowInstall(true);  
+      }
+    }
+
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }
+}, [pathname]); 
+
+
+
+
+const handleInstallClick = async () => {
+   setShowInstall(false);
+
+   if (typeof window !== "undefined") {
+     localStorage.setItem("addToHomeScreenPopup", "true");
+   }
+ 
+   
+
+   if (deferredPrompt) {
+     deferredPrompt.prompt();
+     const { outcome } = await deferredPrompt.userChoice;
+     if (outcome === 'accepted') {
+       localStorage.setItem("addToHomeScreenPopup", "true");
+       console.log("outcome",outcome,localStorage.getItem("addToHomeScreenPopup"));
+       
+     } else {
+       localStorage.setItem("addToHomeScreenPopup", "false");
+     }
+
+     setDeferredPrompt(null);
+   }
+};
+
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault(); 
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
 
   return (
     <div className="groups-container">
@@ -503,6 +584,18 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
           />
         </div>
       </div>
+
+{showInstall && (
+  <div className="chat-banner">
+    <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
+    <button className="chat-banner-btn" onClick={handleInstallClick}>
+      Add To Phone Screen
+    </button>
+  </div>
+)}
+
+
+
 
       <div className="groups-list">
         {groups
@@ -583,6 +676,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
               {/* <span>{orderDetails?.eventType} </span> */}
             </div>
           </div>
+ 
 
           <div className="chat-messages" ref={chatBodyRef}>
  {messages.map((msg) => {
@@ -608,27 +702,6 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
       : msg.senderPhoneNumber.charAt(3)}
   </div>
 )}
-                  {/* Chat bubble */}
-                  {/* <div className="chat-bubble">
-                    <div className="chat-sender">
-                      {senderName
-                        ? senderName
-                        : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-                    </div>
-                    <div className="chat-text">{msg.text}</div>
-                    <div className="chat-time">
-                      {msg.sentAt?.toDate
-                        ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-                            "en-IN",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }
-                          )
-                        : ""}
-                    </div>
-                  </div> */}
                     <div className={`chat-bubble ${isMe ? "sender" : "receiver"}`}>
       {/* Sirf receiver ka naam/number */}
       {!isMe && (
@@ -639,7 +712,7 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
         </div>
       )}
 
-      <div className="chat-text">{msg.text}</div>
+      <div className="chat-text">{linkify(msg.text)}</div>
 
       <div className="chat-time">
         {msg.sentAt?.toDate
@@ -665,118 +738,129 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
             })}
           </div>
 
-          <div className="chat-input-container">
-            <button
-              type="button"
-              onClick={() => {
-                if (showEmojiPicker) {
-                  setShowEmojiPicker(false);
-                  setTimeout(() => {
-                    textareaRef.current?.focus();
-                  }, 0);
-                } else {
-                  setShowEmojiPicker(true);
-                  textareaRef.current?.blur();
-                }
-              }}
-              className="emoji-btn"
-            >
-              {showEmojiPicker ? (
-                <FaRegKeyboard fontSize={20} />
-              ) : (
-                <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-              )}
+       <div className="chat-input-container">
+        
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      if (showEmojiPicker) {
+                        setShowEmojiPicker(false);
+                        setTimeout(() => {
+                          textareaRef.current?.focus();
+                        }, 0);
+                      } else {
+                          // setShowEmojiPicker(true);
+                          // textareaRef.current?.blur();
+                            textareaRef.current?.blur();
+        setTimeout(() => {
+          setShowEmojiPicker(true);
+        },50);
+                      }
+                    }}
+                    className="emoji-btn"
+                  >
+                    {showEmojiPicker ? (
+                      <FaRegKeyboard fontSize={20} />
+                    ) : (
+                      <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                    )}
+    
+                    <div>
+                      {/* Hidden file input */}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        style={{ display: "none" }}
+                      />
+    
+                    </div>
+                  </button>
+    
+                  <textarea
+                    value={text}
+                    ref={textareaRef}
+                    className="chat-input"
+                    rows={1}
+                    onFocus={() => {
+                     if (showEmojiPicker) {
+                          setShowEmojiPicker(false);
+                        }
+                        setTimeout(() => {
+                          textareaRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "end",
+                          });
+                          window.scrollBy(0, -180); 
+                        }, 300);
+                    }}
+                    
+                    onChange={(e) => {
+                      setText(e.target.value);
+                      if (e.target.value.length > 0) {
+                          setShowEmojiPicker(false); 
+                        }
+                    }}
+                    onInput={(e) => {
+                      e.target.style.height = "auto"; 
+                      e.target.style.height =
+                        Math.min(e.target.scrollHeight, 120) + "px"; 
+                    }}
+                    placeholder="Type message here..."
+                  />
+    
+                  <button
+                    onClick={() => {
+                      handleSendMessage();
+                      if (textareaRef.current) {
+                        textareaRef.current.style.height = "auto"; 
+                      }
+                    }}
+                    className="chat-send-btn"
+                  >
+                    <Image src={sendIcon} alt="Send" className="send-icon" />
+                  </button>
+    
+                </div>
+    
+                {showEmojiPicker && (
+                  <div
+                    className="emoji-container"
+                      onPointerDown={(e) => e.preventDefault()} 
+    
+                    // onMouseDown={(e) => e.preventDefault()}
+                    // onTouchStart={(e) => e.preventDefault()}
+                  >
+    
+    
+                    <EmojiPicker
+                      width={emojiWidth}
+                      searchDisabled={true}
+                      onEmojiClick={(emojiData) => {
+                        const textarea = textareaRef.current;
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+    
+                        setText((prevText) => {
+                          const newText =
+                            prevText.substring(0, start) +
+                            emojiData.emoji +
+                            prevText.substring(end);
+    
+                          requestAnimationFrame(() => {
+                            textarea.selectionStart = textarea.selectionEnd =
+                              start + emojiData.emoji.length;
+                          });
+    
+                          return newText;
+                        });
+                      }}
+                    />
+                  </div>
+                )}
 
-              <div>
-                {/* Hidden file input */}
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  style={{ display: "none" }}
-                />
-              </div>
-            </button>
-
-            <textarea
-              value={text}
-              ref={textareaRef}
-              className="chat-input"
-              rows={1}
-              onFocus={() => {
-                if (showEmojiPicker) {
-                  setShowEmojiPicker(false);
-                }
-                // ✅ focus karte hi input ko viewport me le aa
-                setTimeout(() => {
-                  textareaRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "end",
-                  });
-
-                  window.scrollBy(0, -180);
-                }, 300);
-              }}
-              onChange={(e) => {
-                setText(e.target.value);
-                if (e.target.value.length > 0) {
-                  setShowEmojiPicker(false); // typing se emoji picker band ho jaye
-                }
-              }}
-              onInput={(e) => {
-                e.target.style.height = "auto"; // reset height first
-                e.target.style.height =
-                  Math.min(e.target.scrollHeight, 120) + "px"; // grow up to 120px max
-              }}
-              placeholder="Type message here..."
-            />
-
-            <button
-              onClick={() => {
-                handleSendMessage();
-                if (textareaRef.current) {
-                  textareaRef.current.style.height = "auto"; // reset size after send
-                }
-              }}
-              className="chat-send-btn"
-            >
-              <Image src={sendIcon} alt="Send" className="send-icon" />
-            </button>
-          </div>
-
-          {showEmojiPicker && (
-            <div
-              className="emoji-container"
-              onMouseDown={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
-            >
-              <EmojiPicker
-                width={emojiWidth}
-                searchDisabled={true}
-                onEmojiClick={(emojiData) => {
-                  const textarea = textareaRef.current;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-
-                  setText((prevText) => {
-                    const newText =
-                      prevText.substring(0, start) +
-                      emojiData.emoji +
-                      prevText.substring(end);
-
-                    // Update cursor position without focusing (prevents keyboard)
-                    requestAnimationFrame(() => {
-                      textarea.selectionStart = textarea.selectionEnd =
-                        start + emojiData.emoji.length;
-                    });
-
-                    return newText;
-                  });
-                }}
-              />
-            </div>
-          )}
         </div>
       )}
     </div>

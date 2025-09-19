@@ -11,13 +11,17 @@ import ArrowIcon from "@/assets/forward_arrow.svg";
 import ArrowIconColoured from "@/assets/forward_arrow_coloured.svg";
 import CallIcon from "@/assets/call_icon.svg";
 import LogoutIcon from "@/assets/logout_icon.svg";
+import myordericon from "@/assets/Myordersicon.png";
+import OtpLogin from "@/components/OtpLoginPopup";
 
 const AccountPage = () => {
   const [userData, setUserData] = useState({});
   const [errorFetchUser, setErrorFetchUser] = useState(false);
   const [loadingUser, setLoadingUser] = useState(false);
-  const userId = localStorage.getItem("userID");
-  const token = localStorage.getItem("token");
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [showOtpLogin, setShowOtpLogin] = useState(false);
+ const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const [showEditName, setShowEditName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -29,11 +33,23 @@ const AccountPage = () => {
     "font-size:13px; background:pink; color:#bf2c9f;",
     preview
   );
-  const handleLogout = () => {
+  
+  useEffect(() => {
+    // ✅ check login state from localStorage
+    if (userId && token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [userId, token]);
+   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = "/wonderland";
+    setIsLoggedIn(false);
+     window.location.href = "/wonderland";
   };
-
+ const handleLogin = () => {
+  setShowOtpLogin(true);   // ✅ redirect ke jagah OTP popup khulega
+};
   useEffect(() => {
     const fetchEventImages = async () => {
       if (!userId) {
@@ -62,10 +78,16 @@ const AccountPage = () => {
         setLoadingUser(false);
       }
     };
-    // Initial call
-    fetchEventImages();
-  }, [userId, refetchUserData]);
+   
+     if (isLoggedIn) {
+      fetchEventImages();
+    }
+  }, [userId, token, isLoggedIn,refetchUserData]);
 
+const handleOrderClick = () => {
+    window.location.href = "https://horaservices.com/orderlist";
+    
+  };
   const handleNameSubmit = async (e) => {
     setEditLoading(true);
     e.preventDefault();
@@ -141,16 +163,17 @@ const AccountPage = () => {
           },
         }
       );
-
-      if (response.ok) {
-        setLoadingUpload(false);
-        const data = await response.json();
-        if (data) {
-          setPreview(null);
-          setRefetchUserData(!refetchUserData);
-        }
-        setPreview(null);
-      } else {
+if (response.ok) {
+  const data = await response.json();
+  if (data?.data?.avatar) {
+    setUserData((prev) => ({
+      ...prev,
+      avatar: data.data.avatar,
+    }));
+  }
+  setPreview(null);
+}
+ else {
         setLoadingUpload(false);
         const error = await response.json();
         alert("Submission failed: " + (error.message || error.error));
@@ -168,26 +191,31 @@ const AccountPage = () => {
     <>
       <div className="account-ctn">
         <div className="details-ctn">
+       
           <div className="user-img-ctn">
-            <img
-              src={
-                userData?.avatar
-                  ? userData?.avatar
-                  : "https://avatar.iran.liara.run/public/12"
-              }
-              height={100}
-              width={100}
-              className="user-img"
-              onClick={() => document.getElementById("userAvatarImage").click()}
-            />
-            {loadingUpload && <span className="loader"></span>}
-            <input
-              type="file"
-              id="userAvatarImage"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </div>
+  <img
+    src={
+      preview?.url
+        ? preview.url
+        : userData?.avatar
+        ? userData.avatar
+        : "https://avatar.iran.liara.run/public/12"
+    }
+    height={100}
+    width={100}
+    className="user-img"
+    onClick={() => document.getElementById("userAvatarImage").click()}
+  />
+  {/* {loadingUpload && <span className="loader"></span>} */}
+  <input
+    type="file"
+    id="userAvatarImage"
+    accept="image/*"
+    onChange={handleFileChange}
+  />
+</div>
+
+             {isLoggedIn && (
           <div>
             <p
               className="account-name"
@@ -197,9 +225,27 @@ const AccountPage = () => {
               }}
             >
               {userData?.name || "Your Name"}
-              <span className="ms-1"><Image src={ArrowIconColoured} height={18} width={18} /></span>
+              <span className="ms-1"></span>
             </p>
           </div>
+             )}
+           {isLoggedIn && (
+          <div
+            className="contact-ctn"
+            style={{ cursor: "pointer" }}
+            onClick={handleOrderClick}
+          >
+            <div className="contact-item">
+              <Image src={myordericon} height={18} width={18} />
+              <p>My Order</p>
+            </div>
+            <div>
+              <Image src={ArrowIcon} />
+            </div>
+          </div>
+        )}
+
+  {isLoggedIn && (
           <div className="contact-ctn">
             <div className="contact-item">
               <Image src={CallIcon} height={18} width={18} />
@@ -209,25 +255,43 @@ const AccountPage = () => {
                   : `+91${userData?.phone}`}
               </p>
             </div>
-            <div>
+            {/* <div>
               <Image src={ArrowIcon} />
-            </div>
+            </div> */}
           </div>
-          <div
-            className="contact-ctn"
-            style={{ cursor: "pointer" }}
-            onClick={handleLogout}
-          >
-            <div className="contact-item">
-              <Image src={LogoutIcon} height={18} width={18} />
-              <p>Logout</p>
-            </div>
-            <div>
-              <Image src={ArrowIcon} />
-            </div>
+             )}
+           <div
+          className="contact-ctn"
+          style={{ cursor: "pointer" }}
+          onClick={isLoggedIn ? handleLogout : handleLogin}
+        >
+          <div className="contact-item">
+            <Image
+              src={LogoutIcon}
+              height={18}
+              width={18}
+              alt={isLoggedIn ? "Logout" : "Login"}
+            />
+            <p>{isLoggedIn ? "Logout" : "Login"}</p>
           </div>
         </div>
+
+        </div>
       </div>
+
+        {showOtpLogin && (
+  <OtpLogin
+    setIsModalOpen={() => setShowOtpLogin(false)}
+    onSuccess={(user) => {
+      localStorage.setItem("userID", user.id);
+      localStorage.setItem("token", user.token);
+      setIsLoggedIn(true);
+      setUserData(user);
+      setShowOtpLogin(false);
+       window.dispatchEvent(new Event("loginSuccess"));
+    }}
+  />
+)}
       {showEditName && (
         <div className="modal-overlay-edit-form">
           <div className="modal-content-edit-form">
