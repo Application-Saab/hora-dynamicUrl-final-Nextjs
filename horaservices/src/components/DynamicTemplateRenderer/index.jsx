@@ -533,6 +533,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import html2canvas from "html2canvas";
+import "./DynamicTemplateRenderer.css";
 
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
@@ -754,7 +755,7 @@ const DynamicTemplateRenderer = () => {
       alert("Something went wrong.");
     }
   };
-    const handleDownload = async () => {
+  const handleDownload = async () => {
     // if (noteTitle.trim() === "") {
     //   // setErrorMsg("Please write a thank you message.");
     //   return;
@@ -803,8 +804,6 @@ const DynamicTemplateRenderer = () => {
     }, "image/png");
   };
 
-
-
   /** Replace variables inside template */
   const renderHTML = (jsCode, rawData) => {
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
@@ -823,12 +822,12 @@ const DynamicTemplateRenderer = () => {
           backgroundImage: template?.backgroundUrl
             ? `url('/assets/templates/${template?.bgImageName}')`
             : "none",
-          backgroundSize: "contain",
+          backgroundSize: "100% 100%",
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat", 
+          backgroundRepeat: "no-repeat",
           maxHeight: "530px",
-          maxWidth: '480px',
-          width: '100%',
+          maxWidth: "480px",
+          width: "100%",
           // margin: '0 auto',
           borderRadius: "10px",
           position: "relative",
@@ -853,6 +852,24 @@ const DynamicTemplateRenderer = () => {
             }}
           />
         )}
+        {/* <div style={{ position: "relative", zIndex: 2 }}>
+          <div className="invite-wrapper">
+            <div className="invite-card">
+              <div className="name">{formData.name}</div>
+              <div className="datetime">
+                {formData.date
+                  ? new Date(formData.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : ""}
+              </div>
+              <div className="time">at {formData.time}</div>
+              <div className="address">{formData.address}</div>
+            </div>
+          </div>
+        </div> */}
 
         {/* Uploaded Host Image */}
         {uploadedImage && (

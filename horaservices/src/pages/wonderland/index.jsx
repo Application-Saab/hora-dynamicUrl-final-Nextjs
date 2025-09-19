@@ -1461,18 +1461,15 @@ const InvitationCard = () => {
               {orderDetails ? (
                 <>
                   {orderDetails?.externalTemplateImageUrl ? (
-                    <div style={{ padding: "20px" }}>
+                    <div style={{padding: "15px"}}>
                       <div
+                        className="invitation-container-image-ctn"
                         style={{
                           backgroundImage:
                             orderDetails?.externalTemplateImageUrl
                               ? `url('${orderDetails.externalTemplateImageUrl}')`
                               : "none",
-                          backgroundSize: "contain",
-                          backgroundRepeat: "no-repeat",
-                          backgroundPosition: "center",
                           minHeight: "530px",
-                          // borderRadius: "12px",
                           position: "relative",
                         }}
                       >
