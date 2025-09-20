@@ -56,7 +56,7 @@
 
 
 .groups-list {
-  padding: 5px 16px 16px 16px;
+  padding: 8px 10px 16px 10px;
   /* background: #f8f9fa; */
   max-height: 500px;
   overflow-y: auto;
@@ -68,13 +68,12 @@
   align-items: center;
   gap: 5px;
   padding: 5px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   background: #ffffff;
   border-radius: 12px;
   cursor: pointer;
   position: relative;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .group-item:hover {
@@ -766,7 +765,7 @@
 }
 
 .chat-banner-img {
-  width: 90%;
+  width: 95%;
   display: block;
   margin:auto;
   box-shadow: 0px 4px 4px 0px #6c757d47;

@@ -104,16 +104,12 @@ const InvitationCard = () => {
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
-
+ const popupStatus = localStorage.getItem("addToHomeScreenPopup");
 useEffect(() => {
   if (pathname === "/wonderland") {
     if (typeof window !== "undefined") {
 
-         const popupStatus = localStorage.getItem("addToHomeScreenPopup");
-
-      if (popupStatus !== "true" && popupStatus !== "false") {
-        setShowInstall(true);
-      }
+        
     }
 
     const handler = (e) => {
@@ -132,9 +128,9 @@ useEffect(() => {
 const handleInstallClick = async () => {
    setShowInstall(false);
 
-   if (typeof window !== "undefined") {
-     localStorage.setItem("addToHomeScreenPopup", "true");
-   }
+  //  if (typeof window !== "undefined") {
+  //    localStorage.setItem("addToHomeScreenPopup", "true");
+  //  }
 
    if (deferredPrompt) {
      // Show the install prompt
@@ -2484,7 +2480,11 @@ const getAvatarColor = (name) => {
         </div>
       )}
       
-      {pathname === "/wonderland" && showInstall && (
+
+{pathname === "/wonderland" &&
+  showInstall &&
+  popupStatus !== "true" &&
+  popupStatus !== "false" && (
 
 <div className="addhome-popup-overlay">
   <div className="addhome-popup-container">

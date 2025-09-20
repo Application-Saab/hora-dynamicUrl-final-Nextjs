@@ -10,6 +10,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
@@ -47,8 +48,12 @@ const [totalUnread, setTotalUnread] = useState(0);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
 const [text, setText] = useState("");
-
+const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+const eventId = selectedGroup?.id || null;
   const textareaRef = useRef(null);
+const chatOpenRef = useRef(false);
+const [unreadCounts, setUnreadCounts] = useState({});
+
 
   const token = localStorage.getItem("token");
 
@@ -243,24 +248,7 @@ const getAvatarColor = (name) => {
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
-  // const toggleEmojiPicker = () => {
-  //   setIsEmojiPickerOpen((prev) => {
-  //     const next = !prev;
-
-  //     if (next) {
-  //       inputRef.current?.blur();
-  //     } else {
-  //       inputRef.current?.focus();
-  //     }
-
-  //     return next;
-  //   });
-  // };
-
-  // const onEmojiClick = (emojiObject) => {
-  //   setNewMessage((prev) => prev + emojiObject.emoji);
-  //   // Don't refocus input here
-  // };
+  
 
   const scrollToBottom = () => {
     if (chatBodyRef.current) {
@@ -344,6 +332,8 @@ const getAvatarColor = (name) => {
               );
             });
 
+            
+
             return {
               id: groupDoc.id,
               ...groupDoc.data(),
@@ -366,105 +356,32 @@ const getAvatarColor = (name) => {
     fetchGroupsWithMembers();
   }, [userId]);
 
-  const markAsRead = (groupId) => {
-    setGroups((prev) =>
-      prev.map((g) =>
-        g.id === groupId
-          ? {
-              ...g,
-              members: g.members.map((m) =>
-                m.id === userId
-                  ? { ...m, lastSeen: { toDate: () => new Date() } }
-                  : m
-              ),
-            }
-          : g
-      )
-    );
-  };
+const markAsRead = (groupId) => {
+  setGroups((prev) =>
+    prev.map((g) =>
+      g.id === groupId
+        ? {
+            ...g,
+            members: g.members.map((m) =>
+          memberSnap.data().lastSeenAt
+            ),
+          }
+        : g
+    )
+  );
+};
 
   const handleImageUpload = async (e) => {};
 
-  const handleOpenMessages = (group) => {
-    setSelectedGroup(group);
-    markAsRead(group.id);
 
-    const messagesRef = collection(db, "groups", group.id, "messages");
-    const q = query(messagesRef, orderBy("sentAt", "asc"));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMessages(msgs);
-
-      const memberDocRef = doc(db, "groups", group.id, "members", userId);
-      updateDoc(memberDocRef, { lastSeen: serverTimestamp() }).catch(() => {});
-    });
-
-    return unsubscribe;
-  };
-
-  const handleSendMessage = async () => {
-    if (!text.trim() || !selectedGroup) return;
-
-    try {
-      const messagesRef = collection(
-        db,
-        "groups",
-        selectedGroup.id,
-        "messages"
-      );
-
-      // Prefer orderDetails.Name, then guestDetails.name, then fallback to member name or "Guest"
-      let senderName = userData?.name || 'Guest';
-      // if (orderDetails && orderDetails.Name) {
-      //   senderName = orderDetails.Name;
-      // } else if (guestDetails && guestDetails.name) {
-      //   senderName = guestDetails.name;
-      // } else {
-      //   const currentUser = selectedGroup.members.find((m) => m.id === userId);
-      //   if (currentUser?.name) senderName = currentUser.name;
-      // }
-
-      const newMsg = {
-        text: text,
-        senderId: userId,
-        senderPhoneNumber: localStorage.getItem("mobileNumber"),
-        senderName: senderName,
-        sentAt: serverTimestamp(),
-      };
-
-      await addDoc(messagesRef, newMsg);
-
-      const groupRef = doc(db, "groups", selectedGroup.id);
-      await updateDoc(groupRef, { lastMessage: newMsg });
-
-      setText("");
-      setShowEmojiPicker(false);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
 const userPhoneNumber = localStorage.getItem("mobileNumber");
-  const getUnreadCount = (group) => {
-    console.log('%c [ group ]-444', 'font-size:13px; background:pink; color:#bf2c9f;', group)
-    const member = group.members.find((m) => m.id === userId);
-    if (!member?.lastSeen) return group.messages?.length || 0;
 
-    const lastSeen = member.lastSeen?.toDate?.() || new Date(0);
-    let totalCount = (group.messages || []).filter(
-      (msg) => msg.sentAt?.toDate?.() > lastSeen
-    ).length;
-    console.warn('%c [ totalCount ]-453', 'font-size:13px; background:pink; color:#bf2c9f;', totalCount)
+const getUnreadCount = (group) => {
+  return unreadCounts[group.id] || 0;
+};
 
-    return totalCount;
 
-    // return (group.messages || []).filter(
-    //   (msg) => msg.sentAt?.toDate?.() > lastSeen
-    // ).length;
-  };
+
 
   const customDecorator = (href, text, key) => (
     <a
@@ -478,19 +395,38 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
     </a>
   );
 
-  useEffect(() => {
-  if (groups && groups.length > 0) {
-    // har group ka unread count calculate karke sum le
-    const total = groups.reduce((acc, group) => {
-      const unread = getUnreadCount(group);
-      return acc + unread;
-    }, 0);
+useEffect(() => {
+  if (!groups || groups.length === 0 || !userId) return;
 
+  const counts = {};
+    let total = 0;
+  groups.forEach((group) => {
+    const userMember = group.members.find((m) => m.id === userId);
+    const lastSeen = userMember?.lastSeenAt?.toDate
+      ? userMember.lastSeenAt.toDate()
+      : userMember?.lastSeenAt;
+
+    const unreadMessages = (group.messages || []).filter((msg) => {
+      if (!msg.sentAt || msg.senderId === userId) return false;
+      const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+      return lastSeen ? msgDate > lastSeen : true;
+    });
+
+    counts[group.id] = unreadMessages.length;
+       total += unreadMessages.length; 
+
+
+  });
+ 
+  setUnreadCounts(counts);
     localStorage.setItem("totalUnread", total.toString());
-    window.dispatchEvent(new Event("unreadCountChange"));
-    setTotalUnread(total);
-  }
-}, [groups]);
+}, [groups, userId]);
+
+
+
+
+
+
 function linkify(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.split(urlRegex).map((part, index) => {
@@ -569,6 +505,142 @@ const handleInstallClick = async () => {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
+// --------------------------------------------------------------------------------------------------------------------------
+useEffect(() => {
+  if (!eventId || !userId) return;
+
+  const unsubscribe = listenToMessages(eventId, userId);
+
+  return () => unsubscribe();
+}, [eventId, userId, selectedGroup]); // include selectedGroup to sync unread count
+
+
+ useEffect(() => {
+  chatOpenRef.current = !!selectedGroup;
+if (selectedGroup) {
+setUnreadCounts(prev => ({
+  ...prev,
+  [eventId]: selectedGroup?.id === eventId ? 0 : (prev[eventId] || 0) + unreadMessages.length,
+}));
+
+
+
+  if (eventId && userId) {
+    const userRef = doc(db, "groups", eventId, "members", userId);
+    setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
+  }
+
+  }
+}, [selectedGroup, eventId, userId]);
+
+  const lastSeenAtRef = useRef(null);
+  const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
+
+
+
+const listenToMessages = (eventId, userId) => {
+  if (!eventId || !userId) return () => {};
+
+  const messagesRef = collection(db, "groups", eventId, "messages");
+  const q = query(messagesRef, orderBy("sentAt", "asc"));
+  const userRef = doc(db, "groups", eventId, "members", userId);
+
+  const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
+    lastSeenAtRef.current = memberSnap.exists() && memberSnap.data().lastSeenAt
+      ? memberSnap.data().lastSeenAt.toDate()
+      : null;
+  });
+
+const unsubscribeMessages = onSnapshot(q, (snapshot) => {
+  const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  setMessages(msgs);
+
+   const unreadMessages = msgs.filter((msg) => {
+      if (!msg.sentAt || msg.senderId === userId) return false;
+      const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+      return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
+    });
+
+   setUnreadCounts((prev) => ({ ...prev, [eventId]: unreadMessages.length }));
+    
+
+
+    // Notifications
+    if (!chatOpenRef.current && unreadMessages.length > 0) {
+      unreadMessages.forEach((msg) => {
+        if (
+          Notification.permission === "granted" &&
+          !notifiedMessageIdsRef.current.has(msg.id)
+        ) {
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification(`New message from ${msg.senderName}`, {
+              body: msg.text,
+              icon: "/new_logo_light.png",
+            });
+          });
+          notifiedMessageIdsRef.current.add(msg.id);
+        }
+      });
+    }
+  });
+
+
+
+  return () => {
+    unsubscribeUser();
+    unsubscribeMessages();
+  };
+};
+
+
+
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+    if (!eventId || !userID) {
+      console.warn("Missing eventId or userId — cannot send message.");
+      return;
+    }
+    const localSenderName = localStorage.getItem("wonderLandUserName") || "";
+
+    await addDoc(collection(db, "groups", eventId, "messages"), {
+      text,
+      senderId: userID,
+      
+      // senderName:
+      //   urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
+      senderName: localSenderName ? localSenderName : userData?.name,
+      senderPhoneNumber: localStorage.getItem("mobileNumber"),
+      sentAt: serverTimestamp(),
+    });
+    console.log(
+      "%c [ addDoc ]-1195",
+      "font-size:13px; background:pink; color:#bf2c9f;",
+      addDoc
+    );
+
+    setText("");
+    setShowEmojiPicker(false);
+  };
+const handleOpenMessages = (group) => {
+  setSelectedGroup(group);
+  chatOpenRef.current = true;
+
+  setUnreadCounts((prev) => ({
+    ...prev,
+    [group.id]: 0,
+  }));
+
+  if (userId) {
+    const userRef = doc(db, "groups", group.id, "members", userId);
+    setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
+  }
+};
+
+
+
+
+  //------------------------------------------------------------------------------------------------------------------------------
+
   return (
     <div className="groups-container">
       <div className="groups-header">
@@ -604,21 +676,12 @@ const handleInstallClick = async () => {
           )
           .map((group) => {
             const unread = getUnreadCount(group);
-            console.log('%c [ unread ]-495', 'font-size:13px; background:pink; color:#bf2c9f;', unread)
-            return (
+                  return (
               <div
                 key={group.id}
                 className="group-item"
                 onClick={() => handleOpenMessages(group)}
               >
-                {/* <img
-                  src={
-                    group.imageUrl || "https://i.pravatar.cc/150?u=" + group.id
-                  }
-                  alt={group.name}
-                  className="group-avatar"
-                />
-                 */}
                 {group.imageUrl ? (
                   <img
                     src={group.imageUrl}
@@ -646,13 +709,19 @@ const handleInstallClick = async () => {
 
                 <div className="group-info">
                   <p className="group-name">{group.name || "Unnamed Group"}</p>
-                  <span className="group-last">
-                    {unread > 0
-                      ? `${unread} New Message${unread > 1 ? "s" : ""}`
-                      : "No new messages"}
-                  </span>
+ <span className="group-last">
+  {getUnreadCount(group) > 0
+    ? `${getUnreadCount(group)} New Message${getUnreadCount(group) > 1 ? "s" : ""}`
+    : "No new messages"}
+</span>
+
+
+{unreadCounts[group.id] > 0 && <span className="unread-dot"></span>}
+
+
                 </div>
-                {unread > 0 && <span className="unread-dot"></span>}
+               
+{unreadCounts[group.id] > 0 && <span className="unread-dot"></span>}
               </div>
             );
           })}
@@ -680,7 +749,9 @@ const handleInstallClick = async () => {
 
           <div className="chat-messages" ref={chatBodyRef}>
  {messages.map((msg) => {
-                const isMe = msg.senderPhoneNumber === userPhoneNumber;
+               // message render
+const isMe = msg.senderId === userID;
+
                 const senderName =
                   msg.senderName
               return (
@@ -813,7 +884,7 @@ const handleInstallClick = async () => {
     
                   <button
                     onClick={() => {
-                      handleSendMessage();
+                      sendMessage();
                       if (textareaRef.current) {
                         textareaRef.current.style.height = "auto"; 
                       }
