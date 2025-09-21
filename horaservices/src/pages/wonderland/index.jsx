@@ -74,6 +74,7 @@ import { FaImage } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
 import A2HSPrompt from "../../components/AddToHomeScreen";
+import { markGroupAsRead } from "@/utils/unread";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
@@ -1453,6 +1454,8 @@ const getAvatarColor = (name) => {
   const index = Math.abs(hash % colors.length);
   return colors[index];
 };
+  
+
 
   return (
     <>
@@ -1643,6 +1646,7 @@ const getAvatarColor = (name) => {
                             setChatOpen(true);
                             chatOpenRef.current = true;
                             setUnreadCount(0);
+                           markGroupAsRead(eventId);
 
                             const userRef = doc(
                               db,

@@ -39,6 +39,29 @@ useEffect(() => {
     router.events.off("routeChangeComplete", handleRouteChange);
   };
 }, [router]);
+useEffect(() => {
+  const syncUnread = () => {
+    const count = parseInt(localStorage.getItem("totalUnread") || "0");
+    setTotalUnreadCount(count);
+  };
+
+  // Initial sync
+  syncUnread();
+
+  // Listen to same-tab event
+  window.addEventListener("unreadCountChange", syncUnread);
+
+  // Listen to cross-tab storage change
+  const storageListener = (e) => {
+    if (e.key === "totalUnread") syncUnread();
+  };
+  window.addEventListener("storage", storageListener);
+
+  return () => {
+    window.removeEventListener("unreadCountChange", syncUnread);
+    window.removeEventListener("storage", storageListener);
+  };
+}, []);
 
   useEffect(() => {
     const loadUserId = () => {

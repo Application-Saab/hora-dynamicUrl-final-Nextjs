@@ -1,3 +1,5 @@
+
+
 import React, { useRef, useEffect, useState } from "react";
 import { db } from "../../firebase";
 import {
@@ -62,6 +64,9 @@ const [unreadCounts, setUnreadCounts] = useState({});
   const [guestDetails, setGuestDetails] = useState(null);
 
     const [userData, setUserData] = useState({});
+
+    const [refreshKey, setRefreshKey] = useState(0);
+
 useEffect(() => {
   const handleBackButton = (e) => {
     if (selectedGroup) {
@@ -115,7 +120,7 @@ useEffect(() => {
     };
     // Initial call
     fetchUserAccountDetails();
-  }, [userId]);
+  }, [userId] );
 
 
   const fetchOrderDetails = async (eventId) => {
@@ -249,12 +254,13 @@ const getAvatarColor = (name) => {
   }, []);
 
   
-
-  const scrollToBottom = () => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+ useEffect(() => {
+    const chatContainer = document.querySelector(".chat-messages");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  };
+  }, [messages]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -292,9 +298,6 @@ const getAvatarColor = (name) => {
     };
   }, [isEmojiPickerOpen]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   useEffect(() => {
     if (!userId) return;
@@ -354,22 +357,24 @@ const getAvatarColor = (name) => {
     };
 
     fetchGroupsWithMembers();
-  }, [userId]);
+  }, [userId,refreshKey]);
 
-const markAsRead = (groupId) => {
-  setGroups((prev) =>
-    prev.map((g) =>
-      g.id === groupId
-        ? {
-            ...g,
-            members: g.members.map((m) =>
-          memberSnap.data().lastSeenAt
-            ),
-          }
-        : g
-    )
-  );
-};
+ const markAsRead = (groupId) => {
+    setGroups((prev) =>
+      prev.map((g) =>
+        g.id === groupId
+          ? {
+              ...g,
+              members: g.members.map((m) =>
+                m.id === userId
+                  ? { ...m, lastSeen: { toDate: () => new Date() } }
+                  : m
+              ),
+            }
+          : g
+      )
+    );
+  };
 
   const handleImageUpload = async (e) => {};
 
@@ -395,35 +400,38 @@ const getUnreadCount = (group) => {
     </a>
   );
 
+
+
 useEffect(() => {
-  if (!groups || groups.length === 0 || !userId) return;
+  if (!groups || groups.length === 0 || !userId || chatOpenRef.current) return;
 
-  const counts = {};
+  // Delay execution slightly
+  const timeout = setTimeout(() => {
+    const counts = {};
     let total = 0;
-  groups.forEach((group) => {
-    const userMember = group.members.find((m) => m.id === userId);
-    const lastSeen = userMember?.lastSeenAt?.toDate
-      ? userMember.lastSeenAt.toDate()
-      : userMember?.lastSeenAt;
+    groups.forEach((group) => {
+      const userMember = group.members.find((m) => m.id === userId);
+      const lastSeen = userMember?.lastSeenAt?.toDate
+        ? userMember.lastSeenAt.toDate()
+        : userMember?.lastSeenAt;
 
-    const unreadMessages = (group.messages || []).filter((msg) => {
-      if (!msg.sentAt || msg.senderId === userId) return false;
-      const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-      return lastSeen ? msgDate > lastSeen : true;
+      const unreadMessages = (group.messages || []).filter((msg) => {
+        if (!msg.sentAt || msg.senderId === userId) return false;
+        const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+        return lastSeen ? msgDate > lastSeen : true;
+      });
+
+      counts[group.id] = unreadMessages.length;
+      total += unreadMessages.length;
     });
 
-    counts[group.id] = unreadMessages.length;
-       total += unreadMessages.length; 
-
-
-  });
- 
-  setUnreadCounts(counts);
+    setUnreadCounts(counts);
     localStorage.setItem("totalUnread", total.toString());
+    window.dispatchEvent(new Event("unreadCountChange"));
+  }, 500); // wait 500ms for Firestore update to apply
+
+  return () => clearTimeout(timeout);
 }, [groups, userId]);
-
-
-
 
 
 
@@ -471,12 +479,6 @@ useEffect(() => {
 const handleInstallClick = async () => {
    setShowInstall(false);
 
-   if (typeof window !== "undefined") {
-     localStorage.setItem("addToHomeScreenPopup", "true");
-   }
- 
-   
-
    if (deferredPrompt) {
      deferredPrompt.prompt();
      const { outcome } = await deferredPrompt.userChoice;
@@ -512,29 +514,31 @@ useEffect(() => {
   const unsubscribe = listenToMessages(eventId, userId);
 
   return () => unsubscribe();
-}, [eventId, userId, selectedGroup]); // include selectedGroup to sync unread count
+}, [eventId, userId, selectedGroup]); 
 
-
- useEffect(() => {
+useEffect(() => {
   chatOpenRef.current = !!selectedGroup;
-if (selectedGroup) {
-setUnreadCounts(prev => ({
-  ...prev,
-  [eventId]: selectedGroup?.id === eventId ? 0 : (prev[eventId] || 0) + unreadMessages.length,
-}));
 
-
-
-  if (eventId && userId) {
-    const userRef = doc(db, "groups", eventId, "members", userId);
-    setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
-  }
+  if (selectedGroup && eventId && userId) {
+    const updatedCounts = {
+      ...unreadCounts,
+      [eventId]: 0,
+    };
+    setUnreadCounts(updatedCounts);
 
   }
 }, [selectedGroup, eventId, userId]);
 
   const lastSeenAtRef = useRef(null);
-  const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
+  const notifiedMessageIdsRef = useRef(new Set()); 
+
+  
+const updateLocalUnread = (updatedCounts) => {
+  const total = Object.values(updatedCounts).reduce((sum, count) => sum + count, 0);
+  localStorage.setItem("totalUnread", total.toString());
+  window.dispatchEvent(new Event("unreadCountChange"));
+  return total;
+};
 
 
 
@@ -555,14 +559,31 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
   const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   setMessages(msgs);
 
-   const unreadMessages = msgs.filter((msg) => {
-      if (!msg.sentAt || msg.senderId === userId) return false;
-      const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-      return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
-    });
+  const unreadMessages = msgs.filter((msg) => {
+    if (!msg.sentAt || msg.senderId === userId) return false;
+    const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+    return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
+  });
 
-   setUnreadCounts((prev) => ({ ...prev, [eventId]: unreadMessages.length }));
-    
+  setUnreadCounts((prev) => {
+    const updated = { ...prev, [eventId]: chatOpenRef.current ? 0 : unreadMessages.length };
+
+    if (chatOpenRef.current) {
+      // Update Firestore immediately for lastSeen
+      const userRef = doc(db, "groups", eventId, "members", userId);
+      setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
+      lastSeenAtRef.current = new Date(); // local reference
+    }
+
+    updateLocalUnread(updated);
+    return updated;
+  });
+
+
+
+
+
+
 
 
     // Notifications
@@ -592,8 +613,6 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
   };
 };
 
-
-
   const sendMessage = async () => {
     if (!text.trim()) return;
     if (!eventId || !userID) {
@@ -621,21 +640,62 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
     setText("");
     setShowEmojiPicker(false);
   };
-const handleOpenMessages = (group) => {
-  setSelectedGroup(group);
+
+const handleOpenMessages = async (group) => {
   chatOpenRef.current = true;
+  setSelectedGroup(group);
 
-  setUnreadCounts((prev) => ({
-    ...prev,
-    [group.id]: 0,
-  }));
+  // reset unread immediately
+  setUnreadCounts((prev) => {
+    const updated = { ...prev, [group.id]: 0 };
+    updateLocalUnread(updated);
+    return updated;
+  });
 
+  // update lastSeen both local + Firestore
+  lastSeenAtRef.current = new Date();
   if (userId) {
     const userRef = doc(db, "groups", group.id, "members", userId);
-    setDoc(userRef, { lastSeenAt: new Date() }, { merge: true });
+    await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
   }
 };
 
+
+// const handleCloseChat = async () => {
+//   chatOpenRef.current = false;
+//   lastSeenAtRef.current = new Date();
+
+//   if (userId && selectedGroup) {
+//     const userRef = doc(db, "groups", selectedGroup.id, "members", userId);
+//     await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
+//   }
+
+//   setSelectedGroup(null);
+// };
+
+
+const handleCloseChat = async () => {
+  if (!selectedGroup || !userId) return;
+
+  // Forcefully mark all messages as seen
+  const userRef = doc(db, "groups", selectedGroup.id, "members", userId);
+  await setDoc(
+    userRef,
+    { lastSeenAt: serverTimestamp() }, // Firestore timestamp
+    { merge: true }
+  );
+  lastSeenAtRef.current = new Date(); // local reference
+
+  // Reset unread count for this chat locally
+  setUnreadCounts((prev) => {
+    const updated = { ...prev, [selectedGroup.id]: 0 };
+    updateLocalUnread(updated);
+    return updated;
+  });
+
+  setSelectedGroup(null);
+    setRefreshKey((prev) => prev + 1);
+};
 
 
 
@@ -675,7 +735,6 @@ const handleOpenMessages = (group) => {
             group.name?.toLowerCase().includes(searchTerm.toLowerCase())
           )
           .map((group) => {
-            const unread = getUnreadCount(group);
                   return (
               <div
                 key={group.id}
@@ -714,11 +773,6 @@ const handleOpenMessages = (group) => {
     ? `${getUnreadCount(group)} New Message${getUnreadCount(group) > 1 ? "s" : ""}`
     : "No new messages"}
 </span>
-
-
-{unreadCounts[group.id] > 0 && <span className="unread-dot"></span>}
-
-
                 </div>
                
 {unreadCounts[group.id] > 0 && <span className="unread-dot"></span>}
@@ -733,12 +787,11 @@ const handleOpenMessages = (group) => {
             <div className="chat-user-info">
               <button
                 className="btn back-arrow-chat"
-                // onClick={() => {
-                // setChatOpen(false);
-                // chatOpenRef.current = false;
-                onClick={() => setSelectedGroup(null)}
-                // }}
-              >
+                 onClick={() => {
+          
+    handleCloseChat()
+  }}
+             >
                 <FaArrowLeft fontSize={16} />
               </button>
               <span className="mx-2">{`${selectedGroup.name}`}</span>{" "}
@@ -939,3 +992,5 @@ const isMe = msg.senderId === userID;
 };
 
 export default GroupsList;
+
+
