@@ -449,32 +449,52 @@ function linkify(text) {
   });
 }
 
-useEffect(() => {
-  if (pathname === "/chat") {
-    if (typeof window !== "undefined") {
-      const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
-    console.log("addToHomeScreenPopup",addToHomeScreenPopup);
+// useEffect(() => {
+//   if (pathname === "/chat") {
+//     if (typeof window !== "undefined") {
+//       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
+//     console.log("addToHomeScreenPopup",addToHomeScreenPopup);
     
-      if (addToHomeScreenPopup !== "true") {
-        setShowInstall(true);  
-      }
+//       if (addToHomeScreenPopup !== "true") {
+//         setShowInstall(true);  
+//       }
+//     }
+
+//     const handler = (e) => {
+//       e.preventDefault();
+//       setDeferredPrompt(e);
+//     };
+
+//     window.addEventListener("beforeinstallprompt", handler);
+
+//     return () => {
+//       window.removeEventListener("beforeinstallprompt", handler);
+//     };
+//   }
+// }, [pathname]); 
+
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
+    console.log("addToHomeScreenPopup", addToHomeScreenPopup);
+
+    if (addToHomeScreenPopup !== "true") {
+      setShowInstall(true);
     }
-
-    const handler = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
   }
-}, [pathname]); 
 
+  const handler = (e) => {
+    e.preventDefault();
+    setDeferredPrompt(e);
+  };
 
+  window.addEventListener("beforeinstallprompt", handler);
 
+  return () => {
+    window.removeEventListener("beforeinstallprompt", handler);
+  };
+}, [pathname]);
 
 const handleInstallClick = async () => {
    setShowInstall(false);
@@ -717,7 +737,7 @@ const handleCloseChat = async () => {
         </div>
       </div>
 
-{showInstall && (
+{pathname === "/chat" && showInstall && (
   <div className="chat-banner">
     <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
     <button className="chat-banner-btn" onClick={handleInstallClick}>
