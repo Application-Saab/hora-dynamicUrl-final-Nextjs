@@ -1,3 +1,126 @@
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+/* Main Page CSS */
+
+.form-wrapper {
+  margin-top: 25px;
+  max-width: 500px;
+  margin-bottom: 30px;
+  padding: 20px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  background: linear-gradient(
+    180deg,
+    #a8e3fe 0%,
+    #fed7f3 53.58%,
+    #fedfd7 88.89%,
+    #ffdace 100%
+  );
+}
+
+.heading-txt {
+  font-family: "Aclonica", sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #97538c;
+}
+
+.char-count {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.error-msg {
+  font-size: 12px;
+  color: red;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.preview-wrapper {
+  margin: 10px 0;
+  cursor: pointer;
+  text-align: center;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.upload-box {
+  border: 2px dashed #aaa;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #ff9cad;
+  border-radius: 11px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.save-btn {
+  flex: 1;
+  background: #97538c;
+  border-radius: 11px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.input-label {
+  text-align: left;
+  font-size: 0.791rem;
+  font-weight: 600;
+  color: #424648;
+  font-family: "Open Sans", sans-serif;
+  margin-bottom: 4px;
+  display: block;
+}
+.date-time-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.field-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  /* margin-bottom: 10px; */
+  outline: none;
+  background-color: white;
+  transition: border 0.3s;
+  color: #00000099;
+}
+
 /* Haldi template CSS */
 /* 
 .haldi-wrapper {
@@ -263,5 +386,195 @@
   }
   .address {
     font-size: 16px;
+  }
+} */
+
+/* ************************************************ */
+/* Template 3 CSS */
+/* .invite-wrapper {
+  background: url("/balloon-bg.png") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 530px;
+  aspect-ratio: 11 / 19;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: 50px;
+  font-family: "Monotype Corsiva", cursive;
+  color: white;
+}
+
+.datetime {
+  position: absolute;
+  top: 65%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.time {
+  position: absolute;
+  top: 71%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.address {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+  line-height: 1.4;
+}
+
+@media (min-width: 600px) {
+  .name {
+    font-size: 44px;
+  }
+  .datetime,
+  .time {
+    font-size: 20px;
+  }
+  .address {
+    font-size: 16px;
+  }
+} */
+
+/* Template 1 CSS */
+/* .invite-wrapper {
+  background: url("/balloon-bg.png") no-repeat center center;
+  background-size: cover;
+  padding: 30px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 480px;
+  max-height: 530px;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 530px;
+  aspect-ratio: 11 / 19;
+  background-image: url(/GoldandBlueSimpleBirthdayPartyInvitation.png);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.top-text,
+.name,
+.birthday,
+.party,
+.time,
+.datetime,
+.month,
+.address {
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: 300%;
+  font-family: "Monotype Corsiva", cursive;
+  color: white;
+}
+.date-time-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.time,
+.datetime,
+.month {
+  position: absolute;
+  color: #ffd95c;
+}
+
+.time {
+  left: 0%;
+  right: 0%;
+  top: 65%;
+  font-size: 30px;
+}
+
+.datetime {
+  left: 0%;
+  right: 0%;
+  top: 65%;
+  font-size: 30px;
+}
+
+.month {
+  right: 12%;
+}
+
+.address {
+  position: absolute;
+  top: 84%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  text-align: center;
+  font-size: 13px;
+  color: white;
+  line-height: 1.5;
+}
+
+@media (min-width: 600px) {
+  .name {
+    font-size: 44px;
+  }
+  .time,
+  .month {
+    font-size: 18px;
+  }
+  .datetime {
+    font-size: 32px;
+  }
+  .address {
+    font-size: 15px;
   }
 } */
