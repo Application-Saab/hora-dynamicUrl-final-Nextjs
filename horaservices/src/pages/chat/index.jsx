@@ -1,3 +1,5 @@
+
+
 import React, { useRef, useEffect, useState } from "react";
 import { db } from "../../firebase";
 import {
@@ -10,6 +12,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
@@ -22,7 +25,7 @@ import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
 import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
-
+import { usePathname } from "next/navigation";
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
@@ -43,13 +46,32 @@ const GroupsList = () => {
   const userId = getUserIdFromUrl();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 const [totalUnread, setTotalUnread] = useState(0);
-console.log('%c [ totalUnread ]-45', 'font-size:13px; background:pink; color:#bf2c9f;', totalUnread)
+ const pathname = usePathname(); // ✅ Current route
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+const [text, setText] = useState("");
+const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+const eventId = selectedGroup?.id || null;
+  const textareaRef = useRef(null);
+const chatOpenRef = useRef(false);
+const [unreadCounts, setUnreadCounts] = useState({});
+
+
+  const token = localStorage.getItem("token");
+
+  const [orderDetails, setOrderDetails] = useState(null);
+
+  const [guestDetails, setGuestDetails] = useState(null);
+
+    const [userData, setUserData] = useState({});
+
+    const [refreshKey, setRefreshKey] = useState(0);
 
 useEffect(() => {
   const handleBackButton = (e) => {
     if (selectedGroup) {
       e.preventDefault();
-      setSelectedGroup(null); // 👈 back press par list khol do
+      setSelectedGroup(null); 
       window.history.pushState(null, "", window.location.href); 
     }
   };
@@ -61,28 +83,15 @@ useEffect(() => {
   };
 }, [selectedGroup]);
 
-  
   useEffect(() => {
     const handleResize = () => {
-      // ✅ jab bhi viewport change hoga, input ko visible rakho
       textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [text, setText] = useState("");
-
-  const textareaRef = useRef(null);
-
-  const token = localStorage.getItem("token");
-
-  const [orderDetails, setOrderDetails] = useState(null);
-
-  const [guestDetails, setGuestDetails] = useState(null);
-
-    const [userData, setUserData] = useState({});
+  
 
   useEffect(() => {
     const fetchUserAccountDetails = async () => {
@@ -111,7 +120,7 @@ useEffect(() => {
     };
     // Initial call
     fetchUserAccountDetails();
-  }, [userId]);
+  }, [userId] );
 
 
   const fetchOrderDetails = async (eventId) => {
@@ -180,7 +189,7 @@ const getAvatarColor = (name) => {
   const index = Math.abs(hash % colors.length);
   return colors[index];
 };
-  // Check Firestore for role and call appropriate fetch function when selectedGroup changes
+
   useEffect(() => {
     const checkRoleAndFetch = async () => {
       if (selectedGroup && selectedGroup.id) {
@@ -217,14 +226,6 @@ const getAvatarColor = (name) => {
               }
             );
           }
-
-          // if (role === "host") {
-          //   fetchOrderDetails(selectedGroup.id).then(() => {
-          //     console.log('Order Details:', orderDetails);
-          //   });
-          // } else {
-          //   fetchGuestDetails(selectedGroup.id, userIdFromStorage);
-          // }
         } catch (err) {
           console.error("Error checking member role:", err);
         }
@@ -252,32 +253,14 @@ const getAvatarColor = (name) => {
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
-  const toggleEmojiPicker = () => {
-    setIsEmojiPickerOpen((prev) => {
-      const next = !prev;
-
-      if (next) {
-        // Opening emoji picker → blur input (hides keyboard on mobile)
-        inputRef.current?.blur();
-      } else {
-        // Closing emoji picker → focus input (reopens keyboard)
-        inputRef.current?.focus();
-      }
-
-      return next;
-    });
-  };
-
-  const onEmojiClick = (emojiObject) => {
-    setNewMessage((prev) => prev + emojiObject.emoji);
-    // Don't refocus input here
-  };
-
-  const scrollToBottom = () => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+  
+ useEffect(() => {
+    const chatContainer = document.querySelector(".chat-messages");
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  };
+  }, [messages]);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -315,9 +298,6 @@ const getAvatarColor = (name) => {
     };
   }, [isEmojiPickerOpen]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   useEffect(() => {
     if (!userId) return;
@@ -355,6 +335,8 @@ const getAvatarColor = (name) => {
               );
             });
 
+            
+
             return {
               id: groupDoc.id,
               ...groupDoc.data(),
@@ -375,9 +357,9 @@ const getAvatarColor = (name) => {
     };
 
     fetchGroupsWithMembers();
-  }, [userId]);
+  }, [userId,refreshKey]);
 
-  const markAsRead = (groupId) => {
+ const markAsRead = (groupId) => {
     setGroups((prev) =>
       prev.map((g) =>
         g.id === groupId
@@ -396,86 +378,15 @@ const getAvatarColor = (name) => {
 
   const handleImageUpload = async (e) => {};
 
-  const handleOpenMessages = (group) => {
-    setSelectedGroup(group);
-    markAsRead(group.id);
 
-    const messagesRef = collection(db, "groups", group.id, "messages");
-    const q = query(messagesRef, orderBy("sentAt", "asc"));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMessages(msgs);
-
-      const memberDocRef = doc(db, "groups", group.id, "members", userId);
-      updateDoc(memberDocRef, { lastSeen: serverTimestamp() }).catch(() => {});
-    });
-
-    return unsubscribe;
-  };
-
-  const handleSendMessage = async () => {
-    if (!text.trim() || !selectedGroup) return;
-
-    try {
-      const messagesRef = collection(
-        db,
-        "groups",
-        selectedGroup.id,
-        "messages"
-      );
-
-      // Prefer orderDetails.Name, then guestDetails.name, then fallback to member name or "Guest"
-      let senderName = userData?.name || 'Guest';
-      // if (orderDetails && orderDetails.Name) {
-      //   senderName = orderDetails.Name;
-      // } else if (guestDetails && guestDetails.name) {
-      //   senderName = guestDetails.name;
-      // } else {
-      //   const currentUser = selectedGroup.members.find((m) => m.id === userId);
-      //   if (currentUser?.name) senderName = currentUser.name;
-      // }
-
-      const newMsg = {
-        text: text,
-        senderId: userId,
-        senderPhoneNumber: localStorage.getItem("mobileNumber"),
-        senderName: senderName,
-        sentAt: serverTimestamp(),
-      };
-
-      await addDoc(messagesRef, newMsg);
-
-      const groupRef = doc(db, "groups", selectedGroup.id);
-      await updateDoc(groupRef, { lastMessage: newMsg });
-
-      setText("");
-      setShowEmojiPicker(false);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
 const userPhoneNumber = localStorage.getItem("mobileNumber");
-  const getUnreadCount = (group) => {
-    console.log('%c [ group ]-444', 'font-size:13px; background:pink; color:#bf2c9f;', group)
-    const member = group.members.find((m) => m.id === userId);
-    if (!member?.lastSeen) return group.messages?.length || 0;
 
-    const lastSeen = member.lastSeen?.toDate?.() || new Date(0);
-    let totalCount = (group.messages || []).filter(
-      (msg) => msg.sentAt?.toDate?.() > lastSeen
-    ).length;
-    console.warn('%c [ totalCount ]-453', 'font-size:13px; background:pink; color:#bf2c9f;', totalCount)
+const getUnreadCount = (group) => {
+  return unreadCounts[group.id] || 0;
+};
 
-    return totalCount;
 
-    // return (group.messages || []).filter(
-    //   (msg) => msg.sentAt?.toDate?.() > lastSeen
-    // ).length;
-  };
+
 
   const customDecorator = (href, text, key) => (
     <a
@@ -489,19 +400,41 @@ const userPhoneNumber = localStorage.getItem("mobileNumber");
     </a>
   );
 
-  useEffect(() => {
-  if (groups && groups.length > 0) {
-    // har group ka unread count calculate karke sum le
-    const total = groups.reduce((acc, group) => {
-      const unread = getUnreadCount(group);
-      return acc + unread;
-    }, 0);
 
+
+useEffect(() => {
+  if (!groups || groups.length === 0 || !userId || chatOpenRef.current) return;
+
+  // Delay execution slightly
+  const timeout = setTimeout(() => {
+    const counts = {};
+    let total = 0;
+    groups.forEach((group) => {
+      const userMember = group.members.find((m) => m.id === userId);
+      const lastSeen = userMember?.lastSeenAt?.toDate
+        ? userMember.lastSeenAt.toDate()
+        : userMember?.lastSeenAt;
+
+      const unreadMessages = (group.messages || []).filter((msg) => {
+        if (!msg.sentAt || msg.senderId === userId) return false;
+        const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+        return lastSeen ? msgDate > lastSeen : true;
+      });
+
+      counts[group.id] = unreadMessages.length;
+      total += unreadMessages.length;
+    });
+
+    setUnreadCounts(counts);
     localStorage.setItem("totalUnread", total.toString());
     window.dispatchEvent(new Event("unreadCountChange"));
-    setTotalUnread(total);
-  }
-}, [groups]);
+  }, 500); // wait 500ms for Firestore update to apply
+
+  return () => clearTimeout(timeout);
+}, [groups, userId]);
+
+
+
 function linkify(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.split(urlRegex).map((part, index) => {
@@ -515,6 +448,258 @@ function linkify(text) {
     return part;
   });
 }
+
+useEffect(() => {
+  if (pathname === "/chat") {
+    if (typeof window !== "undefined") {
+      const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
+    console.log("addToHomeScreenPopup",addToHomeScreenPopup);
+    
+      if (addToHomeScreenPopup !== "true") {
+        setShowInstall(true);  
+      }
+    }
+
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }
+}, [pathname]); 
+
+
+
+
+const handleInstallClick = async () => {
+   setShowInstall(false);
+
+   if (deferredPrompt) {
+     deferredPrompt.prompt();
+     const { outcome } = await deferredPrompt.userChoice;
+     if (outcome === 'accepted') {
+       localStorage.setItem("addToHomeScreenPopup", "true");
+       console.log("outcome",outcome,localStorage.getItem("addToHomeScreenPopup"));
+       
+     } else {
+       localStorage.setItem("addToHomeScreenPopup", "false");
+     }
+
+     setDeferredPrompt(null);
+   }
+};
+
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault(); 
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+// --------------------------------------------------------------------------------------------------------------------------
+useEffect(() => {
+  if (!eventId || !userId) return;
+
+  const unsubscribe = listenToMessages(eventId, userId);
+
+  return () => unsubscribe();
+}, [eventId, userId, selectedGroup]); 
+
+useEffect(() => {
+  chatOpenRef.current = !!selectedGroup;
+
+  if (selectedGroup && eventId && userId) {
+    const updatedCounts = {
+      ...unreadCounts,
+      [eventId]: 0,
+    };
+    setUnreadCounts(updatedCounts);
+
+  }
+}, [selectedGroup, eventId, userId]);
+
+  const lastSeenAtRef = useRef(null);
+  const notifiedMessageIdsRef = useRef(new Set()); 
+
+  
+const updateLocalUnread = (updatedCounts) => {
+  const total = Object.values(updatedCounts).reduce((sum, count) => sum + count, 0);
+  localStorage.setItem("totalUnread", total.toString());
+  window.dispatchEvent(new Event("unreadCountChange"));
+  return total;
+};
+
+
+
+const listenToMessages = (eventId, userId) => {
+  if (!eventId || !userId) return () => {};
+
+  const messagesRef = collection(db, "groups", eventId, "messages");
+  const q = query(messagesRef, orderBy("sentAt", "asc"));
+  const userRef = doc(db, "groups", eventId, "members", userId);
+
+  const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
+    lastSeenAtRef.current = memberSnap.exists() && memberSnap.data().lastSeenAt
+      ? memberSnap.data().lastSeenAt.toDate()
+      : null;
+  });
+
+const unsubscribeMessages = onSnapshot(q, (snapshot) => {
+  const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  setMessages(msgs);
+
+  const unreadMessages = msgs.filter((msg) => {
+    if (!msg.sentAt || msg.senderId === userId) return false;
+    const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+    return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
+  });
+
+  setUnreadCounts((prev) => {
+    const updated = { ...prev, [eventId]: chatOpenRef.current ? 0 : unreadMessages.length };
+
+    if (chatOpenRef.current) {
+      // Update Firestore immediately for lastSeen
+      const userRef = doc(db, "groups", eventId, "members", userId);
+      setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
+      lastSeenAtRef.current = new Date(); // local reference
+    }
+
+    updateLocalUnread(updated);
+    return updated;
+  });
+
+
+
+
+
+
+
+
+    // Notifications
+    if (!chatOpenRef.current && unreadMessages.length > 0) {
+      unreadMessages.forEach((msg) => {
+        if (
+          Notification.permission === "granted" &&
+          !notifiedMessageIdsRef.current.has(msg.id)
+        ) {
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification(`New message from ${msg.senderName}`, {
+              body: msg.text,
+              icon: "/new_logo_light.png",
+            });
+          });
+          notifiedMessageIdsRef.current.add(msg.id);
+        }
+      });
+    }
+  });
+
+
+
+  return () => {
+    unsubscribeUser();
+    unsubscribeMessages();
+  };
+};
+
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+    if (!eventId || !userID) {
+      console.warn("Missing eventId or userId — cannot send message.");
+      return;
+    }
+    const localSenderName = localStorage.getItem("wonderLandUserName") || "";
+
+    await addDoc(collection(db, "groups", eventId, "messages"), {
+      text,
+      senderId: userID,
+      
+      // senderName:
+      //   urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
+      senderName: localSenderName ? localSenderName : userData?.name,
+      senderPhoneNumber: localStorage.getItem("mobileNumber"),
+      sentAt: serverTimestamp(),
+    });
+    console.log(
+      "%c [ addDoc ]-1195",
+      "font-size:13px; background:pink; color:#bf2c9f;",
+      addDoc
+    );
+
+    setText("");
+    setShowEmojiPicker(false);
+  };
+
+const handleOpenMessages = async (group) => {
+  chatOpenRef.current = true;
+  setSelectedGroup(group);
+
+  // reset unread immediately
+  setUnreadCounts((prev) => {
+    const updated = { ...prev, [group.id]: 0 };
+    updateLocalUnread(updated);
+    return updated;
+  });
+
+  // update lastSeen both local + Firestore
+  lastSeenAtRef.current = new Date();
+  if (userId) {
+    const userRef = doc(db, "groups", group.id, "members", userId);
+    await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
+  }
+};
+
+
+// const handleCloseChat = async () => {
+//   chatOpenRef.current = false;
+//   lastSeenAtRef.current = new Date();
+
+//   if (userId && selectedGroup) {
+//     const userRef = doc(db, "groups", selectedGroup.id, "members", userId);
+//     await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
+//   }
+
+//   setSelectedGroup(null);
+// };
+
+
+const handleCloseChat = async () => {
+  if (!selectedGroup || !userId) return;
+
+  // Forcefully mark all messages as seen
+  const userRef = doc(db, "groups", selectedGroup.id, "members", userId);
+  await setDoc(
+    userRef,
+    { lastSeenAt: serverTimestamp() }, // Firestore timestamp
+    { merge: true }
+  );
+  lastSeenAtRef.current = new Date(); // local reference
+
+  // Reset unread count for this chat locally
+  setUnreadCounts((prev) => {
+    const updated = { ...prev, [selectedGroup.id]: 0 };
+    updateLocalUnread(updated);
+    return updated;
+  });
+
+  setSelectedGroup(null);
+    setRefreshKey((prev) => prev + 1);
+};
+
+
+
+  //------------------------------------------------------------------------------------------------------------------------------
 
   return (
     <div className="groups-container">
@@ -531,14 +716,18 @@ function linkify(text) {
           />
         </div>
       </div>
-<div className="chat-banner">
-  <Image
-    src={PinBanner}
-    alt="Banner"
-    className="chat-banner-img"
-  />
-  <button className="chat-banner-btn">Add To Phone Screen</button>
-</div>
+
+{showInstall && (
+  <div className="chat-banner">
+    <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
+    <button className="chat-banner-btn" onClick={handleInstallClick}>
+      Add To Phone Screen
+    </button>
+  </div>
+)}
+
+
+
 
       <div className="groups-list">
         {groups
@@ -546,22 +735,12 @@ function linkify(text) {
             group.name?.toLowerCase().includes(searchTerm.toLowerCase())
           )
           .map((group) => {
-            const unread = getUnreadCount(group);
-            console.log('%c [ unread ]-495', 'font-size:13px; background:pink; color:#bf2c9f;', unread)
-            return (
+                  return (
               <div
                 key={group.id}
                 className="group-item"
                 onClick={() => handleOpenMessages(group)}
               >
-                {/* <img
-                  src={
-                    group.imageUrl || "https://i.pravatar.cc/150?u=" + group.id
-                  }
-                  alt={group.name}
-                  className="group-avatar"
-                />
-                 */}
                 {group.imageUrl ? (
                   <img
                     src={group.imageUrl}
@@ -589,13 +768,14 @@ function linkify(text) {
 
                 <div className="group-info">
                   <p className="group-name">{group.name || "Unnamed Group"}</p>
-                  <span className="group-last">
-                    {unread > 0
-                      ? `${unread} New Message${unread > 1 ? "s" : ""}`
-                      : "No new messages"}
-                  </span>
+ <span className="group-last">
+  {getUnreadCount(group) > 0
+    ? `${getUnreadCount(group)} New Message${getUnreadCount(group) > 1 ? "s" : ""}`
+    : "No new messages"}
+</span>
                 </div>
-                {unread > 0 && <span className="unread-dot"></span>}
+               
+{unreadCounts[group.id] > 0 && <span className="unread-dot"></span>}
               </div>
             );
           })}
@@ -607,12 +787,11 @@ function linkify(text) {
             <div className="chat-user-info">
               <button
                 className="btn back-arrow-chat"
-                // onClick={() => {
-                // setChatOpen(false);
-                // chatOpenRef.current = false;
-                onClick={() => setSelectedGroup(null)}
-                // }}
-              >
+                 onClick={() => {
+          
+    handleCloseChat()
+  }}
+             >
                 <FaArrowLeft fontSize={16} />
               </button>
               <span className="mx-2">{`${selectedGroup.name}`}</span>{" "}
@@ -623,7 +802,9 @@ function linkify(text) {
 
           <div className="chat-messages" ref={chatBodyRef}>
  {messages.map((msg) => {
-                const isMe = msg.senderPhoneNumber === userPhoneNumber;
+               // message render
+const isMe = msg.senderId === userID;
+
                 const senderName =
                   msg.senderName
               return (
@@ -645,27 +826,6 @@ function linkify(text) {
       : msg.senderPhoneNumber.charAt(3)}
   </div>
 )}
-                  {/* Chat bubble */}
-                  {/* <div className="chat-bubble">
-                    <div className="chat-sender">
-                      {senderName
-                        ? senderName
-                        : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-                    </div>
-                    <div className="chat-text">{msg.text}</div>
-                    <div className="chat-time">
-                      {msg.sentAt?.toDate
-                        ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-                            "en-IN",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }
-                          )
-                        : ""}
-                    </div>
-                  </div> */}
                     <div className={`chat-bubble ${isMe ? "sender" : "receiver"}`}>
       {/* Sirf receiver ka naam/number */}
       {!isMe && (
@@ -702,118 +862,129 @@ function linkify(text) {
             })}
           </div>
 
-          <div className="chat-input-container">
-            <button
-              type="button"
-              onClick={() => {
-                if (showEmojiPicker) {
-                  setShowEmojiPicker(false);
-                  setTimeout(() => {
-                    textareaRef.current?.focus();
-                  }, 0);
-                } else {
-                  setShowEmojiPicker(true);
-                  textareaRef.current?.blur();
-                }
-              }}
-              className="emoji-btn"
-            >
-              {showEmojiPicker ? (
-                <FaRegKeyboard fontSize={20} />
-              ) : (
-                <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-              )}
+       <div className="chat-input-container">
+        
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      if (showEmojiPicker) {
+                        setShowEmojiPicker(false);
+                        setTimeout(() => {
+                          textareaRef.current?.focus();
+                        }, 0);
+                      } else {
+                          // setShowEmojiPicker(true);
+                          // textareaRef.current?.blur();
+                            textareaRef.current?.blur();
+        setTimeout(() => {
+          setShowEmojiPicker(true);
+        },50);
+                      }
+                    }}
+                    className="emoji-btn"
+                  >
+                    {showEmojiPicker ? (
+                      <FaRegKeyboard fontSize={20} />
+                    ) : (
+                      <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+                    )}
+    
+                    <div>
+                      {/* Hidden file input */}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        style={{ display: "none" }}
+                      />
+    
+                    </div>
+                  </button>
+    
+                  <textarea
+                    value={text}
+                    ref={textareaRef}
+                    className="chat-input"
+                    rows={1}
+                    onFocus={() => {
+                     if (showEmojiPicker) {
+                          setShowEmojiPicker(false);
+                        }
+                        setTimeout(() => {
+                          textareaRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "end",
+                          });
+                          window.scrollBy(0, -180); 
+                        }, 300);
+                    }}
+                    
+                    onChange={(e) => {
+                      setText(e.target.value);
+                      if (e.target.value.length > 0) {
+                          setShowEmojiPicker(false); 
+                        }
+                    }}
+                    onInput={(e) => {
+                      e.target.style.height = "auto"; 
+                      e.target.style.height =
+                        Math.min(e.target.scrollHeight, 120) + "px"; 
+                    }}
+                    placeholder="Type message here..."
+                  />
+    
+                  <button
+                    onClick={() => {
+                      sendMessage();
+                      if (textareaRef.current) {
+                        textareaRef.current.style.height = "auto"; 
+                      }
+                    }}
+                    className="chat-send-btn"
+                  >
+                    <Image src={sendIcon} alt="Send" className="send-icon" />
+                  </button>
+    
+                </div>
+    
+                {showEmojiPicker && (
+                  <div
+                    className="emoji-container"
+                      onPointerDown={(e) => e.preventDefault()} 
+    
+                    // onMouseDown={(e) => e.preventDefault()}
+                    // onTouchStart={(e) => e.preventDefault()}
+                  >
+    
+    
+                    <EmojiPicker
+                      width={emojiWidth}
+                      searchDisabled={true}
+                      onEmojiClick={(emojiData) => {
+                        const textarea = textareaRef.current;
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+    
+                        setText((prevText) => {
+                          const newText =
+                            prevText.substring(0, start) +
+                            emojiData.emoji +
+                            prevText.substring(end);
+    
+                          requestAnimationFrame(() => {
+                            textarea.selectionStart = textarea.selectionEnd =
+                              start + emojiData.emoji.length;
+                          });
+    
+                          return newText;
+                        });
+                      }}
+                    />
+                  </div>
+                )}
 
-              <div>
-                {/* Hidden file input */}
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  style={{ display: "none" }}
-                />
-              </div>
-            </button>
-
-            <textarea
-              value={text}
-              ref={textareaRef}
-              className="chat-input"
-              rows={1}
-              onFocus={() => {
-                if (showEmojiPicker) {
-                  setShowEmojiPicker(false);
-                }
-                // ✅ focus karte hi input ko viewport me le aa
-                setTimeout(() => {
-                  textareaRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "end",
-                  });
-
-                  window.scrollBy(0, -180);
-                }, 300);
-              }}
-              onChange={(e) => {
-                setText(e.target.value);
-                if (e.target.value.length > 0) {
-                  setShowEmojiPicker(false); // typing se emoji picker band ho jaye
-                }
-              }}
-              onInput={(e) => {
-                e.target.style.height = "auto"; // reset height first
-                e.target.style.height =
-                  Math.min(e.target.scrollHeight, 120) + "px"; // grow up to 120px max
-              }}
-              placeholder="Type message here..."
-            />
-
-            <button
-              onClick={() => {
-                handleSendMessage();
-                if (textareaRef.current) {
-                  textareaRef.current.style.height = "auto"; // reset size after send
-                }
-              }}
-              className="chat-send-btn"
-            >
-              <Image src={sendIcon} alt="Send" className="send-icon" />
-            </button>
-          </div>
-
-          {showEmojiPicker && (
-            <div
-              className="emoji-container"
-              onMouseDown={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
-            >
-              <EmojiPicker
-                width={emojiWidth}
-                searchDisabled={true}
-                onEmojiClick={(emojiData) => {
-                  const textarea = textareaRef.current;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-
-                  setText((prevText) => {
-                    const newText =
-                      prevText.substring(0, start) +
-                      emojiData.emoji +
-                      prevText.substring(end);
-
-                    // Update cursor position without focusing (prevents keyboard)
-                    requestAnimationFrame(() => {
-                      textarea.selectionStart = textarea.selectionEnd =
-                        start + emojiData.emoji.length;
-                    });
-
-                    return newText;
-                  });
-                }}
-              />
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -821,3 +992,5 @@ function linkify(text) {
 };
 
 export default GroupsList;
+
+

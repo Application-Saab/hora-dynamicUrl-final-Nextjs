@@ -74,6 +74,7 @@ import { FaImage } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
 import A2HSPrompt from "../../components/AddToHomeScreen";
+import { markGroupAsRead } from "@/utils/unread";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
@@ -104,46 +105,60 @@ const InvitationCard = () => {
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
-
-  useEffect(() => {
-    if (pathname === "/wonderland") {
-      if (typeof window !== "undefined") {
-        if (localStorage.getItem("addToHomeScreenPopup") !== "true") {
-          setShowInstall(true);
-        }
-      }
-      const handler = (e) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-      };
-      window.addEventListener("beforeinstallprompt", handler);
-      return () => window.removeEventListener("beforeinstallprompt", handler);
-    }
-  }, [pathname]);
-
-  const handleInstallClick = async () => {
-    setShowInstall(false);
+ const popupStatus = localStorage.getItem("addToHomeScreenPopup");
+useEffect(() => {
+  if (pathname === "/wonderland") {
     if (typeof window !== "undefined") {
-      localStorage.setItem("addToHomeScreenPopup", "true");
-    }
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      setDeferredPrompt(null);
-    }
-  };
 
-  useEffect(() => {
+        
+    }
+
     const handler = (e) => {
-      e.preventDefault(); // Prevent Chrome auto prompt
-      setDeferredPrompt(e);
-      setShowInstall(true); // Show your custom button
+      e.preventDefault();
+      setDeferredPrompt(e);  // Store the deferred prompt for later
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }
+}, [pathname]); 
+
+const handleInstallClick = async () => {
+   setShowInstall(false);
+
+  //  if (typeof window !== "undefined") {
+  //    localStorage.setItem("addToHomeScreenPopup", "true");
+  //  }
+
+   if (deferredPrompt) {
+     // Show the install prompt
+     deferredPrompt.prompt();
+     const { outcome } = await deferredPrompt.userChoice;
+     if (outcome === 'accepted') {
+       localStorage.setItem("addToHomeScreenPopup", "true");
+     } else {
+       localStorage.setItem("addToHomeScreenPopup", "false");
+     }
+
+     setDeferredPrompt(null);
+   }
+};
+
+
+   useEffect(() => {
+     const handler = (e) => {
+       e.preventDefault(); // Prevent Chrome auto prompt
+       setDeferredPrompt(e);
+       setShowInstall(true); // Show your custom button
+     };
+ 
+     window.addEventListener("beforeinstallprompt", handler);
+ 
+     return () => window.removeEventListener("beforeinstallprompt", handler);
+   }, []);
 
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   const userID = localStorage.getItem("userID");
@@ -1439,6 +1454,8 @@ const getAvatarColor = (name) => {
   const index = Math.abs(hash % colors.length);
   return colors[index];
 };
+  
+
 
   return (
     <>
@@ -1629,6 +1646,7 @@ const getAvatarColor = (name) => {
                             setChatOpen(true);
                             chatOpenRef.current = true;
                             setUnreadCount(0);
+                           markGroupAsRead(eventId);
 
                             const userRef = doc(
                               db,
@@ -2257,6 +2275,7 @@ const getAvatarColor = (name) => {
             <div className="chat-input-container">
               <button
                 type="button"
+                onPointerDown={(e) => e.preventDefault()}
                 onClick={() => {
                   if (showEmojiPicker) {
                     setShowEmojiPicker(false);
@@ -2264,8 +2283,12 @@ const getAvatarColor = (name) => {
                       textareaRef.current?.focus();
                     }, 0);
                   } else {
-                      setShowEmojiPicker(true);
-                      textareaRef.current?.blur();
+                      // setShowEmojiPicker(true);
+                      // textareaRef.current?.blur();
+                        textareaRef.current?.blur();
+    setTimeout(() => {
+      setShowEmojiPicker(true);
+    }, 50);
                   }
                 }}
                 className="emoji-btn"
@@ -2377,8 +2400,10 @@ const getAvatarColor = (name) => {
             {showEmojiPicker && (
               <div
                 className="emoji-container"
-                onMouseDown={(e) => e.preventDefault()}
-                onTouchStart={(e) => e.preventDefault()}
+                  onPointerDown={(e) => e.preventDefault()} // keep textarea focused
+
+                // onMouseDown={(e) => e.preventDefault()}
+                // onTouchStart={(e) => e.preventDefault()}
               >
                 {/* <EmojiPicker
   width={emojiWidth}
@@ -2440,13 +2465,12 @@ const getAvatarColor = (name) => {
       {showImageUploadInfo && (
         <div className="image-upload-popup-overlay">
           <div className="upload-image-popup">
-            <h3>Upload Complete</h3>
+            <h3>Uploading your memories…</h3>
             <div className="d-flex justify-content-center my-2">
-              <Image src={SuccessIconImage} alt="Success" />
+              <Image src={SuccessIconImage} alt="Success" width={80} height={80}/>
             </div>
             <p>
-              Your images are uploading will be reflect on event wall after some
-              time.
+           Sit back and relax — this may take a few moments.
             </p>
             <div className="d-flex justify-content-center">
               <button
@@ -2460,7 +2484,11 @@ const getAvatarColor = (name) => {
         </div>
       )}
       
-      {pathname === "/wonderland" && showInstall && (
+
+{pathname === "/wonderland" &&
+  showInstall &&
+  popupStatus !== "true" &&
+  popupStatus !== "false" && (
 
 <div className="addhome-popup-overlay">
   <div className="addhome-popup-container">
@@ -2479,7 +2507,7 @@ const getAvatarColor = (name) => {
       className="addhome-later-button"
       onClick={() => {
         setShowInstall(false);
-        localStorage.setItem("addToHomeScreenPopup", "true");
+        localStorage.setItem("addToHomeScreenPopup", "false");
       }}
     >
       Maybe later

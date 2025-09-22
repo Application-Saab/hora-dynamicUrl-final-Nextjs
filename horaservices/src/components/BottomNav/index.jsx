@@ -17,27 +17,69 @@ export default function BottomNav({ id, groups = [] }) {
   const router = useRouter();
   const currentPath = router.pathname;
   const [showPopup, setShowPopup] = useState(false);
+  const [userId, setUserId] = useState("");
   const [showServices, setShowServices] = useState(false);
   const [totalUnreadCount, setTotalUnreadCount] = useState(localStorage.getItem("totalUnread") || 0);
-
- 
   const [loadingGroups, setLoadingGroups] = useState(true);
- const [userId, setUserId] = useState(router.query.id || router.query.userid || "");
+useEffect(() => {
+  const handleRouteChange = (url) => {
+    // Route change ke baad latest data fetch karo
+    const storedUserId = localStorage.getItem("userID") || "";
+    const unread = localStorage.getItem("totalUnread") || 0;
 
-  // Ensure id is always present in URL
+    setUserId(storedUserId);
+    setTotalUnreadCount(unread);
+    setShowServices(false);  // Overlay hata do agar open hai
+    // Add any other state reset here
+  };
+
+  router.events.on("routeChangeComplete", handleRouteChange);
+
+  return () => {
+    router.events.off("routeChangeComplete", handleRouteChange);
+  };
+}, [router]);
+useEffect(() => {
+  const syncUnread = () => {
+    const count = parseInt(localStorage.getItem("totalUnread") || "0");
+    setTotalUnreadCount(count);
+  };
+
+  // Initial sync
+  syncUnread();
+
+  // Listen to same-tab event
+  window.addEventListener("unreadCountChange", syncUnread);
+
+  // Listen to cross-tab storage change
+  const storageListener = (e) => {
+    if (e.key === "totalUnread") syncUnread();
+  };
+  window.addEventListener("storage", storageListener);
+
+  return () => {
+    window.removeEventListener("unreadCountChange", syncUnread);
+    window.removeEventListener("storage", storageListener);
+  };
+}, []);
+
   useEffect(() => {
-    if (!userId && typeof window !== "undefined") {
+    const loadUserId = () => {
       const storedId = localStorage.getItem("userID");
-      if (storedId) {
-        setUserId(storedId);
-        router.replace({
-          pathname: router.pathname,
-          query: { ...router.query, id: storedId },
-        });
-      }
-    }
-  }, [userId, router]);
+      setUserId(storedId || "");
+    };
 
+    loadUserId();
+
+    // Listen for OTP login success
+    window.addEventListener("loginSuccess", loadUserId);
+
+    return () => {
+      window.removeEventListener("loginSuccess", loadUserId);
+    };
+  }, []);
+
+  // 🔹 Update u
   useEffect(() => {
     if (!userId) return;
     setLoadingGroups(true);
@@ -47,7 +89,12 @@ export default function BottomNav({ id, groups = [] }) {
       .finally(() => setLoadingGroups(false));
   }, [userId]);
 
-
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedId = localStorage.getItem("userID");
+      if (storedId) setUserId(storedId);
+    }
+  }, []);
 
   useEffect(() => {
     if (showServices) {
@@ -158,7 +205,7 @@ export default function BottomNav({ id, groups = [] }) {
       )}
 
       <div className="bottom-nav">
-        <Link href={`/wonderland?id=${id || ""}`}>
+        <Link href={`/wonderland?id=${userId || ""}`}  onClick={() => setShowServices(false)} >
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("wonderland")
@@ -179,13 +226,17 @@ export default function BottomNav({ id, groups = [] }) {
           </div>
         </Link>
 
-        <Link href={`/chat?id=${id || ""}`}>
+        <Link href={`/chat?id=${userId || ""}`}>
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("chat") ? "active" : ""
             }`}
-            onClick={() => setShowServices(false)} // close overlay immediately
-            style={{ position: "relative" }} // needed for absolute badge
+            // onClick={() => setShowServices(false)} 
+              onClick={(e) => {
+      e.preventDefault(); // 🛑 Prevent default navigation
+      window.location.href = `/chat?id=${userId || ""}`; // 🔁 Force full reload
+    }}
+            style={{ position: "relative" }} 
           >
             <Image
               src={
@@ -235,7 +286,7 @@ export default function BottomNav({ id, groups = [] }) {
           <span className="nav-text">Services</span>
         </div>
 
-        <Link href={`/accounts?userid=${id}`}>
+        <Link href={`/accounts?userid=${userId}`}>
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("accounts") ? "active" : ""
