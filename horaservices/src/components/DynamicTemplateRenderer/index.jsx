@@ -726,7 +726,7 @@ const DynamicTemplateRenderer = () => {
   //   }
   // };
 
-
+ 
 
   const handleChange = (e) => {
   const { name, value } = e.target;
@@ -926,15 +926,16 @@ const DynamicTemplateRenderer = () => {
         )}
 
         {/* <div style={{ position: "relative", zIndex: 2 }}>
-          <div class="invite-wrapper">
-            <div class="invite-card">
-              <div class="name">{{name}}</div>
-              <div className="date-time-row">
-                <div class="datetime">At {{time}} | {{date}}</div>
-              </div>
-              <div class="address">{{address}}</div>
-            </div>
+          <div class="invite-template-wrapper">
+        <div class="invite-template-card">
+          <div class="name">{{name}}</div>
+          <div class="date">{{date}}</div>
+          <div class="time">AT {{time}}</div>
+          <div class="address">
+            <p>{{address}}</p>
           </div>
+        </div>
+      </div>
         </div> */}
       </div>
 
