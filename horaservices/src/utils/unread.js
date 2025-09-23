@@ -10,18 +10,18 @@ export const updateGroupUnread = (eventId, increment = 1) => {
   return total;
 };
 
-export const markGroupAsRead = (eventId) => {
-  const storedCounts = JSON.parse(localStorage.getItem("groupUnreadCounts") || "{}");
+// export const markGroupAsRead = (eventId) => {
+//   const storedCounts = JSON.parse(localStorage.getItem("groupUnreadCounts") || "{}");
 
-  // 0 only for current group
-  storedCounts[eventId] = 0;
+//   // 0 only for current group
+//   storedCounts[eventId] = 0;
 
-  localStorage.setItem("groupUnreadCounts", JSON.stringify(storedCounts));
+//   localStorage.setItem("groupUnreadCounts", JSON.stringify(storedCounts));
 
-  // ✅ totalUnread = sum of all groups
-  const total = Object.values(storedCounts).reduce((sum, count) => sum + count, 0);
-  localStorage.setItem("totalUnread", total.toString());
+//   // ✅ totalUnread = sum of all groups
+//   const total = Object.values(storedCounts).reduce((sum, count) => sum + count, 0);
+//   localStorage.setItem("totalUnread", total.toString());
 
-  window.dispatchEvent(new Event("unreadCountChange"));
-};
+//   window.dispatchEvent(new Event("unreadCountChange"));
+// };
 
