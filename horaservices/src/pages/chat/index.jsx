@@ -591,7 +591,8 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
       unreadMessages.forEach((msg) => {
         if (
           Notification.permission === "granted" &&
-          !notifiedMessageIdsRef.current.has(msg.id)
+          !notifiedMessageIdsRef.current.has(msg.id) &&
+          "Notification" in window
         ) {
           navigator.serviceWorker.ready.then((registration) => {
             registration.showNotification(`New message from ${msg.senderName}`, {

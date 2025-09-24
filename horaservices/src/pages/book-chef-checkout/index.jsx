@@ -362,7 +362,7 @@ const contactUsRedirection = () => {
 
         const requestData2 = {
             user_id: storedUserID,
-            price: Math.round(totalPrice * 0.2),
+            price: Math.round(totalPrice * 0.35),
             phone: phoneNumber,
             name: `user_${merchantTransactionId}`,
             merchantTransactionId: merchantTransactionId
