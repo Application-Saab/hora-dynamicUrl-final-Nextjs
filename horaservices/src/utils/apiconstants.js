@@ -1,5 +1,8 @@
 export const BASE_URL="https://horaservices.com:3000";
+<<<<<<< HEAD
 // export const BASE_URL="http://localhost:5000";
+=======
+>>>>>>> 137023d66e8e2a5538d83f87c4a475f5edfeb701
 export const OTP_GENERATE_END_POINT= "/api/user/otp_generate";
 export const API_SUCCESS_CODE=200;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
