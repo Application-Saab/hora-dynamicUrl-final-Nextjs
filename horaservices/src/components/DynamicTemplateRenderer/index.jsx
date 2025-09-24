@@ -567,11 +567,16 @@ const DynamicTemplateRenderer = () => {
     eventType: formData.eventType,
     name: formData?.name,
     date: dateFormatter(formData?.date, template?.dateFormatCase),
+    day: dateFormatter(formData?.date, template?.dateFormatCase)?.day,
+    month: dateFormatter(formData?.date, template?.dateFormatCase)?.month,
+    month: dateFormatter(formData?.date, template?.dateFormatCase)?.year,
     time: formData?.time,
     address: formData?.address,
     templateId: templateId || "",
   });
-
+  console.log('%c [ dataForTemplate ]-567', 'font-size:13px; background:pink; color:#bf2c9f;', dataForTemplate)
+  console.log('%c [ dateFormatter(formData?.date, template?.dateFormatCase)?.day ]-571', 'font-size:13px; background:pink; color:#bf2c9f;', dateFormatter(formData?.date, template?.dateFormatCase)?.day)
+  
   const [formErrors, setFormErrors] = useState({
     eventType: "",
     name: "",
@@ -588,6 +593,9 @@ const DynamicTemplateRenderer = () => {
       eventType: formData.eventType,
       name: formData.name,
       date: dateFormatter(formData.date, template?.dateFormatCase || "1"),
+      day: dateFormatter(formData?.date, template?.dateFormatCase)?.day,
+      month: dateFormatter(formData?.date, template?.dateFormatCase)?.month,
+      year: dateFormatter(formData?.date, template?.dateFormatCase)?.year,
       time: formData.time,
       address: formData.address,
       templateId: templateId || "",
@@ -877,9 +885,26 @@ const DynamicTemplateRenderer = () => {
   };
 
   /** Replace variables inside template */
+  // const renderHTML = (jsCode, rawData) => {
+  //   return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
+  //     console.log('%c [ key ]-882', 'font-size:13px; background:pink; color:#bf2c9f;', key)
+  //     return rawData[key.trim()] || "";
+  //   });
+  // };
+
   const renderHTML = (jsCode, rawData) => {
-    return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
-  };
+  return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
+    const path = key.trim().replace(/\?/g, "");
+    try {
+      return path.split(".").reduce((acc, part) => {
+        return acc && acc[part] !== undefined ? acc[part] : "";
+      }, rawData) || "";
+    } catch {
+      return "";
+    }
+  });
+};
+
 
   if (loading) return <p>Loading template...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -925,12 +950,14 @@ const DynamicTemplateRenderer = () => {
           />
         )}
 
-        {/* <div style={{ position: "relative", zIndex: 2 }}>
-          <div class="invite-template-wrapper">
+        
+{/* 
+        <div style={{ position: "relative", zIndex: 2 }}>
+           <div class="invite-template-wrapper">
         <div class="invite-template-card">
           <div class="name">{{name}}</div>
           <div class="date">{{date}}</div>
-          <div class="time">AT {{time}}</div>
+          <div class="time">{{time}}</div>
           <div class="address">
             <p>{{address}}</p>
           </div>

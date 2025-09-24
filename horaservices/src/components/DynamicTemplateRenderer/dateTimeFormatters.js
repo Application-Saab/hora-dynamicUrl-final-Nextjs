@@ -42,6 +42,38 @@ export function dateFormatter(dateString, caseNo) {
     return `${day}.${month}.${year}`;
     // Output: "02.05.2030"
   }
+
+  if (caseNo === 5 || caseNo === "5") {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      month: "long",
+      day: "numeric",
+    });
+    // Output: "December 31"
+  }
+
+  if (caseNo === 6 || caseNo === "6") {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    let dateObject = {
+      day: "",
+      month: "",
+    };
+    let day = String(date.getDate()).padStart(2, "0");
+    let month = date.toLocaleDateString("en-GB", {
+      month: "long",
+    });
+    dateObject.day = day;
+    dateObject.month = month;
+    return dateObject;
+    // Output: {day: "31", month: "12"}
+    // return date.toLocaleDateString("en-GB", {
+    //   month: "long",
+    //   day: "numeric",
+    // });
+    // Output: {day: "31", month: "December"}
+  }
 }
 
 export function timeFormatter(timeString, caseNo) {
