@@ -67,6 +67,8 @@ import {
   updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
+
+
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
 import LazyImage from "@/components/LazyImage";
@@ -74,7 +76,7 @@ import { FaImage } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
 import A2HSPrompt from "../../components/AddToHomeScreen";
-import { markGroupAsRead } from "@/utils/unread";
+import { handleGroupClick } from "@/utils/unread";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
@@ -106,6 +108,27 @@ const InvitationCard = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
  const popupStatus = localStorage.getItem("addToHomeScreenPopup");
+
+ const [unreadCounts, setUnreadCounts] = useState({});
+const [totalUnread, setTotalUnread] = useState(
+  parseInt(localStorage.getItem("totalUnread") || "0")
+);
+useEffect(() => {
+  const handleUpdate = () => {
+    setTotalUnread(parseInt(localStorage.getItem("totalUnread") || "0"));
+  };
+  window.addEventListener("unreadCountChange", handleUpdate);
+  return () => window.removeEventListener("unreadCountChange", handleUpdate);
+}, []);
+
+useEffect(() => {
+  const handleUpdate = () => {
+    setTotalUnread(parseInt(localStorage.getItem("totalUnread") || "0"));
+  };
+  window.addEventListener("unreadCountChange", handleUpdate);
+  return () => window.removeEventListener("unreadCountChange", handleUpdate);
+}, []);
+
 useEffect(() => {
   if (pathname === "/wonderland") {
     if (typeof window !== "undefined") {
@@ -1455,6 +1478,19 @@ const getAvatarColor = (name) => {
   return colors[index];
 };
   
+ const markGroupAsRead = (eventId, unreadCount) => {
+  // totalUnread ko get karo
+  const totalUnread = parseInt(localStorage.getItem("totalUnread") || "0");
+
+  // clicked group ka unread subtract karo totalUnread se
+  const newTotal = Math.max(totalUnread - unreadCount, 0);
+
+  // localStorage update
+  localStorage.setItem("totalUnread", newTotal.toString());
+
+  // notify components
+  window.dispatchEvent(new Event("unreadCountChange"));
+};
 
 
   return (
@@ -1557,7 +1593,7 @@ const getAvatarColor = (name) => {
                             setChatOpen(true);
                             chatOpenRef.current = true;
                             setUnreadCount(0);
-
+                                markGroupAsRead(eventId, unreadCount);
                             const userRef = doc(
                               db,
                               "groups",
@@ -1646,7 +1682,8 @@ const getAvatarColor = (name) => {
                             setChatOpen(true);
                             chatOpenRef.current = true;
                             setUnreadCount(0);
-                           markGroupAsRead(eventId);
+                      markGroupAsRead(eventId, unreadCount);
+
 
                             const userRef = doc(
                               db,
