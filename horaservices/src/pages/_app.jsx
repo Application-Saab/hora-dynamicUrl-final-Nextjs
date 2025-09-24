@@ -100,21 +100,22 @@ function MyApp({ Component, pageProps }) {
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, [router.asPath]);
 
-
-  useEffect(() => {
-  if (typeof window !== "undefined") {
+useEffect(() => {
+  if (typeof window !== "undefined" && "Notification" in window) {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
         getToken(messaging, { vapidKey: VAPID_KEY })
           .then((currentToken) => {
             if (currentToken) {
               console.log("FCM Token:", currentToken);
-              // Send token to server
+              // Send token to your server
             }
           })
           .catch((err) => console.error("Error getting token:", err));
       }
     });
+  } else {
+    console.log("Notifications API not supported in this browser/device.");
   }
 }, []);
 

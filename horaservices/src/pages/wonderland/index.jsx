@@ -1191,18 +1191,36 @@ const InvitationCard = () => {
     }
   };
 
+  // useEffect(() => {
+  //   if (typeof window !== "undefined" && "Notification" in window) {
+  //     if (
+  //       Notification.permission === "denied" ||
+  //       Notification.permission === "default"
+  //     ) {
+  //       setNotifyPermissionMsg(true);
+  //     } else {
+  //       setNotifyPermissionMsg(false);
+  //     }
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      if (
-        Notification.permission === "denied" ||
-        Notification.permission === "default"
-      ) {
-        setNotifyPermissionMsg(true);
-      } else {
-        setNotifyPermissionMsg(false);
-      }
+  if (typeof window !== "undefined" && "Notification" in window) {
+    if (
+      Notification.permission === "denied" ||
+      Notification.permission === "default"
+    ) {
+      setNotifyPermissionMsg(true);
+    } else {
+      setNotifyPermissionMsg(false);
     }
-  }, []);
+  } else {
+    // Prevent ReferenceError on iOS Safari
+    console.log("Notifications API not supported on this browser.");
+    setNotifyPermissionMsg(false); // or true, depending on your UX
+  }
+}, []);
+
 
   const chatMessagesRef = useRef(null);
   useEffect(() => {
