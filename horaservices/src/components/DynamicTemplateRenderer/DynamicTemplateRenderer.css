@@ -653,3 +653,113 @@
 
 
 /* Template 7 Css */
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
+/* .invite-template-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-template-card {
+  position: relative;
+  max-width: 480px;
+  max-height: 530px;
+  width: 100%;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  color: #e6bf43;
+  font-weight: 900;
+  line-height: 40px;
+}
+
+.date {
+  position: absolute;
+  font-family: "Playfair Display", serif;
+  top: 58%;
+  width: 100%;
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+  color: #e6bf43;
+}
+
+.month {
+  flex: 1 0 auto;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+.month-span{
+  border-top: 1px solid #e6bf43;
+  border-bottom: 1px solid #e6bf43;
+  padding: 5px 0px ;
+  min-width: 70px;
+}
+.year-span{
+  border-top: 1px solid #e6bf43;
+  border-bottom: 1px solid #e6bf43;
+  padding: 5px 0px ;
+  min-width: 70px;
+}
+.day{
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
+}
+.year{
+  flex: 1 0 auto;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+
+
+.time {
+  position: absolute;
+  font-family: "Playfair Display", serif;
+  top: 70%;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #e6bf43;
+  letter-spacing: 2px;
+}
+
+.address {
+  position: absolute;
+  font-family: "Playfair Display", serif;
+  font-weight: 900;
+  top: 78%;
+  width: 100%;
+  padding: 0 40px;
+  font-size: 1rem;
+  color: #e6bf43;
+}
+
+@media (min-width: 360px) {
+  .address {
+    padding: 0 80px;
+  }
+  .name {
+    font-size: 3rem;
+    padding-inline: 60px;
+  }
+} */

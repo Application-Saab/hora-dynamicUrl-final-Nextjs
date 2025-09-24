@@ -9,15 +9,15 @@ import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import { useSearchParams } from "next/navigation";
 const TemplateGrid = () => {
   const router = useRouter();
-  
+
   const [templatesData, setTemplatesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-const searchParams = useSearchParams();
-const eventId = searchParams.get("eventId");
-const eventUserId = searchParams.get("eventUserId");
-const userType = searchParams.get("userType");
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("eventId");
+  const eventUserId = searchParams.get("eventUserId");
+  const userType = searchParams.get("userType");
   const [uploadedTemplate, setUploadedTemplate] = useState(null);
   const [loadingUpload, setLoadingUpload] = useState(false);
 
@@ -49,7 +49,7 @@ const userType = searchParams.get("userType");
       handleUploadTemplate(imageUrl, file);
     }
   };
-    const handleUploadTemplate = async (url, file) => {
+  const handleUploadTemplate = async (url, file) => {
     setLoadingUpload(true);
     if (!url || !file) {
       alert("Please upload an image.");
@@ -65,8 +65,7 @@ const userType = searchParams.get("userType");
       alert("Please log in to upload a template.");
       setLoadingUpload(false);
       return;
-    } 
-
+    }
 
     const formData = new FormData();
     formData.append("image", file);
@@ -106,14 +105,13 @@ const userType = searchParams.get("userType");
       setLoadingUpload(false);
     }
   };
-  
-  const handleApplyClick = (templateMongoId) => {
-  setSelectedTemplate(templateMongoId);
-  router.push(
-    `/wonderland/create-invite-template?id=${eventId}&templateId=${templateMongoId}`
-  );
-};
 
+  const handleApplyClick = (templateMongoId) => {
+    setSelectedTemplate(templateMongoId);
+    router.push(
+      `/wonderland/create-invite-template?id=${eventId}&templateId=${templateMongoId}`
+    );
+  };
 
   if (loading) return <div>Loading templates...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -121,14 +119,18 @@ const userType = searchParams.get("userType");
   return (
     <div className="templateWrapper">
       <h2 className="templateTitle">Choose From 50+ Invites</h2>
-       <h3 className="templateTitle">OR</h3>
+      <h3 className="templateTitle">OR</h3>
       <div className="d-flex justify-content-center mb-4 template-upload">
         <button
           type="button"
           className="btn btn-primary"
           onClick={() => document.getElementById("templateUploadImage").click()}
         >
-          {loadingUpload ? <span className="loader"></span> : "Upload Your Template"}
+          {loadingUpload ? (
+            <span className="loader"></span>
+          ) : (
+            "Upload Your Template"
+          )}
         </button>
         <input
           type="file"
@@ -137,8 +139,8 @@ const userType = searchParams.get("userType");
           onChange={handleFileChange}
         />
       </div>
-    <div className="templateGrid">
-  {/* {templatesData.map((template) => {
+      <div className="templateGrid">
+        {/* {templatesData.map((template) => {
     const isSelected = selectedTemplate === template._id;
     return (
       <div key={template._id} className="templateCard">
@@ -157,38 +159,38 @@ const userType = searchParams.get("userType");
       </div>
     );
   })} */}
-  {templatesData.map((template) => {
-  const isSelected =
-    selectedTemplate === template._id ||
-    selectedTemplate === template.configs?.templateId;
+        {templatesData.map((template) => {
+          const isSelected =
+            selectedTemplate === template._id ||
+            selectedTemplate === template.configs?.templateId;
 
-  return (
-    <div key={template._id} className="templateCard">
-      <img
-        src={template.webpUrl}
-        alt="Template Preview"
-        className="templatePreview"
-      />
-      <button
-        className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
-         onClick={() => handleApplyClick(template._id)}
-
-      >
-        {isSelected ? (
-          <>
-            SELECTED <span className="btnCircle">✔</span>
-          </>
-        ) : (
-          <>
-            APPLY NOW <span className="btnCircle">✔</span>
-          </>
-        )}
-      </button>
-    </div>
-  );
-})}
-
-</div>
+          return (
+            !template?.isDisabled && (
+              <div key={template._id} className="templateCard">
+                <img
+                  src={template.webpUrl}
+                  alt="Template Preview"
+                  className="templatePreview"
+                />
+                <button
+                  className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
+                  onClick={() => handleApplyClick(template._id)}
+                >
+                  {isSelected ? (
+                    <>
+                      SELECTED <span className="btnCircle">✔</span>
+                    </>
+                  ) : (
+                    <>
+                      APPLY NOW <span className="btnCircle">✔</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )
+          );
+        })}
+      </div>
     </div>
   );
 };

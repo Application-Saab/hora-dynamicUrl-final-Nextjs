@@ -59,21 +59,41 @@ export function dateFormatter(dateString, caseNo) {
     let dateObject = {
       day: "",
       month: "",
+      year: "",
     };
     let day = String(date.getDate()).padStart(2, "0");
     let month = date.toLocaleDateString("en-GB", {
       month: "long",
     });
+    let year = date.getFullYear();
     dateObject.day = day;
     dateObject.month = month;
+    dateObject.year = year;
     return dateObject;
-    // Output: {day: "31", month: "12"}
-    // return date.toLocaleDateString("en-GB", {
-    //   month: "long",
-    //   day: "numeric",
-    // });
-    // Output: {day: "31", month: "December"}
+    // Output: {day: "31", month: "December", year: "2023"}
   }
+
+    if (caseNo === 7 || caseNo === "7") {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    let dateObject = {
+      day: "",
+      month: "",
+      year: "",
+    };
+    let day = String(date.getDate()).padStart(2, "0");
+    let month = date.toLocaleDateString("en-GB", {
+      month: "short",
+    });
+    let year = date.getFullYear();
+    dateObject.day = day;
+    dateObject.month = month;
+    dateObject.year = year;
+    return dateObject;
+    // Output: {day: "31", month: "Dec", year: "2023"}
+  }
+
+
 }
 
 export function timeFormatter(timeString, caseNo) {

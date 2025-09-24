@@ -569,7 +569,7 @@ const DynamicTemplateRenderer = () => {
     date: dateFormatter(formData?.date, template?.dateFormatCase),
     day: dateFormatter(formData?.date, template?.dateFormatCase)?.day,
     month: dateFormatter(formData?.date, template?.dateFormatCase)?.month,
-    month: dateFormatter(formData?.date, template?.dateFormatCase)?.year,
+    year: dateFormatter(formData?.date, template?.dateFormatCase)?.year,
     time: formData?.time,
     address: formData?.address,
     templateId: templateId || "",
@@ -951,13 +951,17 @@ const DynamicTemplateRenderer = () => {
         )}
 
         
-{/* 
-        <div style={{ position: "relative", zIndex: 2 }}>
+
+        {/* <div style={{ position: "relative", zIndex: 2 }}>
            <div class="invite-template-wrapper">
         <div class="invite-template-card">
           <div class="name">{{name}}</div>
-          <div class="date">{{date}}</div>
-          <div class="time">{{time}}</div>
+          <div class='date'>
+            <div class="month"><span class='month-span'>{{month}}</span></div>
+            <div class="day">{{day}}</div>
+            <div class="year"><span class="year-span">{{year}}</span></div>
+          </div>
+          <div class="time">At {{time}}</div>
           <div class="address">
             <p>{{address}}</p>
           </div>
