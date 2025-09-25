@@ -18,7 +18,7 @@ import "./bottomNav.css";
 export default function BottomNav({ id }) {
   const router = useRouter();
   const currentPath = router.pathname;
-
+const [refreshKey, setRefreshKey] = useState(0);
   const [userId, setUserId] = useState("");
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
@@ -75,46 +75,48 @@ export default function BottomNav({ id }) {
       lastSeenRef.current[groupId] = snap.exists() && snap.data().lastSeenAt
         ? snap.data().lastSeenAt.toDate()
         : null;
+
+          setRefreshKey((prev) => prev + 1);
     });
 
     // Listen to messages
-    const unsubscribeMessages = onSnapshot(qMessages, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      let unreadCount = 0;
+const unsubscribeMessages = onSnapshot(qMessages, (snapshot) => {
+  const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  let unreadCount = 0;
 
-      msgs.forEach((msg) => {
-        if (msg.senderId === userId) return;
+  msgs.forEach((msg) => {
+    if (msg.senderId === userId) return;
+    const msgDate = msg.sentAt?.toDate ? msg.sentAt.toDate() : msg.sentAt;
+    const lastSeen = lastSeenRef.current[groupId];
+    if (!lastSeen || msgDate > lastSeen) unreadCount++;
+  });
 
-        const msgDate = msg.sentAt?.toDate ? msg.sentAt.toDate() : msg.sentAt;
-        const lastSeen = lastSeenRef.current[groupId];
+  // Load previous counts
+  let allCounts = {};
+  try {
+    const stored = localStorage.getItem("unreadCounts");
+    allCounts = stored ? JSON.parse(stored) : {};
+  } catch {
+    allCounts = {};
+  }
 
-        if (!lastSeen || msgDate > lastSeen) {
-          const isCurrentChatOpen = chatOpenRef.current && currentPath.includes(`/chat?id=${groupId}`);
-          if (!isCurrentChatOpen) unreadCount++;
+  // Current chat open?
+  const urlParams = new URLSearchParams(window.location.search);
+  const openGroupId = urlParams.get("id");
+  if (chatOpenRef.current && openGroupId === groupId) {
+    allCounts[groupId] = 0; // reset only the currently open chat
+  } else {
+    allCounts[groupId] = unreadCount; // else set actual unread count
+  }
 
-          if (!chatOpenRef.current && !notifiedMessageIdsRef.current.has(msg.id)) {
-            // show notification
-            notifiedMessageIdsRef.current.add(msg.id);
-          }
-        }
-      });
-
-      let allCounts = {};
-      try {
-        const stored = localStorage.getItem("unreadCounts");
-        const parsed = stored ? JSON.parse(stored) : {};
-        allCounts = typeof parsed === "object" && parsed !== null ? parsed : {};
-      } catch (err) {
-        console.error("Failed to parse unreadCounts:", err);
-        allCounts = {};
-      }
-
-      allCounts[groupId] = chatOpenRef.current ? 0 : unreadCount;
-      localStorage.setItem("unreadCounts", JSON.stringify(allCounts));
-const totalUnread = Object.values(allCounts).reduce((acc, val) => acc + val, 0);
+  // Always update localStorage and fire event
+  localStorage.setItem("unreadCounts", JSON.stringify(allCounts));
+  const totalUnread = Object.values(allCounts).reduce((acc, val) => acc + val, 0);
   localStorage.setItem("totalUnread", totalUnread.toString());
   window.dispatchEvent(new Event("unreadCountChange"));
-    });
+});
+
+
 
     unsubscribeFunctions.push(unsubscribeUser, unsubscribeMessages);
   }
@@ -125,12 +127,36 @@ const totalUnread = Object.values(allCounts).reduce((acc, val) => acc + val, 0);
     return () => {
       unsubscribeFunctions.forEach((fn) => fn());
     };
-  }, [userId]);
+  }, [userId,refreshKey]);
 
-  // Track if chat page is open
-  useEffect(() => {
-    chatOpenRef.current = currentPath.includes("/chat");
-  }, [currentPath]);
+// Track if chat page is open
+useEffect(() => {
+  chatOpenRef.current = currentPath.includes("/chat");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const openGroupId = urlParams.get("id");
+
+  if (openGroupId && chatOpenRef.current && userId) {
+    // (1) Firestore me lastSeen update karo
+    const memberRef = doc(db, "groups", openGroupId, "members", userId);
+    setDoc(memberRef, { lastSeenAt: serverTimestamp() }, { merge: true });
+
+    // (2) LocalStorage unread reset karo
+    try {
+      const stored = localStorage.getItem("unreadCounts");
+      const parsed = stored ? JSON.parse(stored) : {};
+      parsed[openGroupId] = 0; 
+      localStorage.setItem("unreadCounts", JSON.stringify(parsed));
+
+      const totalUnread = Object.values(parsed).reduce((acc, val) => acc + val, 0);
+      localStorage.setItem("totalUnread", totalUnread.toString());
+      window.dispatchEvent(new Event("unreadCountChange"));
+    } catch (err) {
+      console.error("Failed to reset unread count:", err);
+    }
+  }
+}, [currentPath, userId]);
+
 
   return (
     <div className="bottom-nav">

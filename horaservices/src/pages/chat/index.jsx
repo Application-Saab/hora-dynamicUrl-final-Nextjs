@@ -431,7 +431,7 @@ useEffect(() => {
   }, 500); // wait 500ms for Firestore update to apply
 
   return () => clearTimeout(timeout);
-}, [groups, userId]);
+}, [groups, userId,refreshKey]);
 
 
 
