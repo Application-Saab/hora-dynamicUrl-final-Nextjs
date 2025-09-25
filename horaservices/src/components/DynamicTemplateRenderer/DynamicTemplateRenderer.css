@@ -654,7 +654,7 @@
 
 /* Template 7 Css */
 /* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
-/* .invite-template-wrapper {
+.invite-template-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -674,92 +674,92 @@
   text-align: center;
 }
 
-.name {
+.template-image-wrapper{
   position: absolute;
-  top: 13%;
+  top: 2.1%;
   width: 100%;
-  font-family: "Playfair Display", serif;
-  font-size: 2.5rem;
-  color: #e6bf43;
-  font-weight: 900;
-  line-height: 40px;
-}
-
-.date {
-  position: absolute;
-  font-family: "Playfair Display", serif;
-  top: 58%;
-  width: 100%;
-  display: flex;
-  justify-content: center !important;
-  align-items: center;
-  color: #e6bf43;
-}
-
-.month {
-  flex: 1 0 auto;
-  font-size: 1.5rem;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-}
-.month-span{
-  border-top: 1px solid #e6bf43;
-  border-bottom: 1px solid #e6bf43;
-  padding: 5px 0px ;
-  min-width: 70px;
-}
-.year-span{
-  border-top: 1px solid #e6bf43;
-  border-bottom: 1px solid #e6bf43;
-  padding: 5px 0px ;
-  min-width: 70px;
-}
-.day{
-  flex: 1 0 auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  padding-inline: 20px;
+}
+.template-image{
+  height: 185px;
+  max-width: 370px;
+  width: 100%;
+  z-index: 3;
+}
+
+.name {
+  position: absolute;
+  top: 37%;
+  width: 100%;
+  font-family: "Agbalumo", system-ui;
   font-size: 2.5rem;
+  color: #FFFFFF;
+  font-weight: 400;
 }
-.year{
-  flex: 1 0 auto;
-  font-size: 1.5rem;
+
+.date-row {
+  position: absolute;
+  top: 72%;
+  width: 100%;
   display: flex;
-  justify-content: start;
+  justify-content: center;
+  gap: 15px;
   align-items: center;
 }
-
-
+.month {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  /* letter-spacing: 0px; */
+  font-size: 1.5rem;
+}
+.day {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  /* letter-spacing: 0px; */
+  font-size: 2.25rem;
+}
 
 .time {
-  position: absolute;
-  font-family: "Playfair Display", serif;
-  top: 70%;
-  width: 100%;
-  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
   font-weight: 900;
-  color: #e6bf43;
-  letter-spacing: 2px;
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  /* letter-spacing: 0px; */
 }
 
 .address {
   position: absolute;
-  font-family: "Playfair Display", serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 900;
-  top: 78%;
+  /* top: 56%; */
+  bottom: 3%;
   width: 100%;
-  padding: 0 40px;
-  font-size: 1rem;
-  color: #e6bf43;
+  padding: 0 80px;
+  font-size: 0.875rem;
+  color: #77afc4;
+}
+
+@media (min-width: 320){
+  .month{
+    font-size: 1.25rem;
+  }
+  .day{
+    font-size: 2rem;
+  }
+  .time{
+    font-size: 1.25rem;
+  }
 }
 
 @media (min-width: 360px) {
   .address {
-    padding: 0 80px;
+    padding: 0 100px;
   }
-  .name {
-    font-size: 3rem;
-    padding-inline: 60px;
+  .template-image{
+    height: 195px;
   }
-} */
+}

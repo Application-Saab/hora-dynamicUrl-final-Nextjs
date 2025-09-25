@@ -534,7 +534,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
-import { dateFormatter } from "./dateTimeFormatters";
+import { dateFormatter, imageForTest } from "./dateTimeFormatters";
 
 
 const DynamicTemplateRenderer = () => {
@@ -551,6 +551,7 @@ const DynamicTemplateRenderer = () => {
   const isEdit = Boolean(eventId);
 
   const [template, setTemplate] = useState(null);
+  console.log('%c [ template ]-554', 'font-size:13px; background:pink; color:#bf2c9f;', template)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -602,7 +603,8 @@ const DynamicTemplateRenderer = () => {
     });
   }, [formData, template]); 
 
-  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(imageForTest);
+  console.log('%c [ uploadedImage ]-607', 'font-size:13px; background:pink; color:#bf2c9f;', uploadedImage)
   const fileInputRef = useRef(null);
 
   /** Fetch template */
@@ -624,6 +626,7 @@ const DynamicTemplateRenderer = () => {
           const selectedTemplate = result.templates.find(
             (tpl) => tpl._id === templateId
           );
+          console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;', selectedTemplate)
 
           if (selectedTemplate) {
             let { cssCode, jsCode, fontUrls, backgroundUrl } =
@@ -642,7 +645,7 @@ const DynamicTemplateRenderer = () => {
               jsCode: jsCode || "",
               fontUrls: fontUrls ? JSON.parse(fontUrls) : [],
               backgroundUrl: selectedTemplate.backgroundUrl || null,
-              isHeroImage: selectedTemplate.configs?.isHeroImage || false,
+              isHeroImage: selectedTemplate?.isHeroImage || false,
               bgImageName: selectedTemplate?.configs?.bgImageName || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
@@ -702,7 +705,7 @@ const DynamicTemplateRenderer = () => {
           address: data.location?.length || 0,
         });
 
-        setUploadedImage(data.hostImage || null);
+        // setUploadedImage(data.hostImage || null);
       }
     } catch (err) {
       console.error("Fetch failed:", err);
@@ -936,38 +939,58 @@ const DynamicTemplateRenderer = () => {
         ))}
 
         {/* CSS */}
-        {template?.cssCode && (
+        {/* {template?.cssCode && (
           <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-        )}
+        )} */}
 
         {/* Template HTML */}
-        {template?.jsCode && (
+        {/* {template?.jsCode && (
           <div
             style={{ position: "relative", zIndex: 2 }}
             dangerouslySetInnerHTML={{
               __html: renderHTML(template.jsCode, dataForTemplate),
             }}
           />
-        )}
+        )} */}
 
         
 
-        {/* <div style={{ position: "relative", zIndex: 2 }}>
-           <div class="invite-template-wrapper">
+        <div style={{ position: "relative", zIndex: 2 }}>
+            <div class="invite-template-wrapper">
         <div class="invite-template-card">
-          <div class="name">{{name}}</div>
-          <div class='date'>
-            <div class="month"><span class='month-span'>{{month}}</span></div>
-            <div class="day">{{day}}</div>
-            <div class="year"><span class="year-span">{{year}}</span></div>
+          {uploadedImage && (
+            <div class='template-image-wrapper'>
+              <img
+              src={uploadedImage}
+              alt="Host"
+              class='template-image'
+              // style={{
+              //   position: "absolute",
+              //   // bottom: "20px",
+              //   // top: "20px",
+              //   // right: "20px",
+              //   maxWidth: "300px",
+              //   height: "195px",
+              //   // borderRadius: "50%",
+              //   // objectFit: "cover",
+              //   // border: "3px solid white",
+              //   zIndex: 3,
+              // }}
+            />
+            </div>
+          )}
+          <div class="name">{dataForTemplate?.name}</div>
+          <div class='date-row'>
+            <div class="month"><span>{dataForTemplate?.month}</span></div>
+            <div class="day"><span>{dataForTemplate?.day}</span></div>
+            <div class="time"><span>AT {dataForTemplate?.time} PM</span></div>
           </div>
-          <div class="time">At {{time}}</div>
           <div class="address">
-            <p>{{address}}</p>
+            <p>{dataForTemplate?.address}</p>
           </div>
         </div>
       </div>
-        </div> */}
+        </div>
       </div>
 
       {/* Form */}
