@@ -431,7 +431,7 @@ useEffect(() => {
   }, 500); // wait 500ms for Firestore update to apply
 
   return () => clearTimeout(timeout);
-}, [groups, userId]);
+}, [groups, userId,refreshKey]);
 
 
 
@@ -610,9 +610,8 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
     if (!chatOpenRef.current && unreadMessages.length > 0) {
       unreadMessages.forEach((msg) => {
         if (
-           Notification.permission === "granted" &&
-          !notifiedMessageIdsRef.current.has(msg.id) &&
-          "Notification" in window
+          Notification.permission === "granted" &&
+          !notifiedMessageIdsRef.current.has(msg.id)
         ) {
           navigator.serviceWorker.ready.then((registration) => {
             registration.showNotification(`New message from ${msg.senderName}`, {
