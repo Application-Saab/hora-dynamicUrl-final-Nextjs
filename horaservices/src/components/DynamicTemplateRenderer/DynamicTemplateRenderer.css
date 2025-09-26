@@ -1,0 +1,787 @@
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+/* Main Page CSS */
+
+.form-wrapper {
+  margin-top: 15px;
+  /* max-width: 500px; */
+  margin-bottom: 50px;
+  padding: 20px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  background: linear-gradient(
+    180deg,
+    #a8e3fe 0%,
+    #fed7f3 53.58%,
+    #fedfd7 88.89%,
+    #ffdace 100%
+  );
+}
+
+.heading-txt {
+  font-family: "Aclonica", sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #97538c;
+}
+
+.char-count {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.error-msg {
+  font-size: 12px;
+  color: red;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.preview-wrapper-template {
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.preview-image-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-preview-template {
+  max-width: 200px;
+  max-height: 150px;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.upload-box-template {
+  margin-top: 10px;
+  width: 100%;
+  border: 1.1px solid #97538C;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #ff9cad;
+  border-radius: 11px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.save-btn {
+  flex: 1;
+  background: #97538c;
+  border-radius: 11px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.input-label {
+  text-align: left;
+  font-size: 0.791rem;
+  font-weight: 600;
+  color: #424648;
+  font-family: "Open Sans", sans-serif;
+  margin-bottom: 4px;
+  display: block;
+}
+.date-time-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.field-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  outline: none;
+  background-color: white;
+  transition: border 0.3s;
+  color: #00000099;
+}
+
+/* Haldi template CSS */
+/* 
+.haldi-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.haldi-card {
+  position: relative;
+  max-width: 480px;
+  max-height: 530px;
+  width: 100%;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 77%;
+  width: 100%;
+  font-family: "Tenor Sans", sans-serif;
+  font-size: 30px;
+  color: #c01c28;
+}
+
+.datetime {
+  position: absolute;
+  top: 85%;
+  width: 100%;
+  font-size: 14px;
+  color: #000;
+}
+
+.address {
+  position: absolute;
+  bottom: 7%;
+  width: 100%;
+  font-size: 8px;
+  color: #000;
+} */
+
+/* .invite-wrapper {
+  background: url("/balloon-bg.png") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 530px;
+  aspect-ratio: 11 / 19;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: 50px;
+  font-family: "Monotype Corsiva", cursive;
+  color: white;
+}
+
+.datetime {
+  position: absolute;
+  top: 65%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.time {
+  position: absolute;
+  top: 71%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.address {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+  line-height: 1.4;
+}
+
+@media (min-width: 600px) {
+  .name {
+    font-size: 44px;
+  }
+  .datetime,
+  .time {
+    font-size: 20px;
+  }
+  .address {
+    font-size: 16px;
+  }
+} */
+
+/* Template 4 server code */
+/* .haldi-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.haldi-card {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 77%;
+  width: 100%;
+  font-family: "Tenor Sans", sans-serif;
+  font-size: 30px;
+  color: #c01c28;
+}
+
+.datetime {
+  position: absolute;
+  top: 85%;
+  width: 100%;
+  font-size: 14px;
+  color: #000;
+}
+
+.address {
+  position: absolute;
+  bottom: 7%;
+  width: 100%;
+  font-size: 8px;
+  color: #000;
+} */
+
+/* Template 3 Server code */
+/* <div class="invite-wrapper">
+          <div class="invite-card">
+            <div class="name">{{name}}</div>
+            <div class="datetime">{{date}} {{month}}</div>
+            <div class="time">at {{time}}</div>
+            <div class="address">{{address}}</div>
+          </div>
+        </div> */
+/* 
+.invite-wrapper {
+  background: url("/balloon-bg.png") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  aspect-ratio: 11 / 19;
+  background-image: url("/DarkBlueIllustrativeBirthdayPartyInvitation.png");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: 340%;
+  font-family: "Monotype Corsiva", cursive;
+  color: white;
+}
+
+.datetime {
+  position: absolute;
+  top: 65%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.time {
+  position: absolute;
+  top: 71%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.address {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+  line-height: 1.4;
+}
+
+@media (min-width: 600px) {
+  .name {
+    font-size: 44px;
+  }
+  .datetime,
+  .time {
+    font-size: 20px;
+  }
+  .address {
+    font-size: 16px;
+  }
+} */
+
+/* ************************************************ */
+/* Template 3 CSS */
+/* .invite-wrapper {
+  background: url("/balloon-bg.png") no-repeat center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 530px;
+  aspect-ratio: 11 / 19;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: 50px;
+  font-family: "Monotype Corsiva", cursive;
+  color: white;
+}
+
+.datetime {
+  position: absolute;
+  top: 65%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.time {
+  position: absolute;
+  top: 71%;
+  left: 0%;
+  right: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+}
+
+.address {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+  line-height: 1.4;
+}
+
+@media (min-width: 600px) {
+  .name {
+    font-size: 44px;
+  }
+  .datetime,
+  .time {
+    font-size: 20px;
+  }
+  .address {
+    font-size: 16px;
+  }
+} */
+
+/* Template 1 CSS */
+/* .invite-wrapper {
+  background: url("/balloon-bg.png") no-repeat center center;
+  background-size: cover;
+  padding: 30px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 480px;
+  max-height: 530px;
+}
+
+.invite-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 530px;
+  aspect-ratio: 11 / 19;
+  background-image: url(/GoldandBlueSimpleBirthdayPartyInvitation.png);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+}
+
+.top-text,
+.name,
+.birthday,
+.party,
+.time,
+.datetime,
+.month,
+.address {
+}
+
+.name {
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: 300%;
+  font-family: "Monotype Corsiva", cursive;
+  color: white;
+}
+.date-time-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.time,
+.datetime,
+.month {
+  position: absolute;
+  color: #ffd95c;
+}
+
+.time {
+  left: 0%;
+  right: 0%;
+  top: 65%;
+  font-size: 30px;
+}
+
+.datetime {
+  left: 0%;
+  right: 0%;
+  top: 65%;
+  font-size: 30px;
+}
+
+.month {
+  right: 12%;
+}
+
+.address {
+  position: absolute;
+  top: 84%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%;
+  text-align: center;
+  font-size: 13px;
+  color: white;
+  line-height: 1.5;
+}
+
+@media (min-width: 600px) {
+  .name {
+    font-size: 44px;
+  }
+  .time,
+  .month {
+    font-size: 18px;
+  }
+  .datetime {
+    font-size: 32px;
+  }
+  .address {
+    font-size: 15px;
+  }
+} */
+
+/* Template 5 Fonts */
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
+/* 
+.invite-template-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-template-card {
+  position: relative;
+  max-width: 480px;
+  max-height: 530px;
+  width: 100%;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  top: 20%;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  font-size: 40px;
+  color: #ffd700;
+  font-weight: 700;
+  text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #ffd700, 0 0 5px #ffd700,
+    0 0 40px #ffd700;
+}
+
+.date {
+  position: absolute;
+  font-family: "Roboto", sans-serif;
+  top: 67%;
+  width: 100%;
+  font-size: 1.625rem;
+  font-weight: bold;
+  color:#fbd2fc;
+  text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 5px #fbd2fc, 0 0 2px #fbd2fc,
+    0 0 10px #fbd2fc;
+}
+.time {
+  position: absolute;
+  font-family: "Roboto", sans-serif;
+  top: 74%;
+  width: 100%;
+  font-size: 1.625rem;
+  font-weight: bold;
+  color:#ffd700;
+  text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 5px #ffd700, 0 0 2px #ffd700,
+    0 0 10px #ffd700;
+}
+
+.address {
+  position: absolute;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  bottom: 9%;
+  width: 100%;
+  padding: 0 40px;
+  font-size: 12px;
+  color: #FFFFFF;
+} */
+
+
+
+
+/* Template 7 Css */
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
+/* .invite-template-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-template-card {
+  position: relative;
+  max-width: 480px;
+  max-height: 530px;
+  width: 100%;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+}
+
+.template-image-wrapper{
+  position: absolute;
+  top: 2.1%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-inline: 20px;
+}
+.template-image{
+  height: 185px;
+  max-width: 270px;
+  z-index: 3;
+}
+
+.name {
+  position: absolute;
+  top: 37%;
+  width: 100%;
+  font-family: "Agbalumo", system-ui;
+  font-size: 2.25rem;
+  color: #FFFFFF;
+  font-weight: 400;
+}
+
+.date-row {
+  position: absolute;
+  top: 76%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  padding-inline: 3px;
+}
+.month {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 1.10rem;
+}
+.day {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 1.80rem;
+}
+
+.time {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 1.10rem;
+}
+
+.address {
+  position: absolute;
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  top: 86%;
+  width: 100%;
+  padding: 0 10px;
+  font-size: 0.875rem;
+  color: #FFFFFF;
+}
+
+
+@media (min-width: 360px) {
+  .template-image{
+    max-width: 320px;
+  }
+  .date-row{
+    top: 75%;
+    gap: 15px;
+  }
+  .name{
+    font-size: 2.5rem;
+  }
+  .month{
+    font-size: 1.5rem;
+  }
+  .day{
+    font-size: 2.25rem;
+  }
+  .time{
+    font-size: 1.5rem;
+  }
+
+  .address {
+    padding: 0 20px;
+  }
+  .template-image{
+    height: 195px;
+  }
+}
+
+@media (min-width: 410px) {
+  .template-image{
+    max-width: 370px;
+  }
+} */

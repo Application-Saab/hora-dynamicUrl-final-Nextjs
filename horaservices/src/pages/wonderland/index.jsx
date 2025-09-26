@@ -13,6 +13,7 @@ import { downloadFile } from "@/utils/downloadFile";
 import FloatingEditButton from "@/components/FloatingActionButton/FAB";
 import { FaArrowLeft } from "react-icons/fa";
 import phoneImage from "@/assets/phoneImage.jpeg"
+import shareinvitaion from "@/assets/shareinvitation.png"
 import "../photo-gallery/gallery.css";
 import {
   BASE_URL,
@@ -295,10 +296,10 @@ const handleInstallClick = async () => {
     fetchEventImages();
 
     // Call every 3 minute
-    const interval = setInterval(fetchEventImages, 180000);
+    // const interval = setInterval(fetchEventImages, 180000);
 
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
+    // // Cleanup interval on unmount
+    // return () => clearInterval(interval);
   }, [
     urlParams.eventUserId,
     urlParams.eventId,
@@ -945,6 +946,7 @@ function linkify(text) {
           id: data._id || data.id || data.eventId,
           luckyDraws: data?.luckyDraws || [],
           templateId: data.templateId,
+          externalTemplateImageUrl: data.externalTemplateImageUrl || "",
         });
 
         setSendCustomerId(hostId);
@@ -1536,49 +1538,24 @@ const getAvatarColor = (name) => {
           )}
           {slug.length === 3 && orderDetails && (
             <>
-              {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />}
+              {/* {showFAB && isHost && <FloatingEditButton onClick={handleEdit} />} */}
               {/* <A2HSPrompt /> */}
 
               {orderDetails ? (
                 <>
-                  {templateId && template ? (
-                    <div style={{ padding: "20px" }}>
+                  {orderDetails?.externalTemplateImageUrl ? (
+                    <div style={{padding: "15px"}}>
                       <div
+                        className="invitation-container-image-ctn"
                         style={{
-                          backgroundImage: template.backgroundUrl
-                            ? `url('${template.backgroundUrl}')`
-                            : "none",
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          minHeight: "300px",
-                          borderRadius: "12px",
-                          position: "relative", // key!
-                          border: "5px solid red",
+                          backgroundImage:
+                            orderDetails?.externalTemplateImageUrl
+                              ? `url('${orderDetails.externalTemplateImageUrl}')`
+                              : "none",
+                          minHeight: "530px",
+                          position: "relative",
                         }}
                       >
-                        {/* Fonts */}
-                        {template.fontUrls?.map((url, idx) => (
-                          <link key={idx} href={url} rel="stylesheet" />
-                        ))}
-
-                        {/* Inject template CSS */}
-                        {template.cssCode && (
-                          <style
-                            dangerouslySetInnerHTML={{
-                              __html: template.cssCode,
-                            }}
-                          />
-                        )}
-
-                        {/* Inject template HTML */}
-                        {template.jsCode && (
-                          <div
-                            style={{ position: "relative", zIndex: 2 }}
-                            dangerouslySetInnerHTML={{
-                              __html: renderHTML(template.jsCode, formData),
-                            }}
-                          />
-                        )}
                         <div
                           className="invite-image-wrapper"
                           onClick={async () => {
@@ -1751,12 +1728,12 @@ const getAvatarColor = (name) => {
                           A special day is waiting — don’t miss the celebration!
                         </p>
                         <div className="invite-buttons">
-                          {/* <button className="btn-explore" onClick={handleClick}>
+                          <button className="btn-explore" onClick={handleClick}>
                             <span className="icon-bg-explore">
                               <Image src={shareinvitaion} alt="Explore" className="icon-img" />
                             </span>
                             <span>Explore Themes</span>
-                          </button> */}
+                          </button>
 
                           <button
                             className="button-share"
@@ -1848,7 +1825,7 @@ const getAvatarColor = (name) => {
               ) : (
                 <p>Loading...</p>
               )}
-              {isHost &&
+              {/* {isHost &&
                 orderDetails &&
                 (orderDetails?.luckyDraws?.length === 0 ? (
                   <div className="lucky-draw-banner">
@@ -1917,7 +1894,7 @@ const getAvatarColor = (name) => {
                         guestDetails?.luckyDraws[0]?.ticketNumber}
                     </span>
                   </div>
-                ))}
+                ))} */}
 
               <div style={styles.wrapper}>
                 <h2 style={styles.heading}>

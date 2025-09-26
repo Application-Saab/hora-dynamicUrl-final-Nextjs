@@ -10,6 +10,7 @@ import vector2 from "@/assets/sharepageVector2.png";
 export default function ShareInvitation() {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState(null);
+  console.log('%c [ orderDetails ]-13', 'font-size:13px; background:pink; color:#bf2c9f;', orderDetails)
   function formatDate(dateString) {
     const date = new Date(dateString);
 
@@ -80,7 +81,15 @@ export default function ShareInvitation() {
         </span>
       </button>
       <div className="card-container">
-        <FinalInviteDisplay orderDetails={orderDetails} />
+        {
+          orderDetails?.externalTemplateImageUrl ? (
+            <div className="external-template-image">
+              <img src={orderDetails?.externalTemplateImageUrl} alt="Template image" />
+            </div>
+          ) : (
+            <FinalInviteDisplay orderDetails={orderDetails} />
+          )
+        }
       </div>
     </div>
   );

@@ -1,23 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// import { useRouter } from "next/navigation";
 import { useRouter } from "next/router";
-import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
+import { FiUpload } from "react-icons/fi";
 import "./template.css";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
+import DefaultTemplate from "@/assets/DefaultTemplatePreview.png";
+import ApplyIcon from "@/assets/ApplyTemplateIcon.svg";
+import SelectedIcon from "@/assets/SelectedTemplateIcon.svg";
 import { useSearchParams } from "next/navigation";
 const TemplateGrid = () => {
   const router = useRouter();
-  
+
   const [templatesData, setTemplatesData] = useState([]);
+  const [templatesDataWithDefault, setTemplatesDataWithDefault] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-const searchParams = useSearchParams();
-const eventId = searchParams.get("eventId");
-const eventUserId = searchParams.get("eventUserId");
-const userType = searchParams.get("userType");
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("eventId");
+  const eventUserId = searchParams.get("eventUserId");
+  const userType = searchParams.get("userType");
   const [uploadedTemplate, setUploadedTemplate] = useState(null);
   const [loadingUpload, setLoadingUpload] = useState(false);
 
@@ -49,7 +52,7 @@ const userType = searchParams.get("userType");
       handleUploadTemplate(imageUrl, file);
     }
   };
-    const handleUploadTemplate = async (url, file) => {
+  const handleUploadTemplate = async (url, file) => {
     setLoadingUpload(true);
     if (!url || !file) {
       alert("Please upload an image.");
@@ -65,8 +68,7 @@ const userType = searchParams.get("userType");
       alert("Please log in to upload a template.");
       setLoadingUpload(false);
       return;
-    } 
-
+    }
 
     const formData = new FormData();
     formData.append("image", file);
@@ -106,89 +108,129 @@ const userType = searchParams.get("userType");
       setLoadingUpload(false);
     }
   };
-  
-  const handleApplyClick = (templateMongoId) => {
-  setSelectedTemplate(templateMongoId);
-  router.push(
-    `/wonderland/create-invite-template?id=${eventId}&templateId=${templateMongoId}`
-  );
-};
 
+  const handleApplyClick = (templateMongoId) => {
+    setSelectedTemplate(templateMongoId);
+    router.push(
+      `/wonderland/create-invite-template?id=${eventId}&templateId=${templateMongoId}`
+    );
+  };
+
+  useEffect(() => {
+    // if (templatesData.length > 0) {
+    // const defaultTemplate = {
+    //   _id: "default-template",
+    //   webpUrl: DefaultTemplate.src,
+    //   isDisabled: false,
+    // };
+    setTemplatesDataWithDefault([...templatesData]);
+    // }
+  }, [templatesData]);
 
   if (loading) return <div>Loading templates...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="templateWrapper">
+    <div className="d-flex justify-content-center">
+      <div className="templateWrapper">
       <h2 className="templateTitle">Choose From 50+ Invites</h2>
-       <h3 className="templateTitle">OR</h3>
+      {/* <h3 className="templateTitle">OR</h3>
       <div className="d-flex justify-content-center mb-4 template-upload">
         <button
           type="button"
           className="btn btn-primary"
           onClick={() => document.getElementById("templateUploadImage").click()}
         >
-          {loadingUpload ? <span className="loader"></span> : "Upload Your Template"}
+          {loadingUpload ? (
+            <span className="loader"></span>
+          ) : (
+            "Upload Your Template"
+          )}
         </button>
         <input
           type="file"
           id="templateUploadImage"
           accept="image/*"
           onChange={handleFileChange}
+          hidden
         />
-      </div>
-    <div className="templateGrid">
-  {/* {templatesData.map((template) => {
-    const isSelected = selectedTemplate === template._id;
-    return (
-      <div key={template._id} className="templateCard">
-        <img
-          src={template.webpUrl}
-          alt="Template Preview"
-          className="templatePreview"
-        />
-        <button
-          className="inviteBtn"
-          onClick={() => handleApplyClick(template._id)}
+      </div> */}
+      <div className="templateGrid">
+        
+          <div className="templateCard" style={{border:  '3px solid #47474733'}}>
+          <img
+            src={DefaultTemplate.src}
+            alt="Template Preview"
+            className="templatePreview default-img"
+          />
+          <button
+            className={`inviteBtn ${selectedTemplate === 'default-template' ? "selectedBtn" : ""}`}
+            style={{position: 'absolute', bottom: '-10px'}}
+            onClick={() => handleApplyClick('default-template')}
+          >
+            {selectedTemplate === 'default-template' ? (
+              <>
+                SELECTED <span className="btnCircle"><img src={SelectedIcon.src} height='21px' width='22px' alt="Selected" /></span>
+              </>
+            ) : (
+              <>
+                APPLY NOW <span className="btnCircle"><img src={ApplyIcon.src} alt="Apply" /></span>
+              </>
+            )}
+          </button>
+        </div>
+        <div
+          className="upload-template-card template-upload"
+          onClick={() => document.getElementById("templateUploadImage").click()}
         >
-          {isSelected ? "SELECTED" : "APPLY NOW"}{" "}
-          <span className="btnCircle">✔</span>
-        </button>
+          {loadingUpload ? (
+            <div className="loader" style={{height: '32px', width: '32px'}}></div>
+          ) : (
+            <>
+              <FiUpload size={32} />
+              <span>UPLOAD YOUR TEMPLATE</span>
+            </>
+          )}
+          <input
+            type="file"
+            id="templateUploadImage"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </div>
+        {templatesDataWithDefault.map((template) => {
+          const isSelected =
+            selectedTemplate === template._id ||
+            selectedTemplate === template.configs?.templateId;
+
+          return (
+            !template?.isDisabled && (
+              <div key={template._id} className="templateCard">
+                <img
+                  src={template.webpUrl}
+                  alt="Template Preview"
+                  className="templatePreview"
+                />
+                <button
+                  className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
+                  onClick={() => handleApplyClick(template._id)}
+                >
+                  {isSelected ? (
+                    <>
+                      SELECTED <span className="btnCircle"><img src={SelectedIcon.src} height='21px' width='22px' alt="Selected" /></span>
+                    </>
+                  ) : (
+                    <>
+                      APPLY NOW <span className="btnCircle"><img src={ApplyIcon.src} alt="Apply" /></span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )
+          );
+        })}
       </div>
-    );
-  })} */}
-  {templatesData.map((template) => {
-  const isSelected =
-    selectedTemplate === template._id ||
-    selectedTemplate === template.configs?.templateId;
-
-  return (
-    <div key={template._id} className="templateCard">
-      <img
-        src={template.webpUrl}
-        alt="Template Preview"
-        className="templatePreview"
-      />
-      <button
-        className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
-         onClick={() => handleApplyClick(template._id)}
-
-      >
-        {isSelected ? (
-          <>
-            SELECTED <span className="btnCircle">✔</span>
-          </>
-        ) : (
-          <>
-            APPLY NOW <span className="btnCircle">✔</span>
-          </>
-        )}
-      </button>
     </div>
-  );
-})}
-
-</div>
     </div>
   );
 };

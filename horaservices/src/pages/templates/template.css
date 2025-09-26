@@ -1,13 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 .templateWrapper {
   padding: 0px;
   text-align: center;
+  max-width: 480px;
+  width: 100%;
 }
 
 .templateTitle {
-  font-size: 20px;
-  font-weight: bold;
+  font-family: "Aclonica", sans-serif;
+  font-size: 26px;
+  font-weight: 400;
   color: #97538C;
-  margin: 10px;
+  margin-block: 25px;
 }
 
 .templateGrid {
@@ -17,12 +21,48 @@
   justify-items: center;
   margin:10px
 }
+.default-img{
+  /* border: 3px solid #47474733; */
+  /* border-radius: 2px; */
+  /* width: 100%; */
+  /* max-width: 180px; */
+  height: 294px !important;
+  object-fit: contain !important;
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: not-allowed;
+  background-color: #f0f0f0; */
+}
+
+
+.upload-template-card{
+  border: 3px solid #47474733;
+  border-radius: 2px;
+  width: 100%;
+  max-width: 180px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.upload-template-card span{
+  font-family: 'Inter', sans-serif;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bolder;
+  color: #4A4A4A;;
+}
 
 .templateCard {
   position: relative;
   width: 100%;
   max-width: 180px;
-  border-radius: 12px;
+  /* border-radius: 12px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,27 +70,40 @@
 
 .templatePreview {
   width: 100%;
-  height: 270px;
+  height: 300px;
   object-fit: cover;
   border-bottom: none;
   display: block;
 }
 
 .inviteBtn {
+  font-family: "Inter", sans-serif;
   margin-top: -22px; /* pulls it up inside the card */
   background-color: #97538C;
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 5px 10px;
-  font-weight: 400;
-  font-size: 12px;
+  padding: 5px 12px;
+  font-weight: 500;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  /* box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); */
   cursor: pointer;
+  box-shadow: 0px 4.55px 4.55px 0px #00000040;
+  box-shadow: 0px 5.69px 4.55px 0px #00000040 inset;
+
+}
+
+.selectedBtn{
+  background-color: #FFFFFF;
+  color: #97538C;
+  border: 1.14px solid #97538C;
+  padding: 4px 12px;
+  box-shadow: 0px 4.55px 3.42px 0px #00000040;
+  box-shadow: 0px 7.97px 7.97px 0px #00000026 inset;
 }
 
 .inviteBtn .btnCircle {

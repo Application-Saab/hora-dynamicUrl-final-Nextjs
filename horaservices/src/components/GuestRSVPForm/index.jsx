@@ -155,8 +155,10 @@ const GuestRSVPForm = ({
       });
       const data = await response.json();
       if (data.error) {
+         setSubmitting(false);
         alert("Something went wrong. Please try again.");
       } else {
+        setSubmitting(false);
         fetchGuestsInside();
         setOpenRsvpList(true);
         localStorage.setItem(`rsvp_submitted_${eventId}_${userId}`, "true");
@@ -170,13 +172,12 @@ const GuestRSVPForm = ({
   };
 
  
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !status) return;
-
-    setShowVideo(true);
-
-
+    setSubmitting(true);
+    await updateRsvpStatus();
+    // setShowVideo(true);
     setShowForm(false);
   };
   const [timer, setTimer] = useState(0);
@@ -307,7 +308,7 @@ const handleTimeUpdate = () => {
                 required
               />
               <button type="submit" className="submit-btn" disabled={submitting}>
-                {submitting ? "Submitting..." : "SAVE"}
+                {submitting ? <div className="loader" style={{height: '20px', width: '20px'}}></div> : "SAVE"}
               </button>
             </form>
           </div>
