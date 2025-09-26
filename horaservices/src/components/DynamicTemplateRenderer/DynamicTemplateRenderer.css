@@ -2,9 +2,9 @@
 /* Main Page CSS */
 
 .form-wrapper {
-  margin-top: 25px;
-  max-width: 500px;
-  margin-bottom: 30px;
+  margin-top: 15px;
+  /* max-width: 500px; */
+  margin-bottom: 50px;
   padding: 20px;
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
@@ -40,24 +40,36 @@
   margin-top: 4px;
 }
 
-.preview-wrapper {
-  margin: 10px 0;
+.preview-wrapper-template {
   cursor: pointer;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.preview-image-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.image-preview {
+.image-preview-template {
+  max-width: 200px;
+  max-height: 150px;
+  height: 100%;
   width: 100%;
-  max-height: 200px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 8px;
 }
 
-.upload-box {
-  border: 2px dashed #aaa;
+.upload-box-template {
+  margin-top: 10px;
+  width: 100%;
+  border: 1.1px solid #97538C;
   padding: 20px;
   text-align: center;
   cursor: pointer;
+  border-radius: 16px;
 }
 
 .cancel-btn {
@@ -114,7 +126,6 @@
   font-size: 0.85rem;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.4);
-  /* margin-bottom: 10px; */
   outline: none;
   background-color: white;
   transition: border 0.3s;
@@ -654,7 +665,7 @@
 
 /* Template 7 Css */
 /* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
-.invite-template-wrapper {
+/* .invite-template-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -684,8 +695,7 @@
 }
 .template-image{
   height: 185px;
-  max-width: 370px;
-  width: 100%;
+  max-width: 270px;
   z-index: 3;
 }
 
@@ -694,72 +704,84 @@
   top: 37%;
   width: 100%;
   font-family: "Agbalumo", system-ui;
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   color: #FFFFFF;
   font-weight: 400;
 }
 
 .date-row {
   position: absolute;
-  top: 72%;
+  top: 76%;
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 10px;
   align-items: center;
+  padding-inline: 3px;
 }
 .month {
   font-family: "Roboto", sans-serif;
   font-weight: 900;
   color: #FFFFFF;
-  /* letter-spacing: 0px; */
-  font-size: 1.5rem;
+  font-size: 1.10rem;
 }
 .day {
   font-family: "Roboto", sans-serif;
   font-weight: 900;
   color: #FFFFFF;
-  /* letter-spacing: 0px; */
-  font-size: 2.25rem;
+  font-size: 1.80rem;
 }
 
 .time {
   font-family: "Roboto", sans-serif;
   font-weight: 900;
   color: #FFFFFF;
-  font-size: 1.5rem;
-  /* letter-spacing: 0px; */
+  font-size: 1.10rem;
 }
 
 .address {
   position: absolute;
   font-family: "Roboto", sans-serif;
   font-weight: 900;
-  /* top: 56%; */
-  bottom: 3%;
+  top: 86%;
   width: 100%;
-  padding: 0 80px;
+  padding: 0 10px;
   font-size: 0.875rem;
-  color: #77afc4;
+  color: #FFFFFF;
 }
 
-@media (min-width: 320){
-  .month{
-    font-size: 1.25rem;
-  }
-  .day{
-    font-size: 2rem;
-  }
-  .time{
-    font-size: 1.25rem;
-  }
-}
 
 @media (min-width: 360px) {
+  .template-image{
+    max-width: 320px;
+  }
+  .date-row{
+    top: 75%;
+    gap: 15px;
+  }
+  .name{
+    font-size: 2.5rem;
+  }
+  .month{
+    font-size: 1.5rem;
+  }
+  .day{
+    font-size: 2.25rem;
+  }
+  .time{
+    font-size: 1.5rem;
+  }
+
   .address {
-    padding: 0 100px;
+    padding: 0 20px;
   }
   .template-image{
     height: 195px;
   }
 }
+
+@media (min-width: 410px) {
+  .template-image{
+    max-width: 370px;
+  }
+} */

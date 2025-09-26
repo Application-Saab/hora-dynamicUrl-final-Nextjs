@@ -535,6 +535,7 @@ import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter, imageForTest } from "./dateTimeFormatters";
+import CameraIcon from '@/assets/camera.png'
 
 
 const DynamicTemplateRenderer = () => {
@@ -564,6 +565,7 @@ const DynamicTemplateRenderer = () => {
     address: "",
     templateId: templateId || "",
   });
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [dataForTemplate, setDataForTemplate] = useState({
     eventType: formData.eventType,
     name: formData?.name,
@@ -574,6 +576,7 @@ const DynamicTemplateRenderer = () => {
     time: formData?.time,
     address: formData?.address,
     templateId: templateId || "",
+    image: uploadedImage,
   });
   console.log('%c [ dataForTemplate ]-567', 'font-size:13px; background:pink; color:#bf2c9f;', dataForTemplate)
   console.log('%c [ dateFormatter(formData?.date, template?.dateFormatCase)?.day ]-571', 'font-size:13px; background:pink; color:#bf2c9f;', dateFormatter(formData?.date, template?.dateFormatCase)?.day)
@@ -588,7 +591,7 @@ const DynamicTemplateRenderer = () => {
     name: 0,
     address: 0,
   });
-
+  
   useEffect(() => {
     setDataForTemplate({
       eventType: formData.eventType,
@@ -600,27 +603,22 @@ const DynamicTemplateRenderer = () => {
       time: formData.time,
       address: formData.address,
       templateId: templateId || "",
+      image: uploadedImage,
     });
-  }, [formData, template]); 
+  }, [formData, template, uploadedImage]); 
 
-  const [uploadedImage, setUploadedImage] = useState(imageForTest);
   console.log('%c [ uploadedImage ]-607', 'font-size:13px; background:pink; color:#bf2c9f;', uploadedImage)
   const fileInputRef = useRef(null);
 
   /** Fetch template */
   useEffect(() => {
-    if (!templateId) {
-      setError("No template selected");
-      setLoading(false);
-      return;
-    }
-
     const fetchTemplate = async () => {
       try {
         const response = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
         const result = await response.json();
 
-        if (result.error) {
+        if(templateId){
+          if (result.error) {
           setError(result.message || "Failed to fetch template");
         } else {
           const selectedTemplate = result.templates.find(
@@ -653,6 +651,7 @@ const DynamicTemplateRenderer = () => {
           } else {
             setError("Template not found");
           }
+        }
         }
       } catch (err) {
         setError("Error fetching template: " + err.message);
@@ -798,7 +797,7 @@ const DynamicTemplateRenderer = () => {
         setUploadedImage(compressed);
       } catch (err) {
         console.error("Image compression failed:", err);
-        alert("Image compress karne mein error aaya.");
+        alert("Error on image compression.");
       }
     };
     reader.readAsDataURL(file);
@@ -820,7 +819,6 @@ const DynamicTemplateRenderer = () => {
       eventDate: formData.date ? new Date(formData.date).toISOString() : "",
       eventTime: formData.time || "",
       location: formData.address,
-      // templateId: formData.templateId,
     };
 
     try {
@@ -838,7 +836,6 @@ const DynamicTemplateRenderer = () => {
 
       if (res.ok) {
         handleDownload();
-        // router.replace(`/wonderland?id=${userId}/${eventId || "new"}/host`);
       } else {
         const errData = await res.json();
         alert(`Failed: ${errData.message || "Unknown error"}`);
@@ -857,7 +854,7 @@ const DynamicTemplateRenderer = () => {
     canvas.toBlob(async (blob) => {
       if (!blob) return;
 
-      const file = new File([blob], "sticky-note.png", {
+      const file = new File([blob], `invite_${template?.bgImageName}`, {
         type: "image/png",
         lastModified: new Date().getTime(),
       });
@@ -895,13 +892,40 @@ const DynamicTemplateRenderer = () => {
   //   });
   // };
 
-  const renderHTML = (jsCode, rawData) => {
+//   const renderHTML = (jsCode, rawData) => {
+//   return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
+//     const path = key.trim().replace(/\?/g, "");
+//     try {
+//       return path.split(".").reduce((acc, part) => {
+//         return acc && acc[part] !== undefined ? acc[part] : "";
+//       }, rawData) || "";
+//     } catch {
+//       return "";
+//     }
+//   });
+// };
+
+
+const renderHTML = (jsCode, rawData) => {
+  // Handle conditional blocks: {{#if key}} ... {{/if}}
+  jsCode = jsCode.replace(/{{#if (.*?)}}([\s\S]*?){{\/if}}/g, (_, key, inner) => {
+    const value = rawData[key.trim()];
+    if (value) {
+      // replace inner placeholders normally
+      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => {
+        return rawData[innerKey.trim()] || "";
+      });
+    }
+    return "";
+  });
+
+  // Handle normal placeholders: {{key}}
   return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
-    const path = key.trim().replace(/\?/g, "");
     try {
-      return path.split(".").reduce((acc, part) => {
-        return acc && acc[part] !== undefined ? acc[part] : "";
-      }, rawData) || "";
+      return key
+        .trim()
+        .split(".")
+        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData) || "";
     } catch {
       return "";
     }
@@ -909,11 +933,13 @@ const DynamicTemplateRenderer = () => {
 };
 
 
+
   if (loading) return <p>Loading template...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div style={{ padding: "10px" }}>
+<div className="d-flex justify-content-center">
+      <div style={{ padding: "10px", maxWidth: '500px', width: '100%' }}>
       {/* Template Preview with Background */}
       <div
         ref={templateRef}
@@ -939,58 +965,42 @@ const DynamicTemplateRenderer = () => {
         ))}
 
         {/* CSS */}
-        {/* {template?.cssCode && (
+        {template?.cssCode && (
           <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-        )} */}
+        )}
 
         {/* Template HTML */}
-        {/* {template?.jsCode && (
+        {template?.jsCode && (
           <div
             style={{ position: "relative", zIndex: 2 }}
             dangerouslySetInnerHTML={{
               __html: renderHTML(template.jsCode, dataForTemplate),
             }}
           />
-        )} */}
+        )}
 
         
 
-        <div style={{ position: "relative", zIndex: 2 }}>
+        {/* <div style={{ position: "relative", zIndex: 2 }}>
             <div class="invite-template-wrapper">
         <div class="invite-template-card">
-          {uploadedImage && (
-            <div class='template-image-wrapper'>
-              <img
-              src={uploadedImage}
-              alt="Host"
-              class='template-image'
-              // style={{
-              //   position: "absolute",
-              //   // bottom: "20px",
-              //   // top: "20px",
-              //   // right: "20px",
-              //   maxWidth: "300px",
-              //   height: "195px",
-              //   // borderRadius: "50%",
-              //   // objectFit: "cover",
-              //   // border: "3px solid white",
-              //   zIndex: 3,
-              // }}
-            />
-            </div>
-          )}
-          <div class="name">{dataForTemplate?.name}</div>
+         {{#if image}}
+  <div class='template-image-wrapper'>
+    <img src="{{image}}" alt="host image" class='template-image' />
+  </div>
+{{/if}}
+          <div class="name">{{name}}</div>
           <div class='date-row'>
-            <div class="month"><span>{dataForTemplate?.month}</span></div>
-            <div class="day"><span>{dataForTemplate?.day}</span></div>
-            <div class="time"><span>AT {dataForTemplate?.time} PM</span></div>
+            <div class="month"><span>{{month}}</span></div>
+            <div class="day"><span>{{day}}</span></div>
+            <div class="time"><span>AT {{time}} PM</span></div>
           </div>
           <div class="address">
-            <p>{dataForTemplate?.address}</p>
+            <p>{{address}}</p>
           </div>
         </div>
       </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Form */}
@@ -1078,15 +1088,16 @@ const DynamicTemplateRenderer = () => {
                onClick={() => {
                  if (fileInputRef.current) fileInputRef.current.click();
                }}
-               className="preview-wrapper"
+               className="preview-wrapper-template"
              >
-               <img src={uploadedImage} alt="Preview" className="image-preview" />
-               <div>Tap to change photo</div>
+               <div className="preview-image-div">
+                <img src={uploadedImage} alt="Preview" className="image-preview-template" />
+               </div>
              </div>
            ) : (
-             <label className="upload-box" htmlFor="file-upload">
-               <img src="/camera-icon.png" alt="Upload" width={40} />
-               <div>Upload Photo</div>
+             <label className="upload-box-template" htmlFor="file-upload">
+               <img src={CameraIcon.src} height='45px' width='45px' alt="Upload" />
+               <div className="mt-2 fw-bold" style={{color: '#666666'}}>Upload Photo</div>
              </label>
            ))}
 
@@ -1102,7 +1113,6 @@ const DynamicTemplateRenderer = () => {
              onClick={handleSave}
               className="save-btn"
              style={{
-              //  backgroundColor: saving ? "#ccc" : "#4CAF50",
                cursor: saving ? "not-allowed" : "pointer",
                opacity: saving ? 0.7 : 1,
              }}
@@ -1113,6 +1123,7 @@ const DynamicTemplateRenderer = () => {
          </div>
        </div>
     </div>
+</div>
   );
 };
 

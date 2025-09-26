@@ -22,6 +22,8 @@ const PageLayout = ({ children }) => {
   // Show BottomNav only on these paths
   const showBottomNav =
     pathname === "/wonderland" ||
+    pathname === "/wonderland/create-invite-template" ||
+    pathname === "/templates" ||
     pathname?.startsWith("/chat") || // covers /chat?id=123 also
     pathname === "/about" || pathname === '/accounts';
 
