@@ -15,12 +15,13 @@
   width: 100%;
   height: auto;
   display: block;
+  margin-bottom: 5px;
 }
 .banner-image {
   width: 100%;
   height: auto;
   display: block;
-  margin: 10px 0px 10px 0px;
+  margin: 5px 0px 5px 0px;
 }
 
 .create-invite-btn {

@@ -222,7 +222,7 @@ useEffect(() => {
               alt="Events"
               className="nav-icon"
             />
-            <span className="nav-text">Events</span>
+            <span className="nav-text">Invites</span>
           </div>
         </Link>
 

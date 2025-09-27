@@ -28,11 +28,8 @@ const [showOtpLogin, setShowOtpLogin] = useState(false);
   const [refetchUserData, setRefetchUserData] = useState(false);
   const [preview, setPreview] = useState(null);
   const [loadingUpload, setLoadingUpload] = useState(false);
-  console.log(
-    "%c [ preview ]-24",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    preview
-  );
+   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   
   useEffect(() => {
     // ✅ check login state from localStorage
@@ -263,8 +260,17 @@ if (response.ok) {
            <div
           className="contact-ctn"
           style={{ cursor: "pointer" }}
-          onClick={isLoggedIn ? handleLogout : handleLogin}
+          // onClick={isLoggedIn ? handleLogout : handleLogin}
+             onClick={() => {
+              if (isLoggedIn) {
+                setShowLogoutConfirm(true); // ✅ first open confirm popup
+              } else {
+                handleLogin();
+              }
+            }}
         >
+
+       
           <div className="contact-item">
             <Image
               src={LogoutIcon}
@@ -322,6 +328,33 @@ if (response.ok) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+       {showLogoutConfirm && (
+        <div className="modal-overlay-edit-form">
+          <div className="modal-content-edit-form">
+            <span className="edit-modal-heading">Confirm Logout</span>
+            <p style={{ margin: "10px 0" }}>
+              Are you sure you want to logout?
+            </p>
+            <div className="edit-form-btn-ctn">
+              <button
+                type="button"
+                className="cancel-edit-btn"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="submit-edit-btn"
+                onClick={handleLogout}
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}

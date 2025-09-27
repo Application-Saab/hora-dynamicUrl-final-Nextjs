@@ -64,11 +64,11 @@
 .event-info-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center; /* ✅ Center the entire block */
+  align-items: center; 
 }
 
 .event-details {
-  text-align: left;     /* ✅ Text inside is left aligned */
+  text-align: left;     
   display: inline-block;
 }
 

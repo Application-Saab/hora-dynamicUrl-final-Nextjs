@@ -302,9 +302,6 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
         return "🎊";
     }
   };
-
-  console.log(allEventsData, "allEventsData");
-
   return (
     <>
       {showLoginModal && (
@@ -393,13 +390,13 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 className="banner-image"
               />
             </div>
-            {/* <div className="invite-banner">
+            <div className="invite-banner">
               <Image
                 src={luckdrawBnaner}
                 alt="Invite Banner"
                 className="banner-image"
               />
-            </div> */}
+            </div>
             <div
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -413,7 +410,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 margin: "10px",
               }}
             >
-              How It Works Wonderland
+              How It Works 
             </div>
             <div className="invite-banner">
               <Image
@@ -445,7 +442,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 className="banner-image"
               />
             </div>
-            <div className="invite-banner">
+            <div className="invite">
               <Image
                 src={yourcelebration}
                 alt="Invite Banner"
