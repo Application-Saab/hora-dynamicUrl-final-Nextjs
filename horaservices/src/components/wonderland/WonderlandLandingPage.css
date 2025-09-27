@@ -25,7 +25,7 @@
 
 .create-invite-btn {
   position: absolute;
-  bottom: 30px;
+  bottom: 25px;
   left: 25%;
   transform: translateX(-50%);
   background: #97538c;
@@ -38,6 +38,21 @@
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: borderFlash 1.5s infinite;
+}
+@keyframes borderFlash {
+  0% {
+    border-color: #ddd;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    border-color: #97538c;; /* Highlight color */
+    box-shadow: 0 0 10px rgba(102, 5, 205, 0.6);
+  }
+  100% {
+    border-color: #ddd;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .create-invite-btn:hover {

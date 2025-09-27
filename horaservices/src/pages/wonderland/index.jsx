@@ -5,7 +5,7 @@ import { useSwipeable } from "react-swipeable";
 import tabIcon1 from "@/assets/galleryicon.png";
 import tabIcon2 from "@/assets/thankyouicon.png";
 import imageBackground from "@/assets/imageBackground.jpg";
-import imageBackGround from "@/assets/finalInviteBackground.png";
+import imageBackGround from "@/assets/finalInviteBackground.webp";
 import LuckDrawTicketBanner from "@/assets/lucky_draw_ticket_bg.jpg";
 import Image from "next/image";
 import whatshare from "@/assets/whatshare.png";
@@ -1556,7 +1556,7 @@ const getAvatarColor = (name) => {
                           position: "relative",
                         }}
                       >
-                        <div
+                        {/* <div
                           className="invite-image-wrapper"
                           onClick={async () => {
                             if (userType !== "host" && !hasSubmitted) {
@@ -1621,7 +1621,7 @@ const getAvatarColor = (name) => {
                               {unreadCount}
                             </span>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ) : (
@@ -1645,7 +1645,7 @@ const getAvatarColor = (name) => {
                           clearNewMessage={() => setHasNewMessage(false)}
                           hasNewMessage={hasNewMessage}
                         />
-                        <div
+                        {/* <div
                           className="invite-image-wrapper"
                           onClick={async () => {
                             if (userType !== "host" && !hasSubmitted) {
@@ -1712,7 +1712,7 @@ const getAvatarColor = (name) => {
                               {unreadCount}
                             </span>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   )}
@@ -1825,7 +1825,7 @@ const getAvatarColor = (name) => {
               ) : (
                 <p>Loading...</p>
               )}
-              {/* {isHost &&
+               {isHost &&
                 orderDetails &&
                 (orderDetails?.luckyDraws?.length === 0 ? (
                   <div className="lucky-draw-banner">
@@ -1894,7 +1894,7 @@ const getAvatarColor = (name) => {
                         guestDetails?.luckyDraws[0]?.ticketNumber}
                     </span>
                   </div>
-                ))} */}
+                ))}
 
               <div style={styles.wrapper}>
                 <h2 style={styles.heading}>
@@ -2202,7 +2202,7 @@ const getAvatarColor = (name) => {
       )}
 
       <>
-        {chatOpen && (
+        {/* {chatOpen && (
           <div className="chat-overlay">
             <div className="chat-header">
               <div className="chat-user-info">
@@ -2233,7 +2233,7 @@ const getAvatarColor = (name) => {
                       isSender ? "sender" : "receiver"
                     }`}
                   >
-                    {/* Receiver avatar (left side) */}
+                
                     {!isSender && (
   <div
     className="chat-avatar-receiver"
@@ -2251,7 +2251,7 @@ const getAvatarColor = (name) => {
 
 
                     <div className={`chat-bubble ${isSender ? "sender" : "receiver"}`}>
-      {/* Sirf receiver ka naam/number */}
+    
       {!isSender && (
         <div className="chat-sender">
           {senderName
@@ -2260,7 +2260,7 @@ const getAvatarColor = (name) => {
         </div>
       )}
 {/* 
-      <div className="chat-text">{msg.text}</div> */}
+ 
 <div className="chat-text">{linkify(msg.text)}</div>
 
       <div className="chat-time">
@@ -2274,13 +2274,7 @@ const getAvatarColor = (name) => {
       </div>
     </div>
 
-                    {/* {isSender && (
-                      <div className="chat-avatar">
-                        {senderName
-                          ? senderName.charAt(0).toUpperCase()
-                          : msg.senderPhoneNumber.charAt(3)}
-                      </div>
-                    )} */}
+            
                   </div>
                 );
               })}
@@ -2314,7 +2308,7 @@ const getAvatarColor = (name) => {
                 )}
 
                 <div>
-                  {/* Hidden file input */}
+            
                   <input
                     type="file"
                     accept="image/*"
@@ -2323,24 +2317,6 @@ const getAvatarColor = (name) => {
                     style={{ display: "none" }}
                   />
 
-                  {/* Upload button */}
-                  {/* <button
-        onClick={handleButtonClick}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          padding: '10px 20px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          backgroundColor: '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-        }}
-      >
-        <FaImage style={{ marginRight: '8px' }} />
-        Upload Image
-      </button> */}
                 </div>
               </button>
 
@@ -2390,25 +2366,7 @@ const getAvatarColor = (name) => {
                 <Image src={sendIcon} alt="Send" className="send-icon" />
               </button>
 
-              {/* <textarea
-          value={text}
-          ref={textareaRef}
-          className="chat-input"
-          rows={1}
-          onFocus={() => {
-            // don't hide emoji picker when focusing textarea
-          }}
-          onChange={(e) => setText(e.target.value)}
-          onInput={(e) => {
-            e.target.style.height = "auto";
-            e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
-          }}
-          placeholder="Type message here..."
-        />
-
-        <button onClick={sendMessage} className="chat-send-btn">
-          <Image src={sendIcon} alt="Send" className="send-icon" />
-        </button> */}
+            
             </div>
 
             {showEmojiPicker && (
@@ -2444,7 +2402,7 @@ const getAvatarColor = (name) => {
       return newText;
     });
   }}
-/> */}
+/> 
 
                 <EmojiPicker
                   width={emojiWidth}
@@ -2473,7 +2431,7 @@ const getAvatarColor = (name) => {
               </div>
             )}
           </div>
-        )}
+        )} */}
       </>
 
       {showImageUploadInfo && (

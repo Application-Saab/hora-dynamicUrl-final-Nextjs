@@ -5,18 +5,6 @@ body {
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Overlay Content */
-/* .invitation-container {
-    max-width: 480px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: #fff;
-    justify-content: center;
-    padding: 20px;
-    margin: auto;
-    overflow: hidden;
-} */
 .invitation-container {
     max-width: 480px;
     /* min-height: 100vh; */
@@ -84,7 +72,6 @@ body {
   object-fit: cover;
 }
 
-/* Invitation Title */
 .invitation-title
  {
     text-align: center;
@@ -589,6 +576,7 @@ background-color: none !important;
 .event-grid {
   column-count: 2;
   column-gap: 10px;
+  margin-bottom: 60px;
 }
 
 
