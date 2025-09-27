@@ -40,7 +40,7 @@
 }
 .work-container-slider {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
   justify-content: center;
   width: 100%;
@@ -55,15 +55,14 @@
   background: #FFFFFF;
   border-radius: 18.26px;
   /* Updated to match your new requirement */
-  border: 2px solid #BABABA;
+  border: 1.5px solid #BABABA;
   overflow: hidden; 
-  height: 240px;
   transition: transform 0.3s ease;
 }
-
+/* 
 .work-item-slider:hover {
   transform: translateY(-4px);
-}
+} */
 
 .discount-badge-slider {
   font-family: Inter, sans-serif;
@@ -155,7 +154,7 @@
   gap: 6px;
   font-family: Inter, sans-serif;
   margin-top: 5px;
-  /* margin-bottom: 10px; */
+  margin-bottom: 5px !important;
 }
 
 
@@ -184,7 +183,7 @@
 
 
 .photograpy-book-now-slider {
-  width: 115.09px;
+  width: 100px;
   gap: 9.13px;
   border-radius: 6.39px;
   border: 1px solid #97538C;
@@ -194,10 +193,9 @@
   color: #97538c;
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   transition: all 0.3s ease;
   font-size: 14.61px;
-  /* margin-top: 5px ; */
 }
 
 

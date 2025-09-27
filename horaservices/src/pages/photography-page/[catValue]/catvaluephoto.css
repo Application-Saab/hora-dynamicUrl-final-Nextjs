@@ -22,7 +22,6 @@
   border-radius: 18.26px;
   border: 2px solid #BABABA;
   overflow: hidden; 
-  height: 240px;
   transition: transform 0.3s ease;
 }
 
@@ -103,7 +102,7 @@
   text-align: center;
 }
 
-.Prefred-occ {
+.Prefred {
   font-size: 15.61px;
   color: #97538C;
   font-weight: 600;
@@ -113,6 +112,7 @@
   gap: 6px;
   font-family: Inter, sans-serif;
   margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 
@@ -158,18 +158,18 @@
 }
 
 
-/* Product heading */
 
 .ProductHeading {
   font-family: Inter, sans-serif;
   font-weight: bold;
-  font-size: 14px;
-  /* line-height: 100%; */
+font-size: 28px;
+  font-weight: 700;
   letter-spacing: 2%;
   text-align: center;
   margin-bottom: 6px;
-  color: black;
+  color:#97538C;
   margin-top: 10px;
+
 }
 
 
@@ -194,7 +194,7 @@
   }
 
    .ProductHeading {
-    font-size: 1rem;
+    font-size: 20px
   } 
   .original-price {
     font-weight: 500;

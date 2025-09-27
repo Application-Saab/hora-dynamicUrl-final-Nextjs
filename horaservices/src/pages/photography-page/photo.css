@@ -189,7 +189,6 @@ background-color: rgb(150, 82, 141)!important ;
   /* Updated to match your new requirement */
   border: 2px solid #BABABA;
   overflow: hidden; 
-  height: 240px;
   transition: transform 0.3s ease;
 }
 
