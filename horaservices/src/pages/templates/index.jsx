@@ -11,20 +11,16 @@ import SelectedIcon from "@/assets/SelectedTemplateIcon.svg";
 import { useSearchParams } from "next/navigation";
 const TemplateGrid = () => {
   const router = useRouter();
-
   const [templatesData, setTemplatesData] = useState([]);
-  const [templatesDataWithDefault, setTemplatesDataWithDefault] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
-  const eventUserId = searchParams.get("eventUserId");
-  const userType = searchParams.get("userType");
-  const [uploadedTemplate, setUploadedTemplate] = useState(null);
   const [loadingUpload, setLoadingUpload] = useState(false);
-
   const userId = localStorage.getItem("userID");
+  const defaultTemplateId = '68d7c6cb3d8722ccf540b91c';
+
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
@@ -48,7 +44,6 @@ const TemplateGrid = () => {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setUploadedTemplate({ url: imageUrl, file });
       handleUploadTemplate(imageUrl, file);
     }
   };
@@ -90,11 +85,8 @@ const TemplateGrid = () => {
         setLoadingUpload(false);
         const data = await response.json();
         if (data) {
-          setUploadedTemplate(null);
           router.push(`/wonderland?id=${userId}/${eventId}/host`);
         }
-        setUploadedTemplate(null);
-        // onClose();
       } else {
         setLoadingUpload(false);
         const error = await response.json();
@@ -116,45 +108,13 @@ const TemplateGrid = () => {
     );
   };
 
-  useEffect(() => {
-    // if (templatesData.length > 0) {
-    // const defaultTemplate = {
-    //   _id: "default-template",
-    //   webpUrl: DefaultTemplate.src,
-    //   isDisabled: false,
-    // };
-    setTemplatesDataWithDefault([...templatesData]);
-    // }
-  }, [templatesData]);
-
   if (loading) return <div>Loading templates...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-center" style={{ paddingBottom: '70px'}}>
       <div className="templateWrapper">
       <h2 className="templateTitle">Choose From 50+ Invites</h2>
-      {/* <h3 className="templateTitle">OR</h3>
-      <div className="d-flex justify-content-center mb-4 template-upload">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => document.getElementById("templateUploadImage").click()}
-        >
-          {loadingUpload ? (
-            <span className="loader"></span>
-          ) : (
-            "Upload Your Template"
-          )}
-        </button>
-        <input
-          type="file"
-          id="templateUploadImage"
-          accept="image/*"
-          onChange={handleFileChange}
-          hidden
-        />
-      </div> */}
       <div className="templateGrid">
         
           <div className="templateCard" style={{border:  '3px solid #47474733'}}>
@@ -164,11 +124,11 @@ const TemplateGrid = () => {
             className="templatePreview default-img"
           />
           <button
-            className={`inviteBtn ${selectedTemplate === 'default-template' ? "selectedBtn" : ""}`}
+            className={`inviteBtn ${selectedTemplate === defaultTemplateId ? "selectedBtn" : ""}`}
             style={{position: 'absolute', bottom: '-10px'}}
-            onClick={() => handleApplyClick('default-template')}
+            onClick={() => handleApplyClick(defaultTemplateId)}
           >
-            {selectedTemplate === 'default-template' ? (
+            {selectedTemplate === defaultTemplateId ? (
               <>
                 SELECTED <span className="btnCircle"><img src={SelectedIcon.src} height='21px' width='22px' alt="Selected" /></span>
               </>
@@ -198,7 +158,7 @@ const TemplateGrid = () => {
             onChange={handleFileChange}
           />
         </div>
-        {templatesDataWithDefault.map((template) => {
+        {templatesData?.map((template) => {
           const isSelected =
             selectedTemplate === template._id ||
             selectedTemplate === template.configs?.templateId;

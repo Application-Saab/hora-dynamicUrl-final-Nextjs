@@ -16,7 +16,7 @@ export function dateFormatter(dateString, caseNo) {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", {
-      day: "numeric",
+      day: "numeric", 
       month: "long",
       year: "numeric",
     });
