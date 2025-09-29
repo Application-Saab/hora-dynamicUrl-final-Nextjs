@@ -1,5 +1,5 @@
 /* General Font Setup */
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Aclonica&family=Dancing+Script:wght@700&display=swap');
 
 body {
   font-family: 'Segoe UI', sans-serif;
@@ -860,7 +860,7 @@ background-color: none !important;
 
 /* Title Styles */
 .invite-titles {
-  font-family: 'Aclonica', cursive, sans-serif;
+  font-family: 'Aclonica', sans-serif;
   font-size: 18px;
   font-weight: bold;
   color: #97538c;
