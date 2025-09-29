@@ -390,13 +390,13 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 className="banner-image"
               />
             </div>
-            <div className="invite-banner">
+            {/* <div className="invite-banner">
               <Image
                 src={luckdrawBnaner}
                 alt="Invite Banner"
                 className="banner-image"
               />
-            </div>
+            </div> */}
             <div
               style={{
                 fontFamily: "Inter, sans-serif",

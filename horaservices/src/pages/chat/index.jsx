@@ -18,7 +18,6 @@ import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
 import emojiIcon from "../../assets/Emoji.png";
 import Image from "next/image";
-import Linkify from "react-linkify";
 import { FaArrowLeft } from "react-icons/fa";
 import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";

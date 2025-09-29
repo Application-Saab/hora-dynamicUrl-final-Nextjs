@@ -225,28 +225,28 @@ const DynamicTemplateRenderer = () => {
 
 
 
-  const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ratio = img.width / img.height;
-        const newWidth = Math.min(img.width, maxWidth);
-        const newHeight = newWidth / ratio;
+  // const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
+  //   return new Promise((resolve, reject) => {
+  //     const img = new Image();
+  //     img.onload = () => {
+  //       const canvas = document.createElement("canvas");
+  //       const ratio = img.width / img.height;
+  //       const newWidth = Math.min(img.width, maxWidth);
+  //       const newHeight = newWidth / ratio;
 
-        canvas.width = newWidth;
-        canvas.height = newHeight;
+  //       canvas.width = newWidth;
+  //       canvas.height = newHeight;
 
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+  //       const ctx = canvas.getContext("2d");
+  //       ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-        const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
-        resolve(compressedBase64);
-      };
-      img.onerror = reject;
-      img.src = base64;
-    });
-  };
+  //       const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+  //       resolve(compressedBase64);
+  //     };
+  //     img.onerror = reject;
+  //     img.src = base64;
+  //   });
+  // };
 
     const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.1, 3));
@@ -287,7 +287,8 @@ const DynamicTemplateRenderer = () => {
       );
 
       const croppedBase64 = canvas.toDataURL("image/jpeg");
-      const compressed = await compressBase64Image(croppedBase64, 500, 0.4);
+      // const compressed = await compressBase64Image(croppedBase64, 500, 0.4);
+      const compressed = croppedBase64;
       setUploadedImage(compressed);
       setCropImage(null); // Close cropper
     } catch (err) {
@@ -303,7 +304,8 @@ const DynamicTemplateRenderer = () => {
     const reader = new FileReader();
     reader.onloadend = async () => {
       try {
-        const compressed = await compressBase64Image(reader.result, 500, 0.4);
+        // const compressed = await compressBase64Image(reader.result, 500, 0.4);
+        const compressed = reader.result;
         setUploadedImage(compressed);
         setOriginalImage(compressed);
         setCropImage(compressed); // Open cropper with uploaded image

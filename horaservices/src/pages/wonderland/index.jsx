@@ -1222,11 +1222,11 @@ function linkify(text) {
     registerUser(urlParams.eventId, urlParams.eventUserId, urlParams.userType);
   }, [urlParams]);
 
-  useEffect(() => {
-    if (eventId && userID) {
-      listenToMessages(eventId, userID);
-    }
-  }, [eventId, userID]);
+  // useEffect(() => {
+  //   if (eventId && userID) {
+  //     listenToMessages(eventId, userID);
+  //   }
+  // }, [eventId, userID]);
 
   const hasSetUpMessageListener = useRef(false);
   useEffect(() => {
@@ -1331,12 +1331,12 @@ function linkify(text) {
     }
   }, [messages, chatOpen]); // 🔁 Trigger when messages or chatOpen changes
 
-  useEffect(() => {
-    if (eventId && userId) {
-      const unsubscribe = listenToMessages(eventId, userId);
-      return () => unsubscribe();
-    }
-  }, [eventId, userId]);
+  // useEffect(() => {
+  //   if (eventId && userId) {
+  //     const unsubscribe = listenToMessages(eventId, userId);
+  //     return () => unsubscribe();
+  //   }
+  // }, [eventId, userId]);
 
   useEffect(() => {
     chatOpenRef.current = chatOpen;
@@ -1354,67 +1354,67 @@ function linkify(text) {
   const lastSeenAtRef = useRef(null);
   const notifiedMessageIdsRef = useRef(new Set()); // ✅ Track notified message IDs
 
-  const listenToMessages = (eventId, userId) => {
-    const messagesRef = collection(db, "groups", eventId, "messages");
-    const q = query(messagesRef, orderBy("sentAt", "asc"));
-    const userRef = doc(db, "groups", eventId, "members", userId);
+  // const listenToMessages = (eventId, userId) => {
+  //   const messagesRef = collection(db, "groups", eventId, "messages");
+  //   const q = query(messagesRef, orderBy("sentAt", "asc"));
+  //   const userRef = doc(db, "groups", eventId, "members", userId);
 
-    const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
-      lastSeenAtRef.current =
-        memberSnap.exists() && memberSnap.data().lastSeenAt
-          ? memberSnap.data().lastSeenAt.toDate()
-          : null;
-    });
+  //   const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
+  //     lastSeenAtRef.current =
+  //       memberSnap.exists() && memberSnap.data().lastSeenAt
+  //         ? memberSnap.data().lastSeenAt.toDate()
+  //         : null;
+  //   });
 
-    const unsubscribeMessages = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+  //   const unsubscribeMessages = onSnapshot(q, (snapshot) => {
+  //     const msgs = snapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
 
-      const unreadMessages = msgs.filter((msg) => {
-        if (!msg.sentAt || !msg.senderId) return false;
-        if (msg.senderId === userID) return false;
+  //     const unreadMessages = msgs.filter((msg) => {
+  //       if (!msg.sentAt || !msg.senderId) return false;
+  //       if (msg.senderId === userID) return false;
 
-        const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-        return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
-      });
+  //       const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
+  //       return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
+  //     });
 
-      if (!chatOpenRef.current && unreadMessages.length > 0) {
-        unreadMessages.forEach((msg) => {
-          const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
+  //     if (!chatOpenRef.current && unreadMessages.length > 0) {
+  //       unreadMessages.forEach((msg) => {
+  //         const alreadyNotified = notifiedMessageIdsRef.current.has(msg.id);
 
-          if (Notification.permission === "granted" && !alreadyNotified && "Notification" in window) {
-            navigator.serviceWorker.ready.then((registration) => {
-              registration.showNotification(
-                `New message from ${msg.senderName}`,
-                {
-                  body: msg.text,
-                  icon: "/new_logo_light.png", // ensure correct path
-                }
-              );
-            });
+  //         if (Notification.permission === "granted" && !alreadyNotified && "Notification" in window) {
+  //           navigator.serviceWorker.ready.then((registration) => {
+  //             registration.showNotification(
+  //               `New message from ${msg.senderName}`,
+  //               {
+  //                 body: msg.text,
+  //                 icon: "/new_logo_light.png", // ensure correct path
+  //               }
+  //             );
+  //           });
 
-            // ✅ Mark message as notified
-            notifiedMessageIdsRef.current.add(msg.id);
-          }
-        });
-      }
+  //           // ✅ Mark message as notified
+  //           notifiedMessageIdsRef.current.add(msg.id);
+  //         }
+  //       });
+  //     }
 
-      if (chatOpenRef.current) {
-        setUnreadCount(0);
-      } else {
-        setUnreadCount(unreadMessages.length);
-      }
+  //     if (chatOpenRef.current) {
+  //       setUnreadCount(0);
+  //     } else {
+  //       setUnreadCount(unreadMessages.length);
+  //     }
 
-      setMessages(msgs);
-    });
+  //     setMessages(msgs);
+  //   });
 
-    return () => {
-      unsubscribeUser();
-      unsubscribeMessages();
-    };
-  };
+  //   return () => {
+  //     unsubscribeUser();
+  //     unsubscribeMessages();
+  //   };
+  // };
 
   const sendMessage = async () => {
     if (!text.trim()) return;
@@ -1825,7 +1825,7 @@ const getAvatarColor = (name) => {
               ) : (
                 <p>Loading...</p>
               )}
-               {isHost &&
+               {/* {isHost &&
                 orderDetails &&
                 (orderDetails?.luckyDraws?.length === 0 ? (
                   <div className="lucky-draw-banner">
@@ -1854,8 +1854,8 @@ const getAvatarColor = (name) => {
                         orderDetails?.luckyDraws[0]?.ticketNumber}
                     </span>
                   </div>
-                ))}
-              {!isHost &&
+                ))} */}
+              {/* {!isHost &&
                 guestDetails &&
                 (guestDetails?.luckyDraws?.length === 0 ? (
                   <div className="lucky-draw-banner">
@@ -1894,7 +1894,7 @@ const getAvatarColor = (name) => {
                         guestDetails?.luckyDraws[0]?.ticketNumber}
                     </span>
                   </div>
-                ))}
+                ))} */}
 
               <div style={styles.wrapper}>
                 <h2 style={styles.heading}>
