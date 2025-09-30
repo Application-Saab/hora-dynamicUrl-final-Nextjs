@@ -51,7 +51,7 @@ const DynamicTemplateRenderer = () => {
   });
   console.log('%c [ dataForTemplate ]-567', 'font-size:13px; background:pink; color:#bf2c9f;', dataForTemplate)
   console.log('%c [ dateFormatter(formData?.date, template?.dateFormatCase)?.day ]-571', 'font-size:13px; background:pink; color:#bf2c9f;', dateFormatter(formData?.date, template?.dateFormatCase)?.day)
-  
+
   const [formErrors, setFormErrors] = useState({
     eventType: "",
     name: "",
@@ -70,7 +70,7 @@ const DynamicTemplateRenderer = () => {
   const [cropShape, setCropShape] = useState('rect'); // 'rect' or 'round'
   const [aspectRatio, setAspectRatio] = useState(4 / 3); // Default aspect ratio fro rectangular shape
   const [cropSize, setCropSize] = useState({ width: 200, height: 200 }); // Adjust based on template needs
-  
+
   useEffect(() => {
     setDataForTemplate({
       eventType: formData.eventType,
@@ -96,47 +96,47 @@ const DynamicTemplateRenderer = () => {
         const response = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
         const result = await response.json();
 
-        if(templateId){
+        if (templateId) {
           if (result.error) {
-          setError(result.message || "Failed to fetch template");
-        } else {
-          const selectedTemplate = result.templates.find(
-            (tpl) => tpl._id === templateId
-          );
-          console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;', selectedTemplate)
-
-          if (selectedTemplate) {
-            let { cssCode, jsCode, fontUrls, backgroundUrl } =
-              selectedTemplate.configs;
-
-            // Use the absolute background URL from API
-            if (backgroundUrl) {
-              cssCode = cssCode.replace(
-                /url\((['"]?).*?\1\)/g,
-                `url('${selectedTemplate.backgroundUrl}')`
-              );
-            }
-
-            setTemplate({
-              cssCode: cssCode || "",
-              jsCode: jsCode || "",
-              fontUrls: fontUrls ? JSON.parse(fontUrls) : [],
-              backgroundUrl: selectedTemplate.backgroundUrl || null,
-              isHeroImage: selectedTemplate?.isHeroImage || false,
-              bgImageName: selectedTemplate?.configs?.bgImageName || "",
-              charLimits: selectedTemplate.configs?.charLimits || {},
-              dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
-            });
-            setCropShape(selectedTemplate?.configs?.heroImageConfig?.cropShape || 'rect');
-            setAspectRatio((selectedTemplate?.configs?.heroImageConfig?.cropRatio?.width || 4)  / (selectedTemplate?.configs?.heroImageConfig?.cropRatio?.height || 3));
-            setCropSize({
-              width : selectedTemplate?.configs?.heroImageConfig?.cropSize?.width || 200,
-              height: selectedTemplate?.configs?.heroImageConfig?.cropSize?.height || 200
-            })
+            setError(result.message || "Failed to fetch template");
           } else {
-            setError("Template not found");
+            const selectedTemplate = result.templates.find(
+              (tpl) => tpl._id === templateId
+            );
+            console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;', selectedTemplate)
+
+            if (selectedTemplate) {
+              let { cssCode, jsCode, fontUrls, backgroundUrl } =
+                selectedTemplate.configs;
+
+              // Use the absolute background URL from API
+              if (backgroundUrl) {
+                cssCode = cssCode.replace(
+                  /url\((['"]?).*?\1\)/g,
+                  `url('${selectedTemplate.backgroundUrl}')`
+                );
+              }
+
+              setTemplate({
+                cssCode: cssCode || "",
+                jsCode: jsCode || "",
+                fontUrls: fontUrls ? JSON.parse(fontUrls) : [],
+                backgroundUrl: selectedTemplate.backgroundUrl || null,
+                isHeroImage: selectedTemplate?.isHeroImage || false,
+                bgImageName: selectedTemplate?.configs?.bgImageName || "",
+                charLimits: selectedTemplate.configs?.charLimits || {},
+                dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
+              });
+              setCropShape(selectedTemplate?.configs?.heroImageConfig?.cropShape || 'rect');
+              setAspectRatio((selectedTemplate?.configs?.heroImageConfig?.cropRatio?.width || 4) / (selectedTemplate?.configs?.heroImageConfig?.cropRatio?.height || 3));
+              setCropSize({
+                width: selectedTemplate?.configs?.heroImageConfig?.cropSize?.width || 200,
+                height: selectedTemplate?.configs?.heroImageConfig?.cropSize?.height || 200
+              })
+            } else {
+              setError("Template not found");
+            }
           }
-        }
         }
       } catch (err) {
         setError("Error fetching template: " + err.message);
@@ -201,26 +201,26 @@ const DynamicTemplateRenderer = () => {
   }, [eventId]);
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  const charLimit = template?.charLimits?.[name]
-    ? parseInt(template.charLimits[name])
-    : Infinity;
+    const { name, value } = e.target;
+    const charLimit = template?.charLimits?.[name]
+      ? parseInt(template.charLimits[name])
+      : Infinity;
 
-  // Always allow change but trim if exceeds limit
-  const newValue = value.length > charLimit ? value.slice(0, charLimit) : value;
+    // Always allow change but trim if exceeds limit
+    const newValue = value.length > charLimit ? value.slice(0, charLimit) : value;
 
-  setFormData((prev) => ({ ...prev, [name]: newValue }));
-  setCharCounts((prev) => ({ ...prev, [name]: newValue.length }));
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
+    setCharCounts((prev) => ({ ...prev, [name]: newValue.length }));
 
-  if (value.length > charLimit) {
-    setFormErrors((prev) => ({
-      ...prev,
-      [name]: `Character limit of ${charLimit} exceeded`,
-    }));
-  } else {
-    setFormErrors((prev) => ({ ...prev, [name]: "" }));
-  }
-};
+    if (value.length > charLimit) {
+      setFormErrors((prev) => ({
+        ...prev,
+        [name]: `Character limit of ${charLimit} exceeded`,
+      }));
+    } else {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
 
 
 
@@ -248,7 +248,7 @@ const DynamicTemplateRenderer = () => {
   //   });
   // };
 
-    const handleZoomIn = () => {
+  const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.1, 3));
   };
 
@@ -412,31 +412,31 @@ const DynamicTemplateRenderer = () => {
     }, "image/png");
   };
 
-const renderHTML = (jsCode, rawData) => {
-  // Handle conditional blocks: {{#if key}} ... {{/if}}
-  jsCode = jsCode.replace(/{{#if (.*?)}}([\s\S]*?){{\/if}}/g, (_, key, inner) => {
-    const value = rawData[key.trim()];
-    if (value) {
-      // replace inner placeholders normally
-      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => {
-        return rawData[innerKey.trim()] || "";
-      });
-    }
-    return "";
-  });
-
-  // Handle normal placeholders: {{key}}
-  return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
-    try {
-      return key
-        .trim()
-        .split(".")
-        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData) || "";
-    } catch {
+  const renderHTML = (jsCode, rawData) => {
+    // Handle conditional blocks: {{#if key}} ... {{/if}}
+    jsCode = jsCode.replace(/{{#if (.*?)}}([\s\S]*?){{\/if}}/g, (_, key, inner) => {
+      const value = rawData[key.trim()];
+      if (value) {
+        // replace inner placeholders normally
+        return inner.replace(/{{(.*?)}}/g, (_, innerKey) => {
+          return rawData[innerKey.trim()] || "";
+        });
+      }
       return "";
-    }
-  });
-};
+    });
+
+    // Handle normal placeholders: {{key}}
+    return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
+      try {
+        return key
+          .trim()
+          .split(".")
+          .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData) || "";
+      } catch {
+        return "";
+      }
+    });
+  };
 
 
 
@@ -446,34 +446,34 @@ const renderHTML = (jsCode, rawData) => {
   return (
     <div className="d-flex justify-content-center">
       <div style={{ padding: "10px", maxWidth: '500px', width: '100%' }}>
-      <div
-        ref={templateRef}
-        className="template-container"
-        style={{
-          backgroundImage: template?.bgImageName
-            ? `url('/assets/templates/${template?.bgImageName}')`
-            : "none",
-          backgroundSize: "100% 100%",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          maxHeight: "530px",
-          maxWidth: "480px",
-          width: "100%",
-          borderRadius: "10px",
-          position: "relative",
-        }}
-      >
-        {/* Fonts */}
-        {template?.fontUrls?.map((url, idx) => (
-          <link key={idx} href={url} rel="stylesheet" />
-        ))}
+        <div
+          ref={templateRef}
+          className="template-container"
+          style={{
+            backgroundImage: template?.bgImageName
+              ? `url('/assets/templates/${template?.bgImageName}')`
+              : "none",
+            backgroundSize: "100% 100%",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maxHeight: "530px",
+            maxWidth: "480px",
+            width: "100%",
+            borderRadius: "10px",
+            position: "relative",
+          }}
+        >
+          {/* Fonts */}
+          {template?.fontUrls?.map((url, idx) => (
+            <link key={idx} href={url} rel="stylesheet" />
+          ))}
 
-        {/* CSS */}
-        {template?.cssCode && (
+          {/* CSS */}
+          {template?.cssCode && (
           <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
         )}
 
-        {/* Template HTML */}
+       
         {template?.jsCode && (
           <div
             style={{ position: "relative", zIndex: 2 }}
@@ -483,210 +483,214 @@ const renderHTML = (jsCode, rawData) => {
           />
         )}
 
-        
+          {/* <div style={{ position: "relative", zIndex: 2 }}>
+            <div style={{ position: "relative", zIndex: 2 }}>
+              <div class="invite-template-wrapper">
+                <div class="invite-template-card">
 
-        {/* <div style={{ position: "relative", zIndex: 2 }}>
-        <div style={{ position: "relative", zIndex: 2 }}>
-            <div class="invite-template-wrapper">
-        <div class="invite-template-card">
 
-        {{#if image}}
+                  <div class="name">{dataForTemplate.name}</div>
+                  
+                  <div class="date-wrapper">
+                    <span class="month">{dataForTemplate.month}</span>
+                    <span class="day">{dataForTemplate.day}</span>
+                    <span class="time">AT {dataForTemplate.time}</span>
+                  </div>
+                  <div class="address">
+                    <p>{dataForTemplate.address}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> */}
+        </div>
+        {/* {{#if image}}
           <div class='template-image-wrapper'>
             <img src={{image}} alt="host image" class='template-image' />
           </div>
-        {{/if}}
-          <div class="name">{{name}}</div>
-            <div class="date"><span>{{date}}, {{time}}</span></div>
-          <div class="address">
-            <p>{{address}}</p>
+        {{/if}} */}
+        {/* Form */}
+
+        <div className="form-wrapper">
+          <h3 className="heading-txt">Do you Want <br /> customize Invite?</h3>
+          <div style={{ position: "relative" }}>
+            <input
+              type="text"
+              placeholder="Host Name"
+              name="name"
+              className="input-field"
+              value={formData.name}
+              onChange={handleChange}
+              maxLength={template?.charLimits?.name || undefined}
+              style={{
+                borderColor: formErrors.name ? "red" : "#ccc",
+              }}
+            />
+            {template?.charLimits?.name && (
+              <div className="char-count">
+                {charCounts.name}/{template.charLimits.name}
+              </div>
+            )}
+            {formErrors.name && <div className="error-msg">{formErrors.name}</div>}
+          </div>
+
+          <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+            <div style={{ flex: 1 }}>
+              <label className="input-label">Event Date</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                className="input-field"
+                onChange={handleChange}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label className="input-label">Arrival Time</label>
+              <input
+                type="time"
+                className="input-field"
+                name="time"
+                value={formData.time}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div style={{ position: "relative" }}>
+            <textarea
+              type="text"
+              placeholder="Venue"
+              name="address"
+              className="input-field"
+              value={formData.address}
+              onChange={handleChange}
+              maxLength={template?.charLimits?.address || undefined}
+              style={{
+                borderColor: formErrors.address ? "red" : "#ccc",
+              }}
+            />
+            {template?.charLimits?.address && (
+              <div className="char-count">
+                {charCounts.address}/{template.charLimits.address}
+              </div>
+            )}
+            {formErrors.address && (
+              <div className="error-msg">{formErrors.address}</div>
+            )}
+          </div>
+
+          <input
+            type="file"
+            accept="image/*"
+            id="file-upload"
+            onChange={handleImageChange}
+            ref={fileInputRef}
+            hidden
+          />
+
+          {/* Cropper Modal */}
+          {cropImage && (
+            <div className="crop-modal">
+              <div className="cropper-container">
+                <Cropper
+                  image={cropImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={aspectRatio}
+                  cropShape={cropShape}
+                  cropSize={cropSize}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+              <div className="crop-controls">
+                <div className="zoom-container">
+                  <div>
+                    <button className={`btn zoom-btns ${zoom === 1 && 'btn-disabled'}`} disabled={zoom === 1}>
+                      <BiZoomOut size={30} className="zoom-icons" onClick={handleZoomOut} />
+                    </button>
+                  </div>
+                  <input
+                    type="range"
+                    id="zoom"
+                    value={zoom}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    aria-labelledby="Zoom"
+                    onChange={(e) => setZoom(parseFloat(e.target.value))}
+                    className="zoom-range"
+                  />
+                  <div>
+                    <button className={`btn zoom-btns ${zoom === 3 && 'btn-disabled'}`} disabled={zoom === 3}>
+                      <BiZoomIn size={30} className="zoom-icons" onClick={handleZoomIn} />
+                    </button>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-center align-items-center w-100 gap-4">
+                  <div className="d-flex justify-content-end w-100">
+                    <button onClick={() => setCropImage(null)} className="crop-cancel-btn">
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="w-100">
+                    <button onClick={createCroppedImage} className="crop-save-btn">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {template?.isHeroImage &&
+            (originalImage ? (
+              <div
+                className="preview-wrapper-template"
+              >
+                <div className="preview-image-div">
+                  <img src={originalImage} alt="Preview" className="image-preview-template"
+                    onClick={() => {
+                      if (fileInputRef.current) fileInputRef.current.click();
+                    }}
+                  />
+                </div>
+                <div className="d-flex justify-content-center align-items-end ms-2">
+                  <button className="crop-btn" onClick={handleEditImage}><FaCropAlt className="crop-icon" /> Crop</button>
+                </div>
+              </div>
+            ) : (
+              <label className="upload-box-template" htmlFor="file-upload">
+                <img src={CameraIcon.src} height='45px' width='45px' alt="Upload" />
+                <div className="mt-2 fw-bold" style={{ color: '#666666' }}>Upload Photo</div>
+              </label>
+            ))}
+
+          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <button
+              onClick={() => router.back()}
+              className="cancel-btn"
+              disabled={saving}
+            >
+              CANCEL
+            </button>
+            <button
+              onClick={handleSave}
+              className="save-btn"
+              style={{
+                cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.7 : 1,
+              }}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "SAVE"}
+            </button>
           </div>
         </div>
       </div>
-        </div>
-        </div> */}
-      </div>
-
-      {/* Form */}
-       <div className="form-wrapper">
-         <h3 className="heading-txt">Do you Want <br /> customize Invite?</h3>
-         <div style={{ position: "relative" }}>
-           <input
-            type="text"
-             placeholder="Host Name"
-             name="name"
-             className="input-field"
-             value={formData.name}
-             onChange={handleChange}
-             maxLength={template?.charLimits?.name || undefined}
-             style={{
-               borderColor: formErrors.name ? "red" : "#ccc",
-             }}
-           />
-           {template?.charLimits?.name && (
-             <div className="char-count">
-               {charCounts.name}/{template.charLimits.name}
-             </div>
-           )}
-           {formErrors.name && <div className="error-msg">{formErrors.name}</div>}
-         </div>
-
-         <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-           <div style={{ flex: 1 }}>
-             <label className="input-label">Event Date</label>
-             <input
-               type="date"
-               name="date"
-               value={formData.date}
-               className="input-field"
-               onChange={handleChange}
-             />
-           </div>
-           <div style={{ flex: 1 }}>
-             <label className="input-label">Arrival Time</label>
-             <input
-               type="time"
-               className="input-field"
-               name="time"
-               value={formData.time}
-               onChange={handleChange}
-             />
-           </div>
-         </div>
-
-         <div style={{ position: "relative" }}>
-           <textarea
-             type="text"
-             placeholder="Venue"
-             name="address"
-             className="input-field"
-             value={formData.address}
-             onChange={handleChange}
-             maxLength={template?.charLimits?.address || undefined}
-             style={{
-               borderColor: formErrors.address ? "red" : "#ccc",
-             }}
-           />
-           {template?.charLimits?.address && (
-             <div className="char-count">
-               {charCounts.address}/{template.charLimits.address}
-             </div>
-           )}
-           {formErrors.address && (
-             <div className="error-msg">{formErrors.address}</div>
-           )}
-         </div>
-
-         <input
-           type="file"
-           accept="image/*"
-           id="file-upload"
-           onChange={handleImageChange}
-           ref={fileInputRef}
-           hidden
-         />
-
-        {/* Cropper Modal */}
-        {cropImage && (
-           <div className="crop-modal">
-             <div className="cropper-container">
-               <Cropper
-                 image={cropImage}
-                 crop={crop}
-                 zoom={zoom}
-                 aspect={aspectRatio}
-                 cropShape={cropShape}
-                 cropSize={cropSize}
-                 onCropChange={setCrop}
-                 onCropComplete={onCropComplete}
-                 onZoomChange={setZoom}
-               />
-             </div>
-             <div className="crop-controls">
-               <div className="zoom-container">
-                <div>
-                  <button className={`btn zoom-btns ${zoom === 1 && 'btn-disabled'}`} disabled={zoom === 1}>
-                     <BiZoomOut size={30} className="zoom-icons" onClick={handleZoomOut}  />
-                  </button>
-                </div>
-               <input
-                  type="range"
-                  id="zoom"
-                  value={zoom}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  aria-labelledby="Zoom"
-                  onChange={(e) => setZoom(parseFloat(e.target.value))}
-                  className="zoom-range"
-              />
-              <div>
-                <button className={`btn zoom-btns ${zoom === 3 && 'btn-disabled'}`} disabled={zoom === 3}>
-                  <BiZoomIn size={30} className="zoom-icons" onClick={handleZoomIn} />
-                </button>
-              </div>
-               </div>
-              <div className="d-flex justify-content-center align-items-center w-100 gap-4">
-                 <div className="d-flex justify-content-end w-100">
-                  <button onClick={() => setCropImage(null)} className="crop-cancel-btn">
-                 Cancel
-               </button>
-                 </div>
-                 <div className="w-100">
-               <button onClick={createCroppedImage} className="crop-save-btn">
-                 Save
-               </button>
-                 </div>
-             </div>
-             </div>
-           </div>
-         )}
-
-         {template?.isHeroImage &&
-           (originalImage ? (
-             <div
-               className="preview-wrapper-template"
-             >
-               <div className="preview-image-div">
-                <img src={originalImage} alt="Preview" className="image-preview-template"
-                  onClick={() => {
-                    if (fileInputRef.current) fileInputRef.current.click();
-                  }}
-                />
-               </div>
-               <div className="d-flex justify-content-center align-items-end ms-2">
-                <button className="crop-btn" onClick={handleEditImage}><FaCropAlt className="crop-icon" /> Crop</button>
-               </div>
-             </div>
-           ) : (
-             <label className="upload-box-template" htmlFor="file-upload">
-               <img src={CameraIcon.src} height='45px' width='45px' alt="Upload" />
-               <div className="mt-2 fw-bold" style={{color: '#666666'}}>Upload Photo</div>
-             </label>
-           ))}
-
-         <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-           <button
-             onClick={() => router.back()}
-             className="cancel-btn"
-             disabled={saving}
-           >
-             CANCEL
-           </button>
-           <button
-             onClick={handleSave}
-              className="save-btn"
-             style={{
-               cursor: saving ? "not-allowed" : "pointer",
-               opacity: saving ? 0.7 : 1,
-             }}
-             disabled={saving}
-           >
-             {saving ? "Saving..." : "SAVE"}
-           </button>
-         </div>
-       </div>
     </div>
-</div>
   );
 };
 
