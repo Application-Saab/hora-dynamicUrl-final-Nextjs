@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Roboto:wght@100;300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
 
 
 .form-wrapper {
@@ -254,21 +254,19 @@
 
 
 
-/* *********** Template Wise Css ****************** */
-/* 
-
+/* *********** Template Wise Css ******************
 .invite-template-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: 530px;
+  max-height: 510px;
   max-width: 480px;
 }
 
 .invite-template-card {
   position: relative;
   max-width: 480px;
-  max-height: 530px;
+  max-height: 510px;
   width: 100%;
   aspect-ratio: 11 / 19;
   background-image: url("/Final.png");
@@ -279,19 +277,34 @@
 
 
 .name {
-         position: absolute;
-    top: 17%;
+    position: absolute;
+    top: 33%;
     width: 100%;
-   font-family: "Lilita One", sans-serif;
-    font-size: 2rem;
-    color: #5e3d34;
+ font-family: 'Roboto', sans-serif;
+    font-size: 1.4rem;
+    color: #ffffff;
     font-weight: 600;
+}
+.template-image-wrapper{
+  position: absolute;
+  top: 61%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-inline: 20px;
 }
 
 
+ .template-image{
+    height: 170px;
+    width: 270px;
+      object-fit: cover;
+      border: 4px solid #ffffff;
+  }
+
 .date-wrapper {
   position: absolute;
-  top: 51%;
+  top:41%;
   right: 0;
   left: 0;                
   margin: 0 auto;        
@@ -300,68 +313,69 @@
   justify-content: center;
   gap: 10px;
   width: fit-content;       
-  padding: 0px 20px;
+  padding: 0px 10px;
   text-align: center;
-  font-family: "Roboto", sans-serif;
-  font-weight: 500;
-  color: #5e3d34;
+ font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  color: #ffffff;
 }
 
-
 .date-wrapper .day {
-   font-size: 2.1rem;
-    font-weight: 700;
-    color: #5e3d34
+   font-size: 1.9rem;
+    font-weight: 600;
+    color: #ffffff;
+ font-family: 'Roboto', sans-serif;
+
 }
 
 .time{
-  font-size: 1rem;
-
+  font-size: 1.1rem;
 }
 .month{
- font-size: 1rem;
-
+ font-size: 1.1rem;
 }
-
 .address {
-  position: absolute;
-  font-family: "Roboto", sans-serif;
-  font-weight: 500;
-  top: 62%;
-  width: 100%;
-  padding: 0 50px;
-  font-size: 0.8rem;
-  color: #5e3d34;
+     position: absolute;
+   font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    top: 50%;
+    width: 100%;
+    padding: 0 25px;
+    font-size: 0.8rem;
+    color: #ffffff;
 }
+
+
 
 
 @media (min-width: 360px) {
   .date{
-   font-size: 1.2rem;
-   top: 53%;
+   font-size: 1.1rem;
+
   }
   .name{
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   .time{
     font-size: 1.1rem;
-    top: 53%;
-  } 
-    .month{
-    font-size: 1.1rem;
-    top: 53%;
   } 
   .address{
-  top: 63%;
+  top: 51%;
  font-size: 0.9rem;
+  padding: 0 40px;
+
   }
   .date-wrapper .day {
-  font-size: 2.2rem;
-  font-weight: 900;
+  font-size: 1.9rem;
+  font-weight: 600;
 }
- 
+
   .template-image{
-    height: 250px;
-    width: 250px;
+    height: 180px;
+    width: 260px;
   }
-}  */
+}  
+
+
+
+ */

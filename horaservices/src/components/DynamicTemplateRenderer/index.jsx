@@ -487,7 +487,10 @@ const DynamicTemplateRenderer = () => {
             <div style={{ position: "relative", zIndex: 2 }}>
               <div class="invite-template-wrapper">
                 <div class="invite-template-card">
-
+ 
+          <div class='template-image-wrapper'>
+            <img src={dataForTemplate.image} alt="host image" class='template-image' />
+          </div>
 
                   <div class="name">{dataForTemplate.name}</div>
                   
@@ -504,11 +507,7 @@ const DynamicTemplateRenderer = () => {
             </div>
           </div> */}
         </div>
-        {/* {{#if image}}
-          <div class='template-image-wrapper'>
-            <img src={{image}} alt="host image" class='template-image' />
-          </div>
-        {{/if}} */}
+      
         {/* Form */}
 
         <div className="form-wrapper">
