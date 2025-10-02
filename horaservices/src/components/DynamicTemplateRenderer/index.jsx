@@ -103,7 +103,7 @@ const DynamicTemplateRenderer = () => {
           const selectedTemplate = result.templates.find(
             (tpl) => tpl._id === templateId
           );
-          console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;', selectedTemplate)
+          console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;',  selectedTemplate?.configs?.bgImageHeight)
 
           if (selectedTemplate) {
             let { cssCode, jsCode, fontUrls, backgroundUrl } =
@@ -124,14 +124,15 @@ const DynamicTemplateRenderer = () => {
               backgroundUrl: selectedTemplate.backgroundUrl || null,
               isHeroImage: selectedTemplate?.isHeroImage || false,
               bgImageName: selectedTemplate?.configs?.bgImageName || "",
+              bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
             });
             setCropShape(selectedTemplate?.configs?.heroImageConfig?.cropShape || 'rect');
-            setAspectRatio((selectedTemplate?.configs?.heroImageConfig?.cropRatio?.width || 4)  / (selectedTemplate?.configs?.heroImageConfig?.cropRatio?.height || 3));
+            setAspectRatio((parseInt(selectedTemplate?.configs?.heroImageConfig?.cropRatio?.width) || 4)  / (parseInt(selectedTemplate?.configs?.heroImageConfig?.cropRatio?.height) || 3));
             setCropSize({
-              width : selectedTemplate?.configs?.heroImageConfig?.cropSize?.width || 200,
-              height: selectedTemplate?.configs?.heroImageConfig?.cropSize?.height || 200
+              width : parseInt(selectedTemplate?.configs?.heroImageConfig?.cropSize?.width) || 200,
+              height: parseInt(selectedTemplate?.configs?.heroImageConfig?.cropSize?.height) || 200
             })
           } else {
             setError("Template not found");
@@ -384,6 +385,7 @@ const DynamicTemplateRenderer = () => {
         type: "image/png",
         lastModified: new Date().getTime(),
       });
+      console.log('%c [ image size ]-386', 'font-size:13px; background:pink; color:#bf2c9f;', file)
 
       const formData = new FormData();
       formData.append("image", file);
@@ -456,7 +458,7 @@ const renderHTML = (jsCode, rawData) => {
           backgroundSize: "100% 100%",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          maxHeight: "530px",
+          maxHeight: template?.bgImageHeight ? `${template?.bgImageHeight}px` : '530px',
           maxWidth: "480px",
           width: "100%",
           borderRadius: "10px",

@@ -1547,15 +1547,16 @@ const getAvatarColor = (name) => {
                     <div style={{padding: "15px"}}>
                       <div
                         className="invitation-container-image-ctn"
-                        style={{
-                          backgroundImage:
-                            orderDetails?.externalTemplateImageUrl
-                              ? `url('${orderDetails.externalTemplateImageUrl}')`
-                              : "none",
-                          minHeight: "530px",
-                          position: "relative",
-                        }}
+                        // style={{
+                        //   backgroundImage:
+                        //     orderDetails?.externalTemplateImageUrl
+                        //       ? `url('${orderDetails.externalTemplateImageUrl}')`
+                        //       : "none",
+                        //   minHeight: "530px",
+                        //   position: "relative",
+                        // }}
                       >
+                        <img src={orderDetails.externalTemplateImageUrl} alt='template' />
                         {/* <div
                           className="invite-image-wrapper"
                           onClick={async () => {
