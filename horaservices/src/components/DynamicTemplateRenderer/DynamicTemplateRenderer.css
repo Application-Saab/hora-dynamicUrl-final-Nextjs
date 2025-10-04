@@ -256,19 +256,18 @@
 /* *********** Template Wise Css ****************** */
 
 
-/* 
 .invite-template-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: 530px;
+  max-height: 559px;
   max-width: 480px;
 }
 
 .invite-template-card {
   position: relative;
   max-width: 480px;
-  max-height: 530px;
+  max-height: 480px;
   width: 100%;
   aspect-ratio: 11 / 19;
   background-image: url("/Final.png");
@@ -277,75 +276,105 @@
   text-align: center;
 }
 
+
+.name {
+    position: absolute;
+    top: 52%;
+    width: 100%;
+   font-family: 'Agbalumo', system-ui;
+    font-size: 1.8rem;
+    color:#4d0b3f;
+    font-weight: 700;
+}
 .template-image-wrapper{
   position: absolute;
-  top: 9.5%;
+  top: 5%;
   width: 100%;
   display: flex;
   justify-content: center;
   padding-inline: 20px;
 }
-.template-image{
-  height: 240px;
-  width: 240px;
-  z-index: 3;
-  border-radius: 50%;
-}
+ .template-image{
+    height: 190px;
+    width: 190px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid #c4009a;
+  }
 
-.name {
+.date-wrapper {
   position: absolute;
-  top: 58%;
-  width: 100%;
-  font-family: "Lilita One", sans-serif;
-  font-size: 2.2rem;
-  color: #f6d6ad;
-  font-weight: 300;
+  top:79%;
+  right: 0;
+  left: 0;                
+  margin: 0 auto;        
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: fit-content;       
+  padding: 0px 10px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  color: #4d0b3f;
 }
 
-.date {
-  position: absolute;
-  top: 79%;
-  width: 100%;
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  color: #f6d6ad;
-  font-size: 1.5rem;
+.date-wrapper .day {
+   font-size: 1rem;
+    font-weight: 600;
+    color: #4d0b3f;
+  font-family: 'Roboto', sans-serif;
 }
-
-.time {
-  position: absolute;
-  top: 83%;
-  width: 100%;
-  font-family: "Roboto", sans-serif;
-  font-weight: 700;
-  color: #f6d6ad;
-  font-size: 1.25rem;
+.year{
+  font-size: 1rem;
 }
+.time{
+  font-size: 1rem;
 
+}
+.month{
+ font-size: 1rem;
+}
 .address {
-  position: absolute;
-  font-family: "Roboto", sans-serif;
-  font-weight: 900;
-  top: 87%;
-  width: 100%;
-  padding: 0 10px;
-  font-size: 0.875rem;
-  color: #f6d6ad;
+     position: absolute;
+  font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    top: 87%;
+    width: 100%;
+    padding: 0 20px;
+    font-size: 0.8rem;
+    color: #4d0b3f;
 }
 
 
 @media (min-width: 360px) {
   .date{
-    font-size: 2rem;
+   font-size: 1.1rem;
+
   }
   .name{
-    font-size: 2.5rem;
+    font-size: 1.5rem;
   }
   .time{
-    font-size: 1.5rem;
+    font-size: 1.1rem;
   } 
-  .template-image{
-    height: 250px;
-    width: 250px;
+  .address{
+  top: 87%;
+ font-size: 0.8rem;
+  padding: 0 20px;
+
   }
-} */
+  .date-wrapper .day {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+  .template-image{
+    height: 190px;
+    width: 190px;
+  }
+}  
+
+
+

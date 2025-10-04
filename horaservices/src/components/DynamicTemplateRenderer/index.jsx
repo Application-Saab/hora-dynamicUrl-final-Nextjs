@@ -471,11 +471,10 @@ const renderHTML = (jsCode, rawData) => {
         ))}
 
         {/* CSS */}
-        {template?.cssCode && (
+        {/* {template?.cssCode && (
           <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
         )}
 
-        {/* Template HTML */}
         {template?.jsCode && (
           <div
             style={{ position: "relative", zIndex: 2 }}
@@ -483,29 +482,33 @@ const renderHTML = (jsCode, rawData) => {
               __html: renderHTML(template.jsCode, dataForTemplate),
             }}
           />
-        )}
+        )} */}
 
-        
+       <div style={{ position: "relative", zIndex: 2 }}>
+            <div style={{ position: "relative", zIndex: 2 }}>
+              <div class="invite-template-wrapper">
+                <div class="invite-template-card">
+     
+  <div class='template-image-wrapper'>
+    <img src={dataForTemplate.image} alt="host image" class='template-image' />
+  </div>
 
-        {/* <div style={{ position: "relative", zIndex: 2 }}>
-        <div style={{ position: "relative", zIndex: 2 }}>
-            <div class="invite-template-wrapper">
-        <div class="invite-template-card">
 
-        {{#if image}}
-          <div class='template-image-wrapper'>
-            <img src={{image}} alt="host image" class='template-image' />
-          </div>
-        {{/if}}
-          <div class="name">{{name}}</div>
-            <div class="date"><span>{{date}}, {{time}}</span></div>
-          <div class="address">
-            <p>{{address}}</p>
-          </div>
-        </div>
-      </div>
-        </div>
-        </div> */}
+                  <div class="name">{dataForTemplate.name}</div>
+                  
+                  <div class="date-wrapper">
+                    
+                      <span class="month">{dataForTemplate.month}</span>
+                      <span class="day">{dataForTemplate.day} | </span>
+                     <span class="time"> AT {dataForTemplate.time}</span>
+                  </div>
+                  <div class="address">
+                    <p>{dataForTemplate.address}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> 
       </div>
 
       {/* Form */}
