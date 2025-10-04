@@ -471,7 +471,7 @@ const renderHTML = (jsCode, rawData) => {
         ))}
 
         {/* CSS */}
-        {/* {template?.cssCode && (
+        {template?.cssCode && (
           <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
         )}
 
@@ -482,9 +482,9 @@ const renderHTML = (jsCode, rawData) => {
               __html: renderHTML(template.jsCode, dataForTemplate),
             }}
           />
-        )} */}
+        )}
 
-       <div style={{ position: "relative", zIndex: 2 }}>
+       {/* <div style={{ position: "relative", zIndex: 2 }}>
             <div style={{ position: "relative", zIndex: 2 }}>
               <div class="invite-template-wrapper">
                 <div class="invite-template-card">
@@ -499,7 +499,7 @@ const renderHTML = (jsCode, rawData) => {
                   <div class="date-wrapper">
                     
                       <span class="month">{dataForTemplate.month}</span>
-                      <span class="day">{dataForTemplate.day} | </span>
+                      <span class="day">{dataForTemplate.day}</span>
                      <span class="time"> AT {dataForTemplate.time}</span>
                   </div>
                   <div class="address">
@@ -508,7 +508,7 @@ const renderHTML = (jsCode, rawData) => {
                 </div>
               </div>
             </div>
-          </div> 
+          </div>  */}
       </div>
 
       {/* Form */}
