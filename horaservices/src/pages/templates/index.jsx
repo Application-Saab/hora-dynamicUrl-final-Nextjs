@@ -19,8 +19,27 @@ const TemplateGrid = () => {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
   const [loadingUpload, setLoadingUpload] = useState(false);
+
   const userId = localStorage.getItem("userID");
-  const defaultTemplateId = '68d7c6cb3d8722ccf540b91c';
+  const defaultTemplateId = "68d7c6cb3d8722ccf540b91c";
+
+  const [loadedImages, setLoadedImages] = useState({});
+
+  const handleImageLoad = (id) => {
+    setLoadedImages((prev) => ({
+      ...prev,
+      [id]: true,
+    }));
+  };
+
+  const handleTimeoutFallback = (id) => {
+    setTimeout(() => {
+      setLoadedImages((prev) => ({
+        ...prev,
+        [id]: true,
+      }));
+    }, 2000);
+  };
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -115,82 +134,130 @@ const TemplateGrid = () => {
   return (
     <div className="d-flex justify-content-center">
       <div className="templateWrapper">
-      <h2 className="templateTitle">Choose From 50+ Invites</h2>
-      <div className="templateGrid">
-          <div className="templateCard" style={{border:  '3px solid #47474733'}}>
-          <img
-            src={DefaultTemplate.src}
-            alt="Template Preview"
-            className="templatePreview default-img"
-          />
-          <button
-            className={`inviteBtn ${selectedTemplate === defaultTemplateId ? "selectedBtn" : ""}`}
-            style={{position: 'absolute', bottom: '-10px'}}
-            onClick={() => handleApplyClick(defaultTemplateId)}
+        <h2 className="templateTitle">Choose From 50+ Invites</h2>
+        <div className="templateGrid">
+          <div
+            className="templateCard"
+            style={{ border: "3px solid #47474733" }}
           >
-            {selectedTemplate === defaultTemplateId ? (
-              <>
-                SELECTED <span className="btnCircle"><img src={SelectedIcon.src} height='21px' width='22px' alt="Selected" /></span>
-              </>
+            <img
+              src={DefaultTemplate.src}
+              alt="Template Preview"
+              className="templatePreview default-img"
+            />
+            <button
+              className={`inviteBtn ${
+                selectedTemplate === defaultTemplateId ? "selectedBtn" : ""
+              }`}
+              style={{ position: "absolute", bottom: "-10px" }}
+              onClick={() => handleApplyClick(defaultTemplateId)}
+            >
+              {selectedTemplate === defaultTemplateId ? (
+                <>
+                  SELECTED{" "}
+                  <span className="btnCircle">
+                    <img
+                      src={SelectedIcon.src}
+                      height="21px"
+                      width="22px"
+                      alt="Selected"
+                    />
+                  </span>
+                </>
+              ) : (
+                <>
+                  APPLY NOW{" "}
+                  <span className="btnCircle">
+                    <img src={ApplyIcon.src} alt="Apply" />
+                  </span>
+                </>
+              )}
+            </button>
+          </div>
+          <div
+            className="upload-template-card template-upload"
+            onClick={() =>
+              document.getElementById("templateUploadImage").click()
+            }
+          >
+            {loadingUpload ? (
+              <div
+                className="loader"
+                style={{ height: "32px", width: "32px" }}
+              ></div>
             ) : (
               <>
-                APPLY NOW <span className="btnCircle"><img src={ApplyIcon.src} alt="Apply" /></span>
+                <FiUpload size={32} />
+                <span>UPLOAD YOUR TEMPLATE</span>
               </>
             )}
-          </button>
-        </div>
-        <div
-          className="upload-template-card template-upload"
-          onClick={() => document.getElementById("templateUploadImage").click()}
-        >
-          {loadingUpload ? (
-            <div className="loader" style={{height: '32px', width: '32px'}}></div>
-          ) : (
-            <>
-              <FiUpload size={32} />
-              <span>UPLOAD YOUR TEMPLATE</span>
-            </>
-          )}
-          <input
-            type="file"
-            id="templateUploadImage"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-        </div>
-        {templatesData?.map((template) => {
-          const isSelected =
-            selectedTemplate === template._id ||
-            selectedTemplate === template.configs?.templateId;
+            <input
+              type="file"
+              id="templateUploadImage"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </div>
+          {templatesData?.length > 0 &&
+            templatesData?.map((template) => {
+              const isSelected =
+                selectedTemplate === template._id ||
+                selectedTemplate === template.configs?.templateId;
 
-          return (
-            !template?.isDisabled && (
-              <div key={template._id} className="templateCard">
-                <img
-                  src={template.webpUrl}
-                  alt="Template Preview"
-                  className="templatePreview"
-                />
-                <button
-                  className={`inviteBtn ${isSelected ? "selectedBtn" : ""}`}
-                  onClick={() => handleApplyClick(template._id)}
-                >
-                  {isSelected ? (
-                    <>
-                      SELECTED <span className="btnCircle"><img src={SelectedIcon.src} height='21px' width='22px' alt="Selected" /></span>
-                    </>
-                  ) : (
-                    <>
-                      APPLY NOW <span className="btnCircle"><img src={ApplyIcon.src} alt="Apply" /></span>
-                    </>
-                  )}
-                </button>
-              </div>
-            )
-          );
-        })}
+              return (
+                !template?.isDisabled && (
+                  <div key={template._id} className="templateCard">
+                    {!loadedImages[template._id] && (
+                      <>
+                        <div className="skeleton"></div>
+                        {handleTimeoutFallback(template._id)}
+                      </>
+                    )}
+                    <img
+                      src={template?.webpUrl}
+                      alt="Template Preview"
+                      className="templatePreview"
+                      style={{
+                        display: loadedImages[template._id] ? "block" : "none",
+                      }}
+                      onLoad={() => handleImageLoad(template._id)}
+                      loading="lazy"
+                    />
+                    {template?.webpUrl && (
+                      <button
+                        className={`inviteBtn ${
+                          isSelected ? "selectedBtn" : ""
+                        }`}
+                        onClick={() => handleApplyClick(template._id)}
+                      >
+                        {isSelected ? (
+                          <>
+                            SELECTED{" "}
+                            <span className="btnCircle">
+                              <img
+                                src={SelectedIcon.src}
+                                height="21px"
+                                width="22px"
+                                alt="Selected"
+                              />
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            APPLY NOW{" "}
+                            <span className="btnCircle">
+                              <img src={ApplyIcon.src} alt="Apply" />
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                )
+              );
+            })}
+        </div>
       </div>
-    </div>
     </div>
   );
 };
