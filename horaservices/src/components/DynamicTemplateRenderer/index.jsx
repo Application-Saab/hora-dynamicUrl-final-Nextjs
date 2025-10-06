@@ -1358,7 +1358,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
+import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
 import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "./dateTimeFormatters";
@@ -1457,16 +1457,14 @@ const DynamicTemplateRenderer = () => {
   useEffect(() => {
     const fetchTemplate = async () => {
       try {
-        const response = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+        if(templateId){
+        const response = await fetch(`${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`);
         const result = await response.json();
 
-        if(templateId){
-          if (result.error) {
+        if (result.error) {
           setError(result.message || "Failed to fetch template");
         } else {
-          const selectedTemplate = result.templates.find(
-            (tpl) => tpl._id === templateId
-          );
+          const selectedTemplate = result?.template;
           console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;',  selectedTemplate?.configs?.bgImageHeight)
 
           if (selectedTemplate) {
@@ -1503,11 +1501,11 @@ const DynamicTemplateRenderer = () => {
               bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
-             image: uploadedImage
-    ? uploadedImage
-    : cropShape === "round"
-    ? DefaultImageBgCircle.src
-    : DefaultImageBgRectangle.src,
+              image: uploadedImage
+                        ? uploadedImage
+                        : cropShape === "round"
+                        ? DefaultImageBgCircle.src
+                        : DefaultImageBgRectangle.src,
             });
           } else {
             setError("Template not found");
