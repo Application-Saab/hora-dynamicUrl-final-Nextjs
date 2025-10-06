@@ -11,8 +11,10 @@ import Cropper from 'react-easy-crop';
 import { FaCropAlt } from "react-icons/fa";
 import { BiZoomOut } from "react-icons/bi";
 import { BiZoomIn } from "react-icons/bi";
-const DefaultImageBgCircle = "/assets/templates/DefaultImageBgCircle.png";
-const DefaultImageBgRectangle = "/assets/templates/DefaultImageBgCircle.png"; 
+
+import DefaultImageBgCircle from "../../../public/assets/templates/DefaultImageBgCircle.png";
+import DefaultImageBgRectangle from "../../../public/assets/templates/DefaultImageBgCircle.png";
+
 
 
 const DynamicTemplateRenderer = () => {
@@ -52,9 +54,7 @@ const DynamicTemplateRenderer = () => {
     templateId: templateId || "",
     image: uploadedImage,
   });
-  console.log('%c [ dataForTemplate ]-567', 'font-size:13px; background:pink; color:#bf2c9f;', dataForTemplate)
-  console.log('%c [ dateFormatter(formData?.date, template?.dateFormatCase)?.day ]-571', 'font-size:13px; background:pink; color:#bf2c9f;', dateFormatter(formData?.date, template?.dateFormatCase)?.day)
-  
+ 
   const [formErrors, setFormErrors] = useState({
     eventType: "",
     name: "",
@@ -85,7 +85,11 @@ const DynamicTemplateRenderer = () => {
       time: formData.time,
       address: formData.address,
       templateId: templateId || "",
-      image: uploadedImage,
+      image: uploadedImage
+    ? uploadedImage
+    : cropShape === "round"
+    ? DefaultImageBgCircle.src
+    : DefaultImageBgRectangle.src,
     });
   }, [formData, template, uploadedImage]);
 
@@ -130,11 +134,12 @@ const DynamicTemplateRenderer = () => {
               bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
-    image: uploadedImage
+image: uploadedImage
     ? uploadedImage
     : cropShape === "round"
-    ? DefaultImageBgCircle
-    : DefaultImageBgRectangle,
+    ? DefaultImageBgCircle.src
+    : DefaultImageBgRectangle.src,
+
                  });
             setCropShape(selectedTemplate?.configs?.heroImageConfig?.cropShape || 'rect');
             setAspectRatio((parseInt(selectedTemplate?.configs?.heroImageConfig?.cropRatio?.width) || 4)  / (parseInt(selectedTemplate?.configs?.heroImageConfig?.cropRatio?.height) || 3));
