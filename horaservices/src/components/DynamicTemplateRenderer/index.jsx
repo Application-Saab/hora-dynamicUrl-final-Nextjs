@@ -11,6 +11,9 @@ import Cropper from 'react-easy-crop';
 import { FaCropAlt } from "react-icons/fa";
 import { BiZoomOut } from "react-icons/bi";
 import { BiZoomIn } from "react-icons/bi";
+const DefaultImageBgCircle = "/assets/templates/DefaultImageBgCircle.png";
+const DefaultImageBgRectangle = "/assets/templates/DefaultImageBgCircle.png"; 
+
 
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
@@ -89,7 +92,7 @@ const DynamicTemplateRenderer = () => {
   console.log('%c [ uploadedImage ]-607', 'font-size:13px; background:pink; color:#bf2c9f;', uploadedImage)
   const fileInputRef = useRef(null);
 
-  /** Fetch template */
+
   useEffect(() => {
     const fetchTemplate = async () => {
       try {
@@ -127,7 +130,12 @@ const DynamicTemplateRenderer = () => {
               bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
-            });
+    image: uploadedImage
+    ? uploadedImage
+    : cropShape === "round"
+    ? DefaultImageBgCircle
+    : DefaultImageBgRectangle,
+                 });
             setCropShape(selectedTemplate?.configs?.heroImageConfig?.cropShape || 'rect');
             setAspectRatio((parseInt(selectedTemplate?.configs?.heroImageConfig?.cropRatio?.width) || 4)  / (parseInt(selectedTemplate?.configs?.heroImageConfig?.cropRatio?.height) || 3));
             setCropSize({
@@ -490,7 +498,17 @@ const renderHTML = (jsCode, rawData) => {
                 <div class="invite-template-card">
      
   <div class='template-image-wrapper'>
-    <img src={dataForTemplate.image} alt="host image" class='template-image' />
+   <img
+  src={
+   uploadedImage
+      ? uploadedImage
+      : cropShape === "round"
+      ? "/assets/templates/DefaultImageBgCircle.png"
+      : "/assets/templates/DefaultImageBgCircle.png"
+  }
+  alt="Host"
+  className={`template-image ${cropShape === "round" ? "circle" : "rectangle"}`}
+/>
   </div>
 
 

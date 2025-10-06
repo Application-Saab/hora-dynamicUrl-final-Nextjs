@@ -9,6 +9,7 @@ import DefaultTemplate from "@/assets/DefaultTemplatePreview.png";
 import ApplyIcon from "@/assets/ApplyTemplateIcon.svg";
 import SelectedIcon from "@/assets/SelectedTemplateIcon.svg";
 import { useSearchParams } from "next/navigation";
+import EmojiLoader from "@/components/EmojiLoader";
 const TemplateGrid = () => {
   const router = useRouter();
 
@@ -109,7 +110,7 @@ const TemplateGrid = () => {
     );
   };
 
-  if (loading) return <div>Loading templates...</div>;
+  if (loading) return <EmojiLoader/>;
   if (error) return <div>Error: {error}</div>;
 
   return (
