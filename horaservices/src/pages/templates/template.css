@@ -18,7 +18,7 @@
 .templateGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 15px 10px;
   justify-items: center;
   margin:10px
 }
@@ -53,7 +53,6 @@
   position: relative;
   width: 100%;
   max-width: 180px;
-  aspect-ratio: 3 / 4;
   display: flex;
   flex-direction: column;
   align-items: center;
