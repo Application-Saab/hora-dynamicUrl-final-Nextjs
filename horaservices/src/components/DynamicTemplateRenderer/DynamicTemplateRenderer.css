@@ -44,7 +44,7 @@
   justify-content: center;
   width: 100%;
 }
-.preview-image-div{
+.preview-image-div {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -63,7 +63,7 @@
 .upload-box-template {
   margin-top: 10px;
   width: 100%;
-  border: 1.1px solid #97538C;
+  border: 1.1px solid #97538c;
   padding: 20px;
   text-align: center;
   cursor: pointer;
@@ -165,7 +165,7 @@
 }
 
 .cropper-crop-area {
-  border: 2px solid #4CAF50;
+  border: 2px solid #4caf50;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -181,31 +181,32 @@
   width: 90%;
   gap: 10px;
   border-radius: 10px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 10px 20px;
 }
-.zoom-container{
+.zoom-container {
   display: flex;
   max-width: 450px;
   width: 100%;
   gap: 5px;
 }
-.zoom-range{
+.zoom-range {
   width: 100%;
 }
-.zoom-btns{
+.zoom-btns {
   border: none;
   background: transparent;
 }
-.zoom-btns:hover{
+.zoom-btns:hover {
   border: none;
   background: transparent;
 }
-.zoom-icons{
+.zoom-icons {
   color: black;
 }
 
-.crop-save-btn, .crop-cancel-btn {
+.crop-save-btn,
+.crop-cancel-btn {
   border-radius: 11px;
   color: #fff;
   padding: 5px 10px;
@@ -231,29 +232,151 @@
 .crop-cancel-btn:hover {
   background: #ff9cad;
 }
-.crop-btn{
+.crop-btn {
   display: flex;
   align-items: center;
-  border: 1px solid #97538C;
-  background-color: #FFFFFF;
-  color: #97538C;
-  font-family: 'Inter', sans-serif;
+  border: 1px solid #97538c;
+  background-color: #ffffff;
+  color: #97538c;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: 14px;
   border-radius: 33px;
   padding: 5px 15px;
 }
-.crop-btn:hover{
-  background-color: #97538C;
-  color: #FFFFFF;
+.crop-btn:hover {
+  background-color: #97538c;
+  color: #ffffff;
 }
-.crop-icon{
+.crop-icon {
   margin-right: 5px;
 }
 
+/* *********** Template Wise Css for Aspect Ration setting ****************** */
+/* 
+.invite-template-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.invite-template-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+}
+
+.name {
+  position: absolute;
+  letter-spacing: 1px;
+  top: 20%;
+  width: 100%;
+  font-family: "Lilita One", sans-serif;
+  font-size: 135%;
+  color: #5e3d34;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.date-wrapper {
+  position: absolute;
+  top: 51%;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content;
+  padding: 0px 20px;
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  color: #5e3d34;
+}
+
+.date-wrapper .day {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #5e3d34;
+}
+
+.time {
+  font-size: 1rem;
+}
+.month {
+  font-size: 1rem;
+}
+
+.address {
+  position: absolute;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  top: 62%;
+  width: 100%;
+  padding: 0 50px;
+  font-size: 0.8rem;
+  color: #5e3d34;
+}
+
+@media (min-width: 340px) {
+  .name {
+    font-size: 140%;
+  }
+}
+
+@media (min-width: 360px) {
+  .date {
+    font-size: 1.2rem;
+    top: 53%;
+  }
+  .name {
+    font-size: 150%;
+  }
+  .time {
+    font-size: 1.1rem;
+    top: 53%;
+  }
+  .month {
+    font-size: 1.1rem;
+    top: 53%;
+  }
+  .address {
+    top: 63%;
+    font-size: 0.9rem;
+  }
+  .date-wrapper .day {
+    font-size: 2.2rem;
+    font-weight: 900;
+  }
+
+  .template-image {
+    height: 250px;
+    width: 250px;
+  }
+}
+
+@media (min-width: 420px) {
+  .name {
+    top: 22%;
+    font-size: 170%;
+  }
+} */
 
 
-/* *********** Template Wise Css ****************** */
+
+
+
+
+/* Template Wise Css Without aspect ratio */
 
 /* .invite-template-wrapper {
   display: flex;
@@ -277,45 +400,63 @@
 
 .template-image-wrapper{
   position: absolute;
-  top: 20%;
+  top: 13%;
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-inline: 20px;
 }
 .template-image{
-  height: 200px;
-  width: 150px;
+  height: 240px;
+  width: 200px;
   z-index: 3;
-  border: 4px solid #002617;
-  border-radius: 10px;
+  border: 1px solid #cdb185;
+  padding: 3px;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
 }
 
 .name {
   position: absolute;
-  top: 70%;
+  top: 60%;
   width: 100%;
   font-family: "Alice", serif;
-  font-size: 2.563rem;
-  color: #000000;
-  font-weight: 400;
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  color: #263a53;
+  font-weight: 500;
 }
 
-.date {
+.date-row{
   position: absolute;
-  top: 92%;
+  top: 89%;
   width: 100%;
-  font-family: "Alice", serif;
-  font-weight: 900;
-  color: #000000;
-  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+
+.month {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  color: #263a53;
+  font-size: 1.625rem;
+}
+.day {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  color: #c3748e;
+  font-size: 2.5rem;
+}
+.year {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  color: #263a53;
+  font-size: 1.625rem;
 }
 
 .time {
-  position: absolute;
-  top: 83%;
-  width: 100%;
-  font-family: "Alice", serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 700;
   color: #f6d6ad;
   font-size: 1.25rem;
@@ -323,21 +464,11 @@
 
 .address {
   position: absolute;
-  font-family: "Alice", serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 900;
   top: 87%;
   width: 100%;
   padding: 0 10px;
   font-size: 0.875rem;
   color: #f6d6ad;
-}
-
-
-@media (min-width: 360px) {
-  .date{
-    font-size: 2rem;
-  }
-  .name{
-    font-size: 2.2rem;
-  }
 } */

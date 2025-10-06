@@ -33,6 +33,7 @@ export const GET_GUESTS_BY_EVENTID = "/api/customer/event/event-guests/all";
 export const CREATE_GUEST_BY_EVENTID = "/api/customer/event/event-guest";
 export const UPDATE_RSVP_STATUS = "/api/customer/event/event-guest";
 export const GET_ALL_TEMPLATES = "/api/photo/templates";
+export const GET_TEMPLATES_BY_ID = "/api/photo/templates";
 // export const GET_EVENT_IMAGES = '/api/customer/event/event-images'
 
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
