@@ -1367,6 +1367,8 @@ import Cropper from 'react-easy-crop';
 import { FaCropAlt } from "react-icons/fa";
 import { BiZoomOut } from "react-icons/bi";
 import { BiZoomIn } from "react-icons/bi";
+const DefaultImageBgCircle = "/assets/templates/DefaultImageBgCircle.png";
+const DefaultImageBgRectangle = "/assets/templates/DefaultImageBgCircle.png"; 
 
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
@@ -1440,7 +1442,11 @@ const DynamicTemplateRenderer = () => {
       time: formData.time,
       address: formData.address,
       templateId: templateId || "",
-      image: uploadedImage,
+  image: uploadedImage
+    ? uploadedImage
+    : cropShape === "round"
+    ? DefaultImageBgCircle.src
+    : DefaultImageBgRectangle.src,
     });
   }, [formData, template, uploadedImage]);
 
@@ -1497,6 +1503,11 @@ const DynamicTemplateRenderer = () => {
               bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
+             image: uploadedImage
+    ? uploadedImage
+    : cropShape === "round"
+    ? DefaultImageBgCircle.src
+    : DefaultImageBgRectangle.src,
             });
           } else {
             setError("Template not found");

@@ -190,19 +190,23 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Services iframe overlay */}
-      {showServices && (
-        <div className="iframe-overlay">
-          <iframe
-            src="/"
-            style={{
-              border: "none",
-              width: "100%",
-              height: "100vh",
-            }}
-          />
-        </div>
-      )}
+    
+     {showServices && (
+  <div className="iframe-wrapper">
+    <div className="iframe-overlay">
+      <iframe
+        src="/"
+        style={{
+          border: "none",
+          width: "100%",
+          height: "calc(100vh - 50px)",
+          marginBottom: "50px",
+        }}
+      />
+    </div>
+  </div>
+)}
+
 
       <div className="bottom-nav">
         <Link href={`/wonderland?id=${userId || ""}`}  onClick={() => setShowServices(false)} >

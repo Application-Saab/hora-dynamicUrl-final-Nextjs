@@ -9,6 +9,7 @@ import DefaultTemplate from "@/assets/DefaultTemplatePreview.png";
 import ApplyIcon from "@/assets/ApplyTemplateIcon.svg";
 import SelectedIcon from "@/assets/SelectedTemplateIcon.svg";
 import { useSearchParams } from "next/navigation";
+
 const TemplateGrid = () => {
   const router = useRouter();
 
