@@ -1370,6 +1370,7 @@ import { BiZoomIn } from "react-icons/bi";
 
 import DefaultImageBgCircle from "../../../public/assets/templates/DefaultImageBgCircle.png";
 import DefaultImageBgRectangle from "../../../public/assets/templates/DefaultImageBgCircle.png"
+import SequentialLoader from "../SequentialLoader";
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1801,7 +1802,7 @@ const renderHTML = (jsCode, rawData) => {
 
 
 
-  if (loading) return <p>Loading template...</p>;
+  if (loading) return <SequentialLoader />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (

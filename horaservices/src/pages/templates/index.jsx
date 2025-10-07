@@ -9,6 +9,7 @@ import DefaultTemplate from "@/assets/DefaultTemplatePreview.png";
 import ApplyIcon from "@/assets/ApplyTemplateIcon.svg";
 import SelectedIcon from "@/assets/SelectedTemplateIcon.svg";
 import { useSearchParams } from "next/navigation";
+import SequentialLoader from "@/components/SequentialLoader";
 
 const TemplateGrid = () => {
   const router = useRouter();
@@ -58,7 +59,6 @@ const TemplateGrid = () => {
         setLoading(false);
       }
     };
-
     fetchTemplates();
   }, []);
   const handleFileChange = (e) => {
@@ -129,7 +129,7 @@ const TemplateGrid = () => {
     );
   };
 
-  if (loading) return <div>Loading templates...</div>;
+  if (loading) return  <SequentialLoader />;
   if (error) return <div>Error: {error}</div>;
 
   return (

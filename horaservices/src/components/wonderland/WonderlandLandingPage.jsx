@@ -383,13 +383,13 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
               </div>
             )}
 
-            <div className="invite-banner">
+            {/* <div className="invite-banner">
               <Image
                 src={wonderlandeventplanningBanner}
                 alt="Invite Banner"
                 className="banner-image"
               />
-            </div>
+            </div> */}
             {/* <div className="invite-banner">
               <Image
                 src={luckdrawBnaner}
