@@ -199,8 +199,8 @@ useEffect(() => {
         style={{
           border: "none",
           width: "100%",
-          height: "calc(100vh - 50px)",
-          marginBottom: "50px",
+          height: "calc(100vh - 58px)",
+          marginBottom: "58px",
         }}
       />
     </div>

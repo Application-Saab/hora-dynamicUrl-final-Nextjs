@@ -43,7 +43,7 @@
 }
 
 .iframe-wrapper{
-  padding-bottom: 70px;
+  padding-bottom: 100px;
 }
 .iframe-overlay {
   position: fixed;
@@ -51,7 +51,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9;
+  z-index: 999;
   display: flex;
   justify-content: center;
   animation: fadeIn 0.3s ease-in-out;
