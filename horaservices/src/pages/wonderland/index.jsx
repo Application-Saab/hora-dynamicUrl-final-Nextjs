@@ -1544,7 +1544,7 @@ const getAvatarColor = (name) => {
               {orderDetails ? (
                 <>
                   {orderDetails?.externalTemplateImageUrl ? (
-                    <div style={{padding: "15px"}}>
+                    <div style={{padding: "10px 10px 5px 10px"}}>
                       <div
                         className="invitation-container-image-ctn"
                         // style={{

@@ -1488,8 +1488,8 @@ const DynamicTemplateRenderer = () => {
             }
             setAspectRatio(heroAspect);
             setCropSize({
-              width : parseInt(selectedTemplate?.configs?.heroImageConfig?.cropSize?.width) || 200,
-              height: parseInt(selectedTemplate?.configs?.heroImageConfig?.cropSize?.height) || 200
+              width : parseInt(selectedTemplate?.configs?.heroImageConfig?.cropSize?.width * 1.3) || 200,
+              height: parseInt(selectedTemplate?.configs?.heroImageConfig?.cropSize?.height * 1.3) || 200
             });
 
             setTemplate({
@@ -1818,7 +1818,8 @@ const renderHTML = (jsCode, rawData) => {
           backgroundSize: "100% 100%",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          maxHeight: template?.bgImageHeight ? `${template?.bgImageHeight}px` : '530px',
+          // maxHeight: template?.bgImageHeight ? `${template?.bgImageHeight}px` : '530px',
+          maxHeight: '530px',
           maxWidth: "480px",
           width: "100%",
           borderRadius: "10px",
