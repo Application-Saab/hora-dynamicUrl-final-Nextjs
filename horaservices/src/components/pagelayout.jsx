@@ -25,7 +25,7 @@ const PageLayout = ({ children }) => {
     pathname === "/wonderland/create-invite-template" ||
     pathname === "/templates" ||
     pathname?.startsWith("/chat") || // covers /chat?id=123 also
-    pathname === "/about" || pathname === '/accounts';
+    pathname === "/about" || pathname === '/accounts' || pathname === "/services";
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");
 
@@ -38,8 +38,8 @@ const PageLayout = ({ children }) => {
         />
       </Head>
 
-      <Header />
-
+      {pathname !== "/services" && <Header />
+      }
       <main className="page-main row m-0">
         <section className="p-0">{children}</section>
       </main>

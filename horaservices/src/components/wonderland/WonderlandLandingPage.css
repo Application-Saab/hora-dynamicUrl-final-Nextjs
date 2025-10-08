@@ -16,56 +16,76 @@
   height: auto;
   display: block;
   margin-bottom: 5px;
+  padding:2px;
 }
 .banner-image {
   width: 100%;
   height: auto;
   display: block;
   margin: 5px 0px 5px 0px;
-}
-
-.create-invite-btn {
-  position: absolute;
-  bottom: 25px;
-  left: 25%;
-  transform: translateX(-50%);
-  background: #97538c;
-  color: white;
-  border: none;
-  padding: 5px 25px;
-  font-size: 15px;
-  font-weight: bold;
-  border-radius: 30px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-    animation: borderFlash 1.5s infinite;
-}
-@keyframes borderFlash {
-  0% {
-    border-color: #ddd;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    border-color: #97538c;; /* Highlight color */
-    box-shadow: 0 0 10px rgba(102, 5, 205, 0.6);
-  }
-  100% {
-    border-color: #ddd;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.create-invite-btn:hover {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
-}
-
-.event-list-wrapper {
-  padding: 10px;
   max-width: 600px;
 }
 
+
+
+
+
+
+
+.create-invite-btn {
+    position: absolute;
+    bottom: 25px;
+    left: 5%;
+    background: #97538c;
+     font-family: "Roboto", sans-serif;
+    color: white;
+    border: none;
+    padding: 6px 16px 6px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.create-invite-btn::before {
+  content: '';
+  position: absolute;
+  top: -35px;
+  left: -150%;
+  width: 20%;
+  height: 300%;
+  background: #ffffff4d; /* subtle white shimmer */
+  transform: rotate(30deg);
+  animation: shimmer 1.5s infinite;
+  animation-delay: 0.07s;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -150%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* .event-list-wrapper {
+  padding: 10px;
+  max-width: 600px;
+} */
+
+.event-list-wrapper {
+      padding: 10px 15px;
+  width: 100%;         
+  max-width: 600px;  
+  margin: 0 auto;      
+}
 .section-heading {
   text-align: center;
   font-weight: bold;
@@ -88,7 +108,7 @@
 .event-item {
   display: flex;
   justify-content: space-between;
-  align-items: anchor-center;
+  align-items: center;
   border-bottom: 1px solid #BBBBBB;
   padding: 12px 0;
   width: 100%;
