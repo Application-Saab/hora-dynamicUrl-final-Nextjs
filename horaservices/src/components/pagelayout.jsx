@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
-import BottomNav from "./BottomNav"; 
+import BottomNav from "./BottomNav";
 import "../app/globals.css";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
@@ -25,7 +25,7 @@ const PageLayout = ({ children }) => {
     pathname === "/wonderland/create-invite-template" ||
     pathname === "/templates" ||
     pathname?.startsWith("/chat") || // covers /chat?id=123 also
-    pathname === "/about" || pathname === '/accounts';
+    pathname === "/about" || pathname === '/accounts' || pathname === "/services";
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");
 
@@ -37,8 +37,8 @@ const PageLayout = ({ children }) => {
           content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe"
         />
       </Head>
-
-      <Header />
+      {pathname !== "/services" && <Header />
+      }
 
       <main className="page-main row m-0">
         <section className="p-0">{children}</section>

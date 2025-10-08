@@ -7,8 +7,8 @@ import { BASE_URL, GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
 import wonderlandBanner from "@/assets/wonderlandBanner1.webp";
-import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
-import howitworks from "@/assets/howitworks.jpg";
+// import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
+import howitworks from "@/assets/howitworks2.jpg";
 import hostandGuest from "@/assets/hostandGuest.webp";
 import yourcelebration from "@/assets/yourcelebration.png";
 import luckdrawBnaner from "@/assets/lucky.jpg";
@@ -333,16 +333,19 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 className="create-invite-btn"
                 onClick={createInviteClick}
               >
-                Create Invite
+             <span>CREATE INVITE</span>
               </button>
             </div>
+
+      
+
 
             {/* Event List */}
             {getEventsLoading && <p>Loading your events...</p>}
 
             {allEventsData?.length > 0 && (
               <div className="event-list-wrapper">
-                <h3 className="section-heading">Past Events</h3>
+                <h3 className="section-heading">Cheer Story</h3>
                 <ul className="event-list">
                   {allEventsData?.map((event) => (
                     <>
@@ -397,21 +400,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
                 className="banner-image"
               />
             </div> */}
-            <div
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 700,
-                fontStyle: "normal",
-                fontSize: "20px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                textAlign: "center",
-                verticalAlign: "middle",
-                margin: "10px",
-              }}
-            >
-           
-            </div>
+            
             <div className="invite-banner">
               <Image
                 src={howitworks}

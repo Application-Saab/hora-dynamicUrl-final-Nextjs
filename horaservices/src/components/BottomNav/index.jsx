@@ -190,7 +190,7 @@ useEffect(() => {
         </div>
       )}
 
-    
+{/*     
      {showServices && (
   <div className="iframe-wrapper">
     <div className="iframe-overlay">
@@ -205,7 +205,7 @@ useEffect(() => {
       />
     </div>
   </div>
-)}
+)} */}
 
 
       <div className="bottom-nav">
@@ -278,7 +278,7 @@ useEffect(() => {
         </Link> */}
 
         {/* Services iframe trigger */}
-        <div
+        {/* <div
           className={`nav-item ${showServices ? "active" : ""}`}
           onClick={() => setShowServices(true)}
         >
@@ -288,7 +288,22 @@ useEffect(() => {
             className="nav-icon"
           />
           <span className="nav-text">Services</span>
-        </div>
+        </div> */}
+<Link href={`/services?userid=${userId}`}>
+  <div
+    className={`nav-item ${
+      currentPath.includes("services") ? "active" : ""
+    }`}
+    onClick={() => setShowServices(true)}
+  >
+    <Image
+      src={currentPath.includes("services") ? serviceIconFill : servicesIcon}
+      alt="Services"
+      className="nav-icon"
+    />
+    <span className="nav-text">Services</span>
+  </div>
+</Link>
 
         <Link href={`/accounts?userid=${userId}`}>
           <div
