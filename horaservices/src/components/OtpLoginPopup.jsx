@@ -188,6 +188,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
+             <AiOutlineClose className="close-icons" onClick={hadelClose} size={15} />
         {!isUserLoggedIn ? (
           <>
             <div className="popup-header">
@@ -236,7 +237,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                   <button
                     onClick={verifyOtp}
                     className="loginbtn"
-                    disabled={otp.length !== 4} // Disable if OTP is not 4 digits
+                    disabled={otp.length !== 4} 
                   >
                     Verify OTP
                   </button>
@@ -269,7 +270,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
           <div className="success-message">
             <div className='popup-header'>  
               <Image src={loginImage} />
-            <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
+            {/* <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} /> */}
               </div>
             <h1>Logged In Successful</h1>
             <p>Welcome Hora! You have been logged out successfully.</p>
