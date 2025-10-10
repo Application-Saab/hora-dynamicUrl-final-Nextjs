@@ -78,6 +78,8 @@ import { usePathname } from "next/navigation";
 
 import A2HSPrompt from "../../components/AddToHomeScreen";
 import { handleGroupClick } from "@/utils/unread";
+import axios from "axios";
+import EventwallGalleryItem from "@/components/wonderland/EventwallGalleryItem";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
@@ -215,6 +217,53 @@ const handleInstallClick = async () => {
   const [loadingEventImages, setLoadingEventImages] = useState(true);
   const [errorEventImages, setErrorEventImages] = useState(null);
   const [refetchEventImages, setRefetchEventImages] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({
+    total: 0,
+    uploaded: 0,
+    remaining: 0,
+    percentage: 0,
+  });
+
+  const [showCheers, setShowCheers] = useState(false);
+  const [showSpark, setShowSpark] = useState(false);
+  const [showDone, setShowDone] = useState(false);
+  const [hideCheers, setHideCheers] = useState(false);
+
+  useEffect(() => {
+    if (uploadProgress?.percentage === 100) {
+      // Start Cheers animation after progress done
+      setShowCheers(true);
+
+      // Spark animation timing
+      const sparkTimer = setTimeout(() => setShowSpark(true), 1300);
+
+      // Done text timing
+      const doneTimer = setTimeout(() => setShowDone(true), 1800);
+
+      const hideCheersTimer = setTimeout(() => setHideCheers(true), 2500);
+
+      const hideLoadingFull = setTimeout(() => setUploadProgress((prev) => ({
+        ...prev,
+        total: 0,
+        uploaded: 0,
+        remaining: 0,
+        percentage: 0,
+      })), 3500);
+
+      return () => {
+        clearTimeout(sparkTimer);
+        clearTimeout(doneTimer);
+        clearTimeout(hideCheersTimer);
+        clearTimeout(hideLoadingFull);
+      };
+    } else {
+      setShowCheers(false);
+      setShowSpark(false);
+      setShowDone(false);
+      setHideCheers(false);
+    }
+  }, [uploadProgress?.percentage]);
 
   const [urlParams, setUrlParams] = useState({
     eventUserId: slug[0] || "",
@@ -472,9 +521,7 @@ const handleInstallClick = async () => {
   const [sendCustomerId, setSendCustomerId] = useState("");
   const [sendCustomerPhoneNumber, setSendCustomerPhoneNumber] = useState("");
 
-  const [eventData, setEventData] = useState([]);
   const [loadingThumbnails, setLoadingThumbnails] = useState(true);
-  const [uploading, setUploading] = useState(false);
 
   const [showPopup, setShowPopup] = useState(false);
   const [noteTitle, setNoteTitle] = useState("");
@@ -1024,70 +1071,63 @@ function linkify(text) {
     trackMouse: true, // optional, mouse drag support bhi deta hai
   });
 
-  const handleImageUpload = async (e) => {
+ const handleImageUpload = async (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    setShowCheers(false);
     setUploading(true);
-    setWallUploading(true);
-    setShowImageUploadInfo(true);
-
-    const files = e.target.files;
-    if (!files || files.length === 0) {
-      console.error("No files selected for upload");
-      setUploading(false);
-      setWallUploading(false);
-      return;
-    }
-
-    const formData = new FormData();
-
-    // Append all files with the same field name "files" (backend should handle array)
-    Array.from(files).forEach((file, index) => {
-      formData.append("selfUploadedImages", file); // Multiple files under "files" key
+    const totalFiles = selectedFiles.length;
+    let uploadedCount = 0;
+    // Reset progress
+    setUploadProgress({
+      total: totalFiles,
+      uploaded: 0,
+      remaining: totalFiles,
+      percentage: 0,
     });
 
-    formData.append("userId", userID);
+    // Function to upload one file
+    const uploadSingleFile = async (file) => {
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("userId", userID);
 
-    try {
-      const res = await fetch(
-        `${BASE_URL}${UPLOAD_IMAGES_SELF}/${urlParams?.eventId}/self-uploaded`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `${token}`,
-          },
-          body: formData,
-        }
-      );
+      try {
+        await axios.put(
+          `${BASE_URL}${UPLOAD_IMAGES_SELF}/${urlParams?.eventId}/self-uploaded`,
+          formData,
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+            onUploadProgress: (progressEvent) => {
+              const percent = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              // Optionally track individual file % if needed
+              console.log(`${file.name}: ${percent}%`);
+            },
+          }
+        );
 
-      if (!res.ok) {
-        throw new Error(`Upload failed with status: ${res.status}`);
-      }
-
-      const data = await res.json();
-      console.log("Uploaded:", data);
-
-      if (data?.uploaded && Array.isArray(data.uploaded)) {
-        // Update eventData with uploaded images
-        const newImages = data.uploaded.map((item) => ({
-          type: "image",
-          src: item.url, // Ensure backend returns "url" field
-          alt:
-            item.key ||
-            item.filename ||
-            `Uploaded image ${data.uploaded.indexOf(item) + 1}`,
+        uploadedCount += 1;
+        setUploadProgress((prev) => ({
+          ...prev,
+          uploaded: uploadedCount,
+          remaining: totalFiles - uploadedCount,
+          percentage: Math.round((uploadedCount / totalFiles) * 100),
         }));
-
-        setEventData((prev) => [...newImages, ...prev]);
-      } else {
-        console.warn("No valid uploaded images data received", data);
+      } catch (err) {
+        console.error(`Upload failed for ${file.name}:`, err.message);
       }
-    } catch (err) {
-      console.error("Upload failed", err.message);
-      // Optionally show user feedback (e.g., alert or UI message)
-    } finally {
-      setRefetchEventImages(!refetchEventImages);
-      setUploading(false);
-      setWallUploading(false);
-    }
+    };
+
+    // Upload all files in parallel
+    await Promise.all(selectedFiles.map(uploadSingleFile));
+
+    setRefetchEventImages((prev) => !prev);
+    setUploading(false);
   };
   const handleDeleteImage = async (imageId, imageType) => {
     try {
@@ -1161,7 +1201,7 @@ function linkify(text) {
       formData.append("image", file);
       formData.append("userId", userID);
       try {
-        const response = await fetch(
+        await fetch(
           `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${urlParams?.eventId}/thankyou-note`,
           {
             method: "PUT",
@@ -1171,19 +1211,7 @@ function linkify(text) {
             body: formData,
           }
         );
-        const result = await response.json();
-
-        if (result.success && result.uploaded && result.uploaded[0]?.url) {
-          // ✅ Add the uploaded image to eventData so it shows in the UI
-          const newImage = {
-            type: "image",
-            src: result.uploaded[0].url,
-            alt: "Thank You Note",
-          };
-          setEventData((prev) => [newImage, ...prev]);
-        }
         setRefetchEventImages(!refetchEventImages);
-        // setShowPopup(false);
         setNoteTitle("");
         setNoteBy("");
       } catch (err) {
@@ -1956,36 +1984,90 @@ const getAvatarColor = (name) => {
                     type="file"
                     id="imageUploadInput"
                     multiple
-                    accept="image/*"
+                    accept="image/*, video/*"
                     style={{ display: "none" }}
                     onChange={handleImageUpload}
                   />
                 </div>
 
-                {/* Images Grid */}
-                <div style={{ position: "relative", marginTop: "auto" }}>
-                  {/* {wallUploading && (
+                <div>
+                  {(uploading || showCheers) && (
                     <div
                       style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: "rgba(255, 255, 255, 0.8)",
-                        display: "flex",
-                        justifyContent: "center",
-                        zIndex: 2,
+                        textAlign: "center",
+                        marginTop: "20px",
+                        width: "300px",
+                        minHeight: "70px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        position: "relative",
+                        fontFamily: "'Poppins', sans-serif",
                       }}
                     >
-                      <div className="spinner" />
-                    </div>
-                  )} */}
+                      {uploadProgress.percentage < 100 && (
+                        <>
+                          <div
+                            className="progress custom-progress"
+                            role="progressbar"
+                            aria-label="Success example"
+                            aria-valuenow="25"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          >
+                            <div
+                              className="progress-bar custom-progress-bar"
+                              style={{ width: uploadProgress.percentage * 3 }}
+                            ></div>
+                          </div>
+                          <div className="status-text mt-2">Uploading...</div>{" "}
+                        </>
+                      )}
 
+                      {/* Glass Cheers Animation */}
+                      {uploadProgress.percentage === 100 && (
+                        <div className="glass-container">
+                          {!hideCheers && (
+                            <>
+                              <span
+                                className="left-glass"
+                                style={{
+                                  animation: showCheers
+                                    ? "leftCheers 2s ease forwards"
+                                    : "none",
+                                }}
+                              >
+                                🍷
+                              </span>
+
+                              <span
+                                className="right-glass"
+                                style={{
+                                  animation: showCheers
+                                    ? "rightCheers 2s ease forwards"
+                                    : "none",
+                                }}
+                              >
+                                🍷
+                              </span>
+                            </>
+                          )}
+
+                          {showSpark && <div className="spark-loader" />}
+
+                          {showDone && (
+                            <div className="done-text">Uploading Done 🎉</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Images Grid */}
+                <div style={{ position: "relative", marginTop: "auto" }}>
                   <div
                     className="thumbnail-gallery"
                     style={{
-                      // opacity: wallUploading ? 0.5 : 1,
                       margin: "20px auto",
                     }}
                   >
@@ -2003,18 +2085,31 @@ const getAvatarColor = (name) => {
                     ) : (
                       <div className="thumbnail-gallery">
                         <div className="event-grid">
-                          {eventAllImages.map((thumbnail, indexOnPage) => (
-                            <LazyImage
-                              key={thumbnail._id}
-                              src={thumbnail.webpUrl}
-                              alt={`Event Image ${indexOnPage + 1}`}
-                              wrapperClassName="masonry-item"
-                              onClick={() => {
-                                setSelectedImage(thumbnail); // Image select karo
-                                setIsImageOpen(true); // Lightbox open karo
-                              }}
-                            />
-                          ))}
+                          {eventAllImages?.map((thumbnail, indexOnPage) => {
+                            const isVideo =
+                              thumbnail.imageUrl?.match(
+                                /\.(mp4|mov|avi|mkv)$/i
+                              );
+
+                            return (
+                              <div
+                                key={thumbnail._id}
+                                // className="masonry-item"
+                                onClick={() => {
+                                  setSelectedImage(thumbnail);
+                                  setSelectedIndex(indexOnPage);
+                                  setIsImageOpen(true);
+                                }}
+                                style={{
+                                  cursor: "pointer",
+                                  position: "relative",
+                                  backgroundColor: "transparent",
+                                }}
+                              >
+                                <EventwallGalleryItem isVideo={isVideo} thumbnail={thumbnail} indexOnPage={indexOnPage} />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -2051,11 +2146,32 @@ const getAvatarColor = (name) => {
                           ‹
                         </button>
 
-                        <img
-                          src={selectedImage.webpUrl}
-                          alt=""
-                          className="lightbox-img"
-                        />
+                        {selectedImage.imageUrl?.match(
+                          /\.(mp4|mov|avi|mkv)$/i
+                        ) ? (
+                          <video
+                            autoPlay
+                            controls
+                            playsInline
+                            className="lightbox-img"
+                            style={{
+                              maxWidth: "90%",
+                            }}
+                          >
+                            <source
+                              src={selectedImage.imageUrl}
+                              type="video/mp4"
+                            ></source>
+                          </video>
+                        ) : (
+                          <img
+                            src={
+                              selectedImage.webpUrl || selectedImage.imageUrl
+                            }
+                            alt=""
+                            className="lightbox-img"
+                          />
+                        )}
                         {selectedImage.name && (
                           <p className="lightbox-name">
                             Shared BY : {selectedImage.name}
@@ -2435,27 +2551,6 @@ const getAvatarColor = (name) => {
         )} */}
       </>
 
-      {showImageUploadInfo && (
-        <div className="image-upload-popup-overlay">
-          <div className="upload-image-popup">
-            <h3>Uploading your memories…</h3>
-            <div className="d-flex justify-content-center my-2">
-              <Image src={SuccessIconImage} alt="Success" width={80} height={80}/>
-            </div>
-            <p>
-           Sit back and relax — this may take a few moments.
-            </p>
-            <div className="d-flex justify-content-center">
-              <button
-                className="upload-image-popup-btn"
-                onClick={() => setShowImageUploadInfo(false)}
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       
 
 {pathname === "/wonderland" &&
