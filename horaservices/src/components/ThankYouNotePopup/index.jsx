@@ -603,7 +603,7 @@ const handleNameInput = (e) => {
   </div>
 </div> */}
 <div className="thankyou-preview">
-  <div className="sticky-preview" style={{ position: "relative", width: "300px", height: "300px" }}>
+  <div className="sticky-preview" style={{ position: "relative", width: "300px", height: "300px", margin: "0 auto" }}>
     <Image
       src={StickyImage}
       alt="Sticky Note Background"
@@ -678,7 +678,7 @@ const handleNameInput = (e) => {
 
 
     {/* Emoji Picker Toggle */}
-    <button
+    {/* <button
       type="button"
       onClick={() => setShowEmojiPicker((prev) => !prev)}
       style={{
@@ -691,11 +691,11 @@ const handleNameInput = (e) => {
       }}
     >
       <Image src={emojiIcon} alt="Emoji" width={24} height={24} />
-    </button>
+    </button> */}
 
     {/* Emoji Picker */}
     {showEmojiPicker && (
-      <div style={{ position: "absolute", bottom: "60px", right: "10px", zIndex: 10 }}>
+      <div className="emoji-container-thankyou" style={{ position: "static", zIndex: 10, marginTop: "10px" }}>
         <EmojiPicker
           width={emojiWidth}
           searchDisabled={true}
