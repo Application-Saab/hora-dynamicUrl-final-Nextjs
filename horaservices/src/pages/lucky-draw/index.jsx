@@ -7,7 +7,7 @@ import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import Confetti from "react-confetti";
 import { useWindowSize } from 'react-use';
-const LuckyDrawForm = ({ onClose, hostData }) => {
+const LuckyDrawForm = ({ onClose, hostData, userData }) => {
   const { width, height } = useWindowSize();
   const [showConfetti, setShowConfetti] = useState(true);
   const router = useRouter();
@@ -48,6 +48,7 @@ const LuckyDrawForm = ({ onClose, hostData }) => {
     const formData = new FormData();
     formData.append("image", preview.file);
     formData.append("userId", userId);
+    formData.append('name', userData?.name);
 
     try {
       const response = await fetch(

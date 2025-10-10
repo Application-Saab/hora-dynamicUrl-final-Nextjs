@@ -1072,64 +1072,81 @@ function linkify(text) {
     trackMouse: true, // optional, mouse drag support bhi deta hai
   });
 
- const handleImageUpload = async (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    if (!selectedFiles || selectedFiles.length === 0) return;
+const handleImageUpload = async (e) => {
+  const selectedFiles = Array.from(e.target.files);
+  if (!selectedFiles || selectedFiles.length === 0) return;
 
-    setShowCheers(false);
-    setUploading(true);
-    const totalFiles = selectedFiles.length;
-    let uploadedCount = 0;
-    // Reset progress
-    setUploadProgress({
-      total: totalFiles,
-      uploaded: 0,
-      remaining: totalFiles,
-      percentage: 0,
-    });
+  setShowCheers(false);
+  setUploading(true);
+  const totalFiles = selectedFiles.length;
+  let uploadedCount = 0;
 
-    // Function to upload one file
-    const uploadSingleFile = async (file) => {
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("userId", userID);
+  // Reset progress
+  setUploadProgress({
+    total: totalFiles,
+    uploaded: 0,
+    remaining: totalFiles,
+    percentage: 0,
+  });
 
-      try {
-        await axios.put(
-          `${BASE_URL}${UPLOAD_IMAGES_SELF}/${urlParams?.eventId}/self-uploaded`,
-          formData,
-          {
-            headers: {
-              Authorization: `${token}`,
-            },
-            onUploadProgress: (progressEvent) => {
-              const percent = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              // Optionally track individual file % if needed
-              console.log(`${file.name}: ${percent}%`);
-            },
-          }
-        );
+  // Function to upload one file and append to state
+  const uploadSingleFile = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("userId", userID);
+    formData.append("name", userData?.name || "");
 
-        uploadedCount += 1;
-        setUploadProgress((prev) => ({
-          ...prev,
-          uploaded: uploadedCount,
-          remaining: totalFiles - uploadedCount,
-          percentage: Math.round((uploadedCount / totalFiles) * 100),
-        }));
-      } catch (err) {
-        console.error(`Upload failed for ${file.name}:`, err.message);
+    try {
+      const response = await axios.put(
+        `${BASE_URL}${UPLOAD_IMAGES_SELF}/${urlParams?.eventId}/self-uploaded`,
+        formData,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            console.log(`${file.name}: ${percent}%`);
+          },
+        }
+      );
+
+      // Increment uploaded count and update progress
+      uploadedCount += 1;
+      setUploadProgress((prev) => ({
+        ...prev,
+        uploaded: uploadedCount,
+        remaining: totalFiles - uploadedCount,
+        percentage: Math.round((uploadedCount / totalFiles) * 100),
+      }));
+
+      // Append the new image to eventAllImages immediately
+      const newImage = response.data.data; // Array of one image
+      if (newImage && Array.isArray(newImage)) {
+        setEventAllImages((prev) => [...newImage, ...prev]);
       }
-    };
 
-    // Upload all files in parallel
-    await Promise.all(selectedFiles.map(uploadSingleFile));
-
-    setRefetchEventImages((prev) => !prev);
-    setUploading(false);
+      return newImage; // Return for Promise.all (optional, for logging or error handling)
+    } catch (err) {
+      console.error(`Upload failed for ${file.name}:`, err.message);
+      return null;
+    }
   };
+
+  // Upload all files in parallel
+  const uploadResults = await Promise.all(selectedFiles?.map(uploadSingleFile));
+
+  // Log failed uploads (optional)
+  const failedUploads = uploadResults?.filter((result) => result === null);
+  if (failedUploads.length > 0) {
+    console.warn(`${failedUploads?.length} uploads failed`);
+  }
+
+  setUploading(false);
+};
+
   const handleDeleteImage = async (imageId, imageType) => {
     try {
       const res = await fetch(
@@ -1201,6 +1218,7 @@ function linkify(text) {
       const formData = new FormData();
       formData.append("image", file);
       formData.append("userId", userID);
+      formData.append('name', noteBy || userData?.name);
       try {
         await fetch(
           `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${urlParams?.eventId}/thankyou-note`,
@@ -2020,7 +2038,7 @@ const getAvatarColor = (name) => {
                               style={{ width: uploadProgress.percentage * 3 }}
                             ></div>
                           </div>
-                          <div className="status-text mt-2">Uploading...</div>{" "}
+                          <div className="status-text mt-2">UPLOADING... {`${uploadProgress?.remaining}/${uploadProgress?.total}`}</div>
                         </>
                       )}
 
@@ -2056,7 +2074,7 @@ const getAvatarColor = (name) => {
                           {showSpark && <div className="spark-loader" />}
 
                           {showDone && (
-                            <div className="done-text">Uploading Done 🎉</div>
+                            <div className="done-text">UPLOADING DONE 🎉</div>
                           )}
                         </div>
                       )}
@@ -2295,6 +2313,7 @@ const getAvatarColor = (name) => {
                   >
                     <LuckyDrawForm
                       hostData={orderDetails}
+                      userData={userData}
                       onClose={() => {
                         setShowLuckyDrawPopup(false);
                         setRefetchLuckyDraw(!refetchLuckyDraw);

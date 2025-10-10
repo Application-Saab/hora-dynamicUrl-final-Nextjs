@@ -554,7 +554,7 @@ body {
 
 .event-grid {
   column-count: 2;
-  column-gap: 10px;
+  column-gap: 0px;
   margin-bottom: 60px;
 }
 
@@ -577,7 +577,10 @@ body {
   margin-top: -10px;
 }
 .custom-masonry {
-  border-radius: 15px !important;
+  border-radius: 5px !important;
+  background-color: #ffffff !important;
+  margin: 7px 3.5px !important;
+  margin-bottom: 0px !important;
 }
 
 /* Responsive breakpoints */
@@ -600,7 +603,7 @@ body {
 @media (max-width: 480px) {
   .event-grid {
     column-count: 2;
-    column-gap: 5px;
+    /* column-gap: 5px; */
   }
 }
 
@@ -1156,11 +1159,12 @@ body {
 }
 .custom-progress {
   border-radius: 33px !important;
-  box-shadow: 0 0 10px rgb(182 0 227 / 30%) !important;
+  box-shadow: 0 0 5px rgb(182 0 227 / 30%) !important;
+   height : 0.7rem !important;
 }
 .custom-progress-bar {
   background-color: #97538c;
-  box-shadow: 0 0 10px rgb(182 0 227 / 30%) !important;
+  box-shadow: 0 0 5px rgb(182 0 227 / 30%) !important;
 }
 .glass-container {
   display: block;
