@@ -69,6 +69,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
+import Wonderlandvideo from "@/assets/Wonderlandvideo.mp4"
 
 import { db } from "../../firebase";
 import { getToken, onMessage, getMessaging } from "firebase/messaging";
@@ -92,10 +93,10 @@ const dummayImageGallery = [
   photo5,
   photo6,
   photo7,
-  photo8,
-  photo2,
-  photo5,
-  photo6,
+  // photo8,
+  // photo2,
+  // photo5,
+  // photo6,
 ];
 
 const InvitationCard = () => {
@@ -2064,24 +2065,45 @@ const getAvatarColor = (name) => {
                 </div>
 
                 {/* Images Grid */}
-                <div style={{ position: "relative", marginTop: "auto" }}>
+                   <div style={{ position: "relative", marginTop: "auto" }}>
                   <div
                     className="thumbnail-gallery"
                     style={{
                       margin: "20px auto",
                     }}
                   >
-                    {eventAllImages.length === 0 ? (
-                      <div className="event-grid">
+                   {eventAllImages.length === 0 ? (
+                      <>
+                      <div> 
+                        <video
+    className="video-item"
+    autoPlay
+    loop
+    muted
+    playsInline
+    style={{ width: "100%", height: "100%", objectFit: "cover", marginBottom:"10px"}}
+  >
+    <source src={Wonderlandvideo} type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>
+                       <div className="event-grid">
                         {dummayImageGallery?.map((item, index) => (
                           <LazyImage
                             key={index + 1}
                             src={item.src}
-                            alt={`Event Image ${index + 1}`}
+                           alt={`Event Image ${index + 1}`}
                             wrapperClassName="masonry-item"
                           />
                         ))}
-                      </div>
+     
+
+  
+
+
+
+                      </div> 
+                      </>
                     ) : (
                       <div className="thumbnail-gallery">
                         <div className="event-grid">
