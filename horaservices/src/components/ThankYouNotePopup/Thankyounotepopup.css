@@ -146,13 +146,15 @@ input {
   overflow: hidden;
 } */
  .emoji-container-thankyou {
-  position: absolute; /* ya relative jahan aapko picker dikhana hai */
+  position: absolute; 
   z-index: 10;
   margin-top: 10px;
-  max-height: 300px;   /* vertical scroll limit */
-  width: 100%;          /* adjust as needed */
-  overflow-y: auto;     /* vertical scroll enabled */
-  overflow-x: hidden;   /* horizontal scroll hidden */
+  max-height: 300px;  
+  width: 100%;        
+  overflow-y: auto;    
+  overflow-x: hidden;  
+    max-width: 300px;
+    margin: 0 auto;
 }
 
 
@@ -169,13 +171,16 @@ input {
   cursor: pointer;
   color: black;
 }
-
+.epr-main.EmojiPickerReact {
+  max-width: 300px !important;
+  width: 100% !important;
+}
 /* Responsive Fix */
 @media (max-width: 480px) {
   .emoji-container-thankyou {
     left: 0;
     right: 0;
-    max-width: 95vw;
+    max-width: 300px;
     margin: 0 auto;
   }
 

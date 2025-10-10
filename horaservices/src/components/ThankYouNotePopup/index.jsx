@@ -1,3 +1,5 @@
+
+
 import React, { useEffect } from "react";
 import Image from "next/image";
 import StickyImage from "../../assets/sticky1.png"; // adjust path
@@ -66,6 +68,10 @@ const [charCount, setCharCount] = useState(0);
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
+    
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
+
+
       </Head>
 
       <h1 className="title">Thank You Note</h1>
@@ -79,98 +85,118 @@ const [charCount, setCharCount] = useState(0);
       />
     <div className="form-group">
   <label className="label">Type Note</label>
-  <div className="textarea-with-emoji">
-    <textarea
-      ref={noteTextAreaRef}
-      rows={4}
-      placeholder="Write Your Thank You Message..."
-      value={noteTitle}
-      className="textareanote"
-      onFocus={() => {
-        if (showEmojiPicker) setShowEmojiPicker(false);
-      }}
-      onChange={(e) => {
-        let input = e.target.value;
+<div className="textarea-with-emoji">
+  <textarea
+    ref={noteTextAreaRef}
+    rows={4}
+    placeholder="Write Your Thank You Message..."
+    value={noteTitle}
+    className="textareanote"
+    onFocus={() => {
+      if (showEmojiPicker) setShowEmojiPicker(false);
+    }}
+    onChange={(e) => {
+      let input = e.target.value;
 
-        // Split by user-entered lines
-        const lines = input.split("\n");
-        let adjustedLines = [];
+      // Split by user-entered lines
+      const lines = input.split("\n");
+      let adjustedLines = [];
 
-        for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
-          let line = lines[i];
+      for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+        let line = lines[i];
 
-          if (!line) {
-            adjustedLines.push("");
-            continue;
-          }
+        if (!line) {
+          adjustedLines.push("");
+          continue;
+        }
 
-          let words = line.split(" ");
-          let currentLine = "";
+        let words = line.split(" ");
+        let currentLine = "";
 
-          for (let j = 0; j < words.length; j++) {
-            if (adjustedLines.length >= 8) break;
-            let word = words[j];
+        for (let j = 0; j < words.length; j++) {
+          if (adjustedLines.length >= 8) break;
+          let word = words[j];
 
-            if ((currentLine + (currentLine ? " " : "") + word).length > 26) {
-              if (currentLine) adjustedLines.push(currentLine);
-              currentLine = word;
-            } else {
-              currentLine += (currentLine ? " " : "") + word;
+          let testLine = currentLine ? currentLine + " " + word : word;
+
+          if (testLine.length > 27) {
+         
+            if (currentLine) {
+              adjustedLines.push(currentLine);
             }
-          }
 
+          
+            while (word.length > 27 && adjustedLines.length < 8) {
+              adjustedLines.push(word.slice(0, 27));
+              word = word.slice(27);
+            }
+
+            currentLine = word; 
+          } else {
+            currentLine = testLine;
+          }
+        }
+
+        if (currentLine && adjustedLines.length < 8) {
+          while (currentLine.length > 27 && adjustedLines.length < 8) {
+            adjustedLines.push(currentLine.slice(0, 27));
+            currentLine = currentLine.slice(27);
+          }
           if (currentLine && adjustedLines.length < 8) {
             adjustedLines.push(currentLine);
           }
         }
+      }
 
-        const finalText = adjustedLines.join("\n");
-        const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+      const finalText = adjustedLines.join("\n");
+      const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
 
-        setNoteTitle(finalText);
-        setCharCount(totalChars);
+      setNoteTitle(finalText);
+      setCharCount(totalChars);
 
-        if (finalText.trim() === "") {
-          setErrorMsg("Please write a thank you message.");
-        } else {
-          setErrorMsg("");
-        }
+      if (finalText.trim() === "") {
+        setErrorMsg("Please write a thank you message.");
+      } else {
+        setErrorMsg("");
+      }
 
-        if (showEmojiPicker) setShowEmojiPicker(false); // typing hides emoji picker
-      }}
-      onInput={(e) => {
-        e.target.style.height = "auto";
-        e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
-      }}
-    />
+      if (showEmojiPicker) setShowEmojiPicker(false); 
+    }}
+    onInput={(e) => {
+      e.target.style.height = "auto";
+      e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+    }}
+  />
 
-    {/* Emoji toggle button */}
-    <button
-      type="button"
-      onClick={() => {
-        setShowEmojiPicker((prev) => !prev);
-        if (showEmojiPicker) {
-          noteTextAreaRef.current?.focus();
-        } else {
-          noteTextAreaRef.current?.blur();
-        }
-      }}
-      className="btn emoji-button"
-    >
-      <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-    </button>
-  </div>
+  {/* Emoji toggle button */}
+  <button
+    type="button"
+    onClick={() => {
+      setShowEmojiPicker((prev) => !prev);
+      if (showEmojiPicker) {
+        noteTextAreaRef.current?.focus();
+      } else {
+        noteTextAreaRef.current?.blur();
+      }
+    }}
+    className="btn emoji-button"
+  >
+    <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+  </button>
+</div>
+
+
 
   <p
-    className="word-limit"
-    style={{ color: charCount >= 184 ? "red" : "#4A4A4A" }}
-  >
-    {charCount >= 184
-      ? "You have reached the 8 line / 26 character per line limit!"
-      : `${charCount} / 184 characters`}
-  </p>
+  className="word-limit"
+  style={{ color: charCount >= 216 ? "red" : "#4A4A4A" }}
+>
+  {charCount >= 216
+    ? "You have reached the 8 line / 27 character per line limit!"
+    : `${charCount} / 216 characters`}
+</p>
 
-  {/* Emoji Picker */}
+
   {showEmojiPicker && (
     <div className="emoji-container-thankyou" style={{ position: "static", zIndex: 10, marginTop: "10px" }}>
       <EmojiPicker
@@ -195,7 +221,7 @@ const [charCount, setCharCount] = useState(0);
             return newText;
           });
 
-          setShowEmojiPicker(false); // hide picker after emoji click
+          setShowEmojiPicker(false); 
         }}
       />
     </div>
@@ -243,7 +269,7 @@ const [charCount, setCharCount] = useState(0);
           backgroundColor: "white",
           borderRadius: "12px",
           overflow: "hidden",
-          padding: "10px",
+          padding: "5px",
           boxSizing: "border-box",
         }}
       >
@@ -263,12 +289,13 @@ const [charCount, setCharCount] = useState(0);
         <div
           style={{
             position: "absolute",
-            top: "50%",
+            top: "52%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "70%",
+            width: "75%",
             zIndex: 1,
             textAlign: "left",
+            alignItems:"center"
           }}
           
         >
@@ -280,6 +307,7 @@ const [charCount, setCharCount] = useState(0);
               fontFamily: "'Montserrat', sans-serif",
               wordWrap: "break-word",
               whiteSpace: "pre-wrap",
+              justifyContent:"center"
             }}
           >
             {noteTitle}
@@ -303,6 +331,7 @@ const [charCount, setCharCount] = useState(0);
 </div>
 
       </div>
+      
     </div>
   );
 };
