@@ -53,6 +53,142 @@ const [charCount, setCharCount] = useState(0);
   
       return () => window.removeEventListener("resize", updateWidth);
     }, []);
+
+
+// const handleNoteInput = (e) => {
+//   const sel = window.getSelection();
+//   const range = sel.getRangeAt(0);
+
+//   // Store cursor position
+//   const cursorPosition = range.startOffset;
+
+//   setNoteTitle(e.currentTarget.innerText);
+
+//   // Restore cursor position
+//   requestAnimationFrame(() => {
+//     const newRange = document.createRange();
+//     newRange.setStart(noteTextAreaRef.current.firstChild || noteTextAreaRef.current, cursorPosition);
+//     newRange.collapse(true);
+
+//     sel.removeAllRanges();
+//     sel.addRange(newRange);
+//   });
+// };
+ const handleNoteInput = (e) => {
+    const sel = window.getSelection();
+    const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+
+    // Save cursor offset
+    const cursorPosition = range ? range.startOffset : 0;
+
+    let input = e.currentTarget.innerText;
+
+    // Split input lines
+    const lines = input.split("\n");
+    let adjustedLines = [];
+
+    for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+      let line = lines[i];
+
+      if (!line) {
+        adjustedLines.push("");
+        continue;
+      }
+
+      let words = line.split(" ");
+      let currentLine = "";
+
+      for (let j = 0; j < words.length; j++) {
+        if (adjustedLines.length >= 8) break;
+
+        let word = words[j];
+        let testLine = currentLine ? currentLine + " " + word : word;
+
+        if (testLine.length > 28) {
+          if (currentLine) {
+            adjustedLines.push(currentLine);
+          }
+
+          // Break long words too
+          while (word.length > 28 && adjustedLines.length < 8) {
+            adjustedLines.push(word.slice(0, 28));
+            word = word.slice(28);
+          }
+
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+
+      if (currentLine && adjustedLines.length < 8) {
+        while (currentLine.length > 28 && adjustedLines.length < 8) {
+          adjustedLines.push(currentLine.slice(0, 28));
+          currentLine = currentLine.slice(28);
+        }
+
+        if (currentLine && adjustedLines.length < 8) {
+          adjustedLines.push(currentLine);
+        }
+      }
+    }
+
+    const finalText = adjustedLines.join("\n");
+    const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+
+    // Update React state
+    setNoteTitle(finalText);
+    setCharCount(totalChars);
+
+    // Update div text manually to ensure truncation
+    if (noteTextAreaRef.current.innerText !== finalText) {
+      noteTextAreaRef.current.innerText = finalText;
+    }
+
+    // Restore cursor
+    requestAnimationFrame(() => {
+      if (!noteTextAreaRef.current) return;
+      const newRange = document.createRange();
+      newRange.selectNodeContents(noteTextAreaRef.current);
+      newRange.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    });
+
+    // Validation
+    if (finalText.trim() === "") {
+      setErrorMsg("Please write a thank you message.");
+    } else {
+      setErrorMsg("");
+    }
+
+    if (showEmojiPicker) setShowEmojiPicker(false);
+  };
+const nameRef = useRef(null);
+
+const handleNameInput = (e) => {
+  const sel = window.getSelection();
+  const range = sel.getRangeAt(0);
+
+  const cursorPosition = range.startOffset;
+
+  setNoteBy(e.currentTarget.innerText);
+
+  requestAnimationFrame(() => {
+    const newRange = document.createRange();
+    const textNode = nameRef.current.firstChild || nameRef.current;
+
+    if (textNode && textNode.length >= cursorPosition) {
+      newRange.setStart(textNode, cursorPosition);
+      newRange.collapse(true);
+
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    }
+  });
+};
+
   return (
     <div className="popup-thankyou">
       <Head>
@@ -78,12 +214,169 @@ const [charCount, setCharCount] = useState(0);
       <h3 className="subtitlePopUp">
         Celebrate the moment with few words of gratitude for {} and crew
       </h3>
-      <Image
+      {/* <Image
         src={DummySticky}
         alt="Sticky Note Sample"
         className="thankyou-image"
-      />
-    <div className="form-group">
+      /> */}
+      {/* <div className="thankyou-preview">
+  <div className="sticky-preview">
+    <Image
+      src={StickyImage}
+      alt="Sticky Note Background"
+      fill
+      style={{ objectFit: "cover", borderRadius: "12px" }}
+    />
+
+  <div
+  className="preview-text"
+  contentEditable
+  suppressContentEditableWarning={true}
+  onInput={(e) => setNoteTitle(e.currentTarget.innerText)}
+  style={{
+    outline: "none",
+    cursor: "text",
+    minHeight: "50px",
+    whiteSpace: "pre-wrap",
+  }}
+>
+  {noteTitle || "Write your note here..."}
+</div>
+
+
+
+   <div
+  className="preview-name"
+  contentEditable
+  suppressContentEditableWarning={true}
+  onInput={(e) => setNoteBy(e.currentTarget.innerText)}
+  style={{
+    outline: "none",
+    cursor: "text",
+  }}
+>
+  {noteBy || "Your Name"}
+</div>
+
+  </div>
+</div> */}
+<div className="thankyou-preview">
+  <div className="sticky-preview" style={{ position: "relative", width: "300px", height: "300px" }}>
+    <Image
+      src={StickyImage}
+      alt="Sticky Note Background"
+      fill
+      style={{ objectFit: "cover", borderRadius: "12px" }}
+    />
+
+{/* <div
+  ref={noteTextAreaRef}
+  className="preview-text"
+  contentEditable
+  suppressContentEditableWarning={true}
+  data-placeholder="Write your note here..."
+  style={{
+    outline: "none",
+    cursor: "text",
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-word",
+    minHeight: "150px",
+    fontWeight: "500",
+    fontSize: "15px",
+    fontFamily: "'Montserrat', sans-serif",
+  }}
+  onInput={handleNoteInput}
+>
+  {noteTitle}
+</div> */}
+<div
+      ref={noteTextAreaRef}
+      className="preview-text"
+      contentEditable
+      suppressContentEditableWarning={true}
+      data-placeholder="Write your note here..."
+      onInput={handleNoteInput}
+      style={{
+        outline: "none",
+        cursor: "text",
+        whiteSpace: "pre-wrap",
+        wordWrap: "break-word",
+        fontWeight: "500",
+        fontSize: "15px",
+        fontFamily: "'Montserrat', sans-serif",
+        lineHeight: "1.5em",
+        minHeight: "12em", // 8 lines * 1.5em
+        maxHeight: "12em",
+        overflow: "hidden",
+      }}
+    >
+      {noteTitle}
+    </div>
+
+  <div
+  ref={nameRef}
+  className="preview-name"
+  contentEditable
+  suppressContentEditableWarning={true}
+  style={{
+    outline: "none",
+    cursor: "text",
+    position: "absolute",
+    bottom: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontWeight: "500",
+    fontSize: "15px",
+    fontFamily: "'Montserrat', sans-serif",
+  }}
+  onInput={handleNameInput}
+>
+  {noteBy || "Your Name"}
+</div>
+
+
+    {/* Emoji Picker Toggle */}
+    <button
+      type="button"
+      onClick={() => setShowEmojiPicker((prev) => !prev)}
+      style={{
+        position: "absolute",
+        bottom: "20px",
+        right: "20px",
+        background: "transparent",
+        border: "none",
+        cursor: "pointer",
+      }}
+    >
+      <Image src={emojiIcon} alt="Emoji" width={24} height={24} />
+    </button>
+
+    {/* Emoji Picker */}
+    {showEmojiPicker && (
+      <div style={{ position: "absolute", bottom: "60px", right: "10px", zIndex: 10 }}>
+        <EmojiPicker
+          width={emojiWidth}
+          searchDisabled={true}
+          onEmojiClick={(emojiData) => {
+            const sel = window.getSelection();
+            const range = sel.getRangeAt(0);
+            const emojiNode = document.createTextNode(emojiData.emoji);
+            range.insertNode(emojiNode);
+            range.setStartAfter(emojiNode);
+            range.setEndAfter(emojiNode);
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            setNoteTitle(document.querySelector(".preview-text").innerText);
+            setShowEmojiPicker(false);
+          }}
+        />
+      </div>
+    )}
+  </div>
+</div>
+
+    {/* <div className="form-group">
   <label className="label">Type Note</label>
 <div className="textarea-with-emoji">
   <textarea
@@ -168,7 +461,7 @@ const [charCount, setCharCount] = useState(0);
     }}
   />
 
-  {/* Emoji toggle button */}
+ 
   <button
     type="button"
     onClick={() => {
@@ -245,7 +538,7 @@ const [charCount, setCharCount] = useState(0);
             setNoteBy(e.target.value);
           }}
         />
-      </div>
+      </div> */}
 
       {errorMsg && <p className="error-msg">{errorMsg}</p>}
 
@@ -327,7 +620,7 @@ const [charCount, setCharCount] = useState(0);
     zIndex: 1,
   }}
 >
-  :- {noteBy.length > 15 ? noteBy.substring(0, 15) + "..." : noteBy}
+  - {noteBy.length > 15 ? noteBy.substring(0, 15) + "..." : noteBy}
 </div>
 
       </div>
