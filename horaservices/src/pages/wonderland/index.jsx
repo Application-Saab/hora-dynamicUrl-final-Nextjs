@@ -1540,7 +1540,22 @@ const getAvatarColor = (name) => {
   // notify components
   window.dispatchEvent(new Event("unreadCountChange"));
 };
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const video = videoRef.current;
 
+    // iOS Safari workaround for autoplay
+    const playPromise = video?.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        const handler = () => {
+          video.play();
+          document.removeEventListener("touchstart", handler);
+        };
+        document.addEventListener("touchstart", handler);
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -2093,17 +2108,25 @@ const getAvatarColor = (name) => {
                    {eventAllImages.length === 0 ? (
                       <>
                       <div> 
-                        <video
-    className="video-item"
-    autoPlay
-    loop
-    muted
-    playsInline
-    style={{ width: "100%", height: "100%", objectFit: "cover", marginBottom:"10px"}}
-  >
-    <source src={Wonderlandvideo} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+              <video
+                            ref={videoRef}
+                            className="video-item"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            webkit-playsinline="true"
+                            preload="auto"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              marginBottom: "10px",
+                            }}
+                          >
+                              <source src={Wonderlandvideo} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
 </div>
                        <div className="event-grid">
                         {dummayImageGallery?.map((item, index) => (
@@ -2219,6 +2242,9 @@ const getAvatarColor = (name) => {
                         )}
                         <button
                           className="nav-btn next-btn"
+
+
+
                           onClick={() => {
                             const nextIndex =
                               (selectedIndex + 1) % eventAllImages.length;
