@@ -110,81 +110,81 @@ const InvitationCard = () => {
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
- const popupStatus = localStorage.getItem("addToHomeScreenPopup");
+  const popupStatus = localStorage.getItem("addToHomeScreenPopup");
 
- const [unreadCounts, setUnreadCounts] = useState({});
-const [totalUnread, setTotalUnread] = useState(
-  parseInt(localStorage.getItem("totalUnread") || "0")
-);
-useEffect(() => {
-  const handleUpdate = () => {
-    setTotalUnread(parseInt(localStorage.getItem("totalUnread") || "0"));
-  };
-  window.addEventListener("unreadCountChange", handleUpdate);
-  return () => window.removeEventListener("unreadCountChange", handleUpdate);
-}, []);
+  const [unreadCounts, setUnreadCounts] = useState({});
+  const [totalUnread, setTotalUnread] = useState(
+    parseInt(localStorage.getItem("totalUnread") || "0")
+  );
+  useEffect(() => {
+    const handleUpdate = () => {
+      setTotalUnread(parseInt(localStorage.getItem("totalUnread") || "0"));
+    };
+    window.addEventListener("unreadCountChange", handleUpdate);
+    return () => window.removeEventListener("unreadCountChange", handleUpdate);
+  }, []);
 
-useEffect(() => {
-  const handleUpdate = () => {
-    setTotalUnread(parseInt(localStorage.getItem("totalUnread") || "0"));
-  };
-  window.addEventListener("unreadCountChange", handleUpdate);
-  return () => window.removeEventListener("unreadCountChange", handleUpdate);
-}, []);
+  useEffect(() => {
+    const handleUpdate = () => {
+      setTotalUnread(parseInt(localStorage.getItem("totalUnread") || "0"));
+    };
+    window.addEventListener("unreadCountChange", handleUpdate);
+    return () => window.removeEventListener("unreadCountChange", handleUpdate);
+  }, []);
 
-useEffect(() => {
-  if (pathname === "/wonderland") {
-    if (typeof window !== "undefined") {
+  useEffect(() => {
+    if (pathname === "/wonderland") {
+      if (typeof window !== "undefined") {
 
-        
+
+      }
+
+      const handler = (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);  // Store the deferred prompt for later
+      };
+
+      window.addEventListener("beforeinstallprompt", handler);
+
+      return () => {
+        window.removeEventListener("beforeinstallprompt", handler);
+      };
     }
+  }, [pathname]);
 
+  const handleInstallClick = async () => {
+    setShowInstall(false);
+
+    //  if (typeof window !== "undefined") {
+    //    localStorage.setItem("addToHomeScreenPopup", "true");
+    //  }
+
+    if (deferredPrompt) {
+      // Show the install prompt
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        localStorage.setItem("addToHomeScreenPopup", "true");
+      } else {
+        localStorage.setItem("addToHomeScreenPopup", "false");
+      }
+
+      setDeferredPrompt(null);
+    }
+  };
+
+
+  useEffect(() => {
     const handler = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);  // Store the deferred prompt for later
+      e.preventDefault(); // Prevent Chrome auto prompt
+      setDeferredPrompt(e);
+      setShowInstall(true); // Show your custom button
     };
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
-  }
-}, [pathname]); 
-
-const handleInstallClick = async () => {
-   setShowInstall(false);
-
-  //  if (typeof window !== "undefined") {
-  //    localStorage.setItem("addToHomeScreenPopup", "true");
-  //  }
-
-   if (deferredPrompt) {
-     // Show the install prompt
-     deferredPrompt.prompt();
-     const { outcome } = await deferredPrompt.userChoice;
-     if (outcome === 'accepted') {
-       localStorage.setItem("addToHomeScreenPopup", "true");
-     } else {
-       localStorage.setItem("addToHomeScreenPopup", "false");
-     }
-
-     setDeferredPrompt(null);
-   }
-};
-
-
-   useEffect(() => {
-     const handler = (e) => {
-       e.preventDefault(); // Prevent Chrome auto prompt
-       setDeferredPrompt(e);
-       setShowInstall(true); // Show your custom button
-     };
- 
-     window.addEventListener("beforeinstallprompt", handler);
- 
-     return () => window.removeEventListener("beforeinstallprompt", handler);
-   }, []);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
 
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   const userID = localStorage.getItem("userID");
@@ -413,44 +413,44 @@ const handleInstallClick = async () => {
     hasSubmitted,
   ]);
 
-  
 
-    useEffect(() => {
-      const fetchUserAccountDetails = async () => {
-        if (!userID) {
-          console.log('User id not available')
-          return;
-        }
-  
-        try {
-          const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
-            headers: {
-              Authorization: `${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-          const data = await response.json();
-          if (data.error) {
-            setUserData({});
-            console.log(data.message || "Failed to fetch guests");
-          } else {
-            setUserData(data.data || {});
-            if (data.data && data.data.name) {
-              localStorage.setItem("wonderLandUserName", data.data?.name || "");
-            }
+
+  useEffect(() => {
+    const fetchUserAccountDetails = async () => {
+      if (!userID) {
+        console.log('User id not available')
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userID}`, {
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        if (data.error) {
+          setUserData({});
+          console.log(data.message || "Failed to fetch guests");
+        } else {
+          setUserData(data.data || {});
+          if (data.data && data.data.name) {
+            localStorage.setItem("wonderLandUserName", data.data?.name || "");
           }
-        } catch (err) {
-          console.log("Error fetching guests: " + err.message);
         }
-      };
-      // Initial call
-      fetchUserAccountDetails();
-    }, [
-      userID,
-      urlParams.eventId,
-      hasSubmitted,
-      refetchAddGuest
-    ]);
+      } catch (err) {
+        console.log("Error fetching guests: " + err.message);
+      }
+    };
+    // Initial call
+    fetchUserAccountDetails();
+  }, [
+    userID,
+    urlParams.eventId,
+    hasSubmitted,
+    refetchAddGuest
+  ]);
 
 
   useEffect(() => {
@@ -678,34 +678,34 @@ const handleInstallClick = async () => {
     reader.readAsDataURL(file); // ✅ Converts file to base64 string
   };
   useEffect(() => {
-  if (orderDetails && eventId && userID && hasSubmitted) {
-    const userRef = doc(db, "groups", eventId, "members", userID);
+    if (orderDetails && eventId && userID && hasSubmitted) {
+      const userRef = doc(db, "groups", eventId, "members", userID);
 
-    setDoc(
-      userRef,
-      {
-        userId: userID,
-        name: guestDetails?.name || orderDetails?.Name || "Guest",
-        phoneNumber: userPhoneNumber,
-        lastSeenAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
-  }
-}, [orderDetails, eventId, userID, hasSubmitted]);
-function linkify(text) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.split(urlRegex).map((part, index) => {
-    if (part.match(urlRegex)) {
-      return (
-        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-          {part}
-        </a>
+      setDoc(
+        userRef,
+        {
+          userId: userID,
+          name: guestDetails?.name || orderDetails?.Name || "Guest",
+          phoneNumber: userPhoneNumber,
+          lastSeenAt: serverTimestamp(),
+        },
+        { merge: true }
       );
     }
-    return part;
-  });
-}
+  }, [orderDetails, eventId, userID, hasSubmitted]);
+  function linkify(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlRegex).map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  }
 
 
   const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
@@ -835,10 +835,10 @@ function linkify(text) {
       : "";
     const formattedTime = formData.time
       ? new Date(`1970-01-01T${formData.time}`).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
       : "";
 
     const finalImage = uploadedImage || orderDetails?.Image || "";
@@ -1071,7 +1071,7 @@ function linkify(text) {
     trackMouse: true, // optional, mouse drag support bhi deta hai
   });
 
- const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (!selectedFiles || selectedFiles.length === 0) return;
 
@@ -1270,46 +1270,46 @@ function linkify(text) {
     const requestPermissionAndSaveToken = async () => {
       try {
         if ("Notification" in window) {
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") return;
 
-        const messagingInstance = getMessaging();
-        const token = await getToken(messagingInstance, {
-          vapidKey: VAPID_KEY,
-        });
+          const messagingInstance = getMessaging();
+          const token = await getToken(messagingInstance, {
+            vapidKey: VAPID_KEY,
+          });
 
-        console.log("FCM Token:", token);
+          console.log("FCM Token:", token);
 
-        if (token) {
-          await setDoc(
-            doc(db, "fcmTokens", userID),
-            { token },
-            { merge: true }
-          );
-        }
+          if (token) {
+            await setDoc(
+              doc(db, "fcmTokens", userID),
+              { token },
+              { merge: true }
+            );
+          }
 
-        if (!hasSetUpMessageListener.current) {
-          onMessage(messagingInstance, (payload) => {
-            console.log("Foreground message received:", payload);
+          if (!hasSetUpMessageListener.current) {
+            onMessage(messagingInstance, (payload) => {
+              console.log("Foreground message received:", payload);
 
-            // 🔹 Frontend-only notification
-            new Notification(payload.notification?.title || "New Message", {
+              // 🔹 Frontend-only notification
+              new Notification(payload.notification?.title || "New Message", {
+                body: payload.notification?.body || "You got a message!",
+                icon: "/new_logo_light.png",
+              });
+            });
+            hasSetUpMessageListener.current = true;
+          }
+
+          setTimeout(() => {
+            new Notification("Test Message", {
               body: payload.notification?.body || "You got a message!",
               icon: "/new_logo_light.png",
             });
-          });
-          hasSetUpMessageListener.current = true;
+          }, 3000);
+        } else {
+          console.log("Notifications are not supported on this browser");
         }
-
-        setTimeout(() => {
-          new Notification("Test Message", {
-            body: payload.notification?.body || "You got a message!",
-            icon: "/new_logo_light.png",
-          });
-        }, 3000);
-        }else {
-  console.log("Notifications are not supported on this browser");
-}
       } catch (err) {
         console.error("FCM Error:", err);
       }
@@ -1487,41 +1487,56 @@ function linkify(text) {
     return jsCode.replace(/{{(.*?)}}/g, (_, key) => rawData[key.trim()] || "");
   };
   // helper function to generate a color from string
-const getAvatarColor = (name) => {
-  const colors = [
-    "#F44336", // red
-    "#E91E63", // pink
-    "#9C27B0", // purple
-    "#673AB7", // deep purple
-    "#3F51B5", // indigo
-    "#2196F3", // blue
-    "#009688", // teal
-    "#4CAF50", // green
-    "#FF9800", // orange
-    "#795548"  // brown
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash % colors.length);
-  return colors[index];
-};
-  
- const markGroupAsRead = (eventId, unreadCount) => {
-  // totalUnread ko get karo
-  const totalUnread = parseInt(localStorage.getItem("totalUnread") || "0");
+  const getAvatarColor = (name) => {
+    const colors = [
+      "#F44336", // red
+      "#E91E63", // pink
+      "#9C27B0", // purple
+      "#673AB7", // deep purple
+      "#3F51B5", // indigo
+      "#2196F3", // blue
+      "#009688", // teal
+      "#4CAF50", // green
+      "#FF9800", // orange
+      "#795548"  // brown
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash % colors.length);
+    return colors[index];
+  };
 
-  // clicked group ka unread subtract karo totalUnread se
-  const newTotal = Math.max(totalUnread - unreadCount, 0);
+  const markGroupAsRead = (eventId, unreadCount) => {
+    // totalUnread ko get karo
+    const totalUnread = parseInt(localStorage.getItem("totalUnread") || "0");
 
-  // localStorage update
-  localStorage.setItem("totalUnread", newTotal.toString());
+    // clicked group ka unread subtract karo totalUnread se
+    const newTotal = Math.max(totalUnread - unreadCount, 0);
 
-  // notify components
-  window.dispatchEvent(new Event("unreadCountChange"));
-};
+    // localStorage update
+    localStorage.setItem("totalUnread", newTotal.toString());
 
+    // notify components
+    window.dispatchEvent(new Event("unreadCountChange"));
+  };
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const video = videoRef.current;
+
+    // iOS Safari workaround for autoplay
+    const playPromise = video?.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        const handler = () => {
+          video.play();
+          document.removeEventListener("touchstart", handler);
+        };
+        document.addEventListener("touchstart", handler);
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -1572,17 +1587,17 @@ const getAvatarColor = (name) => {
               {orderDetails ? (
                 <>
                   {orderDetails?.externalTemplateImageUrl ? (
-                    <div style={{padding: "10px 10px 5px 10px"}}>
+                    <div style={{ padding: "10px 10px 5px 10px" }}>
                       <div
                         className="invitation-container-image-ctn"
-                        // style={{
-                        //   backgroundImage:
-                        //     orderDetails?.externalTemplateImageUrl
-                        //       ? `url('${orderDetails.externalTemplateImageUrl}')`
-                        //       : "none",
-                        //   minHeight: "530px",
-                        //   position: "relative",
-                        // }}
+                      // style={{
+                      //   backgroundImage:
+                      //     orderDetails?.externalTemplateImageUrl
+                      //       ? `url('${orderDetails.externalTemplateImageUrl}')`
+                      //       : "none",
+                      //   minHeight: "530px",
+                      //   position: "relative",
+                      // }}
                       >
                         <img src={orderDetails.externalTemplateImageUrl} alt='template' />
                         {/* <div
@@ -1854,7 +1869,7 @@ const getAvatarColor = (name) => {
               ) : (
                 <p>Loading...</p>
               )}
-               {/* {isHost &&
+              {/* {isHost &&
                 orderDetails &&
                 (orderDetails?.luckyDraws?.length === 0 ? (
                   <div className="lucky-draw-banner">
@@ -2071,37 +2086,45 @@ const getAvatarColor = (name) => {
                       margin: "20px auto",
                     }}
                   >
-                   {eventAllImages.length === 0 ? (
+                    {eventAllImages.length === 0 ? (
                       <>
-                      <div> 
-                        <video
-    className="video-item"
-    autoPlay
-    loop
-    muted
-    playsInline
-    style={{ width: "100%", height: "100%", objectFit: "cover", marginBottom:"60px"}}
-  >
-    <source src={Wonderlandvideo} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-</div>
-                      {/* <div className="event-grid">
-                        {dummayImageGallery?.map((item, index) => (
-                          <LazyImage
-                            key={index + 1}
-                            src={item.src}
-                            alt={Event Image ${index + 1}}
-                            wrapperClassName="masonry-item"
-                          />
-                        ))}
-     
+                        <div>
+                          <video
+                            ref={videoRef}
+                            className="video-item"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            webkit-playsinline="true"
+                            preload="auto"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              marginBottom: "10px",
+                            }}
+                          >
+                            <source src={Wonderlandvideo} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                        <div className="event-grid">
+                          {dummayImageGallery?.map((item, index) => (
+                            <LazyImage
+                              key={index + 1}
+                              src={item.src}
+                              alt={`Event Image ${index + 1}`}
+                              wrapperClassName="masonry-item"
+                            />
+                          ))}
 
-  
 
 
 
-                      </div> */}
+
+
+                        </div>
                       </>
                     ) : (
                       <div className="thumbnail-gallery">
@@ -2572,40 +2595,40 @@ const getAvatarColor = (name) => {
         )} */}
       </>
 
-      
-
-{pathname === "/wonderland" &&
-  showInstall &&
-  popupStatus !== "true" &&
-  popupStatus !== "false" && (
-
-<div className="addhome-popup-overlay">
-  <div className="addhome-popup-container">
-    <Image src={phoneImage} alt="Phone Preview" className="addhome-phone-image" />
-
-    <div className="addhome-popup-text">
-      <p className="addhome-headline">Your parties, one tap away</p>
-      <p className="addhome-headline">Pin to your screen.</p>
-    </div>
-
-    <button className="addhome-add-button" onClick={handleInstallClick}>
-      Add To Screen
-    </button>
-
-    <button
-      className="addhome-later-button"
-      onClick={() => {
-        setShowInstall(false);
-        localStorage.setItem("addToHomeScreenPopup", "false");
-      }}
-    >
-      Maybe later
-    </button>
-  </div>
-</div>
 
 
-      )}
+      {pathname === "/wonderland" &&
+        showInstall &&
+        popupStatus !== "true" &&
+        popupStatus !== "false" && (
+
+          <div className="addhome-popup-overlay">
+            <div className="addhome-popup-container">
+              <Image src={phoneImage} alt="Phone Preview" className="addhome-phone-image" />
+
+              <div className="addhome-popup-text">
+                <p className="addhome-headline">Your parties, one tap away</p>
+                <p className="addhome-headline">Pin to your screen.</p>
+              </div>
+
+              <button className="addhome-add-button" onClick={handleInstallClick}>
+                Add To Screen
+              </button>
+
+              <button
+                className="addhome-later-button"
+                onClick={() => {
+                  setShowInstall(false);
+                  localStorage.setItem("addToHomeScreenPopup", "false");
+                }}
+              >
+                Maybe later
+              </button>
+            </div>
+          </div>
+
+
+        )}
     </>
   );
 };

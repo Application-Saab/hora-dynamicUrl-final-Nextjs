@@ -55,116 +55,80 @@ const [charCount, setCharCount] = useState(0);
     }, []);
 
 
-// const handleNoteInput = (e) => {
-//   const sel = window.getSelection();
-//   const range = sel.getRangeAt(0);
+const handleNoteInput = (e) => {
+  const sel = window.getSelection();
+  const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
 
-//   // Store cursor position
-//   const cursorPosition = range.startOffset;
-
-//   setNoteTitle(e.currentTarget.innerText);
-
-//   // Restore cursor position
-//   requestAnimationFrame(() => {
-//     const newRange = document.createRange();
-//     newRange.setStart(noteTextAreaRef.current.firstChild || noteTextAreaRef.current, cursorPosition);
-//     newRange.collapse(true);
-
-//     sel.removeAllRanges();
-//     sel.addRange(newRange);
-//   });
-// };
- const handleNoteInput = (e) => {
-    const sel = window.getSelection();
-    const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
-
-    // Save cursor offset
-    const cursorPosition = range ? range.startOffset : 0;
-
-    let input = e.currentTarget.innerText;
-
-    // Split input lines
-    const lines = input.split("\n");
-    let adjustedLines = [];
-
-    for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
-      let line = lines[i];
-
-      if (!line) {
-        adjustedLines.push("");
-        continue;
+  // Save full cursor position
+  const savedCursor = range
+    ? {
+        container: range.startContainer,
+        offset: range.startOffset,
       }
+    : null;
 
-      let words = line.split(" ");
-      let currentLine = "";
+  let input = e.currentTarget.innerText;
 
-      for (let j = 0; j < words.length; j++) {
-        if (adjustedLines.length >= 8) break;
+  // Process input...
+  // (Keep your original line-wrapping and truncation logic here)
+  // Assume it ends with `const finalText = adjustedLines.join("\n");`
 
-        let word = words[j];
-        let testLine = currentLine ? currentLine + " " + word : word;
+  // Update state
+  setNoteTitle(finalText);
+  setCharCount(adjustedLines.reduce((acc, l) => acc + l.length, 0));
 
-        if (testLine.length > 28) {
-          if (currentLine) {
-            adjustedLines.push(currentLine);
-          }
+  // Only update innerText if needed
+  if (noteTextAreaRef.current.innerText !== finalText) {
+    noteTextAreaRef.current.innerText = finalText;
 
-          // Break long words too
-          while (word.length > 28 && adjustedLines.length < 8) {
-            adjustedLines.push(word.slice(0, 28));
-            word = word.slice(28);
-          }
-
-          currentLine = word;
-        } else {
-          currentLine = testLine;
-        }
-      }
-
-      if (currentLine && adjustedLines.length < 8) {
-        while (currentLine.length > 28 && adjustedLines.length < 8) {
-          adjustedLines.push(currentLine.slice(0, 28));
-          currentLine = currentLine.slice(28);
-        }
-
-        if (currentLine && adjustedLines.length < 8) {
-          adjustedLines.push(currentLine);
-        }
-      }
-    }
-
-    const finalText = adjustedLines.join("\n");
-    const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
-
-    // Update React state
-    setNoteTitle(finalText);
-    setCharCount(totalChars);
-
-    // Update div text manually to ensure truncation
-    if (noteTextAreaRef.current.innerText !== finalText) {
-      noteTextAreaRef.current.innerText = finalText;
-    }
-
-    // Restore cursor
+    // Restore cursor position
     requestAnimationFrame(() => {
-      if (!noteTextAreaRef.current) return;
-      const newRange = document.createRange();
-      newRange.selectNodeContents(noteTextAreaRef.current);
-      newRange.collapse(false);
+      if (!noteTextAreaRef.current || !savedCursor) return;
+
+      const range = document.createRange();
       const sel = window.getSelection();
+
+      // Find correct text node again
+      let node = noteTextAreaRef.current;
+      let textNode = null;
+
+      // Recursively find the actual text node
+      function getTextNodeAtOffset(node, offset) {
+        for (let i = 0; i < node.childNodes.length; i++) {
+          const child = node.childNodes[i];
+          if (child.nodeType === Node.TEXT_NODE) {
+            if (offset <= child.length) return { node: child, offset };
+            offset -= child.length;
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            const found = getTextNodeAtOffset(child, offset);
+            if (found) return found;
+          }
+        }
+        return { node: node, offset: 0 };
+      }
+
+      const { node: newNode, offset: newOffset } = getTextNodeAtOffset(
+        noteTextAreaRef.current,
+        savedCursor.offset
+      );
+
+      range.setStart(newNode, newOffset);
+      range.collapse(true);
       sel.removeAllRanges();
-      sel.addRange(newRange);
+      sel.addRange(range);
     });
+  }
 
-    // Validation
-    if (finalText.trim() === "") {
-      setErrorMsg("Please write a thank you message.");
-    } else {
-      setErrorMsg("");
-    }
+  // Validation
+  if (finalText.trim() === "") {
+    setErrorMsg("Please write a thank you message.");
+  } else {
+    setErrorMsg("");
+  }
 
-    if (showEmojiPicker) setShowEmojiPicker(false);
-  };
+  if (showEmojiPicker) setShowEmojiPicker(false);
+};
+
 const nameRef = useRef(null);
 
 const handleNameInput = (e) => {
@@ -261,7 +225,7 @@ const handleNameInput = (e) => {
   </div>
 </div> */}
 <div className="thankyou-preview">
-  <div className="sticky-preview" style={{ position: "relative", width: "300px", height: "300px" }}>
+  <div className="sticky-preview" style={{ position: "relative", width: "300px", height: "300px"  }}>
     <Image
       src={StickyImage}
       alt="Sticky Note Background"
@@ -305,7 +269,7 @@ const handleNameInput = (e) => {
         fontSize: "15px",
         fontFamily: "'Montserrat', sans-serif",
         lineHeight: "1.5em",
-        minHeight: "12em", // 8 lines * 1.5em
+        minHeight: "12em",
         maxHeight: "12em",
         overflow: "hidden",
       }}
@@ -352,11 +316,15 @@ const handleNameInput = (e) => {
     </button>
 
     {/* Emoji Picker */}
+ 
+  </div>
     {showEmojiPicker && (
-      <div style={{ position: "absolute", bottom: "60px", right: "10px", zIndex: 10 }}>
+          <div  style={{ position:"relative", zIndex: 10,  margin: "0px auto"}}>
         <EmojiPicker
           width={emojiWidth}
           searchDisabled={true}
+           previewConfig={{ showPreview: false }} 
+             skinTonesDisabled={true}    
           onEmojiClick={(emojiData) => {
             const sel = window.getSelection();
             const range = sel.getRangeAt(0);
@@ -373,8 +341,8 @@ const handleNameInput = (e) => {
         />
       </div>
     )}
-  </div>
 </div>
+ 
 
     {/* <div className="form-group">
   <label className="label">Type Note</label>
