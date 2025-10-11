@@ -554,7 +554,7 @@ body {
 
 .event-grid {
   column-count: 2;
-  column-gap: 0px;
+  column-gap: 10px;
   margin-bottom: 60px;
 }
 
