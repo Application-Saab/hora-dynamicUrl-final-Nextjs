@@ -5,8 +5,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 388px;
+   width: 99%;
+  max-width: 450px;
   padding: 10px;
   background: linear-gradient(180deg, #A8E3FE 0%, #FED7F3 53.58%, #FEDFD7 88.89%, #FFDACE 100%);
   border: 1px solid #0000004D;
@@ -146,7 +146,7 @@ input {
   overflow: hidden;
 } */
  .emoji-container-thankyou {
-  position: absolute; 
+  position: relative; 
   z-index: 10;
   margin-top: 10px;
   max-height: 300px;  

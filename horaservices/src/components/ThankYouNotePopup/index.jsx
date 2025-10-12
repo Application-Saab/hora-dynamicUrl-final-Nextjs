@@ -397,116 +397,234 @@ const [charCount, setCharCount] = useState(0);
     }, []);
 
 
-// const handleNoteInput = (e) => {
-//   const sel = window.getSelection();
-//   const range = sel.getRangeAt(0);
 
-//   // Store cursor position
-//   const cursorPosition = range.startOffset;
+//  const handleNoteInput = (e) => {
+//     const sel = window.getSelection();
+//     const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
 
-//   setNoteTitle(e.currentTarget.innerText);
+//     // Save cursor offset
+//     const cursorPosition = range ? range.startOffset : 0;
 
-//   // Restore cursor position
-//   requestAnimationFrame(() => {
-//     const newRange = document.createRange();
-//     newRange.setStart(noteTextAreaRef.current.firstChild || noteTextAreaRef.current, cursorPosition);
-//     newRange.collapse(true);
+//     let input = e.currentTarget.innerText;
 
-//     sel.removeAllRanges();
-//     sel.addRange(newRange);
-//   });
-// };
- const handleNoteInput = (e) => {
-    const sel = window.getSelection();
-    const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+//     // Split input lines
+//     const lines = input.split("\n");
+//     let adjustedLines = [];
 
-    // Save cursor offset
-    const cursorPosition = range ? range.startOffset : 0;
+//     for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+//       let line = lines[i];
 
-    let input = e.currentTarget.innerText;
+//       if (!line) {
+//         adjustedLines.push("");
+//         continue;
+//       }
 
-    // Split input lines
-    const lines = input.split("\n");
-    let adjustedLines = [];
+//       let words = line.split(" ");
+//       let currentLine = "";
 
-    for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
-      let line = lines[i];
+//       for (let j = 0; j < words.length; j++) {
+//         if (adjustedLines.length >= 8) break;
 
-      if (!line) {
-        adjustedLines.push("");
-        continue;
-      }
+//         let word = words[j];
+//         let testLine = currentLine ? currentLine + " " + word : word;
 
-      let words = line.split(" ");
-      let currentLine = "";
+//         if (testLine.length > 28) {
+//           if (currentLine) {
+//             adjustedLines.push(currentLine);
+//           }
 
-      for (let j = 0; j < words.length; j++) {
-        if (adjustedLines.length >= 8) break;
+//           // Break long words too
+//           while (word.length > 28 && adjustedLines.length < 8) {
+//             adjustedLines.push(word.slice(0, 28));
+//             word = word.slice(28);
+//           }
 
-        let word = words[j];
-        let testLine = currentLine ? currentLine + " " + word : word;
+//           currentLine = word;
+//         } else {
+//           currentLine = testLine;
+//         }
+//       }
 
-        if (testLine.length > 28) {
-          if (currentLine) {
-            adjustedLines.push(currentLine);
-          }
+//       if (currentLine && adjustedLines.length < 8) {
+//         while (currentLine.length > 28 && adjustedLines.length < 8) {
+//           adjustedLines.push(currentLine.slice(0, 28));
+//           currentLine = currentLine.slice(28);
+//         }
 
-          // Break long words too
-          while (word.length > 28 && adjustedLines.length < 8) {
-            adjustedLines.push(word.slice(0, 28));
-            word = word.slice(28);
-          }
+//         if (currentLine && adjustedLines.length < 8) {
+//           adjustedLines.push(currentLine);
+//         }
+//       }
+//     }
 
-          currentLine = word;
-        } else {
-          currentLine = testLine;
+//     const finalText = adjustedLines.join("\n");
+//     const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+
+//     // Update React state
+//     setNoteTitle(finalText);
+//     setCharCount(totalChars);
+
+//     // Update div text manually to ensure truncation
+//     if (noteTextAreaRef.current.innerText !== finalText) {
+//       noteTextAreaRef.current.innerText = finalText;
+//     }
+
+    
+// requestAnimationFrame(() => {
+//   const el = noteTextAreaRef.current;
+//   if (!el) return;
+
+//   const selection = window.getSelection();
+//   const range = document.createRange();
+
+//   const isEnter =
+//     e.inputType === "insertParagraph" || e.inputType === "insertLineBreak";
+
+//   // --- Fix: Always use textNode based offseting instead of firstChild ---
+//   const textNode = el.childNodes[el.childNodes.length - 1]; // last text node
+//   if (!textNode) return;
+
+//   const textLength = textNode.textContent.length;
+
+//   if (isEnter) {
+//     // If Enter is pressed → move to the end (bottom line)
+//     range.setStart(textNode, textLength);
+//     range.collapse(true);
+//   } else {
+//     // Otherwise restore approx same offset
+//     const safeOffset = Math.min(cursorPosition, textLength);
+//     range.setStart(textNode, safeOffset);
+//     range.collapse(true);
+//   }
+
+//   selection.removeAllRanges();
+//   selection.addRange(range);
+// });
+
+
+
+
+//     // Validation
+//     if (finalText.trim() === "") {
+//       setErrorMsg("Please write a thank you message.");
+//     } else {
+//       setErrorMsg("");
+//     }
+
+//     if (showEmojiPicker) setShowEmojiPicker(false);
+//   };
+const handleNoteInput = (e) => {
+  const el = noteTextAreaRef.current;
+  if (!el) return;
+
+  const sel = window.getSelection();
+  const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+
+  // Capture cursor position relative to the whole text
+  let cursorIndex = 0;
+  if (range) {
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(el);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    cursorIndex = preCaretRange.toString().length; // character index from start
+  }
+
+  let input = el.innerText;
+
+  // --- Your truncation logic ---
+  const lines = input.split("\n");
+  let adjustedLines = [];
+
+  for (let i = 0; i < lines.length && adjustedLines.length < 8; i++) {
+    let line = lines[i];
+    if (!line) {
+      adjustedLines.push("");
+      continue;
+    }
+
+    let words = line.split(" ");
+    let currentLine = "";
+
+    for (let j = 0; j < words.length; j++) {
+      if (adjustedLines.length >= 8) break;
+      let word = words[j];
+      let testLine = currentLine ? currentLine + " " + word : word;
+
+      if (testLine.length > 28) {
+        if (currentLine) adjustedLines.push(currentLine);
+
+        while (word.length > 28 && adjustedLines.length < 8) {
+          adjustedLines.push(word.slice(0, 28));
+          word = word.slice(28);
         }
-      }
 
-      if (currentLine && adjustedLines.length < 8) {
-        while (currentLine.length > 28 && adjustedLines.length < 8) {
-          adjustedLines.push(currentLine.slice(0, 28));
-          currentLine = currentLine.slice(28);
-        }
-
-        if (currentLine && adjustedLines.length < 8) {
-          adjustedLines.push(currentLine);
-        }
+        currentLine = word;
+      } else {
+        currentLine = testLine;
       }
     }
 
-    const finalText = adjustedLines.join("\n");
-    const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+    if (currentLine && adjustedLines.length < 8) {
+      while (currentLine.length > 28 && adjustedLines.length < 8) {
+        adjustedLines.push(currentLine.slice(0, 28));
+        currentLine = currentLine.slice(28);
+      }
 
-    // Update React state
+      if (currentLine && adjustedLines.length < 8) adjustedLines.push(currentLine);
+    }
+  }
+
+  const finalText = adjustedLines.join("\n");
+  const totalChars = adjustedLines.reduce((acc, l) => acc + l.length, 0);
+
+  // Prevent extra React re-renders (no re-render = cursor stable)
+  if (noteTitle !== finalText) {
     setNoteTitle(finalText);
     setCharCount(totalChars);
+    el.innerText = finalText; // manually sync DOM
+  }
 
-    // Update div text manually to ensure truncation
-    if (noteTextAreaRef.current.innerText !== finalText) {
-      noteTextAreaRef.current.innerText = finalText;
+  // --- Restore cursor to the same character index ---
+  requestAnimationFrame(() => {
+    const selection = window.getSelection();
+    const range = document.createRange();
+
+    let charCount = 0;
+    let foundNode = null;
+    let foundOffset = 0;
+
+    const treeWalker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    while (treeWalker.nextNode()) {
+      const node = treeWalker.currentNode;
+      const nextCount = charCount + node.textContent.length;
+
+      if (cursorIndex <= nextCount) {
+        foundNode = node;
+        foundOffset = cursorIndex - charCount;
+        break;
+      }
+      charCount = nextCount;
     }
 
-    // Restore cursor
-    requestAnimationFrame(() => {
-      if (!noteTextAreaRef.current) return;
-      const newRange = document.createRange();
-      newRange.selectNodeContents(noteTextAreaRef.current);
-      newRange.collapse(false);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(newRange);
-    });
-
-    // Validation
-    if (finalText.trim() === "") {
-      setErrorMsg("Please write a thank you message.");
-    } else {
-      setErrorMsg("");
+    if (foundNode) {
+      range.setStart(foundNode, foundOffset);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
     }
+  });
 
-    if (showEmojiPicker) setShowEmojiPicker(false);
-  };
+  // Validation
+  if (finalText.trim() === "") {
+    setErrorMsg("Please write a thank you message.");
+  } else {
+    setErrorMsg("");
+  }
+
+  if (showEmojiPicker) setShowEmojiPicker(false);
+};
+
+
 const nameRef = useRef(null);
 
 const handleNameInput = (e) => {
@@ -678,7 +796,7 @@ const handleNameInput = (e) => {
 
 
     {/* Emoji Picker Toggle */}
-    {/* <button
+     <button
       type="button"
       onClick={() => setShowEmojiPicker((prev) => !prev)}
       style={{
@@ -691,9 +809,11 @@ const handleNameInput = (e) => {
       }}
     >
       <Image src={emojiIcon} alt="Emoji" width={24} height={24} />
-    </button> */}
+    </button> 
 
     {/* Emoji Picker */}
+  
+  </div>
     {showEmojiPicker && (
       <div className="emoji-container-thankyou" style={{ position: "static", zIndex: 10, marginTop: "10px" }}>
         <EmojiPicker
@@ -715,7 +835,6 @@ const handleNameInput = (e) => {
         />
       </div>
     )}
-  </div>
 </div>
 
     {/* <div className="form-group">
