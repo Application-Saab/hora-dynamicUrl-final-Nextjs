@@ -667,7 +667,6 @@ const handleNameInput = (e) => {
     
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet" />
 
-
       </Head>
 
       <h1 className="title">Thank You Note</h1>
@@ -729,26 +728,7 @@ const handleNameInput = (e) => {
       style={{ objectFit: "cover", borderRadius: "12px" }}
     />
 
-{/* <div
-  ref={noteTextAreaRef}
-  className="preview-text"
-  contentEditable
-  suppressContentEditableWarning={true}
-  data-placeholder="Write your note here..."
-  style={{
-    outline: "none",
-    cursor: "text",
-    whiteSpace: "pre-wrap",
-    wordWrap: "break-word",
-    minHeight: "150px",
-    fontWeight: "500",
-    fontSize: "15px",
-    fontFamily: "'Montserrat', sans-serif",
-  }}
-  onInput={handleNoteInput}
->
-  {noteTitle}
-</div> */}
+
 <div
       ref={noteTextAreaRef}
       className="preview-text"
@@ -791,7 +771,7 @@ const handleNameInput = (e) => {
   }}
   onInput={handleNameInput}
 >
-  {noteBy || "Your Name"}
+ - {noteBy || "Your Name"}
 </div>
 
 
@@ -1012,7 +992,7 @@ const handleNameInput = (e) => {
         </button>
       </div>
 
-      <div
+      {/* <div
         ref={noteRef}
         style={{
           width: "300px",
@@ -1058,7 +1038,7 @@ const handleNameInput = (e) => {
               fontWeight: "500",
               fontSize: "15px",
               color: "black",
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "'Montserrat', sans-serif" ,
               wordWrap: "break-word",
               whiteSpace: "pre-wrap",
               justifyContent:"center"
@@ -1084,7 +1064,7 @@ const handleNameInput = (e) => {
   - {noteBy.length > 15 ? noteBy.substring(0, 15) + "..." : noteBy}
 </div>
 
-      </div>
+      </div> */}
       
     </div>
   );
