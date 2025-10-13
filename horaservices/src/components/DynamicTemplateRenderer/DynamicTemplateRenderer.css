@@ -263,92 +263,57 @@
   justify-content: center;
   color: rgb(33, 37, 41)
 }
-
 .invite-template-card {
   position: relative;
   width: 100%;
   text-align: center;
 }
-
 .Imge-circle {
-   position: absolute;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    width: 31%;
-    height: 21%;
-    border: 2px solid rgb(33, 37, 41);
-}
-.name {
-  position: absolute;
-   width: 100%;
-}
-.date-address-wrapper {
-    position: absolute;
-    font-family: "Roboto", sans-serif;
-    padding: 0 10%;;
-    width: 100%;
-}
-/* span.day {
-    margin: 0 22px;
-} */
-.date-time {
-      display: flex;
-    justify-content: center;
-    align-items: center;
-}
-/* template css 1*/
-.invite-template-card.template-68e0e3808fcfb8f6456e6a73 .Imge-circle  {
-   top: 20%;
-   border-radius: 61%;
- }
-.invite-template-card.template-68e0e3808fcfb8f6456e6a73 .name { 
-  top: 39%;
-  font-family: 'Carter One';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 37px;
-}
-.invite-template-card.template-68e0e3808fcfb8f6456e6a73 .date-address-wrapper {
-  top: 62%;
-    font-size: 19px;
-}
-.invite-template-card.template-68e0e3808fcfb8f6456e6a73  .date-time {
-  font-size: 25px;;
-}
-.invite-template-card.template-68e0e3808fcfb8f6456e6a73 .address {
-  font-size: 16px;
-  margin: 0 auto;
-  font-size: 16px;
-  text-transform: capitalize;
-  font-weight: 500;
-}
-
-/* template css 2*/
-.invite-template-card.template-68da7728a08985d3d6b8bdae .name { 
-  top: 57%;
-  font-family: 'Alice';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 37px;
-  color:#55565a;
-}
-.invite-template-card.template-68da7728a08985d3d6b8bdae .date-address-wrapper {
-  top: 63%;
   left: 0;
   right: 0;
   margin: 0 auto;
-  font-size: 19px;
+  border: 2px solid rgb(33, 37, 41);
+  border-radius: 50%;
 }
-.invite-template-card.template-68da7728a08985d3d6b8bdae .date-time {
-  font-size: 16px;
-  margin: 31px 0 8px;
+.date-time-wrapper {
+  font-family: "Roboto", sans-serif;
+  left:0;
+  right:0;
+  margin: 0 auto;
+  width: 100%;
+}
+.name {
+  left: 0;
+  right: 0;
+    margin: 0 auto;
+}
+ .address {
+  padding: 0 12%;
+}
+/* template css1 */
+.invite-template-card.template-68e0e3808fcfb8f6456e6a73 .name { 
+  font-family: 'Carter One';
+    font-style: normal;
+    font-weight: 400;
+}
+
+/* template css 2*/
+
+.invite-template-card.template-68da7728a08985d3d6b8bdae .name {
+  font-family: 'Alice';
+  font-style: normal;
+  font-weight: 400;
+  color:#55565a;
+}
+.invite-template-card.template-68da7728a08985d3d6b8bdae .date-time-wrapper {
   font-weight: 500;
-} 
+  text-transform: uppercase;
+}
+ 
 .invite-template-card.template-68da7728a08985d3d6b8bdae span.day {
   color: #af7e55;
-  font-weight: 700;
-  font-size: 32px;
+    font-weight: 700;
+    margin: 0 4%;
 }
 .invite-template-card.template-68da7728a08985d3d6b8bdae  span.month , .invite-template-card.template-68da7728a08985d3d6b8bdae  span.time {
     border-top: 1px dotted;
@@ -356,13 +321,12 @@
     padding: 1px 8px;
 }
 .invite-template-card.template-68da7728a08985d3d6b8bdae .address {
-  margin: 0 auto;
-  font-size: 16px;
-  text-transform: capitalize;
+  text-transform: uppercase;
   font-weight: 500;
 }
-/* template css3 */
 
+/* template css3 */
+/* 
 .invite-template-card.template-68df936b8fcfb8f6456d0a91 .Imge-circle {
     top: 5px;
     border-radius: 13px;
@@ -376,7 +340,7 @@
   font-size: 48px;
   color: #ffc805;
 }
-.invite-template-card.template-68df936b8fcfb8f6456d0a91 .date-address-wrapper {
+.invite-template-card.template-68df936b8fcfb8f6456d0a91 .date-time-wrapper {
  top: 78%;
     left: 0;
     right: 0;
@@ -400,7 +364,7 @@
     font-size: 16px;
     text-transform: capitalize;
     font-weight: 500;
-}
+} */
 
 /* .template-image-wrapper{
   position: absolute;

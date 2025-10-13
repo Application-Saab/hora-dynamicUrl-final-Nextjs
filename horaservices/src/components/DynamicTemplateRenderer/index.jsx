@@ -70,9 +70,18 @@ const DynamicTemplateRenderer = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [aspectRatio, setAspectRatio] = useState(4 / 3); // Default aspect ratio for rectangular shape
   const [cropSize, setCropSize] = useState({ width: 200, height: 200 }); // Adjust based on template needs
+  const [ aspectRatioTemplate , setAspectRatioTemplate] = useState();
   const imgRef = useRef(null);
   const [imgHeight, setImgHeight] = useState(0);
-
+  const [nameFontSize , setNameFontSize ] = useState();
+   const [dateTimeFontSize , setDateTimeFontSize ] = useState();
+  const [addressFontSize , setAddressFontSize ] = useState();
+  const [namePosition , setNamePosition ] = useState();
+  const [dateTimePosition , setDateTimePosition ] = useState();
+  const [addressPosition , setAddressPosition ] = useState();
+  const [ imgCirclePosition , setImgCirclePosition ] = useState();
+  const [ imgCircleWidth , setImageCircleWidth] = useState();
+   const [ imgCircleHeight , setImageCircleHeight] = useState();
   useEffect(() => {
     setDataForTemplate({
       eventType: formData.eventType,
@@ -464,13 +473,90 @@ const renderHTML = (jsCode, rawData) => {
 // }, []);
 
 const handleImageLoad = () => {
-   console.log("Image height:1");
-  if (imgRef.current) {
-    const height = imgRef.current.clientHeight;
-    setImgHeight(height);
-    console.log("Image height:2", height);
+  if (!imgRef.current) return;
+
+  let templateWidth, templateHeight;
+  let templateNameSize, templateNamePosition;
+  let templateDateTimeSize, templateDateTimePosition;
+  let templateAddressSize, templateAddressPosition;
+  let templateCirclePosition, templateCircleWidth;
+  let tempateCircleHeight;
+
+  if (templateId === '68da7728a08985d3d6b8bdae') {
+    templateWidth = 397;
+    templateHeight = 559;
+    templateNameSize = 40;
+    templateNamePosition = 300;
+    templateDateTimeSize = 16;
+    templateDateTimePosition = 370;
+    templateAddressSize = 14;
+    templateAddressPosition = 425;
+  } else if (templateId === '68e0e3808fcfb8f6456e6a73') {
+    templateWidth = 559;
+    templateHeight = 794;
+    templateNameSize = 50;
+    templateNamePosition = 466;
+    templateDateTimeSize = 25;
+    templateDateTimePosition = 538;
+    templateAddressSize = 25;
+    templateAddressPosition = 594;
+    templateCirclePosition = 150;
+    templateCircleWidth =  225;
+    tempateCircleHeight = 225;
+  } 
+  // else if (templateId = '68df936b8fcfb8f6456d0a91'){
+  //   templateWidth = 800;
+  //   templateHeight = 794;
+  //   templateNameSize = 50;
+  //   templateNamePosition = 466;
+  //   templateDateTimeSize = 25;
+  //   templateDateTimePosition = 538;
+  //   templateAddressSize = 25;
+  //   templateAddressPosition = 594;
+  //   templateCirclePosition = 150;
+  //   templateCircleWidth =  225;
+  //   tempateCircleHeight = 225;
+  // }
+  else {
+    console.warn("Unhandled templateId:", templateId);
+    return;
   }
+
+  const screenWidth = window.innerWidth;
+  console.log('screenWidth:', screenWidth);
+
+  const ratio = (templateWidth - screenWidth) / templateWidth;
+  const scaleFactor = 1 - ratio;
+
+  const height = scaleFactor * templateHeight;
+  const nameSize = scaleFactor * templateNameSize;
+  const dateTimeSize = scaleFactor * templateDateTimeSize;
+  const addressSize = scaleFactor * templateAddressSize;
+
+  const namePosition = scaleFactor * templateNamePosition;
+  const dateTimePosition = scaleFactor * templateDateTimePosition;
+  const addressPosition = scaleFactor * templateAddressPosition;
+  const imgCirclePosition = scaleFactor * templateCirclePosition;
+  const imgCircleHeight = scaleFactor * tempateCircleHeight;
+  const imgCircleWidth = scaleFactor * templateCircleWidth;
+  // Update states
+  setAspectRatioTemplate(ratio);
+  setImgHeight(height);
+  setNameFontSize(nameSize);
+  setDateTimeFontSize(dateTimeSize);
+  setAddressFontSize(addressSize);
+  setNamePosition(namePosition);
+  setDateTimePosition(dateTimePosition);
+  setAddressPosition(addressPosition);
+  setImgCirclePosition(imgCirclePosition);
+  setImageCircleHeight(imgCircleHeight);
+  setImageCircleWidth(imgCircleWidth);
+  console.log("Image height (px):", height);
+  console.log("Aspect ratio difference:", ratio);
+  console.log("Image rendered width:", screenWidth, "Name font size:", nameSize, "Name position:", namePosition);
 };
+
+
 
 useEffect(() => {
   if (imgRef.current?.complete) {
@@ -521,21 +607,25 @@ useEffect(() => {
                 <div className={`invite-template-card template-${templateId}`} style={{height:  imgHeight }}>
                 {
                 ['68e0e3808fcfb8f6456e6a73', '68df936b8fcfb8f6456d0a91'].includes(templateId) ? 
-                <div className="Imge-circle"></div> 
+                <div className="Imge-circle" style={{ top: imgCirclePosition + 'px' , position: 'absolute' , width: imgCircleWidth  + 'px' , height:imgCircleHeight  + 'px'}}>
+                  <img/>
+                </div> 
                 : null
                 }
                  
-                  <div class="name">{dataForTemplate?.name}</div>
-
-                  <div class="date-address-wrapper">
-                    <div class="date-time">
-                    <span class="month">{dataForTemplate?.month}</span>
-                    <span class="day">{dataForTemplate?.day}</span>
-                    <span class="time">AT {dataForTemplate?.time}</span>
+                  <div class="name" style={{ fontSize: nameFontSize , top: namePosition + 'px', position: 'absolute' , lineHeight: (nameFontSize + 3)  + 'px'  }}>  
+                    {dataForTemplate?.name}
                     </div>
-                     <div class="address">
-                    <p>{dataForTemplate?.address}</p>
+
+                  <div class="date-time-wrapper" style={{ top: dateTimePosition + 'px' ,  position: 'absolute' ,  lineHeight: ( dateTimeFontSize + 3) + 'px'}}>
+                    <span class="month" style={{ fontSize: dateTimeFontSize  }}>{dataForTemplate?.month}</span>
+                    <span class="day" style={{ fontSize: '30px'  }}>{dataForTemplate?.day}</span>
+                    <span class="time" style={{ fontSize: dateTimeFontSize  }}>{dataForTemplate?.time}PM.</span>
+
                   </div>
+
+                    <div class="address" style={{ fontSize: addressFontSize ,  top: addressPosition  + 'px' ,  position: 'absolute' , lineHeight: ( addressFontSize + 5) + 'px' }}>
+                    {dataForTemplate?.address}
                   </div>
                  
                 </div>
