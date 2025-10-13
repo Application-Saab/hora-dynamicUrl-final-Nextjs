@@ -1823,6 +1823,7 @@ const getAvatarColor = (name) => {
                       userType={userType}
                       hostData={orderDetails}
                       urlParams={urlParams}
+                      userData={userData}
                     />
                   ) : hasSubmitted ? (
                     <GuestListPreview
@@ -1831,6 +1832,7 @@ const getAvatarColor = (name) => {
                       userType={userType}
                       hostData={orderDetails}
                       urlParams={urlParams}
+                      userData={userData}
                     />
                   ) : (
                     <div ref={rsvpRef}>
@@ -1838,7 +1840,8 @@ const getAvatarColor = (name) => {
                         highlightRSVPButtons={highlightRSVPButtons}
                         setHighlightRSVPButtons={setHighlightRSVPButtons}
                         hostData={orderDetails}
-                        rsvpGuestName={guestDetails?.name || ""}
+                        userData={userData}
+                        rsvpGuestName={userData?.name || ""}
                         userType={userType}
                         guestList={guestList}
                         loading={loading}
@@ -2215,6 +2218,7 @@ const getAvatarColor = (name) => {
                           <video
                             autoPlay
                             controls
+                            // controlsList="nodownload" 
                             playsInline
                             className="lightbox-img"
                             style={{
@@ -2222,7 +2226,7 @@ const getAvatarColor = (name) => {
                             }}
                           >
                             <source
-                              src={selectedImage.imageUrl}
+                              src={selectedImage?.imageUrl}
                               type="video/mp4"
                             ></source>
                           </video>
@@ -2380,6 +2384,7 @@ const getAvatarColor = (name) => {
           <RSVPPopup
             hostData={hostData}
             guestList={guestList}
+            userData={userData}
             onClose={() => setShowPopupGuest(false)}
           />
         </>

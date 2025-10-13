@@ -27,6 +27,7 @@ const GuestRSVPForm = ({
   highlightRSVPButtons,
   setHighlightRSVPButtons,
   rsvpGuestName,
+  userData
 }) => {
   const [guestName, setGuestName] = useState(rsvpGuestName || "");
   const [status, setStatus] = useState("");
@@ -49,7 +50,7 @@ const GuestRSVPForm = ({
   useEffect(() => {
     const confirmed =
       guestData.filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
-        .length + 1;
+        .length;
     const willTry = guestData.filter(
       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
     ).length;
@@ -119,9 +120,14 @@ const GuestRSVPForm = ({
     }
   }, [eventId, userId, hasSubmitted, setHasSubmitted]);
 
-  const handleClick = (selectedStatus) => {
+  const handleClick = async (selectedStatus) => {
     setStatus(selectedStatus);
-    setShowForm(true);
+    if (guestName) {
+      setSubmitting(true);
+      await updateRsvpStatus();
+    } else {
+      setShowForm(true);
+    }
   };
 
   const handleViewFullListClick = () => {
@@ -288,6 +294,7 @@ const handleTimeUpdate = () => {
             hostData={hostData}
             guestData={guestData}
             loading={loading}
+            userData={userData}
             error={error}
             onClose={() => setOpenRsvpList(false)}
           />

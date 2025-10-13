@@ -24,8 +24,6 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
     return name.charAt(0).toUpperCase();
   };
 
-  const hostName = hostData?.name || hostData?.Name || hostData?.hostName || "";
-
   return (
     <>
       <div className={styles.backdrop} onClick={onClose} />
@@ -35,7 +33,7 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
 
         <div className={styles.list}>
           {/* Show host always */}
-          {(() => {
+          {/* {(() => {
             const hostName = hostData?.name || hostData?.Name || "";
             return hostName ? (
               <div className={styles.row}>
@@ -46,7 +44,7 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
                 <span className={styles.check}>✔</span>
               </div>
             ) : null;
-          })()}
+          })()} */}
 
           {/* Guests */}
           {loading ? (

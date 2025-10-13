@@ -12,7 +12,7 @@ const RSVP_STATUS = {
   WILL_TRY: "Sure, will try",
 };
 
-const GuestListPreview = ({ hostData, urlParams }) => {
+const GuestListPreview = ({ hostData, urlParams, userData }) => {
   const router = useRouter();
 
   const [guestData, setGuestData] = useState([]);
@@ -79,7 +79,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
   useEffect(() => {
     const confirmed =
       guestData.filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
-        .length + 1;
+        .length;
 
     const willTry = guestData.filter(
       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
@@ -159,6 +159,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
         <RSVPPopup
           hostData={hostData}
           guestData={guestDataRSVP}
+          userData
           loading={loading}
           error={error}
           onClose={() => setOpenRsvpList(false)}
