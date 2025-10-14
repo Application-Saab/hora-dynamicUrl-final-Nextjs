@@ -23,100 +23,101 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [currentUrl, setCurrentUrl] = useState("");
   const { catValue, productName } = router.query;
-  useEffect(() => {
-    const blockContextMenu = (e) => e.preventDefault();
-    const blockKeys = (e) => {
-      const key = e?.key?.toLowerCase();
-      if (
-        (e.ctrlKey && (key === "u" || key === "s")) || // Ctrl+U, Ctrl+S
-        (e.ctrlKey && e.shiftKey && (key === "i" || key === "c")) || // Ctrl+Shift+I, C
-        key === "f12"
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-    const blockDrag = (e) => e.preventDefault();
 
-    document.addEventListener("contextmenu", blockContextMenu);
-    document.addEventListener("keydown", blockKeys);
-    document.addEventListener("dragstart", blockDrag);
+  // useEffect(() => {
+  //   const blockContextMenu = (e) => e.preventDefault();
+  //   const blockKeys = (e) => {
+  //     const key = e?.key?.toLowerCase();
+  //     if (
+  //       (e.ctrlKey && (key === "u" || key === "s")) || // Ctrl+U, Ctrl+S
+  //       (e.ctrlKey && e.shiftKey && (key === "i" || key === "c")) || // Ctrl+Shift+I, C
+  //       key === "f12"
+  //     ) {
+  //       e.preventDefault();
+  //       e.stopPropagation();
+  //     }
+  //   };
+  //   const blockDrag = (e) => e.preventDefault();
 
-    return () => {
-      document.removeEventListener("contextmenu", blockContextMenu);
-      document.removeEventListener("keydown", blockKeys);
-      document.removeEventListener("dragstart", blockDrag);
-    };
-  }, []);
+  //   document.addEventListener("contextmenu", blockContextMenu);
+  //   document.addEventListener("keydown", blockKeys);
+  //   document.addEventListener("dragstart", blockDrag);
 
-  useEffect(() => {
-    const blockContextMenu = (e) => e.preventDefault();
-    const blockKeys = (e) => {
-      const key = e.key;
-      const combo = `${e.ctrlKey ? "Ctrl+" : ""}${
-        e.shiftKey ? "Shift+" : ""
-      }${key}`;
+  //   return () => {
+  //     document.removeEventListener("contextmenu", blockContextMenu);
+  //     document.removeEventListener("keydown", blockKeys);
+  //     document.removeEventListener("dragstart", blockDrag);
+  //   };
+  // }, []);
 
-      const blockedCombos = [
-        "F12",
-        "Ctrl+Shift+I",
-        "Ctrl+U",
-        "Ctrl+Shift+C",
-        "Ctrl+S",
-      ];
-      if (blockedCombos.includes(key) || blockedCombos.includes(combo)) {
-        e.preventDefault();
-      }
-    };
+  // useEffect(() => {
+  //   const blockContextMenu = (e) => e.preventDefault();
+  //   const blockKeys = (e) => {
+  //     const key = e.key;
+  //     const combo = `${e.ctrlKey ? "Ctrl+" : ""}${
+  //       e.shiftKey ? "Shift+" : ""
+  //     }${key}`;
 
-    document.addEventListener("contextmenu", blockContextMenu);
-    document.addEventListener("keydown", blockKeys);
+  //     const blockedCombos = [
+  //       "F12",
+  //       "Ctrl+Shift+I",
+  //       "Ctrl+U",
+  //       "Ctrl+Shift+C",
+  //       "Ctrl+S",
+  //     ];
+  //     if (blockedCombos.includes(key) || blockedCombos.includes(combo)) {
+  //       e.preventDefault();
+  //     }
+  //   };
 
-    return () => {
-      document.removeEventListener("contextmenu", blockContextMenu);
-      document.removeEventListener("keydown", blockKeys);
-    };
-  }, []);
+  //   document.addEventListener("contextmenu", blockContextMenu);
+  //   document.addEventListener("keydown", blockKeys);
 
-
-  useEffect(() => {
-    setCurrentUrl(router.asPath);
-    // Google Tag Manager script
-    (function (w, d, s, l, i) {
-      console.log("run", router.pathname);
-      w[l] = w[l] || [];
-      w[l].push({
-        "gtm.start": new Date().getTime(),
-        event: "gtm.js",
-        pageName: router.pathname,
-      });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l != "dataLayer" ? "&l=" + l : "";
-      j.async = true;
-      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-      f.parentNode.insertBefore(j, f);
-      console.log("GTM Script Loaded"); // Debugging log
-    })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
-  }, [router.asPath]);
+  //   return () => {
+  //     document.removeEventListener("contextmenu", blockContextMenu);
+  //     document.removeEventListener("keydown", blockKeys);
+  //   };
+  // }, []);
 
 
-  useEffect(() => {
-  if (typeof window !== "undefined" && "Notification" in window) {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        getToken(messaging, { vapidKey: VAPID_KEY })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log("FCM Token:", currentToken);
-              // Send token to server
-            }
-          })
-          .catch((err) => console.error("Error getting token:", err));
-      }
-    });
-  }
-}, []);
+  // useEffect(() => {
+  //   setCurrentUrl(router.asPath);
+  //   // Google Tag Manager script
+  //   (function (w, d, s, l, i) {
+  //     console.log("run", router.pathname);
+  //     w[l] = w[l] || [];
+  //     w[l].push({
+  //       "gtm.start": new Date().getTime(),
+  //       event: "gtm.js",
+  //       pageName: router.pathname,
+  //     });
+  //     var f = d.getElementsByTagName(s)[0],
+  //       j = d.createElement(s),
+  //       dl = l != "dataLayer" ? "&l=" + l : "";
+  //     j.async = true;
+  //     j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+  //     f.parentNode.insertBefore(j, f);
+  //     console.log("GTM Script Loaded"); // Debugging log
+  //   })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
+  // }, [router.asPath]);
+
+
+//   useEffect(() => {
+//   if (typeof window !== "undefined" && "Notification" in window) {
+//     Notification.requestPermission().then((permission) => {
+//       if (permission === "granted") {
+//         getToken(messaging, { vapidKey: VAPID_KEY })
+//           .then((currentToken) => {
+//             if (currentToken) {
+//               console.log("FCM Token:", currentToken);
+//               // Send token to server
+//             }
+//           })
+//           .catch((err) => console.error("Error getting token:", err));
+//       }
+//     });
+//   }
+// }, []);
 
 
 
