@@ -18,15 +18,11 @@ const DynamicTemplateRenderer = () => {
   const templateRef = useRef(null);
   const templateId = searchParams.get("templateId");
   const eventId = searchParams.get("id");
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const [template, setTemplate] = useState(null);
-  console.log('%c [ template ]-554', 'font-size:13px; background:pink; color:#bf2c9f;', template)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
-
   const [formData, setFormData] = useState({
     eventType: "",
     name: "",
@@ -37,7 +33,7 @@ const DynamicTemplateRenderer = () => {
   });
   const [uploadedImage, setUploadedImage] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
-  const [cropShape, setCropShape] = useState('rect'); // 'rect' or 'round'
+  const [cropShape, setCropShape] = useState('rect'); 
   const [dataForTemplate, setDataForTemplate] = useState({
     eventType: formData.eventType,
     name: formData?.name,
@@ -50,9 +46,6 @@ const DynamicTemplateRenderer = () => {
     templateId: templateId || "",
     image: uploadedImage ? uploadedImage : cropShape === 'round' ? DefaultImageBgCircle.src : DefaultImageBgCircle.src,
   });
-  console.log('%c [ dataForTemplate ]-567', 'font-size:13px; background:pink; color:#bf2c9f;', dataForTemplate)
-  console.log('%c [ dateFormatter(formData?.date, template?.dateFormatCase)?.day ]-571', 'font-size:13px; background:pink; color:#bf2c9f;', dateFormatter(formData?.date, template?.dateFormatCase)?.day)
-
   const [formErrors, setFormErrors] = useState({
     eventType: "",
     name: "",
@@ -74,14 +67,20 @@ const DynamicTemplateRenderer = () => {
   const imgRef = useRef(null);
   const [imgHeight, setImgHeight] = useState(0);
   const [nameFontSize , setNameFontSize ] = useState();
+  const [nameLineHeight,setnameLineHeight] =useState();
    const [dateTimeFontSize , setDateTimeFontSize ] = useState();
   const [addressFontSize , setAddressFontSize ] = useState();
+   const [addressLineHeight,setaddressLineHeight] =useState();
   const [namePosition , setNamePosition ] = useState();
   const [dateTimePosition , setDateTimePosition ] = useState();
+  const [dateTimeLineHeight,setdateTimeLineHeight] =useState();
   const [addressPosition , setAddressPosition ] = useState();
   const [ imgCirclePosition , setImgCirclePosition ] = useState();
   const [ imgCircleWidth , setImageCircleWidth] = useState();
    const [ imgCircleHeight , setImageCircleHeight] = useState();
+   const [scaledData, setScaledData] = useState(null);
+    const [renderedHTML, setRenderedHTML] = useState("");
+
   useEffect(() => {
     setDataForTemplate({
       eventType: formData.eventType,
@@ -97,11 +96,9 @@ const DynamicTemplateRenderer = () => {
     });
   }, [formData, template, uploadedImage]);
 
-  console.log('%c [ uploadedImage ]-607', 'font-size:13px; background:pink; color:#bf2c9f;', uploadedImage)
   const fileInputRef = useRef(null);
-
-   /** Fetch template */
   useEffect(() => {
+    
     const fetchTemplate = async () => {
       try {
         if(templateId){
@@ -112,13 +109,9 @@ const DynamicTemplateRenderer = () => {
           setError(result.message || "Failed to fetch template");
         } else {
           const selectedTemplate = result?.template;
-          console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;',  selectedTemplate?.configs?.bgImageHeight)
-
           if (selectedTemplate) {
-            let { cssCode, jsCode, fontUrls, backgroundUrl } =
+            let { cssCode, jsCode, fontUrls, backgroundUrl, } =
               selectedTemplate.configs;
-
-            // Use the absolute background URL from API
             if (backgroundUrl) {
               cssCode = cssCode.replace(
                 /url\((['"]?).*?\1\)/g,
@@ -148,12 +141,15 @@ const DynamicTemplateRenderer = () => {
               bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
+              templateInfo: selectedTemplate?.configs?.templateinfo || {},
               image: uploadedImage
                         ? uploadedImage
                         : cropShape === "round"
                         ? DefaultImageBgCircle.src
                         : DefaultImageBgCircle.src,
+                        
             });
+            
           } else {
             setError("Template not found");
           }
@@ -167,9 +163,9 @@ const DynamicTemplateRenderer = () => {
     };
 
     fetchTemplate();
+    
   }, [templateId]);
 
-  /** Fetch event details (Edit Mode) */
   const fetchOrderDetails = async () => {
     try {
       const res = await fetch(
@@ -226,8 +222,6 @@ const DynamicTemplateRenderer = () => {
   const charLimit = template?.charLimits?.[name]
     ? parseInt(template.charLimits[name])
     : Infinity;
-
-  // Always allow change but trim if exceeds limit
   const newValue = value.length > charLimit ? value.slice(0, charLimit) : value;
 
   setFormData((prev) => ({ ...prev, [name]: newValue }));
@@ -303,7 +297,7 @@ const DynamicTemplateRenderer = () => {
           const croppedUrl = URL.createObjectURL(blob);
           setUploadedImage(croppedUrl);
         }
-        setCropImage(null); // Close cropper
+        setCropImage(null); 
       }, "image/png", 1.0);
     } catch (err) {
       console.error("Crop failed:", err);
@@ -318,7 +312,7 @@ const DynamicTemplateRenderer = () => {
     const url = URL.createObjectURL(file);
     setUploadedImage(url);
     setOriginalImage(url);
-    setCropImage(url); // Open cropper with uploaded image
+    setCropImage(url); 
   };
 
   const handleEditImage = () => {
@@ -418,144 +412,132 @@ const DynamicTemplateRenderer = () => {
   };
 
 const renderHTML = (jsCode, rawData) => {
-  // Handle conditional blocks: {{#if key}} ... {{/if}}
+  if (!jsCode) return "";
+
+  // Handle conditional blocks
   jsCode = jsCode.replace(/{{#if (.*?)}}([\s\S]*?){{\/if}}/g, (_, key, inner) => {
     const value = rawData[key.trim()];
     if (value) {
-      // replace inner placeholders normally
-      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => {
-        return rawData[innerKey.trim()] || "";
-      });
+      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => rawData[innerKey.trim()] || "");
     }
     return "";
   });
 
-  // Handle normal placeholders: {{key}}
+  // Handle all {{variables}} (works for both CSS and text)
   return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
     try {
-      return key
+      const val = key
         .trim()
         .split(".")
-        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData) || "";
+        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData);
+      return val ?? "";
     } catch {
       return "";
     }
   });
 };
 
- console.log('Image height:11');
- 
-//  useEffect(() => {
-//   const updateHeight = () => {
-//      console.log('Image height:1122');
-//     if (imgRef.current) {
-//       const height = imgRef.current.clientHeight;
-//       setImgHeight(height);
-//       console.log('Image height:', height);
-//     }
-//   };
 
-//   const img = imgRef.current;
 
-//   if (img?.complete) {
-//     console.log('img com-plete');
-//     // Image already loaded (e.g., from cache)
-//     updateHeight();
-//   } else {
-//     // Wait for the image to load
-//     console.log('img cadd event lister');
-//     img?.addEventListener("load", updateHeight);
-//   }
+useEffect(() => {
+  if (template?.jsCode && dataForTemplate && scaledData) {
+    const combinedData = { ...dataForTemplate, ...scaledData };
+    const html = renderHTML(template.jsCode, combinedData);
+    setRenderedHTML(html);
+  }
+}, [template, dataForTemplate, scaledData]);
+ useEffect(() => {
+  const updateHeight = () => {
+    if (imgRef.current) {
+      const height = imgRef.current.clientHeight;
+      setImgHeight(height);
+      console.log('Image height:', height);
+    }
+  };
 
-//   return () => {
-//     img?.removeEventListener("load", updateHeight);
-//   };
-// }, []);
+  const img = imgRef.current;
+
+  if (img?.complete) {
+    updateHeight();
+  } else {
+    img?.addEventListener("load", updateHeight);
+  }
+
+  return () => {
+    img?.removeEventListener("load", updateHeight);
+  };
+}, []);
+
+
+
 
 const handleImageLoad = () => {
-  if (!imgRef.current) return;
+  if (!imgRef.current || !template?.templateInfo) return;
 
-  let templateWidth, templateHeight;
-  let templateNameSize, templateNamePosition;
-  let templateDateTimeSize, templateDateTimePosition;
-  let templateAddressSize, templateAddressPosition;
-  let templateCirclePosition, templateCircleWidth;
-  let tempateCircleHeight;
+  const {
+    templateWidth,
+    templateHeight,
+    templateNameSize,
+    templateNamePosition,
+    templateDateTimeSize,
+    templateDateTimePosition,
+    templateAddressSize,
+    templateAddressPosition,
+    templateNamelineHeight,
+    templateAddresslineHeight,
+    templateDatetimelineHeight,
+    templateCirclePosition = 0,
+    templateCircleWidth = 0,
+    templateCircleHeight = 0,
+  } = template.templateInfo;
 
-  if (templateId === '68da7728a08985d3d6b8bdae') {
-    templateWidth = 397;
-    templateHeight = 559;
-    templateNameSize = 40;
-    templateNamePosition = 300;
-    templateDateTimeSize = 16;
-    templateDateTimePosition = 370;
-    templateAddressSize = 14;
-    templateAddressPosition = 425;
-  } else if (templateId === '68e0e3808fcfb8f6456e6a73') {
-    templateWidth = 559;
-    templateHeight = 794;
-    templateNameSize = 50;
-    templateNamePosition = 466;
-    templateDateTimeSize = 25;
-    templateDateTimePosition = 538;
-    templateAddressSize = 25;
-    templateAddressPosition = 594;
-    templateCirclePosition = 150;
-    templateCircleWidth =  225;
-    tempateCircleHeight = 225;
-  } 
-  // else if (templateId = '68df936b8fcfb8f6456d0a91'){
-  //   templateWidth = 800;
-  //   templateHeight = 794;
-  //   templateNameSize = 50;
-  //   templateNamePosition = 466;
-  //   templateDateTimeSize = 25;
-  //   templateDateTimePosition = 538;
-  //   templateAddressSize = 25;
-  //   templateAddressPosition = 594;
-  //   templateCirclePosition = 150;
-  //   templateCircleWidth =  225;
-  //   tempateCircleHeight = 225;
-  // }
-  else {
-    console.warn("Unhandled templateId:", templateId);
+  console.log("templateHeight-----------",templateHeight);
+  
+  if (!templateWidth || !templateHeight) {
+    console.warn("Missing template dimensions");
     return;
   }
 
   const screenWidth = window.innerWidth;
-  console.log('screenWidth:', screenWidth);
+  console.log("screenWidth:", screenWidth);
 
   const ratio = (templateWidth - screenWidth) / templateWidth;
   const scaleFactor = 1 - ratio;
-
-  const height = scaleFactor * templateHeight;
-  const nameSize = scaleFactor * templateNameSize;
-  const dateTimeSize = scaleFactor * templateDateTimeSize;
-  const addressSize = scaleFactor * templateAddressSize;
-
-  const namePosition = scaleFactor * templateNamePosition;
-  const dateTimePosition = scaleFactor * templateDateTimePosition;
-  const addressPosition = scaleFactor * templateAddressPosition;
-  const imgCirclePosition = scaleFactor * templateCirclePosition;
-  const imgCircleHeight = scaleFactor * tempateCircleHeight;
-  const imgCircleWidth = scaleFactor * templateCircleWidth;
-  // Update states
+ const newScaledData = {
+    imgHeight: scaleFactor * templateHeight,
+    nameFontSize: scaleFactor * templateNameSize,
+    nameLineHeight: (scaleFactor * templateNameSize + templateNamelineHeight),
+    namePosition: scaleFactor * templateNamePosition,
+    dateTimeFontSize: scaleFactor * templateDateTimeSize,
+    dateTimeLineHeight: (scaleFactor * templateDateTimeSize + templateDatetimelineHeight),
+    dateTimePosition: scaleFactor * templateDateTimePosition,
+    addressFontSize: scaleFactor * templateAddressSize,
+    addressLineHeight: (scaleFactor * templateAddressSize * templateAddresslineHeight),
+    addressPosition: scaleFactor * templateAddressPosition,
+    imgCirclePosition: scaleFactor * templateCirclePosition,
+    imgCircleHeight: scaleFactor * templateCircleHeight,
+    imgCircleWidth: scaleFactor * templateCircleWidth,
+   
+  };
+  // ✅ Update states
+  
+  setScaledData(newScaledData);
   setAspectRatioTemplate(ratio);
-  setImgHeight(height);
-  setNameFontSize(nameSize);
-  setDateTimeFontSize(dateTimeSize);
-  setAddressFontSize(addressSize);
+  setImgHeight(imgHeight);
+  setNameFontSize(nameFontSize);
+  setDateTimeFontSize(dateTimeFontSize);
+  setAddressFontSize(addressFontSize);
   setNamePosition(namePosition);
   setDateTimePosition(dateTimePosition);
   setAddressPosition(addressPosition);
   setImgCirclePosition(imgCirclePosition);
   setImageCircleHeight(imgCircleHeight);
   setImageCircleWidth(imgCircleWidth);
-  console.log("Image height (px):", height);
-  console.log("Aspect ratio difference:", ratio);
-  console.log("Image rendered width:", screenWidth, "Name font size:", nameSize, "Name position:", namePosition);
-};
+setnameLineHeight (nameLineHeight)
+setaddressLineHeight(addressLineHeight)
+setdateTimeLineHeight(dateTimeLineHeight)
 
+};
 
 
 useEffect(() => {
@@ -588,49 +570,39 @@ useEffect(() => {
         ))}
 
         {/* CSS */}
-        {/* {template?.cssCode && (
+        {template?.cssCode && (
           <style dangerouslySetInnerHTML={{ __html: template.cssCode }} />
-        )} */}
+        )}
 
         {/* Template HTML */}
-        {/* {template?.jsCode && (
-          <div
-            style={{ position: "absolute", zIndex: 2, top: 0, left: 0, right: 0, bottom: 0 }}
-            dangerouslySetInnerHTML={{
-              __html: renderHTML(template.jsCode, dataForTemplate),
-            }}
-          />
-        )} */}
+     {renderedHTML && (
+  <div
+    style={{ position: "absolute", zIndex: 2, top: 0, left: 0, right: 0, bottom: 0 }}
+    dangerouslySetInnerHTML={{ __html: renderedHTML }}
+  />
+)}
 
-            <div  style={{ position: "absolute", zIndex: 2, top: 0, left: 0, right: 0, bottom: 0, height: imgHeight }}>
-              <div class="invite-template-wrapper">
-                <div className={`invite-template-card template-${templateId}`} style={{height:  imgHeight }}>
-                {
-                ['68e0e3808fcfb8f6456e6a73', '68df936b8fcfb8f6456d0a91'].includes(templateId) ? 
-                <div className="Imge-circle" style={{ top: imgCirclePosition + 'px' , position: 'absolute' , width: imgCircleWidth  + 'px' , height:imgCircleHeight  + 'px'}}>
-                  <img/>
-                </div> 
-                : null
-                }
-                 
-                  <div class="name" style={{ fontSize: nameFontSize , top: namePosition + 'px', position: 'absolute' , lineHeight: (nameFontSize + 3)  + 'px'  }}>  
-                    {dataForTemplate?.name}
-                    </div>
+      {/* <div class="invite-template-wrapper">
+  <div class="invite-template-card" style="height:{{imgHeight}}px;">
+  
 
-                  <div class="date-time-wrapper" style={{ top: dateTimePosition + 'px' ,  position: 'absolute' ,  lineHeight: ( dateTimeFontSize + 3) + 'px'}}>
-                    <span class="month" style={{ fontSize: dateTimeFontSize  }}>{dataForTemplate?.month}</span>
-                    <span class="day" style={{ fontSize: '30px'  }}>{dataForTemplate?.day}</span>
-                    <span class="time" style={{ fontSize: dateTimeFontSize  }}>{dataForTemplate?.time}PM.</span>
+    <div class="name" style="font-size:{{nameFontSize}}px; top:{{namePosition}}px; position:absolute; line-height:{{nameLineHeight}}px;">
+      {{name}}
+    </div>
 
-                  </div>
+    <div class="date-wrapper" style="top:{{dateTimePosition}}px; position:absolute; line-height:{{dateTimeLineHeight}}px;">
+      <span class="month" style="font-size:{{dateTimeFontSize}}px;">{{month}}</span>
+      <span class="day" style="font-size:30px;">{{day}}</span>
+      <span class="time" style="font-size:{{dateTimeFontSize}}px;">{{time}}PM.</span>
+    </div>
 
-                    <div class="address" style={{ fontSize: addressFontSize ,  top: addressPosition  + 'px' ,  position: 'absolute' , lineHeight: ( addressFontSize + 5) + 'px' }}>
-                    {dataForTemplate?.address}
-                  </div>
-                 
-                </div>
-            </div>
-          </div>
+    <div class="address" style="font-size:{{addressFontSize}}px; top:{{addressPosition}}px; position:absolute; line-height:{{addressLineHeight}}px;">
+      {{address}}
+    </div>
+  </div>
+</div> */}
+
+  
       </div>
 
       {/* Form */}

@@ -257,13 +257,13 @@
 
 /* common css */
 
-.invite-template-wrapper {
+/* .invite-template-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   color: rgb(33, 37, 41)
-}
-.invite-template-card {
+} */
+/* .invite-template-card {
   position: relative;
   width: 100%;
   text-align: center;
@@ -289,15 +289,15 @@
 }
  .address {
   padding: 0 12%;
-}
-/* template css1 */
+ } */
+/*
 .invite-template-card.template-68e0e3808fcfb8f6456e6a73 .name { 
   font-family: 'Carter One';
     font-style: normal;
     font-weight: 400;
 }
 
-/* template css 2*/
+
 
 .invite-template-card.template-68da7728a08985d3d6b8bdae .name {
   font-family: 'Alice';
@@ -323,7 +323,7 @@
 .invite-template-card.template-68da7728a08985d3d6b8bdae .address {
   text-transform: uppercase;
   font-weight: 500;
-}
+} */
 
 /* template css3 */
 /* 
