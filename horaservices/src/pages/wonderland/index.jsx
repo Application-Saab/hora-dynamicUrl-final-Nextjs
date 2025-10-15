@@ -39,8 +39,10 @@ import photo5 from "@/assets/collage/photo5.png";
 import photo6 from "@/assets/collage/photo6.png";
 import photo7 from "@/assets/collage/photo7.png";
 import wallCamera from "@/assets/wallCamera.png";
-import downloadicon from "@/assets/download-icon.png";
-import deletebtn from "@/assets/deletebtn.png";
+import downloadicon from "@/assets/download-icon.svg";
+import deletebtn from "@/assets/deletebtn.svg";
+import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 import photo8 from "@/assets/collage/photo8.png";
 import "react-datepicker/dist/react-datepicker.css";
 import InvitationModal from "@/components/InvitationModal";
@@ -81,24 +83,20 @@ import A2HSPrompt from "../../components/AddToHomeScreen";
 import { handleGroupClick } from "@/utils/unread";
 import axios from "axios";
 import EventwallGalleryItem from "@/components/wonderland/EventwallGalleryItem";
+import MediaViewer from "./EventwalPopup";
 
 const VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
 
 const dummayImageGallery = [
-  photo1,
-  photo2,
-  photo3,
-  photo4,
-  photo5,
-  photo6,
-  photo7,
-  // photo8,
-  // photo2,
-  // photo5,
-  // photo6,
+  { _id: 1, isVideo: false, webpUrl : photo1?.src, imageUrl : photo1?.src },
+  { _id: 2, isVideo: false, webpUrl : photo2?.src, imageUrl : photo2?.src },
+  { _id: 3, isVideo: false, webpUrl : photo3?.src, imageUrl : photo3?.src },
+  { _id: 4, isVideo: false, webpUrl : photo4?.src, imageUrl : photo4?.src },
+  { _id: 5, isVideo: false, webpUrl : photo5?.src, imageUrl : photo5?.src },
+  { _id: 6, isVideo: false, webpUrl : photo6?.src, imageUrl : photo6?.src },
+  { _id: 7, isVideo: false, webpUrl : photo7?.src, imageUrl : photo7?.src },
 ];
-
 const InvitationCard = () => {
   const hasSeenMessages = useRef(true);
   const prevMessageLength = useRef(0);
@@ -1557,6 +1555,32 @@ const getAvatarColor = (name) => {
     }
   }, []);
 
+  
+  useEffect(() => {
+  let pausedVideos = [];
+
+  if (isImageOpen) {
+    const allVideos = document.querySelectorAll("video");
+
+    allVideos.forEach((vid) => {
+      const insidePopup = vid.closest(".custom-lightbox");
+      if (!insidePopup && !vid.paused) {
+        pausedVideos.push(vid);
+        vid.pause();
+      }
+    });
+  } else {
+    pausedVideos.forEach((vid) => {
+      vid.play().catch(() => {});
+    });
+  }
+
+  return () => {
+    pausedVideos = []; // cleanup
+  };
+}, [isImageOpen]);
+
+
   return (
     <>
       {!isLoggedIn ? (
@@ -2110,8 +2134,8 @@ const getAvatarColor = (name) => {
                   >
                    {eventAllImages.length === 0 ? (
                       <>
-                      <div> 
-              <video
+                        <div>
+                          <video
                             ref={videoRef}
                             className="video-item"
                             autoPlay
@@ -2127,26 +2151,27 @@ const getAvatarColor = (name) => {
                               marginBottom: "10px",
                             }}
                           >
-                              <source src={Wonderlandvideo} type="video/mp4" />
+                            <source src={Wonderlandvideo} type="video/mp4" />
                             Your browser does not support the video tag.
                           </video>
-</div>
-                       <div className="event-grid">
-                        {dummayImageGallery?.map((item, index) => (
-                          <LazyImage
-                            key={index + 1}
-                            src={item.src}
-                           alt={`Event Image ${index + 1}`}
-                            wrapperClassName="masonry-item"
-                          />
-                        ))}
-     
-
-  
-
-
-
-                      </div> 
+                        </div>
+                        <div className="event-grid">
+                          {dummayImageGallery?.map((item, index) => (
+                              <div
+                                key={item._id}
+                                style={{
+                                  position: "relative",
+                                  backgroundColor: "transparent",
+                                }}
+                              >
+                                <EventwallGalleryItem
+                                  isVideo={false}
+                                  thumbnail={item}
+                                  indexOnPage={index}
+                                />
+                              </div>
+                          ))}
+                        </div>
                       </>
                     ) : (
                       <div className="thumbnail-gallery">
@@ -2160,7 +2185,6 @@ const getAvatarColor = (name) => {
                             return (
                               <div
                                 key={thumbnail._id}
-                                // className="masonry-item"
                                 onClick={() => {
                                   setSelectedImage(thumbnail);
                                   setSelectedIndex(indexOnPage);
@@ -2182,7 +2206,7 @@ const getAvatarColor = (name) => {
                   </div>
                 </div>
 
-                {isImageOpen && selectedImage && (
+{isImageOpen && selectedImage && (
                   <div
                     className="custom-lightbox"
                     onClick={() => setIsImageOpen(false)}
@@ -2193,36 +2217,25 @@ const getAvatarColor = (name) => {
                     >
                       <div {...handlers} className="lightbox-content">
                         <button
-                          className="close-btn"
+                          className="lightbox-close-btn"
                           onClick={() => setIsImageOpen(false)}
                         >
                           ✖
                         </button>
 
-                        <button
-                          className="nav-btn prev-btn"
-                          onClick={() => {
-                            const prevIndex =
-                              (selectedIndex - 1 + eventAllImages.length) %
-                              eventAllImages.length;
-                            setSelectedIndex(prevIndex);
-                            setSelectedImage(eventAllImages[prevIndex]);
-                          }}
-                        >
-                          ‹
-                        </button>
+                         <MediaViewer media={selectedImage} />
 
-                        {selectedImage.imageUrl?.match(
+                        {/* {selectedImage?.imageUrl?.match(
                           /\.(mp4|mov|avi|mkv)$/i
                         ) ? (
                           <video
                             autoPlay
                             controls
-                            // controlsList="nodownload" 
+                            // controlsList="nodownload"
                             playsInline
                             className="lightbox-img"
                             style={{
-                              maxWidth: "90%",
+                              maxWidth: "100%",
                             }}
                           >
                             <source
@@ -2238,48 +2251,22 @@ const getAvatarColor = (name) => {
                             alt=""
                             className="lightbox-img"
                           />
-                        )}
+                        )} */}
                         {selectedImage.name && (
                           <p className="lightbox-name">
                             Shared BY : {selectedImage.name}
                           </p>
                         )}
-                        <button
-                          className="nav-btn next-btn"
 
-
-
-                          onClick={() => {
-                            const nextIndex =
-                              (selectedIndex + 1) % eventAllImages.length;
-                            setSelectedIndex(nextIndex);
-                            setSelectedImage(eventAllImages[nextIndex]);
-                          }}
-                        >
-                          ›
-                        </button>
+                     
 
                         {/* Toolbar */}
                         <div className="lightbox-toolbar">
-                          <button
-                            className="lightbox-btn"
-                            onClick={() => downloadFile(selectedImage.imageUrl)}
-                          >
-                            <Image
-                              src={downloadicon}
-                              alt="Download"
-                              style={{ width: 30, height: 30 }}
-                            />
-                          </button>
-
-                          {selectedImage.userId === userID && (
-                            // <button
-                            //   className="lightbox-btn"
-                            //   onClick={() => handleDeleteImage(selectedImage._id, selectedImage.imageType)}
-                            // >
                             <button
                               className="lightbox-btn"
+                              disabled={selectedImage?.userId !== userID}
                               onClick={(e) => {
+                                if(selectedImage?.userId !== userID) return;
                                 e.stopPropagation();
                                 setDeleteTarget({
                                   imageId: selectedImage._id,
@@ -2291,10 +2278,42 @@ const getAvatarColor = (name) => {
                               <Image
                                 src={deletebtn}
                                 alt="Delete"
-                                style={{ width: 30, height: 30 }}
+                                style={{ width: 14, height: 15 }}
                               />
                             </button>
-                          )}
+                          <button
+                          className="lightbox-btn prev-btn"
+                          onClick={() => {
+                            const prevIndex =
+                              (selectedIndex - 1 + eventAllImages.length) %
+                              eventAllImages.length;
+                            setSelectedIndex(prevIndex);
+                            setSelectedImage(eventAllImages[prevIndex]);
+                          }}
+                        >
+                          <IoIosArrowBack size={25} color="#000000" />
+                        </button>
+                           <button
+                          className="lightbox-btn next-btn"
+                          onClick={() => {
+                            const nextIndex =
+                              (selectedIndex + 1) % eventAllImages.length;
+                            setSelectedIndex(nextIndex);
+                            setSelectedImage(eventAllImages[nextIndex]);
+                          }}
+                        >
+                          <IoIosArrowForward size={25} color="#000000" />
+                        </button>
+                          <button
+                            className="lightbox-btn"
+                            onClick={() => downloadFile(selectedImage.imageUrl)}
+                          >
+                            <Image
+                              src={downloadicon}
+                              alt="Download"
+                              style={{ width: 16, height: 16 }}
+                            />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -2331,7 +2350,7 @@ const getAvatarColor = (name) => {
                 </div>
               )}
 
-              {/* 🎁 Lucky Draw Popup */}
+              {/* Lucky Draw Popup */}
               {showLuckyDrawPopup && (
                 <div
                   className="popup-luckdraw-overlay"

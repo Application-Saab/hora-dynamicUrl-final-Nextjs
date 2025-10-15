@@ -21,6 +21,7 @@ const EventwallGalleryItem = ({ isVideo, thumbnail, indexOnPage }) => {
           src={thumbnail?.webpUrl}
           alt={`Event Image ${indexOnPage + 1}`}
           wrapperClassName="masonry-item custom-masonry"
+          isEventWall={true}
         />
       )}
     </>

@@ -1065,6 +1065,74 @@ const handleNameInput = (e) => {
 </div>
 
       </div> */}
+
+
+      
+      {/* Hidden Clone for Canvas (only for html2canvas) */}
+      <div
+        ref={noteRef}
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "-9999px",
+          width: "300px",
+          height: "300px",
+          backgroundColor: "white",
+          borderRadius: "12px",
+          overflow: "hidden",
+        }}
+      >
+        <Image
+          src={StickyImage}
+          alt="Sticky Note"
+          fill
+          style={{
+            objectFit: "cover",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            borderRadius: "12px",
+          }}
+        />
+
+        {/* Text */}
+        <div
+          style={{
+            position: "absolute",
+            top: "52%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "75%",
+            textAlign: "left",
+            fontWeight: "500",
+            fontSize: "15px",
+            color: "black",
+            fontFamily: "'Montserrat', sans-serif",
+            whiteSpace: "pre-wrap",
+            wordWrap: "break-word",
+          }}
+        >
+          {noteTitle}
+        </div>
+
+        {/* Name */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            fontWeight: "500",
+            fontSize: "15px",
+            color: "black",
+            fontFamily: "'Montserrat', sans-serif",
+          }}
+        >
+          - {noteBy.length > 15 ? noteBy.substring(0, 15) + "..." : noteBy}
+        </div>
+      </div>
+      
+
       
     </div>
   );

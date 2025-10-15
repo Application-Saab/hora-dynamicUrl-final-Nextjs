@@ -12,9 +12,7 @@ const RSVP_STATUS = {
   WILL_TRY: "Sure, will try",
 };
 
-const GuestListPreview = ({ hostData, urlParams, userData }) => {
-  const router = useRouter();
-
+const GuestListPreview = ({ hostData, urlParams }) => {
   const [guestData, setGuestData] = useState([]);
   const [guestDataRSVP, setGuestDataRSVP] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +109,6 @@ const GuestListPreview = ({ hostData, urlParams, userData }) => {
           <Image src={train} alt="Train Guests" className="train-image" />
 
           {[
-            { name: hostData?.name || hostData?.Name },
             ...guestData.filter(
               (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
             ),

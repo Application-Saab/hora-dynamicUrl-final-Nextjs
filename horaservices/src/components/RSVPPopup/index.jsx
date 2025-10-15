@@ -18,7 +18,7 @@ const avatarColors = [
   "#e91e63", // pink
 ];
 
-const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
+const RSVPPopup = ({ onClose, guestData, loading, error }) => {
   const getAvatarContent = (name) => {
     if (!name || name.trim() === "") return "🎈";
     return name.charAt(0).toUpperCase();
