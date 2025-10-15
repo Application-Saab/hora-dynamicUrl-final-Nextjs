@@ -78,6 +78,8 @@ const DynamicTemplateRenderer = () => {
   const [ imgCirclePosition , setImgCirclePosition ] = useState();
   const [ imgCircleWidth , setImageCircleWidth] = useState();
    const [ imgCircleHeight , setImageCircleHeight] = useState();
+   const [dayFontSize ,setDayFontSize]=useState();
+   const [dayPosition ,setDayPosition]=useState();
    const [scaledData, setScaledData] = useState(null);
     const [renderedHTML, setRenderedHTML] = useState("");
 
@@ -486,6 +488,8 @@ const handleImageLoad = () => {
     templateNamelineHeight,
     templateAddresslineHeight,
     templateDatetimelineHeight,
+    templatedayfontSize,
+    templatedayposition,
     templateCirclePosition = 0,
     templateCircleWidth = 0,
     templateCircleHeight = 0,
@@ -517,7 +521,8 @@ const handleImageLoad = () => {
     imgCirclePosition: scaleFactor * templateCirclePosition,
     imgCircleHeight: scaleFactor * templateCircleHeight,
     imgCircleWidth: scaleFactor * templateCircleWidth,
-   
+    dayFontSize: scaleFactor * templatedayfontSize,
+    dayPosition: scaleFactor * templatedayposition,
   };
   // ✅ Update states
   
@@ -536,7 +541,8 @@ const handleImageLoad = () => {
 setnameLineHeight (nameLineHeight)
 setaddressLineHeight(addressLineHeight)
 setdateTimeLineHeight(dateTimeLineHeight)
-
+setDayFontSize(dayFontSize)
+setDayPosition(dayPosition)
 };
 
 
@@ -558,7 +564,7 @@ useEffect(() => {
       <div
         ref={templateRef}
         className="template-container"
-        style={{border:'1px solid green' , position: 'relative' }}
+        style={{position: 'relative' }}
       >
         <img  ref={imgRef}  src={`/assets/templates/${template?.bgImageName}`}  id='bg-image' alt="bg" 
         onLoad={handleImageLoad}
@@ -602,7 +608,7 @@ useEffect(() => {
   </div>
 </div> */}
 
-  
+ 
       </div>
 
       {/* Form */}
