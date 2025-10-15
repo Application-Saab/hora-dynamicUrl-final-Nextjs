@@ -1355,37 +1355,30 @@
 
 
 "use client";
-
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
+import { BASE_URL, GET_TEMPLATES_BY_ID} from "@/utils/apiconstants";
 import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "./dateTimeFormatters";
 import CameraIcon from '@/assets/camera.png'
+import DefaultImageBgCircle from '../../../public/assets/templates/DefaultImageBgCircle.png'
 import Cropper from 'react-easy-crop';
 import { FaCropAlt } from "react-icons/fa";
 import { BiZoomOut } from "react-icons/bi";
 import { BiZoomIn } from "react-icons/bi";
 
-import DefaultImageBgCircle from "../../../public/assets/templates/DefaultImageBgCircle.png";
-import DefaultImageBgRectangle from "../../../public/assets/templates/DefaultImageBgCircle.png"
-import SequentialLoader from "../SequentialLoader";
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const templateRef = useRef(null);
   const templateId = searchParams.get("templateId");
   const eventId = searchParams.get("id");
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const [template, setTemplate] = useState(null);
-  console.log('%c [ template ]-554', 'font-size:13px; background:pink; color:#bf2c9f;', template)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
-
   const [formData, setFormData] = useState({
     eventType: "",
     name: "",
@@ -1396,6 +1389,7 @@ const DynamicTemplateRenderer = () => {
   });
   const [uploadedImage, setUploadedImage] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
+  const [cropShape, setCropShape] = useState('rect'); 
   const [dataForTemplate, setDataForTemplate] = useState({
     eventType: formData.eventType,
     name: formData?.name,
@@ -1406,11 +1400,8 @@ const DynamicTemplateRenderer = () => {
     time: formData?.time,
     address: formData?.address,
     templateId: templateId || "",
-    image: uploadedImage,
+    image: uploadedImage ? uploadedImage : cropShape === 'round' ? DefaultImageBgCircle.src : DefaultImageBgCircle.src,
   });
-  console.log('%c [ dataForTemplate ]-567', 'font-size:13px; background:pink; color:#bf2c9f;', dataForTemplate)
-  console.log('%c [ dateFormatter(formData?.date, template?.dateFormatCase)?.day ]-571', 'font-size:13px; background:pink; color:#bf2c9f;', dateFormatter(formData?.date, template?.dateFormatCase)?.day)
-  
   const [formErrors, setFormErrors] = useState({
     eventType: "",
     name: "",
@@ -1426,12 +1417,28 @@ const DynamicTemplateRenderer = () => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [cropShape, setCropShape] = useState('rect'); // 'rect' or 'round'
-  console.log('%c [ cropShape ]-1427', 'font-size:13px; background:pink; color:#bf2c9f;', cropShape)
-  const [aspectRatio, setAspectRatio] = useState(4 / 3); // Default aspect ratio for rectangular shape
-  const [cropSize, setCropSize] = useState({ width: 200, height: 200 }); // Adjust based on template needs
-  console.log('%c [ cropSize ]-1429', 'font-size:13px; background:pink; color:#bf2c9f;', cropSize)
-  
+  const [aspectRatio, setAspectRatio] = useState(4 / 3);
+  const [cropSize, setCropSize] = useState({ width: 200, height: 200 }); 
+  const [ aspectRatioTemplate , setAspectRatioTemplate] = useState();
+  const imgRef = useRef(null);
+  const [imgHeight, setImgHeight] = useState(0);
+  const [nameFontSize , setNameFontSize ] = useState();
+  const [nameLineHeight,setnameLineHeight] =useState();
+   const [dateTimeFontSize , setDateTimeFontSize ] = useState();
+  const [addressFontSize , setAddressFontSize ] = useState();
+   const [addressLineHeight,setaddressLineHeight] =useState();
+  const [namePosition , setNamePosition ] = useState();
+  const [dateTimePosition , setDateTimePosition ] = useState();
+  const [dateTimeLineHeight,setdateTimeLineHeight] =useState();
+  const [addressPosition , setAddressPosition ] = useState();
+  const [ imgCirclePosition , setImgCirclePosition ] = useState();
+  const [ imgCircleWidth , setImageCircleWidth] = useState();
+   const [ imgCircleHeight , setImageCircleHeight] = useState();
+   const [dayFontSize ,setDayFontSize]=useState();
+   const [dayPosition ,setDayPosition]=useState();
+   const [scaledData, setScaledData] = useState(null);
+    const [renderedHTML, setRenderedHTML] = useState("");
+
   useEffect(() => {
     setDataForTemplate({
       eventType: formData.eventType,
@@ -1443,19 +1450,13 @@ const DynamicTemplateRenderer = () => {
       time: formData.time,
       address: formData.address,
       templateId: templateId || "",
-  image: uploadedImage
-    ? uploadedImage
-    : cropShape === "round"
-    ? DefaultImageBgCircle.src
-    : DefaultImageBgRectangle.src,
+      image: uploadedImage ? uploadedImage : cropShape === 'round' ? DefaultImageBgCircle.src : DefaultImageBgCircle.src,
     });
   }, [formData, template, uploadedImage]);
 
-  console.log('%c [ uploadedImage ]-607', 'font-size:13px; background:pink; color:#bf2c9f;', uploadedImage)
   const fileInputRef = useRef(null);
-
-  /** Fetch template */
   useEffect(() => {
+    
     const fetchTemplate = async () => {
       try {
         if(templateId){
@@ -1466,13 +1467,9 @@ const DynamicTemplateRenderer = () => {
           setError(result.message || "Failed to fetch template");
         } else {
           const selectedTemplate = result?.template;
-          console.log('%c [ selectedTemplate ]-626', 'font-size:13px; background:pink; color:#bf2c9f;',  selectedTemplate?.configs?.bgImageHeight)
-
           if (selectedTemplate) {
-            let { cssCode, jsCode, fontUrls, backgroundUrl } =
+            let { cssCode, jsCode, fontUrls, backgroundUrl, } =
               selectedTemplate.configs;
-
-            // Use the absolute background URL from API
             if (backgroundUrl) {
               cssCode = cssCode.replace(
                 /url\((['"]?).*?\1\)/g,
@@ -1502,12 +1499,15 @@ const DynamicTemplateRenderer = () => {
               bgImageHeight: selectedTemplate?.configs?.bgImageHeight || "",
               charLimits: selectedTemplate.configs?.charLimits || {},
               dateFormatCase: selectedTemplate?.configs?.dateFormatCase || "1",
+              templateInfo: selectedTemplate?.configs?.templateinfo || {},
               image: uploadedImage
                         ? uploadedImage
                         : cropShape === "round"
                         ? DefaultImageBgCircle.src
-                        : DefaultImageBgRectangle.src,
+                        : DefaultImageBgCircle.src,
+                        
             });
+            
           } else {
             setError("Template not found");
           }
@@ -1521,9 +1521,9 @@ const DynamicTemplateRenderer = () => {
     };
 
     fetchTemplate();
+    
   }, [templateId]);
 
-  /** Fetch event details (Edit Mode) */
   const fetchOrderDetails = async () => {
     try {
       const res = await fetch(
@@ -1580,8 +1580,6 @@ const DynamicTemplateRenderer = () => {
   const charLimit = template?.charLimits?.[name]
     ? parseInt(template.charLimits[name])
     : Infinity;
-
-  // Always allow change but trim if exceeds limit
   const newValue = value.length > charLimit ? value.slice(0, charLimit) : value;
 
   setFormData((prev) => ({ ...prev, [name]: newValue }));
@@ -1596,9 +1594,6 @@ const DynamicTemplateRenderer = () => {
     setFormErrors((prev) => ({ ...prev, [name]: "" }));
   }
 };
-
-
-
 
     const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.1, 3));
@@ -1660,7 +1655,7 @@ const DynamicTemplateRenderer = () => {
           const croppedUrl = URL.createObjectURL(blob);
           setUploadedImage(croppedUrl);
         }
-        setCropImage(null); // Close cropper
+        setCropImage(null); 
       }, "image/png", 1.0);
     } catch (err) {
       console.error("Crop failed:", err);
@@ -1675,7 +1670,7 @@ const DynamicTemplateRenderer = () => {
     const url = URL.createObjectURL(file);
     setUploadedImage(url);
     setOriginalImage(url);
-    setCropImage(url); // Open cropper with uploaded image
+    setCropImage(url); 
   };
 
   const handleEditImage = () => {
@@ -1775,25 +1770,25 @@ const DynamicTemplateRenderer = () => {
   };
 
 const renderHTML = (jsCode, rawData) => {
-  // Handle conditional blocks: {{#if key}} ... {{/if}}
+  if (!jsCode) return "";
+
+  // Handle conditional blocks
   jsCode = jsCode.replace(/{{#if (.*?)}}([\s\S]*?){{\/if}}/g, (_, key, inner) => {
     const value = rawData[key.trim()];
     if (value) {
-      // replace inner placeholders normally
-      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => {
-        return rawData[innerKey.trim()] || "";
-      });
+      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => rawData[innerKey.trim()] || "");
     }
     return "";
   });
 
-  // Handle normal placeholders: {{key}}
+  // Handle all {{variables}} (works for both CSS and text)
   return jsCode.replace(/{{(.*?)}}/g, (_, key) => {
     try {
-      return key
+      const val = key
         .trim()
         .split(".")
-        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData) || "";
+        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData);
+      return val ?? "";
     } catch {
       return "";
     }
@@ -1802,31 +1797,136 @@ const renderHTML = (jsCode, rawData) => {
 
 
 
-  if (loading) return <SequentialLoader />;
+useEffect(() => {
+  if (template?.jsCode && dataForTemplate && scaledData) {
+    const combinedData = { ...dataForTemplate, ...scaledData };
+    const html = renderHTML(template.jsCode, combinedData);
+    setRenderedHTML(html);
+  }
+}, [template, dataForTemplate, scaledData]);
+ useEffect(() => {
+  const updateHeight = () => {
+    if (imgRef.current) {
+      const height = imgRef.current.clientHeight;
+      setImgHeight(height);
+      console.log('Image height:', height);
+    }
+  };
+
+  const img = imgRef.current;
+
+  if (img?.complete) {
+    updateHeight();
+  } else {
+    img?.addEventListener("load", updateHeight);
+  }
+
+  return () => {
+    img?.removeEventListener("load", updateHeight);
+  };
+}, []);
+
+
+
+
+const handleImageLoad = () => {
+  if (!imgRef.current || !template?.templateInfo) return;
+
+  const {
+    templateWidth,
+    templateHeight,
+    templateNameSize,
+    templateNamePosition,
+    templateDateTimeSize,
+    templateDateTimePosition,
+    templateAddressSize,
+    templateAddressPosition,
+    templateNamelineHeight,
+    templateAddresslineHeight,
+    templateDatetimelineHeight,
+    templatedayfontSize,
+    templatedayposition,
+    templateCirclePosition = 0,
+    templateCircleWidth = 0,
+    templateCircleHeight = 0,
+  } = template.templateInfo;
+
+  console.log("templateHeight-----------",templateHeight);
+  
+  if (!templateWidth || !templateHeight) {
+    console.warn("Missing template dimensions");
+    return;
+  }
+
+  const screenWidth = window.innerWidth;
+  console.log("screenWidth:", screenWidth);
+
+  const ratio = (templateWidth - screenWidth) / templateWidth;
+  const scaleFactor = 1 - ratio;
+ const newScaledData = {
+    imgHeight: scaleFactor * templateHeight,
+    nameFontSize: scaleFactor * templateNameSize,
+    nameLineHeight: (scaleFactor * templateNameSize + templateNamelineHeight),
+    namePosition: scaleFactor * templateNamePosition,
+    dateTimeFontSize: scaleFactor * templateDateTimeSize,
+    dateTimeLineHeight: (scaleFactor * templateDateTimeSize + templateDatetimelineHeight),
+    dateTimePosition: scaleFactor * templateDateTimePosition,
+    addressFontSize: scaleFactor * templateAddressSize,
+    addressLineHeight: (scaleFactor * templateAddressSize * templateAddresslineHeight),
+    addressPosition: scaleFactor * templateAddressPosition,
+    imgCirclePosition: scaleFactor * templateCirclePosition,
+    imgCircleHeight: scaleFactor * templateCircleHeight,
+    imgCircleWidth: scaleFactor * templateCircleWidth,
+    dayFontSize: scaleFactor * templatedayfontSize,
+    dayPosition: scaleFactor * templatedayposition,
+  };
+  // ✅ Update states
+  
+  setScaledData(newScaledData);
+  setAspectRatioTemplate(ratio);
+  setImgHeight(imgHeight);
+  setNameFontSize(nameFontSize);
+  setDateTimeFontSize(dateTimeFontSize);
+  setAddressFontSize(addressFontSize);
+  setNamePosition(namePosition);
+  setDateTimePosition(dateTimePosition);
+  setAddressPosition(addressPosition);
+  setImgCirclePosition(imgCirclePosition);
+  setImageCircleHeight(imgCircleHeight);
+  setImageCircleWidth(imgCircleWidth);
+setnameLineHeight (nameLineHeight)
+setaddressLineHeight(addressLineHeight)
+setdateTimeLineHeight(dateTimeLineHeight)
+setDayFontSize(dayFontSize)
+setDayPosition(dayPosition)
+};
+
+
+useEffect(() => {
+  if (imgRef.current?.complete) {
+    handleImageLoad();
+  }
+}, []);
+
+
+ 
+
+  if (loading) return <p>Loading template...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div className="d-flex justify-content-center">
-      <div style={{ padding: "10px", maxWidth: '500px', width: '100%' }}>
+      <div style={{ padding: "10px" ,  width: '100%' }}>
       <div
         ref={templateRef}
         className="template-container"
-        style={{
-          backgroundImage: template?.bgImageName
-            ? `url('/assets/templates/${template?.bgImageName}')`
-            : "none",
-          backgroundSize: "100% 100%",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          // maxHeight: template?.bgImageHeight ? `${template?.bgImageHeight}px` : '530px',
-          maxHeight: '530px',
-          maxWidth: "480px",
-          width: "100%",
-          borderRadius: "10px",
-          position: "relative",
-        }}
+        style={{position: 'relative' }}
       >
-        {/* Fonts */}
+        <img  ref={imgRef}  src={`/assets/templates/${template?.bgImageName}`}  id='bg-image' alt="bg" 
+        onLoad={handleImageLoad}
+        />
+
+        {/* Fonts  */}
         {template?.fontUrls?.map((url, idx) => (
           <link key={idx} href={url} rel="stylesheet" />
         ))}
@@ -1837,31 +1937,34 @@ const renderHTML = (jsCode, rawData) => {
         )}
 
         {/* Template HTML */}
-        {template?.jsCode && (
-          <div
-            style={{ position: "relative", zIndex: 2 }}
-            dangerouslySetInnerHTML={{
-              __html: renderHTML(template.jsCode, dataForTemplate),
-            }}
-          />
-        )}
+     {renderedHTML && (
+  <div
+    style={{ position: "absolute", zIndex: 2, top: 0, left: 0, right: 0, bottom: 0 }}
+    dangerouslySetInnerHTML={{ __html: renderedHTML }}
+  />
+)}
 
-        
+      {/* <div class="invite-template-wrapper">
+  <div class="invite-template-card" style="height:{{imgHeight}}px;">
+  
 
-        {/* <div style={{ position: "relative", zIndex: 2 }}>
-            <div class="invite-template-wrapper">
-        <div class="invite-template-card">
+    <div class="name" style="font-size:{{nameFontSize}}px; top:{{namePosition}}px; position:absolute; line-height:{{nameLineHeight}}px;">
+      {{name}}
+    </div>
 
-        {dataForTemplate?.image &&
-  <div class='template-image-wrapper'>
-    <img src={dataForTemplate?.image} alt="host image" class='template-image' />
+    <div class="date-wrapper" style="top:{{dateTimePosition}}px; position:absolute; line-height:{{dateTimeLineHeight}}px;">
+      <span class="month" style="font-size:{{dateTimeFontSize}}px;">{{month}}</span>
+      <span class="day" style="font-size:30px;">{{day}}</span>
+      <span class="time" style="font-size:{{dateTimeFontSize}}px;">{{time}}PM.</span>
+    </div>
+
+    <div class="address" style="font-size:{{addressFontSize}}px; top:{{addressPosition}}px; position:absolute; line-height:{{addressLineHeight}}px;">
+      {{address}}
+    </div>
   </div>
-}
-          <div class="name">{dataForTemplate?.name}</div>
-            <div class="date"><span>{dataForTemplate?.date}</span></div>
-        </div>
-        </div>
-        </div> */}
+</div> */}
+
+ 
       </div>
 
       {/* Form */}
