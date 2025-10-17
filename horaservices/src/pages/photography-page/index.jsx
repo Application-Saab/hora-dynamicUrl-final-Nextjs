@@ -35,13 +35,7 @@ import photo7 from "@/assets/cardphoto/photo7.jpg"
 import photo8 from "@/assets/cardphoto/photo8.jpg"
 import photo9 from "@/assets/cardphoto/photo9.jpg"
 import photo10 from "@/assets/cardphoto/photo10.png"
-import GalleryImage from "@/assets/GalleryImage.jpg"
-import wedding from "@/assets/wedding.jpeg"
-import prewedding from "@/assets/pre-wedding.jpeg"
-import corporateshoot from "@/assets/corporate-shoot.jpeg"
-import babyshowershoot from "@/assets/babyshower-shoot.jpg"
-import maternityshoot from "@/assets/maternity-shoot.jpeg"
-import birthdayshoot from "@/assets/birthday-shoot.jpeg"
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -50,102 +44,13 @@ import google from "../../assets/google.jpg";
 import PhotoGraphyCard from '@/components/PhotoGraphyCard';
 import PhotoGraphyCardgrid from '@/components/photoGraphyCardGrid';
 import PhotographysliderSection from '@/components/photographysliderSection';
+import {photoCat}  from "@/utils/photoCategories.js";
 const index = () => {
-  const schemaOrg = getPhotographyOrganizationSchema();
-const scriptTag = JSON.stringify(schemaOrg);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [discountPercentage, setDiscountPercentage] = useState(0); 
-  const [discountedPrice, setDiscountedPrice] = useState(0); 
-  const [discountDifference, setDiscountDifference] = useState(0);
+
   const router = useRouter();
-  const { catvalue } = router.query;
- let { city } = router.query;
 
- const viewMoreProduct = (work, activeTab) => {
-   router.push({
-      pathname: `/photography-page/product/${work._id}`,
-      query: {
-        product: JSON.stringify(work),
-        tagId: tagIds[activeTab],  
-      },
-    });
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: 'photography_view_more_click',
-    eventCategory: 'photography',
-    eventAction: 'view_more_click',
-    eventLabel: work?.title || work?.name || 'Unknown Product',
-    productId: work?._id,
-    tabName: activeTab,
-  });
+
  
-  };
-
-  const getDiscountedPrice = (price) => {
-    let discount;
-
-    // Determine the discount percentage based on the item price
-    if (price < 3000) {
-      discount = 20; // 20% discount
-    } else if (price >= 3000 && price <= 5000) {
-      discount = 27; // 27% discount
-    } else {
-      discount = 35; // 35% discount for prices above 5000
-    }
-
-    const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
-    const discountDifference = Math.abs(price - discountedPrice);;
-    return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
-  };
-
-
-  const fetchData = useCallback(async (tagId) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
-      );
-      const productData = response.data.data.map(item => {
-        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);
-        return {
-          ...item,
-          discountPercentage: discount,
-          discountedPrice,
-          discountDifference
-        };
-      });
-      setProducts(productData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setProducts([]);
-    }
-    finally {
-      setLoading(false); // Stop loading
-    }
-  }, []);
-
-
-
-  const sendToCheckoutPage = (product) => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: product.name,
-    });
-    console.log("Data sent to dataLayer:");
-    router.push({
-      pathname: 'photography-checkout',
-      query: {
-        from: window.location.pathname,
-        product: JSON.stringify(product),
-        totalAmount: product.price,
-      }
-    });
-  };
-
-
 const firePoseClickEvent = (poseCategory) => {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
@@ -198,44 +103,7 @@ const cardsgrid = [
   return (
     <>
       <div>
-        <Head>
-  <title>
-    {city
-      ? `HORA Photography in ${city} | Professional Event Photography – Birthdays, Weddings & More – Starting at ₹3500`
-      : 'HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500'}
-  </title>
-    <meta
-    name="description"
-    content={
-      city
-        ? `📸 Capture Every Moment in ${city}! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉 in ${city}, our professional photographers are here to make your moments look as magical as they felt.`
-        : `📸 Capture Every Moment, Forever! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt.`
-    }
-  />
-   <meta
-    name="keywords"
-    content="couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, 
-    couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, 
-    pregnancy photo shoot, photography in pregnancy, pregnant women photoshoot, motherhood photoshoot, pregnant ladies photoshoot, couple pregnancy photoshoot, seemantham photoshoot, pregnancy photoshoot in bangalore, newborn photography, infant photography,
-     baby photography near me, newborn photography near me, newborn photoshoot, infant photographers near me, newborn portraits near me, newborn family photoshoot, family photography with newborn, cake smash photoshoot, first birthday cake smash photoshoot, 
-     engagement photo shoot, engagement photoshoot, engagement couple photography, engagement photography, wedding photographer, wedding photographer near me, wedding photoshoot, photographer wedding, candid wedding photography, marriage photoshoot, post wedding photoshoot, 
-     bridal photoshoot, traditional photography, wedding photographers in bangalore, marriage photographers in bangalore, birthday photoshoot, first birthday photoshoot, pre birthday photoshoot, birthday celebration photoshoot, birthday photo session, 18th photoshoot, 
-     birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, 
-     photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
-  />
-  <meta property="og:title" content="HORA Photography : Professional photography for all events" />
-  <meta
-    property="og:description"
-    content="Professional event photography for weddings, birthdays, baby showers, and more. Book today for stunning, affordable memories — starting at just ₹3500!"
-  />
-  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-  <meta property="og:url" content="https://horaservices.com/photography" />
-  <meta property="og:type" content="website" />
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="Hora Services" />
-  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-  <script type="application/ld+json">{scriptTag}</script>
-</Head>
+  
         <div className="party-services homeslider">
           <div className="image-banner-slider">
             <Swiper
@@ -258,71 +126,37 @@ const cardsgrid = [
           </div>
         </div>
 
-    <div className="gridContainer">
-      {cards.map((card, index) => (
-        <PhotoGraphyCard key={index} src={card.src} title={card.title} />
-      ))}
-    </div>
+   <div className="gridContainer">
+  {photoCat.slice(0, 6).map((item) => (
+    <PhotoGraphyCard
+      key={item.id}
+      src={item.image}
+      title={item.name}
+      subCategory={item.subCategory}
+    />
+  ))}
+</div>
+
+    
       
-         <PhotographysliderSection
+         {/* <PhotographysliderSection
         title="Standard Packages"
-        tagId="66c96b4e22ed47b72117e09a" 
-      />
-
-  <div className="gridContainersec">
-      {cardsgrid.map((cardsgrid, index) => (
-        <PhotoGraphyCardgrid key={index} src={cardsgrid.src} title={cardsgrid.title} />
-      ))}
-    </div>
-
-        <h2 className="gallery-heading">
-        <Image
-          src={GalleryImage}
-          alt="camera"
-          style={{ width: '40px', height: '40px' }}
-        />
-        Our Gallery
-      </h2>
-      <div >
-        <section className="collage-flex-row">
-          <div className="side-img image-box">
-            <Image src={wedding} alt="Wedding" />
-            <div className="image-label">Wedding</div>
-          </div>
-
-          <div className="center-grid">
-            <div className="image-box">
-              <Image src={prewedding} alt="pre-Wedding" />
-              <div className="image-label">pre-Wedding</div>
-            </div>
-            <div className="image-box" >
-              <Image src={corporateshoot} alt="Corporate" />
-              <div className="image-label">Corporate</div>
-            </div>
-            <div className="image-box">
-              <Image src={maternityshoot} alt="Maternity" />
-              <div className="image-label">Maternity</div>
-            </div>
-            <div className="image-box">
-              <Image src={babyshowershoot} alt="baby shower" />
-              <div className="image-label">Baby Shower</div>
-            </div>
-          </div>
-
-          <div className="side-img image-box">
-            <Image src={birthdayshoot} alt="Maternity" />
-            <div className="image-label">Birthday</div>
-          </div>
-        </section>
-      </div>
-      <div className="gallery-see-more">
-        <a href="/gallery" className="see-more-btn">
-          See More <span className="arrow-circle">&gt;</span>
-        </a>
-      </div>
+        tagId="66c96b2a22ed47b72117e089" 
+      /> */}
 
 
+    <div className="gridContainersec">
+  {photoCat.slice(6, 10).map((item) => (
+    <PhotoGraphyCardgrid
+      key={item.id}
+      src={item.image}
+      title={item.name}
+      subCategory={item.subCategory}
+    />
+  ))}
+</div>
 
+      
         <div class="suggested-poses">
           <div class="suggested-poses-section">
             <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
@@ -501,8 +335,7 @@ const cardsgrid = [
 
         <div class="trust-section">
           <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
-          {/* <h3 class="trust-subtitle">Ashu Tiwari</h3>
-        <div class="stars"> ★★★★★</div> */}
+
           <div className="review">
             <Swiper
               modules={[Pagination, Autoplay]}
@@ -523,13 +356,7 @@ const cardsgrid = [
 
 
 
-          {/* <div class="user-quote">
-          <img src="user.jpg" alt="Tara Sutara" class="profile-img" />
-          <div>
-            <div class="quote">"I absolutely love their work! Highly recommended."</div>
-            <p class="name">Tara sutara</p>
-          </div>
-        </div> */}
+  
 
           <div class="stats-grid">
             <div class="stat-box">
@@ -555,92 +382,7 @@ const cardsgrid = [
 
 
 
-        <div className="keywords-box">
- 
-  <p className="keyword-text">
-    {[
-      "couple photoshoot",
-      "romantic photoshoot for couples",
-      "pre wedding photoshoot",
-      "pre wedding photography",
-      "couple pre wedding photography",
-      "candid pre wedding shoot",
-      "pre bridal photography",
-      "pre wedding shoot price",
-      "pre wedding shoot in bangalore",
-      "couples photography",
-      "maternity photoshoot",
-      "maternity photoshoot near me",
-      "maternity photo sessions",
-      "maternity photoshoot in bangalore",
-      "maternity couple photoshoot",
-      "mother to be photoshoot",
-      "maternity shoot near me",
-      "pregnancy photoshoot near me",
-      "pregnancy photo shoot",
-      "photography in pregnancy",
-      "pregnant women photoshoot",
-      "motherhood photoshoot",
-      "pregnant ladies photoshoot",
-      "couple pregnancy photoshoot",
-      "seemantham photoshoot",
-      "pregnancy photoshoot in bangalore",
-      "newborn photography",
-      "infant photography",
-      "baby photography near me",
-      "newborn photography near me",
-      "newborn photoshoot",
-      "infant photographers near me",
-      "newborn portraits near me",
-      "newborn family photoshoot",
-      "family photography with newborn",
-      "cake smash photoshoot",
-      "first birthday cake smash photoshoot",
-      "engagement photo shoot",
-      "engagement photoshoot",
-      "engagement couple photography",
-      "engagement photography",
-      "wedding photographer",
-      "wedding photographer near me",
-      "wedding photoshoot",
-      "photographer wedding",
-      "candid wedding photography",
-      "marriage photoshoot",
-      "post wedding photoshoot",
-      "bridal photoshoot",
-      "traditional photography",
-      "wedding photographers in bangalore",
-      "marriage photographers in bangalore",
-      "birthday photoshoot",
-      "first birthday photoshoot",
-      "pre birthday photoshoot",
-      "birthday celebration photoshoot",
-      "birthday photo session",
-      "18th photoshoot",
-      "birthday party photographer",
-      "event photography",
-      "photoshoot for wedding anniversary",
-      "anniversary photoshoot",
-      "candid photography",
-      "cinematic photography",
-      "fashion photography",
-      "model photography",
-      "black and white photography",
-      "landscape photography",
-      "portrait photography",
-      "photographers near me",
-      "professional photographer near me",
-      "professional photographer",
-      "freelance photographer",
-      "best photographers near me",
-      "photoshoot near me",
-      "photographer in bangalore",
-      "photography in bangalore",
-      "bangalore photoshoot",
-      "photography services"
-    ].join(", ")}
-  </p>
-</div>
+   
 
       </div>
     </>

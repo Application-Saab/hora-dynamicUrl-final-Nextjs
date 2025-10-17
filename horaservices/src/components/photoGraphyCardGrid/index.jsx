@@ -2,11 +2,11 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import "./photoGraphyCardgrid.css";
 
-export default function PhotoGraphyCardgrid({ src, title }) {
+export default function PhotoGraphyCardgrid( {src, title, subCategory }) {
   const router = useRouter();
-   const handleViewMore = () => {
-    const slug = title.trim().replace(/\s+/g, "-");
-    router.push(`/photography-page/${slug}`);
+ const handleViewMore = () => {
+    if (!subCategory) return; // safety check
+    router.push(`/photography-page/${subCategory}`);
   };
   return (
     <div className="cardgrid">
@@ -23,6 +23,8 @@ export default function PhotoGraphyCardgrid({ src, title }) {
     </div>
   );
 }
+
+
 
 
 
