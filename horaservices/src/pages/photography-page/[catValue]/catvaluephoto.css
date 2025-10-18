@@ -20,7 +20,7 @@
   position: relative;
   background: #FFFFFF;
   border-radius: 18.26px;
-  border: 2px solid #BABABA;
+  border: 1px solid #BABABA;
   overflow: hidden; 
   transition: transform 0.3s ease;
 }
@@ -74,7 +74,7 @@
 .work-image-overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.3);
   mix-blend-mode: multiply;
   z-index: 1;
 }
@@ -84,11 +84,11 @@
   z-index: 2;
   font-family: 'Mada', sans-serif !important;
   font-weight: 500;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 20px;
   text-align: center;
   color: white;
-  padding: 6px 12px;
+  margin-bottom: 0.1px !important;
   width: 100%;
   text-shadow:
     -1px -1px 0 #525151,
