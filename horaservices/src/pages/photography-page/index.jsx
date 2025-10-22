@@ -139,10 +139,14 @@ const cardsgrid = [
 
     
       
-         {/* <PhotographysliderSection
+         <PhotographysliderSection
         title="Standard Packages"
         tagId="66c96b2a22ed47b72117e089" 
-      /> */}
+      //     key={item.id}
+      // src={item.image}
+      // title={item.name}
+      // subCategory={item.subCategory}
+      />
 
 
     <div className="gridContainersec">

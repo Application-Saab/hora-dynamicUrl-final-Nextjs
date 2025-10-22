@@ -3,22 +3,28 @@ import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Head from "next/head";
-import photographyAddOns from "../../../utils/photographyAddOns.json";
-import productsData from '../../../utils/photoGraphyImages.js';
-import { faqData } from '../../../utils/photographyFAQData.js'
-import { getPhotographyOrganizationSchema } from "../../../utils/schema";
+import photographyAddOns from "@/utils/photographyAddOns.json";
+import productsData from '@/utils/photoGraphyImages.js';
+import { faqData } from '@/utils/photographyFAQData.js'
+import { getPhotographyOrganizationSchema } from "@/utils/schema";
 // import addOnProductsData from '../../../utils/addOnProduct.json';
-import cancellation from "../../../assets/Cancellation.svg"
-import PROFESSIONALPHOTOGRAPHERS from "../../../assets/professionalPhoto.png";
-import SECURESTORAGE from "../../../assets/secureStorage.png";
-import SUPPORT from "../../../assets/support.png";
+import cancellation from "@/assets/Cancellation.svg"
+import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
+import SECURESTORAGE from "@/assets/secureStorage.png";
+import SUPPORT from "@/assets/support.png";
 import "./productDetails.css";
+import {
+  BASE_URL,
+
+} from "@/utils/apiconstants";
 import { FaQuestionCircle } from "react-icons/fa";
 const ProductDetails = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
   const router = useRouter();
-  const { productId, product } = router.query;
+  const { query } = useRouter();
+const productId = query.id;
+  const {  product } = router.query;
   console.log(product)
   const [work, setWork] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,6 +42,7 @@ const ProductDetails = () => {
   const tagId = parsedProduct?.tag?.[0];
   const addonRef = useRef(null);      // Scroll target inside modal
   const customizationRef = useRef(null);
+
   const calculateTotalPrice = (productPrice) => {
     let totalPrice = Number(productPrice);
     selectedAddOnProduct.forEach(item => {
@@ -188,53 +195,30 @@ const ProductDetails = () => {
     });
   };
 
-  useEffect(() => {
-    const fetchFromBackup = async () => {
-      try {
-        const res = await axios.get(
-          'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
-        );
-        const allWorks = res.data.data;
-        const matched = allWorks.find((item) => item._id === productId);
-        if (matched) {
-          const price = Number(matched.price);
-          const { discount, discountedPrice, discountDifference } = getDiscountedPrice(price);
-          setWork({
-            ...matched,
-            price,
-            discountedPrice,
-            discountPercentage: discount,
-            discountDifference,
-          });
-        }
-      } catch (err) {
-        console.error("Backup fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    if (product) {
-      try {
-        const parsed = JSON.parse(product);
-        const price = Number(parsed.price);
-        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(price);
-        setWork({
-          ...parsed,
-          price,
-          discountedPrice,
-          discountPercentage: discount,
-          discountDifference,
-        });
-        setLoading(false);
-      } catch (err) {
-        console.error("Invalid product JSON in query:", err);
-        fetchFromBackup();
-      }
-    } else {
-      fetchFromBackup();
+
+
+useEffect(() => {
+  if (!productId) return;
+
+  const fetchProductDetails = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
+      const data = res.data?.data;
+      if (!data) throw new Error("No product found");
+      setWork(data); // everything comes from API now
+    } catch (err) {
+      console.error("Error fetching product details:", err.message);
+      setWork(null);
+    } finally {
+      setLoading(false);
     }
-  }, [product, productId]);
+  };
+
+  fetchProductDetails();
+}, [productId]);
+
+
 
   if (loading) return <div className="photodetails-loading" >Loading...</div>;
   if (!work) return <div className="photodetails-loading">Work not found</div>;
@@ -402,7 +386,10 @@ const ProductDetails = () => {
 
       <div className="photodetails-price-section">
         <span className="photodetails-discounted">₹ {work.price}</span>
-        <span className="photodetails-original">₹ {Math.floor(work.discountedPrice.toFixed(2))} </span>
+        {/* <span className="photodetails-original">₹ {Math.floor(work.discountedPrice.toFixed(2))} </span> */}
+<span className="photodetails-original">
+  ₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}
+</span>
 
         <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
       </div>

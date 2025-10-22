@@ -1,7 +1,7 @@
 export const photoCat = [
   {
     id: "1",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Birthday-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Birthday-Photography.jpg",
     name: "Birthday-Photography",
     subCategory: "Birthday-Photography",
     catValue: "Birthday-Photography",
@@ -9,7 +9,7 @@ export const photoCat = [
   },
    {
     id: "2",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Anniversary-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Anniversary-Photography.jpg",
     name: "Anniversary Photography",
     subCategory: "Anniversary-Photography",
     catValue: "Anniversary-Photography",
@@ -17,7 +17,7 @@ export const photoCat = [
   },
   {
     id: "3",
-    image: "https://horaservices.com/api/uploads/compressed_webp/House-warming-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/House-warming-Photography.jpg",
     name: "House Warming Photography",
     subCategory: "House-Warming-Photography",
     catValue: "House-Warming-Photography",
@@ -25,7 +25,7 @@ export const photoCat = [
   },
    {
     id: "4",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Naming-ceremony-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Naming-ceremony-Photography.jpg",
     name: "Naming Ceremony Photography",
     subCategory: "Naming-Ceremony-Photography",
     catValue: "Naming-Ceremony-Photography",
@@ -33,7 +33,7 @@ export const photoCat = [
   },
    {
     id: "5",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Bachelorette-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Bachelorette-Photography.jpg",
     name: "Bachelorette Photography",
     subCategory: "Bachelorette-Photography",
     catValue: "Bachelorette-Photography",
@@ -41,7 +41,7 @@ export const photoCat = [
   },
   {
     id: "6",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Baby-Shower-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Baby-Shower-Photography.jpg",
     name: "Baby Shower Photography",
     subCategory: "Baby-Shower-Photography",
     catValue: "Baby-Shower-Photography",
@@ -49,7 +49,7 @@ export const photoCat = [
   },
   {
     id: "7",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.jpg",
     name: "Wedding Photography",
     subCategory: "Wedding-Photography",
     catValue: "Wedding-Photography",
@@ -57,7 +57,7 @@ export const photoCat = [
   },
   {
     id: "8",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Engagement-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Engagement-Photography.jpg",
     name: "Engagement Photography",
     subCategory: "Engagement-Photography",
     catValue: "Engagement-Photography",
@@ -65,7 +65,7 @@ export const photoCat = [
   },
   {
     id: "9",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Maternity-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Maternity-Photography.jpg",
     name: "Maternity Photography",
     subCategory: "Maternity-Photography",
     catValue: "Maternity-Photography",
@@ -74,7 +74,7 @@ export const photoCat = [
   
   {
     id: "10",
-    image: "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+    image: "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.png",
     name: "New Born Baby Photography",
     subCategory: "New-Born-Baby-Photography",
     catValue: "New-Born-Baby-Photography",
