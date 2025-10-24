@@ -71,10 +71,10 @@
   z-index: 0;
 }
 
-.work-image-overlay {
+.work-image-over {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  /* background-color: rgba(0, 0, 0, 0.3); */
   mix-blend-mode: multiply;
   z-index: 1;
 }

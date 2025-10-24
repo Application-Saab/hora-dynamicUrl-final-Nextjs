@@ -348,9 +348,10 @@ export default function CatValuePage() {
       ) : products.length > 0 ? (
         <div className="work-container">
           {products.map((work) => {
-            const imagePath = work.featured_image
-              ? `/photographyImages/${work.featured_image}`
-              : "/default.jpg";
+  //        const imagePath = work.featured_image
+  // ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
+  // : "/default.jpg";
+
 
             return (
               <div className="work-item" key={work._id}>
@@ -361,13 +362,17 @@ export default function CatValuePage() {
                 <div className="work-image-wrapper">
                   <div className="work-image">
                     <Image
-                      src={imagePath}
+             src={
+        work.featured_image
+          ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
+          : "/default.jpg"
+      }
                       alt={work.name || "Photography"}
                       width={300}
                       height={200}
                       className="work-img"
                     />
-                    <div className="work-image-overlay" />
+                    <div className="work-image-over" />
                     <h5 className="work-title">{work.name}</h5>
                   </div>
                 </div>
