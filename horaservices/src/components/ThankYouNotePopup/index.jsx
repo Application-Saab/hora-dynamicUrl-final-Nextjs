@@ -728,30 +728,28 @@ const handleNameInput = (e) => {
       style={{ objectFit: "cover", borderRadius: "12px" }}
     />
 
-
 <div
-      ref={noteTextAreaRef}
-      className="preview-text"
-      contentEditable
-      suppressContentEditableWarning={true}
-      data-placeholder="Write your note here..."
-      onInput={handleNoteInput}
-      style={{
-        outline: "none",
-        cursor: "text",
-        whiteSpace: "pre-wrap",
-        wordWrap: "break-word",
-        fontWeight: "500",
-        fontSize: "15px",
-        fontFamily: "'Montserrat', sans-serif",
-        lineHeight: "1.5em",
-        minHeight: "12em", // 8 lines * 1.5em
-        maxHeight: "12em",
-        overflow: "hidden",
-      }}
-    >
-      {noteTitle}
-    </div>
+  ref={noteTextAreaRef}
+  className="preview-text"
+  contentEditable
+  suppressContentEditableWarning={true}
+  data-placeholder="Write your note here..."
+  onInput={(e) => setNoteTitle(e.currentTarget.innerText)}
+   onClick={() => setShowEmojiPicker(false)}
+  style={{
+    outline: "none",
+    cursor: "text",
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-word",
+    fontWeight: "500",
+    fontSize: "15px",
+    fontFamily: "'Montserrat', sans-serif",
+    lineHeight: "1.5em",
+    minHeight: "12em",
+    maxHeight: "12em",
+    overflow: "hidden",
+  }}
+/>
 
   <div
   ref={nameRef}
@@ -778,7 +776,10 @@ const handleNameInput = (e) => {
     {/* Emoji Picker Toggle */}
      <button
       type="button"
-      onClick={() => setShowEmojiPicker((prev) => !prev)}
+     onClick={() => {
+    setShowEmojiPicker((prev) => !prev);
+    noteTextAreaRef.current?.blur(); // ✅ input blur -> keyboard close
+  }}
       style={{
         position: "absolute",
         bottom: "20px",
@@ -799,6 +800,8 @@ const handleNameInput = (e) => {
         <EmojiPicker
           width={emojiWidth}
           searchDisabled={true}
+          skinToneDisabled={true}
+          suggestedEmojisMode="none"
           onEmojiClick={(emojiData) => {
             const sel = window.getSelection();
             const range = sel.getRangeAt(0);
@@ -810,7 +813,7 @@ const handleNameInput = (e) => {
             sel.addRange(range);
 
             setNoteTitle(document.querySelector(".preview-text").innerText);
-            setShowEmojiPicker(false);
+            // setShowEmojiPicker(false);
           }}
         />
       </div>
@@ -1099,9 +1102,11 @@ const handleNameInput = (e) => {
         <div
           style={{
             position: "absolute",
-            top: "52%",
+            top: "25%",
+            // top: "90px",
             left: "50%",
-            transform: "translate(-50%, -50%)",
+            // transform: "translate(-50%, -50%)",
+            transform: "translateX(-50%)", // sirf horizontally center
             width: "75%",
             textAlign: "left",
             fontWeight: "500",
@@ -1110,6 +1115,9 @@ const handleNameInput = (e) => {
             fontFamily: "'Montserrat', sans-serif",
             whiteSpace: "pre-wrap",
             wordWrap: "break-word",
+            minHeight: "12em",
+            maxHeight: "12em",
+            overflow: "hidden",
           }}
         >
           {noteTitle}

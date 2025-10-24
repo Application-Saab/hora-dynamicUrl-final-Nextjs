@@ -14,6 +14,7 @@ const RSVP_STATUS = {
 
 const GuestListPreview = ({ hostData, urlParams }) => {
   const [guestData, setGuestData] = useState([]);
+  console.log('%c [ guestData....@@@ ]-17', 'font-size:13px; background:pink; color:#bf2c9f;', guestData)
   const [guestDataRSVP, setGuestDataRSVP] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -1001,6 +1001,12 @@ body {
   z-index: 10000;
 }
 .lightbox-name {
+  position: absolute;
+  bottom : 11%;
+  left: 50%;
+  width: 90%;
+  max-width: 480px;
+  transform: translateX(-50%);
   text-align: center;
   margin-top: 8px;
   color: #FFFFFF;
@@ -1013,6 +1019,7 @@ body {
 
 .lightbox-toolbar {
   position: absolute;
+  bottom : 4%;
   /* bottom: -40px; */
   left: 50%;
   width: 90%;

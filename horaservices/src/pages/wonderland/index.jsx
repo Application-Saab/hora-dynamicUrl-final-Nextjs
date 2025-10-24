@@ -1200,6 +1200,11 @@ const handleImageUpload = async (e) => {
     }
     setErrorMsg("");
     setShowPopup(false);
+    setShowCheers(true);
+    setUploadProgress((prev) => ({
+        ...prev,
+        total: 1,
+      }))
     const canvas = await html2canvas(noteRef.current, {
       backgroundColor: null,
       useCORS: true,
@@ -1228,6 +1233,10 @@ const handleImageUpload = async (e) => {
             body: formData,
           }
         );
+        setUploadProgress((prev) => ({
+        ...prev,
+        percentage: 100,
+      }))
         setRefetchEventImages(!refetchEventImages);
         setNoteTitle("");
         setNoteBy("");
@@ -2080,12 +2089,12 @@ const getAvatarColor = (name) => {
                               style={{ width: uploadProgress.percentage * 3 }}
                             ></div>
                           </div>
-                          <div className="status-text mt-2">UPLOADING... {`${uploadProgress?.remaining}/${uploadProgress?.total}`}</div>
+                          <div className="status-text mt-2">UPLOADING... {`${uploadProgress?.uploaded}/${uploadProgress?.total}`}</div>
                         </>
                       )}
 
                       {/* Glass Cheers Animation */}
-                      {uploadProgress.percentage === 100 && (
+                      {(uploadProgress.percentage === 100) && (
                         <div className="glass-container">
                           {!hideCheers && (
                             <>
@@ -2209,7 +2218,7 @@ const getAvatarColor = (name) => {
 {isImageOpen && selectedImage && (
                   <div
                     className="custom-lightbox"
-                    onClick={() => setIsImageOpen(false)}
+                    // onClick={() => setIsImageOpen(false)}
                   >
                     <div
                       className="lightbox-inner"
@@ -2223,44 +2232,14 @@ const getAvatarColor = (name) => {
                           ✖
                         </button>
 
-                         <MediaViewer media={selectedImage} />
+                        <MediaViewer media={selectedImage} />
 
-                        {/* {selectedImage?.imageUrl?.match(
-                          /\.(mp4|mov|avi|mkv)$/i
-                        ) ? (
-                          <video
-                            autoPlay
-                            controls
-                            // controlsList="nodownload"
-                            playsInline
-                            className="lightbox-img"
-                            style={{
-                              maxWidth: "100%",
-                            }}
-                          >
-                            <source
-                              src={selectedImage?.imageUrl}
-                              type="video/mp4"
-                            ></source>
-                          </video>
-                        ) : (
-                          <img
-                            src={
-                              selectedImage.webpUrl || selectedImage.imageUrl
-                            }
-                            alt=""
-                            className="lightbox-img"
-                          />
-                        )} */}
+                      </div>
                         {selectedImage.name && (
                           <p className="lightbox-name">
                             Shared BY : {selectedImage.name}
                           </p>
                         )}
-
-                     
-
-                        {/* Toolbar */}
                         <div className="lightbox-toolbar">
                             <button
                               className="lightbox-btn"
@@ -2315,7 +2294,6 @@ const getAvatarColor = (name) => {
                             />
                           </button>
                         </div>
-                      </div>
                     </div>
                   </div>
                 )}

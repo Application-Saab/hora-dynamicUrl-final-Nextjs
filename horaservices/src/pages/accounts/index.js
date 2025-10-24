@@ -18,19 +18,20 @@ const AccountPage = () => {
   const [userData, setUserData] = useState({});
   const [errorFetchUser, setErrorFetchUser] = useState(false);
   const [loadingUser, setLoadingUser] = useState(false);
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
-const [showOtpLogin, setShowOtpLogin] = useState(false);
- const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showOtpLogin, setShowOtpLogin] = useState(false);
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const [showEditName, setShowEditName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [refetchUserData, setRefetchUserData] = useState(false);
   const [preview, setPreview] = useState(null);
   const [loadingUpload, setLoadingUpload] = useState(false);
-   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  
   useEffect(() => {
     // ✅ check login state from localStorage
     if (userId && token) {
@@ -39,14 +40,14 @@ const [showOtpLogin, setShowOtpLogin] = useState(false);
       setIsLoggedIn(false);
     }
   }, [userId, token]);
-   const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-     window.location.href = "/wonderland";
+    window.location.href = "/wonderland";
   };
- const handleLogin = () => {
-  setShowOtpLogin(true);   // ✅ redirect ke jagah OTP popup khulega
-};
+  const handleLogin = () => {
+    setShowOtpLogin(true); // ✅ redirect ke jagah OTP popup khulega
+  };
   useEffect(() => {
     const fetchEventImages = async () => {
       if (!userId) {
@@ -75,15 +76,14 @@ const [showOtpLogin, setShowOtpLogin] = useState(false);
         setLoadingUser(false);
       }
     };
-   
-     if (isLoggedIn) {
+
+    if (isLoggedIn) {
       fetchEventImages();
     }
-  }, [userId, token, isLoggedIn,refetchUserData]);
+  }, [userId, token, isLoggedIn, refetchUserData]);
 
-const handleOrderClick = () => {
+  const handleOrderClick = () => {
     window.location.href = "https://horaservices.com/orderlist";
-    
   };
   const handleNameSubmit = async (e) => {
     setEditLoading(true);
@@ -160,17 +160,16 @@ const handleOrderClick = () => {
           },
         }
       );
-if (response.ok) {
-  const data = await response.json();
-  if (data?.data?.avatar) {
-    setUserData((prev) => ({
-      ...prev,
-      avatar: data.data.avatar,
-    }));
-  }
-  setPreview(null);
-}
- else {
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.data?.avatar) {
+          setUserData((prev) => ({
+            ...prev,
+            avatar: data.data.avatar,
+          }));
+        }
+        setPreview(null);
+      } else {
         setLoadingUpload(false);
         const error = await response.json();
         alert("Submission failed: " + (error.message || error.error));
@@ -188,116 +187,112 @@ if (response.ok) {
     <>
       <div className="account-ctn">
         <div className="details-ctn">
-       
           <div className="user-img-ctn">
-  <img
-    src={
-      preview?.url
-        ? preview.url
-        : userData?.avatar
-        ? userData.avatar
-        : "https://avatar.iran.liara.run/public/12"
-    }
-    height={100}
-    width={100}
-    className="user-img"
-    onClick={() => document.getElementById("userAvatarImage").click()}
-  />
-  {/* {loadingUpload && <span className="loader"></span>} */}
-  <input
-    type="file"
-    id="userAvatarImage"
-    accept="image/*"
-    onChange={handleFileChange}
-  />
-</div>
-
-             {isLoggedIn && (
-          <div>
-            <p
-              className="account-name"
-              onClick={() => {
-                setEditedName(userData?.name);
-                setShowEditName(true);
-              }}
-            >
-              {userData?.name || "Your Name"}
-              <span className="ms-1"></span>
-            </p>
+            <img
+              src={
+                preview?.url
+                  ? preview.url
+                  : userData?.avatar
+                  ? userData.avatar
+                  : "https://avatar.iran.liara.run/public/12"
+              }
+              height={100}
+              width={100}
+              className="user-img"
+              onClick={() => document.getElementById("userAvatarImage").click()}
+            />
+            {/* {loadingUpload && <span className="loader"></span>} */}
+            <input
+              type="file"
+              id="userAvatarImage"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
           </div>
-             )}
-           {isLoggedIn && (
+
+          {isLoggedIn && (
+            <div>
+              <p
+                className="account-name"
+                onClick={() => {
+                  setEditedName(userData?.name);
+                  setShowEditName(true);
+                }}
+              >
+                {userData?.name || "Your Name"}
+                <span className="ms-1"></span>
+              </p>
+            </div>
+          )}
+          {isLoggedIn && (
+            <div
+              className="contact-ctn"
+              style={{ cursor: "pointer" }}
+              onClick={handleOrderClick}
+            >
+              <div className="contact-item">
+                <Image src={myordericon} height={18} width={18} />
+                <p>My Order</p>
+              </div>
+              <div>
+                <Image src={ArrowIcon} />
+              </div>
+            </div>
+          )}
+
+          {isLoggedIn && (
+            <div className="contact-ctn">
+              <div className="contact-item">
+                <Image src={CallIcon} height={18} width={18} />
+                <p>
+                  {userData?.phone?.includes(91)
+                    ? userData?.phone
+                    : `+91${userData?.phone}`}
+                </p>
+              </div>
+              {/* <div>
+              <Image src={ArrowIcon} />
+            </div> */}
+            </div>
+          )}
           <div
             className="contact-ctn"
             style={{ cursor: "pointer" }}
-            onClick={handleOrderClick}
-          >
-            <div className="contact-item">
-              <Image src={myordericon} height={18} width={18} />
-              <p>My Order</p>
-            </div>
-            <div>
-              <Image src={ArrowIcon} />
-            </div>
-          </div>
-        )}
-
-  {isLoggedIn && (
-          <div className="contact-ctn">
-            <div className="contact-item">
-              <Image src={CallIcon} height={18} width={18} />
-              <p>
-                {userData?.phone?.includes(91)
-                  ? userData?.phone
-                  : `+91${userData?.phone}`}
-              </p>
-            </div>
-            {/* <div>
-              <Image src={ArrowIcon} />
-            </div> */}
-          </div>
-             )}
-           <div
-          className="contact-ctn"
-          style={{ cursor: "pointer" }}
-          // onClick={isLoggedIn ? handleLogout : handleLogin}
-             onClick={() => {
+            // onClick={isLoggedIn ? handleLogout : handleLogin}
+            onClick={() => {
               if (isLoggedIn) {
                 setShowLogoutConfirm(true); // ✅ first open confirm popup
               } else {
                 handleLogin();
               }
             }}
-        >
-
-       
-          <div className="contact-item">
-            <Image
-              src={LogoutIcon}
-              height={18}
-              width={18}
-              alt={isLoggedIn ? "Logout" : "Login"}
-            />
-            <p>{isLoggedIn ? "Logout" : "Login"}</p>
+          >
+            <div className="contact-item">
+              <Image
+                src={LogoutIcon}
+                height={18}
+                width={18}
+                alt={isLoggedIn ? "Logout" : "Login"}
+              />
+              <p>{isLoggedIn ? "Logout" : "Login"}</p>
+            </div>
           </div>
-        </div>
-
         </div>
       </div>
 
-        {showOtpLogin && (
-  <OtpLogin
-    setIsModalOpen={() => setShowOtpLogin(false)}
-    onSuccess={(user) => {
-      localStorage.setItem("userID", user.id);
-      localStorage.setItem("token", user.token);
-      setIsLoggedIn(true);
-      setUserData(user);
-      setShowOtpLogin(false);
-       window.dispatchEvent(new Event("loginSuccess"));
-    }}
-  />
-)}
+      {showOtpLogin && (
+        <OtpLogin
+          setIsModalOpen={() => setShowOtpLogin(false)}
+          onSuccess={(user) => {
+            localStorage.setItem("userID", user.id);
+            localStorage.setItem("token", user.token);
+            setIsLoggedIn(true);
+            setUserData(user);
+            setShowOtpLogin(false);
+            window.dispatchEvent(new Event("loginSuccess"));
+          }}
+        />
+      )}
       {showEditName && (
         <div className="modal-overlay-edit-form">
           <div className="modal-content-edit-form">
@@ -324,7 +319,13 @@ if (response.ok) {
                   className="submit-edit-btn"
                   disabled={editLoading}
                 >
-                  {editLoading ? <span className="loader"></span> : "Save"}
+                  {editLoading ? (
+                    <div class="spinner-border text-light" style={{
+                      height : '1.5rem', width: '1.5rem'
+                    }} role="status"></div>
+                  ) : (
+                    "Save"
+                  )}
                 </button>
               </div>
             </form>
@@ -332,13 +333,11 @@ if (response.ok) {
         </div>
       )}
 
-       {showLogoutConfirm && (
+      {showLogoutConfirm && (
         <div className="modal-overlay-edit-form">
           <div className="modal-content-edit-form">
             <span className="edit-modal-heading">Confirm Logout</span>
-            <p style={{ margin: "10px 0" }}>
-              Are you sure you want to logout?
-            </p>
+            <p style={{ margin: "10px 0" }}>Are you sure you want to logout?</p>
             <div className="edit-form-btn-ctn">
               <button
                 type="button"

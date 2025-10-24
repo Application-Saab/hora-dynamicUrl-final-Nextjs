@@ -1367,6 +1367,7 @@ import Cropper from 'react-easy-crop';
 import { FaCropAlt } from "react-icons/fa";
 import { BiZoomOut } from "react-icons/bi";
 import { BiZoomIn } from "react-icons/bi";
+import SequentialLoader from "../SequentialLoader";
 
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
@@ -1514,6 +1515,7 @@ const DynamicTemplateRenderer = () => {
         }
         }
       } catch (err) {
+        setLoading(false);
         setError("Error fetching template: " + err.message);
       } finally {
         setLoading(false);
@@ -1911,7 +1913,7 @@ useEffect(() => {
 
  
 
-  if (loading) return <p>Loading template...</p>;
+  if (loading) return <SequentialLoader />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
@@ -2142,7 +2144,13 @@ useEffect(() => {
              }}
              disabled={saving}
            >
-             {saving ? "Saving..." : "SAVE"}
+             {saving ? (
+                    <div class="spinner-border text-light" style={{
+                      height : '1.5rem', width: '1.5rem'
+                    }} role="status"></div>
+                  ) : (
+                    "Save"
+                  )}
            </button>
          </div>
        </div>

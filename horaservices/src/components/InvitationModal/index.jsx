@@ -17,6 +17,7 @@ const InvitationModal = ({
   fileInputRef,
   orderDetails,
   imageBackground,
+  loading
 }) => {
   if (!showModal) return null;
   const router = useRouter();
@@ -26,7 +27,7 @@ const InvitationModal = ({
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
 
   // const slug = router.query.slug || [];
-  
+
   const filteredOptions = eventOptions.filter((opt) =>
     opt.toLowerCase().includes((formData.eventTypeSearch || "").toLowerCase())
   );
@@ -50,7 +51,10 @@ const InvitationModal = ({
   return (
     <div
       className="modal-overlay"
-      style={{ backgroundImage: `url(${imageBackground?.src || ""})`, position: page === "create-invite" ? '' : 'fixed' }}
+      style={{
+        backgroundImage: `url(${imageBackground?.src || ""})`,
+        position: page === "create-invite" ? "" : "fixed",
+      }}
     >
       <Head>
         <link
@@ -207,8 +211,19 @@ const InvitationModal = ({
           <button className="cancel-btn" onClick={handleCancelClick}>
             Cancel
           </button>
-          <button className="save-btn" onClick={handleSave}>
-            Save
+          <button className="save-btn" style={{cursor: loading ? 'not-allowed' : 'pointer'}} onClick={!loading && handleSave}>
+            {loading ? (
+              <div
+                class="spinner-border text-light"
+                style={{
+                  height: "1.3rem",
+                  width: "1.3rem",
+                }}
+                role="status"
+              ></div>
+            ) : (
+              "Save"
+            )}
           </button>
         </div>
       </div>

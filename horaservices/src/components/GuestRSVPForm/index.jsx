@@ -27,12 +27,12 @@ const GuestRSVPForm = ({
   highlightRSVPButtons,
   setHighlightRSVPButtons,
   rsvpGuestName,
-  userData
+  userData,
 }) => {
   const [guestName, setGuestName] = useState(rsvpGuestName || "");
   const [status, setStatus] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);  
+  const [submitting, setSubmitting] = useState(false);
   const [openRsvpList, setOpenRsvpList] = useState(false);
 
   const [guestData, setGuestData] = useState([]);
@@ -48,9 +48,9 @@ const GuestRSVPForm = ({
   const videoRef = useRef(null);
 
   useEffect(() => {
-    const confirmed =
-      guestData.filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
-        .length;
+    const confirmed = guestData.filter(
+      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+    ).length;
     const willTry = guestData.filter(
       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
     ).length;
@@ -101,12 +101,11 @@ const GuestRSVPForm = ({
     // Initial call
     fetchGuestsInside();
 
-  // Call every 3 minute
-  const interval = setInterval(fetchGuestsInside, 10000);
+    // Call every 3 minute
+    const interval = setInterval(fetchGuestsInside, 10000);
 
-  // Cleanup interval on unmount
-  return () => clearInterval(interval);
-
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, [eventId, userId]);
 
   useEffect(() => {
@@ -161,7 +160,7 @@ const GuestRSVPForm = ({
       });
       const data = await response.json();
       if (data.error) {
-         setSubmitting(false);
+        setSubmitting(false);
         alert("Something went wrong. Please try again.");
       } else {
         setSubmitting(false);
@@ -177,7 +176,6 @@ const GuestRSVPForm = ({
     }
   };
 
- 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !status) return;
@@ -191,10 +189,10 @@ const GuestRSVPForm = ({
     if (!showVideo || !videoRef.current) return;
 
     const video = videoRef.current;
-const handleTimeUpdate = () => {
-    // Countdown: total duration minus currentTime
-    setTimer(Math.ceil(video.duration - video.currentTime));
-  };
+    const handleTimeUpdate = () => {
+      // Countdown: total duration minus currentTime
+      setTimer(Math.ceil(video.duration - video.currentTime));
+    };
     const handleEnded = async () => {
       setShowVideo(false);
       setSubmitting(true);
@@ -202,7 +200,7 @@ const handleTimeUpdate = () => {
       setSubmitting(false);
     };
 
-   video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
 
     video.currentTime = 0;
@@ -217,7 +215,9 @@ const handleTimeUpdate = () => {
   return (
     <>
       {highlightRSVPButtons && <div className="full-screen-overlay"></div>}
-      <div className={`guest-rsvp-box ${highlightRSVPButtons ? "highlight" : ""}`}>
+      <div
+        className={`guest-rsvp-box ${highlightRSVPButtons ? "highlight" : ""}`}
+      >
         {userType !== "host" && !hasSubmitted && (
           <div className="rsvp-box">
             <h4 className="rsvp-title">
@@ -262,10 +262,31 @@ const handleTimeUpdate = () => {
 
           <div className="train-preview-wrapper">
             <Image src={train} alt="Train Guests" className="train-image" />
+            {[
+              ...guestData.filter(
+                (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+              ),
+            ]
+              .slice(0, 5)
+              .map((guest, index) => {
+                const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
+                return (
+                  <span
+                    key={index}
+                    className={`balloon-letter balloon-${index}`}
+                  >
+                    {firstLetter}
+                  </span>
+                );
+              })}
             <div className="guest-count-overlay">
-              <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+              <span className="confirmed">
+                Confirm - {guestCounts?.confirmed || 0}
+              </span>
               <span className="separator">|</span>
-              <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
+              <span className="try">
+                Will Try - {guestCounts?.willTry || 0}
+              </span>
             </div>
           </div>
 
@@ -304,7 +325,12 @@ const handleTimeUpdate = () => {
       {showForm && (
         <div className="modal-overlay-form">
           <div className="modal-content-form">
-            <button className="modal-close-form" onClick={() => setShowForm(false)}>×</button>
+            <button
+              className="modal-close-form"
+              onClick={() => setShowForm(false)}
+            >
+              ×
+            </button>
             <h2>What Should We Scream When You Enter?</h2>
             <form onSubmit={handleSubmit}>
               <input
@@ -314,8 +340,19 @@ const handleTimeUpdate = () => {
                 onChange={(e) => setGuestName(e.target.value)}
                 required
               />
-              <button type="submit" className="submit-btn" disabled={submitting}>
-                {submitting ? <div className="loader" style={{height: '20px', width: '20px'}}></div> : "SAVE"}
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <div
+                    className="loader"
+                    style={{ height: "20px", width: "20px" }}
+                  ></div>
+                ) : (
+                  "SAVE"
+                )}
               </button>
             </form>
           </div>
@@ -324,32 +361,26 @@ const handleTimeUpdate = () => {
 
       {showVideo && (
         <div className="video-overlay">
-          <video
-            ref={videoRef}
-            src={gif}
-            muted
-            autoPlay
-            playsInline
-          />
-            <div
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          background: "rgba(0,0,0,0.6)",
-          color: "#fff",
-          borderRadius: "50%",
-          width: "30px",
-          height: "30px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontWeight: "bold",
-          fontSize: "16px",
-        }}
-      >
-        {timer}
-      </div>
+          <video ref={videoRef} src={gif} muted autoPlay playsInline />
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              background: "rgba(0,0,0,0.6)",
+              color: "#fff",
+              borderRadius: "50%",
+              width: "30px",
+              height: "30px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            {timer}
+          </div>
         </div>
       )}
     </>

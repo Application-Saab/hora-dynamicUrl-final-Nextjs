@@ -19,6 +19,7 @@ import { db } from "../../../firebase";
 const CreateEventInvite = ({ slug }) => {
   const fileInputRef = useRef(null);
   const [showModal, setShowModal] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const hostUserId = slug[0];
   const eventId = slug[1];
@@ -144,6 +145,7 @@ const CreateEventInvite = ({ slug }) => {
   };
 
   const handleSave = async () => {
+    setLoading(true);
     if (!formData.eventType && formData.eventTypeSearch) {
       formData.eventType = formData.eventTypeSearch;
     }
@@ -253,10 +255,12 @@ const CreateEventInvite = ({ slug }) => {
         } else {
           console.log("ℹ️ Group does not exist — skipping update.");
         }
+        setLoading(false);
 
         // Redirect
         return router.replace(`/wonderland?id=${hostUserId}/${eventId}/host`);
       } else {
+        setLoading(false);
         alert("Failed to save invitation.");
       }
 
@@ -271,6 +275,7 @@ const CreateEventInvite = ({ slug }) => {
       });
       setUploadedImage(null);
     } catch (err) {
+      setLoading(false);
       console.error("Error:", err);
       alert("Something went wrong.");
     }
@@ -301,6 +306,7 @@ const CreateEventInvite = ({ slug }) => {
           fileInputRef={fileInputRef}
           orderDetails={""}
           imageBackground={imageBackground}
+          loading={loading}
         />
       </div>
       {/* <div
