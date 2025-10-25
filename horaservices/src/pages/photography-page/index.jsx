@@ -20,7 +20,7 @@ import pose12 from "@/assets/poseimages/pose12.jpg"
 import pose13 from "@/assets/poseimages/pose13.png"
 import pose14 from "@/assets/poseimages/pose14.jpg"
 import pose15 from "@/assets/poseimages/pose15.jpg"
-import PhotoBanner from "../../assets/PhotoBanner.webp"
+import PhotoBanner from "../../assets/PhotoBanner.jpg"
 import Banner1 from "../../assets/banner1.webp"
 import Banner2 from "../../assets/Banner2.webp"
 import Banner3 from "../../assets/banner3.webp"
@@ -175,7 +175,7 @@ const scriptTag = JSON.stringify(schemaOrg);
         </div>
 
 
-        <div class="suggested-poses">
+        {/* <div class="suggested-poses">
           <div class="suggested-poses-section">
             <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
             <div class="text-overlay">
@@ -183,10 +183,14 @@ const scriptTag = JSON.stringify(schemaOrg);
               <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
             </div>
           </div>
+        </div> */}
+
+
+<div class="suggested-poses">
+          <div class="suggested-poses-section">
+            <Image src={PhotoBanner} alt="Camera Holding" class="suggested-image" />
+          </div>
         </div>
-
-
-
 
         <div class="poses">
 
@@ -258,7 +262,7 @@ const scriptTag = JSON.stringify(schemaOrg);
             </a>
 
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href="https://horaservices.com/photo-gallery?folderName=naming%20ceremony%20weblink&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
@@ -278,7 +282,7 @@ const scriptTag = JSON.stringify(schemaOrg);
               <div className="TextBackground"><p>Couple shoot</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href="https://horaservices.com/photo-gallery?folderName=new%20born%20&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
@@ -288,7 +292,7 @@ const scriptTag = JSON.stringify(schemaOrg);
               <div className="TextBackground"><p>New Born Baby</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href="https://horaservices.com/photo-gallery?folderName=engagement-weblink&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
@@ -318,7 +322,7 @@ const scriptTag = JSON.stringify(schemaOrg);
               <div className="TextBackground"><p>House warming</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href="https://horaservices.com/photo-gallery?folderName=bacherrolerate&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
@@ -328,7 +332,7 @@ const scriptTag = JSON.stringify(schemaOrg);
               <div className="TextBackground"><p>Bachelorate</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href=""
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"

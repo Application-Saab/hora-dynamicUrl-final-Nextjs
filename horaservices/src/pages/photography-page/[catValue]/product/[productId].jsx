@@ -25,8 +25,8 @@ const ProductDetails = () => {
   const { query } = useRouter();
 const productId = query.id;
   const {  product } = router.query;
-  console.log(product)
   const [work, setWork] = useState(null);
+   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantities, setQuantities] = useState({});
   const [addedItems, setAddedItems] = useState([]);
@@ -35,7 +35,7 @@ const productId = query.id;
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
   const [totalAmount, setTotalAmount] = useState();
   const [isArrowDown, setIsArrowDown] = useState(true);
-  const images = productsData[productId]?.images || [];
+  
   const duration = productsData[productId]?.duration || "Duration not available";
 
   const parsedProduct = product ? JSON.parse(product) : null;
@@ -89,13 +89,15 @@ const productId = query.id;
     updateTotalAmount();
   };
 
-  const updateTotalAmount = () => {
-    let newTotalAmount = Number(product.price);
-    selectedAddOnProduct.forEach(item => {
-      newTotalAmount += item.price * itemQuantities[item.title];
-    });
-    setTotalAmount(newTotalAmount);
-  };
+ const updateTotalAmount = () => {
+  if (!work) return;
+
+  let newTotalAmount = Number(work.price) || 0;
+  selectedAddOnProduct.forEach(item => {
+    newTotalAmount += item.price * (itemQuantities[item.title] || 0);
+  });
+  setTotalAmount(newTotalAmount);
+};
 
   const handleRemoveFromCart = (item) => {
     const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
@@ -151,21 +153,12 @@ const productId = query.id;
 
 
   const getDiscountedPrice = (price) => {
-    let discount;
-
-    // Determine the discount percentage based on the item price
-    if (price < 3000) {
-      discount = 20; // 20% discount
-    } else if (price >= 3000 && price <= 5000) {
-      discount = 27; // 27% discount
-    } else {
-      discount = 35; // 35% discount for prices above 5000
-    }
-
-    const discountedPrice = price * (1 + discount / 100); // Calculate the discounted price
-    const discountDifference = Math.abs(price - discountedPrice);;
-    return { discount, discountedPrice, discountDifference }; // Return both discount percentage and discounted price
+    const discount = 22; // Fixed 22% discount
+    const discountedPrice = price - (price * discount) / 100;
+    const discountDifference = price - discountedPrice;
+    return { discount, discountedPrice, discountDifference };
   };
+
   const sendToCheckoutPage = (product) => {
     const totalPrice = calculateTotalPrice(product.price);
     window.dataLayer = window.dataLayer || [];
@@ -198,25 +191,36 @@ const productId = query.id;
 
 
 
-useEffect(() => {
-  if (!productId) return;
 
-  const fetchProductDetails = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
-      const data = res.data?.data;
-      if (!data) throw new Error("No product found");
-      setWork(data); // everything comes from API now
-    } catch (err) {
-      console.error("Error fetching product details:", err.message);
-      setWork(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (!productId) return;
 
-  fetchProductDetails();
-}, [productId]);
+    const fetchProductDetails = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
+        const data = res.data?.data;
+
+        if (!data) throw new Error("No product found");
+
+        // 💰 Calculate discount
+        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
+
+        setWork({
+          ...data,
+          discount,
+          discountedPrice,
+          discountDifference,
+        });
+      } catch (err) {
+        console.error("Error fetching product details:", err.message);
+        setWork(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductDetails();
+  }, [productId]);
 
 
 
@@ -368,31 +372,37 @@ useEffect(() => {
     <div className="photodetails-container">
       
       <div className="photodetails-image-section">
-        {images.length > 0 ? (
-          images.map((img, idx) => (
-            <Image
-              key={idx}
-              src={img}
-              alt={`${work?.name || "Product"} image ${idx + 1}`}
-              width={400}
-              height={300}
-            />
-          ))
-        ) : (
-          <p>No images found</p>
-        )}
-        {/* <img src="/traditionalPhoto.png" alt="Traditional Photography" /> */}
+ 
+        <Image
+          src={
+            work.featured_image
+              ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
+              : "/default.jpg"
+          }
+          alt={`${work?.name || "Product"} image`}
+          className="decImage"
+          width={400}
+          height={300}
+        />
       </div>
 
-      <div className="photodetails-price-section">
+      {/* <div className="photodetails-price-section">
         <span className="photodetails-discounted">₹ {work.price}</span>
-        {/* <span className="photodetails-original">₹ {Math.floor(work.discountedPrice.toFixed(2))} </span> */}
+       
 <span className="photodetails-original">
   ₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}
 </span>
 
         <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
-      </div>
+      </div> */}
+      <div className="photodetails-price-section">
+        <span className="photodetails-discounted">
+    ₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}
+  </span>
+  <span className="photodetails-original">₹ {work.price}</span>
+  <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
+</div>
+
       <div className='addon-prices' ref={customizationRef}>
 
         <div className="photodetails-inclusions">
@@ -429,14 +439,13 @@ useEffect(() => {
       </div>
       
 
-          <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "600px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
+          <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "400px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
             <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
               {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
 
               <div className="modal-middle-box 11">
                 <div className="modalcard-container">
-
-                  {photographyAddOns?.addOnProductsById?.[tagId]?.map((item, index) => (
+                  {photographyAddOns?.addOnProducts.map((item, index) => (
                     <div key={index} className="modalcard">
                       <img
                         // style={{ width: "120px", height: "120px" }}

@@ -1,4 +1,4 @@
-.card {
+/* .card {
   overflow: hidden;
   position: relative;
   border: none;
@@ -91,4 +91,144 @@
 
 .viewMore:hover {
   text-decoration: none;
+} */
+
+.photo-card {
+  overflow: hidden;
+  position: relative;
+  border: none;
+  transition: transform 0.3s ease;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.photo-card:hover {
+  transform: scale(1.03);
+}
+
+/* ==== Image Wrapper ==== */
+.photo-imageWrapper {
+  border-radius: 15px;
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.photo-imageOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(180deg, #a4601400 89%, #a46014 100%);
+  border-radius: 15px;
+  pointer-events: none;
+}
+
+.photo-image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  filter: blur(0.2px);
+}
+
+/* ==== Title Wrapper ==== */
+.photo-titleWrapper {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.photo-title {
+  color: white;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 12px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  margin: 0;
+}
+
+/* ==== Footer ==== */
+.photo-footer {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.photo-viewMore {
+  background: none;
+  border: none;
+  color: #97538c;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-decoration-offset: 0px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.photo-viewMore:hover {
+  text-decoration: none;
+}
+
+/* ==== Responsive Layout ==== */
+
+/* For tablet screens */
+@media (max-width: 992px) {
+  .photo-imageWrapper {
+    height: 340px;
+  }
+  .photo-title {
+    font-size: 18px;
+  }
+  .photo-viewMore {
+    font-size: 19px;
+  }
+}
+
+/* For mobile screens */
+@media (max-width: 768px) {
+  .photo-card {
+    transform: none;
+  }
+  .photo-imageWrapper {
+    height: 300px;
+  }
+  .photo-title {
+    font-size: 16px;
+  }
+  .photo-viewMore {
+    font-size: 16px;
+  }
+}
+
+/* For very small mobile screens */
+@media (max-width: 480px) {
+  .photo-imageWrapper {
+    height: 160px;
+  }
+  .photo-title {
+    font-size: 14px;
+  }
+  .photo-viewMore {
+    font-size: 13px;
+  }
+  .photo-footer {
+    margin-bottom: 6px;
+  }
 }

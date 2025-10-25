@@ -12,16 +12,16 @@ export default function PhotoGraphyCard({ src, title, subCategory }) {
   };
 
   return (
-    <div className="card">
-      <div className="imageWrapper">
-        <Image src={src} alt={title} fill className="image" priority />
-        <div className="imageOverlay"></div>
-        <div className="titleWrapper">
-          <h3 className="title">{title}</h3>
+    <div className="photo-card">
+      <div className="photo-imageWrapper">
+        <Image src={src} alt={title} fill className="photo-image" priority />
+        <div className="photo-imageOverlay"></div>
+        <div className="photo-titleWrapper">
+          <h3 className="photo-title">{title}</h3>
         </div>
       </div>
-      <div className="footer">
-        <button className="viewMore" onClick={handleViewMore}>
+      <div className="photo-footer">
+        <button className="photo-viewMore" onClick={handleViewMore}>
           View more
         </button>
       </div>

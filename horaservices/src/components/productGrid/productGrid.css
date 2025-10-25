@@ -54,7 +54,9 @@ min-height: 140px;
     max-height: none;
     min-height: unset;
     aspect-ratio: 4 / 3; /* optional for consistency */
-  }}
+  }
+
+}
 .watermark {
   position: absolute;
   bottom: 15px;
