@@ -24,9 +24,12 @@ import PhotoBanner from "../../assets/PhotoBanner.jpg"
 import Banner1 from "../../assets/banner1.webp"
 import Banner2 from "../../assets/Banner2.webp"
 import Banner3 from "../../assets/banner3.webp"
-
-
-
+import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
+import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
+import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
+import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
+import TopBrandIMg from "../../assets/TpBrandsIMG.png";
+import {balloonreviews} from "@/utils/balloonReviews";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -36,6 +39,8 @@ import PhotoGraphyCard from '@/components/PhotoGraphyCard';
 import PhotoGraphyCardgrid from '@/components/photoGraphyCardGrid';
 import PhotographysliderSection from '@/components/photographysliderSection';
 import { photoCat } from "@/utils/photoCategories.js";
+import BrandBanner from '@/components/BrandBanner';
+import ReviewSlider from '@/components/ReviewSection';
 const index = () => {
 
   const router = useRouter();
@@ -78,7 +83,12 @@ const scriptTag = JSON.stringify(schemaOrg);
       author: "Anusha Battiprolu"
     }
   ];
-
+const brandItems = [
+  { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+  { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
+  { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
+  { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
+];
 
   return (
     <>
@@ -151,6 +161,10 @@ const scriptTag = JSON.stringify(schemaOrg);
               src={item.image}
               title={item.name}
               subCategory={item.subCategory}
+               city={city}              
+      // locality={locality}        
+      photoCat={photoCat}       
+      hasCityPageParam={true} 
             />
           ))}
         </div>
@@ -170,6 +184,10 @@ const scriptTag = JSON.stringify(schemaOrg);
               src={item.image}
               title={item.name}
               subCategory={item.subCategory}
+                 city={city}              
+      // locality={locality}        
+      photoCat={photoCat}       
+      hasCityPageParam={true} 
             />
           ))}
         </div>
@@ -355,7 +373,7 @@ const scriptTag = JSON.stringify(schemaOrg);
           </div>
         </div>
 
-        <div class="trust-section">
+        {/* <div class="trust-section">
           <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
 
           <div className="review">
@@ -400,8 +418,21 @@ const scriptTag = JSON.stringify(schemaOrg);
               <p><strong>15K+</strong><span class="highlight"> Happy Customers</span></p>
             </div>
           </div>
-        </div>
+        </div> */}
 
+<section className="BabyShowerBanner">
+        <Image
+          src={BrandBannerIMG}
+          alt="Decoration-Banner"
+          width={1200}
+          height={400}
+          className="decorationBanner-image"
+          priority
+        />
+      </section>
+      <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+
+<ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
 
 
         <div className="keywords-box">

@@ -1,10 +1,13 @@
 import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
 import "@/app/homepage.css";
-import PhotographyDescription from "../../photography-page/components/PhotographyDescription";
-import PhotographySEOKeywords from "../../photography-page/components/PhotographySEOKeywords";
-import PhotographyFAQ from "../../photography-page/components/PhotographyFAQ";
+import PhotographyDescription from "../../../../components/PhotographyDescription";
+import PhotographySEOKeywords from "../../../../components/PhotographySEOKeywords";
+import PhotographyFAQ from "../../../../components/PhotographyFAQ";
 import { faqData } from "@/utils/photographyFAQData";
+import FAQAccordion from "@/components/FAQs";
+import FAQSection from "@/components/FAQSection";
+import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
 
 
 const PhotographyCityPage = () => {
@@ -17,11 +20,17 @@ const PhotographyCityPage = () => {
 
 
   return (
-    <div className="page-width">
+    <div >
+  
       <Index />
-      <PhotographyFAQ faqData={faqData} />
+        <div className="tab-section-details-productpage">
+      <FAQSection faqData={faqData} />
+      </div>
       <PhotographyDescription city={locality} />
-      <PhotographySEOKeywords city={locality} />
+    
+       {/* <div className="my-4 container">
+              <DecorationSEOKeywords city={locality} />
+            </div> */}
     </div>
   );
 };

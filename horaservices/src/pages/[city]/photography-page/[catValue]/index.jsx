@@ -5,12 +5,11 @@ import cityData from "@/utils/cityData";
 import "@/app/homepage.css";
 import {faqData} from "@/utils/photographyFAQData";
 
-import PhotographyLocalities from "@/components/PhotographyLocalities";
 import PhotographyDescription from "@/components/PhotographyDescription";
 import PhotographySEOKeywords from "@/components/PhotographySEOKeywords";
-import PhotographyFAQ from "@/components/PhotographyFAQ";
 import FAQSection from "@/components/FAQSection";
 import LocalitiesSection from "@/components/LocalitiesSection";
+import CatValuePage from "@/pages/photography-page/[catValue]";
 
 const PhotographyCityPage = () => {
   const router = useRouter();
@@ -39,7 +38,7 @@ const PhotographyCityPage = () => {
 
   return (
     <div >
-      <Index />
+      <CatValuePage />
         <LocalitiesSection
         title={`${city} localities`}
         localities={cityLocalitiesList}

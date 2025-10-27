@@ -141,15 +141,28 @@ export default function CatValuePage() {
   const slugify = (text) =>
     text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const handleViewMore = (work) => {
-    const slug = slugify(work.name);
-    const categorySlug = slugify(work.categoryValue || "photography");
+  // const handleViewMore = (work) => {
+  //   const slug = slugify(work.name);
+  //   const categorySlug = slugify(work.categoryValue || "photography");
 
-    router.push({
-      pathname: `/photography-page/${categorySlug}/product/${slug}`,
-      query: { id: work._id },
-    });
-  };
+  //   router.push({
+  //     pathname: `/photography-page/${categorySlug}/product/${slug}`,
+  //     query: { id: work._id },
+  //   });
+  // };
+  const handleViewMore = (work) => {
+  const slug = slugify(work.name);
+  const categorySlug = slugify(work.categoryValue || "photography");
+
+  // Get current city from URL
+  const city = router.query.city || "gurugram"; // default fallback if not present
+
+  router.push({
+    pathname: `/${city}/photography-page/${categorySlug}/product/${slug}`,
+    query: { id: work._id },
+  });
+};
+
 
  return (
     <div className="featured-photo-works">

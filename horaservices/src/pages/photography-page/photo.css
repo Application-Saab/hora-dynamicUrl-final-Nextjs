@@ -937,3 +937,10 @@ strong {
   max-width: 800px;
     margin: auto;
 }
+
+
+.decorationBanner-image {
+  width: 100%;
+  height: auto;
+  
+}
