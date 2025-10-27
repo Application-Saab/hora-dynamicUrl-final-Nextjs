@@ -82,7 +82,7 @@ import { usePathname } from "next/navigation";
 import A2HSPrompt from "../../components/AddToHomeScreen";
 import { handleGroupClick } from "@/utils/unread";
 import axios from "axios";
-import EventwallGalleryItem from "@/components/wonderland/EventwallGalleryItem";
+import EventwallGalleryItem from "@/components/wonderland-old/EventwallGalleryItem";
 import MediaViewer from "./EventwalPopup";
 
 const VAPID_KEY =

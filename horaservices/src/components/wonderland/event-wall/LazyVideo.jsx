@@ -88,7 +88,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaPlayCircle } from "react-icons/fa";
 import "./LazyVideo.css";
 
-const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName }) => {
+const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName, isEventWall = false }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [duration, setDuration] = useState(null);
   const videoRef = useRef(null);
@@ -142,7 +142,11 @@ const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName }) =>
   }, [fullVideoSrc]);
 
   return (
-    <div ref={wrapperRef} className={`lazy-video-wrapper ${wrapperClassName || ""}`}>
+    <div 
+    ref={wrapperRef} 
+    className={`lazy-video-wrapper ${wrapperClassName || ""}`}
+    style={{backgroundColor: isEventWall && (isLoaded ? "#FFFFFF" : "#e9ecef")}}
+    >
       <video
         ref={videoRef}
         src={previewSrc}
