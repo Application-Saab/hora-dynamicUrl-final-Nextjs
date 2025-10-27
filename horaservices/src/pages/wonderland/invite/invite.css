@@ -1,0 +1,10 @@
+.invite-page-container {
+    max-width: 480px;
+    width: 100%;
+    height: 70vh;
+    box-sizing: border-box; 
+}
+
+.placeholder-glow, .placeholder {
+    
+}

@@ -30,20 +30,8 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   const token = localStorage.getItem("token");
   const router = useRouter();
   const { page, id: queryId, hostName } = router.query;
-  const { id } = router.query;
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
-  console.log(
-    "%c [ slug..... ]-12",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    slug
-  );
-
-  console.log(
-    "%c [ page ]-15",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    page
-  );
 
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
@@ -143,13 +131,6 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
       router.push(`/wonderland?id=${slug[0]}/${slug[1]}/guest`);
     }
   }, [loggedinUserId, isUserLoggedIn, queryId]);
-
-  // 🔹 Jab login state change hoti hai to redirect // TODO: Need to fix this thing
-  // useEffect(() => {
-  //   if (isUserLoggedIn && loggedinUserId && slug?.length === 0) {
-  //     router.push(`/wonderland?id=${loggedinUserId}`);
-  //   }
-  // }, [queryId, loggedinUserId, isUserLoggedIn]);
 
   useLayoutEffect(() => {
     let timer;
@@ -288,20 +269,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
       }
     }
   };
-  const getEventIcon = (type) => {
-    switch (type?.toLowerCase()) {
-      case "birthday party":
-        return "🎂";
-      case "wedding":
-        return "💍";
-      case "holi celebration":
-        return "🎉";
-      case "kids party":
-        return "🧒";
-      default:
-        return "🎊";
-    }
-  };
+
   return (
     <>
       {showLoginModal && (
