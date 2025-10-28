@@ -1,0 +1,127 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* Full viewport backdrop */
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+  display: flex;
+  /* align-items: center; <-- Center alignment hataya gaya */
+  justify-content: center;
+  align-items: flex-start; /* Modal ko top se align karega */
+  padding-top: 81px; /* Top se margin ke liye padding diya gaya */
+  z-index: 1050; /* Ensure it is above other content */
+}
+
+/* Modal Content Box */
+.custom-modal-content {
+  background-color: white;
+  width: 85%; /* Mobile friendly width */
+  max-width: 400px; /* Max width for desktop/tablet */
+  border-radius: 16px;
+  overflow: hidden; /* Ensures header gradient respects the top corner radius */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  /* For the custom header and body layout */
+  display: flex;
+  flex-direction: column;
+
+  /* Responsive top margin set using the parent's padding-top */
+  /* margin-top: 50px; <-- Agar flex-start ka use na karein to yeh use hoga */
+}
+
+/* Custom Gradient Header */
+.modal-header-custom {
+  background: linear-gradient(90deg, #6d247d 0%, #bd256f 100%);
+  color: white;
+  padding: 23px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top-left-radius: 16px; /* Match content box radius */
+  border-top-right-radius: 16px; /* Match content box radius */
+}
+
+.modal-title-custom {
+  font-size: 24px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+  letter-spacing: 0px;
+}
+
+/* Modal Body */
+.modal-body-custom {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-question-text {
+  font-size: 28px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  color: #010000;
+  margin-bottom: 40px;
+  margin-top: 9px;
+  text-align: center;
+  letter-spacing: 0px;
+}
+
+/* Input Group */
+.input-group-custom {
+  width: 100%;
+  margin-bottom: 30px;
+  text-align: right;
+}
+
+.input-group-custom input {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #fff;
+  border: 1px solid #00000066;
+  border-radius: 8px;
+  color: #00000099;
+  font-size: 17px;
+  box-shadow: 0px 4px 4px 0px #0000003b;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-group-custom input:focus {
+  border-color: #cc3399;
+}
+
+.char-limit-text {
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  color: #3C3C3C;
+  font-weight: 400;
+  display: block;
+  margin-top: 4px;
+  padding-right: 5px;
+}
+
+/* Submit Button */
+.submit-button-custom {
+  width: 70%;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  cursor: pointer;
+}
+
+.submit-button-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(153, 51, 204, 0.6);
+}

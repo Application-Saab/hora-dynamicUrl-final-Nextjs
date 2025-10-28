@@ -4,7 +4,6 @@ import axios from "axios";
 // Create isolated axios instance
 const api = axios.create({
   baseURL: "https://horaservices.com:3000",
-  // timeout: 10000, // 10 seconds timeout for safety
 });
 
 // Request interceptor for Authorization

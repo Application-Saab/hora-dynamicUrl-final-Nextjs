@@ -1,66 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import "./invite.css";
+import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
+// import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlashLoader";
+// import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
+import InviteActions from "@/components/wonderland/common/InviteActions";
+import WhosJoining from "@/components/wonderland/rsvp/WhosJoining";
+import EventwallSection from "@/components/wonderland/event-wall/EventwallSection";
 
 const InvitesPage = () => {
+  // const [openCreateInviteModal, setOpenCreateInviteModal] = useState(true);
+
   return (
-    <div className="container-fluid w-100 p-0 m-0 d-flex justify-content-center">
-      <div className="invite-page-container p-3">
-        <div className="container">
-          {/* 1. Large Image/Banner Placeholder (as per image) */}
-          <div className="placeholder-glow mb-4">
-            <div
-              className="placeholder w-100 rounded"
-              style={{ height: "150px" }}
-            ></div>
-          </div>
-
-          {/* 2. Three Circular Placeholders (Categories/Icons) */}
-          <div className="d-flex justify-content-around mb-4 placeholder-glow">
-            <span
-              className="placeholder rounded-circle"
-              style={{ width: "48px", height: "48px" }}
-            ></span>
-            <span
-              className="placeholder rounded-circle"
-              style={{ width: "48px", height: "48px" }}
-            ></span>
-            <span
-              className="placeholder rounded-circle"
-              style={{ width: "48px", height: "48px" }}
-            ></span>
-          </div>
-
-          {/* 3. Content Block Placeholder 1 (Card Style) */}
-          <div className="placeholder-glow mb-4">
-            <div
-              className="placeholder w-100 rounded"
-              style={{ height: "150px" }}
-            ></div>
-          </div>
-
-          {/* 4. Two Small Placeholders (Side-by-side tabs/buttons) */}
-          <div className="d-flex mb-4 w-100 gap-3 placeholder-glow">
-            <span
-              className="placeholder col rounded"
-              style={{ height: "30px" }}
-            ></span>
-            <span
-              className="placeholder col rounded"
-              style={{ height: "30px" }}
-            ></span>
-            <span
-              className="placeholder col rounded"
-              style={{ height: "30px" }}
-            ></span>
-          </div>
-
-          {/* 5. Large Card Placeholder (Detailed Content Block) */}
-          <div className="placeholder-glow mb-4">
-            <div
-              className="placeholder w-100 rounded"
-              style={{ height: "150px" }}
-            ></div>
-          </div>
+    // <InvitePageFlashLoader />
+    // <CreateInviteModal
+    //   isOpen={openCreateInviteModal}
+    //   onClose={() => setOpenCreateInviteModal(false)}
+    // />
+    <div className="invite-page">
+      <div className="invite-page-container">
+        <img
+          src={DefaultTemplate.src}
+          alt="Default Invitation Template"
+          className="default-invite-image"
+        />
+        <div className="invite-action-container">
+          <InviteActions />
+        </div>
+        <div className="whos-joining-container">
+          <WhosJoining />
+        </div>
+        <div className="event-wall-container">
+          <p className="wall-heading text-center">Celebration Wall</p>
+          <EventwallSection />
         </div>
       </div>
     </div>

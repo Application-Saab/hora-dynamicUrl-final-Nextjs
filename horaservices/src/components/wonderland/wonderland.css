@@ -69,11 +69,6 @@
   }
 }
 
-/* .event-list-wrapper {
-  padding: 10px;
-  max-width: 600px;
-} */
-
 .event-list-wrapper {
       padding: 10px 15px;
   width: 100%;         
@@ -207,13 +202,6 @@
   transform: translateY(-6px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
-/* 
-.tab-card.active {
-  background: linear-gradient(135deg, #42a5f5, #d1dbe4);
-  color: #fff;
-  border-color: #42a5f5;
-  box-shadow: 0 8px 22px rgba(66,165,245,0.4);
-} */
 
 .icon {
   font-size: 32px;
