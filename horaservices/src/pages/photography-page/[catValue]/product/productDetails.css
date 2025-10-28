@@ -554,3 +554,8 @@ ul.decoration-addons {
 }
 
 
+.tab-section-details-productpage{
+    margin: 0 0 10px 0 !important;
+    padding: 10px !important;
+    background-color: #fff;
+}

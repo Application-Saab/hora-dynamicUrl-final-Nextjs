@@ -28,8 +28,6 @@ const getDiscountedPrice = (price = 0) => {
 
 
 
-
-// ✅ Static mapping for gallery integration
 const categoryToGallery = {
   "Engagement-Photography": {
     folderName: "engagement weblink",
@@ -83,7 +81,6 @@ export default function CatValuePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Fetch category ID dynamically
   const getSubCatId = useCallback(async (subCategory) => {
     try {
       const response = await axios.get(
@@ -101,17 +98,14 @@ export default function CatValuePage() {
     }
   }, []);
 
-  // ✅ When catValue changes
   useEffect(() => {
     if (catValue) {
       getSubCatId(catValue);
-      // Also assign gallery if available
       const gallery = categoryToGallery[catValue] || null;
       setGalleryData(gallery);
     }
   }, [catValue, getSubCatId]);
 
-  // ✅ Fetch products for this catId
   const fetchProducts = useCallback(async (categoryId) => {
     if (!categoryId) return;
     setLoading(true);
@@ -138,30 +132,19 @@ export default function CatValuePage() {
     if (catId) fetchProducts(catId);
   }, [catId, fetchProducts]);
 
-  const slugify = (text) =>
-    text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+ const slugify = (text) =>
+  text.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  // const handleViewMore = (work) => {
-  //   const slug = slugify(work.name);
-  //   const categorySlug = slugify(work.categoryValue || "photography");
-
-  //   router.push({
-  //     pathname: `/photography-page/${categorySlug}/product/${slug}`,
-  //     query: { id: work._id },
-  //   });
-  // };
   const handleViewMore = (work) => {
-  const slug = slugify(work.name);
-  const categorySlug = slugify(work.categoryValue || "photography");
+    const slug = slugify(work.name);
+    const categorySlug = slugify(catValue || "photography");
 
-  // Get current city from URL
-  const city = router.query.city || "gurugram"; // default fallback if not present
+    router.push({
+      pathname: `/photography-page/${categorySlug}/product/${slug}`,
+      query: { id: work._id },
+    });
+  };
 
-  router.push({
-    pathname: `/${city}/photography-page/${categorySlug}/product/${slug}`,
-    query: { id: work._id },
-  });
-};
 
 
  return (
@@ -175,7 +158,7 @@ export default function CatValuePage() {
       ) : error ? (
         <p className="error-text">{error}</p>
       ) : products.length > 0 ? (
-        <ProductGrid data={products} onCardClick={handleViewMore} />
+        <ProductGrid data={products} onCardClick={handleViewMore}  categoryType="photography"/>
       ) : (
         <p>No products found.</p>
       )}
@@ -183,10 +166,6 @@ export default function CatValuePage() {
  <div class="suggested-poses">
           <div class="suggested-poses-section">
             <Image src={PhotoBanner} alt="Camera Holding" class="suggested-image" />
-            {/* <div class="text-overlay">
-              <h2 class="pose-title">Suggested Poses</h2>
-              <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
-            </div> */}
           </div>
         </div>
       {galleryData && galleryData.folderName && galleryData.customerId && (
@@ -195,6 +174,7 @@ export default function CatValuePage() {
           <ThumbnailGallery
             folderName={galleryData.folderName}
             customerId={galleryData.customerId}
+             disablePopup={true} 
           />
         </div>
       )}

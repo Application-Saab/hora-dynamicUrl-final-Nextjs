@@ -14,7 +14,7 @@ import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is cor
 // import "slick-carousel/slick/slick.css"; 
 // import "slick-carousel/slick/slick-theme.css";
 
-const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
+const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon, disablePopup = false }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -101,6 +101,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
   const handleImageClick = useCallback((indexInDisplayedList) => {
+      if (disablePopup) return;
     let originalIndex;
     if (isIOSMobile) {
       originalIndex = (currentPage - 1) * ITEMS_PER_PAGE + indexInDisplayedList;
@@ -111,7 +112,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     if (originalIndex >= 0 && originalIndex < allThumbnails.length) {
       setSelectedIndex(originalIndex);
     }
-  }, [currentPage, ITEMS_PER_PAGE, allThumbnails.length, isIOSMobile]);
+  }, [disablePopup,currentPage, ITEMS_PER_PAGE, allThumbnails.length, isIOSMobile]);
 
   const closePopup = useCallback(() => {
     setSelectedIndex(null);

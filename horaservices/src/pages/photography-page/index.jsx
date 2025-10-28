@@ -47,7 +47,7 @@ const index = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
 const scriptTag = JSON.stringify(schemaOrg);
  let { city } = router.query;
-
+let {locality} = router.query;
 
   const firePoseClickEvent = (poseCategory) => {
     window.dataLayer = window.dataLayer || [];
@@ -92,7 +92,7 @@ const brandItems = [
 
   return (
     <>
-      <div>
+      <div style={{maxWidth:"800px",margin:"auto"}}>
         <Head>
           <title>
             {city
@@ -104,8 +104,21 @@ const brandItems = [
             content={
               city
                 ? `📸 Capture Every Moment in ${city}! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉 in ${city}, our professional photographers are here to make your moments look as magical as they felt.`
-                : `📸 Capture Every Moment, Forever! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt.`
-            }
+                : `    📸 Capture Every Moment, Forever! ✨
+ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
+Weddings Photoshoot👰‍♀️; 
+Maternity photoshoot;
+Baby Shoots 🤰👼; 
+Birthdays photoshoot; 
+Newborn photography;
+Couples photography
+Anniversaries photographer 🎂❤️; 
+Newborn photography
+Housewarming & Corporate Events; 
+Pre wedding photoshoot & Couple Photographer; 
+Freelancer Photographer; Photographer near me, `
+       
+              }
           />
           <meta
             name="keywords"
@@ -161,10 +174,10 @@ const brandItems = [
               src={item.image}
               title={item.name}
               subCategory={item.subCategory}
-               city={city}              
-      // locality={locality}        
-      photoCat={photoCat}       
-      hasCityPageParam={true} 
+              city={city}
+              locality={locality}   
+              photoCat={photoCat}   
+              hasCityPageParam={true}
             />
           ))}
         </div>
@@ -173,7 +186,11 @@ const brandItems = [
 
         <PhotographysliderSection
           title="Standard Packages"
-          tagId="66c96b2a22ed47b72117e089"
+          tagId="66c96b4e22ed47b72117e09a"
+           city={city}              
+      locality={locality}        
+      photoCat={photoCat}       
+      hasCityPageParam={true}
         />
 
 
@@ -185,7 +202,7 @@ const brandItems = [
               title={item.name}
               subCategory={item.subCategory}
                  city={city}              
-      // locality={locality}        
+      locality={locality}        
       photoCat={photoCat}       
       hasCityPageParam={true} 
             />

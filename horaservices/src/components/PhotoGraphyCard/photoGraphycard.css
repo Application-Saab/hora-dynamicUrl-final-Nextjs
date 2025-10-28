@@ -207,7 +207,7 @@
     transform: none;
   }
   .photo-imageWrapper {
-    height: 300px;
+    height: 270px;
   }
   .photo-title {
     font-size: 16px;
@@ -218,9 +218,10 @@
 }
 
 /* For very small mobile screens */
+
 @media (max-width: 480px) {
   .photo-imageWrapper {
-    height: 160px;
+    height: 180px;
   }
   .photo-title {
     font-size: 14px;
@@ -230,5 +231,17 @@
   }
   .photo-footer {
     margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 340px) {
+  .photo-imageWrapper {
+    height: 160px;
+  }
+}
+
+@media (min-width: 360px) and (max-width: 440px) {
+  .photo-imageWrapper {
+    height: 180px;
   }
 }

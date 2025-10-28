@@ -92,7 +92,14 @@ export const photoCat = [
     catValue: "New-Born-Baby-Photography",
     imgAlt: "Cute newborn photoshoot ideas",
   },
- 
+ {
+      id: "10",
+    image: "https://horaservices.com/api/uploads/compressed_webp/New-Born-Baby-Photography.webp",
+    name: "Intimate-Gathering",
+    subCategory: "Intimate-Gathering",
+    catValue: "Intimate-Gathering",
+    imgAlt: "Intimate-Gathering",
+ },
   
  
 ];

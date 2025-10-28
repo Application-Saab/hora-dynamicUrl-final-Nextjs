@@ -10,7 +10,7 @@ import PhotographySEOKeywords from "@/components/PhotographySEOKeywords";
 import FAQSection from "@/components/FAQSection";
 import LocalitiesSection from "@/components/LocalitiesSection";
 import CatValuePage from "@/pages/photography-page/[catValue]";
-import ProductDetails from "@/pages/photography-page/[catValue]/product/[productId]";
+import ProductDetails from "@/pages/photography-page/[catValue]/product/[productName]";
 
 const PhotographyCityPage = () => {
   const router = useRouter();

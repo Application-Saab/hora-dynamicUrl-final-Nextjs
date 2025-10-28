@@ -48,7 +48,7 @@ const handleViewMore = () => {
   router.push(path);
 };
   return (
-    <div className="photo-card">
+    <div className="photo-card" onClick={handleViewMore} style={{ cursor: "pointer" }}>
       <div className="photo-imageWrapper">
         <Image src={src} alt={title} fill className="photo-image" priority />
         <div className="photo-imageOverlay"></div>
@@ -57,7 +57,11 @@ const handleViewMore = () => {
         </div>
       </div>
       <div className="photo-footer">
-        <button className="photo-viewMore" onClick={handleViewMore}>
+        <button className="photo-viewMore"    
+         onClick={(e) => {
+            e.stopPropagation(); 
+            handleViewMore();
+          }}>
           View more
         </button>
       </div>

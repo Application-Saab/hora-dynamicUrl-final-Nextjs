@@ -82,7 +82,8 @@ console.log(selectedAddOnProduct)
     
       const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
       setSendInclusion(formattedInclusions);
-      setProductPrice(product.price);
+    setProductPrice(product.discountedPrice || product.price);
+
       setProductData(parsedProduct);
 
       // Product ID se local image set karo
@@ -395,14 +396,21 @@ console.log("advanceAmount",advanceAmount);
 
 
 
+const contactUsRedirection = (productName) => {
+  // productName example: "Candid Anniversary Photography Package"
 
-  const contactUsRedirection = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "photography_checkout_contact_us_click",
-    });
-    window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
-  };
+  const msg = `Hi, I want to book ${productName} & need more info`;
+
+  // ✅ GTM push
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "photography_checkout_contact_us_click",
+    product_name: productName,
+  });
+
+  // ✅ Open WhatsApp
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg)}`);
+};
 
 
 
@@ -699,7 +707,8 @@ console.log(advanceAmount);
               Need more info?
             </p>
 
-            <button className="button-cta whatsapp-cta" onClick={contactUsRedirection}>
+
+            <button className="button-cta whatsapp-cta" onClick={() => contactUsRedirection(productData?.name)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" className="whatsapp-iconimg"></path></svg>Whatsapp</button>
 
           </div>

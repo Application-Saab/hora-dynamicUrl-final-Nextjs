@@ -7,6 +7,7 @@ import photographyAddOns from "@/utils/photographyAddOns.json";
 import productsData from '@/utils/photoGraphyImages.js';
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
+import { useParams } from "next/navigation";
 // import addOnProductsData from '../../../utils/addOnProduct.json';
 import cancellation from "@/assets/Cancellation.svg"
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
@@ -28,6 +29,7 @@ import FAQSection from '@/components/FAQSection';
 import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
 
+import Photographyslider from '@/components/photoslidersection';
 const SkeletonLoader = () => {
   return (
     <div
@@ -168,13 +170,15 @@ const SkeletonLoader = () => {
     </div>
   );
 };
-const ProductDetails = () => {
+const ProductDetails = ({city,locality}) => {
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
   const router = useRouter();
+    const params = useParams();
   const { query } = useRouter();
   const productId = query.id;
   const { product } = router.query;
+    const [catValue, setCatValue] = useState("");
   const [work, setWork] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -185,19 +189,31 @@ const ProductDetails = () => {
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
   const [totalAmount, setTotalAmount] = useState();
   const [isArrowDown, setIsArrowDown] = useState(true);
-
+  const altTagCatValue = catValue.replace(/-/g, " ");
+  const hasCityPageParam = city ? true : false;
+  const cityName = params?.city;
   const parsedProduct = product ? JSON.parse(product) : null;
   const tagId = parsedProduct?.tag?.[0];
   const addonRef = useRef(null);      // Scroll target inside modal
   const customizationRef = useRef(null);
+  const [similarProducts, setSimilarProducts] = useState([]);
+const similarRef = useRef(null);
+
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
+    useEffect(() => {
+    if (params?.catValue) {
+      setCatValue(params.catValue);
+    }
+  }, [params]);
   const calculateTotalPrice = (productPrice) => {
-    let totalPrice = Number(productPrice);
+    // let totalPrice = Number(productPrice);
+    let totalPrice = Number(work?.discountedPrice || productPrice);
+
     selectedAddOnProduct.forEach(item => {
       totalPrice += item.price * itemQuantities[item.title];
     });
@@ -244,8 +260,9 @@ const ProductDetails = () => {
 
   const updateTotalAmount = () => {
     if (!work) return;
+let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
 
-    let newTotalAmount = Number(work.price) || 0;
+    // let newTotalAmount = Number(work.price) || 0;
     selectedAddOnProduct.forEach(item => {
       newTotalAmount += item.price * (itemQuantities[item.title] || 0);
     });
@@ -326,6 +343,7 @@ const ProductDetails = () => {
 
   const sendToCheckoutPage = (product) => {
     const totalPrice = calculateTotalPrice(product.price);
+    
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "book_now_click",
@@ -343,9 +361,8 @@ const ProductDetails = () => {
       // }
       query: {
         from: window.location.pathname,
-
         product: JSON.stringify(product),
-        ProductPrice: product.price,
+        ProductPrice: product.discountedPrice || product.price,
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
         totalAmount: totalPrice,
@@ -386,6 +403,89 @@ const ProductDetails = () => {
 
     fetchProductDetails();
   }, [productId]);
+
+// const catValue = work?.catValue || work?.category || parsedProduct?.catValue || "";
+ const getMappedCatValue = (slug) => {
+    const map = {
+        "Engagement-Photography": "Engagement-Photography",
+   "  Wedding-Photography": "  Wedding-Photography",
+    " Anniversary-Photography":" Anniversary-Photography",
+    " Birthday-Photography": "Birthday-Photography",
+  "   House-warming-Photography":"   House-warming-Photography",
+    " Naming-ceremony-Photography": "Naming-ceremony-Photography",
+    " Baby-Shower-Photography":" Baby-Shower-Photography",
+    " Bachelorette-Photography":" Bachelorette-Photography",
+   "  Maternity-Photography":"  Maternity-Photography",
+   " New-Born-Baby-Photography":" New-Born-Baby-Photography"
+    };
+    return map[slug] || slug;  // If not mapped, return the same slug
+  };
+//   useEffect(() => {
+//   if (!tagId || !productId) return; // Wait until both are available
+
+//   const fetchSimilarProducts = async () => {
+//     try {
+//       const res = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
+//       const allProducts = res.data?.data || [];
+
+//       // Remove the current product
+//       const filteredProducts = allProducts.filter(p => p._id !== productId);
+//       setSimilarProducts(filteredProducts);
+//     } catch (error) {
+//       console.error("Error fetching similar products:", error.message);
+//     }
+//   };
+
+//   fetchSimilarProducts();
+// }, [tagId, productId]);
+useEffect(() => {
+  if (!productId) return;
+
+  const fetchProductAndSimilar = async () => {
+    try {
+      // 1️⃣ Fetch main product details
+      const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
+      const data = res.data?.data;
+
+      if (!data) throw new Error("No product found");
+
+      // 💰 Calculate discount
+      const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
+
+      // 🟢 Set product info for UI
+      setWork({
+        ...data,
+        discount,
+        discountedPrice,
+        discountDifference,
+      });
+
+      // 2️⃣ Extract tag ID safely
+      const tagId = data?.tag?.[0]?._id;
+      if (!tagId) {
+        console.warn("No tag found for product");
+        return;
+      }
+
+      // 3️⃣ Fetch similar products by tag
+      const similarRes = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
+      const allProducts = similarRes.data?.data || [];
+
+      // 4️⃣ Remove the current product from the similar list
+      const filteredProducts = allProducts.filter((p) => p._id !== productId);
+
+      setSimilarProducts(filteredProducts);
+      console.log("✅ Similar products:", filteredProducts);
+    } catch (error) {
+      console.error("Error fetching product or similar products:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProductAndSimilar();
+}, [productId]);
+
 
 
   if (loading) {
@@ -458,16 +558,19 @@ const ProductDetails = () => {
           >
             <a
               style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
-              href="/"
+              href="/photography-page"
             >
               Home
             </a>
             {" > "}
-            {/* <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none",fontSize: "13px" }}
-                    href={`/balloon-decoration/${catValue}`}
-                  >                    {catValue}
-                  </a> */}
+                  
+    <a
+      style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
+      href={`/photography-page/${catValue}`}
+    >
+      {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+    </a>
+
             {" > "}
           </h2>
 
@@ -599,6 +702,38 @@ const ProductDetails = () => {
 
           </div>
         </div>
+           <div className="whyHoraSec">
+          <h2 className="whyHoraHeading">Why Hora Photography</h2>
+          <div className="whyHoraSecInner">
+            <div className="whyHoraSecBox">
+              <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
+              <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
+            </div>
+            <div className="whyHoraSecBox">
+              <Image src={SECURESTORAGE} alt="buy-now" />
+              <p className="whyHoraSubheading">SECURE STORAGE</p>
+            </div>
+            <div className="whyHoraSecBox">
+              <Image src={SUPPORT} alt="buy-now" />
+              <p className="whyHoraSubheading">27/7 SUPPORT</p>
+            </div>
+          </div>
+        </div>
+        
+  <div ref={similarRef}>
+    <Photographyslider
+      title="Similar Photography"
+      data={similarProducts}
+      showDiscount={true}
+      imageSize={{ width: 120, height: 120 }}
+      city={city}
+      hasCityPageParam={hasCityPageParam}
+      locality={locality}
+      catValue={getMappedCatValue(router.query.catValue)}
+    />
+  </div>
+
+
         <div className="decorke-celebrate-banner">
           <Image
             src={HowitWork}
@@ -617,23 +752,7 @@ const ProductDetails = () => {
         <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
         <AdditionalServices />
-        <div className="whyHoraSec">
-          <h2 className="whyHoraHeading">Why Hora Photography</h2>
-          <div className="whyHoraSecInner">
-            <div className="whyHoraSecBox">
-              <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
-              <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image src={SECURESTORAGE} alt="buy-now" />
-              <p className="whyHoraSubheading">SECURE STORAGE</p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image src={SUPPORT} alt="buy-now" />
-              <p className="whyHoraSubheading">27/7 SUPPORT</p>
-            </div>
-          </div>
-        </div>
+     
         <div className="tab-section-details-productpage">
           <FAQSection faqData={faqData} />
         </div>
