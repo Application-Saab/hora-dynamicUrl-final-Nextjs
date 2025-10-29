@@ -70,7 +70,7 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 5px;
   overflow: visible;
   position: relative;
   z-index: 2;
@@ -676,4 +676,27 @@ font-family: 'Inter', sans-serif;
     transition: transform 0.3s ease;
     width: 40% !important;
     font-size: 12px;
+}
+
+
+
+.amountBox {
+  display: inline-block;
+}
+
+.amountRow {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  gap:30px
+}
+
+.labels,
+.value {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;          /* Bold */
+  font-size: 14.61px;        /* exact size */
+  line-height: 100%;         /* 1:1 spacing */
+  letter-spacing: 0;         /* no extra spacing */
+  color: rgb(157, 74, 147);  /* purple */
 }

@@ -212,7 +212,7 @@ const similarRef = useRef(null);
   }, [params]);
   const calculateTotalPrice = (productPrice) => {
     // let totalPrice = Number(productPrice);
-    let totalPrice = Number(work?.discountedPrice || productPrice);
+    let totalPrice = Number(work?.price || productPrice);
 
     selectedAddOnProduct.forEach(item => {
       totalPrice += item.price * itemQuantities[item.title];
@@ -334,12 +334,18 @@ let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
     );
   };
 
-  const getDiscountedPrice = (price) => {
-    const discount = 22; // Fixed 22% discount
-    const discountedPrice = price - (price * discount) / 100;
-    const discountDifference = price - discountedPrice;
-    return { discount, discountedPrice, discountDifference };
+const getDiscountedPrice = (price = 0) => {
+  // price here is AFTER discount
+  const discountedPrice = price / 0.78; // get original (before discount)
+  const discountDifference = discountedPrice - price; // how much is off
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); // 22%
+  return {
+    discount: Number(discount),              // 22
+    discountedPrice: Math.round(discountedPrice), // original price (before discount)
+    discountDifference: Math.round(discountDifference), // amount off
   };
+};
+
 
   const sendToCheckoutPage = (product) => {
     const totalPrice = calculateTotalPrice(product.price);
@@ -613,9 +619,9 @@ useEffect(() => {
 
         <div className="photodetails-price-section">
           <span className="photodetails-discounted">
-            ₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}
+            ₹{work.price}
           </span>
-          <span className="photodetails-original">₹ {work.price}</span>
+          <span className="photodetails-original">₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}</span>
           <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
         </div>
 

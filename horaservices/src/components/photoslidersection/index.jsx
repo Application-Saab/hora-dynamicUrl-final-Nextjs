@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import "./photographyslider.css";
-import { useDecorationEvents } from "@/utils/decorationEvents";
 
 const getDiscountedDifference = (price) => {
   const numericPrice = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
@@ -12,6 +11,7 @@ const getDiscountedDifference = (price) => {
   const discountedPrice = Math.floor(numericPrice * (1 - discount / 100));
   return Math.floor(numericPrice - discountedPrice);
 };
+
 
 const Photographyslider = ({
   title = "",
@@ -100,9 +100,10 @@ const Photographyslider = ({
                 </div>
 
                 <div className="photo-premium-content">
-                  <p className="photo-premium-title">
+                  {/* <p className="photo-premium-title">
                     {titleText.length > 20 ? `${titleText.slice(0, 20)}...` : titleText}
-                  </p>
+                  </p> */}
+                  <p className="photo-premium-title">{titleText}</p>
                 </div>
 
                 <div className="photo-premium-price-wrapper">

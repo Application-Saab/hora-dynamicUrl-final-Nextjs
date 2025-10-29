@@ -8,6 +8,7 @@ import Image from "next/image";
 import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
 import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
+import CardSkeleton from "@/components/CardSkeleton";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -16,15 +17,17 @@ import {
 import ProductGrid from "@/components/productGrid";
 
 const getDiscountedPrice = (price = 0) => {
-  const discountedPrice = price * 0.78; // 22% discount
-  const discountDifference = price - discountedPrice; // how much is off
-  const discount = ((discountDifference / price) * 100).toFixed(0); // 22%
+  // price here is AFTER discount
+  const discountedPrice = price / 0.78; // get original (before discount)
+  const discountDifference = discountedPrice - price; // how much is off
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); // 22%
   return {
-    discount: Number(discount),
-    discountedPrice,
-    discountDifference,
+    discount: Number(discount),              // 22
+    discountedPrice: Math.round(discountedPrice), // original price (before discount)
+    discountDifference: Math.round(discountDifference), // amount off
   };
 };
+
 
 
 
@@ -146,38 +149,57 @@ export default function CatValuePage() {
   };
 
 
+return (
+  <div className="featured-photo-works">
+    {loading ? (
+      <div className="skeleton-wrapper">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <CardSkeleton key={index} />
+        ))}
+      </div>
+    ) : error ? (
+      <p className="error-text">{error}</p>
+    ) : (
+      <>
+        <p className="PhotoHeading">{catValue}</p>
 
- return (
-    <div className="featured-photo-works">
-      <p className="PhotoHeading">{catValue}</p>
+        {products.length > 0 ? (
+          <ProductGrid
+            data={products}
+            onCardClick={handleViewMore}
+            categoryType="photography"
+          />
+        ) : (
+            <div className="skeleton-wrapper">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <CardSkeleton key={index} />
+        ))}
+      </div>
+        )}
 
-      {loading ? (
-        <div className="loader-container">
-          <div className="spinner"></div>
-        </div>
-      ) : error ? (
-        <p className="error-text">{error}</p>
-      ) : products.length > 0 ? (
-        <ProductGrid data={products} onCardClick={handleViewMore}  categoryType="photography"/>
-      ) : (
-        <p>No products found.</p>
-      )}
-
- <div class="suggested-poses">
-          <div class="suggested-poses-section">
-            <Image src={PhotoBanner} alt="Camera Holding" class="suggested-image" />
+        {/* Suggested Banner */}
+        <div className="suggested-poses">
+          <div className="suggested-poses-section">
+            <Image
+              src={PhotoBanner}
+              alt="Camera Holding"
+              className="suggested-image"
+            />
           </div>
         </div>
-      {galleryData && galleryData.folderName && galleryData.customerId && (
-        <div className="photo-gallery-wrapper">
-        
-          <ThumbnailGallery
-            folderName={galleryData.folderName}
-            customerId={galleryData.customerId}
-             disablePopup={true} 
-          />
-        </div>
-      )}
-    </div>
-  );
+
+        {/* Gallery Section */}
+        {galleryData && galleryData.folderName && galleryData.customerId && (
+          <div className="photo-gallery-wrapper">
+            <ThumbnailGallery
+              folderName={galleryData.folderName}
+              customerId={galleryData.customerId}
+              disablePopup={true}
+            />
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
 }

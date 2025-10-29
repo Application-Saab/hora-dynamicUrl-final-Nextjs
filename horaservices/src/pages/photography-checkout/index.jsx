@@ -82,7 +82,7 @@ console.log(selectedAddOnProduct)
     
       const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
       setSendInclusion(formattedInclusions);
-    setProductPrice(product.discountedPrice || product.price);
+    setProductPrice(product.price || product.price);
 
       setProductData(parsedProduct);
 
@@ -560,7 +560,16 @@ console.log(advanceAmount);
                 The selected date and time must be at least 24 hours from now.
               </p>
             )}
-
+<div className="amountBox">
+  <div className="amountRow">
+    <span className="labels">TOTAL AMOUNT :</span>
+    <span className="value">₹ {totalAmount}</span>
+  </div>
+  <div className="amountRow">
+    <span className="labels">ADVANCE AMOUNT :</span>
+    <span className="value">₹ {advanceAmount}</span>
+  </div>
+</div>
             <div className="form-group input-with-icon">
               <label className="form-label">Share comments</label>
               <Image src={CommentIcon} className="input-icon" alt="comment" />
