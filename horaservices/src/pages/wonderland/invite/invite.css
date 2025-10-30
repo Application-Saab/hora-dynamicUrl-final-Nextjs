@@ -4,6 +4,7 @@
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  margin-bottom: 80px;
 }
 /* Main center container */
 .invite-page-container {
@@ -14,11 +15,34 @@
   padding-inline: 7px;
 }
 /* Default template image */
+.default-template-wrapper {
+  position: relative; /* Important: make this the reference point */
+  width: 100%;
+  margin-top: 15px;
+  border-radius: 10px;
+  overflow: hidden; /* Optional: hides text overflow outside image */
+}
+
+/* Image styling */
 .default-invite-image {
   width: 100%;
   height: auto;
+  display: block;
   border-radius: 10px;
-  margin-top: 15px;
+}
+
+/* Overlay text styling */
+.default-template-text {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* Actions (Explore, share templates, add details) */
@@ -154,6 +178,34 @@
   align-items: center;
   justify-content: center;
 }
+.eventwall-nopost-ctn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.nopost-box {
+  box-shadow: 0px 4px 4px 0px #00000040;
+  padding: 35px 20px;
+  text-align: center;
+  border-radius: 15px;
+}
+.nopost-box .line-1 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #4C4F56;
+  text-align: center;
+}
+.nopost-box .line-2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: #6B6F71;
+    text-align: center;
+}
+.nopost-box .line-3 {
+ margin-top: 20px;
+}
 
 @media (min-width: 360px) {
   .status-box-header h3 {
@@ -164,7 +216,11 @@
     font-size: 14px;
   }
 
-.event-wall-action-btn{
+  .event-wall-action-btn {
     padding: 9px 17px;
-}  
+  }
+
+  .default-template-text {
+    top: 50%;
+  }
 }

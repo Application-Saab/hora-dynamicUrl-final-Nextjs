@@ -1,89 +1,79 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
+import { BASE_URL } from "@/utils/apiconstants";
 
-// Create isolated axios instance
+// Axios instance setup
 const api = axios.create({
-  baseURL: "https://horaservices.com:3000",
+  baseURL: BASE_URL,
 });
 
-// Request interceptor for Authorization
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `${token}`;
-    }
+    if (token) config.headers.Authorization = `${token}`;
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ✅ Main hook
-const useApi = (initialUrl = null, initialMethod = "get", initialBody = null, initialTrigger = 0) => {
+// Reusable hook
+const useApi = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [lastRequest, setLastRequest] = useState(null);
 
-  // Function to handle API calls (GET, POST, PUT, DELETE)
-  const makeRequest = useCallback(async (url, method = "get", body = null, params = {}) => {
-    setLoading(true);
-    setError(null);
+  // Make request (GET, POST, PUT, DELETE)
+  const makeRequest = useCallback(
+    async (url, method = "GET", body = null, params = {}) => {
+      if (!url) return;
 
-    try {
-      const response = await api({
-        method: method.toLowerCase(),
-        url,
-        data: body,
-        params,
-      });
-
-      setData(response.data);
-      return response.data;
-    } catch (err) {
-      const message = err.response?.data?.message || err.message || "Something went wrong";
-      setError(message);
-      setData(null);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Auto-fetch for initial GET request
-  useEffect(() => {
-    if (!initialUrl || initialMethod.toLowerCase() !== "get") return;
-
-    const controller = new AbortController();
-    const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await api.get(initialUrl, { signal: controller.signal });
+        const response = await api({
+          url,
+          method: method.toLowerCase(),
+          data: body,
+          params,
+        });
+
         setData(response.data);
+        // Store last request for refetch
+        setLastRequest({ url, method, body, params });
+        return response.data;
       } catch (err) {
-        if (err.name !== "CanceledError") {
-          const message = err.response?.data?.message || err.message || "Something went wrong";
-          setError(message);
-          setData(null);
-        }
+        const message =
+          err.response?.data?.message || err.message || "Something went wrong";
+        setError(message);
+        console.error("API Error:", message);
+        throw err;
       } finally {
         setLoading(false);
       }
-    };
+    },
+    []
+  );
 
-    fetchData();
-    return () => controller.abort(); // cleanup on unmount
-  }, [initialUrl, initialMethod, initialTrigger]);
+  // Refetch (only last called API)
+  const refetch = useCallback(async () => {
+    if (!lastRequest?.url) {
+      console.warn("No previous request found to refetch");
+      return;
+    }
 
-  // Optional reset function to clear data and errors
+    const { url, method, body, params } = lastRequest;
+    await makeRequest(url, method, body, params);
+  }, [lastRequest, makeRequest]);
+
+  // Reset data and error
   const reset = useCallback(() => {
     setData(null);
     setError(null);
   }, []);
 
-  // Return all useful states and methods
-  return { data, loading, error, makeRequest, setData, reset };
+  return { data, loading, error, makeRequest, refetch, setData, reset };
 };
 
 export default useApi;

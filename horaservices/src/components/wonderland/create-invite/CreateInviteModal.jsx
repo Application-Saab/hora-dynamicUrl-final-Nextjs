@@ -2,12 +2,36 @@ import React, { useState } from "react";
 import BackArrow from "@/assets/BackArrowSvg.svg";
 import Image from "next/image";
 import "./CreateInviteModal.css";
+import useApi from "@/hooks/useApi";
+import { CREATE_EVENT_INVITE } from "@/utils/apiconstants";
+import { useRouter } from "next/router";
 
 const CreateInviteModal = ({ isOpen, onClose }) => {
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
+  const router = useRouter();
   const [occation, setOccation] = useState("");
+  const { loading, makeRequest } = useApi();
+  const userId = localStorage.getItem("userID");
+
+  const handleSubmit = async () => {
+    if (!userId && occation) return;
+    try {
+      let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", {
+        userId: userId,
+        hostName: occation,
+      });
+      if (resp?.data) {
+        router.replace({
+          pathname: "/wonderland/invite",
+          query: { eventid: resp?.data._id },
+        });
+        setOccation("");
+        onClose();
+      }
+    } catch (err) {
+      console.error("Error rejecting content:", err);
+    }
+  };
 
   return (
     <>
@@ -34,8 +58,12 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               </small>
             </div>
 
-            <button className="submit-button-custom" onClick={onClose}>
-              Submit
+            <button
+              className="submit-button-custom"
+              disabled={!occation}
+              onClick={occation && handleSubmit}
+            >
+              {loading ? "Submitting..." : "Submit"}
             </button>
           </div>
         </div>

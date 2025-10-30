@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import ExploreTemplateIcon from "@/assets/ExploreTemplateIcon.svg";
 import ShareInviteIcon from "@/assets/ShareInviteIcon.svg";
 import AddDetailsIcon from "@/assets/AddDetailsIcon.svg";
+import AddDetailsModal from "../create-invite/AddDetailsModal";
 
 const actions = [
   {
@@ -21,11 +22,23 @@ const actions = [
   },
 ];
 
-const InviteActions = () => {
+const InviteActions = ({ eventData, refetchInvite }) => {
+  const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
+  const handleClick = (actionId) => {
+    // Handle action based on actionId
+    if (actionId === 3) {
+      setOpenAddDetailsModal(true);
+    }
+  };
+
   return (
     <>
       {actions.map((action) => (
-        <div key={action.id} className="action-item-icon-wrapper">
+        <div
+          key={action.id}
+          className="action-item-icon-wrapper"
+          onClick={() => handleClick(action.id)}
+        >
           <div className="invite-action-item">
             <img
               src={
@@ -52,6 +65,12 @@ const InviteActions = () => {
           </p>
         </div>
       ))}
+      <AddDetailsModal
+        eventData={eventData}
+        isOpen={openAddDetailsModal}
+        refetchInvite={() => refetchInvite()}
+        onClose={() => setOpenAddDetailsModal(false)}
+      />
     </>
   );
 };

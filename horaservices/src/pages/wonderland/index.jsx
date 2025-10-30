@@ -1,5 +1,4 @@
 import OtpLogin from "@/components/OtpLoginPopup";
-import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import Image from "next/image";
@@ -12,7 +11,7 @@ import InvitesListing from "@/components/wonderland/InvitesListing";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
-  const { page, id: queryId, hostName } = router.query;
+  const { id: queryId } = router.query;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
@@ -29,60 +28,17 @@ const WonderlandMainPage = () => {
       timer = setTimeout(() => {
         router.push(`/wonderland?id=${loggedinUserId}`);
       }, 2500);
-    }   
+    }
 
     return () => clearTimeout(timer);
   }, [queryId, loggedinUserId, isUserLoggedIn, slug]);
-
-  const handleClickCreateInvite = async () => {
-    try {
-      const payload = {
-        userId: loggedinUserId || "",
-        eventType: "",
-        hostName: "",
-        eventDate: "",
-        eventTime: "",
-        location: "",
-        hostImage: null,
-      };
-
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/create-event-invite`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const result = await res.json();
-
-      if (res.ok) {
-        const finalEventId = result?.data?._id;
-        if (finalEventId) {
-          router.replace(
-            `/wonderland/?id=${loggedinUserId}/${finalEventId}&page=create-invite`
-          );
-        }
-      } else {
-        console.error("Failed:", result);
-        alert("Failed to save invitation.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Something went wrong.");
-    }
-  };
 
   const createInviteClick = () => {
     if (!isUserLoggedIn) {
       setShowHostLoginModal(true);
       return;
     } else {
-      handleClickCreateInvite();
+      router.replace(`/wonderland/invite`);
     }
   };
 
@@ -123,7 +79,6 @@ const WonderlandMainPage = () => {
           </button>
         </div>
 
-        {/* Event List */}
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}
@@ -171,7 +126,7 @@ const WonderlandMainPage = () => {
         <OtpLogin
           setIsModalOpen={() => {
             setShowHostLoginModal(false);
-            handleClickCreateInvite();
+            router.replace(`/wonderland/invite`);
           }}
         />
       )}

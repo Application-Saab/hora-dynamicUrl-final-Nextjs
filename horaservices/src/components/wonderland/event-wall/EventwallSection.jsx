@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import NotesButtonIcon from "@/assets/NotesButtonIcon.svg";
 import PostBadgeButtonIcon from "@/assets/PostBadgeButtonIcon.svg";
 import GalleryButtonIcon from "@/assets/GalleryButtonIcon.svg";
+import NopostCamera from "@/assets/NopostCamera.svg";
 
 const EventwallSection = () => {
   const [allImages, setAllImages] = useState([]);
@@ -41,16 +42,22 @@ const EventwallSection = () => {
       </div>
       <div>
         {allImages.length === 0 ? (
-          <p
-            className="text-center"
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              color: "#666666",
-            }}
-          >
-            No posts yet. Be the first to post on the celebration wall!
-          </p>
+          <div className="eventwall-nopost-ctn mt-5">
+            <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
+              <img
+                src={NopostCamera.src}
+                alt="No Post Camera"
+                className="mb-3"
+              />
+              <p className="line-1">
+                No memories here yet! Be the First to share.
+              </p>
+              <p className="line-2">
+                Everyone can upload photos & videos from the event!
+              </p>
+              <p className="line-2 line-3">Let’s fill this wall with joy!</p>
+            </div>
+          </div>
         ) : (
           <div className="event-wall-images-grid">
             {allImages.map((imageSrc, index) => (
