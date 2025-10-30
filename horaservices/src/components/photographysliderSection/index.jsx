@@ -20,18 +20,16 @@ export default function PhotographysliderSection({
 
   
 const getDiscountedPrice = (price = 0) => {
-  // price here is AFTER discount
-  const discountedPrice = price / 0.78; // get original (before discount)
-  const discountDifference = discountedPrice - price; // how much is off
-  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); // 22%
+  const discountedPrice = price / 0.78; 
+  const discountDifference = discountedPrice - price; 
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); 
   return {
-    discount: Number(discount),              // 22
-    discountedPrice: Math.round(discountedPrice), // original price (before discount)
-    discountDifference: Math.round(discountDifference), // amount off
+    discount: Number(discount),             
+    discountedPrice: Math.round(discountedPrice), 
+    discountDifference: Math.round(discountDifference),
   };
 };
 
-  // ✅ Fetch photography data
   const fetchData = useCallback(async () => {
     if (!tagId) return;
     setLoading(true);
@@ -60,15 +58,26 @@ const getDiscountedPrice = (price = 0) => {
     text?.toLowerCase()?.replace(/[^a-z0-9]+/g, "-")?.replace(/(^-|-$)/g, "");
 
   const handleCardClick = (work) => {
-    if (!work) return;
-    const slug = slugify(work.name);
-    const categorySlug = slugify(work.categoryValue || "photography");
+  if (!work) return;
 
-    router.push({
-      pathname: `/photography-page/${categorySlug}/product/${slug}`,
-      query: { id: work._id },
-    });
-  };
+  const slug = slugify(work.name);
+  const categorySlug = slugify(work.categoryValue || "photography");
+
+  const city = router.query.city;
+  const locality = router.query.locality;
+  let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+  if (city && locality) {
+    basePath = `/${city.toLowerCase()}/${locality.toLowerCase()}${basePath}`;
+  } else if (city) {
+    basePath = `/${city.toLowerCase()}${basePath}`;
+  }
+
+  router.push({
+    pathname: basePath,
+    query: { id: work._id },
+  });
+};
+
 
   return (
     <section className="premium-slide-decor">
@@ -92,13 +101,14 @@ const getDiscountedPrice = (price = 0) => {
                   onClick={() => handleCardClick(item)}
                 >
                   <div className="premium-img-wrapper">
-                    <Image
-                      src={imageUrl}
-                      alt={item.name}
-                      width={200}
+             
+                       <Image
+                                    src={`https://horaservices.com/api/uploads/compressed_webp/${item.featured_image?.split(".")[0]}.webp`}
+                                    alt={`balloon decoration ${item.name}`}
+                                      width={200}
                       height={150}
                       className="premium-img"
-                    />
+                                  />
                     <div className="premium-discount">
                       ₹{Math.floor(item.discountDifference)} off
                     </div>

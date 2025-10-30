@@ -63,7 +63,9 @@
   margin: 0;
   padding: 0px 10px;
 }
-
+.photograpghy-image{
+  object-fit: cover;
+}
 
 .footergrid {
   text-align: center;

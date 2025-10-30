@@ -21,13 +21,13 @@ const ReviewSlider = ({ reviews = [], title = "Customer Reviews" }) => {
         autoplay={{ delay: 4000 }}
         loop={true}
         spaceBetween={6}
-         slidesPerView={1.2} 
+         slidesPerView={1.3} 
   centeredSlides={true}
         
       >
         {reviews.map((review, idx) => (
           <SwiperSlide key={idx}>
-            <div className="review-card final-card">
+            <div className="final-card">
               <div className="top-row">
                 <img src={review.avatar} className="avatar-circle" alt={review.name} />
                 <div className="top-info">

@@ -1,7 +1,8 @@
 .review-section {
-  padding: 10px;
+  padding: 5px;
   text-align: center;
   overflow: hidden; 
+  margin-bottom: 5px;
 }
 
 
@@ -15,7 +16,7 @@
 .final-card {
   background: #fff;
   margin: 0 auto;
-  padding: 10px;
+  padding: 5px;
   border-radius: 12px;
   border: 1px solid #ccc;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -25,8 +26,9 @@
 .top-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 10px;
+  gap: 0.3rem;
+  padding: 0 5px;
+  margin-bottom: 5px;
 }
 
 .avatar-circle {
@@ -43,7 +45,7 @@
 }
 
 .review-name-mono {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   font-family: monospace;
 }
@@ -64,8 +66,21 @@
   color: #ccc;
 }
 
-.review-text-block {
-  font-size: 10px;
+/* .review-text-block {
+  font-size: 9px;
   color: #444;
   text-align: justify;
+} */
+
+.review-text-block {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #333;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;   
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: calc(1.5em * 4); 
+  padding: 0 10px;
 }

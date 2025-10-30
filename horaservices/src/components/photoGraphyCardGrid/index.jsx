@@ -60,7 +60,7 @@ const handleViewMore = () => {
 };
 
   return (
-    <div className="cardgrid">
+    <div className="cardgrid"onClick={handleViewMore}>
       <div className="imageWrappergrid ">
         <Image src={src} alt={title} fill className="photograpghy-image" priority />
         <div className="imageOverlaygrid"></div>
@@ -69,7 +69,10 @@ const handleViewMore = () => {
         </div>
       </div>
       <div className="footergrid">
-        <button className="viewMoregrid " onClick={handleViewMore}>
+        <button className="viewMoregrid "   onClick={(e) => {
+            e.stopPropagation(); 
+            handleViewMore();
+          }}>
           View more
         </button>
       </div>

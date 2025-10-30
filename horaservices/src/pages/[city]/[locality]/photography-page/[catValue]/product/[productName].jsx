@@ -40,7 +40,7 @@ const PhotographyCityPage = () => {
   return (
     <div >
       <ProductDetails />
-        <LocalitiesSection
+        {/* <LocalitiesSection
         title={`${city} localities`}
         localities={cityLocalitiesList}
         handleClick={localityHandleClick}
@@ -49,7 +49,7 @@ const PhotographyCityPage = () => {
         <FAQSection faqData={faqData} />
       </div>
       <PhotographyDescription city={city} />
-      <PhotographySEOKeywords city={city} />
+      <PhotographySEOKeywords city={city} /> */}
     </div>
   );
 };

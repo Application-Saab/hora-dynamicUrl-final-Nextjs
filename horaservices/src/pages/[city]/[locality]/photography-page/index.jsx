@@ -23,14 +23,7 @@ const PhotographyCityPage = () => {
     <div >
   
       <Index />
-        <div className="tab-section-details-productpage">
-      <FAQSection faqData={faqData} />
-      </div>
-      <PhotographyDescription city={locality} />
     
-       {/* <div className="my-4 container">
-              <DecorationSEOKeywords city={locality} />
-            </div> */}
     </div>
   );
 };

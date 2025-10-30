@@ -29,7 +29,7 @@ import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../assets/TpBrandsIMG.png";
-import {balloonreviews} from "@/utils/balloonReviews";
+import { photographyreviews } from '@/utils/photographyreviews';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -390,52 +390,7 @@ Freelancer Photographer; Photographer near me, `
           </div>
         </div>
 
-        {/* <div class="trust-section">
-          <h2 class="Trust-header" >Why People Trust Us <span>♥</span></h2>
-
-          <div className="review">
-            <Swiper
-              modules={[Pagination, Autoplay]}
-              pagination={{ clickable: true }}
-              autoplay={{ delay: 4000 }}
-              loop={true}
-              spaceBetween={20}
-              slidesPerView={1}
-            >
-              {reviews.map(({ text, author }, idx) => (
-                <SwiperSlide key={idx}>
-                  <p className="trust-subtitle">{author}</p>
-                  <p className="review-text">{text}</p>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-
-
-
-
-
-          <div class="stats-grid">
-            <div class="stat-box">
-              <div class="rating-row">
-                <Image src={google} alt="Google Icon" class="icon" />
-                <strong>4.8</strong>
-              </div>
-              <p class="Text-google">Google Rating</p>
-            </div>
-
-            <div class="stat-box">
-              <div class="photoD">
-                <strong >50L+</strong>
-                <div class="photos-title">Photos Delivered</div>
-              </div>
-            </div>
-
-            <div class="stat-box full">
-              <p><strong>15K+</strong><span class="highlight"> Happy Customers</span></p>
-            </div>
-          </div>
-        </div> */}
+     
 
 <section className="BabyShowerBanner">
         <Image
@@ -449,7 +404,7 @@ Freelancer Photographer; Photographer near me, `
       </section>
       <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
-<ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
+<ReviewSlider reviews={photographyreviews} title="Customer Reviews" />
 
 
         <div className="keywords-box">

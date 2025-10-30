@@ -14,7 +14,7 @@ import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
 import SUPPORT from "@/assets/support.png";
 import Brand from "@/assets/Brand.png";
-import HowitWork from "@/assets/howitwork.jpg";
+import HowitWork from "@/assets/howitworkphoto.jpg";
 import HappyCustomerIMG from "@/assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "@/assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "@/assets/ourSocialmediaIMG.png";
@@ -30,6 +30,7 @@ import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
 
 import Photographyslider from '@/components/photoslidersection';
+
 const SkeletonLoader = () => {
   return (
     <div
@@ -170,13 +171,15 @@ const SkeletonLoader = () => {
     </div>
   );
 };
-const ProductDetails = ({city,locality}) => {
+const ProductDetails = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
   const router = useRouter();
     const params = useParams();
   const { query } = useRouter();
   const productId = query.id;
+   let { city } = router.query;
+  let { locality } = router.query;
   const { product } = router.query;
     const [catValue, setCatValue] = useState("");
   const [work, setWork] = useState(null);
@@ -335,14 +338,13 @@ let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
   };
 
 const getDiscountedPrice = (price = 0) => {
-  // price here is AFTER discount
-  const discountedPrice = price / 0.78; // get original (before discount)
-  const discountDifference = discountedPrice - price; // how much is off
-  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); // 22%
+  const discountedPrice = price / 0.78; 
+  const discountDifference = discountedPrice - price; 
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); 
   return {
-    discount: Number(discount),              // 22
-    discountedPrice: Math.round(discountedPrice), // original price (before discount)
-    discountDifference: Math.round(discountDifference), // amount off
+    discount: Number(discount),              
+    discountedPrice: Math.round(discountedPrice), 
+    discountDifference: Math.round(discountDifference), 
   };
 };
 
@@ -358,13 +360,6 @@ const getDiscountedPrice = (price = 0) => {
 
     router.push({
       pathname: '/photography-checkout',
-      // query: {
-      //   from: window.location.pathname,
-      //   product: JSON.stringify(product),
-      //  ProductPrice: product.price,
-      //   // Productname: product.name,
-      //   // productId: product._id,
-      // }
       query: {
         from: window.location.pathname,
         product: JSON.stringify(product),
@@ -372,6 +367,7 @@ const getDiscountedPrice = (price = 0) => {
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
         totalAmount: totalPrice,
+        duration:work?.duration,
       }
     });
   };
@@ -410,7 +406,7 @@ const getDiscountedPrice = (price = 0) => {
     fetchProductDetails();
   }, [productId]);
 
-// const catValue = work?.catValue || work?.category || parsedProduct?.catValue || "";
+
  const getMappedCatValue = (slug) => {
     const map = {
         "Engagement-Photography": "Engagement-Photography",
@@ -424,41 +420,18 @@ const getDiscountedPrice = (price = 0) => {
    "  Maternity-Photography":"  Maternity-Photography",
    " New-Born-Baby-Photography":" New-Born-Baby-Photography"
     };
-    return map[slug] || slug;  // If not mapped, return the same slug
+    return map[slug] || slug;  
   };
-//   useEffect(() => {
-//   if (!tagId || !productId) return; // Wait until both are available
-
-//   const fetchSimilarProducts = async () => {
-//     try {
-//       const res = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
-//       const allProducts = res.data?.data || [];
-
-//       // Remove the current product
-//       const filteredProducts = allProducts.filter(p => p._id !== productId);
-//       setSimilarProducts(filteredProducts);
-//     } catch (error) {
-//       console.error("Error fetching similar products:", error.message);
-//     }
-//   };
-
-//   fetchSimilarProducts();
-// }, [tagId, productId]);
 useEffect(() => {
   if (!productId) return;
 
   const fetchProductAndSimilar = async () => {
     try {
-      // 1️⃣ Fetch main product details
       const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
       const data = res.data?.data;
 
       if (!data) throw new Error("No product found");
-
-      // 💰 Calculate discount
       const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
-
-      // 🟢 Set product info for UI
       setWork({
         ...data,
         discount,
@@ -466,18 +439,14 @@ useEffect(() => {
         discountDifference,
       });
 
-      // 2️⃣ Extract tag ID safely
       const tagId = data?.tag?.[0]?._id;
       if (!tagId) {
         console.warn("No tag found for product");
         return;
       }
 
-      // 3️⃣ Fetch similar products by tag
       const similarRes = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
       const allProducts = similarRes.data?.data || [];
-
-      // 4️⃣ Remove the current product from the similar list
       const filteredProducts = allProducts.filter((p) => p._id !== productId);
 
       setSimilarProducts(filteredProducts);
@@ -495,7 +464,7 @@ useEffect(() => {
 
 
   if (loading) {
-    return <SkeletonLoader />; // Show skeleton loader while loading
+    return <SkeletonLoader />
   }
 
   if (!work) return <div className="photodetails-loading">Work not found</div>;
@@ -503,26 +472,55 @@ useEffect(() => {
   return (
     <div>
 
-      <Head>
-        <title>HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500</title>
+         <Head>
+        <title>
+          {city
+            ? `HORA Photography ${city} ${work.name} by Professionals Photographer, Starting at ₹3500`
+            : `HORA Photography ${work.name} by Professionals Photographer, Starting at ₹3500`}
+        </title>
         <meta
           name="description"
-          content="📸 Capture Every Moment, Forever! ✨
-     Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
-    Weddings 👰‍♀️🤵
-    Maternity & Baby Shoots 🤰👼
-    Birthdays & Anniversaries 🎂❤️
-    Housewarming & Corporate Events" />
+          content={
+            city
+              ? `  📸 Capture Every Moment, Forever! ✨
+Welcome to HORA ${city} ${work.name}— where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
+Weddings Photoshoot👰‍♀️; 
+Maternity photoshoot;
+Baby Shoots 🤰👼; 
+Birthdays photoshoot; 
+Newborn photography;
+Couples photography
+Anniversaries photographer 🎂❤️; 
+Newborn photography
+Housewarming & Corporate Events; 
+Pre wedding photoshoot & Couple Photographer; 
+Freelancer Photographer; Photographer near me,`
+              : `   📸 Capture Every Moment, Forever! ✨
+Welcome to HORA ${work.name}— where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
+Weddings Photoshoot👰‍♀️; 
+Maternity photoshoot;
+Baby Shoots 🤰👼; 
+Birthdays photoshoot; 
+Newborn photography;
+Couples photography
+Anniversaries photographer 🎂❤️; 
+Newborn photography
+Housewarming & Corporate Events; 
+Pre wedding photoshoot & Couple Photographer; 
+Freelancer Photographer; Photographer near me, `
+
+          }
+        />
         <meta
           name="keywords"
           content="couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, 
-        couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, 
-        pregnancy photo shoot, photography in pregnancy, pregnant women photoshoot, motherhood photoshoot, pregnant ladies photoshoot, couple pregnancy photoshoot, seemantham photoshoot, pregnancy photoshoot in bangalore, newborn photography, infant photography,
-         baby photography near me, newborn photography near me, newborn photoshoot, infant photographers near me, newborn portraits near me, newborn family photoshoot, family photography with newborn, cake smash photoshoot, first birthday cake smash photoshoot, 
-         engagement photo shoot, engagement photoshoot, engagement couple photography, engagement photography, wedding photographer, wedding photographer near me, wedding photoshoot, photographer wedding, candid wedding photography, marriage photoshoot, post wedding photoshoot, 
-         bridal photoshoot, traditional photography, wedding photographers in bangalore, marriage photographers in bangalore, birthday photoshoot, first birthday photoshoot, pre birthday photoshoot, birthday celebration photoshoot, birthday photo session, 18th photoshoot, 
-         birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, 
-         photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
+    couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, 
+    pregnancy photo shoot, photography in pregnancy, pregnant women photoshoot, motherhood photoshoot, pregnant ladies photoshoot, couple pregnancy photoshoot, seemantham photoshoot, pregnancy photoshoot in bangalore, newborn photography, infant photography,
+     baby photography near me, newborn photography near me, newborn photoshoot, infant photographers near me, newborn portraits near me, newborn family photoshoot, family photography with newborn, cake smash photoshoot, first birthday cake smash photoshoot, 
+     engagement photo shoot, engagement photoshoot, engagement couple photography, engagement photography, wedding photographer, wedding photographer near me, wedding photoshoot, photographer wedding, candid wedding photography, marriage photoshoot, post wedding photoshoot, 
+     bridal photoshoot, traditional photography, wedding photographers in bangalore, marriage photographers in bangalore, birthday photoshoot, first birthday photoshoot, pre birthday photoshoot, birthday celebration photoshoot, birthday photo session, 18th photoshoot, 
+     birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, 
+     photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
         />
         <meta property="og:title" content="HORA Photography : Professional photography for all events" />
         <meta

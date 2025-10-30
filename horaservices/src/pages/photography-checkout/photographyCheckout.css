@@ -636,18 +636,17 @@ font-family: 'Inter', sans-serif;
     left: 24%;
 }
 .photographer-note {
-    color: red;
-    border: 1px solid red;
-    padding: 4px 0px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 500;
-    text-align: left;
-    /* white-space: nowrap; */
-    overflow: hidden;
-    margin-bottom: 20px;
-    text-align: center;
-    /* background-color: antiquewhite; */
+   text-align: center;
+    align-items: center;
+    color: #091B44;
+    font-size: 12px;
+    font-weight: 550;
+    gap: 8px;
+    margin: 20px 0px 25px 0px;
+    background-color: #FFE2BE;
+    border: 1px #882697 solid;
+    border-radius: 10px;
+    padding: 2px;
 }
 
 .floating-image {

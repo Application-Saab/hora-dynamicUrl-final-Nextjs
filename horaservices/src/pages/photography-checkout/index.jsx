@@ -30,10 +30,9 @@ const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
    const scriptTag = JSON.stringify(schemaOrg);
-  let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
-  console.log(product)
+  let { product, totalAmount, orderType,duration } = router.query;
+
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];// 
-console.log(selectedAddOnProduct)
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -60,7 +59,7 @@ console.log(selectedAddOnProduct)
   const [sendInclusion, setSendInclusion] = useState(false);
   const [productPrice, setProductPrice] = useState(null);
   const [productImage, setProductImage] = useState(null);
-  const [productDuration, setProductDuration] = useState(null);
+  // const [productDuration, setProductDuration] = useState(null);
   const [productData, setProductData] = useState(null);
 
   if (product) {
@@ -89,7 +88,6 @@ console.log(selectedAddOnProduct)
       // Product ID se local image set karo
       if (parsedProduct._id && productsData[parsedProduct._id]) {
         setProductImage(productsData[parsedProduct._id].images[0]);
-        setProductDuration(productsData[parsedProduct._id].durationMaxslot);
       }
     }
   }, [router.isReady, router.query.product]);
@@ -522,8 +520,7 @@ console.log(advanceAmount);
 
             <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
   <div className="photographer-note">
-       Photographer will be available for {productDuration} after arrival.
-  {/* Need more info ? chat on WhatsApp now! */}
+     Duration: {duration ? `${duration} ` : "Not selected"}
 </div>
             <div className="form-row">
               <div className="form-half large-input">
@@ -649,16 +646,22 @@ console.log(advanceAmount);
           <div className='d-flex flex-column flex-lg-row'>
 
             <div >
-              {/* <label>Product Name :</label> */}
+             
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
-            {/* <div className='prod-detailsp'>
-              {productImage && (
-                <div className='detail-item'>
-                  <Image src={productImage} alt={product.name} className="detailimage" />
-                </div>
-              )}
-            </div> */}
+           <div className='prod-detailsp'>
+              <Image
+                          className="checkoutRightImg"
+                          src={
+                            product?.featured_image
+                              ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
+                              : "/default-image.webp"
+                          }
+                          alt="image"
+                          width={300}
+                          height={300}
+                        />
+            </div> 
 
             <div className='prod-details'>
          

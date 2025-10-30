@@ -43,7 +43,7 @@
 .photodetails-offer {
   margin-left: 2px;
   background-color: #ffc107;
-  color: #5a3e00;
+  color: white;
   font-weight: bold;
   padding: 4px 8px;
   border-radius: 6px;
@@ -534,10 +534,12 @@ ul.decoration-addons {
 }
 
 .media-heading {
+  font-family: 'Inter', sans-serif;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 700;
   color: #97538C;
   margin-bottom: 20px;
+
 }
 
 .media-logos {
