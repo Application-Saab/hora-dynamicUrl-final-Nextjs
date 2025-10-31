@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "@/utils/apiconstants";
 
@@ -7,6 +7,7 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
+// Add token interceptor
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -16,14 +17,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Reusable hook
-const useApi = () => {
+// ✅ Combined useApi Hook
+const useApi = (
+  initialUrl = null,
+  initialMethod = "GET",
+  initialBody = null,
+  initialTrigger = 0
+) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastRequest, setLastRequest] = useState(null);
 
-  // Make request (GET, POST, PUT, DELETE)
+  // Main reusable API call function
   const makeRequest = useCallback(
     async (url, method = "GET", body = null, params = {}) => {
       if (!url) return;
@@ -40,7 +46,6 @@ const useApi = () => {
         });
 
         setData(response.data);
-        // Store last request for refetch
         setLastRequest({ url, method, body, params });
         return response.data;
       } catch (err) {
@@ -56,7 +61,47 @@ const useApi = () => {
     []
   );
 
-  // Refetch (only last called API)
+  // Auto initial GET request (optional)
+  useEffect(() => {
+    if (!initialUrl || initialMethod.toLowerCase() !== "get") return;
+
+    const controller = new AbortController();
+
+    const fetchInitialData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await api.get(initialUrl, {
+          signal: controller.signal,
+        });
+        setData(response.data);
+        setLastRequest({
+          url: initialUrl,
+          method: initialMethod,
+          body: null,
+          params: {},
+        });
+      } catch (err) {
+        if (err.name !== "CanceledError") {
+          const message =
+            err.response?.data?.message ||
+            err.message ||
+            "Something went wrong";
+          setError(message);
+          setData(null);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
+
+    return () => controller.abort(); // Cleanup
+  }, [initialUrl, initialMethod, initialTrigger]);
+
+  // Refetch last request
   const refetch = useCallback(async () => {
     if (!lastRequest?.url) {
       console.warn("No previous request found to refetch");
@@ -67,7 +112,7 @@ const useApi = () => {
     await makeRequest(url, method, body, params);
   }, [lastRequest, makeRequest]);
 
-  // Reset data and error
+  // Reset function
   const reset = useCallback(() => {
     setData(null);
     setError(null);
