@@ -59,22 +59,23 @@ export const photoCat = [
     catValue: "Baby-Shower-Photography",
     imgAlt: "Baby shower and family photoshoot ideas",
   },
-  {
+   {
     id: "7",
-    image: "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
-    name: "Wedding Photography",
-    subCategory: "Wedding-Photography",
-    catValue: "Wedding-Photography",
-    imgAlt: "Wedding photography with cinematic shots",
-  },
-  {
-    id: "8",
     image: "https://horaservices.com/api/uploads/compressed_webp/Engagement-Photography.webp",
     name: "Engagement Photography",
     subCategory: "Engagement-Photography",
     catValue: "Engagement-Photography",
     imgAlt: "Engagement photoshoots and pre-wedding moments",
   },
+  {
+    id: "8",
+    image: "https://horaservices.com/api/uploads/compressed_webp/Wedding-Photography.webp",
+    name: "Wedding Photography",
+    subCategory: "Wedding-Photography",
+    catValue: "Wedding-Photography",
+    imgAlt: "Wedding photography with cinematic shots",
+  },
+ 
   {
     id: "9",
     image: "https://horaservices.com/api/uploads/compressed_webp/Maternity-Photography.webp",

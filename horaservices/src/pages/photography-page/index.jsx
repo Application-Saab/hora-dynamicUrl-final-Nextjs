@@ -327,7 +327,7 @@ Freelancer Photographer; Photographer near me, `
               <div className="TextBackground"><p>New Born Baby</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=engagement-weblink&customerId=64137625549b58e3dc39a685"
+              href="https://horaservices.com/photo-gallery?folderName=engagement weblink&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
@@ -337,7 +337,7 @@ Freelancer Photographer; Photographer near me, `
               <div className="TextBackground"><p>Engagement</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href="https://horaservices.com/photo-gallery?folderName=anniversary%20poses%20web%20link&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
@@ -347,7 +347,7 @@ Freelancer Photographer; Photographer near me, `
               <div className="TextBackground"><p>Anniversary</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
+              href="https://horaservices.com/photo-gallery?folderName=House warming weblink&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
               rel="noopener noreferrer"
