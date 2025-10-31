@@ -26,10 +26,6 @@ import dogsImg from "@/assets/dogs.webp";
 import heroImg from "@/assets/hero.webp";
 import footballImg from "@/assets/football.webp";
 import unicornImg from "@/assets/unicorn.webp";
-import MashaImag from "@/assets/Masha-Bear.webp";
-
-
-
 export const themeFilters = [
   { label: "Select Theme", value: "all", image: "" },
   { label: "Astronaut space theme", value: "Astronaut-space", image: astronautImg },
@@ -58,5 +54,4 @@ export const themeFilters = [
   { label: "Super Hero theme", value: "Hero", image: heroImg },
   { label: "Sport Football theme", value: "Football", image: footballImg },
   { label: "Unicorn Theme", value: "Unicorn", image: unicornImg },
-  {label:"Masha and Bear Theme",value:"Masha",image:MashaImag}
 ];

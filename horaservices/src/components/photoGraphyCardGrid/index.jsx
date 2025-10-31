@@ -16,18 +16,16 @@ export default function PhotoGraphyCard({
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // ✅ Format path (adds city & locality if available)
+
   const formatPath = (path) => {
     let basePath = "";
     if (city) basePath += `/${city.toLowerCase()}`;
     if (locality) basePath += `/${locality.toLowerCase()}`;
     return `${basePath}${path}`;
   };
-
-  // ✅ View more handler
  
 const handleViewMore = () => {
-  // find the clicked category from photoCat array
+
   const categoryItem = photoCat?.find(
     (cat) => cat.subCategory === subCategory || cat.name === subCategory
   );

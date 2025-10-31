@@ -8,7 +8,6 @@ import productsData from '@/utils/photoGraphyImages.js';
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { useParams } from "next/navigation";
-// import addOnProductsData from '../../../utils/addOnProduct.json';
 import cancellation from "@/assets/Cancellation.svg"
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
@@ -28,7 +27,6 @@ import { FaQuestionCircle } from "react-icons/fa";
 import FAQSection from '@/components/FAQSection';
 import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
-
 import Photographyslider from '@/components/photoslidersection';
 
 const SkeletonLoader = () => {
@@ -175,13 +173,13 @@ const ProductDetails = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
   const router = useRouter();
-    const params = useParams();
+  const params = useParams();
   const { query } = useRouter();
   const productId = query.id;
-   let { city } = router.query;
+  let { city } = router.query;
   let { locality } = router.query;
   const { product } = router.query;
-    const [catValue, setCatValue] = useState("");
+  const [catValue, setCatValue] = useState("");
   const [work, setWork] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -200,7 +198,7 @@ const ProductDetails = () => {
   const addonRef = useRef(null);      // Scroll target inside modal
   const customizationRef = useRef(null);
   const [similarProducts, setSimilarProducts] = useState([]);
-const similarRef = useRef(null);
+  const similarRef = useRef(null);
 
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
@@ -208,13 +206,12 @@ const similarRef = useRef(null);
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
-    useEffect(() => {
+  useEffect(() => {
     if (params?.catValue) {
       setCatValue(params.catValue);
     }
   }, [params]);
   const calculateTotalPrice = (productPrice) => {
-    // let totalPrice = Number(productPrice);
     let totalPrice = Number(work?.price || productPrice);
 
     selectedAddOnProduct.forEach(item => {
@@ -235,7 +232,7 @@ const similarRef = useRef(null);
     }, 100);
   };
   const handleAddToCartAndScrollBack = (item) => {
-    handleAddToCart(item);  // You already have this function
+    handleAddToCart(item);
 
     setIsModalOpen(false);
 
@@ -263,7 +260,7 @@ const similarRef = useRef(null);
 
   const updateTotalAmount = () => {
     if (!work) return;
-let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
+    let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
 
     // let newTotalAmount = Number(work.price) || 0;
     selectedAddOnProduct.forEach(item => {
@@ -337,21 +334,21 @@ let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
     );
   };
 
-const getDiscountedPrice = (price = 0) => {
-  const discountedPrice = price / 0.78; 
-  const discountDifference = discountedPrice - price; 
-  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); 
-  return {
-    discount: Number(discount),              
-    discountedPrice: Math.round(discountedPrice), 
-    discountDifference: Math.round(discountDifference), 
+  const getDiscountedPrice = (price = 0) => {
+    const discountedPrice = price / 0.78;
+    const discountDifference = discountedPrice - price;
+    const discount = ((discountDifference / discountedPrice) * 100).toFixed(0);
+    return {
+      discount: Number(discount),
+      discountedPrice: Math.round(discountedPrice),
+      discountDifference: Math.round(discountDifference),
+    };
   };
-};
 
 
   const sendToCheckoutPage = (product) => {
     const totalPrice = calculateTotalPrice(product.price);
-    
+
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "book_now_click",
@@ -367,7 +364,7 @@ const getDiscountedPrice = (price = 0) => {
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
         totalAmount: totalPrice,
-        duration:work?.duration,
+        duration: work?.duration,
       }
     });
   };
@@ -407,59 +404,59 @@ const getDiscountedPrice = (price = 0) => {
   }, [productId]);
 
 
- const getMappedCatValue = (slug) => {
+  const getMappedCatValue = (slug) => {
     const map = {
-        "Engagement-Photography": "Engagement-Photography",
-   "  Wedding-Photography": "  Wedding-Photography",
-    " Anniversary-Photography":" Anniversary-Photography",
-    " Birthday-Photography": "Birthday-Photography",
-  "   House-warming-Photography":"   House-warming-Photography",
-    " Naming-ceremony-Photography": "Naming-ceremony-Photography",
-    " Baby-Shower-Photography":" Baby-Shower-Photography",
-    " Bachelorette-Photography":" Bachelorette-Photography",
-   "  Maternity-Photography":"  Maternity-Photography",
-   " New-Born-Baby-Photography":" New-Born-Baby-Photography"
+      "Engagement-Photography": "Engagement-Photography",
+      "  Wedding-Photography": "  Wedding-Photography",
+      " Anniversary-Photography": " Anniversary-Photography",
+      " Birthday-Photography": "Birthday-Photography",
+      "   House-warming-Photography": "   House-warming-Photography",
+      " Naming-ceremony-Photography": "Naming-ceremony-Photography",
+      " Baby-Shower-Photography": " Baby-Shower-Photography",
+      " Bachelorette-Photography": " Bachelorette-Photography",
+      "  Maternity-Photography": "  Maternity-Photography",
+      " New-Born-Baby-Photography": " New-Born-Baby-Photography"
     };
-    return map[slug] || slug;  
+    return map[slug] || slug;
   };
-useEffect(() => {
-  if (!productId) return;
+  useEffect(() => {
+    if (!productId) return;
 
-  const fetchProductAndSimilar = async () => {
-    try {
-      const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
-      const data = res.data?.data;
+    const fetchProductAndSimilar = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
+        const data = res.data?.data;
 
-      if (!data) throw new Error("No product found");
-      const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
-      setWork({
-        ...data,
-        discount,
-        discountedPrice,
-        discountDifference,
-      });
+        if (!data) throw new Error("No product found");
+        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
+        setWork({
+          ...data,
+          discount,
+          discountedPrice,
+          discountDifference,
+        });
 
-      const tagId = data?.tag?.[0]?._id;
-      if (!tagId) {
-        console.warn("No tag found for product");
-        return;
+        const tagId = data?.tag?.[0]?._id;
+        if (!tagId) {
+          console.warn("No tag found for product");
+          return;
+        }
+
+        const similarRes = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
+        const allProducts = similarRes.data?.data || [];
+        const filteredProducts = allProducts.filter((p) => p._id !== productId);
+
+        setSimilarProducts(filteredProducts);
+        console.log("✅ Similar products:", filteredProducts);
+      } catch (error) {
+        console.error("Error fetching product or similar products:", error.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const similarRes = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
-      const allProducts = similarRes.data?.data || [];
-      const filteredProducts = allProducts.filter((p) => p._id !== productId);
-
-      setSimilarProducts(filteredProducts);
-      console.log("✅ Similar products:", filteredProducts);
-    } catch (error) {
-      console.error("Error fetching product or similar products:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchProductAndSimilar();
-}, [productId]);
+    fetchProductAndSimilar();
+  }, [productId]);
 
 
 
@@ -472,7 +469,7 @@ useEffect(() => {
   return (
     <div>
 
-         <Head>
+      <Head>
         <title>
           {city
             ? `HORA Photography ${city} ${work.name} by Professionals Photographer, Starting at ₹3500`
@@ -550,14 +547,14 @@ Freelancer Photographer; Photographer near me, `
             height={300}
           />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',   padding: "0px 10px" }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "0px 10px" }}>
           <h2
             style={{
               fontSize: "13px",
               color: "#222",
               margin: "8px 0 8px 0",
               fontWeight: "500",
-           
+
             }}
           >
             <a
@@ -567,13 +564,13 @@ Freelancer Photographer; Photographer near me, `
               Home
             </a>
             {" > "}
-                  
-    <a
-      style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
-      href={`/photography-page/${catValue}`}
-    >
-      {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-    </a>
+
+            <a
+              style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
+              href={`/photography-page/${catValue}`}
+            >
+              {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+            </a>
 
             {" > "}
           </h2>
@@ -585,7 +582,7 @@ Freelancer Photographer; Photographer near me, `
             style={{
               fontFamily: "Inter, sans-serif",
               fontSize: "14px",
-              fontWeight: 700, // numeric value
+              fontWeight: 700,
               color: "rgb(157, 74, 147)",
               background: "none",
               border: "none",
@@ -608,8 +605,8 @@ Freelancer Photographer; Photographer near me, `
             fontSize: "18px",
             color: "#222",
             fontWeight: "#500",
-               padding: "10px",
-               marginBottom: "0",
+            padding: "10px",
+            marginBottom: "0",
           }}
         >
           {work.name}
@@ -625,10 +622,10 @@ Freelancer Photographer; Photographer near me, `
 
         <div className='addon-prices' ref={customizationRef}>
 
-       
-            {selectedAddOnProduct.length > 0 && (
-              <>
-                 <div style={{ padding: "10px" }} >
+
+          {selectedAddOnProduct.length > 0 && (
+            <>
+              <div style={{ padding: "10px" }} >
                 <label>Customisations</label>
                 <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
                   < svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg" style={{ color: "rgb(146, 82, 170)", verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
@@ -643,10 +640,10 @@ Freelancer Photographer; Photographer near me, `
                   </li>
                 ))}
 
-             </div>
-              </>
-            )}
-       
+              </div>
+            </>
+          )}
+
         </div>
         <div className="photodetails-inclusions">
 
@@ -663,20 +660,20 @@ Freelancer Photographer; Photographer near me, `
 
         <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "400px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
           <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
-            {/* <button className="modal-close11" onClick={() => setIsModalOpen(false)}>×</button> */}
+
 
             <div className="modal-middle-box 11">
               <div className="modalcard-container">
                 {photographyAddOns?.addOnProducts.map((item, index) => (
                   <div key={index} className="modalcard">
                     <img
-                      // style={{ width: "120px", height: "120px" }}
+
                       src={item.image}
                       alt={item.title}
                       className="model-image"
                     />
                     <h3>{item.title}</h3>
-                    {/* <p>{item.description}</p> */}
+
 
                     <div className="price-container">
                       <span className="price">
@@ -690,7 +687,7 @@ Freelancer Photographer; Photographer near me, `
                             <button onClick={() => handleAddToCart(item)} className="quantitybutton">+</button>
                           </div>
                         ) : (
-                          // <button onClick={() => handleAddToCart(item)} className="addbutton">Add</button>
+
                           <button onClick={() => handleAddToCartAndScrollBack(item)} className="addbutton">Add</button>
 
                         )
@@ -706,7 +703,7 @@ Freelancer Photographer; Photographer near me, `
 
           </div>
         </div>
-           <div className="whyHoraSec">
+        <div className="whyHoraSec">
           <h2 className="whyHoraHeading">Why Hora Photography</h2>
           <div className="whyHoraSecInner">
             <div className="whyHoraSecBox">
@@ -723,19 +720,19 @@ Freelancer Photographer; Photographer near me, `
             </div>
           </div>
         </div>
-        
-  <div ref={similarRef}>
-    <Photographyslider
-      title="Similar Photography"
-      data={similarProducts}
-      showDiscount={true}
-      imageSize={{ width: 120, height: 120 }}
-      city={city}
-      hasCityPageParam={hasCityPageParam}
-      locality={locality}
-      catValue={getMappedCatValue(router.query.catValue)}
-    />
-  </div>
+
+        <div ref={similarRef}>
+          <Photographyslider
+            title="Similar Photography"
+            data={similarProducts}
+            showDiscount={true}
+            imageSize={{ width: 120, height: 120 }}
+            city={city}
+            hasCityPageParam={hasCityPageParam}
+            locality={locality}
+            catValue={getMappedCatValue(router.query.catValue)}
+          />
+        </div>
 
 
         <div className="decorke-celebrate-banner">
@@ -756,17 +753,17 @@ Freelancer Photographer; Photographer near me, `
         <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
         <AdditionalServices />
-     
+
         <div className="tab-section-details-productpage">
           <FAQSection faqData={faqData} />
         </div>
         <div className="confirm-button-wrapper">
-          {/* <div className="modal-bottom-box"> */}
+
 
           <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black" }}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
 
           <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
-          {/* </div> */}
+
         </div>
       </div>
     </div>

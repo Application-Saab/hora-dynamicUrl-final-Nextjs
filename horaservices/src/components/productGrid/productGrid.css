@@ -14,7 +14,7 @@
   text-align: center;
   margin-bottom: 0px;
 }
-/* === Grid Layout for Cards === */
+
 .decContainer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -22,7 +22,7 @@
   padding: 10px;
 }
 
-/* === Individual Card === */
+
 .imageContainer {
   background-color: #fff;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
@@ -34,7 +34,6 @@
 }
 
 
-/* === Image & Watermark === */
 .imageWrapper {
   position: relative;
 }
@@ -53,7 +52,7 @@ min-height: 140px;
     height: auto;
     max-height: none;
     min-height: unset;
-    aspect-ratio: 4 / 3; /* optional for consistency */
+    aspect-ratio: 4 / 3; 
   }
 
 }
@@ -64,8 +63,6 @@ min-height: 140px;
   width: 30px;
   height: 30px;
 }
-
-/* === Discount Badge === */
 .discountLabel {
     position: absolute;
     top: 0px;
@@ -78,8 +75,6 @@ min-height: 140px;
     font-size: 10px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
-
-/* === Card Content === */
 .cardContent {
   padding: 5px;
 }
@@ -93,7 +88,6 @@ min-height: 140px;
 }
 
 .priceRatingRow {
-  /* display: flex; */
   justify-content: space-between;
   align-items: center;
 }
@@ -119,8 +113,6 @@ min-height: 140px;
   margin-bottom: 0px;
 }
 
-
-/* === Misc === */
 .itemName {
   font-size: 14px;
   text-align: center;

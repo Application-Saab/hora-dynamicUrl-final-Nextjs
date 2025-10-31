@@ -210,16 +210,6 @@ Freelancer Photographer; Photographer near me, `
         </div>
 
 
-        {/* <div class="suggested-poses">
-          <div class="suggested-poses-section">
-            <Image src={PhotoBanner} alt="Camera Holding" class="suggested-img" />
-            <div class="text-overlay">
-              <h2 class="pose-title">Suggested Poses</h2>
-              <p class="pose-subtitle">Perfect for a relaxed and friendly vibe</p>
-            </div>
-          </div>
-        </div> */}
-
 
 <div class="suggested-poses">
           <div class="suggested-poses-section">
