@@ -5,6 +5,7 @@ import "./CreateInviteModal.css";
 import useApi from "@/hooks/useApi";
 import { CREATE_EVENT_INVITE } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
+import CustomButton from "../common/CustomButton";
 
 const CreateInviteModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -38,7 +39,15 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       <div className="custom-modal-backdrop">
         <div className="custom-modal-content">
           <div className="modal-header-custom">
-            <Image src={BackArrow} height={25} width={15} onClick={onClose} />
+            <Image
+              src={BackArrow}
+              height={25}
+              width={15}
+              onClick={() => {
+                onClose();
+                router.push("/wonderland");
+              }}
+            />
             <h2 className="modal-title-custom">Create Invitation</h2>
           </div>
 
@@ -58,13 +67,19 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               </small>
             </div>
 
-            <button
+            {/* <button
               className="submit-button-custom"
               disabled={!occation}
               onClick={occation && handleSubmit}
             >
               {loading ? "Submitting..." : "Submit"}
-            </button>
+            </button> */}
+            <CustomButton
+              title={"Submit"}
+              loading={loading}
+              disabled={!occation}
+              onClick={occation && handleSubmit}
+            />
           </div>
         </div>
       </div>

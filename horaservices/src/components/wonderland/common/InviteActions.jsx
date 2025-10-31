@@ -3,6 +3,7 @@ import ExploreTemplateIcon from "@/assets/ExploreTemplateIcon.svg";
 import ShareInviteIcon from "@/assets/ShareInviteIcon.svg";
 import AddDetailsIcon from "@/assets/AddDetailsIcon.svg";
 import AddDetailsModal from "../create-invite/AddDetailsModal";
+import ShareInviteModal from "./ShareInviteModal";
 
 const actions = [
   {
@@ -24,10 +25,14 @@ const actions = [
 
 const InviteActions = ({ eventData, refetchInvite }) => {
   const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
+  const [openShareInviteModal, setOpenShareInviteModal] = useState(false);
   const handleClick = (actionId) => {
     // Handle action based on actionId
     if (actionId === 3) {
       setOpenAddDetailsModal(true);
+    }
+    if (actionId === 2) {
+      setOpenShareInviteModal(true);
     }
   };
 
@@ -70,6 +75,12 @@ const InviteActions = ({ eventData, refetchInvite }) => {
         isOpen={openAddDetailsModal}
         refetchInvite={() => refetchInvite()}
         onClose={() => setOpenAddDetailsModal(false)}
+      />
+
+      <ShareInviteModal
+        eventData={eventData}
+        isOpen={openShareInviteModal}
+        onClose={() => setOpenShareInviteModal(false)}
       />
     </>
   );

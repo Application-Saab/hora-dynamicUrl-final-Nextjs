@@ -1,0 +1,65 @@
+.common-custom-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 50%;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Variants */
+.common-custom-button.primary {
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+}
+
+.common-custom-button.outline {
+  background: transparent;
+  border: 2px solid #572381;
+  color: #572381;
+}
+
+.common-custom-button.danger {
+  background: linear-gradient(90deg, #ff3b30 0%, #c62828 100%);
+}
+
+/* Hover and disabled states */
+.common-custom-button:hover:not(:disabled) {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.common-custom-button:disabled {
+  cursor: not-allowed;
+}
+
+/* Loader spinner */
+.button-loader {
+  width: 25px;
+  height: 25px;
+  border: 3px solid white;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Default icon/image style */
+.button-media {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}

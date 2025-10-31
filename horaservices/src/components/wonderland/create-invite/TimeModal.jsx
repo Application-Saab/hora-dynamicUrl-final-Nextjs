@@ -3,10 +3,8 @@ import "./CreateInviteModal.css";
 
 const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
   const modalRef = useRef(null);
-
   const [hour, setHour] = useState(6);
   const [minute, setMinute] = useState(30);
-  const [second, setSecond] = useState(0);
   const [period, setPeriod] = useState("PM");
 
   useEffect(() => {
@@ -19,12 +17,23 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
+  // Set wheel to selectedTime when modal opens
+  useEffect(() => {
+    if (show && selectedTime) {
+      const [time, per] = selectedTime.split(" ");
+      const [h, m] = time.split(":");
+      setHour(parseInt(h, 10));
+      setMinute(parseInt(m, 10));
+      setPeriod(per);
+    }
+  }, [show, selectedTime]);
+
   if (!show) return null;
 
   const handleSave = () => {
     const formatted = `${String(hour).padStart(2, "0")}:${String(
       minute
-    ).padStart(2, "0")}:${String(second).padStart(2, "0")} ${period}`;
+    ).padStart(2, "0")} ${period}`;
     setSelectedTime(formatted);
     onClose();
   };
@@ -44,11 +53,11 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
   );
 
   return (
-    <div className="custom-modal-backdrop">
+    <div className="custom-modal-backdrop align-items-center justify-content-center">
       <div ref={modalRef} className="custom-time-modal">
         <h3 className="time-modal-title">Set time</h3>
 
-        <div className="time-wheel-container">
+        <div className="time-wheel-container my-5">
           <Wheel
             range={[...Array(12).keys()].map((i) => i + 1)}
             value={hour}
@@ -61,28 +70,10 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
             setValue={setMinute}
           />
           <span className="colon">:</span>
-          <Wheel
-            range={[...Array(60).keys()]}
-            value={second}
-            setValue={setSecond}
-          />
-          <div className="ampm-toggle">
-            <div
-              className={`ampm-option ${period === "AM" ? "active" : ""}`}
-              onClick={() => setPeriod("AM")}
-            >
-              AM
-            </div>
-            <div
-              className={`ampm-option ${period === "PM" ? "active" : ""}`}
-              onClick={() => setPeriod("PM")}
-            >
-              PM
-            </div>
-          </div>
+          <Wheel range={["AM", "PM"]} value={period} setValue={setPeriod} />
         </div>
 
-        <div className="time-modal-actions">
+        <div className="time-modal-actions mt-5">
           <button className="cancel-btn w-100" onClick={onClose}>
             Cancel
           </button>

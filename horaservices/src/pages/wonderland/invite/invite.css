@@ -45,6 +45,79 @@
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
+/* Address section css */
+.invite-address-section {
+  max-width: 480px;
+  width: 100%;
+}
+.address-part-ctn {
+  display: flex;
+  flex-direction: column;
+  padding-left: 5px;
+}
+.address-part-ctn .date-time-text {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #423e3e;
+  line-height: normal;
+}
+.address-part-ctn .address-text {
+  font-size: 10px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  color: #505050;
+  line-height: 13px;
+  letter-spacing: 0%;
+}
+.address-graph-image {
+  width: 128px;
+  height: 64px;
+}
+.direction-ctn {
+  position: relative;
+  width: 78px;
+  height: 64px;
+  background-image: url("../../../assets/wonderland/MapGraphImage.png"); /* <-- yahan apni image ka sahi path lagao */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+/* Direction icon styling */
+.address-direction-image {
+  width: 18px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.direction-icon-ctn {
+  z-index: 2;
+  height: 50px;
+  width: 50px;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  border-radius: 50%;
+  margin-left: -30px;
+}
+.direction-icon-ctn span {
+  font-size: 6px;
+  font-family: "Inter", sans-serif;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0%;
+}
+.location-modal-question-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+}
+
 /* Actions (Explore, share templates, add details) */
 .invite-action-container {
   display: flex;
@@ -190,21 +263,21 @@
   border-radius: 15px;
 }
 .nopost-box .line-1 {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   font-size: 14px;
-  color: #4C4F56;
+  color: #4c4f56;
   text-align: center;
 }
 .nopost-box .line-2 {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 400;
   font-size: 12px;
-  color: #6B6F71;
-    text-align: center;
+  color: #6b6f71;
+  text-align: center;
 }
 .nopost-box .line-3 {
- margin-top: 20px;
+  margin-top: 20px;
 }
 
 @media (min-width: 360px) {

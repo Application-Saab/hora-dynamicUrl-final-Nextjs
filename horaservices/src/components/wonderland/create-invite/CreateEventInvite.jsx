@@ -13,7 +13,6 @@ import {
   getDocs,
   serverTimestamp,
 } from "firebase/firestore";
-// doc, getDoc, updateDoc,
 import { db } from "../../../firebase";
 
 const CreateEventInvite = ({ slug }) => {

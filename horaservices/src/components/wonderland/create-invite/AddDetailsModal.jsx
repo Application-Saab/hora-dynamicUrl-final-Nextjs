@@ -10,6 +10,7 @@ import useApi from "@/hooks/useApi";
 import { UPDATE_EVENT_BY_ID } from "@/utils/apiconstants";
 import CalendarModal from "./CalendarModal";
 import TimeModal from "./TimeModal";
+import CustomButton from "../common/CustomButton";
 
 const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
   if (!isOpen) return null;
@@ -20,7 +21,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
   const [selectedDate, setSelectedDate] = useState(
     eventData?.eventDate ? new Date(eventData?.eventDate) : ""
   );
-  const [selectedTime, setSelectedTime] = useState();
+  const [selectedTime, setSelectedTime] = useState(eventData?.eventTime || "");
   const [formData, setFormData] = useState({
     eventDate: selectedDate,
     eventTime: eventData?.eventTime || "",
@@ -32,7 +33,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
     setFormData((prevData) => ({
       ...prevData,
       eventDate: selectedDate,
-      eventTime : selectedTime
+      eventTime: selectedTime,
     }));
   }, [selectedDate, selectedTime]);
 
@@ -103,10 +104,10 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
                 onClick={() => setShowTimeModal(true)}
               >
                 <Image src={TimeIcon} alt="time icon" />
-                {formData?.eventTime ? formData?.eventTime : 'Time'}
+                {formData?.eventTime ? formData?.eventTime : "Time"}
               </button>
             </div>
-            <div className="input-group custom-input-grop-add-details mb-3">
+            <div className="input-group custom-input-grop-add-details">
               <span
                 className="input-group-text add-details-input-addon"
                 id="basic-addon1"
@@ -124,7 +125,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
                 onChange={handleChange}
               />
             </div>
-            <div className="input-group custom-input-grop-add-details mb-3">
+            <div className="input-group custom-input-grop-add-details">
               <span
                 className="input-group-text add-details-input-addon"
                 id="basic-addon1"
@@ -143,9 +144,11 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               />
             </div>
 
-            <button className="submit-button-custom" onClick={handleSubmit}>
-              {loading ? "Submitting..." : "Submit"}
-            </button>
+            <CustomButton
+              title={"Submit"}
+              loading={loading}
+              onClick={handleSubmit}
+            />
           </div>
         </div>
       </div>

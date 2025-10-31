@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import useApi from "@/hooks/useApi";
 import { GET_EVENT_BY_ID } from "@/utils/apiconstants";
 import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlashLoader";
+import InviteAddressSection from "@/components/wonderland/common/InviteAddressSection";
 
 const InvitesPage = () => {
   const router = useRouter();
@@ -62,7 +63,7 @@ const InvitesPage = () => {
 
   return (
     <>
-      <div className="invite-page">
+    <div className="invite-page">
         <div className="invite-page-container">
           <div className="default-template-wrapper">
             {!fetchEventLoading || eventDetails?.hostName ? (
@@ -85,6 +86,11 @@ const InvitesPage = () => {
               </div>
             )}
           </div>
+
+          <div className="invite-address-section">
+            <InviteAddressSection eventData={eventDetails} />
+          </div>
+
           <div className="invite-action-container">
             <InviteActions
               refetchInvite={() => refetchEventInvite()}

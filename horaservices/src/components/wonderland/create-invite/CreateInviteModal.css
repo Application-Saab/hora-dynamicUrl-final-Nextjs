@@ -143,6 +143,7 @@
 .custom-input-grop-add-details {
   border-radius: 8px;
   box-shadow: 0px 4px 4px 0px #0000003b !important;
+  margin-bottom: 10px;
 }
 .add-details-input {
   padding: 15px 11.5px 11.5px 0px !important;
@@ -281,7 +282,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 14px;
   margin-top: 10px;
 }
 
@@ -291,8 +292,8 @@
 }
 
 .wheel {
-  height: 80px;
-  width: 45px;
+  height: 150px;
+  width: 50px;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
@@ -304,7 +305,7 @@
 
 .wheel-item {
   font-size: 18px;
-  height: 26px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
