@@ -6,40 +6,46 @@ import NopostCamera from "@/assets/NopostCamera.svg";
 
 const EventwallSection = () => {
   const [allImages, setAllImages] = useState([]);
+
+  const actionButtons = [
+    {
+      label: "Notes",
+      icon: NotesButtonIcon.src,
+      onClick: () => console.log("Notes clicked"),
+    },
+    {
+      label: "Post Badge",
+      icon: PostBadgeButtonIcon.src,
+      onClick: () => console.log("Post Badge clicked"),
+    },
+    {
+      label: "Upload Pictures",
+      icon: GalleryButtonIcon.src,
+      onClick: () => console.log("Upload Pictures clicked"),
+    },
+  ];
+
   return (
     <>
       <div className="event-wall-action-ctn">
-        <button className="event-wall-action-btn">
-          <img
-            src={NotesButtonIcon.src}
-            alt="Notes Button Icon"
-            className="event-wall-action-icon me-1"
-            height="18px"
-            width="16px"
-          />
-          Notes
-        </button>
-        <button className="event-wall-action-btn">
-          <img
-            src={PostBadgeButtonIcon.src}
-            alt="Notes Button Icon"
-            className="event-wall-action-icon me-1"
-            height="18px"
-            width="16px"
-          />
-          Post Badge
-        </button>
-        <button className="event-wall-action-btn">
-          <img
-            src={GalleryButtonIcon.src}
-            alt="Notes Button Icon"
-            className="event-wall-action-icon me-1"
-            height="18px"
-            width="16px"
-          />
-          Upload Pictures
-        </button>
+        {actionButtons.map(({ label, icon, onClick }, index) => (
+          <button
+            key={index}
+            className="event-wall-action-btn"
+            onClick={onClick}
+          >
+            <img
+              src={icon}
+              alt={`${label} Icon`}
+              className="event-wall-action-icon me-1"
+              height="18px"
+              width="16px"
+            />
+            {label}
+          </button>
+        ))}
       </div>
+
       <div>
         {allImages.length === 0 ? (
           <div className="eventwall-nopost-ctn mt-5">
