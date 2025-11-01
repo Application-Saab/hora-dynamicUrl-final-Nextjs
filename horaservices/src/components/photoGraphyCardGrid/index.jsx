@@ -1,7 +1,5 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { setState } from "@/actions/action";
 import "./photoGraphyCardgrid.css";
 
 export default function PhotoGraphyCard({
@@ -14,15 +12,7 @@ export default function PhotoGraphyCard({
   hasCityPageParam = false,
 }) {
   const router = useRouter();
-  const dispatch = useDispatch();
 
-
-  const formatPath = (path) => {
-    let basePath = "";
-    if (city) basePath += `/${city.toLowerCase()}`;
-    if (locality) basePath += `/${locality.toLowerCase()}`;
-    return `${basePath}${path}`;
-  };
  
 const handleViewMore = () => {
 

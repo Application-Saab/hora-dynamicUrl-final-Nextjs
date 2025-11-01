@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import "./photoGraphycard.css";
 
 export default function PhotoGraphyCard({ 
-  // src, title, subCategory 
   src,
   title,
   subCategory,
@@ -14,9 +13,7 @@ export default function PhotoGraphyCard({
 }) {
   const router = useRouter();
 
-  // ✅ Correctly pass the subCategory on click
 const handleViewMore = () => {
-  // find the clicked category from photoCat array
   const categoryItem = photoCat?.find(
     (cat) => cat.subCategory === subCategory || cat.name === subCategory
   );

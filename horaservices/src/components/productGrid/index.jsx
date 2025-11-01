@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
 import "./productGrid.css";
-import { useEffect } from "react";
+
 const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
   return (
     <div className="decContainer">

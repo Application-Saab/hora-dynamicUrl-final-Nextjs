@@ -1,6 +1,3 @@
-
-
-
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
@@ -102,7 +99,6 @@ export default function CatValuePage() {
         setError("No category found");
       }
     } catch (err) {
-      console.error("Error fetching category ID:", err.message);
       setError("Failed to fetch category");
     }
   }, []);
@@ -129,7 +125,6 @@ export default function CatValuePage() {
 
       setProducts(productsWithDiscount);
     } catch (err) {
-      console.error("Error fetching products:", err.message);
       setProducts([]);
       setError("Failed to fetch products");
     } finally {
@@ -144,8 +139,6 @@ export default function CatValuePage() {
   const slugify = (text) =>
     text.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-
- 
   const handleViewMore = (work) => {
     const slug = slugify(work.name);
     const categorySlug = slugify(catValue || "photography");

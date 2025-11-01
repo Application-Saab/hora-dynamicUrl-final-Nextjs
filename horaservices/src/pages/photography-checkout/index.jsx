@@ -298,7 +298,7 @@ const Checkout = () => {
      
     
 
-const advanceAmount = (advanceAmountData[productData?.name] || Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
+const advanceAmount = ( Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
 
       const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
@@ -442,26 +442,9 @@ const contactUsRedirection = (productName) => {
   }, [product, isEventPushed])
 
   if (!isClient) return null;
-const advanceAmountData = {
-  // Initmate
-  "Traditional Photography": 1260,
-  "Candid Photography": 1660,
-  "Pro Photography": 2660,
-  "VideoGraphy": 2450,
-  // Mega
-  "Mega Traditional Photography": 3200,
-  "Mega Candid Photography": 4700,
-  "Mega Pro Photography": 7200,
-  "Mega VideoGraphy": 7200,
-  // Grand
-  "Haldi & Mehandi": 6000,
-  "Pre-wedding shoot and videography": 9600,
-  "Wedding Affair": 10000,
-  "Grand Wedding Affair": 26000,
-};
-const advanceAmount = (advanceAmountData[productData?.name] || Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
 
-console.log(advanceAmount);
+const advanceAmount = ( Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
+
 
 
   return (

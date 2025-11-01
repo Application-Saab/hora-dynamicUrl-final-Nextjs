@@ -4,11 +4,9 @@ import axios from 'axios';
 import Image from 'next/image';
 import Head from "next/head";
 import photographyAddOns from "@/utils/photographyAddOns.json";
-import productsData from '@/utils/photoGraphyImages.js';
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { useParams } from "next/navigation";
-import cancellation from "@/assets/Cancellation.svg"
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
 import SUPPORT from "@/assets/support.png";
@@ -23,7 +21,6 @@ import "./productDetails.css";
 import {
   BASE_URL,
 } from "@/utils/apiconstants";
-import { FaQuestionCircle } from "react-icons/fa";
 import FAQSection from '@/components/FAQSection';
 import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
@@ -181,10 +178,7 @@ const ProductDetails = () => {
   const { product } = router.query;
   const [catValue, setCatValue] = useState("");
   const [work, setWork] = useState(null);
-  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [quantities, setQuantities] = useState({});
-  const [addedItems, setAddedItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
@@ -195,7 +189,7 @@ const ProductDetails = () => {
   const cityName = params?.city;
   const parsedProduct = product ? JSON.parse(product) : null;
   const tagId = parsedProduct?.tag?.[0];
-  const addonRef = useRef(null);      // Scroll target inside modal
+  const addonRef = useRef(null);
   const customizationRef = useRef(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const similarRef = useRef(null);
@@ -220,9 +214,7 @@ const ProductDetails = () => {
     return totalPrice;
   };
 
-  const handleContinue = () => {
-    setIsModalOpen(false);
-  }
+
   const showAddOnmodal = () => {
     setIsModalOpen((prev) => !prev);
     setIsArrowDown((prev) => !prev);
@@ -393,7 +385,6 @@ const ProductDetails = () => {
           discountDifference,
         });
       } catch (err) {
-        console.error("Error fetching product details:", err.message);
         setWork(null);
       } finally {
         setLoading(false);
@@ -438,7 +429,6 @@ const ProductDetails = () => {
 
         const tagId = data?.tag?.[0]?._id;
         if (!tagId) {
-          console.warn("No tag found for product");
           return;
         }
 
@@ -447,9 +437,8 @@ const ProductDetails = () => {
         const filteredProducts = allProducts.filter((p) => p._id !== productId);
 
         setSimilarProducts(filteredProducts);
-        console.log("✅ Similar products:", filteredProducts);
+    
       } catch (error) {
-        console.error("Error fetching product or similar products:", error.message);
       } finally {
         setLoading(false);
       }
@@ -658,7 +647,7 @@ Freelancer Photographer; Photographer near me, `
         </div>
 
 
-        <div className="modal-overlay11" onClick={() => setIsModalOpen(false)} style={{ maxHeight: "400px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
+        <div className="modal-overlay11"  style={{ maxHeight: "400px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
           <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
 
 

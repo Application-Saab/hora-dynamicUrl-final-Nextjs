@@ -34,49 +34,40 @@ const WhatsAppIcon = ({ router }) => {
         break;
 
       case '/balloon-decoration/[catValue]':
-        eventName = 'decoration_productlistedpage_whatsapp_click';
-        productNameEvent = `decoration_productlist_categorypage_whatsapp_click_${catValue}`;
+  eventName = 'decoration_productlistedpage_whatsapp_click';
+  productNameEvent = `decoration_productlist_categorypage_whatsapp_click_${catValue}`;
 
-        const messagesByCategory = {
-          "birthday-decoration": "Hi, I saw your birthday party decoration designs and want to know more about it.",
-          "kids-birthday-decoration": "Hi, I saw your kids party decoration designs and want to know more about it.",
-          "premium-decoration": "Hi, I saw your premium decoration designs and want to know more about it.",
-          "baby-shower-decoration": "Hi, I saw your baby shower decoration designs and want to know more about it.",
-          "welcome-baby-decoration": "Hi, I saw your baby welcome decoration designs and want to know more about it.",
-          "anniversary-decoration": "Hi, I saw your anniversary decoration designs and want to know more about it.",
-          "first-night-decoration": "Hi, I saw your first night decoration designs and want to know more about it.",
-          "haldi-mehendi-decoration": "Hi, I saw your haldi & mehendi decoration designs and want to know more about it.",
-          "wedding": "Hi, I saw your wedding decoration designs and want to know more about it.",
-          "bachelorette-decoration": "Hi, I saw your bachelorette decoration designs and want to know more about it."
-        };
 
-        const msg = messagesByCategory[catValue]
-          || "Hi, I saw your decoration designs and want to know more about it."; // fallback message
-        window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg)}`);
-        break;
+  const formatCategoryName = (value) => {
+    return value
+      ?.replace(/-/g, ' ')    
+      ?.replace(/\b\w/g, (l) => l.toUpperCase()); 
+  };
 
-      case '/balloon-decoration/[catValue]/product/[productName]':
-        eventName = 'decoration_productpage_whatsapp_click';
-        productNameEvent = `decoration_productpage_whatsapp_click_${productName}`;
+  const readableName = formatCategoryName(catValue);
 
-        const productMessagesByCategory = {
-          "kids-birthday-decoration": "Hi, I liked your kids birthday decor design, can you help me in booking process.",
-          "birthday-decoration": "Hi, I liked your birthday decor design, can you help me in booking process.",
-          "anniversary-decoration": "Hi, I liked your anniversary decor design, can you help me in booking process.",
-          "first-night-decoration": "Hi, I liked your first night decor design, can you help me in booking process.",
-          "premium-decoration": "Hi, I liked your premium decor design, can you help me in booking process.",
-          "baby-shower-decoration": "Hi, I liked your baby shower decor design, can you help me in booking process.",
-          "welcome-baby-decoration": "Hi, I liked your baby welcome decor design, can you help me in booking process.",
-          "haldi-mehendi-decoration": "Hi, I liked your haldi & mehendi decor design, can you help me in booking process.",
-          "wedding-decoration": "Hi, I liked your wedding decor design, can you help me in booking process.",
-          "bachelorette-decoration": "Hi, I liked your bachelorette decor design, can you help me in booking process."
-        };
+  const msg = `Hi, I saw your ${readableName} designs and want to know more about it.`;
 
-        const productMsg = productMessagesByCategory[catValue]
-          || "Hi, I liked your decoration design, can you help me in booking process.";
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg)}`);
+  break;
 
-        window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(productMsg)}`);
-        break;
+case '/balloon-decoration/[catValue]/product/[productName]':
+  eventName = 'decoration_productpage_whatsapp_click';
+  productNameEvent = `decoration_productpage_whatsapp_click_${productName}`;
+
+
+  const formatCategoryName1 = (value) => {
+      return value
+      ?.replace(/-/g, ' ')    
+      ?.replace(/\b\w/g, (l) => l.toUpperCase()); 
+  };
+
+  const readableName1 = formatCategoryName1(catValue);
+
+  const productMsg = `Hi, I liked your ${readableName1} decor design, can you help me in booking process.`;
+
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(productMsg)}`);
+  break;
 
       case '/[city]/balloon-decoration':
         eventName = 'decoration_citypage_whatsappclick';
@@ -92,78 +83,71 @@ const WhatsAppIcon = ({ router }) => {
         );
         break;
 
-      case '/[city]/balloon-decoration/[catValue]':
-        eventName = 'decoration_productlistedcitypage_whatsapp_click';
-        productNameEvent = 'decoration_productlistedcitypage_whatsapp_click';
+      
+case '/[city]/balloon-decoration/[catValue]':
+  eventName = 'decoration_productlistedcitypage_whatsapp_click';
+  productNameEvent = 'decoration_productlistedcitypage_whatsapp_click';
 
-        const cityMessages = {
-          "birthday-decoration": `Hi, I saw your birthday party decoration designs and want to know more for ${queryCity}.`,
-          "kids-birthday-decoration": `Hi, I saw your kids party decoration designs and want to know more for ${queryCity}.`,
-          "premium-decoration": `Hi, I saw your premium decoration designs and want to know more for ${queryCity}.`,
-          "baby-shower-decoration": `Hi, I saw your baby shower decoration designs and want to know more for ${queryCity}.`,
-          "welcome-baby-decoration": `Hi, I saw your baby welcome decoration designs and want to know more for ${queryCity}.`,
-          "anniversary-decoration": `Hi, I saw your anniversary decoration designs and want to know more for ${queryCity}.`,
-          "first-night-decoration": `Hi, I saw your first night decoration designs and want to know more for ${queryCity}.`,
-          "haldi-mehendi-decoration": `Hi, I saw your haldi & mehendi decoration designs and want to know more for ${queryCity}.`,
-          "wedding": `Hi, I saw your wedding decoration designs and want to know more for ${queryCity}.`,
-          "bachelorette-decoration": `Hi, I saw your bachelorette decoration designs and want to know more for ${queryCity}.`,
-        };
 
-        const messageWithCity = cityMessages[catValue]
-          || `Hi, I saw your decoration designs and want to know more for ${queryCity}.`;
+  const formatCategoryName2 = (value) => {
+       return value
+      ?.replace(/-/g, ' ')    
+      ?.replace(/\b\w/g, (l) => l.toUpperCase()); 
+  };
 
-        window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(messageWithCity)}`);
-        break;
+  const readableCategory5 = formatCategoryName2(catValue);
+  const readableCity5 = queryCity
+    ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1)
+    : 'your city';
 
-      case '/[city]/balloon-decoration/[catValue]/product/[productName]':
-        eventName = 'decoration_productcitypage_whatsapp_click';
-        productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
+  const messageWithCity2 = `Hi, I saw your ${readableCategory5} designs and want to know more for ${readableCity5}.`;
 
-        const productMessagesByCategoryCity = {
-          "kids-birthday-decoration": "Hi, I liked your kids birthday decor design, can you help me in booking process",
-          "birthday-decoration": "Hi, I liked your birthday decor design, can you help me in booking process",
-          "anniversary-decoration": "Hi, I liked your anniversary decor design, can you help me in booking process",
-          "first-night-decoration": "Hi, I liked your first night decor design, can you help me in booking process",
-          "premium-decoration": "Hi, I liked your premium decor design, can you help me in booking process",
-          "baby-shower-decoration": "Hi, I liked your baby shower decor design, can you help me in booking process",
-          "welcome-baby-decoration": "Hi, I liked your baby welcome decor design, can you help me in booking process",
-          "haldi-mehendi-decoration": "Hi, I liked your haldi & mehendi decor design, can you help me in booking process",
-          "wedding-decoration": "Hi, I liked your wedding decor design, can you help me in booking process",
-          "bachelorette-decoration": "Hi, I liked your bachelorette decor design, can you help me in booking process"
-        };
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(messageWithCity2)}`);
+  break;
 
-        const productMsgCity =
-          (productMessagesByCategoryCity[catValue] || "Hi, I liked your decoration design, can you help me in booking process") +
-          ` for ${cityName}.`;
+ 
+case '/[city]/balloon-decoration/[catValue]/product/[productName]':
+  eventName = 'decoration_productcitypage_whatsapp_click';
+  productNameEvent = `decoration_productcitypage_whatsapp_click_${productName}`;
 
-        window.open(
-          `https://wa.me/+917338584828/?text=${encodeURIComponent(productMsgCity)}`,
-          "_blank"
-        );
-        break;
+  const formatCategoryName3 = (value) => {
+        return value
+      ?.replace(/-/g, ' ')    
+      ?.replace(/\b\w/g, (l) => l.toUpperCase()); 
+  };
 
-      case '/checkout':
-        eventName = 'decoration_checkoutpage_whatsapp_click';
-        productNameEvent = 'decoration_checkoutpage_whatsapp_click';
+  const readableCategory3= formatCategoryName3(catValue);
+  const readableCity3 = cityName
+    ? cityName.charAt(0).toUpperCase() + cityName.slice(1)
+    : 'your city';
 
-        const checkoutMessagesByCategory = {
-          "kids-birthday-decoration": "Hi, can you help me book a kids birthday decor design.",
-          "birthday-decoration": "Hi, can you help me book a birthday decor design.",
-          "anniversary-decoration": "Hi, can you help me book an anniversary decor design.",
-          "baby-shower-decoration": "Hi, can you help me book a baby shower decor design.",
-          "welcome-baby-decoration": "Hi, can you help me book a baby welcome decor design.",
-          "first-night-decoration": "Hi, can you help me book a first night decor design.",
-          "premium-decoration": "Hi, can you help me book a premium decor design.",
-          "haldi-mehendi-decoration": "Hi, can you help me book a haldi & mehendi decor design.",
-          "wedding-decoration": "Hi, can you help me book a wedding decor design.",
-          "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design."
-        };
+  const productMsgCity = `Hi, I liked your ${readableCategory3} decor design, can you help me in booking process for ${readableCity3}.`;
 
-        const checkoutMsg = checkoutMessagesByCategory[catValue]
-          || "Hi, I saw your website and want to know more about the services.";
+  window.open(
+    `https://wa.me/+917338584828/?text=${encodeURIComponent(productMsgCity)}`,
+    '_blank'
+  );
+  break;
 
-        window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(checkoutMsg)}`);
-        break;
+case '/checkout':
+  eventName = 'decoration_checkoutpage_whatsapp_click';
+  productNameEvent = 'decoration_checkoutpage_whatsapp_click';
+
+
+  const formatCategoryName4 = (value) => {
+       return value
+      ?.replace(/-/g, ' ')    
+      ?.replace(/\b\w/g, (l) => l.toUpperCase()); 
+  };
+
+  const readableCategory4= formatCategoryName4(catValue);
+
+  const checkoutMsg = readableCategory4
+    ? `Hi, can you help me book a ${readableCategory4} decor design.`
+    : `Hi, I saw your website and want to know more about the services.`;
+
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(checkoutMsg)}`);
+  break;
 
       case '/[city]/[locality]/balloon-decoration':
         eventName = 'decoration_localitypage_whatsappclick';
@@ -230,29 +214,25 @@ const WhatsAppIcon = ({ router }) => {
         );
         break;
 
-      case '/photography-page/[catValue]':
-        eventName = 'photography_productlistedpage_whatsapp_click';
-        productNameEvent = `photography_productlist_categorypage_whatsapp_click_${catValue}`;
+case '/photography-page/[catValue]':
+  eventName = 'photography_productlistedpage_whatsapp_click';
+  productNameEvent = `photography_productlist_categorypage_whatsapp_click_${catValue}`;
 
-        const messagesByCategoryPhoto = {
 
-          "Engagement-Photography": "Hi, I saw your engagement photography packages & want to know more about it.",
-          "Wedding-Photography": "Hi, I saw your wedding photography packages & want to know more about it.",
-          "Anniversary-Photography": "Hi, I saw your anniversary photography packages & want to know more about it.",
-          "Birthday-Photography": "Hi, I saw your birthday photography packages & want to know more about it.",
-          "House-warming-Photography": "Hi, I saw your house warming photography packages & want to know more about it.",
-          "Naming-ceremony-Photography": "Hi, I saw your naming ceremony photography packages & want to know more about it.",
-          "Baby-Shower-Photography": "Hi, I saw your baby shower photography packages & want to know more about it.",
-          "Bachelorette-Photography": "Hi, I saw your bachelorette photography packages & want to know more about it.",
-          "Maternity-Photography": "Hi, I saw your maternity photography packages & want to know more about it.",
-          "New-Born-Baby-Photography": "Hi, I saw your new born baby photography packages & want to know more about it.",
-        };
+  const formatPhotoCategory = (value) => {
+        return value
+      ?.replace(/-/g, ' ')    
+      ?.replace(/\b\w/g, (l) => l.toUpperCase()); 
+  };
 
-        const messages = messagesByCategoryPhoto[catValue]
-          || "Hi, I saw your designs and want to know more about them."; // fallback message
+  const readableCategory6 = formatPhotoCategory(catValue);
 
-        window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(messages)}`);
-        break;
+  const msg5 = readableCategory6
+    ? `Hi, I saw your ${readableCategory6} photography packages & want to know more about them.`
+    : `Hi, I saw your photography services and want to know more about them.`;
+
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg5)}`);
+  break;
 
       case '/photography-checkout':
         eventName = 'photography_checkout_whatsappclick';

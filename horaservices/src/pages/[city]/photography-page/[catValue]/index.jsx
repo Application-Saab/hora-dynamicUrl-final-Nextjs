@@ -14,19 +14,17 @@ const PhotographyCityPage = () => {
   }
 
   const normalizedCity = city ? city.toLowerCase() : "";
-  const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
-  const localityHandleClick = (localityName) => {
-    const formattedLocalityName = localityName
-      .replace(/\s+/g, "-")
-      .toLowerCase();
-    router.push({
-      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography-page`,
-    });
-  };
+  // const localityHandleClick = (localityName) => {
+  //   const formattedLocalityName = localityName
+  //     .replace(/\s+/g, "-")
+  //     .toLowerCase();
+  //   router.push({
+  //     pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography-page`,
+  //   });
+  // };
   useEffect(() => {
     if (normalizedCity) {
       const localities = cityData[normalizedCity]?.cityLocalitiesList || [];
-      setCityLocalitiesList(localities);
     }
   }, [normalizedCity]);
 

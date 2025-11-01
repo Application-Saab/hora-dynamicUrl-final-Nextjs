@@ -1,10 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
-import './photo.css'
 import Head from "next/head";
 import Image from 'next/image'
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
+import './photo.css'
 import pose1 from "@/assets/poseimages/pose1.png"
 import pose2 from "@/assets/poseimages/pose2.png"
 import pose3 from "@/assets/poseimages/pose3.jpg"
@@ -12,14 +10,11 @@ import pose4 from "@/assets/poseimages/pose4.jpg"
 import pose5 from "@/assets/poseimages/pose5.jpg"
 import pose6 from "@/assets/poseimages/pose6.jpg"
 import pose7 from "@/assets/poseimages/pose7.png"
-import pose8 from "@/assets/poseimages/pose8.png"
 import pose9 from "@/assets/poseimages/pose9.jpg"
 import pose10 from "@/assets/poseimages/pose10.jpg"
 import pose11 from "@/assets/poseimages/pose11.png"
 import pose12 from "@/assets/poseimages/pose12.jpg"
 import pose13 from "@/assets/poseimages/pose13.png"
-import pose14 from "@/assets/poseimages/pose14.jpg"
-import pose15 from "@/assets/poseimages/pose15.jpg"
 import PhotoBanner from "../../assets/PhotoBanner.jpg"
 import Banner1 from "../../assets/banner1.webp"
 import Banner2 from "../../assets/Banner2.webp"
@@ -34,7 +29,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import google from "../../assets/google.jpg";
 import PhotoGraphyCard from '@/components/PhotoGraphyCard';
 import PhotoGraphyCardgrid from '@/components/photoGraphyCardGrid';
 import PhotographysliderSection from '@/components/photographysliderSection';
@@ -65,24 +59,6 @@ let {locality} = router.query;
     Banner3,
   ];
 
-  const reviews = [
-    {
-      text: "Service is very good. We really liked every service. We took decoration photography and food service. Decoration done in 1hr. Photographer reached 20min before. Food delivered 30min before. Everything happened before time and was perfect.",
-      author: "Saravani A"
-    },
-    {
-      text: "All the service provided by HORA including decoration and photography done by Mr. Naveen kumar were up to the mark. Thankyou so much for making our baby shower program memorable. Would definitely recommend for decoration and photography.",
-      author: "Shilpa Raha"
-    },
-    {
-      text: "The Best Services! I never knew or heard about them, just tried to take photography services n booked it. Especially, The photographer Mr. Devendra! Such a down to earth, friendly n professional men. I was so happy about his services n behaviour!! If you wanna try... Close you eyes n book them!! Highly recommend!",
-      author: "Umesh K"
-    },
-    {
-      text: "Hora makes our life easy in simple partying.. it's great I found Hora... Every service team is excellent in doing there jobs. Mr Mitesh photography did his job ",
-      author: "Anusha Battiprolu"
-    }
-  ];
 const brandItems = [
   { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
   { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -297,16 +273,6 @@ Freelancer Photographer; Photographer near me, `
               <div className="TextBackground"><p>Naming Ceremony</p></div>
             </a>
             <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
-              className="pose-card"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => firePoseClickEvent("Couple shoot")}
-            >
-              <Image src={pose8} alt="Couple shoot" />
-              <div className="TextBackground"><p>Couple shoot</p></div>
-            </a>
-            <a
               href="https://horaservices.com/photo-gallery?folderName=new%20born%20&customerId=64137625549b58e3dc39a685"
               className="pose-card"
               target="_blank"
@@ -355,26 +321,6 @@ Freelancer Photographer; Photographer near me, `
             >
               <Image src={pose13} alt="Bachelorate" />
               <div className="TextBackground"><p>Bachelorate</p></div>
-            </a>
-            <a
-              href=""
-              className="pose-card"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => firePoseClickEvent("Corporate")}
-            >
-              <Image src={pose14} alt="Corporate" />
-              <div className="TextBackground"><p>Corporate</p></div>
-            </a>
-            <a
-              href="https://horaservices.com/photo-gallery?folderName=baby%20shower&customerId=6683e5d43e33c54c0ebde8f2"
-              className="pose-card"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => firePoseClickEvent("Model shoot")}
-            >
-              <Image src={pose15} alt="Model shoot" />
-              <div className="TextBackground"><p>Model shoot</p></div>
             </a>
 
           </div>
