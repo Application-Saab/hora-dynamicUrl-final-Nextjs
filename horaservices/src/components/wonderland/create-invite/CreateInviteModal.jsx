@@ -6,6 +6,7 @@ import useApi from "@/hooks/useApi";
 import { CREATE_EVENT_INVITE } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import CustomButton from "../common/CustomButton";
+import CustomModal from "../common/CustomModal";
 
 const CreateInviteModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -16,11 +17,12 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async () => {
     if (!userId && occation) return;
+    let payload = {
+      userId: userId,
+      hostName: occation?.charAt(0)?.toUpperCase() + occation?.slice(1),
+    };
     try {
-      let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", {
-        userId: userId,
-        hostName: occation,
-      });
+      let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);
       if (resp?.data) {
         router.replace({
           pathname: "/wonderland/invite",
@@ -35,55 +37,42 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <>
-      <div className="custom-modal-backdrop">
-        <div className="custom-modal-content">
-          <div className="modal-header-custom">
-            <Image
-              src={BackArrow}
-              height={25}
-              width={15}
-              onClick={() => {
-                onClose();
-                router.push("/wonderland");
-              }}
+    <CustomModal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        router.push("/wonderland");
+      }}
+      title="Create Invitation"
+      verticalCenter={false}
+      body={
+        <>
+          <h3 className="modal-question-text">What's the occasion?</h3>
+
+          <div className="input-group-custom">
+            <input
+              type="text"
+              placeholder="Type Event Name"
+              maxLength={30}
+              value={occation}
+              onChange={(e) => setOccation(e.target.value)}
             />
-            <h2 className="modal-title-custom">Create Invitation</h2>
+            <small className="char-limit-text">
+              {occation?.length}/30 Characters
+            </small>
           </div>
-
-          <div className="modal-body-custom">
-            <h3 className="modal-question-text">What's the occasion?</h3>
-
-            <div className="input-group-custom">
-              <input
-                type="text"
-                placeholder="Type Event Name"
-                maxLength={30}
-                value={occation}
-                onChange={(e) => setOccation(e.target.value)}
-              />
-              <small className="char-limit-text">
-                {occation?.length}/30 Characters
-              </small>
-            </div>
-
-            {/* <button
-              className="submit-button-custom"
-              disabled={!occation}
-              onClick={occation && handleSubmit}
-            >
-              {loading ? "Submitting..." : "Submit"}
-            </button> */}
+          <div className="d-flex justify-content-center">
             <CustomButton
               title={"Submit"}
               loading={loading}
               disabled={!occation}
               onClick={occation && handleSubmit}
+              buttonClass="create-invite-btn"
             />
           </div>
-        </div>
-      </div>
-    </>
+        </>
+      }
+    />
   );
 };
 

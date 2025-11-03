@@ -148,6 +148,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               title={"Submit"}
               loading={loading}
               onClick={handleSubmit}
+              buttonClass="add-details-submit"
             />
           </div>
         </div>

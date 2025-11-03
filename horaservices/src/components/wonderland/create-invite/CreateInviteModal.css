@@ -18,7 +18,7 @@
 /* Modal Content Box */
 .custom-modal-content {
   background-color: white;
-  width: 85%;
+  width: 95%;
   max-width: 400px;
   border-radius: 16px;
   overflow: hidden;
@@ -118,11 +118,15 @@
 .submit-button-custom:disabled {
   cursor: not-allowed;
 }
+.create-invite-btn{
+  padding: 14px 68px !important;
+}
+
 
 /* Update details modal css */
 .adddetails-input-group {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 17px;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -140,10 +144,11 @@
   outline: none;
   transition: border-color 0.3s;
 }
+
 .custom-input-grop-add-details {
   border-radius: 8px;
   box-shadow: 0px 4px 4px 0px #0000003b !important;
-  margin-bottom: 10px;
+  margin-bottom: 17px;
 }
 .add-details-input {
   padding: 15px 11.5px 11.5px 0px !important;
@@ -170,6 +175,9 @@
 
 .adddetails-input-group input:focus {
   border-color: #cc3399;
+}
+.add-details-submit {
+  padding: 10px 68px !important;
 }
 
 .add-details-date-btn {
