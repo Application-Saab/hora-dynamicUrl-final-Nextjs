@@ -13,7 +13,7 @@ import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 import "./bottomNav.css";
 
-export default function BottomNav({ id, groups = [] }) {
+export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
   const [showPopup, setShowPopup] = useState(false);

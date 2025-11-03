@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import "../../pages/wonderland/EventInvitation.css";
+import "../../pages/wonderland-old/EventInvitation.css";
 import "../../pages/photo-gallery/gallery.css";
-import LazyImage from "./event-wall/LazyImage";
-import LazyVideo from "./event-wall/LazyVideo";
+import LazyImage from "../wonderland/event-wall/LazyImage";
+import LazyVideo from "../wonderland/event-wall/LazyVideo";
 
 const EventwallGalleryItem = ({ isVideo, thumbnail, indexOnPage }) => {
   return (
@@ -13,7 +13,6 @@ const EventwallGalleryItem = ({ isVideo, thumbnail, indexOnPage }) => {
             previewSrc={thumbnail?.webpUrl}
             fullVideoSrc={thumbnail?.imageUrl}
             wrapperClassName="masonry-item custom-masonry"
-            isEventWall={true}
           />
         </div>
       ) : (

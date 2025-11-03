@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 import './gallery.css'; // Ensure this path is correct
 import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is correct
-import LazyImage from '../../components/LazyImage';         // Ensure path is correct
+import LazyImage from '../../components/wonderland/event-wall/LazyImage';         // Ensure path is correct
 import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
 import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
 
