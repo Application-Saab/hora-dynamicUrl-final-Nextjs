@@ -3,6 +3,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import "./photographyslider.css";
+import {BASE_URL,GET_PHOTOGRAPHY_BY_NAME} from "@/utils/apiconstants.js";
 import traditionalImg from "@/assets/traditionalphoto.webp";
 
 export default function PhotographysliderSection({
@@ -35,7 +36,7 @@ const getDiscountedPrice = (price = 0) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
+        `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}${tagId}`
       );
       const data = res.data?.data?.map((item) => {
         const { discountedPrice, discountDifference } = getDiscountedPrice(item.price || 0);

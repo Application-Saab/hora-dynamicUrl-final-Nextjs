@@ -1,4 +1,3 @@
-import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";

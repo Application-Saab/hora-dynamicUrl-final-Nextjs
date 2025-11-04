@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import Head from "next/head";
 import photographyAddOns from "@/utils/photographyAddOns.json";
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
@@ -25,6 +24,7 @@ import FAQSection from '@/components/FAQSection';
 import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
 import Photographyslider from '@/components/photoslidersection';
+import { SeoWork } from '@/utils/photoGraphyHead';
 
 const SkeletonLoader = () => {
   return (
@@ -457,70 +457,7 @@ const ProductDetails = () => {
 
   return (
     <div>
-
-      <Head>
-        <title>
-          {city
-            ? `HORA Photography ${city} ${work.name} by Professionals Photographer, Starting at ₹3500`
-            : `HORA Photography ${work.name} by Professionals Photographer, Starting at ₹3500`}
-        </title>
-        <meta
-          name="description"
-          content={
-            city
-              ? `  📸 Capture Every Moment, Forever! ✨
-Welcome to HORA ${city} ${work.name}— where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
-Weddings Photoshoot👰‍♀️; 
-Maternity photoshoot;
-Baby Shoots 🤰👼; 
-Birthdays photoshoot; 
-Newborn photography;
-Couples photography
-Anniversaries photographer 🎂❤️; 
-Newborn photography
-Housewarming & Corporate Events; 
-Pre wedding photoshoot & Couple Photographer; 
-Freelancer Photographer; Photographer near me,`
-              : `   📸 Capture Every Moment, Forever! ✨
-Welcome to HORA ${work.name}— where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for:
-Weddings Photoshoot👰‍♀️; 
-Maternity photoshoot;
-Baby Shoots 🤰👼; 
-Birthdays photoshoot; 
-Newborn photography;
-Couples photography
-Anniversaries photographer 🎂❤️; 
-Newborn photography
-Housewarming & Corporate Events; 
-Pre wedding photoshoot & Couple Photographer; 
-Freelancer Photographer; Photographer near me, `
-
-          }
-        />
-        <meta
-          name="keywords"
-          content="couple photoshoot, romantic photoshoot for couples, pre wedding photoshoot, pre wedding photography, couple pre wedding photography, candid pre wedding shoot, pre bridal photography, pre wedding shoot price, pre wedding shoot in bangalore, 
-    couples photography, maternity photoshoot, maternity photoshoot near me, maternity photo sessions, maternity photoshoot in bangalore, maternity couple photoshoot, mother to be photoshoot, maternity shoot near me, pregnancy photoshoot near me, 
-    pregnancy photo shoot, photography in pregnancy, pregnant women photoshoot, motherhood photoshoot, pregnant ladies photoshoot, couple pregnancy photoshoot, seemantham photoshoot, pregnancy photoshoot in bangalore, newborn photography, infant photography,
-     baby photography near me, newborn photography near me, newborn photoshoot, infant photographers near me, newborn portraits near me, newborn family photoshoot, family photography with newborn, cake smash photoshoot, first birthday cake smash photoshoot, 
-     engagement photo shoot, engagement photoshoot, engagement couple photography, engagement photography, wedding photographer, wedding photographer near me, wedding photoshoot, photographer wedding, candid wedding photography, marriage photoshoot, post wedding photoshoot, 
-     bridal photoshoot, traditional photography, wedding photographers in bangalore, marriage photographers in bangalore, birthday photoshoot, first birthday photoshoot, pre birthday photoshoot, birthday celebration photoshoot, birthday photo session, 18th photoshoot, 
-     birthday party photographer, event photography, photoshoot for wedding anniversary, anniversary photoshoot, candid photography, cinematic photography, fashion photography, model photography, black and white photography, landscape photography, portrait photography, 
-     photographers near me, professional photographer near me, professional photographer, freelance photographer, best photographers near me, photoshoot near me, photographer in bangalore, photography in bangalore, bangalore photoshoot, photography services"
-        />
-        <meta property="og:title" content="HORA Photography : Professional photography for all events" />
-        <meta
-          property="og:description"
-          content="Professional event photography for weddings, birthdays, baby showers, and more. Book today for stunning, affordable memories — starting at just ₹3500!"
-        />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <meta property="og:url" content="https://horaservices.com/photography" />
-        <meta property="og:type" content="website" />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-        <script type="application/ld+json">{scriptTag}</script>
-      </Head>
+         <SeoWork city={city} work={work} scriptTag={scriptTag} />
       <div className="photodetails-container">
 
         <div className="photodetails-image-section">

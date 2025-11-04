@@ -45,8 +45,6 @@ const Photographyslider = ({
     <section  style={{
     padding: '10px',
      background: "#fbe6d3",
-    // borderRadius: '12px',
-    // boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
   }}>
       <div className="premium-slide-decor-header">
       {title && <h2>{title}</h2>}
@@ -100,9 +98,6 @@ const Photographyslider = ({
                 </div>
 
                 <div className="photo-premium-content">
-                  {/* <p className="photo-premium-title">
-                    {titleText.length > 20 ? `${titleText.slice(0, 20)}...` : titleText}
-                  </p> */}
                   <p className="photo-premium-title">{titleText}</p>
                 </div>
 
