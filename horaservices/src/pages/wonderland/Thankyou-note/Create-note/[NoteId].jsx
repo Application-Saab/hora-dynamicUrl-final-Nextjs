@@ -1,11 +1,11 @@
-import React from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
-import "./thankyounote.css";
+import { useState, useEffect, useRef } from "react";
+import Head from "next/head";
+import "./createNote.css";
 import ImportantIcon from "@/assets/ThankyouNote-icon/importanticon.png";
 import ThankyounotePin from "@/assets/ThankyouNote-icon/ThankyounotePin.png";
 import FoodInfo from "@/assets/ThankyouNote-icon/Foodinfo.png";
-import Head from "next/head";
+
 const notesData = [
   {
     id: 1,
@@ -14,7 +14,6 @@ const notesData = [
       "Thanks for inviting us. We truly enjoyed being part of Sahaj’s wonderful birthday celebration. May God bless you always.",
     author: "- YashParmar",
     color: "linear-gradient(140.79deg, #F5973D 8.22%, #FABC6F 96.1%)",
-
   },
   {
     id: 2,
@@ -69,8 +68,33 @@ const notesData = [
   },
 ];
 
-const EventNotes = () => {
+export default function NoteDetails() {
   const router = useRouter();
+  const { NoteId } = router.query;
+  const [note, setNote] = useState(null);
+  const contentRef = useRef(null);
+
+  useEffect(() => {
+    if (NoteId) {
+      const foundNote = notesData.find((n) => n.id === Number(NoteId));
+      setNote(foundNote);
+    }
+  }, [NoteId]);
+
+  useEffect(() => {
+    if (contentRef.current) adjustHeight(contentRef.current);
+  }, [note]);
+
+  const adjustHeight = (el) => {
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  };
+
+  if (!note) return <p>Loading...</p>;
+
+  const handleChange = (field, value) => {
+    setNote((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <>
@@ -81,32 +105,39 @@ const EventNotes = () => {
         />
       </Head>
 
-      <div className="note-container">
+      <div className="note-edit-container" style={{ background: note.color }}>
+        {/* Editable Title */}
+        <input
+          className="edit-title"
+          value={note.title}
+          onChange={(e) => handleChange("title", e.target.value)}
+        />
 
-        <h2 className="note-heading">Event Notes</h2>
-        <div className="notesGrid">
-          {notesData.map((note) => (
-            <div
-              key={note.id}
-              className="noteCard"
-              style={{ background: note.color }}
-              onClick={() => router.push(`/wonderland/Thankyou-note/Create-note/${note.id}`)}
-            >
-              <div className="noteHeader">
+        {/* Editable Content */}
+        <textarea
+          ref={contentRef}
+          className="edit-content"
+          value={note.content}
+          onChange={(e) => {
+            handleChange("content", e.target.value);
+            adjustHeight(e.target);
+          }}
+        />
 
-                <h3 className="noteTitle">{note.title}</h3>
-                {note.icon && <Image src={note.icon} alt="" className="noteIcon" />}
-              </div>
-              <p className="noteContent">{note.content}</p>
-              <p className="noteAuthor">{note.author}</p>
-            </div>
+        {/* Editable Author */}
+        <input
+          className="edit-author"
+          value={note.author}
+          onChange={(e) => handleChange("author", e.target.value)}
+        />
 
-
-          ))}
-        </div>
+        <button
+          className="save-btn"
+          onClick={() => alert("Note updated successfully!")}
+        >
+          Save Changes
+        </button>
       </div>
     </>
   );
-};
-
-export default EventNotes;
+}

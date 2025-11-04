@@ -1,0 +1,65 @@
+.note-edit-container {
+  padding: 20px;
+  color: #fff;
+  max-width: 300px;
+  margin: 40px auto;
+  font-family: "Just Another Hand", cursive;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent image or bg expanding */
+}
+
+.edit-title {
+  font-size: 38px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 90%;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.edit-content {
+  background: transparent;
+  border: none;
+  width: 90%;
+  font-size: 22px;
+  color: #fff;
+  resize: none;
+  overflow: hidden; /* prevent scrollbar */
+  outline: none;
+  min-height: 100px;
+  line-height: 1.2;
+  margin-top: 5px;
+}
+
+.edit-author {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 26px;
+  width: 90%;
+  text-align: right;
+  outline: none;
+  margin-top: 20px;
+}
+
+.save-btn {
+  margin-top: 25px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+
+.save-btn:hover {
+  transform: scale(1.05);
+}
