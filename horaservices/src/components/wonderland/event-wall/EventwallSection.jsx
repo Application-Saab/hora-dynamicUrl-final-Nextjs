@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import NotesButtonIcon from "@/assets/NotesButtonIcon.svg";
 import PostBadgeButtonIcon from "@/assets/PostBadgeButtonIcon.svg";
 import GalleryButtonIcon from "@/assets/GalleryButtonIcon.svg";
@@ -6,12 +7,12 @@ import NopostCamera from "@/assets/NopostCamera.svg";
 
 const EventwallSection = () => {
   const [allImages, setAllImages] = useState([]);
-
+ const router = useRouter()
   const actionButtons = [
     {
       label: "Notes",
       icon: NotesButtonIcon.src,
-      onClick: () => console.log("Notes clicked"),
+      onClick: () => router.push("/wonderland/Thankyou-note"), 
     },
     {
       label: "Post Badge",
