@@ -45,6 +45,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       }}
       title="Create Invitation"
       verticalCenter={false}
+      disableBackdropClick={true}
       body={
         <>
           <h3 className="modal-question-text">What's the occasion?</h3>

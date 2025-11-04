@@ -20,29 +20,42 @@ const CustomModal = ({
   verticalCenter = true,
   disableBgScroll = true,
 }) => {
-  if (!isOpen) return null;
-
   // Lock background scroll
   useEffect(() => {
+    let scrollY = 0;
+
     if (isOpen && disableBgScroll) {
-      // store current scroll position
-      const scrollY = window.scrollY;
+      // Save current scroll position
+      scrollY = window.scrollY;
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
       document.body.style.left = "0";
       document.body.style.right = "0";
       document.body.style.overflow = "hidden";
-    } else {
-      // restore scroll position
-      const scrollY = document.body.style.top;
+    }
+
+    if (!isOpen && disableBgScroll) {
+      // Restore scroll position
+      const y = document.body.style.top;
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
       document.body.style.right = "";
       document.body.style.overflow = "";
-      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      window.scrollTo(0, -parseInt(y || "0"));
     }
+
+    // Cleanup when component unmounts (just in case)
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+    };
   }, [isOpen, disableBgScroll]);
+
+  if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
     if (

@@ -16,6 +16,7 @@ import LinkedinIcon from "@/assets/wonderland/ShareInviteLinkedin.svg";
 import "./ShareInviteModal.css";
 
 import { formateDateInDMDFormat } from "@/utils/dateFormatters";
+import CustomModal from "./CustomModal";
 
 const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   const [copyStatus, setCopyStatus] = useState(false);
@@ -134,7 +135,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
     // Copy invite text
     copyToClipboard(text);
 
-   // Open platform directly in new tab
+    // Open platform directly in new tab
     const newTab = window.open(platform.url, "_blank");
 
     // Try deep link only if mobile device
@@ -157,20 +158,12 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   };
 
   return (
-    <div className="custom-modal-backdrop">
-      <div className="custom-modal-content">
-        <div className="modal-header-custom">
-          <Image
-            src={BackArrow}
-            height={25}
-            width={15}
-            onClick={onClose}
-            alt="Back"
-          />
-          <h2 className="modal-title-custom">Share Invitation</h2>
-        </div>
-
-        <div className="modal-body-custom" style={{ padding: "10px 15px" }}>
+    <CustomModal
+      isOpen={isOpen}
+      onClose={() => onClose()}
+      title="Share Invitation"
+      body={
+        <>
           {/* Template preview */}
           <div className="d-flex justify-content-center w-100">
             <div
@@ -253,9 +246,9 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 };
 
