@@ -10,6 +10,7 @@ import useApi from "@/hooks/useApi";
 import { GET_EVENT_BY_ID } from "@/utils/apiconstants";
 import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlashLoader";
 import InviteAddressSection from "@/components/wonderland/common/InviteAddressSection";
+import LoginModal from "@/components/wonderland/common/login/LoginModal";
 
 const InvitesPage = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ const InvitesPage = () => {
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [fullPageLoader, setFullPageLoader] = useState(true);
+  const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
 
   const {
     data: eventData,
@@ -32,6 +34,10 @@ const InvitesPage = () => {
 
       if (!queryEventId && userId) {
         setOpenCreateInviteModal(true);
+        setFullPageLoader(false);
+      }
+      if (queryEventId && !userId) {
+        setShowGuestLoginModal(true);
         setFullPageLoader(false);
       }
     }, 600);
@@ -114,6 +120,10 @@ const InvitesPage = () => {
       <CreateInviteModal
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}
+      />
+      <LoginModal
+        isOpen={showGuestLoginModal}
+        onClose={() => setShowGuestLoginModal(false)}
       />
     </>
   );

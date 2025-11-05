@@ -48,30 +48,7 @@ const InvitesListing = ({ userId }) => {
   };
 
   const handleClickViewEvent = (eventData) => {
-    if (
-      eventData?.hostName &&
-      eventData?.eventType &&
-      eventData?.eventDate &&
-      eventData?.eventTime
-    ) {
-      if (eventData?.eventRole === "host") {
-        router.push(
-          `/wonderland?id=${eventData?.userId}/${eventData._id}/host`
-        );
-      } else if (eventData?.eventRole === "guest") {
-        router.push(
-          `/wonderland?id=${eventData?.userId}/${eventData._id}/guest`
-        );
-      }
-    } else {
-      if (eventData?.eventRole === "host") {
-        router.push(
-          `/wonderland?id=${eventData?.userId}/${eventData._id}&page=create-invite`
-        );
-      } else {
-        alert("Event details are incomplete, only host can update this event.");
-      }
-    }
+    router.push(`/wonderland/invite?eventid=${eventData._id}`);
   };
 
   return loading ? (
