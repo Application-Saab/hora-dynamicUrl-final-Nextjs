@@ -396,9 +396,14 @@ case '/photography-page/[catValue]/product/[productName]': {
   const shouldShowWhatsAppIcon = () => {
     return (
       !router.asPath.startsWith('/wonderland') &&
+      !router.asPath.startsWith('/templates') &&
+      !router.asPath.startsWith('/chat') &&
       router.asPath !== '/order-details' &&
       router.asPath !== '/orderlist' &&
-      router.asPath !== '/photo-gallery'
+      router.asPath !== '/photo-gallery' &&
+      !router.asPath.startsWith('/chat') &&
+      !router.asPath.startsWith('/accounts')&&
+       !router.asPath.startsWith('/services')
     );
   };
   return (

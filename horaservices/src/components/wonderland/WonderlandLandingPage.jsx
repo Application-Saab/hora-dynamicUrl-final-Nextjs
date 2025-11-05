@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./WonderlandLandingPage.css";
 import { useRouter } from "next/router";
@@ -5,17 +6,31 @@ import CreateInviteModal from "./create-invite/CreateEventInvite";
 import { BASE_URL, GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import WonderlandOtploginpopup from "@/components/WonderlandOtploginpopup";
 import Image from "next/image";
-import wonderlandBanner from "@/assets/wonderlandBanner.jpg"
-import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.png";
-import howitworks from "@/assets/howitworks.jpg"
-import hostandGuest from "@/assets/hostandGuest.png"
-import yourcelebration from "@/assets/yourcelebration.png"
-import luckdrawBnaner from "@/assets/lucky.jpg"
+import wonderlandBanner from "@/assets/wonderlandBanner1.webp";
+// import wonderlandeventplanningBanner from "@/assets/wonderlandeventplanningBanner.svg";
+import howitworks from "@/assets/howitworks2.jpg";
+import hostandGuest from "@/assets/hostandGuest.webp";
+import yourcelebration from "@/assets/yourcelebration.png";
+import luckdrawBnaner from "@/assets/lucky.jpg";
 import OtpLogin from "../OtpLoginPopup";
+import {
+  FaHome,
+  FaComments,
+  FaServicestack,
+  FaFolderOpen,
+  FaGlassCheers,
+  FaSearch,
+  FaUser,
+  FaImage,
+} from "react-icons/fa";
+import Link from "next/link";
+
+
 const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   const token = localStorage.getItem("token");
   const router = useRouter();
-  const { page, id: queryId ,hostName} = router.query;
+  const { page, id: queryId, hostName } = router.query;
+  const { id } = router.query;
   // const queryId = router.query.id;
   const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   console.log(
@@ -120,7 +135,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
       slug?.length === 3 &&
       slug[2] === "guest"
     ) {
-      if(slug[0] === loggedinUserId){
+      if (slug[0] === loggedinUserId) {
         router.push(`/wonderland?id=${slug[0]}/${slug[1]}/host`);
         return;
       }
@@ -235,6 +250,7 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
   }, [loggedinUserId, isUserLoggedIn]);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "Event Date";
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
         day: "numeric",
@@ -286,131 +302,156 @@ const WonderlandLandingPage = ({ setRefectchLoginGuest }) => {
         return "🎊";
     }
   };
+  return (
+    <>
+      {showLoginModal && (
+        <div className="no-orders">
+          <WonderlandOtploginpopup
+            setIsModalOpen={setIsModalOpen}
+            hostName={hostName}
+          />
+        </div>
+      )}
 
-return (
-  <>
-    {showLoginModal && (
-      <div className="no-orders">
-        <WonderlandOtploginpopup setIsModalOpen={setIsModalOpen} hostName={hostName}/>
-      </div>
-    )}
-
-    {/* {!loggedinUserId && slug?.length <= 0 && (
+      {/* {!loggedinUserId && slug?.length <= 0 && (
       <div className="no-orders">
         <div>Wonderland Public Landing Page</div>
       </div>
     )} */}
-{(slug?.length === 1 ||
-        slug?.length <= 0) && (
-          <>
-      <div className="logedin-container">
-
-        <div className="invite-banner">
-          <Image src={wonderlandBanner} alt="Invite Banner" className="banner-image-top" />
-
-          <button
-            type="button"
-            className="create-invite-btn"
-            onClick={createInviteClick}
-          >
-            Create Invite
-          </button>
-        </div>
-
-        {/* Event List */}
-        {getEventsLoading && <p>Loading your events...</p>}
-
-           {allEventsData?.length > 0 && <div className="event-list-wrapper">
-          <h3 className="section-heading">Past Events</h3>
-        <ul className="event-list">
-  {allEventsData?.map((event) => (
-    <li key={event._id} className="event-item">
-      <div className="event-info">
-        <div className="event-details">
-          <strong>{event.eventType}</strong>
-          <div className="event-meta">
-            <span className="event-role">
-              {event.eventRole?.charAt(0).toUpperCase() + event.eventRole?.slice(1)}
-            </span>{" "}
-            - {formatDate(event.eventDate)}
-          </div>
-        </div>
-      </div>
-      <button
-        className="view-btn"
-        onClick={() => handleClickViewEvent(event)}
-      >
-        View Event
-      </button>
-    </li>
-  ))}</ul>
-
-        </div>}
-   <div className="invite-banner">
-          <Image src={wonderlandeventplanningBanner} alt="Invite Banner" className="banner-image" />
-</div>
-  <div className="invite-banner">
-          <Image src={luckdrawBnaner} alt="Invite Banner" className="banner-image" />
-</div>
-<div
-  style={{
-    fontFamily: 'Inter, sans-serif',
-    fontWeight: 700,
-    fontStyle: 'normal', 
-    fontSize: '20px',
-    lineHeight: '100%', 
-    letterSpacing: '0%',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    margin:"10px",
-  }}
->
- How It Works Wonderland
-</div>
-  <div className="invite-banner">
-          <Image src={howitworks} alt="Invite Banner" className="banner-image" />
-</div>
-<div
-  style={{
-    fontFamily: 'Inter, sans-serif',
-    fontWeight: 700,
-    fontStyle: 'normal', 
-    fontSize: '21px',
-    lineHeight: '100%', 
-    letterSpacing: '0%',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    margin:"10px",
-  }}
->
-  Host & Guest Features
-</div>
-
- <div className="invite-banner">
-          <Image src={hostandGuest} alt="Invite Banner" className="banner-image" />
-</div>
- <div className="invite-banner">
-          <Image src={yourcelebration} alt="Invite Banner" className="banner-image" />
-</div>
-      </div>
-
-      {
-            showHostLoginModal && (
-              <OtpLogin
-                setIsModalOpen={() => {
-                  setShowHostLoginModal(false);
-                  handleClickCreateInvite();
-                }}
+      {(slug?.length === 1 || slug?.length <= 0) && (
+        <>
+          <div className="logedin-container">
+            <div className="invite-banner">
+              <Image
+                src={wonderlandBanner}
+                alt="Invite Banner"
+                className="banner-image-top"
               />
-            )
-          }
-          </>
-    )}
 
-  </>
-);
+              <button
+                type="button"
+                className="create-invite-btn"
+                onClick={createInviteClick}
+              >
+             <span>CREATE INVITE</span>
+              </button>
+            </div>
+
+      
 
 
+            {/* Event List */}
+            {getEventsLoading && <p>Loading your events...</p>}
+
+            {allEventsData?.length > 0 && (
+              <div className="event-list-wrapper">
+                <h3 className="section-heading">Cheer Story</h3>
+                <ul className="event-list">
+                  {allEventsData?.map((event) => (
+                    <>
+                      <li key={event._id} className="event-item">
+                        <div className="event-info-list">
+                          <div className="event-details-list">
+                            <div className="event-meta">
+                              <span className="event-role">
+                                {event.eventRole?.charAt(0).toUpperCase() +
+                                  event.eventRole?.slice(1)}
+                              </span>
+                            </div>
+                            <span className="list-event-title">
+                              {event.hostName
+                                ? `${event.hostName}'s`
+                                : "Host Name"}{" "}
+                              {event.eventType
+                                ? `${event.eventType}`
+                                : "Event Type"}
+                            </span>
+                            <div className="list-event-date">
+                              <span>{formatDate(event.eventDate)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="btn-ctn-event">
+                          <button
+                            className="view-btn"
+                            onClick={() => handleClickViewEvent(event)}
+                          >
+                            View Event
+                          </button>
+                        </div>
+                      </li>
+                    </>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* <div className="invite-banner">
+              <Image
+                src={wonderlandeventplanningBanner}
+                alt="Invite Banner"
+                className="banner-image"
+              />
+            </div> */}
+            {/* <div className="invite-banner">
+              <Image
+                src={luckdrawBnaner}
+                alt="Invite Banner"
+                className="banner-image"
+              />
+            </div> */}
+            
+            <div className="invite-banner">
+              <Image
+                src={howitworks}
+                alt="Invite Banner"
+                className="banner-image"
+              />
+            </div>
+            <div
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 700,
+                fontStyle: "normal",
+                fontSize: "21px",
+                lineHeight: "100%",
+                letterSpacing: "0%",
+                textAlign: "center",
+                verticalAlign: "middle",
+                margin: "10px",
+              }}
+            >
+              Host & Guest Features
+            </div>
+
+            <div className="invite-banner">
+              <Image
+                src={hostandGuest}
+                alt="Invite Banner"
+                className="banner-image"
+              />
+            </div>
+            <div className="invite">
+              <Image
+                src={yourcelebration}
+                alt="Invite Banner"
+                className="banner-image"
+              />
+            </div>
+          </div>
+
+          {showHostLoginModal && (
+            <OtpLogin
+              setIsModalOpen={() => {
+                setShowHostLoginModal(false);
+                handleClickCreateInvite();
+              }}
+            />
+          )}
+        </>
+      )}
+    </>
+  );
 };
 
 export default WonderlandLandingPage;

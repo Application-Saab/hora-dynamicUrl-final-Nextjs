@@ -1,0 +1,351 @@
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+/* Main Page CSS */
+.form-wrapper {
+  margin-top: 15px;
+  margin-bottom: 50px;
+  padding: 20px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  background: linear-gradient(
+    180deg,
+    #a8e3fe 0%,
+    #fed7f3 53.58%,
+    #fedfd7 88.89%,
+    #ffdace 100%
+  );
+}
+
+.heading-txt {
+  font-family: "Aclonica", sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #97538c;
+}
+
+.char-count {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.error-msg {
+  font-size: 12px;
+  color: red;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.preview-wrapper-template {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.preview-image-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-preview-template {
+  max-width: 200px;
+  max-height: 150px;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.upload-box-template {
+  margin-top: 10px;
+  width: 100%;
+  border: 1.1px solid #97538C;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #ff9cad;
+  border-radius: 11px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.save-btn {
+  flex: 1;
+  background: #97538c;
+  border-radius: 11px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.input-label {
+  text-align: left;
+  font-size: 0.791rem;
+  font-weight: 600;
+  color: #424648;
+  font-family: "Open Sans", sans-serif;
+  margin-bottom: 4px;
+  display: block;
+}
+.date-time-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.field-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  outline: none;
+  background-color: white;
+  transition: border 0.3s;
+  color: #00000099;
+}
+
+.crop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.cropper-container {
+  position: relative;
+  width: 90%;
+  max-width: 450px;
+  height: 400px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cropper-inner-container {
+  width: 100%;
+  height: 100%;
+}
+
+.cropper-media {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.cropper-crop-area {
+  border: 2px solid #4CAF50;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.cropper-crop-area.round {
+  border-radius: 50%;
+}
+
+.crop-controls {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  max-width: 450px;
+  width: 90%;
+  gap: 10px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  padding: 10px 20px;
+}
+.zoom-container{
+  display: flex;
+  max-width: 450px;
+  width: 100%;
+  gap: 5px;
+}
+.zoom-range{
+  width: 100%;
+}
+.zoom-btns{
+  border: none;
+  background: transparent;
+}
+.zoom-btns:hover{
+  border: none;
+  background: transparent;
+}
+.zoom-icons{
+  color: black;
+}
+
+.crop-save-btn, .crop-cancel-btn {
+  border-radius: 11px;
+  color: #fff;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.crop-save-btn {
+  background: #97538c;
+}
+
+.crop-save-btn:hover {
+  background: #97538c;
+}
+
+.crop-cancel-btn {
+  background: #ff9cad;
+}
+
+.crop-cancel-btn:hover {
+  background: #ff9cad;
+}
+.crop-btn{
+  display: flex;
+  align-items: center;
+  border: 1px solid #97538C;
+  background-color: #FFFFFF;
+  color: #97538C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 33px;
+  padding: 5px 15px;
+}
+.crop-btn:hover{
+  background-color: #97538C;
+  color: #FFFFFF;
+}
+.crop-icon{
+  margin-right: 5px;
+}
+
+
+
+/* *********** Template Wise Css ****************** */
+
+
+/* 
+.invite-template-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 530px;
+  max-width: 480px;
+}
+
+.invite-template-card {
+  position: relative;
+  max-width: 480px;
+  max-height: 530px;
+  width: 100%;
+  aspect-ratio: 11 / 19;
+  background-image: url("/Final.png");
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+}
+
+.template-image-wrapper{
+  position: absolute;
+  top: 9.5%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-inline: 20px;
+}
+.template-image{
+  height: 240px;
+  width: 240px;
+  z-index: 3;
+  border-radius: 50%;
+}
+
+.name {
+  position: absolute;
+  top: 58%;
+  width: 100%;
+  font-family: "Lilita One", sans-serif;
+  font-size: 2.2rem;
+  color: #f6d6ad;
+  font-weight: 300;
+}
+
+.date {
+  position: absolute;
+  top: 79%;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  color: #f6d6ad;
+  font-size: 1.5rem;
+}
+
+.time {
+  position: absolute;
+  top: 83%;
+  width: 100%;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  color: #f6d6ad;
+  font-size: 1.25rem;
+}
+
+.address {
+  position: absolute;
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  top: 87%;
+  width: 100%;
+  padding: 0 10px;
+  font-size: 0.875rem;
+  color: #f6d6ad;
+}
+
+
+@media (min-width: 360px) {
+  .date{
+    font-size: 2rem;
+  }
+  .name{
+    font-size: 2.5rem;
+  }
+  .time{
+    font-size: 1.5rem;
+  } 
+  .template-image{
+    height: 250px;
+    width: 250px;
+  }
+} */

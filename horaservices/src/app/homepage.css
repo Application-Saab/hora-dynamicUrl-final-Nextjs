@@ -100,9 +100,6 @@
 
 /* Mobile View Adjustments */
 @media (max-width: 1200px) {
-  .page-width {
-    width: 94% !important;
-  }
   .party-title {
     margin: 17px auto;
     font-size: 40px;

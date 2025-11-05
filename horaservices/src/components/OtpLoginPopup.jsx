@@ -188,14 +188,16 @@ const sendWelcomeMessage = async (mobileNumber) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
+                     <AiOutlineClose className="close-icons" onClick={hadelClose} size={15} />
+
         {!isUserLoggedIn ? (
           <>
             <div className="popup-header">
-              {isHomePage ? (
+              {/* {isHomePage ? (
                 <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
               ) : (
                 ''
-              )}
+              )} */}
               <h2>Login to Hora!</h2> {/* Fixed missing closing quote */}
             </div>
             <div className="otp-login">
@@ -269,7 +271,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
           <div className="success-message">
             <div className='popup-header'>  
               <Image src={loginImage} />
-            <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} />
+            {/* <AiOutlineClose className="close-icon" onClick={hadelClose} size={15} /> */}
               </div>
             <h1>Logged In Successful</h1>
             <p>Welcome Hora! You have been logged out successfully.</p>

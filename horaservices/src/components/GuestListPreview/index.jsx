@@ -13,9 +13,8 @@ const RSVP_STATUS = {
 };
 
 const GuestListPreview = ({ hostData, urlParams }) => {
-  const router = useRouter();
-
   const [guestData, setGuestData] = useState([]);
+  console.log('%c [ guestData....@@@ ]-17', 'font-size:13px; background:pink; color:#bf2c9f;', guestData)
   const [guestDataRSVP, setGuestDataRSVP] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,7 +78,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
   useEffect(() => {
     const confirmed =
       guestData.filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
-        .length + 1;
+        .length;
 
     const willTry = guestData.filter(
       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
@@ -111,7 +110,6 @@ const GuestListPreview = ({ hostData, urlParams }) => {
           <Image src={train} alt="Train Guests" className="train-image" />
 
           {[
-            { name: hostData?.name || hostData?.Name },
             ...guestData.filter(
               (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
             ),
@@ -159,6 +157,7 @@ const GuestListPreview = ({ hostData, urlParams }) => {
         <RSVPPopup
           hostData={hostData}
           guestData={guestDataRSVP}
+          userData
           loading={loading}
           error={error}
           onClose={() => setOpenRsvpList(false)}

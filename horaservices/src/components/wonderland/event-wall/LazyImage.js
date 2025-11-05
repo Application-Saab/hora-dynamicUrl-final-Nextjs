@@ -1,10 +1,5 @@
-// components/LazyImage.js
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-
-// Placeholder component is now minimal, mostly for semantic grouping if needed during render.
-// The visual placeholder (background, min-height) is handled by CSS on the wrapper.
-const Placeholder = () => null; // Or <div className="lazy-image-placeholder-visual-cue"></div> if specific styling needed
 
 const LazyImage = ({
   src,
@@ -12,6 +7,7 @@ const LazyImage = ({
   className, // For the <img> tag
   wrapperClassName, // For the main div wrapper of this component (.masonry-item)
   onClick,
+  isEventWall = false
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
@@ -51,6 +47,7 @@ const LazyImage = ({
       ref={wrapperRef}
       className={`lazy-image-container-wrapper ${wrapperClassName || ''}`} // This is the .masonry-item
       onClick={onClick}
+      style={{backgroundColor: isEventWall && (isLoaded ? "#FFFFFF" : "#e9ecef")}}
     >
       {/* Render img tag only when in view to start loading */}
       {isInView && (
@@ -62,7 +59,6 @@ const LazyImage = ({
           onError={() => {
             setIsLoaded(true); // Consider it "handled" to remove spinner
             console.warn(`Failed to load image: ${src}`);
-            // Optionally, you could set a 'broken-image' class here
           }}
         />
       )}
@@ -73,9 +69,6 @@ const LazyImage = ({
           <div className="lazy-image-spinner-animation"></div>
         </div>
       )}
-      
-      {/* If not in view, the .masonry-item's min-height and background act as placeholder */}
-      {/* {!isInView && <Placeholder />} */}
     </div>
   );
 };

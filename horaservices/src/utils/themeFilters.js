@@ -26,10 +26,16 @@ import dogsImg from "@/assets/dogs.webp";
 import heroImg from "@/assets/hero.webp";
 import footballImg from "@/assets/football.webp";
 import unicornImg from "@/assets/unicorn.webp";
+import mashaImg from "@/assets/Masha-Bear.webp";
+import SonicImg from "@/assets/Sonic-Theme.webp";
+import MinionImg from "@/assets/Minion-Theme.webp";
+import KrishnaImg from "@/assets/Krishna-Theme.webp";
+import PawImg from "@/assets/paw-patrol.webp";
+import ButterflyImg from "@/assets/Butterfly-Theme.webp"
 export const themeFilters = [
   { label: "Select Theme", value: "all", image: "" },
   { label: "Astronaut space theme", value: "Astronaut-space", image: astronautImg },
-  { label: "Avengers theme", value: "Avengers", image: avengersImg },
+  { label: "Super Hero theme", value: "Hero", image: heroImg },
   { label: "Boss baby theme", value: "Boss", image: bossBabyImg },
   { label: "Baby shark theme", value: "shark", image: babySharkImg },
   { label: "Barbie theme", value: "Barbie", image: barbieImg },
@@ -51,7 +57,13 @@ export const themeFilters = [
   { label: "Panda Theme", value: "Panda", image: pandaImg },
   { label: "Traffic Theme", value: "Traffic", image: trafficImg },
   { label: "Super dogs theme", value: "dogs", image: dogsImg },
-  { label: "Super Hero theme", value: "Hero", image: heroImg },
   { label: "Sport Football theme", value: "Football", image: footballImg },
   { label: "Unicorn Theme", value: "Unicorn", image: unicornImg },
+  {label:"Masha and Bear Theme",value:"Masha",image: mashaImg},
+  {label:"Paw Patrol Theme",value:"paw",image:PawImg},
+   {label:"Butterfly Theme",value:"Butterfly",image:ButterflyImg},
+  {label:"Minion Theme",value:"Minion",image: MinionImg},
+  {label:"Sonic Theme",value:"Sonic",image: SonicImg},
+  {label:"Krishna Theme",value:"Krishna",image:KrishnaImg},
+ 
 ];

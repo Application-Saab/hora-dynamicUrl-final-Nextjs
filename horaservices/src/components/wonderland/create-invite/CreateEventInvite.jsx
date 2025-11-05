@@ -4,10 +4,21 @@ import React, { useEffect, useRef, useState } from "react";
 import imageBackground from "../../../assets/imageBackground.jpg";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
+import {
+  doc,
+  updateDoc,
+  getDoc,
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../../../firebase";
 
 const CreateEventInvite = ({ slug }) => {
   const fileInputRef = useRef(null);
   const [showModal, setShowModal] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const hostUserId = slug[0];
   const eventId = slug[1];
@@ -71,7 +82,7 @@ const CreateEventInvite = ({ slug }) => {
       setFormData({ ...formData, [name]: value });
     }
 
-    // ✅ Add/remove `has-value` class for date/time inputs
+    // Add/remove `has-value` class for date/time inputs
     if (type === "date" || type === "time") {
       if (value) {
         e.target.classList.add("has-value");
@@ -92,7 +103,7 @@ const CreateEventInvite = ({ slug }) => {
 
       try {
         const compressed = await compressBase64Image(base64String, 500, 0.4); // 👈 compress karo
-        setUploadedImage(compressed); // ✅ use compressed base64
+        setUploadedImage(compressed); //  use compressed base64
         console.log("Compressed Base64:", compressed);
         console.log(
           "Size (approx):",
@@ -105,7 +116,7 @@ const CreateEventInvite = ({ slug }) => {
       }
     };
 
-    reader.readAsDataURL(file); // ✅ Converts file to base64 string
+    reader.readAsDataURL(file); //  Converts file to base64 string
   };
 
   const compressBase64Image = (base64, maxWidth = 500, quality = 0.4) => {
@@ -133,6 +144,7 @@ const CreateEventInvite = ({ slug }) => {
   };
 
   const handleSave = async () => {
+    setLoading(true);
     if (!formData.eventType && formData.eventTypeSearch) {
       formData.eventType = formData.eventTypeSearch;
     }
@@ -166,6 +178,7 @@ const CreateEventInvite = ({ slug }) => {
     };
 
     try {
+      //  1. Update your backend
       const res = await fetch(
         `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
         {
@@ -178,18 +191,79 @@ const CreateEventInvite = ({ slug }) => {
         }
       );
 
-      //   const result = await res.json();
+      if (res.ok && eventId && hostUserId) {
+        // 2. Check if group exists — update only `hostName`
+        const groupRef = doc(db, "groups", eventId);
+        const groupSnap = await getDoc(groupRef);
 
-      if (res.ok && eventId) {
-        // setShowModal(false);
+        if (groupSnap.exists()) {
+          const finalName =
+            (
+              (formData.name || "") +
+              (formData.name && formData.eventType ? " " : "") +
+              (formData.eventType || "")
+            ).trim() || "Unnamed";
 
-        // ✅ Update the URL route to reflect changes
+          console.log(finalName, "finalname");
+          await updateDoc(groupRef, {
+            name: finalName.trim() || "Unnamed",
+            imageUrl: finalImage || "",
+          });
+          console.log(" Group hostName updated.");
+
+          //  Check if messages collection is empty before adding defaults
+          const messagesCol = collection(db, "groups", eventId, "messages");
+          const existingMessagesSnapshot = await getDocs(messagesCol);
+
+          if (existingMessagesSnapshot.empty) {
+            const defaultMessages = [
+              {
+                senderId: hostUserId,
+                senderName: "You",
+                sentAt: serverTimestamp(),
+                text: " What’s on your mind? !",
+              },
+              {
+                senderId: hostUserId,
+                senderName: "You",
+                sentAt: serverTimestamp(),
+                text: "Welcome to Wonderland chat — where the fun begins even before the party!",
+              },
+            ];
+
+            // Add first message
+            await addDoc(messagesCol, defaultMessages[0]);
+            console.log("First default message added.");
+
+            // Add a small delay before sending the second message (e.g., 2 seconds)
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // Add second message
+            await addDoc(messagesCol, defaultMessages[1]);
+            console.log("Second default message added.");
+
+            // for (const msg of defaultMessages) {
+            //   await addDoc(messagesCol, msg);
+            // }
+            // console.log(" Default messages added.");
+          } else {
+            console.log(
+              "ℹ️ Messages already exist — skipping default messages."
+            );
+          }
+        } else {
+          console.log("ℹ️ Group does not exist — skipping update.");
+        }
+        setLoading(false);
+
+        // Redirect
         return router.replace(`/wonderland?id=${hostUserId}/${eventId}/host`);
       } else {
+        setLoading(false);
         alert("Failed to save invitation.");
       }
 
-      // ✅ Reset form
+      // Reset form
       setFormData({
         name: "",
         date: "",
@@ -199,8 +273,8 @@ const CreateEventInvite = ({ slug }) => {
         eventTypeSearch: "",
       });
       setUploadedImage(null);
-      //   setSelectedImage("");
     } catch (err) {
+      setLoading(false);
       console.error("Error:", err);
       alert("Something went wrong.");
     }
@@ -231,14 +305,18 @@ const CreateEventInvite = ({ slug }) => {
           fileInputRef={fileInputRef}
           orderDetails={""}
           imageBackground={imageBackground}
+          loading={loading}
         />
       </div>
-      <div className="invite-card" style={{
-        border: "1px solid rgba(0, 0, 0, 0.53)",
-        marginTop: "-20px",
-        background: "white",
-        marginBottom: '30px'
-      }}> 
+      {/* <div
+        className="invite-card"
+        style={{
+          border: "1px solid rgba(0, 0, 0, 0.53)",
+          marginTop: "-20px",
+          background: "white",
+          marginBottom: "30px",
+        }}
+      >
         <h2 className="invite-heading party-title">It's Time To Party!</h2>
 
         <div className="cake-image-wrapper">
@@ -258,7 +336,7 @@ const CreateEventInvite = ({ slug }) => {
           </div>
           <div className="event-address">{formData.address}</div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

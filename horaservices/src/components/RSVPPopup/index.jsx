@@ -18,13 +18,11 @@ const avatarColors = [
   "#e91e63", // pink
 ];
 
-const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
+const RSVPPopup = ({ onClose, guestData, loading, error }) => {
   const getAvatarContent = (name) => {
     if (!name || name.trim() === "") return "🎈";
     return name.charAt(0).toUpperCase();
   };
-
-  const hostName = hostData?.name || hostData?.Name || hostData?.hostName || "";
 
   return (
     <>
@@ -35,7 +33,7 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
 
         <div className={styles.list}>
           {/* Show host always */}
-          {(() => {
+          {/* {(() => {
             const hostName = hostData?.name || hostData?.Name || "";
             return hostName ? (
               <div className={styles.row}>
@@ -46,7 +44,7 @@ const RSVPPopup = ({ onClose, hostData, guestData, loading, error }) => {
                 <span className={styles.check}>✔</span>
               </div>
             ) : null;
-          })()}
+          })()} */}
 
           {/* Guests */}
           {loading ? (

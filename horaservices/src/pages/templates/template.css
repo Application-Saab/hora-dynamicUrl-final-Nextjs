@@ -1,28 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Adamina&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 .templateWrapper {
   padding: 0px;
   text-align: center;
+  max-width: 480px;
+  width: 100%;
+    margin-bottom: 60px;
 }
 
 .templateTitle {
-  font-size: 20px;
-  font-weight: bold;
+  font-family: "Aclonica", sans-serif;
+  font-size: 26px;
+  font-weight: 400;
   color: #97538C;
-  margin: 10px;
+  margin-block: 25px;
 }
 
 .templateGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Always 2 per row */
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px 10px;
   justify-items: center;
   margin:10px
+}
+.default-img{
+  height: 294px !important;
+  object-fit: contain !important;
+}
+
+
+.upload-template-card{
+  border: 3px solid #47474733;
+  border-radius: 2px;
+  width: 100%;
+  max-width: 180px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.upload-template-card span{
+  font-family: 'Inter', sans-serif;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bolder;
+  color: #4A4A4A;;
 }
 
 .templateCard {
   position: relative;
   width: 100%;
   max-width: 180px;
-  border-radius: 12px;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,27 +61,40 @@
 
 .templatePreview {
   width: 100%;
-  height: 270px;
-  object-fit: cover;
+  max-height: 300px;
+  height: 100%;
+  object-fit: contain;
   border-bottom: none;
   display: block;
 }
 
 .inviteBtn {
-  margin-top: -22px; /* pulls it up inside the card */
+  font-family: "Inter", sans-serif;
+  margin-top: -22px;
   background-color: #97538C;
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 5px 10px;
-  font-weight: 400;
-  font-size: 12px;
+  padding: 5px 12px;
+  font-weight: 500;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
   cursor: pointer;
+  box-shadow: 0px 4.55px 4.55px 0px #00000040;
+  box-shadow: 0px 5.69px 4.55px 0px #00000040 inset;
+
+}
+
+.selectedBtn{
+  background-color: #FFFFFF;
+  color: #97538C;
+  border: 1.14px solid #97538C;
+  padding: 4px 12px;
+  box-shadow: 0px 4.55px 3.42px 0px #00000040;
+  box-shadow: 0px 7.97px 7.97px 0px #00000026 inset;
 }
 
 .inviteBtn .btnCircle {
@@ -58,4 +102,19 @@
 }
 .template-upload input[type="file"] {
   display: none;
+}
+
+
+/* Skeleton Loader */
+.skeleton {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
 }

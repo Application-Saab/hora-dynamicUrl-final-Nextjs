@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
+.Share-icon-wrapper {
+}
+.share-icon-circle {
+  height: 28px;
+  width: 28px;
+  background-color: #44bb67;
+  border-radius: 50%;
+}
+.share-icons-heading {
+  color: #441355;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 8.79px;
+  line-height: 10px;
+  letter-spacing: 0%;
+  text-align: center;
+}
+.share-icons-subheading {
+  color: #423e3e;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 7.79px;
+  line-height: 10px;
+  letter-spacing: 0%;
+  text-align: center;
+}
+.copy-link-btn{
+    background: linear-gradient(90deg, #73247D 0%, #B02471 100%);
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-size: 15px;
+}

@@ -11,7 +11,7 @@
     width: 100%;
     max-width: 380px;
     text-align: center;
-    height: 400px;
+    height: auto;
     box-shadow: 0 6px 20px #cebac436;
     /* border: 2px solid #cebac436; */
     margin: auto;
@@ -64,18 +64,18 @@
 .event-info-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center; /* ✅ Center the entire block */
+  align-items: center; 
 }
 
 .event-details {
-  text-align: left;     /* ✅ Text inside is left aligned */
+  text-align: left;     
   display: inline-block;
 }
 
 .event-line {
   color: #10235B;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 18px;
   margin-top: 10px;
 }
 

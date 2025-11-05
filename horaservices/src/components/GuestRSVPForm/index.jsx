@@ -27,11 +27,12 @@ const GuestRSVPForm = ({
   highlightRSVPButtons,
   setHighlightRSVPButtons,
   rsvpGuestName,
+  userData,
 }) => {
   const [guestName, setGuestName] = useState(rsvpGuestName || "");
   const [status, setStatus] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);  
+  const [submitting, setSubmitting] = useState(false);
   const [openRsvpList, setOpenRsvpList] = useState(false);
 
   const [guestData, setGuestData] = useState([]);
@@ -47,9 +48,9 @@ const GuestRSVPForm = ({
   const videoRef = useRef(null);
 
   useEffect(() => {
-    const confirmed =
-      guestData.filter((guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME)
-        .length + 1;
+    const confirmed = guestData.filter(
+      (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+    ).length;
     const willTry = guestData.filter(
       (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_TRY
     ).length;
@@ -100,12 +101,11 @@ const GuestRSVPForm = ({
     // Initial call
     fetchGuestsInside();
 
-  // Call every 3 minute
-  const interval = setInterval(fetchGuestsInside, 10000);
+    // Call every 3 minute
+    const interval = setInterval(fetchGuestsInside, 10000);
 
-  // Cleanup interval on unmount
-  return () => clearInterval(interval);
-
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, [eventId, userId]);
 
   useEffect(() => {
@@ -119,9 +119,14 @@ const GuestRSVPForm = ({
     }
   }, [eventId, userId, hasSubmitted, setHasSubmitted]);
 
-  const handleClick = (selectedStatus) => {
+  const handleClick = async (selectedStatus) => {
     setStatus(selectedStatus);
-    setShowForm(true);
+    if (guestName) {
+      setSubmitting(true);
+      await updateRsvpStatus();
+    } else {
+      setShowForm(true);
+    }
   };
 
   const handleViewFullListClick = () => {
@@ -155,8 +160,10 @@ const GuestRSVPForm = ({
       });
       const data = await response.json();
       if (data.error) {
+        setSubmitting(false);
         alert("Something went wrong. Please try again.");
       } else {
+        setSubmitting(false);
         fetchGuestsInside();
         setOpenRsvpList(true);
         localStorage.setItem(`rsvp_submitted_${eventId}_${userId}`, "true");
@@ -169,22 +176,23 @@ const GuestRSVPForm = ({
     }
   };
 
- 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !status) return;
-
-    setShowVideo(true);
-
-
+    setSubmitting(true);
+    await updateRsvpStatus();
+    // setShowVideo(true);
     setShowForm(false);
   };
-
+  const [timer, setTimer] = useState(0);
   useEffect(() => {
     if (!showVideo || !videoRef.current) return;
 
     const video = videoRef.current;
-
+    const handleTimeUpdate = () => {
+      // Countdown: total duration minus currentTime
+      setTimer(Math.ceil(video.duration - video.currentTime));
+    };
     const handleEnded = async () => {
       setShowVideo(false);
       setSubmitting(true);
@@ -192,11 +200,14 @@ const GuestRSVPForm = ({
       setSubmitting(false);
     };
 
+    video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("ended", handleEnded);
+
     video.currentTime = 0;
     video.play();
 
     return () => {
+      video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("ended", handleEnded);
     };
   }, [showVideo]);
@@ -204,7 +215,9 @@ const GuestRSVPForm = ({
   return (
     <>
       {highlightRSVPButtons && <div className="full-screen-overlay"></div>}
-      <div className={`guest-rsvp-box ${highlightRSVPButtons ? "highlight" : ""}`}>
+      <div
+        className={`guest-rsvp-box ${highlightRSVPButtons ? "highlight" : ""}`}
+      >
         {userType !== "host" && !hasSubmitted && (
           <div className="rsvp-box">
             <h4 className="rsvp-title">
@@ -249,10 +262,31 @@ const GuestRSVPForm = ({
 
           <div className="train-preview-wrapper">
             <Image src={train} alt="Train Guests" className="train-image" />
+            {[
+              ...guestData.filter(
+                (guest) => guest.rsvpStatus === RSVP_STATUS.WILL_COME
+              ),
+            ]
+              .slice(0, 5)
+              .map((guest, index) => {
+                const firstLetter = guest?.name?.charAt(0).toUpperCase() || "";
+                return (
+                  <span
+                    key={index}
+                    className={`balloon-letter balloon-${index}`}
+                  >
+                    {firstLetter}
+                  </span>
+                );
+              })}
             <div className="guest-count-overlay">
-              <span className="confirmed">Confirm - {guestCounts?.confirmed || 0}</span>
+              <span className="confirmed">
+                Confirm - {guestCounts?.confirmed || 0}
+              </span>
               <span className="separator">|</span>
-              <span className="try">Will Try - {guestCounts?.willTry || 0}</span>
+              <span className="try">
+                Will Try - {guestCounts?.willTry || 0}
+              </span>
             </div>
           </div>
 
@@ -281,6 +315,7 @@ const GuestRSVPForm = ({
             hostData={hostData}
             guestData={guestData}
             loading={loading}
+            userData={userData}
             error={error}
             onClose={() => setOpenRsvpList(false)}
           />
@@ -290,7 +325,12 @@ const GuestRSVPForm = ({
       {showForm && (
         <div className="modal-overlay-form">
           <div className="modal-content-form">
-            <button className="modal-close-form" onClick={() => setShowForm(false)}>×</button>
+            <button
+              className="modal-close-form"
+              onClick={() => setShowForm(false)}
+            >
+              ×
+            </button>
             <h2>What Should We Scream When You Enter?</h2>
             <form onSubmit={handleSubmit}>
               <input
@@ -300,8 +340,19 @@ const GuestRSVPForm = ({
                 onChange={(e) => setGuestName(e.target.value)}
                 required
               />
-              <button type="submit" className="submit-btn" disabled={submitting}>
-                {submitting ? "Submitting..." : "SAVE"}
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <div
+                    className="loader"
+                    style={{ height: "20px", width: "20px" }}
+                  ></div>
+                ) : (
+                  "SAVE"
+                )}
               </button>
             </form>
           </div>
@@ -310,13 +361,26 @@ const GuestRSVPForm = ({
 
       {showVideo && (
         <div className="video-overlay">
-          <video
-            ref={videoRef}
-            src={gif}
-            muted
-            autoPlay
-            playsInline
-          />
+          <video ref={videoRef} src={gif} muted autoPlay playsInline />
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              background: "rgba(0,0,0,0.6)",
+              color: "#fff",
+              borderRadius: "50%",
+              width: "30px",
+              height: "30px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            {timer}
+          </div>
         </div>
       )}
     </>

@@ -1,0 +1,71 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  height: 100%;
+  width: 70px;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+/* Highlight active tab */
+.nav-item.active {
+  color: #8a3a78; /* your purple color */
+}
+
+.nav-item.active .nav-icon {
+  filter: brightness(0) saturate(100%) invert(25%) sepia(33%) saturate(733%) hue-rotate(266deg) brightness(94%) contrast(88%);
+}
+
+.iframe-wrapper{
+  padding-bottom: 100px;
+}
+.iframe-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-in-out;
+    overflow: auto; 
+  align-items: flex-start;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+

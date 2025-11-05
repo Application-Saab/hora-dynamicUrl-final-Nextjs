@@ -41,7 +41,7 @@ const FinalInviteDisplay = ({
         <h2 className="invite-heading party-title">It's Time To Party!</h2>
 
         <div className="cake-image-wrapper">
-          <img src={orderDetails.Image} alt="Cake" className="cake-image" />
+          <img src={orderDetails.Image || 'https://avatar.iran.liara.run/public/12'} alt="user image" className="cake-image" />
         </div>
 
         <h3 className="invite-title highlight-title">
