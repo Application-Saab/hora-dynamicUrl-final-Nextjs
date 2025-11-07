@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import BackArrow from "@/assets/BackArrowSvg.svg";
 import DateIcon from "@/assets/wonderland/CalendarGradientIcon.svg";
 import TimeIcon from "@/assets/wonderland/TimeGradientIcon.svg";
 import LocationIcon from "@/assets/wonderland/LocationGradientIcon.svg";
@@ -81,6 +80,8 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
         onClose={() => onClose()}
         title="Add Event Details"
         verticalCenter={false}
+        bodyClass="add-details-modal-body"
+        backdropClass={showCalendarModal || showTimeModal ? "d-none" : ""}
         body={
           <>
             <div className="adddetails-input-group">
@@ -108,16 +109,6 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               >
                 <Image src={LocationIcon} alt="location" />
               </span>
-              {/* <input
-                type="text"
-                name="location"
-                className="form-control add-details-input"
-                placeholder="Address"
-                aria-label="Address"
-                aria-describedby="basic-addon1"
-                value={formData?.location}
-                onChange={handleChange}
-              /> */}
               <textarea
                 name="location"
                 className="form-control add-details-input"
@@ -142,16 +133,6 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               >
                 <Image src={MapIcon} alt="image" />
               </span>
-              {/* <input
-                type="text"
-                name="googleMapLink"
-                className="form-control add-details-input"
-                placeholder="Google Map"
-                aria-label="Google Map"
-                aria-describedby="basic-addon1"
-                value={formData?.googleMapLink}
-                onChange={handleChange}
-              /> */}
               <textarea
                 name="googleMapLink"
                 className="form-control add-details-input"
@@ -169,7 +150,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
                 }}
               ></textarea>
             </div>
-            <div className="d-flex justify-content-center">
+            <div className="d-flex justify-content-center mt-1">
               <CustomButton
                 title={"Submit"}
                 loading={loading}

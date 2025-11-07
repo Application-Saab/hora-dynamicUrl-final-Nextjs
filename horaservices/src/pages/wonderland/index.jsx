@@ -72,7 +72,7 @@ const WonderlandMainPage = () => {
 
           <button
             type="button"
-            className="create-invite-btn"
+            className="create-invite-btn-landing"
             onClick={createInviteClick}
           >
             <span>CREATE INVITE</span>

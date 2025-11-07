@@ -14,18 +14,17 @@
 
 .common-custom-modal-content {
   background-color: #ffffff;
-  width: 95%;
+  width: 85%;
   max-width: 450px;
-  border-radius: 25px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease;
 }
 
 .common-custom-modal-header {
   background: linear-gradient(90deg, #6d247d 0%, #bd256f 100%);
   color: white;
-  padding: 23px 20px;
+  padding: 23.54px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -34,8 +33,8 @@
 }
 
 .common-modal-header-icon {
-  width: 14px;
-  height: 25px;
+  width: 14.48px;
+  height: 25.92px;
   cursor: pointer;
 }
 

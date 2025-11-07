@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "https://horaservices.com:3000";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
@@ -25,7 +25,7 @@ export const GET_DECORATION_CAT_ITEM = "/api/Decoration/searchByTag/";
 export const GET_DECORATION_DETAILS = "/api/order/order_details_decoration";
 export const GET_DECORATION_BY_NAME = "/api/Decoration/searchByName/";
 export const GET_FOOD_DELIVERY_DETAILS =
-  "/api/order/order_details_food_delivery"; 
+  "/api/order/order_details_food_delivery";
 export const GET_PHOTOGRAPHY_BY_NAME =
   "/api/photography/searchByTag/66c96b4e22ed47b72117e09a";
 export const IMAGE_UPLOAD = "/api/image_upload";

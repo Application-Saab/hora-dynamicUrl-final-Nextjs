@@ -1,12 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
+.share-invite-modal-body{
+  padding: 0px 9.5px 26.93px 9.5px !important;
+}
+
 .Share-icon-wrapper {
   box-shadow: 0px 4px 10px 0px #b5b5b540;
   box-shadow: 0px 4px 16px 0px #7572721f inset;
   background-color: #ffffff;
   border-radius: 10px;
-  padding: 6px;
-  /* gap: 4px; */
+  padding: 3.18px;
 }
 .share-icon-circle {
   height: 28px;
@@ -18,7 +21,7 @@
   color: #441355;
   font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 8.79px;
+  font-size: 10px;
   line-height: 10px;
   letter-spacing: 0%;
   text-align: center;
@@ -27,7 +30,7 @@
   color: #423e3e;
   font-family: "Inter", sans-serif;
   font-weight: 500;
-  font-size: 7.79px;
+  font-size: 9.5px;
   line-height: 10px;
   letter-spacing: 0%;
   text-align: center;
@@ -46,6 +49,7 @@
 .share-with-ctn {
   max-width: 200px;
   width: 100%;
+  margin-top: 18.39px;
 }
 .share-with-ctn p {
   font-family: "Roboto", sans-serif;
@@ -54,6 +58,7 @@
   line-height: 12px;
   letter-spacing: 0%;
   color: #444444;
+  margin-bottom: 3.84px;
 }
 .share-with-ctn img {
   height: 28px;
@@ -66,6 +71,7 @@
   width: 100%;
   background: #747474;
   position: relative;
+  margin-top: 15.39px;
 }
 .seprator-txt {
   position: absolute;
@@ -75,6 +81,7 @@
   font-family: "Roboto", sans-serif;
   font-weight: 900;
   font-size: 14.06px;
+  border-radius: 50%;
 }
 .copy-share-ctn img {
   height: 28px;

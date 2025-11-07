@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import BackArrow from "@/assets/BackArrowSvg.svg";
-import Image from "next/image";
 import "./CreateInviteModal.css";
 import useApi from "@/hooks/useApi";
 import { CREATE_EVENT_INVITE } from "@/utils/apiconstants";
@@ -35,7 +33,14 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       console.error("Error rejecting content:", err);
     }
   };
-
+  const handleChange = (e) => {
+    let value = e.target.value;
+    const formattedOccation = value.replace(/(^\w|(?<=\s)\w)/g, (char) =>
+      char.toUpperCase()
+    );
+    setOccation(formattedOccation);
+  };
+  
   return (
     <CustomModal
       isOpen={isOpen}
@@ -46,6 +51,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       title="Create Invitation"
       verticalCenter={false}
       disableBackdropClick={true}
+      bodyClass='create-invite-modal-body'
       body={
         <>
           <h3 className="modal-question-text">What's the occasion?</h3>
@@ -56,7 +62,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               placeholder="Type Event Name"
               maxLength={30}
               value={occation}
-              onChange={(e) => setOccation(e.target.value)}
+              onChange={handleChange}
             />
             <small className="char-limit-text">
               {occation?.length}/30 Characters

@@ -3,63 +3,58 @@ import "./LoginModal.css";
 import CustomButton from "../CustomButton";
 import { useTimer } from "@/utils/useTimer";
 import useApi from "@/hooks/useApi";
-import { OTP_GENERATE_END_POINT } from "@/utils/apiconstants";
+import axios from "axios";
+import {
+  OTP_GENERATE_END_POINT,
+  OTP_VERIFY_ENDPOINT,
+} from "@/utils/apiconstants";
 
 const LoginModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  console.log(
-    "%c [ phone ]-12",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    phone
-  );
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
-  const { time, isTimeUp, resetTimer } = useTimer(30);
-  const [error, setError] = useState("");
   const [otpError, setOtpError] = useState("");
-  const { data, makeRequest } = useApi();
+  const [error, setError] = useState({ name: "", phone: "" });
 
+  const { time, resetTimer } = useTimer(30);
+  const { loading: sendOtpLoading, makeRequest } = useApi();
+  const { loading: verifyOtpLoading, makeRequest: makeVerifyRequest } =
+    useApi();
+
+  // Close modal on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         onClose();
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  // Handle mobile number input change
+  // Validate phone input
   const handleChangePhone = (e) => {
     const value = e.target.value;
-    console.log('%c [ value ]-40', 'font-size:13px; background:pink; color:#bf2c9f;', value)
     if (/^\d{0,10}$/.test(value)) {
       setPhone(value);
-      setError("Please enter a valid mobile number");
-    }
-
-    // Reset error message if mobile number length is correct
-    if (value.length === 10) {
-      setError("");
+      setError((prev) => ({
+        ...prev,
+        phone:
+          value.length === 10
+            ? ""
+            : "Please enter a valid 10-digit mobile number",
+      }));
     }
   };
 
-  // Function to send the WhatsApp message
+  // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
-    let formattedMobileNumber = mobileNumber;
-
-    // Ensure the mobile number starts with '+91'
-    if (!formattedMobileNumber.startsWith("+91")) {
-      formattedMobileNumber = "+91" + formattedMobileNumber;
-    }
-
-    // Remove any extra spaces or special characters
-    formattedMobileNumber = formattedMobileNumber.replace(/\s+/g, "");
+    if (!mobileNumber) return;
+    let formattedNumber = mobileNumber.startsWith("+91")
+      ? mobileNumber
+      : "+91" + mobileNumber;
 
     const options = {
       method: "POST",
@@ -67,7 +62,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       headers: {
         accept: "application/json",
         "content-type": "application/json",
-        Authorization: "key_wZpn79uTfV", // Keep this secure in backend
+        Authorization: "key_wZpn79uTfV",
       },
       data: {
         messages: [
@@ -80,49 +75,111 @@ const LoginModal = ({ isOpen, onClose }) => {
                   mediaUrl:
                     "https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg",
                 },
-                body: { placeholders: ["Hora Services"] }, // Use dynamic placeholders if needed
+                body: { placeholders: ["Hora Services"] },
               },
               templateName: "happy_to_help_v2",
             },
             from: "+917338584828",
-            to: formattedMobileNumber, // Send to the formatted mobile number
+            to: formattedNumber,
           },
         ],
       },
     };
 
     try {
-      const response = await axios.request(options);
-      console.log("WhatsApp message response:", response.data);
-    } catch (error) {
-      console.error("Error sending WhatsApp message:", error);
+      const res = await axios.request(options);
+      console.log("WhatsApp message sent:", res.data);
+    } catch (err) {
+      console.error("WhatsApp message error:", err);
     }
   };
 
-  // Function to send OTP
+  // Send OTP
   const sendOtp = async () => {
-    alert("Hello");
-    if (!phone) {
-      setError("Mobile number is required.");
+    let newError = { name: "", phone: "" };
+    if (!name.trim()) newError.name = "Name is required";
+    if (!phone) newError.phone = "Mobile number is required";
+    if (phone && phone.length !== 10)
+      newError.phone = "Please enter a valid 10-digit number";
+
+    if (newError.name || newError.phone) {
+      setError(newError);
       return;
     }
 
     try {
-      const response = await makeRequest(`${OTP_GENERATE_END_POINT}`, "POST", {
+      const response = await makeRequest(OTP_GENERATE_END_POINT, "POST", {
         phone,
         name,
         role: "customer",
       });
 
-      if (response.data.status === 200) {
+      if (response.status === 200) {
         setIsOtpSent(true);
-        setError("");
         resetTimer();
+        setError({ name: "", phone: "" });
       } else {
-        setError("Failed to send OTP. Please try again.");
+        setError({ ...newError, phone: "Failed to send OTP. Try again." });
       }
     } catch (err) {
-      setError("Error sending OTP. Please try again.");
+      setError({ ...newError, phone: "Error sending OTP. Please retry." });
+    }
+  };
+
+  // Verify OTP
+  const verifyOtp = async () => {
+    if (!otp) {
+      setOtpError("Please enter the OTP");
+      return;
+    }
+    try {
+      const response = await makeVerifyRequest(OTP_VERIFY_ENDPOINT, "POST", {
+        phone,
+        otp,
+        role: "customer",
+      });
+
+      if (response.status === 200) {
+        const { token, data } = response;
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("mobileNumber", phone);
+        localStorage.setItem("token", token);
+        localStorage.setItem("userID", data?._id);
+
+        sendWelcomeMessage(phone);
+
+        setIsOtpSent(false);
+        setOtp("");
+        setPhone("");
+        setName("");
+        setOtpError("");
+        window.dispatchEvent(new Event("loginStateChange"));
+
+        // Optional reload logic
+        const currentPath = window.location.pathname;
+        if (currentPath === "/orderlist" || currentPath === "/photo-gallery") {
+          window.location.reload();
+        }
+      } else {
+        setOtpError("Invalid OTP. Please try again.");
+        setOtp("");
+      }
+    } catch (err) {
+      setOtpError("Error verifying OTP. Please try again.");
+    }
+  };
+
+  const resendOtp = async () => {
+    setOtp("");
+    setOtpError("");
+    await sendOtp();
+  };
+
+  const handleClick = () => {
+    if (!isOtpSent) {
+      sendOtp();
+    } else if (isOtpSent) {
+      verifyOtp();
     }
   };
 
@@ -136,33 +193,89 @@ const LoginModal = ({ isOpen, onClose }) => {
           <p className="login-modal-subheading">
             Enter your mobile number to get started
           </p>
+
           <div className="d-flex flex-column px-4 w-100 gap-3">
-            <div>
-              <input
-                type="text"
-                placeholder="Enter Your Name"
-                name="name"
-                onChange={(e) => setName(e.target.value)}
-                className="login-input-field w-100"
-              />
-            </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Enter Number"
-                name="phone"
-                onChange={handleChangePhone}
-                className="login-input-field w-100"
-              />
-            </div>
+            {!isOtpSent ? (
+              <>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Enter Your Name"
+                    name="name"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setError((prev) => ({
+                        ...prev,
+                        name:
+                          e.target.value.length > 0 ? "" : "Name is required!",
+                      }));
+                    }}
+                    className="login-input-field w-100"
+                  />
+                  {error.name && (
+                    <p className="login-modal-err-msg text-danger">
+                      * {error.name}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Enter Number"
+                    name="phone"
+                    value={phone}
+                    onChange={handleChangePhone}
+                    className="login-input-field w-100"
+                  />
+                  {error.phone && (
+                    <p className="login-modal-err-msg text-danger">
+                      * {error.phone}
+                    </p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  name="otp"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="login-input-field w-100"
+                />
+                {otpError ? (
+                  <div className="wonderland-error-text-container">
+                    <p className="login-modal-err-msg text-danger m-1">
+                      * bhai kuch to error hai {otpError}
+                    </p>
+                    <p
+                      className="m-1 mt-3"
+                      style={{ color: "#9252AA", cursor: "pointer" }}
+                      onClick={resendOtp}
+                    >
+                      Resend Code
+                    </p>
+                  </div>
+                ) : (
+                  time === 0 && (
+                    <p className="login-modal-timer-txt">
+                      Resend Code in {time} sec
+                    </p>
+                  )
+                )}
+              </div>
+            )}
           </div>
+
           <div style={{ marginBlock: "37px" }}>
             <CustomButton
-              title="Get OTP"
+              title={!isOtpSent ? "Get OTP" : "Verify"}
               buttonClass="login-modal-btn"
-              onClick={() => {
-                !isOtpSent && sendOtp();
-              }}
+              onClick={handleClick}
+              disabled={sendOtpLoading || verifyOtpLoading}
+              loading={sendOtpLoading || verifyOtpLoading}
             />
           </div>
         </div>

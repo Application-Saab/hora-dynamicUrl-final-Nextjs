@@ -45,7 +45,7 @@ const CustomModal = ({
       window.scrollTo(0, -parseInt(y || "0"));
     }
 
-    // Cleanup when component unmounts (just in case)
+    // Cleanup when component unmounts
     return () => {
       document.body.style.position = "";
       document.body.style.top = "";
@@ -69,7 +69,7 @@ const CustomModal = ({
   return (
     <div
       className={`common-custom-modal-backdrop ${
-        verticalCenter && "align-items-center"
+        verticalCenter && "align-items-center p-0"
       }  ${backdropClass}`}
       onClick={handleBackdropClick}
     >
@@ -85,7 +85,7 @@ const CustomModal = ({
               className="common-modal-header-icon"
               onClick={onClose}
             />
-            {title && <h2 className="common-modal-title m-0">{title}</h2>}
+            {title && <h2 className="common-modal-title m-0 p-0">{title}</h2>}
 
             {showCloseButton && (
               <button className="common-modal-close-btn" onClick={onClose}>
