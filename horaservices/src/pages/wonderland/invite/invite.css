@@ -179,6 +179,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ffffff;
 }
 .eventwall-nopost-ctn {
   display: flex;
@@ -192,7 +193,7 @@
   text-align: center;
   border-radius: 15px;
 }
-.nopost-box img{
+.nopost-box img {
   height: 51.11px;
   width: 64.03px;
 }
@@ -220,11 +221,10 @@
 }
 
 @media (min-width: 345px) {
-  .event-wall-action-ctn{
+  .event-wall-action-ctn {
     gap: 10px;
   }
 }
-
 
 @media (min-width: 360px) {
   .status-box-header h3 {
