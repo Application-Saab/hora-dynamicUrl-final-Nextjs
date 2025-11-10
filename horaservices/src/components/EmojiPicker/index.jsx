@@ -61,12 +61,22 @@ export default function EmojiPickerButton({
           handleButtonClick(e);
         }}
       >
-        <Image
+        {/* <Image
           src={pickerVisible ? ThankYouKeyboard : emojiIcon}
           alt="emoji"
           width={30}
           height={30}
-        />
+        /> */}
+           <Image
+  src={pickerVisible ? ThankYouKeyboard : emojiIcon}
+  alt="emoji"
+  width={30}
+  height={pickerVisible ? 25 : 30} 
+  style={{
+    transition: "height 0.2s ease",
+    cursor: "pointer",
+  }}
+/>
       </div>
       <div className={`emoji-picker-container ${pickerVisible ? "open" : ""}`}>
         {pickerVisible && (

@@ -93,12 +93,12 @@
   touch-action: manipulation;
 }
 
-.textArea-title.active,
-.textArea-Content.active,
-.textArea-Author.active {
-  border: 2px solid rgba(255, 255, 255, 0.9); 
-  border-radius: 6px;
+.active-border {
+ border: 2px dashed rgba(255, 255, 255, 0.9); 
+ border-radius: 5px;
 }
+
+
 .EmojiPickerReact {
   border-top-left-radius: 15px !important;
   border-top-right-radius: 15px !important;

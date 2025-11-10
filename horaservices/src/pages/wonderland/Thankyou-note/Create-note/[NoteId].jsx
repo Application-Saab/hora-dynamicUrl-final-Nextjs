@@ -20,6 +20,7 @@ export default function NoteDetails() {
   const [activeField, setActiveField] = useState(null);
   const [lastSelection, setLastSelection] = useState({ start: 0, end: 0 });
   const [preventRefocus, setPreventRefocus] = useState(false);
+const [focusedField, setFocusedField] = useState(null);
 
   const titleRef = useRef(null);
   const contentRef = useRef(null);
@@ -292,9 +293,10 @@ useEffect(() => {
           value={liveData.title}
           rows={1}
           onChange={(e) => handleChange("title", e.target.value, titleRef)}
-          onFocus={() => handleFocus("title", titleRef)}
+          onFocus={() => { handleFocus("title", titleRef);setFocusedField("title");}}
+           onBlur={() => setFocusedField(null)}
           placeholder="TITLE..."
-          className="textArea-title"
+         className={`textArea-title ${focusedField === "title" ? "active-border" : ""}`}
 
         />
 
@@ -303,9 +305,13 @@ useEffect(() => {
           value={liveData.content}
           rows={2}
           onChange={(e) => handleChange("content", e.target.value, contentRef)}
-          onFocus={() => handleFocus("content", contentRef)}
+         onFocus={() => {
+    handleFocus("content", contentRef);
+    setFocusedField("content");
+  }}
+  onBlur={() => setFocusedField(null)}
           placeholder="Write your note..."
-          className="textArea-Content"
+          className={`textArea-Content ${focusedField === "content" ? "active-border" : ""}`}
         />
 
         <textarea
