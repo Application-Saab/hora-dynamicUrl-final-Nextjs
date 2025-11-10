@@ -13,7 +13,7 @@ export default function EmojiPickerButton({
   setIsPickerOpen,
 }) {
   const pickerVisible = isPickerOpen ?? false;
-  const togglePicker = setIsPickerOpen ?? (() => {});
+  const togglePicker = setIsPickerOpen ?? (() => { });
 
   const handleButtonClick = (e) => {
     e.preventDefault();
@@ -61,22 +61,19 @@ export default function EmojiPickerButton({
           handleButtonClick(e);
         }}
       >
-        {/* <Image
+
+        <Image
           src={pickerVisible ? ThankYouKeyboard : emojiIcon}
           alt="emoji"
           width={30}
           height={30}
-        /> */}
-           <Image
-  src={pickerVisible ? ThankYouKeyboard : emojiIcon}
-  alt="emoji"
-  width={30}
-  height={pickerVisible ? 25 : 30} 
-  style={{
-    transition: "height 0.2s ease",
-    cursor: "pointer",
-  }}
-/>
+          style={{
+            objectFit: "contain",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+            transform: pickerVisible ? "scale(0.95)" : "scale(1)",
+          }}
+        />
       </div>
       <div className={`emoji-picker-container ${pickerVisible ? "open" : ""}`}>
         {pickerVisible && (
@@ -88,7 +85,7 @@ export default function EmojiPickerButton({
             previewConfig={{ showPreview: false }}
             lazyLoadEmojis
             skinTonesDisabled
-             theme="auto" 
+            theme="auto"
           />
         )}
       </div>
