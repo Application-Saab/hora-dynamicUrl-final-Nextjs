@@ -1,0 +1,29 @@
+.emoji-picker-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -100%; 
+  width: 100%;
+  z-index: 999;
+  transition: bottom 0.3s ease;
+  background: white;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.emoji-picker-container.open {
+  bottom: 0;
+}
+
+.note-scroll-container {
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  transition: max-height 0.3s ease;
+}
+
+.note-scroll-container.keyboard-open {
+  max-height: calc(100vh - 290px); 
+}
+
+

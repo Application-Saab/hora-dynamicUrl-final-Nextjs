@@ -35,7 +35,7 @@ const EventNotes = () => {
                 {note.icon && <Image src={note.icon} alt="" className="noteIcon" />}
               </div>
               <p className="noteContent">{note.content}</p>
-              <p className="noteAuthor">{note.author}</p>
+              {/* <p className="noteAuthor">{note.author}</p> */}
             </div>
 
 

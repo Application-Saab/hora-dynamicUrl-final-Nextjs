@@ -1,3 +1,8 @@
+
+.note-scroll-container {
+  scroll-behavior: smooth;
+}
+
 .createNote-container {
   position: relative;
   width: 100%;
@@ -84,7 +89,7 @@
   transition: border 0.2s ease;
   -webkit-user-select: text;
   user-select: text;
-  caret-color: black; /* ensures cursor is visible */
+  caret-color: black;
   touch-action: manipulation;
 }
 
@@ -94,6 +99,11 @@
   border: 2px solid rgba(255, 255, 255, 0.9); 
   border-radius: 6px;
 }
+.EmojiPickerReact {
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+}
+
 
 
 @media (max-width: 400px) {
