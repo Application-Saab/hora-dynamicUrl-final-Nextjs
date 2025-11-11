@@ -10,12 +10,16 @@
 
 }
 
-.highPriceImageWrapper {
+ .highPriceImageWrapper {
   position: relative;
+   overflow: hidden;
 }
 
 .highPriceImage {
-    border-radius: 6px 6px 0px 0px;
+    width: 100%;
+  height: auto;
+  border-radius: 6px 6px 0 0;
+  object-fit: cover;
 }
 
 .highdiscountBadge {
@@ -28,7 +32,8 @@
   border-radius: 8px;
   font-weight: bold;
   font-size: 12px;
-}
+} 
+
 
 .highPriceContent {
       padding: 10px;
