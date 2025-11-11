@@ -1,6 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 .Share-icon-wrapper {
+  box-shadow: 0px 4px 10px 0px #b5b5b540;
+  box-shadow: 0px 4px 16px 0px #7572721f inset;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 6px;
+  /* gap: 4px; */
 }
 .share-icon-circle {
   height: 28px;
@@ -26,11 +32,52 @@
   letter-spacing: 0%;
   text-align: center;
 }
-.copy-link-btn{
-    background: linear-gradient(90deg, #73247D 0%, #B02471 100%);
-    color: #FFFFFF;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 30px;
-    font-size: 15px;
+.copy-link-btn {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  background: linear-gradient(90deg, #73247d 0%, #b02471 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+}
+
+.share-with-ctn {
+  max-width: 200px;
+  width: 100%;
+}
+.share-with-ctn p {
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 12px;
+  letter-spacing: 0%;
+  color: #444444;
+}
+.share-with-ctn img {
+  height: 28px;
+  width: 28px;
+  cursor: pointer;
+}
+.seprator-line-share {
+  height: 1px;
+  max-width: 200px;
+  width: 100%;
+  background: #747474;
+  position: relative;
+}
+.seprator-txt {
+  position: absolute;
+  top: -20px;
+  background-color: white;
+  padding: 10px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  font-size: 14.06px;
+}
+.copy-share-ctn img {
+  height: 28px;
+  width: 28px;
+  cursor: pointer;
 }

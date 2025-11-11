@@ -5,6 +5,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import RsvpListModal from "./RsvpListModal";
 
 const colors = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#6C5CE7", "#00B894"];
+
 const WhosJoining = () => {
   const router = useRouter();
   const { eventid: eventId } = router.query;
@@ -49,12 +50,11 @@ const WhosJoining = () => {
             <div className="avatar-container">
               {filledGuests?.map((item, index) => (
                 <div
-                  className="avatar-item-ctn"
-                  style={{ backgroundColor: colors[index] }}
+                  key={index}
+                  className={`avatar-item-ctn confetti-style-${index + 1}`}
+                  style={{ backgroundColor: colors[index % colors.length] }}
                 >
-                  <div className="avatar-item">
-                    <span>{item?.name[0]}</span>
-                  </div>
+                  <span>{item?.name?.[0] || ""}</span>
                 </div>
               ))}
             </div>

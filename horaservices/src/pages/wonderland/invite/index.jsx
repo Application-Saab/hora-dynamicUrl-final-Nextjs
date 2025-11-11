@@ -63,7 +63,7 @@ const InvitesPage = () => {
 
   return (
     <>
-    <div className="invite-page">
+      <div className="invite-page">
         <div className="invite-page-container">
           <div className="default-template-wrapper">
             {!fetchEventLoading || eventDetails?.hostName ? (
@@ -87,9 +87,14 @@ const InvitesPage = () => {
             )}
           </div>
 
-          <div className="invite-address-section">
-            <InviteAddressSection eventData={eventDetails} />
-          </div>
+          {(eventDetails?.eventDate ||
+            eventData?.location ||
+            eventData?.googleMapLink ||
+            eventData?.eventTime) && (
+            <div className="invite-address-section">
+              <InviteAddressSection eventData={eventDetails} />
+            </div>
+          )}
 
           <div className="invite-action-container">
             <InviteActions
