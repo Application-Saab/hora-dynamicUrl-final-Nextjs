@@ -220,7 +220,7 @@ const handleDownload = async () => {
     console.error("Failed to capture image.");
     return;
   }
-  
+
   const formData = new FormData();
   formData.append("image", blob, "note.png");
   formData.append("userId", userID);
@@ -236,10 +236,18 @@ const handleDownload = async () => {
       }
     );
 
+    const result = await response.json();
     console.log("API Status:", response.status);
-    console.log("API Response:", await response.json());
+    console.log("API Response:", result);
+
+    if (response.ok) {
+      router.push(`/wonderland/invite?eventid=${eventid}`);
+    } else {
+      alert("Upload failed. Please try again.");
+    }
   } catch (err) {
     console.error("Upload failed:", err);
+    alert("Something went wrong while uploading.");
   }
 };
 
