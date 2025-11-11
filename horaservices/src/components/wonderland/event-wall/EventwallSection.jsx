@@ -7,12 +7,14 @@ import NopostCamera from "@/assets/NopostCamera.svg";
 
 const EventwallSection = () => {
   const [allImages, setAllImages] = useState([]);
+
  const router = useRouter()
+    const { eventid } = router.query;
   const actionButtons = [
-    {
+     {
       label: "Notes",
       icon: NotesButtonIcon.src,
-      onClick: () => router.push("/wonderland/Thankyou-note"), 
+      onClick: () => router.push(`/wonderland/Thankyou-note?eventid=${eventid}`),
     },
     {
       label: "Post Badge",

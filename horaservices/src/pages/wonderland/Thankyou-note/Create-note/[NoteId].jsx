@@ -9,7 +9,8 @@ import CustomButton from "@/components/wonderland/common/CustomButton";
 import Image from "next/image";
 import { GET_USER_BY_ID, BASE_URL, UPLOAD_THANKYOU_NOTE, } from "@/utils/apiconstants";
 import EmojiPickerButton from "@/components/EmojiPicker";
-
+import NoteSkeleton from "@/components/wonderland/NoteSkeleton";
+import { captureElementAsImage } from "@/utils/captureElementAsImage";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
@@ -70,7 +71,6 @@ export default function NoteDetails() {
       }
     }
   }, [NoteId]);
-
 
   const adjustHeight = (el) => {
     if (el) {
@@ -196,157 +196,52 @@ export default function NoteDetails() {
     });
   };
 
-
 const handleDownload = async () => {
   if (!noteRef.current) return;
- 
-  const { eventId } = router.query; 
-  if (!eventId) {
+
+  const { eventid } = router.query;
+  if (!eventid) {
     console.error("eventId is undefined");
     return;
   }
-  const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+
+  const userID =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
   if (!userID) {
     console.error("userID not found");
     return;
   }
 
-  const emojiButton = noteRef.current.querySelector(".emoji-button");
-  if (emojiButton) emojiButton.style.display = "none";
-
-  const textareas = noteRef.current.querySelectorAll("textarea");
-  const replacements = [];
-
-  textareas.forEach((ta) => {
-    const div = document.createElement("div");
-    const computed = window.getComputedStyle(ta);
-    Object.assign(div.style, {
-      whiteSpace: "pre-wrap",
-      wordWrap: "break-word",
-      overflowWrap: "break-word",
-      display: "block",
-      boxSizing: "border-box",
-      fontFamily: computed.fontFamily,
-      fontSize: computed.fontSize,
-      fontWeight: computed.fontWeight,
-      letterSpacing: computed.letterSpacing,
-      lineHeight: computed.lineHeight,
-      color: computed.color,
-      textAlign: computed.textAlign,
-      background: computed.backgroundColor,
-      padding: computed.padding,
-      margin: computed.margin,
-      width: `${ta.offsetWidth}px`,
-      minHeight: `${ta.offsetHeight}px`,
-      borderRadius: computed.borderRadius,
-      transform: computed.transform,
-      textTransform: computed.textTransform,
-    });
-    div.textContent = ta.value || ta.placeholder || "";
-    ta.parentNode.insertBefore(div, ta);
-    ta.style.display = "none";
-    replacements.push({ ta, div });
-  });
-
-  await document.fonts.ready;
-  await new Promise((r) => setTimeout(r, 100));
-
-  const canvas = await html2canvas(noteRef.current, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: null,
-  });
-
-  replacements.forEach(({ ta, div }) => {
-    div.remove();
-    ta.style.display = "";
-  });
-  if (emojiButton) emojiButton.style.display = "";
-
- canvas.toBlob(async (blob) => {
-  if (!blob) return;
-
+  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
+  if (!blob) {
+    console.error("Failed to capture image.");
+    return;
+  }
+  
   const formData = new FormData();
   formData.append("image", blob, "note.png");
   formData.append("userId", userID);
-  formData.append("name", userName || "Guest"); 
+  formData.append("name", userName || "Guest");
 
   try {
-    const response = await  fetch(`${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${eventId}/thankyou-note`, {
-  method: "PUT",
-  headers: { Authorization: `${token}` },
-  body: formData,
-});
+    const response = await fetch(
+      `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${eventid}/thankyou-note`,
+      {
+        method: "PUT",
+        headers: { Authorization: `${token}` },
+        body: formData,
+      }
+    );
 
     console.log("API Status:", response.status);
     console.log("API Response:", await response.json());
   } catch (err) {
     console.error("Upload failed:", err);
   }
-}, "image/png");
-
 };
-
-
-  // const handleDownload = async () => {
-  //   if (!noteRef.current) return;
-  //   const emojiButton = noteRef.current.querySelector(".emoji-button");
-  //   if (emojiButton) emojiButton.style.display = "none";
-
-  //   const textareas = noteRef.current.querySelectorAll("textarea");
-  //   const replacements = [];
-
-  //   textareas.forEach((ta) => {
-  //     const div = document.createElement("div");
-  //     const computed = window.getComputedStyle(ta);
-  //     Object.assign(div.style, {
-  //       whiteSpace: "pre-wrap",
-  //       wordWrap: "break-word",
-  //       overflowWrap: "break-word",
-  //       display: "block",
-  //       boxSizing: "border-box",
-  //       fontFamily: computed.fontFamily,
-  //       fontSize: computed.fontSize,
-  //       fontWeight: computed.fontWeight,
-  //       letterSpacing: computed.letterSpacing,
-  //       lineHeight: computed.lineHeight,
-  //       color: computed.color,
-  //       textAlign: computed.textAlign,
-  //       background: computed.backgroundColor,
-  //       padding: computed.padding,
-  //       margin: computed.margin,
-  //       width: `${ta.offsetWidth}px`,
-  //       minHeight: `${ta.offsetHeight}px`,
-  //       borderRadius: computed.borderRadius,
-  //       transform: computed.transform,
-  //       textTransform: computed.textTransform,
-  //     });
-  //     div.textContent = ta.value || ta.placeholder || "";
-  //     ta.parentNode.insertBefore(div, ta);
-  //     ta.style.display = "none";
-  //     replacements.push({ ta, div });
-  //   });
-
-  //   await document.fonts.ready;
-  //   await new Promise((r) => setTimeout(r, 100));
-
-  //   const canvas = await html2canvas(noteRef.current, {
-  //     scale: 2,
-  //     useCORS: true,
-  //     backgroundColor: null,
-  //     logging: false,
-  //   });
-  //   replacements.forEach(({ ta, div }) => {
-  //     div.remove();
-  //     ta.style.display = "";
-  //   });
-
-  //   if (emojiButton) emojiButton.style.display = "";
-  //   const link = document.createElement("a");
-  //   link.download = `${liveData.title || "note"}.png`;
-  //   link.href = canvas.toDataURL("image/png");
-  //   link.click();
-  // };
 
   useEffect(() => {
     const scrollContainer = document.querySelector(".note-scroll-container");
@@ -373,10 +268,13 @@ const handleDownload = async () => {
           rel="stylesheet"
         />
       </Head>
+       {!note ? (
+          <NoteSkeleton />
+        ) : (
       <div
         className="note-scroll-container"
       >
-
+  
         <div
           ref={noteRef}
           className="createNote-container"
@@ -451,11 +349,13 @@ const handleDownload = async () => {
 
           </div>
         </div>
-
+    
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton title={"Submit"} onClick={handleDownload} />
         </div>
+   
       </div>
+           )}
     </>
   );
 }

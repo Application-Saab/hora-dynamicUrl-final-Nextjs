@@ -8,7 +8,10 @@ import {notesData} from "@/utils/ThankyounotesData.js"
 
 const EventNotes = () => {
   const router = useRouter();
-
+   const { eventid: queryEventId } = router.query;
+  const handleNoteClick = (noteId) => {
+    router.push(`/wonderland/Thankyou-note/Create-note/${noteId}?eventid=${queryEventId}`);
+  };
   return (
     <>
       <Head>
@@ -27,7 +30,7 @@ const EventNotes = () => {
               key={note.id}
               className="noteCard"
               style={{ background: note.color }}
-              onClick={() => router.push(`/wonderland/Thankyou-note/Create-note/${note.id}`)}
+              onClick={() => handleNoteClick(note.id)}
             >
               <div className="noteHeader">
 
