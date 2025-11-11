@@ -20,42 +20,42 @@ const CustomModal = ({
   verticalCenter = true,
   disableBgScroll = true,
 }) => {
-  // Lock background scroll
+  // Helper function for clean reset
+  const resetBodyScrollStyles = () =>
+    Object.assign(document.body.style, {
+      position: "",
+      top: "",
+      left: "",
+      right: "",
+      overflow: "",
+      width: "",
+    });
+
   useEffect(() => {
     let scrollY = 0;
 
     if (isOpen && disableBgScroll) {
-      // Save current scroll position
       scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
-      document.body.style.overflow = "hidden";
+
+      Object.assign(document.body.style, {
+        position: "fixed",
+        top: `-${scrollY}px`,
+        left: "0",
+        right: "0",
+        overflow: "hidden",
+        width: "100%",
+      });
     }
 
     if (!isOpen && disableBgScroll) {
-      // Restore scroll position
       const y = document.body.style.top;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.overflow = "";
+      resetBodyScrollStyles();
       window.scrollTo(0, -parseInt(y || "0"));
     }
 
-    // Cleanup when component unmounts
-    return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.overflow = "";
-    };
+    // Cleanup on unmount
+    return () => resetBodyScrollStyles();
   }, [isOpen, disableBgScroll]);
-
-  if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
     if (
@@ -66,6 +66,7 @@ const CustomModal = ({
     }
   };
 
+  if (!isOpen) return null;
   return (
     <div
       className={`common-custom-modal-backdrop ${

@@ -85,3 +85,15 @@ export const eventOptions = [
   "Retirement",
   "Pet Welcome",
 ];
+
+export const RSVP_STATUS = {
+  WILL_COME: "will Come",
+  WILL_TRY: "Sure, will try",
+};
+
+export const mobileBreakPoints = {
+  extraSmall : 320,
+  small : 360,
+  medium : 390,
+  large : 480
+}

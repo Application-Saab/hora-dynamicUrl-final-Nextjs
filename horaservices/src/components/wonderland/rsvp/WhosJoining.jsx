@@ -5,9 +5,10 @@ import {
 } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import RsvpListModal, { RSVP_STATUS } from "./RsvpListModal";
+import RsvpListModal from "./RsvpListModal";
 import useScreenSize from "@/hooks/useScreenSize";
 import CustomButton from "../common/CustomButton";
+import { RSVP_STATUS } from "@/utils/constants";
 
 const colors = [
   "#FD8D0A",
