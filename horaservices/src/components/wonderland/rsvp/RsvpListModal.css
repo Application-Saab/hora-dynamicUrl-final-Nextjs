@@ -2,6 +2,29 @@
 .whos-joining-wrapper {
   width: 100%;
 }
+.guest-rsvp-box {
+  background: linear-gradient(180deg, #c5bee4 0%, #ead5e8 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0px 0px 0px 0px #dfbfd9;
+  padding: 13.98px 27.7px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  margin-top: 6px;
+}
+.guest-rsvp-box p {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  margin-bottom: 26px;
+  padding: 0px;
+}
+.guest-rsvp-btn{
+  font-size: 15.86px;
+  padding: 13.52px 12.11px;
+}
 
 .whos-joining-status-box {
   width: 100%;
@@ -209,7 +232,7 @@
 }
 
 /* Rsvp List Modal */
-.rsvp-list-modal-body{
+.rsvp-list-modal-body {
   padding: 25.15px 0px 21.6px 15.86px;
 }
 
@@ -304,11 +327,11 @@
   margin-top: 20px;
 }
 
-@media (min-width : 360px) {
-  .status-box-header h3{
+@media (min-width: 360px) {
+  .status-box-header h3 {
     font-size: 24px;
   }
-  .status-box-header span{
+  .status-box-header span {
     font-size: 14px;
   }
 }

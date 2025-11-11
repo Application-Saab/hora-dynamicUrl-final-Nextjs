@@ -8,6 +8,7 @@ import {
   OTP_GENERATE_END_POINT,
   OTP_VERIFY_ENDPOINT,
 } from "@/utils/apiconstants";
+import CustomModal from "../CustomModal";
 
 const LoginModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
@@ -19,6 +20,11 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState({ name: "", phone: "" });
 
   const { time, resetTimer } = useTimer(30);
+  console.log(
+    "%c [ time ]-23",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    time
+  );
   const { loading: sendOtpLoading, makeRequest } = useApi();
   const { loading: verifyOtpLoading, makeRequest: makeVerifyRequest } =
     useApi();
@@ -154,12 +160,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         setName("");
         setOtpError("");
         window.dispatchEvent(new Event("loginStateChange"));
-
-        // Optional reload logic
-        const currentPath = window.location.pathname;
-        if (currentPath === "/orderlist" || currentPath === "/photo-gallery") {
-          window.location.reload();
-        }
+        onClose();
       } else {
         setOtpError("Invalid OTP. Please try again.");
         setOtp("");
@@ -186,15 +187,22 @@ const LoginModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="login-modal-backdrop">
-      <div ref={modalRef} className="login-modal-content w-100">
-        <div className="login-modal-body-custom">
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onClose}
+      showHeader={false}
+      backdropClass="login-modal-backdrop"
+      modalClass="login-modal-content"
+      bodyClass="login-modal-body"
+      disableBackdropClick={true}
+      body={
+        <>
           <p className="login-modal-heading">Join The Celebration!</p>
           <p className="login-modal-subheading">
             Enter your mobile number to get started
           </p>
 
-          <div className="d-flex flex-column px-4 w-100 gap-3">
+          <div className="d-flex flex-column w-100 login-input-ctn">
             {!isOtpSent ? (
               <>
                 <div>
@@ -245,25 +253,30 @@ const LoginModal = ({ isOpen, onClose }) => {
                   onChange={(e) => setOtp(e.target.value)}
                   className="login-input-field w-100"
                 />
-                {otpError ? (
-                  <div className="wonderland-error-text-container">
-                    <p className="login-modal-err-msg text-danger m-1">
-                      * bhai kuch to error hai {otpError}
-                    </p>
-                    <p
-                      className="m-1 mt-3"
-                      style={{ color: "#9252AA", cursor: "pointer" }}
-                      onClick={resendOtp}
-                    >
-                      Resend Code
-                    </p>
+                {/* Otp Error */}
+                {otpError && (
+                  <p className="login-modal-err-msg text-danger m-1">
+                    * {otpError}
+                  </p>
+                )}
+
+                {/* Timer & Resend Logic */}
+                {!otpError && (
+                  <div className="d-flex justify-content-center align-items-center mt-2">
+                    {time > 0 ? (
+                      <p className="login-modal-timer-txt">
+                        Resend OTP in {time} sec
+                      </p>
+                    ) : (
+                      <p
+                        className="mt-3"
+                        style={{ color: "#572381", cursor: "pointer" }}
+                        onClick={resendOtp}
+                      >
+                        Resend OTP
+                      </p>
+                    )}
                   </div>
-                ) : (
-                  time === 0 && (
-                    <p className="login-modal-timer-txt">
-                      Resend Code in {time} sec
-                    </p>
-                  )
                 )}
               </div>
             )}
@@ -278,9 +291,9 @@ const LoginModal = ({ isOpen, onClose }) => {
               loading={sendOtpLoading || verifyOtpLoading}
             />
           </div>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 };
 

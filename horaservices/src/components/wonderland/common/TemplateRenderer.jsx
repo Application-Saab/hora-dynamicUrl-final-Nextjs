@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
+import { mobileBreakPoints } from "@/utils/constants";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -16,13 +17,13 @@ const TemplateRenderer = ({
   const getBaseFontStyles = () => {
     // If baseFontSize is an object (responsive values)
     if (typeof baseFontSize === "object" && baseFontSize !== null) {
-      if (width >= 390) {
+      if (width >= mobileBreakPoints?.medium) {
         return {
           fontSize: baseFontSize.large || "2.5rem",
           lineHeight: baseFontSize.large ? "40px" : "45px",
           top: "38%",
         };
-      } else if (width >= 360) {
+      } else if (width >= mobileBreakPoints?.small) {
         return {
           fontSize: baseFontSize.medium || "2rem",
           lineHeight: baseFontSize.medium ? "34px" : "42px",
@@ -47,13 +48,13 @@ const TemplateRenderer = ({
     }
 
     // Default fallback sizes (when no prop is passed)
-    if (width >= 390) {
+    if (width >= mobileBreakPoints?.medium) {
       return {
         fontSize: "2.5rem",
         lineHeight: "45px",
         top: "38%",
       };
-    } else if (width >= 360) {
+    } else if (width >= mobileBreakPoints?.small) {
       return {
         fontSize: "2rem",
         lineHeight: "42px",

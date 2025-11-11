@@ -17,7 +17,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Combined useApi Hook
+// Combined useApi Hook
 const useApi = (
   initialUrl = null,
   initialMethod = "GET",
@@ -98,7 +98,7 @@ const useApi = (
 
     fetchInitialData();
 
-    return () => controller.abort(); // Cleanup
+    return () => controller.abort();
   }, [initialUrl, initialMethod, initialTrigger]);
 
   // Refetch last request
