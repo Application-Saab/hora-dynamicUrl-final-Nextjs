@@ -1,0 +1,62 @@
+.category-tabs-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: flex-start;
+}
+
+.category-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+
+.categories-Button {
+  position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: "Inter", sans-serif;
+  border-radius: 50px;
+  border: 3px solid transparent;
+  color:white ;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.categories-Button.active {
+  position: relative;
+  color: #fff;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+
+.categories-Button.active::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: white;
+  border-radius: 50px;
+  z-index: -1;
+}
+
+
+.categories-Button.active::after {
+  content: "";
+  position: absolute;
+  inset: 2px; 
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  border-radius: 50px;
+  z-index: -1;
+}
+
+.categories-Button:hover {
+  transform: scale(1.05);
+}
