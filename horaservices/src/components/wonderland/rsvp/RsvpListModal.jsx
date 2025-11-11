@@ -3,6 +3,7 @@ import WillTryIcon from "@/assets/wonderland/RsvpListWilltry.svg";
 import WillComeIcon from "@/assets/wonderland/RsvpListWillCome.svg";
 import "./RsvpListModal.css";
 import CustomModal from "../common/CustomModal";
+import useScreenSize from "@/hooks/useScreenSize";
 
 const RSVP_STATUS = {
   WILL_COME: "will Come",
@@ -19,15 +20,17 @@ const colorsArray = [
 
 const RsvpListModal = ({ isOpen, onClose, guestData }) => {
   if (!isOpen) return null;
-
+  const { width } = useScreenSize();
   return (
     <CustomModal
       isOpen={isOpen}
       onClose={() => onClose()}
       title="Full Guests List"
+      verticalCenter={false}
+      bodyClass="rsvp-list-modal-body"
       body={
         <>
-          <div className="rsvp-list-container w-100 pe-3">
+          <div className="rsvp-list-container w-100">
             {guestData?.map((item, index) => (
               <div
                 key={index}
@@ -41,11 +44,11 @@ const RsvpListModal = ({ isOpen, onClose, guestData }) => {
                 >
                   <span>{item.name.charAt(0).toUpperCase()}</span>
                 </div>
-                <div className="d-flex align-items-center justify-content-between list-content-wrapper w-100 gap-1">
-                  <div className="col-8 list-names">
+                <div className="d-flex align-items-center justify-content-between list-content-wrapper w-100 gap-2">
+                  <div className={`${width > 360 ? 'col-7' : 'col-6'} list-names`}>
                     <span>{item?.name}</span>
                   </div>
-                  <div className="col-4 list-status-icon d-flex justify-content-start align-items-center">
+                  <div className={`${width > 360 ? 'col-5' : 'col-6'} list-status-icon d-flex justify-content-start align-items-center`}>
                     <Image
                       src={
                         item?.rsvpStatus === RSVP_STATUS?.WILL_COME
@@ -53,7 +56,6 @@ const RsvpListModal = ({ isOpen, onClose, guestData }) => {
                           : WillTryIcon
                       }
                       alt="will try"
-                      className="me-2"
                     />
                     <span>
                       {item?.rsvpStatus === RSVP_STATUS?.WILL_COME

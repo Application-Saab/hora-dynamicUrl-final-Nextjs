@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import BackArrow from "@/assets/BackArrowSvg.svg";
-import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
 import LockIcon from "@/assets/wonderland/ShareInviteLockIcon.svg";
 import RightTick from "@/assets/wonderland/ShareInviteRightTick.svg";
 import CameraIcon from "@/assets/wonderland/ShareInviteCameraIcon.svg";
@@ -17,6 +15,7 @@ import "./ShareInviteModal.css";
 
 import { formateDateInDMDFormat } from "@/utils/dateFormatters";
 import CustomModal from "./CustomModal";
+import TemplateRenderer from "./TemplateRenderer";
 
 const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   const [copyStatus, setCopyStatus] = useState(false);
@@ -162,27 +161,24 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
       isOpen={isOpen}
       onClose={() => onClose()}
       title="Share Invitation"
+      verticalCenter={false}
+      bodyClass="share-invite-modal-body"
       body={
         <>
           {/* Template preview */}
-          <div className="d-flex justify-content-center w-100">
-            <div
-              className="default-template-wrapper mt-0"
-              style={{ width: "90%" }}
-            >
-              <img
-                src={DefaultTemplate.src}
-                alt="Default Invitation Template"
-                className="default-invite-image"
-              />
-              <div className="default-template-text w-100">
-                <p>{eventData?.hostName}</p>
-              </div>
-            </div>
-          </div>
+          <TemplateRenderer
+            fetchEventLoading={false}
+            eventDetails={eventData}
+            baseFontSize={{
+              small: "1.1rem",
+              medium: "1.2rem",
+              large: "1.7rem",
+            }}
+            isLandingPage={false}
+          />
 
           {/* Info section */}
-          <div className="d-flex justify-content-between w-100 mt-3 gap-2">
+          <div className="d-flex justify-content-between w-100 mt-3 gap-3">
             <InfoBox
               icon={LockIcon}
               title="Private & Secure"
@@ -201,9 +197,9 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
           </div>
 
           {/* Direct share */}
-          <div className="share-with-ctn mt-4">
+          <div className="share-with-ctn">
             <p className="text-center">Share Invite With</p>
-            <div className="d-flex justify-content-between w-100 mt-1">
+            <div className="d-flex justify-content-between w-100">
               {Object.entries(directSharePlatforms).map(([key, platform]) => (
                 <div
                   key={key}
@@ -216,7 +212,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
               ))}
             </div>
 
-            <div className="seprator-line-share d-flex justify-content-center mt-4">
+            <div className="seprator-line-share d-flex justify-content-center">
               <span className="seprator-txt">OR</span>
             </div>
           </div>
@@ -234,7 +230,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
           </div>
 
           {/* Copy + open apps */}
-          <div className="copy-share-ctn d-flex justify-content-around w-100 mt-3 mb-3">
+          <div className="copy-share-ctn d-flex justify-content-around w-100 mt-3">
             {Object.entries(copySharePlatforms).map(([key, platform]) => (
               <div
                 key={key}

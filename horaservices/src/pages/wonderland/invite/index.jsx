@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./invite.css";
-import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
 import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import InviteActions from "@/components/wonderland/common/InviteActions";
 import WhosJoining from "@/components/wonderland/rsvp/WhosJoining";
@@ -10,6 +9,8 @@ import useApi from "@/hooks/useApi";
 import { GET_EVENT_BY_ID } from "@/utils/apiconstants";
 import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlashLoader";
 import InviteAddressSection from "@/components/wonderland/common/InviteAddressSection";
+import LoginModal from "@/components/wonderland/common/login/LoginModal";
+import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 
 const InvitesPage = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ const InvitesPage = () => {
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [fullPageLoader, setFullPageLoader] = useState(true);
+  const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
 
   const {
     data: eventData,
@@ -32,6 +34,10 @@ const InvitesPage = () => {
 
       if (!queryEventId && userId) {
         setOpenCreateInviteModal(true);
+        setFullPageLoader(false);
+      }
+      if (queryEventId && !userId) {
+        setShowGuestLoginModal(true);
         setFullPageLoader(false);
       }
     }, 600);
@@ -65,27 +71,10 @@ const InvitesPage = () => {
     <>
       <div className="invite-page">
         <div className="invite-page-container">
-          <div className="default-template-wrapper">
-            {!fetchEventLoading || eventDetails?.hostName ? (
-              <>
-                <img
-                  src={DefaultTemplate.src}
-                  alt="Default Invitation Template"
-                  className="default-invite-image"
-                />
-                <div className="default-template-text w-100">
-                  <p>{eventDetails?.hostName}</p>
-                </div>{" "}
-              </>
-            ) : (
-              <div className="placeholder-glow mb-4">
-                <div
-                  className="placeholder w-100"
-                  style={{ height: "200px", borderRadius: "10px" }}
-                ></div>
-              </div>
-            )}
-          </div>
+          <TemplateRenderer
+            fetchEventLoading={fetchEventLoading}
+            eventDetails={eventDetails}
+          />
 
           {(eventDetails?.eventDate ||
             eventData?.location ||
@@ -106,7 +95,7 @@ const InvitesPage = () => {
             <WhosJoining />
           </div>
           <div className="event-wall-container">
-            <p className="wall-heading text-center">Celebration Wall</p>
+            <p className="wall-heading text-center m-0 p-0">Celebration Wall</p>
             <EventwallSection />
           </div>
         </div>
@@ -114,6 +103,10 @@ const InvitesPage = () => {
       <CreateInviteModal
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}
+      />
+      <LoginModal
+        isOpen={showGuestLoginModal}
+        onClose={() => setShowGuestLoginModal(false)}
       />
     </>
   );

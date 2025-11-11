@@ -33,7 +33,14 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       console.error("Error rejecting content:", err);
     }
   };
-
+  const handleChange = (e) => {
+    let value = e.target.value;
+    const formattedOccation = value.replace(/(^\w|(?<=\s)\w)/g, (char) =>
+      char.toUpperCase()
+    );
+    setOccation(formattedOccation);
+  };
+  
   return (
     <CustomModal
       isOpen={isOpen}
@@ -44,6 +51,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       title="Create Invitation"
       verticalCenter={false}
       disableBackdropClick={true}
+      bodyClass='create-invite-modal-body'
       body={
         <>
           <h3 className="modal-question-text">What's the occasion?</h3>
@@ -54,7 +62,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               placeholder="Type Event Name"
               maxLength={30}
               value={occasion}
-              onChange={(e) => setOccasion(e.target.value)}
+              onChange={handleChange}
             />
             <small className="char-limit-text">
               {occasion?.length}/30 Characters

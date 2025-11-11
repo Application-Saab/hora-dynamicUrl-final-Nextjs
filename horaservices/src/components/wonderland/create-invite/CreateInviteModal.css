@@ -56,6 +56,9 @@
   flex-direction: column;
   align-items: center;
 }
+.create-invite-modal-body{
+  padding: 33px 23px !important;
+}
 
 .modal-question-text {
   font-size: 28px;
@@ -63,24 +66,25 @@
   font-weight: 700;
   color: #010000;
   margin-bottom: 40px;
-  margin-top: 9px;
   text-align: center;
   letter-spacing: 0px;
+  margin-top: 0px;
+  padding: 0px;
 }
 
 /* Input Group */
 .input-group-custom {
   width: 100%;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   text-align: right;
 }
 
 .input-group-custom input {
   width: 100%;
-  padding: 10px 15px;
+  padding: 17.5px 10px;
   background-color: #fff;
   border: 1px solid #00000066;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #00000099;
   font-size: 17px;
   box-shadow: 0px 4px 4px 0px #0000003b;
@@ -98,7 +102,7 @@
   color: #3c3c3c;
   font-weight: 400;
   display: block;
-  margin-top: 4px;
+  margin-top: 9px;
   padding-right: 5px;
 }
 
@@ -124,6 +128,9 @@
 
 
 /* Update details modal css */
+.add-details-modal-body{
+  padding: 22px 23px 49px 23px !important;
+}
 .adddetails-input-group {
   width: 100%;
   margin-bottom: 17px;
@@ -151,7 +158,7 @@
   margin-bottom: 17px;
 }
 .add-details-input {
-  padding: 17.5px 11.5px 17.5px 0px !important;
+  padding: 16px 11.5px 16px 0px !important;
   background-color: #fff !important;
   border: 1px solid #00000066 !important;
   border-radius: 0px 8px 8px 0px !important;
@@ -193,6 +200,10 @@
 .add-details-date-btn img {
   margin-right: 8px;
 }
+.calendar-modal-body{
+  background-color: transparent !important;
+  padding: 0px 0px;
+}
 
 .dark-calendar-modal {
   background: transparent;
@@ -209,7 +220,6 @@
   padding: 10px !important;
   max-width: 450px !important;
   width: 100% !important;
-  /* width: 280px !important; */
   height: 400px !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   border: none !important;
@@ -274,7 +284,7 @@
   color: white;
   border-radius: 12px;
   padding: 20px;
-  width: 270px;
+  width: 100%;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
@@ -363,16 +373,15 @@
   padding: 13px 20px;
   font-size: 14px;
   cursor: pointer;
+  color: #FFFFFF;
 }
 
 .cancel-btn {
   background-color: transparent;
   backdrop-filter: blur(30px);
-  color: white;
   border: 1px solid #4e4e4e;
 }
 
 .save-btn {
   background-color: #349053;
-  color: white;
 }

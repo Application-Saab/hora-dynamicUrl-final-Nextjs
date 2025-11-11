@@ -3,8 +3,9 @@ import { GET_GUESTS_BY_EVENTID } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import RsvpListModal from "./RsvpListModal";
+import useScreenSize from "@/hooks/useScreenSize";
 
-const colors = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#6C5CE7", "#00B894"];
+const colors = ["#FD8D0A", "#E8275F", "#A654B0", "#31B8CC", "#F2BB2F"]; //#6BB266
 
 const WhosJoining = () => {
   const router = useRouter();
@@ -13,6 +14,7 @@ const WhosJoining = () => {
   const [allGuestsData, setAllGuestsData] = useState([]);
   const [filledGuests, setFilledGuests] = useState([]);
   const [showListModal, setShowListModal] = useState(false);
+  const { width } = useScreenSize();
 
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
@@ -28,15 +30,19 @@ const WhosJoining = () => {
   }, [eventId]);
 
   useEffect(() => {
+    let arrSize = 5;
+    if (width >= 360) {
+      arrSize = 6;
+    }
     if (Array.isArray(data?.data)) {
-      const guests = [...data.data.slice(0, 5)];
-      while (guests.length < 5) guests.push(null);
+      const guests = [...data.data.slice(0, arrSize)];
+      while (guests.length < arrSize) guests.push(null);
       setFilledGuests(guests);
       setAllGuestsData(data.data || []);
     } else {
-      setFilledGuests(new Array(5).fill(null));
+      setFilledGuests(new Array(arrSize).fill(null));
     }
-  }, [data?.data]);
+  }, [data?.data, width]);
 
   return (
     <>
