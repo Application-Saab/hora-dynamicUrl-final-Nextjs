@@ -43,7 +43,7 @@ const InviteAddressSection = ({ eventData }) => {
   return (
     <>
       <div
-        className="d-flex justify-content-between align-items-center"
+        className="d-flex justify-content-between align-items-start"
         style={{ gap: "30px", marginTop: "9px" }}
       >
         <div className="address-part-ctn">

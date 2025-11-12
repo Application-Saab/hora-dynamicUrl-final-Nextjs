@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import BackArrow from "@/assets/BackArrowSvg.svg";
 import DateIcon from "@/assets/wonderland/CalendarGradientIcon.svg";
 import TimeIcon from "@/assets/wonderland/TimeGradientIcon.svg";
 import LocationIcon from "@/assets/wonderland/LocationGradientIcon.svg";
@@ -11,6 +10,7 @@ import { UPDATE_EVENT_BY_ID } from "@/utils/apiconstants";
 import CalendarModal from "./CalendarModal";
 import TimeModal from "./TimeModal";
 import CustomButton from "../common/CustomButton";
+import CustomModal from "../common/CustomModal";
 
 const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
   if (!isOpen) return null;
@@ -75,20 +75,15 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
 
   return (
     <>
-      <div className="custom-modal-backdrop">
-        <div className="custom-modal-content">
-          <div className="modal-header-custom">
-            <Image
-              src={BackArrow}
-              height={25}
-              width={15}
-              onClick={onClose}
-              alt="back"
-            />
-            <h2 className="modal-title-custom">Add Event Details</h2>
-          </div>
-
-          <div className="modal-body-custom">
+      <CustomModal
+        isOpen={isOpen}
+        onClose={() => onClose()}
+        title="Add Event Details"
+        verticalCenter={false}
+        bodyClass="add-details-modal-body"
+        backdropClass={showCalendarModal || showTimeModal ? "d-none" : ""}
+        body={
+          <>
             <div className="adddetails-input-group">
               <button
                 type="button"
@@ -114,16 +109,22 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               >
                 <Image src={LocationIcon} alt="location" />
               </span>
-              <input
-                type="text"
+              <textarea
                 name="location"
                 className="form-control add-details-input"
                 placeholder="Address"
-                aria-label="Address"
-                aria-describedby="basic-addon1"
-                value={formData?.location}
+                value={formData.location}
                 onChange={handleChange}
-              />
+                rows={1}
+                style={{
+                  resize: "none",
+                  overflow: "hidden",
+                }}
+                onInput={(e) => {
+                  e.target.style.height = "55px";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+              ></textarea>
             </div>
             <div className="input-group custom-input-grop-add-details">
               <span
@@ -132,26 +133,34 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               >
                 <Image src={MapIcon} alt="image" />
               </span>
-              <input
-                type="text"
+              <textarea
                 name="googleMapLink"
                 className="form-control add-details-input"
                 placeholder="Google Map"
-                aria-label="Google Map"
-                aria-describedby="basic-addon1"
                 value={formData?.googleMapLink}
                 onChange={handleChange}
+                rows={1}
+                style={{
+                  resize: "none",
+                  overflow: "hidden",
+                }}
+                onInput={(e) => {
+                  e.target.style.height = "55px";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+              ></textarea>
+            </div>
+            <div className="d-flex justify-content-center mt-1">
+              <CustomButton
+                title={"Submit"}
+                loading={loading}
+                onClick={handleSubmit}
+                buttonClass="add-details-submit"
               />
             </div>
-
-            <CustomButton
-              title={"Submit"}
-              loading={loading}
-              onClick={handleSubmit}
-            />
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <CalendarModal
         show={showCalendarModal}

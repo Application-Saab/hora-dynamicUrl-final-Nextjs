@@ -51,12 +51,12 @@ const EventwallSection = () => {
 
       <div>
         {allImages.length === 0 ? (
-          <div className="eventwall-nopost-ctn mt-5">
+          <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img
                 src={NopostCamera.src}
                 alt="No Post Camera"
-                className="mb-3"
+                className=""
               />
               <p className="line-1">
                 No memories here yet! Be the First to share.
