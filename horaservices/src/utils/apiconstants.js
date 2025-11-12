@@ -1,6 +1,6 @@
-export const BASE_URL = "https://horaservices.com:3000";
-export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
-export const API_SUCCESS_CODE = 200;
+export const BASE_URL="https://horaservices.com:3000";
+export const OTP_GENERATE_END_POINT= "/api/user/otp_generate";
+export const API_SUCCESS_CODE=200;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
 export const UPDATE_USER_DETAIL_ENDPOINT = "/api/users/user_update";
 export const UPDATE_ORDER_STATUS = "/api/order/update_order_status";

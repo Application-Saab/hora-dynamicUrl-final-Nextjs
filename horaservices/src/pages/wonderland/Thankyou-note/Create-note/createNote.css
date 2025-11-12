@@ -1,0 +1,120 @@
+
+.note-scroll-container {
+  scroll-behavior: smooth;
+}
+
+.createNote-container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 14px;
+  text-align: center;
+  font-family: 'Just Another Hand', cursive;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  margin:  40px auto;
+   pointer-events: auto;
+       
+}
+
+.createNote-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.createNote-icon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.textArea-title {
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  text-transform: uppercase;
+  font-size: 28px;
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  overflow: hidden;
+}
+ 
+.textArea-Content {
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  width: 100%;
+  color: #fff;
+  font-size: 22px;
+  text-align: center;
+  margin-top: 15px;
+  line-height: 1.4em;
+  overflow: hidden;
+}
+
+.textArea-Author{
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  width: 100%;
+  color: #fff;
+  font-size: 20px;
+  text-align: left;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.textArea-title,
+.textArea-Content,
+.textArea-Author {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  resize: none;
+  transition: border 0.2s ease;
+  -webkit-user-select: text;
+  user-select: text;
+  caret-color: black;
+  touch-action: manipulation;
+}
+
+.active-border {
+ border: 2px dashed rgba(255, 255, 255, 0.9); 
+ border-radius: 5px;
+}
+
+
+
+
+
+
+@media (max-width: 400px) {
+   .createNote-container {
+    width: 92%;
+    padding: 12px;
+  }
+ }
+
+@media (min-width: 410px) and (max-width: 560px) {
+    .createNote-container {
+    width: 92%;
+    padding: 12px;
+  }
+
+ 
+}

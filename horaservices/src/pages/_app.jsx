@@ -126,6 +126,10 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
         <title>Hora Services</title>
         <link rel="icon" href="/new_logo_light.png" />
+          <link
+          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
+          rel="stylesheet"
+        />
       </Head>
     
     <Provider store={store}>

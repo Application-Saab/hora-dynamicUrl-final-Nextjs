@@ -50,8 +50,6 @@ const WonderlandMainPage = () => {
     };
 
     window.addEventListener("storage", syncLoginState);
-
-    // Sync on same tab login without change page
     window.addEventListener("loginStateChange", syncLoginState);
 
     return () => {
