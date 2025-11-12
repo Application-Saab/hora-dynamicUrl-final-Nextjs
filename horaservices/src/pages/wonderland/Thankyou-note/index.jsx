@@ -8,19 +8,12 @@ import {notesData} from "@/utils/ThankyounotesData.js"
 
 const EventNotes = () => {
   const router = useRouter();
-   const { eventid: queryEventId } = router.query;
+  const { eventid } = router.query;
   const handleNoteClick = (noteId) => {
-    router.push(`/wonderland/Thankyou-note/Create-note/${noteId}?eventid=${queryEventId}`);
+    router.push(`/wonderland/Thankyou-note/Create-note/${noteId}?eventid=${eventid}`);
   };
   return (
     <>
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-
       <div className="note-container">
 
         <h2 className="note-heading">Event Notes</h2>
@@ -35,7 +28,7 @@ const EventNotes = () => {
               <div className="noteHeader">
 
                 <h3 className="noteTitle">{note.title}</h3>
-                {note.icon && <Image src={note.icon} alt="" className="noteIcon" />}
+                {note.icon && <Image src={note.icon} alt="NoteIcon" className="noteIcon" />}
               </div>
               <p className="noteContent">{note.content}</p>
             </div>
