@@ -76,6 +76,7 @@
   font-size: 20px;
   text-transform: uppercase;
   text-align: center;
+  font-weight: 700;
 }
 
 .noteContent {
@@ -83,7 +84,7 @@
     font-weight: 500;
     font-size: 20px;
     line-height: 18px;
- 
+   margin-bottom: 0px !important;
 }
 
 .noteAuthor {
@@ -104,14 +105,14 @@
     .note-heading {
     font-size: 24px;
   }
-  .noteContent{
-    font-size: 12px;
-  }
   .noteTitle{
-    font-size: 16px;
+    font-size: 13px;
+  }
+    .noteContent{
+    font-size: 11px;
   }
    .noteAuthor {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 
@@ -120,26 +121,26 @@
     font-size: 26px;
   }
   .noteTitle {
-    font-size: 18px;
+    font-size: 15px;
   }
+     .noteContent{
+    font-size: 14px;
+}
   .noteAuthor {
     font-size: 14px;
   }
-   .noteContent{
-    font-size: 14px;
-}}
+}
 
 @media (min-width: 410px) and (max-width: 560px) {
-  .noteContent {
-       font-size: 16px;
-  }
     .note-heading {
     font-size: 30px;
   }
   .noteTitle {
-    font-size: 20px;
+    font-size: 18px;
   }
-
+  .noteContent {
+       font-size: 15px;
+  }
   .noteAuthor {
     font-size: 16px;
   }

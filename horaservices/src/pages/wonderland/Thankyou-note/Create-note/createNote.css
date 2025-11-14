@@ -19,7 +19,7 @@
   margin:  40px auto;
    pointer-events: auto;
        
-}
+} 
 
 .createNote-header {
   width: 100%;
@@ -49,24 +49,27 @@
   color: #fff;
   width: 100%;
   overflow: hidden;
+  font-weight: 700;
 }
  
-.textArea-Content {
-  background: transparent;
-  border: none;
-  outline: none;
-  resize: none;
-  width: 100%;
-  font-family: cursive;
-  color: #fff;
-  font-size: 20px;
-  text-align: center;
-  margin-top: 15px;
-  line-height: 1.4em;
-  overflow: hidden;
-  margin-bottom: 10px;
+ .textArea-Content{
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    width: 100%;
+    font-family: cursive;
+    color: #fff;
+    font-size: 20px;
+    text-align: left;
+    margin-top: 15px;
+    line-height: 1.4em;
+    overflow: hidden;
+    margin-bottom: 10px;
+    min-height: 120px;
+    align-items: center;
+    padding: 13px;
 }
-
 .textArea-Author{
   background: transparent;
   border: none;
