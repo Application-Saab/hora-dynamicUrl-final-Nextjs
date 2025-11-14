@@ -68,15 +68,13 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               {occasion?.length}/30 Characters
             </small>
           </div>
-          <div className="d-flex justify-content-center">
             <CustomButton
               title={"Submit"}
               loading={loading}
               disabled={!occasion}
               onClick={occasion && handleSubmit}
-              buttonClass="create-invite-btn"
+              // buttonClass="create-invite-btn"
             />
-          </div>
         </>
       }
     />

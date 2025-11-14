@@ -387,7 +387,11 @@
 .save-btn {
   background-color: #349053;
 }
-
+@media (max-width: 360px) {
+ .input-group-custom input {
+    padding: 12px 10px;
+  }
+}
 @media (min-width: 360px) {
   .add-details-modal-body {
     padding: 22px 23px 49px 23px !important;
