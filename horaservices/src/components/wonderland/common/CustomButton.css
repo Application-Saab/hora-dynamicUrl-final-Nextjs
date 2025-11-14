@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 10px;
   font-size: 18px;
   font-family: "Inter", sans-serif;
   font-weight: 600;
@@ -13,6 +13,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   overflow: hidden;
+  width: 65%;
 }
 
 /* Variants */

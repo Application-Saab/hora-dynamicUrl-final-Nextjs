@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
+import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
 import { mobileBreakPoints } from "@/utils/constants";
 
