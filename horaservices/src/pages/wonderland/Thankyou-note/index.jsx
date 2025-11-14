@@ -25,6 +25,7 @@ const EventNotes = () => {
               style={{ background: note.color }}
               onClick={() => handleNoteClick(note.id)}
             >
+                <span className="tryBadge">Try</span>
               <div className="noteHeader">
 
                 <h3 className="noteTitle">{note.title}</h3>

@@ -22,6 +22,7 @@ export default function NoteDetails() {
   const [lastSelection, setLastSelection] = useState({ start: 0, end: 0 });
   const [preventRefocus, setPreventRefocus] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [showBorders, setShowBorders] = useState(true);
 
   const titleRef = useRef(null);
   const contentRef = useRef(null);
@@ -56,6 +57,17 @@ export default function NoteDetails() {
     fetchUserName();
   }, []);
 
+  useEffect(() => {
+    if (contentRef.current) {
+      adjustHeight(contentRef.current);
+    }
+    if (titleRef.current) {
+      adjustHeight(titleRef.current);
+    }
+    if (authorRef.current) {
+      adjustHeight(authorRef.current);
+    }
+  }, [note]);
 
 
   useEffect(() => {
@@ -196,60 +208,61 @@ export default function NoteDetails() {
     });
   };
 
-const handleDownload = async () => {
-  if (!noteRef.current) return;
-
-  const { eventid } = router.query;
-  if (!eventid) {
-    console.error("eventId is undefined");
-    return;
-  }
-
-  const userID =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-  if (!userID) {
-    console.error("userID not found");
-    return;
-  }
-
-  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
-  if (!blob) {
-    console.error("Failed to capture image.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image", blob, "note.png");
-  formData.append("userId", userID);
-  formData.append("name", userName || "Guest");
-
-  try {
-    const response = await fetch(
-      `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${eventid}/thankyou-note`,
-      {
-        method: "PUT",
-        headers: { Authorization: `${token}` },
-        body: formData,
-      }
-    );
-
-    const result = await response.json();
-    console.log("API Status:", response.status);
-    console.log("API Response:", result);
-
-    if (response.ok) {
-      router.push(`/wonderland/invite?eventid=${eventid}`);
-    } else {
-      alert("Upload failed. Please try again.");
+  const handleDownload = async () => {
+    if (!noteRef.current) return;
+    setShowBorders(false);
+    
+    const { eventid } = router.query;
+    if (!eventid) {
+      console.error("eventId is undefined");
+      return;
     }
-  } catch (err) {
-    console.error("Upload failed:", err);
-    alert("Something went wrong while uploading.");
-  }
-};
+
+    const userID =
+      typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    if (!userID) {
+      console.error("userID not found");
+      return;
+    }
+
+    const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
+    if (!blob) {
+      console.error("Failed to capture image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", blob, "note.png");
+    formData.append("userId", userID);
+    formData.append("name", userName || "Guest");
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${eventid}/thankyou-note`,
+        {
+          method: "PUT",
+          headers: { Authorization: `${token}` },
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+      console.log("API Status:", response.status);
+      console.log("API Response:", result);
+
+      if (response.ok) {
+        router.push(`/wonderland/invite?eventid=${eventid}`);
+      } else {
+        alert("Upload failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Something went wrong while uploading.");
+    }
+  };
 
   useEffect(() => {
     const scrollContainer = document.querySelector(".note-scroll-container");
@@ -276,94 +289,90 @@ const handleDownload = async () => {
           rel="stylesheet"
         />
       </Head>
-       {!note ? (
-          <NoteSkeleton />
-        ) : (
-      <div
-        className="note-scroll-container"
-      >
-  
+      {!note ? (
+        <NoteSkeleton />
+      ) : (
         <div
-          ref={noteRef}
-          className="createNote-container"
-          style={{ background: note.color, position: "relative" }}
+          className="note-scroll-container"
         >
-          <div className="createNote-header">
-            {note.icon && <Image src={note.icon} alt="" className="createNote-icon" />}
-          </div>
-
-          <textarea
-            ref={titleRef}
-            value={liveData.title}
-            rows={1}
-            onChange={(e) => handleChange("title", e.target.value, titleRef)}
-            onFocus={() => { handleFocus("title", titleRef); setFocusedField("title"); }}
-            onBlur={() => {
-              if (!showEmojiPicker) setFocusedField(null);
-            }}
-
-            placeholder="TITLE..."
-            className={`textArea-title ${focusedField === "title" || (showEmojiPicker && activeField === "title")
-                ? "active-border"
-                : ""
-              }`}
-
-
-          />
-
-          <textarea
-            ref={contentRef}
-            value={liveData.content}
-            rows={2}
-            onChange={(e) => handleChange("content", e.target.value, contentRef)}
-            onFocus={() => {
-              handleFocus("content", contentRef);
-              setFocusedField("content");
-            }}
-            onBlur={() => {
-              if (!showEmojiPicker) setFocusedField(null);
-            }}
-
-            placeholder="Write your note..."
-            className={`textArea-Content ${focusedField === "content" || (showEmojiPicker && activeField === "content")
-                ? "active-border"
-                : ""
-              }`}
-
-          />
-
-          <textarea
-            rows={1}
-            value={userName ? `- ${userName}` : ""}
-            readOnly
-            placeholder="- Fetching your name..."
-            className="textArea-Author"
-          />
-
 
           <div
-            style={{
-              position: "absolute",
-              bottom: "12px",
-              right: "12px",
-              zIndex: 300,
-            }}
+            ref={noteRef}
+            className="createNote-container"
+            style={{ background: note.color, position: "relative" }}
           >
-            <EmojiPickerButton
-              onEmojiSelect={handleEmojiSelect}
-              isPickerOpen={showEmojiPicker}
-              setIsPickerOpen={setShowEmojiPicker}
+            <div className="createNote-header">
+              {note.icon && <Image src={note.icon} alt="" className="createNote-icon" />}
+            </div>
+
+            <textarea
+              ref={titleRef}
+              value={liveData.title}
+              rows={1}
+              onChange={(e) => handleChange("title", e.target.value, titleRef)}
+              onFocus={() => { handleFocus("title", titleRef); setFocusedField("title"); }}
+              onBlur={() => {
+                if (!showEmojiPicker) setFocusedField(null);
+              }}
+
+              placeholder="TITLE..."
+
+              className={`textArea-title ${showBorders ? "always-border" : ""}`}
+
+
             />
 
+            <textarea
+              ref={contentRef}
+              value={liveData.content}
+              rows={2}
+              onChange={(e) => handleChange("content", e.target.value, contentRef)}
+              onFocus={() => {
+                handleFocus("content", contentRef);
+                setFocusedField("content");
+              }}
+              onBlur={() => {
+                if (!showEmojiPicker) setFocusedField(null);
+              }}
+
+              placeholder="Write your note..."
+
+              className={`textArea-Content ${showBorders ? "always-border" : ""}`}
+
+            />
+
+            <textarea
+              rows={1}
+              value={userName ? `- ${userName}` : ""}
+              readOnly
+              placeholder="- Fetching your name..."
+              className="textArea-Author"
+            />
+
+
+            <div
+              style={{
+                position: "absolute",
+                bottom: "12px",
+                right: "12px",
+                zIndex: 300,
+              }}
+            >
+              <EmojiPickerButton
+                onEmojiSelect={handleEmojiSelect}
+                isPickerOpen={showEmojiPicker}
+                setIsPickerOpen={setShowEmojiPicker}
+              />
+
+            </div>
           </div>
+
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <CustomButton title={"Submit"} onClick={handleDownload} />
+          </div>
+
         </div>
-    
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <CustomButton title={"Submit"} onClick={handleDownload} />
-        </div>
-   
-      </div>
-           )}
+      )}
     </>
   );
 }

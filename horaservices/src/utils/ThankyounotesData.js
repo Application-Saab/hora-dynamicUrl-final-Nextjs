@@ -47,7 +47,7 @@ export const notesData = [
   },
   {
     id: 6,
-    title: "#SarahsSuperBash",
+    title: "#SarahsSuper Bash",
     content: "",
     author: "YashParmar",
     color: "linear-gradient(140.79deg, #E05180 8.22%, #E6899E 96.1%)",
