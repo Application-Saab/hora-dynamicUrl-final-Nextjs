@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ExploreTemplateIcon from "@/assets/ExploreTemplateIcon.svg";
-import ShareInviteIcon from "@/assets/ShareInviteIcon.svg";
-import AddDetailsIcon from "@/assets/AddDetailsIcon.svg";
+import ExploreTemplateIcon from "@/assets/wonderland/ExploreTemplateIcon.svg";
+import ShareInviteIcon from "@/assets/wonderland/ShareInviteIcon.svg";
+import AddDetailsIcon from "@/assets/wonderland/AddDetailsIcon.svg";
 import AddDetailsModal from "../create-invite/AddDetailsModal";
 import ShareInviteModal from "./ShareInviteModal";
 

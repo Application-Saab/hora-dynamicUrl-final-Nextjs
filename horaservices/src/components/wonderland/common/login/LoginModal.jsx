@@ -20,11 +20,6 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState({ name: "", phone: "" });
 
   const { time, resetTimer } = useTimer(30);
-  console.log(
-    "%c [ time ]-23",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    time
-  );
   const { loading: sendOtpLoading, makeRequest } = useApi();
   const { loading: verifyOtpLoading, makeRequest: makeVerifyRequest } =
     useApi();

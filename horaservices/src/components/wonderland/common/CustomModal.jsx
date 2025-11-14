@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import "./CustomModal.css";
-import BackArrow from "@/assets/BackArrowSvg.svg";
+import BackArrow from "@/assets/wonderland/BackArrowSvg.svg";
 
 const CustomModal = ({
   isOpen = false,
