@@ -81,6 +81,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
         title="Add Event Details"
         verticalCenter={false}
         bodyClass="add-details-modal-body"
+        modalClass="add-details-modal-content"
         backdropClass={showCalendarModal || showTimeModal ? "d-none" : ""}
         body={
           <>

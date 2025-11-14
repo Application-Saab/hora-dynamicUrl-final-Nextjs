@@ -17,7 +17,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
     if (!userId) return;
     let payload = {
       userId: userId,
-      hostName: occasion?.charAt(0)?.toUpperCase() + occasion?.slice(1),
+      hostName: occasion,
     };
     try {
       let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);
@@ -38,9 +38,9 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
     const formattedOccation = value.replace(/(^\w|(?<=\s)\w)/g, (char) =>
       char.toUpperCase()
     );
-    setOccation(formattedOccation);
+    setOccasion(formattedOccation);
   };
-  
+
   return (
     <CustomModal
       isOpen={isOpen}
@@ -51,7 +51,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
       title="Create Invitation"
       verticalCenter={false}
       disableBackdropClick={true}
-      bodyClass='create-invite-modal-body'
+      bodyClass="create-invite-modal-body"
       body={
         <>
           <h3 className="modal-question-text">What's the occasion?</h3>
