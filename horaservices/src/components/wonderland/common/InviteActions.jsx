@@ -26,14 +26,17 @@ const actions = [
 
 const InviteActions = ({ eventData, refetchInvite }) => {
   const router = useRouter();
+    const { eventid } = router.query;
   const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
   const [openShareInviteModal, setOpenShareInviteModal] = useState(false);
 
   const handleClick = (actionId) => {
-    if (actionId === 1) {
-      router.push("/wonderland/Templates");
-      return;
-    }
+ if (actionId === 1) {
+
+  router.push(`/wonderland/templates?eventid=${eventid}`);
+  return;
+}
+
     if (actionId === 2) {
       setOpenShareInviteModal(true);
     }

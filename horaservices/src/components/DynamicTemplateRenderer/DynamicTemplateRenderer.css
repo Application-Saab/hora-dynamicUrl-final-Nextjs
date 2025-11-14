@@ -251,6 +251,16 @@
   margin-right: 5px;
 }
 
+.editable-field {
+  outline: none;
+  cursor: text;
+  transition: border-bottom 0.2s;
+}
+
+.editable-field:focus {
+  border-bottom: 1px dashed #666;
+  background: rgba(255, 255, 255, 0.1);
+}
 
 
 /* *********** Template Wise Css ****************** */

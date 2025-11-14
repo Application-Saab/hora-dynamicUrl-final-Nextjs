@@ -74,6 +74,7 @@ const InvitesPage = () => {
           <TemplateRenderer
             fetchEventLoading={fetchEventLoading}
             eventDetails={eventDetails}
+              orderDetails={eventDetails}
           />
 
           {(eventDetails?.eventDate ||

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
@@ -5,6 +6,7 @@ import useScreenSize from "@/hooks/useScreenSize";
 const TemplateRenderer = ({
   fetchEventLoading,
   eventDetails,
+  orderDetails,
   baseFontSize,
   isLandingPage = true,
 }) => {
@@ -12,104 +14,106 @@ const TemplateRenderer = ({
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
 
-  // Define base font-size + line-height dynamically based on screen size
+  // 🧩 Get base font style dynamically
   const getBaseFontStyles = () => {
-    // If baseFontSize is an object (responsive values)
     if (typeof baseFontSize === "object" && baseFontSize !== null) {
-      if (width >= 390) {
-        return {
-          fontSize: baseFontSize.large || "2.5rem",
-          lineHeight: baseFontSize.large ? "40px" : "45px",
-          top: "38%",
-        };
-      } else if (width >= 360) {
-        return {
-          fontSize: baseFontSize.medium || "2rem",
-          lineHeight: baseFontSize.medium ? "34px" : "42px",
-          top: "40%",
-        };
-      } else {
-        return {
-          fontSize: baseFontSize.small || "1.7rem",
-          lineHeight: baseFontSize.small ? "25px" : "34px",
-          top: "42%",
-        };
-      }
+      if (width >= 390)
+        return { fontSize: baseFontSize.large || "2.5rem", lineHeight: "40px", top: "38%" };
+      else if (width >= 360)
+        return { fontSize: baseFontSize.medium || "2rem", lineHeight: "34px", top: "40%" };
+      else return { fontSize: baseFontSize.small || "1.7rem", lineHeight: "30px", top: "42%" };
     }
 
-    // If baseFontSize is a simple string (single size)
-    if (typeof baseFontSize === "string") {
-      return {
-        fontSize: baseFontSize,
-        lineHeight: "40px",
-        top: "40%",
-      };
-    }
+    if (typeof baseFontSize === "string")
+      return { fontSize: baseFontSize, lineHeight: "40px", top: "40%" };
 
-    // Default fallback sizes (when no prop is passed)
-    if (width >= 390) {
-      return {
-        fontSize: "2.5rem",
-        lineHeight: "45px",
-        top: "38%",
-      };
-    } else if (width >= 360) {
-      return {
-        fontSize: "2rem",
-        lineHeight: "42px",
-        top: "40%",
-      };
-    } else {
-      return {
-        fontSize: "1.7rem",
-        lineHeight: "34px",
-        top: "42%",
-      };
-    }
+    if (width >= 390) return { fontSize: "2.5rem", lineHeight: "45px", top: "38%" };
+    else if (width >= 360) return { fontSize: "2rem", lineHeight: "42px", top: "40%" };
+    else return { fontSize: "1.7rem", lineHeight: "34px", top: "42%" };
   };
 
   const [baseStyles, setBaseStyles] = useState(getBaseFontStyles());
 
-  // Update styles on width or prop change
   useEffect(() => {
     setBaseStyles(getBaseFontStyles());
   }, [width, baseFontSize]);
 
-  // ✨ Adjust font-size based on text length
+  // ✨ Adjust font size for shorter/longer names
   useEffect(() => {
     if (!eventDetails?.hostName) return;
-
     const baseFontRem = parseFloat(baseStyles.fontSize);
-    if (eventDetails.hostName.length <= 14) {
+    if (eventDetails.hostName.length <= 14)
       setDynamicFontSize((baseFontRem + 0.5).toFixed(2) + "rem");
-    } else {
-      setDynamicFontSize(baseStyles.fontSize);
-    }
+    else setDynamicFontSize(baseStyles.fontSize);
   }, [eventDetails?.hostName, baseStyles]);
+
+const imageUrl =
+  orderDetails?.externalTemplateImageUrl ||
+  orderDetails?.Image ||
+  orderDetails?.hostImage ||
+  orderDetails?.imageUrl ||
+  DefaultTemplate.src;
 
   return (
     <div
       className="default-template-wrapper"
-      style={{ paddingInline: !isLandingPage ? "25px" : "" }}
+      style={{
+        paddingInline: !isLandingPage ? "25px" : "",
+        textAlign: "center",
+      }}
     >
-      {!fetchEventLoading || eventDetails?.hostName ? (
+      {!fetchEventLoading ? (
         <>
-          <img
-            src={DefaultTemplate.src}
-            alt="Default Invitation Template"
-            className="default-invite-image"
-          />
           <div
-            ref={textRef}
-            className={`default-template-text w-100`}
+            className="template-preview-container"
             style={{
-              fontSize: dynamicFontSize,
-              lineHeight: baseStyles.lineHeight,
-              top: baseStyles.top,
-              paddingInline: !isLandingPage ? "45px" : "20"
+              position: "relative",
+              display: "inline-block",
+              width: "100%",
+              maxWidth: "450px",
+              borderRadius: "12px",
+              overflow: "hidden",
             }}
           >
-            <p>{eventDetails?.hostName}</p>
+            {/* 🖼️ Render template image */}
+            <img
+              src={imageUrl}
+              alt="Invitation Template"
+              className="default-invite-image"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "12px",
+                objectFit: "cover",
+              }}
+            />
+
+         
+{imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
+  <div
+    ref={textRef}
+    className="default-template-text"
+    style={{
+      position: "absolute",
+      top: baseStyles.top,
+      left: "50%",
+      transform: "translateX(-50%)",
+      fontSize: dynamicFontSize,
+      lineHeight: baseStyles.lineHeight,
+      fontWeight: 700,
+      color: "#fff",
+      textShadow: "2px 2px 6px rgba(0,0,0,0.5)",
+      width: "100%",
+      textAlign: "center",
+      paddingInline: "20px",
+      fontFamily: "'Great Vibes', cursive",
+      pointerEvents: "auto",
+    }}
+  >
+    {eventDetails?.hostName}
+  </div>
+)}
+
           </div>
         </>
       ) : (
