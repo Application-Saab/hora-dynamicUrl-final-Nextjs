@@ -5,12 +5,8 @@ import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "../store/store";
-import Link from "next/link";
-import Image from "next/image";
-import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from "next/router"; // Import useRouter
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
-import A2HSPrompt from "@/components/AddToHomeScreen";
 import Head from "next/head";
 import { getMessaging, getToken } from "firebase/messaging";
 import { messaging } from "../firebase"; 
