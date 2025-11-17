@@ -1,6 +1,8 @@
 import ImportantIcon from "@/assets/ThankyouNote-icon/importanticon.png";
 import ThankyounotePin from "@/assets/ThankyouNote-icon/ThankyounotePin.png";
 import FoodInfo from "@/assets/ThankyouNote-icon/Foodinfo.png";
+import host from "@/assets/ThankyouNote-icon/host.png";
+import guestIcon from "@/assets/ThankyouNote-icon/guestIcon.png";
 
 export const notesData = [
   {
@@ -10,6 +12,7 @@ export const notesData = [
       "Thanks for inviting us. We truly enjoyed being part of Sahaj’s wonderful birthday celebration. May God bless you always.",
     author: "YashParmar",
     color: "linear-gradient(140.79deg, #F5973D 8.22%, #FABC6F 96.1%)",
+    icon: guestIcon,
   },
   {
     id: 2,
@@ -18,6 +21,7 @@ export const notesData = [
       "So thrilled to celebrate with you all! Parking is bit tricky, please use rideshare. Let’s make memories!",
     author: "YashParmar",
     color: "linear-gradient(140.79deg, #6AADD9 8.22%, #A5C9CD 96.1%)",
+    icon: host,
   },
   {
     id: 3,
@@ -49,7 +53,7 @@ export const notesData = [
     id: 6,
     title: "#SarahsSuper Bash",
     content: "",
-    author: "YashParmar",
+    author: "",
     color: "linear-gradient(140.79deg, #E05180 8.22%, #E6899E 96.1%)",
   },
   {

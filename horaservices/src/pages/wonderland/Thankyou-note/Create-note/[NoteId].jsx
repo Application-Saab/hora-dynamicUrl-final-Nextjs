@@ -57,17 +57,17 @@ export default function NoteDetails() {
     fetchUserName();
   }, []);
 
-  useEffect(() => {
-    if (contentRef.current) {
-      adjustHeight(contentRef.current);
-    }
-    if (titleRef.current) {
-      adjustHeight(titleRef.current);
-    }
-    if (authorRef.current) {
-      adjustHeight(authorRef.current);
-    }
-  }, [note]);
+  // useEffect(() => {
+  //   if (contentRef.current) {
+  //     adjustHeight(contentRef.current);
+  //   }
+  //   if (titleRef.current) {
+  //     adjustHeight(titleRef.current);
+  //   }
+  //   if (authorRef.current) {
+  //     adjustHeight(authorRef.current);
+  //   }
+  // }, [note]);
 
 
   useEffect(() => {
@@ -264,20 +264,28 @@ export default function NoteDetails() {
     }
   };
 
-  useEffect(() => {
-    const scrollContainer = document.querySelector(".note-scroll-container");
-    if (!scrollContainer) return;
+ useEffect(() => {
+  const scrollContainer = document.querySelector(".note-scroll-container");
+  if (!scrollContainer) return;
 
-    if (showEmojiPicker) {
-      scrollContainer.classList.add("keyboard-open");
-      scrollContainer.scrollTo({
-        top: scrollContainer.scrollHeight,
-        behavior: "smooth",
-      });
-    } else {
-      scrollContainer.classList.remove("keyboard-open");
+  if (showEmojiPicker) {
+    const isAtBottom =
+      scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 10;
+
+    if (isAtBottom) {
+      // Only scroll if the user is already at the bottom
+      scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: "smooth" });
     }
-  }, [showEmojiPicker]);
+
+    scrollContainer.classList.add("keyboard-open");
+  } else {
+    scrollContainer.classList.remove("keyboard-open");
+  }
+}, [showEmojiPicker]);
+
+
+
+
 
   if (!note) return <p>Loading...</p>;
 
@@ -303,9 +311,8 @@ export default function NoteDetails() {
           >
             <div className="createNote-header">
               {note.icon && <Image src={note.icon} alt="" className="createNote-icon" />}
-            </div>
-
-            <textarea
+             
+                <textarea
               ref={titleRef}
               value={liveData.title}
               rows={1}
@@ -321,6 +328,9 @@ export default function NoteDetails() {
 
 
             />
+            </div>
+
+          
 
             <textarea
               ref={contentRef}

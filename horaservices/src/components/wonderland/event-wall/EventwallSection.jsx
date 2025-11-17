@@ -35,7 +35,7 @@ const EventwallSection = () => {
         {actionButtons.map(({ label, icon, onClick }, index) => (
           <button
             key={index}
-            className="event-wall-action-btn"
+           className={`event-wall-action-btn event-wall-action-btn-${index}`}
             onClick={onClick}
           >
             <img

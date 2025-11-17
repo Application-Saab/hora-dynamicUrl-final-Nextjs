@@ -6,7 +6,6 @@
 .createNote-container {
   position: relative;
   width: 100%;
-  max-width: 420px;
   padding: 14px;
   text-align: center;
   display: flex;
@@ -29,6 +28,18 @@
   margin-bottom: 6px;
   position: relative;
 }
+.createNote-container .textArea-title  {
+   font-family: 'Kadwa', serif; 
+}
+.createNote-container .textArea-Content {
+    font-family: Recursive;
+    font-size: clamp(20px, 6vw, 30px);
+    overflow: hidden;
+    width: 99%;
+    height: clamp(250px, 80vw, 325px);
+}
+
+
 
 .createNote-icon {
   width: 20px;
@@ -108,23 +119,12 @@
 .always-border {
   border: 2px dashed rgba(255, 255, 255, 0.9);
   border-radius: 5px;
+  animation: borderMove 1.5s  linear infinite;
 }
 
 
 
 
-@media (max-width: 400px) {
-   .createNote-container {
-    width: 92%;
-    padding: 12px;
-  }
- }
 
-@media (min-width: 410px) and (max-width: 560px) {
-    .createNote-container {
-    width: 92%;
-    padding: 12px;
-  }
 
- 
-}
+

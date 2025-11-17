@@ -49,6 +49,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
         router.push("/wonderland");
       }}
       title="Create Invitation"
+      titleClass="my-title-class"
       verticalCenter={false}
       disableBackdropClick={true}
       bodyClass="create-invite-modal-body"

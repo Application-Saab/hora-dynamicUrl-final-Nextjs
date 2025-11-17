@@ -20,6 +20,7 @@
   max-height: calc(100vh - 60px);
   overflow-y: auto;
   transition: max-height 0.3s ease;
+  margin-bottom: 30px;
 }
 
 .note-scroll-container.keyboard-open {
