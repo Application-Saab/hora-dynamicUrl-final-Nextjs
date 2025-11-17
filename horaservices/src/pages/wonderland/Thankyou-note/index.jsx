@@ -18,20 +18,27 @@ const EventNotes = () => {
 
         <h2 className="note-heading">Event Notes</h2>
         <div className="notesGrid">
-          {notesData.map((note) => (
+          {notesData.map((note , index ) => (
             <div
               key={note.id}
-              className="noteCard"
+             className={`noteCard noteCard-${index}`}
               style={{ background: note.color }}
               onClick={() => handleNoteClick(note.id)}
             >
-                <span className="tryBadge">Try</span>
+              
               <div className="noteHeader">
-
+                <div className="noteIconsec">
+                    {note.icon && <Image src={note.icon} alt="NoteIcon" className="noteIcon" />}
+                        <span className="tryBadge">Try</span>
+                  </div>
+              
                 <h3 className="noteTitle">{note.title}</h3>
-                {note.icon && <Image src={note.icon} alt="NoteIcon" className="noteIcon" />}
+        
               </div>
-              <p className="noteContent">{note.content}</p>
+              <p className="noteContent">
+                {note.content}
+                </p>
+                <p className="noteContent auther">- {note.author}</p>
             </div>
 
 

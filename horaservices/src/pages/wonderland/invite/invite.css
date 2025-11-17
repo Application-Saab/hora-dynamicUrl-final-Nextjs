@@ -153,12 +153,12 @@
 
 /* Event wall section */
 .event-wall-container {
-  margin-top: 14.09px;
+  margin-top: 21px;
 }
 .wall-heading {
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  font-size: 22px;
+  font-size: clamp(16px, 5.60vw, 26px);
 }
 .event-wall-action-ctn {
   display: flex;
@@ -172,24 +172,35 @@
   box-shadow: 0px 4px 4px 0px #00000026;
   border: none;
   border-radius: 33px;
-  padding: 8px 7px;
+  font-size: clamp(10px, 3.05vw, 14px);
   font-family: "Montserrat", sans-serif;
-  font-weight: 800;
-  font-size: 11px;
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
+  height: clamp(24px, 7.88vw, 40px);
+}
+.event-wall-action-btn-0 {
+  width: clamp(80px, 26.9vw, 120px);
+}
+.event-wall-action-btn-1{
+  width: clamp(90px, 31.3vw, 150px);
+}
+.event-wall-action-btn-2{
+ width: clamp(110px, 38.19vw, 190px);
 }
 .eventwall-nopost-ctn {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 24.5px;
+  margin: 24.5px auto 0;
+    width: 71%;
 }
 .nopost-box {
   box-shadow: 0px 4px 4px 0px #00000040;
-  padding: 32.45px 15px;
+  padding: clamp(20px, 8.25vw, 40px) clamp(10px, 3.81vw, 20px);
   text-align: center;
   border-radius: 15px;
 }
@@ -200,7 +211,7 @@
 .nopost-box .line-1 {
   font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-size: 14px;
+  font-size: clamp(9px, 2.80vw, 13px);
   color: #4c4f56;
   text-align: center;
   margin-bottom: 0px;
@@ -210,33 +221,13 @@
 .nopost-box .line-2 {
   font-family: "Inter", sans-serif;
   font-weight: 400;
-  font-size: 12px;
+ font-size: clamp(9px, 2.80vw, 13px);
   color: #6b6f71;
   text-align: center;
-  margin: 0px;
+  margin: 4px 0 0;
   padding: 0px;
 }
 .nopost-box .line-3 {
   margin-top: 17.37px;
 }
 
-@media (min-width: 345px) {
-  .event-wall-action-ctn {
-    gap: 10px;
-  }
-}
-
-@media (min-width: 360px) {
-  .status-box-header h3 {
-    font-size: 22px;
-  }
-
-  .status-box-header span {
-    font-size: 14px;
-  }
-
-  .event-wall-action-btn {
-    padding: 9px 8px;
-    font-size: 12px;
-  }
-}

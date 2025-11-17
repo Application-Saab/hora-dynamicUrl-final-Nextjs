@@ -61,11 +61,10 @@
 }
 
 .modal-question-text {
-  font-size: 23px;
+font-size: clamp(22px, 7.1vw, 34px);
   font-family: "Roboto", sans-serif;
   font-weight: 700;
   color: #010000;
-  margin-bottom: 30px;
   text-align: center;
   letter-spacing: 0px;
   margin-top: 0px;
@@ -75,18 +74,23 @@
 /* Input Group */
 .input-group-custom {
   width: 100%;
-  margin-bottom: 40px;
+  margin-top: clamp(14px, 4.6vw, 22px);
+  margin-bottom: clamp(22px, 6.9vw, 32px);
+  margin-left: 0;
+margin-right: 0;
   text-align: right;
 }
 
-.input-group-custom input {
-  width: 100%;
-  padding: 17.5px 10px;
+.input-group-custom input , .add-details-input  {
+  width: clamp(250px, 72vw, 310px);
+  height: clamp(48px, 14vw, 65px);
+  padding-left: 10px;
+  padding-right: 10px;
   background-color: #fff;
   border: 1px solid #00000066;
   border-radius: 10px;
   color: #00000099;
-  font-size: 17px;
+ font-size: clamp(15px, 4.3vw, 20px);
   box-shadow: 0px 4px 4px 0px #0000003b;
   outline: none;
   transition: border-color 0.3s;
@@ -159,14 +163,7 @@
   box-shadow: 0px 4px 4px 0px #0000003b !important;
   margin-bottom: 17px;
 }
-.add-details-input {
-  padding: 16px 11.5px 16px 0px !important;
-  background-color: #fff !important;
-  border: 1px solid #00000066 !important;
-  border-radius: 0px 8px 8px 0px !important;
-  border-left: none !important;
-  font-size: 14px !important;
-}
+
 .add-details-input-addon {
   border: 1px solid #00000066 !important;
   border-radius: 8px 0px 0px 8px !important;
@@ -184,9 +181,6 @@
 
 .adddetails-input-group input:focus {
   border-color: #cc3399;
-}
-.add-details-submit {
-  padding: 10px 68px !important;
 }
 
 .add-details-date-btn {
@@ -386,26 +380,4 @@
 
 .save-btn {
   background-color: #349053;
-}
-@media (max-width: 360px) {
- .input-group-custom input {
-    padding: 12px 10px;
-  }
-}
-@media (min-width: 360px) {
-  .add-details-modal-body {
-    padding: 22px 23px 49px 23px !important;
-  }
-  .add-details-modal-content {
-    width: 90% !important;
-  }
-}
-@media (min-width: 380px) {
-  .add-details-modal-content {
-    width: 85% !important;
-  }
-  .modal-question-text{
-    font-size: 28px;
-    margin-bottom: 40px;
-  }
 }
