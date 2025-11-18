@@ -24,7 +24,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 15px 10px;
   justify-items: center;
-  margin: 10px;
+  margin: 5px;
 }
 
 .tempskeleton-card {
@@ -36,7 +36,7 @@
   overflow: hidden;
 }
 
-/* shimmer animation */
+
 .tempskeleton-tab::after,
 .tempskeleton-card::after {
   content: "";
