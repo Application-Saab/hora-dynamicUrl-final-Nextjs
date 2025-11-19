@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FiUpload } from "react-icons/fi";
 import CategoryTabs from "@/components/wonderland/CategoryTabs";
 import TemplateSkeleton from "@/components/wonderland/TemplateSkeleton";
 import SequentialLoader from "@/components/SequentialLoader";
@@ -33,7 +32,6 @@ const TemplatesPage = () => {
         if (data.error) throw new Error(data.message || "Failed to fetch templates");
         setTemplates(data.templates || []);
       } catch (err) {
-        console.error(err.message);
       } finally {
         setLoading(false);
       }
@@ -70,7 +68,6 @@ const TemplatesPage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!eventId || !userId) {
-      alert("Please make sure you’re logged in and have an event selected.");
       return;
     }
     uploadCustomTemplate(file);
