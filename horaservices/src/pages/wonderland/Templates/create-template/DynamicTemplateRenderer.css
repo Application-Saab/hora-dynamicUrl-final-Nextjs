@@ -256,7 +256,7 @@
   outline: 1px dashed #ffffff;
   padding: 2px 4px;
   border-radius: 1px;
-  width: fit-content;
+  width:max-content;
   line-height: normal;
 }
 

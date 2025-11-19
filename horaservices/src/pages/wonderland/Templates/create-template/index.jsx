@@ -266,17 +266,94 @@ const DynamicTemplateRenderer = () => {
   }, [templateMeta?.templateInfo]);
 
   /* --- editable clicks --- */
+  // const handleEditableClick = useCallback(
+  //   (field, node) => {
+  //     const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
+  //     node.contentEditable = "true";
+  //     node.dataset.editing = "true";
+  //     node.classList.add("editing");
+  //     node.innerText = node.innerText?.trim()
+  //       ? node.innerText
+  //       : formData[field] || (field === "address" ? "Type your address" : "");
+  //     node.focus();
+
+  //     const onKeyDown = (ev) => {
+  //       const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
+  //       if (printable && node.innerText.length >= charLimit) {
+  //         const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
+  //         if (!allowed.includes(ev.key)) {
+  //           ev.preventDefault();
+  //           setFormErrors((prev) => ({ ...prev, [field]: `Character limit of ${charLimit} reached` }));
+  //           return;
+  //         }
+  //       } else {
+  //         setFormErrors((prev) => ({ ...prev, [field]: "" }));
+  //       }
+  //       if (ev.key === "Enter") {
+  //         ev.preventDefault();
+  //         node.blur();
+  //       }
+  //       if (ev.key === "Escape") {
+  //         node.innerText = formData[field] || "";
+  //         node.blur();
+  //       }
+  //     };
+
+  //     const onInput = () => {
+  //       if (node.innerText.length > charLimit) {
+  //         node.innerText = node.innerText.slice(0, charLimit);
+  //       }
+  //       setCharCounts((prev) => ({ ...prev, [field]: node.innerText.length }));
+  //       if (node.innerText.length <= charLimit) {
+  //         setFormErrors((prev) => ({ ...prev, [field]: "" }));
+  //       }
+  //     };
+
+  //     const onPaste = (ev) => {
+  //       ev.preventDefault();
+  //       const pasted = (ev.clipboardData || window.clipboardData).getData("text");
+  //       const allowed = Math.max(0, charLimit - node.innerText.length);
+  //       document.execCommand("insertText", false, pasted.slice(0, allowed));
+  //     };
+
+  //     const onBlur = () => {
+  //       let value = node.innerText.trim();
+  //       if (!value && field === "address") value = "Type your address";
+  //       if (value.length > charLimit) value = value.slice(0, charLimit);
+  //       setFormData((prev) => ({ ...prev, [field]: value }));
+  //       setCharCounts((prev) => ({ ...prev, [field]: value.length }));
+  //       setFormErrors((prev) => ({ ...prev, [field]: "" }));
+  //       node.contentEditable = "false";
+  //       node.removeAttribute("data-editing");
+  //       node.classList.remove("editing");
+  //       node.removeEventListener("keydown", onKeyDown);
+  //       node.removeEventListener("input", onInput);
+  //       node.removeEventListener("paste", onPaste);
+  //       node.removeEventListener("blur", onBlur);
+  //     };
+
+  //     node.addEventListener("keydown", onKeyDown);
+  //     node.addEventListener("input", onInput);
+  //     node.addEventListener("paste", onPaste);
+  //     node.addEventListener("blur", onBlur);
+  //   },
+  //   [formData, templateMeta?.charLimits]
+  // );
   const handleEditableClick = useCallback(
     (field, node) => {
       const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
       node.contentEditable = "true";
       node.dataset.editing = "true";
       node.classList.add("editing");
-      node.innerText = node.innerText?.trim()
-        ? node.innerText
-        : formData[field] || (field === "address" ? "Type your address" : "");
+  
+      const isEmpty = !node.innerText?.trim();
+      if (isEmpty) {
+        node.innerText = formData[field] || (field === "address" ? "Type your address" : "");
+        setCaretAtEnd(node); // sirf tab call karo jab humne text set kiya
+      }
+  
       node.focus();
-
+  
       const onKeyDown = (ev) => {
         const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
         if (printable && node.innerText.length >= charLimit) {
@@ -289,33 +366,34 @@ const DynamicTemplateRenderer = () => {
         } else {
           setFormErrors((prev) => ({ ...prev, [field]: "" }));
         }
+  
         if (ev.key === "Enter") {
           ev.preventDefault();
           node.blur();
-        }
-        if (ev.key === "Escape") {
+        } else if (ev.key === "Escape") {
           node.innerText = formData[field] || "";
           node.blur();
         }
       };
-
+  
       const onInput = () => {
         if (node.innerText.length > charLimit) {
           node.innerText = node.innerText.slice(0, charLimit);
+          setCaretAtEnd(node);
         }
         setCharCounts((prev) => ({ ...prev, [field]: node.innerText.length }));
         if (node.innerText.length <= charLimit) {
           setFormErrors((prev) => ({ ...prev, [field]: "" }));
         }
       };
-
+  
       const onPaste = (ev) => {
         ev.preventDefault();
         const pasted = (ev.clipboardData || window.clipboardData).getData("text");
         const allowed = Math.max(0, charLimit - node.innerText.length);
         document.execCommand("insertText", false, pasted.slice(0, allowed));
       };
-
+  
       const onBlur = () => {
         let value = node.innerText.trim();
         if (!value && field === "address") value = "Type your address";
@@ -331,7 +409,7 @@ const DynamicTemplateRenderer = () => {
         node.removeEventListener("paste", onPaste);
         node.removeEventListener("blur", onBlur);
       };
-
+  
       node.addEventListener("keydown", onKeyDown);
       node.addEventListener("input", onInput);
       node.addEventListener("paste", onPaste);
@@ -339,7 +417,6 @@ const DynamicTemplateRenderer = () => {
     },
     [formData, templateMeta?.charLimits]
   );
-
   useEffect(() => {
     const container = templateRef.current;
     if (!container) return;
