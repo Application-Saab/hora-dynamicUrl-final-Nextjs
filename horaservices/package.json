@@ -15,6 +15,7 @@
     "@next/third-parties": "^14.2.9",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "browser-image-compression": "^2.0.2",
     "emoji-picker-react": "^4.13.2",
     "file-loader": "^6.2.0",
     "firebase": "^12.1.0",
