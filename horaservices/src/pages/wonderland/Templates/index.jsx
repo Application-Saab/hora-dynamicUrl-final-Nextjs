@@ -48,22 +48,22 @@ const TemplatesPage = () => {
     };
     fetchTemplates();
   }, []);
-useEffect(() => {
-  if (loading) return;
+  useEffect(() => {
+    if (loading) return;
 
-  setCategoryLoading(true);
+    setCategoryLoading(true);
 
-  const timer = setTimeout(() => {
-    const filtered = templates.filter(
-      (t) => t.category === selectedCategory
-    );
+    const timer = setTimeout(() => {
+      const filtered = templates.filter(
+        (t) => t.category === selectedCategory && !t.isDisabled
+      );
 
-    setFilteredTemplates(filtered);
-    setCategoryLoading(false);
-  }, 500); 
+      setFilteredTemplates(filtered);
+      setCategoryLoading(false);
+    }, 500);
 
-  return () => clearTimeout(timer);
-}, [selectedCategory, templates, loading]);
+    return () => clearTimeout(timer);
+  }, [selectedCategory, templates, loading]);
 
   const handleApplyClick = (templateMongoId) => {
     router.push(
@@ -121,3 +121,7 @@ return (
 };
 
 export default TemplatesPage;
+
+
+
+

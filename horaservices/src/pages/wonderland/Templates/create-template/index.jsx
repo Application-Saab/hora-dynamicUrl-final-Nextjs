@@ -49,7 +49,8 @@ const DynamicTemplateRenderer = () => {
     time: "",
     address: "",
     templateId: templateId || "",
-    image: DefaultImageBgCircle.src,
+    image: uploadedImage || originalImage || DefaultImageBgCircle.src,
+
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -497,7 +498,10 @@ const DynamicTemplateRenderer = () => {
           templateId: templateId,
           isHeroImage: template?.isHeroImage || false,
         }));
-
+  if (data.imageUrl) {
+       setUploadedImage(data.imageUrl);
+       setOriginalImage(data.imageUrl);
+     }
         setCharCounts({
           eventType: data.eventType?.length || 0,
           name: data.hostName?.length || 0,
@@ -535,6 +539,7 @@ const DynamicTemplateRenderer = () => {
       eventDate: formData.date ? new Date(formData.date).toISOString() : "",
       eventTime: formData.time || "",
       location: formData.address,
+      
     };
 
     try {
@@ -559,9 +564,7 @@ const DynamicTemplateRenderer = () => {
       console.error("Error:", err);
       alert("Something went wrong.");
     }
-    finally {
-      setIsSaved(false);
-    }
+ 
   };
 
   const handleDownload = async () => {
@@ -789,6 +792,7 @@ useEffect(() => {
           setFormData(prev => ({ ...prev, time: t }));
         }}
       />
+      
     </div>
   );
 };

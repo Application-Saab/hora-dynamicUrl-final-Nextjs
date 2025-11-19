@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
+import TemplatecardSkeleton from "../TemplateSkeleton/templatecardSkeleton";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -13,6 +14,7 @@ const TemplateRenderer = ({
   const textRef = useRef(null);
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // 🧩 Get base font style dynamically
   const getBaseFontStyles = () => {
@@ -75,7 +77,8 @@ const imageUrl =
               overflow: "hidden",
             }}
           >
-            {/* 🖼️ Render template image */}
+            {!imageLoaded && <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />}
+
             <img
               src={imageUrl}
               alt="Invitation Template"
@@ -85,7 +88,9 @@ const imageUrl =
                 height: "auto",
                 borderRadius: "12px",
                 objectFit: "cover",
+                  visibility: imageLoaded ? "visible" : "hidden",
               }}
+               onLoad={() => setImageLoaded(true)}
             />
 
          

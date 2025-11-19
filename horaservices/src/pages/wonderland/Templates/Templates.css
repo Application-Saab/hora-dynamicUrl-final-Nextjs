@@ -13,10 +13,10 @@
 
 .templates-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px 10px;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: clamp(10px, 4vw, 15px) clamp(8px, 3vw, 10px); 
   justify-items: center;
-  margin:10px
+  margin: 10px;
 }
 
 .template-card {
@@ -51,7 +51,92 @@
   display: block;
 }
 
+.template-img-wrapper {
+  width: clamp(140px, 45vw, 184px);
+  height: clamp(200px, 55vw, 240px);
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+
+.template-image {
+  object-fit: cover;
+}
+
 .template-cat {
   padding: 8px;
   font-weight: 600;
 }
+
+/* 
+.templates-page {
+  padding: 10px;
+  text-align: center;
+}
+
+.templates-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 20px; 
+  text-align: center;
+  color: #171414;
+}
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 12px; 
+  justify-items: center;
+  margin: 10px 0;
+}
+
+.template-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #AEAEAE;
+  border-radius: 6px;
+  width: 100%;
+  max-width: 184px; 
+  transition: transform 0.3s ease;
+}
+
+.template-card:hover {
+  transform: translateY(-5px);
+}
+
+.try-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-weight: 600;
+  font-size: 10px; 
+  padding: 2px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.template-img-wrapper {
+  width: 100%;
+  aspect-ratio: 184 / 203; 
+  overflow: hidden;
+  border-radius: 6px;
+  position: relative;
+}
+
+.template-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.template-cat {
+  padding: 8px;
+  font-weight: 600;
+  font-size: 14px; 
+  text-align: center;
+} */

@@ -251,21 +251,25 @@
   margin-right: 5px;
 }
 
-.editable {
+.editborder {
   display: inline-block;
   outline: 1px dashed #ffffff;
   padding: 2px 4px;
-  border-radius: 4px;
+  border-radius: 1px;
   width: fit-content;
   line-height: normal;
 }
 
-.saved .editable {
+.saved .editborder {
   outline: none;
   padding: 0;
 }
 
-
+.template-container {
+  border-radius: 12px;
+  border: 1px solid #000000;
+  overflow: hidden;
+}
 
 /* *********** Template Wise Css ****************** */
 
