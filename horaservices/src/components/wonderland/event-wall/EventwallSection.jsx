@@ -125,11 +125,11 @@ const EventwallSection = ({ userData }) => {
       let uploadResult;
 
       if (isVideo) {
-        uploadResult = await uploadVideo(file, userId, eventid, (percent) =>
+        uploadResult = await uploadVideo(file, userId, eventid, 'self-upload', (percent) =>
           updateProgress(id, percent)
         );
       } else {
-        uploadResult = await uploadImage(file, userId, eventid, (percent) =>
+        uploadResult = await uploadImage(file, userId, eventid, 'self-upload', (percent) =>
           updateProgress(id, percent)
         );
       }

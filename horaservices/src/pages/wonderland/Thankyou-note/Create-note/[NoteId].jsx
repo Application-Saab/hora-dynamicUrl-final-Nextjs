@@ -1,4 +1,3 @@
-
 import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
@@ -7,16 +6,26 @@ import "./createNote.css";
 import { notesData } from "@/utils/ThankyounotesData.js";
 import CustomButton from "@/components/wonderland/common/CustomButton";
 import Image from "next/image";
-import { GET_USER_BY_ID, BASE_URL, UPLOAD_THANKYOU_NOTE, } from "@/utils/apiconstants";
+import {
+  GET_USER_BY_ID,
+  BASE_URL,
+  CREATE_NEW_POST,
+} from "@/utils/apiconstants";
 import EmojiPickerButton from "@/components/EmojiPicker";
 import NoteSkeleton from "@/components/wonderland/NoteSkeleton";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
+import { uploadImage } from "@/utils/handleMediaUpload";
+import useApi from "@/hooks/useApi";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
 
   const [note, setNote] = useState(null);
-  const [liveData, setLiveData] = useState({ title: "", content: "", author: "" });
+  const [liveData, setLiveData] = useState({
+    title: "",
+    content: "",
+    author: "",
+  });
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [activeField, setActiveField] = useState(null);
   const [lastSelection, setLastSelection] = useState({ start: 0, end: 0 });
@@ -28,6 +37,7 @@ export default function NoteDetails() {
   const contentRef = useRef(null);
   const authorRef = useRef(null);
   const noteRef = useRef(null);
+  const { makeRequest: createPost } = useApi();
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
@@ -69,7 +79,6 @@ export default function NoteDetails() {
   //   }
   // }, [note]);
 
-
   useEffect(() => {
     if (NoteId) {
       const found = notesData.find((n) => n.id === Number(NoteId));
@@ -102,16 +111,14 @@ export default function NoteDetails() {
     adjustHeight(ref.current);
   };
 
-
-
   useEffect(() => {
     if (!showEmojiPicker && activeField && !preventRefocus) {
       const ref =
         activeField === "title"
           ? titleRef.current
           : activeField === "content"
-            ? contentRef.current
-            : authorRef.current;
+          ? contentRef.current
+          : authorRef.current;
 
       if (ref) {
         ref.focus();
@@ -125,8 +132,6 @@ export default function NoteDetails() {
     }
   }, [showEmojiPicker]);
 
-
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -136,15 +141,11 @@ export default function NoteDetails() {
       ) {
         setShowEmojiPicker(false);
       }
-
     };
 
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, [showEmojiPicker]);
-
-
-
 
   const handleFocus = (field, ref) => {
     setActiveField(field);
@@ -167,8 +168,8 @@ export default function NoteDetails() {
       activeField === "title"
         ? titleRef.current
         : activeField === "content"
-          ? contentRef.current
-          : authorRef.current;
+        ? contentRef.current
+        : authorRef.current;
 
     if (!ref) return;
 
@@ -211,7 +212,7 @@ export default function NoteDetails() {
   const handleDownload = async () => {
     if (!noteRef.current) return;
     setShowBorders(false);
-    
+
     const { eventid } = router.query;
     if (!eventid) {
       console.error("eventId is undefined");
@@ -220,40 +221,42 @@ export default function NoteDetails() {
 
     const userID =
       typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     if (!userID) {
       console.error("userID not found");
       return;
     }
 
-    const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
+    const blob = await captureElementAsImage(noteRef.current, [
+      ".emoji-button",
+    ]);
     if (!blob) {
       console.error("Failed to capture image.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", blob, "note.png");
-    formData.append("userId", userID);
-    formData.append("name", userName || "Guest");
+    const file = new File([blob], "note.png", { type: blob.type });
 
     try {
-      const response = await fetch(
-        `${BASE_URL}${UPLOAD_THANKYOU_NOTE}/${eventid}/thankyou-note`,
-        {
-          method: "PUT",
-          headers: { Authorization: `${token}` },
-          body: formData,
-        }
+      let response = await uploadImage(
+        file,
+        userID,
+        eventid,
+        "thankyou-note",
+        (percent) => console.log(`Upload progress: ${percent}%`)
       );
-
-      const result = await response.json();
-      console.log("API Status:", response.status);
-      console.log("API Response:", result);
-
-      if (response.ok) {
+      if (response.success) {
+        // Create DB post
+        const postPayload = {
+          postById: userID,
+          postByName: userName || "Guest",
+          postType: "selfUploaded",
+          postUrl: response.originalUrl,
+          postKey: response.originalKey,
+          postWebpUrl: response.thumbnailUrl,
+          postWebpKey: response.thumbnailKey,
+        };
+        await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
         router.push(`/wonderland/invite?eventid=${eventid}`);
       } else {
         alert("Upload failed. Please try again.");
@@ -264,28 +267,30 @@ export default function NoteDetails() {
     }
   };
 
- useEffect(() => {
-  const scrollContainer = document.querySelector(".note-scroll-container");
-  if (!scrollContainer) return;
+  useEffect(() => {
+    const scrollContainer = document.querySelector(".note-scroll-container");
+    if (!scrollContainer) return;
 
-  if (showEmojiPicker) {
-    const isAtBottom =
-      scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 10;
+    if (showEmojiPicker) {
+      const isAtBottom =
+        scrollContainer.scrollHeight -
+          scrollContainer.scrollTop -
+          scrollContainer.clientHeight <
+        10;
 
-    if (isAtBottom) {
-      // Only scroll if the user is already at the bottom
-      scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: "smooth" });
+      if (isAtBottom) {
+        // Only scroll if the user is already at the bottom
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+
+      scrollContainer.classList.add("keyboard-open");
+    } else {
+      scrollContainer.classList.remove("keyboard-open");
     }
-
-    scrollContainer.classList.add("keyboard-open");
-  } else {
-    scrollContainer.classList.remove("keyboard-open");
-  }
-}, [showEmojiPicker]);
-
-
-
-
+  }, [showEmojiPicker]);
 
   if (!note) return <p>Loading...</p>;
 
@@ -300,43 +305,45 @@ export default function NoteDetails() {
       {!note ? (
         <NoteSkeleton />
       ) : (
-        <div
-          className="note-scroll-container"
-        >
-
+        <div className="note-scroll-container">
           <div
             ref={noteRef}
             className="createNote-container"
             style={{ background: note.color, position: "relative" }}
           >
             <div className="createNote-header">
-              {note.icon && <Image src={note.icon} alt="" className="createNote-icon" />}
-             
-                <textarea
-              ref={titleRef}
-              value={liveData.title}
-              rows={1}
-              onChange={(e) => handleChange("title", e.target.value, titleRef)}
-              onFocus={() => { handleFocus("title", titleRef); setFocusedField("title"); }}
-              onBlur={() => {
-                if (!showEmojiPicker) setFocusedField(null);
-              }}
+              {note.icon && (
+                <Image src={note.icon} alt="" className="createNote-icon" />
+              )}
 
-              placeholder="TITLE..."
-
-              className={`textArea-title ${showBorders ? "always-border" : ""}`}
-
-
-            />
+              <textarea
+                ref={titleRef}
+                value={liveData.title}
+                rows={1}
+                onChange={(e) =>
+                  handleChange("title", e.target.value, titleRef)
+                }
+                onFocus={() => {
+                  handleFocus("title", titleRef);
+                  setFocusedField("title");
+                }}
+                onBlur={() => {
+                  if (!showEmojiPicker) setFocusedField(null);
+                }}
+                placeholder="TITLE..."
+                className={`textArea-title ${
+                  showBorders ? "always-border" : ""
+                }`}
+              />
             </div>
-
-          
 
             <textarea
               ref={contentRef}
               value={liveData.content}
               rows={2}
-              onChange={(e) => handleChange("content", e.target.value, contentRef)}
+              onChange={(e) =>
+                handleChange("content", e.target.value, contentRef)
+              }
               onFocus={() => {
                 handleFocus("content", contentRef);
                 setFocusedField("content");
@@ -344,11 +351,10 @@ export default function NoteDetails() {
               onBlur={() => {
                 if (!showEmojiPicker) setFocusedField(null);
               }}
-
               placeholder="Write your note..."
-
-              className={`textArea-Content ${showBorders ? "always-border" : ""}`}
-
+              className={`textArea-Content ${
+                showBorders ? "always-border" : ""
+              }`}
             />
 
             <textarea
@@ -358,7 +364,6 @@ export default function NoteDetails() {
               placeholder="- Fetching your name..."
               className="textArea-Author"
             />
-
 
             <div
               style={{
@@ -373,14 +378,12 @@ export default function NoteDetails() {
                 isPickerOpen={showEmojiPicker}
                 setIsPickerOpen={setShowEmojiPicker}
               />
-
             </div>
           </div>
 
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <CustomButton title={"Submit"} onClick={handleDownload} />
           </div>
-
         </div>
       )}
     </>

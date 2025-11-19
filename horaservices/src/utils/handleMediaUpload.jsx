@@ -100,15 +100,21 @@ export async function uploadToS3WithProgress(file, presignedUrl, onProgress) {
   });
 }
 
-export async function uploadImage(file, userId, eventId, onProgress) {
+export async function uploadImage(
+  file,
+  userId,
+  eventId,
+  folderName,
+  onProgress
+) {
   const thumb = await imageCompression(file, {
     maxSizeMB: 0.15,
     maxWidthOrHeight: 400,
   });
 
   const [origSigned, thumbSigned] = await Promise.all([
-    getPresignedUrl(file, userId, eventId, "self-upload"),
-    getPresignedUrl(thumb, userId, eventId, "self-upload"),
+    getPresignedUrl(file, userId, eventId, folderName),
+    getPresignedUrl(thumb, userId, eventId, folderName),
   ]);
 
   await uploadToS3WithProgress(file, origSigned.uploadURL, onProgress);
@@ -126,12 +132,18 @@ export async function uploadImage(file, userId, eventId, onProgress) {
   };
 }
 
-export async function uploadVideo(file, userId, eventId, onProgress) {
+export async function uploadVideo(
+  file,
+  userId,
+  eventId,
+  folderName,
+  onProgress
+) {
   const thumbnailFile = await create3SecClip(file);
 
   const [origSigned, thumbSigned] = await Promise.all([
-    getPresignedUrl(file, userId, eventId, "self-upload"),
-    getPresignedUrl(thumbnailFile, userId, eventId, "self-upload"),
+    getPresignedUrl(file, userId, eventId, folderName),
+    getPresignedUrl(thumbnailFile, userId, eventId, folderName),
   ]);
 
   await uploadToS3WithProgress(file, origSigned.uploadURL, onProgress);
