@@ -95,7 +95,7 @@ const TemplatesPage = () => {
         const data = await res.json();
         throw new Error(data.message || "Upload failed");
       }
-      router.push(`/wonderland?id=${userId}/${eventId}/host`);
+      router.replace(`/wonderland/invite?eventid=${eventId}`);
     } catch (err) {
       alert(err.message);
     } finally {
