@@ -23,7 +23,6 @@ const EventwallSection = ({ userData }) => {
   const { makeRequest: getAllPosts } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
-  const [uploading, setUploading] = useState(false);
 
   const MAX_PARALLEL_UPLOADS = 5;
   let activeUploads = 0;
@@ -191,7 +190,7 @@ const EventwallSection = ({ userData }) => {
       onClick: () => console.log("Post Badge clicked"),
     },
     {
-      label: uploading ? "Uploading..." : "Upload Pictures",
+      label: "Upload Pictures",
       icon: GalleryButtonIcon.src,
       onClick: handleUploadPictureClick,
     },

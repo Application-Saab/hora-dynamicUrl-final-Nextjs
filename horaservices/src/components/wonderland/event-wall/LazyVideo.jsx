@@ -6,13 +6,11 @@ import "./LazyVideo.css";
 const LazyVideo = ({
   previewSrc,
   fullVideoSrc,
-  className,
-  wrapperClassName,
+  className
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [duration, setDuration] = useState(null);
   const videoRef = useRef(null);
-  const wrapperRef = useRef(null);
 
   // Format video duration
   const formatDuration = (seconds) => {
@@ -29,10 +27,8 @@ const LazyVideo = ({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          console.log("Playing video:", fullVideoSrc);
           currentVideo.play().catch(() => {});
         } else {
-          console.log("Paused video:", fullVideoSrc);
           currentVideo.pause();
         }
       },
@@ -48,7 +44,7 @@ const LazyVideo = ({
     };
   }, []);
 
-  // ✅ Load video metadata (duration)
+  // Load video metadata (duration)
   useEffect(() => {
     if (!fullVideoSrc) return;
     const video = document.createElement("video");
@@ -62,8 +58,7 @@ const LazyVideo = ({
 
   return (
     <div
-      ref={wrapperRef}
-      className={`${wrapperClassName || ""}`}
+      className='event-masonry-item'
       style={{
         backgroundColor: isLoaded ? "#FFFFFF" : "#e9ecef",
       }}

@@ -5,7 +5,6 @@ const EventLazyImage = ({
   src,
   alt,
   className,
-  wrapperClassName,
   onClick,
   progress,
 }) => {
@@ -43,7 +42,7 @@ const EventLazyImage = ({
   return (
     <div
       ref={wrapperRef}
-      className={`${wrapperClassName || ""}`}
+      className='event-masonry-item'
       onClick={onClick}
       style={{
         backgroundColor: isLoaded ? "#FFFFFF" : "#e9ecef",

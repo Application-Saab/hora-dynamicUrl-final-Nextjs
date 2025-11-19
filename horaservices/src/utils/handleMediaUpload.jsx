@@ -61,9 +61,13 @@ export async function create3SecClip(videoFile) {
 
 // Presigned URL
 export const getPresignedUrl = async (file, userId, eventId, folderName) => {
+  let token =  localStorage.getItem('token')
   const res = await fetch(`${BASE_URL}/api/customer/event/get-presigned-url`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `${token}`
+    },
     body: JSON.stringify({
       fileName: file.name,
       fileType: file.type,
@@ -100,6 +104,33 @@ export async function uploadToS3WithProgress(file, presignedUrl, onProgress) {
   });
 }
 
+export async function convertToWebP(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob(
+        (blob) => {
+          const webpFile = new File([blob], "thumbnail.webp", {
+            type: "image/webp",
+          });
+          resolve(webpFile);
+        },
+        "image/webp",
+        1 // quality (0–1)
+      );
+    };
+  });
+}
+
 export async function uploadImage(
   file,
   userId,
@@ -107,18 +138,24 @@ export async function uploadImage(
   folderName,
   onProgress
 ) {
+  // STEP 1: compression
   const thumb = await imageCompression(file, {
     maxSizeMB: 0.15,
     maxWidthOrHeight: 400,
   });
 
+  // STEP 2: convert to WebP
+  const webpThumbnail = await convertToWebP(thumb);
+
+  // STEP 3: presigned URLs
   const [origSigned, thumbSigned] = await Promise.all([
     getPresignedUrl(file, userId, eventId, folderName),
-    getPresignedUrl(thumb, userId, eventId, folderName),
+    getPresignedUrl(webpThumbnail, userId, eventId, folderName),
   ]);
 
+  // STEP 4: upload main + webp thumbnail
   await uploadToS3WithProgress(file, origSigned.uploadURL, onProgress);
-  await uploadToS3(thumb, thumbSigned.uploadURL);
+  await uploadToS3(webpThumbnail, thumbSigned.uploadURL);
 
   const originalUrl = `https://photography-hora.s3.eu-north-1.amazonaws.com/${origSigned.key}`;
   const thumbnailUrl = `https://photography-hora.s3.eu-north-1.amazonaws.com/${thumbSigned.key}`;

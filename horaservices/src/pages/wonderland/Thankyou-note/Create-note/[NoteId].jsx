@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import html2canvas from "html2canvas";
 import "./createNote.css";
 import { notesData } from "@/utils/ThankyounotesData.js";
 import CustomButton from "@/components/wonderland/common/CustomButton";
@@ -29,8 +28,6 @@ export default function NoteDetails() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [activeField, setActiveField] = useState(null);
   const [lastSelection, setLastSelection] = useState({ start: 0, end: 0 });
-  const [preventRefocus, setPreventRefocus] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
   const [showBorders, setShowBorders] = useState(true);
 
   const titleRef = useRef(null);
@@ -67,18 +64,6 @@ export default function NoteDetails() {
     fetchUserName();
   }, []);
 
-  // useEffect(() => {
-  //   if (contentRef.current) {
-  //     adjustHeight(contentRef.current);
-  //   }
-  //   if (titleRef.current) {
-  //     adjustHeight(titleRef.current);
-  //   }
-  //   if (authorRef.current) {
-  //     adjustHeight(authorRef.current);
-  //   }
-  // }, [note]);
-
   useEffect(() => {
     if (NoteId) {
       const found = notesData.find((n) => n.id === Number(NoteId));
@@ -112,7 +97,7 @@ export default function NoteDetails() {
   };
 
   useEffect(() => {
-    if (!showEmojiPicker && activeField && !preventRefocus) {
+    if (!showEmojiPicker && activeField) {
       const ref =
         activeField === "title"
           ? titleRef.current
@@ -325,10 +310,6 @@ export default function NoteDetails() {
                 }
                 onFocus={() => {
                   handleFocus("title", titleRef);
-                  setFocusedField("title");
-                }}
-                onBlur={() => {
-                  if (!showEmojiPicker) setFocusedField(null);
                 }}
                 placeholder="TITLE..."
                 className={`textArea-title ${
@@ -346,10 +327,6 @@ export default function NoteDetails() {
               }
               onFocus={() => {
                 handleFocus("content", contentRef);
-                setFocusedField("content");
-              }}
-              onBlur={() => {
-                if (!showEmojiPicker) setFocusedField(null);
               }}
               placeholder="Write your note..."
               className={`textArea-Content ${

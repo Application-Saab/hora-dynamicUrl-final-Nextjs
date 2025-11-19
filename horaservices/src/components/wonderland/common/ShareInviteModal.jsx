@@ -36,7 +36,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
     gmail: {
       name: "Gmail",
       url: (text) =>
-        `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(
+        `mailto:?subject=${encodeURIComponent(
           "You're Invited! 🎉"
         )}&body=${encodeURIComponent(text)}`,
       icon: GmailIcon,
@@ -75,13 +75,9 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   const createShareText = (orderDetails) => {
     if (!orderDetails) return "";
 
-    const inviteURL = `https://horaservices.com/wonderland?eventid=${
-      orderDetails?._id
-    }&hostName=${orderDetails?.hostName?.replace(/ /g, "%20")}`;
+    const inviteURL = `https://horaservices.com/wonderland/invite?eventid=${orderDetails?._id}`;
 
-    return `You're invited to ${orderDetails?.hostName || "someone"}'s ${
-      orderDetails["Event Type"] || "Birthday"
-    }! 🎉
+    return `You're invited to ${orderDetails?.hostName}! 🎉
 📅 ${
       orderDetails.eventDate
         ? formateDateInDMDFormat(orderDetails?.eventDate)

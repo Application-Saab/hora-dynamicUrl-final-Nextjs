@@ -15,7 +15,6 @@ const EventwallGalleryItem = ({ isVideo, thumbnail, indexOnPage }) => {
             fullVideoSrc={thumbnail?.postUrl}
             isEventWall={true}
             progress={thumbnail.progress}
-            wrapperClassName={`event-masonry-item`}
           />
       ) : (
         <EventLazyImage
