@@ -1,6 +1,6 @@
-import LazyVideo from "./LazyVideo";
-import EventLazyImage from "./EventLazyImage";
-import "./EventLazyImage.css";
+import LazyVideo from "../../common/LazyVideo";
+import EventLazyImage from "../../common/EventLazyImage";
+import '../../common/EventLazyImage.css';
 
 const EventwallGalleryItem = ({ isVideo, thumbnail, indexOnPage }) => {
   const isLoading = !thumbnail?.postWebpUrl && thumbnail.status !== "done";

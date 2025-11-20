@@ -13,7 +13,7 @@ import {
   clearAllEventCache,
   getCachedEvent,
 } from "@/utils/eventCache";
-import "./EventLazyImage.css";
+import "../../common/EventLazyImage.css";
 import EventwallGalleryItem from "./EventwallGalleryItem";
 
 const EventwallSection = ({ userData }) => {
