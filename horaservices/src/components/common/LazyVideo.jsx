@@ -3,11 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaPlayCircle } from "react-icons/fa";
 import "./LazyVideo.css";
 
-const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName, isEventWall = false }) => {
+const LazyVideo = ({
+  previewSrc,
+  fullVideoSrc,
+  className
+}) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [duration, setDuration] = useState(null);
   const videoRef = useRef(null);
-  const wrapperRef = useRef(null);
 
   // Format video duration
   const formatDuration = (seconds) => {
@@ -23,17 +26,14 @@ const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName, isEv
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-     if (entry.isIntersecting) {
-        console.log("Playing video:", fullVideoSrc);
-        currentVideo.play().catch(() => {});
-      } else {
-        console.log("Paused video:", fullVideoSrc);
-        currentVideo.pause();
-      }
-
+        if (entry.isIntersecting) {
+          currentVideo.play().catch(() => {});
+        } else {
+          currentVideo.pause();
+        }
       },
       {
-        threshold: 0.9, // Play only when 90% visible
+        threshold: 0.9,
       }
     );
 
@@ -44,7 +44,7 @@ const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName, isEv
     };
   }, []);
 
-  // ✅ Load video metadata (duration)
+  // Load video metadata (duration)
   useEffect(() => {
     if (!fullVideoSrc) return;
     const video = document.createElement("video");
@@ -57,10 +57,11 @@ const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName, isEv
   }, [fullVideoSrc]);
 
   return (
-    <div 
-    ref={wrapperRef} 
-    className={`lazy-video-wrapper ${wrapperClassName || ""}`}
-    style={{backgroundColor: isEventWall && (isLoaded ? "#FFFFFF" : "#e9ecef")}}
+    <div
+      className='event-masonry-item'
+      style={{
+        backgroundColor: isLoaded ? "#FFFFFF" : "#e9ecef",
+      }}
     >
       <video
         ref={videoRef}
@@ -87,7 +88,7 @@ const LazyVideo = ({ previewSrc, fullVideoSrc, className, wrapperClassName, isEv
         <div className="lazy-video-overlay">
           <span className="lazy-video-duration">{duration}</span>
           <FaPlayCircle className="lazy-video-play-icon" />
-        </div>
+        </div>  
       )}
     </div>
   );

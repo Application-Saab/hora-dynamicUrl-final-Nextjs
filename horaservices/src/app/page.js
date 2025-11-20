@@ -31,52 +31,52 @@ export default function Home() {
 const router = useRouter();
 const [showButton, setShowButton] = useState(false);
 const [currentSlide, setCurrentSlide] = useState(0);
-useEffect(() => {
-  const blockContextMenu = (e) => e.preventDefault();
-  const blockKeys = (e) => {
-    const key = e.key.toLowerCase();
-    if (
-      e.ctrlKey && (key === 'u' || key === 's') || // Ctrl+U, Ctrl+S
-      (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'c')) || // Ctrl+Shift+I, C
-      key === 'f12'
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-  const blockDrag = (e) => e.preventDefault();
+// useEffect(() => {
+//   const blockContextMenu = (e) => e.preventDefault();
+//   const blockKeys = (e) => {
+//     const key = e.key.toLowerCase();
+//     if (
+//       e.ctrlKey && (key === 'u' || key === 's') || // Ctrl+U, Ctrl+S
+//       (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'c')) || // Ctrl+Shift+I, C
+//       key === 'f12'
+//     ) {
+//       e.preventDefault();
+//       e.stopPropagation();
+//     }
+//   };
+//   const blockDrag = (e) => e.preventDefault();
 
-  document.addEventListener("contextmenu", blockContextMenu);
-  document.addEventListener("keydown", blockKeys);
-  document.addEventListener("dragstart", blockDrag);
+//   document.addEventListener("contextmenu", blockContextMenu);
+//   document.addEventListener("keydown", blockKeys);
+//   document.addEventListener("dragstart", blockDrag);
 
-  return () => {
-    document.removeEventListener("contextmenu", blockContextMenu);
-    document.removeEventListener("keydown", blockKeys);
-    document.removeEventListener("dragstart", blockDrag);
-  };
-}, []);
+//   return () => {
+//     document.removeEventListener("contextmenu", blockContextMenu);
+//     document.removeEventListener("keydown", blockKeys);
+//     document.removeEventListener("dragstart", blockDrag);
+//   };
+// }, []);
 
- useEffect(() => {
-    const blockContextMenu = (e) => e.preventDefault();
-    const blockKeys = (e) => {
-      const key = e.key;
-      const combo = `${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${key}`;
+//  useEffect(() => {
+//     const blockContextMenu = (e) => e.preventDefault();
+//     const blockKeys = (e) => {
+//       const key = e.key;
+//       const combo = `${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${key}`;
 
-      const blockedCombos = ["F12", "Ctrl+Shift+I", "Ctrl+U", "Ctrl+Shift+C", "Ctrl+S"];
-      if (blockedCombos.includes(key) || blockedCombos.includes(combo)) {
-        e.preventDefault();
-      }
-    };
+//       const blockedCombos = ["F12", "Ctrl+Shift+I", "Ctrl+U", "Ctrl+Shift+C", "Ctrl+S"];
+//       if (blockedCombos.includes(key) || blockedCombos.includes(combo)) {
+//         e.preventDefault();
+//       }
+//     };
 
-    document.addEventListener("contextmenu", blockContextMenu);
-    document.addEventListener("keydown", blockKeys);
+//     document.addEventListener("contextmenu", blockContextMenu);
+//     document.addEventListener("keydown", blockKeys);
 
-    return () => {
-      document.removeEventListener("contextmenu", blockContextMenu);
-      document.removeEventListener("keydown", blockKeys);
-    };
-  }, []);
+//     return () => {
+//       document.removeEventListener("contextmenu", blockContextMenu);
+//       document.removeEventListener("keydown", blockKeys);
+//     };
+//   }, []);
 
   // ✅ Disable image dragging & text selection
   // useEffect(() => {
