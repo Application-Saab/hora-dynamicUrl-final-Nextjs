@@ -118,10 +118,6 @@ p.noteContent.auther {
      5px 
      clamp(6px, calc(10 / 363 * 100vw), 10px);
 }
-.noteCard.noteCard-4 img.noteIcon {
-    width: 46px;
-    height: 37px;
-}
 .noteCard.noteCard-6 {
     margin-top: 8%;
 }
@@ -152,8 +148,8 @@ p.noteContent.auther {
     padding: 0 5px;
 }
 .noteIcon {
-  width: 25px;
-
+  width: 23px;
+  height: 24px;
   object-fit: contain;
 }
 
