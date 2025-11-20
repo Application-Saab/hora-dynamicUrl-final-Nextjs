@@ -15,6 +15,7 @@ import {
 } from "@/utils/eventCache";
 import "../../common/EventLazyImage.css";
 import EventwallGalleryItem from "./EventwallGalleryItem";
+import UploadPhotoModal from "./UploadPhotoModal";
 
 const EventwallSection = ({ userData }) => {
   const router = useRouter();
@@ -23,8 +24,8 @@ const EventwallSection = ({ userData }) => {
   const { makeRequest: getAllPosts } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
+  const [showUploadPhotoModal, setShowUploadPhotoModal] = useState(false);
 
-  const MAX_PARALLEL_UPLOADS = 5;
   let activeUploads = 0;
   let uploadQueue = [];
 
@@ -53,129 +54,11 @@ const EventwallSection = ({ userData }) => {
     loadEventPosts();
   }, [eventid]);
 
-  const updateProgress = (id, percent) => {
-    setAllImages((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, progress: percent } : item
-      )
-    );
-  };
-
-  const updateStatus = (id, status) => {
-    setAllImages((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status } : item))
-    );
-  };
-
-  const updateUploadedUrls = (id, postUrl, thumbnailUrl) => {
-    setAllImages((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item
-      )
-    );
-  };
-
-  const handleUploadPictureClick = async () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*,video/*";
-    input.multiple = true;
-
-    input.onchange = async (e) => {
-      const files = Array.from(e.target.files);
-
-      const tempItems = files.map((file) => {
-        const isVideo = file.type.startsWith("video");
-        const localPreview = URL.createObjectURL(file);
-
-        return {
-          id: Math.random().toString(36).substring(2),
-          file,
-          localPreview,
-          isVideo,
-          progress: 0,
-          status: "queued",
-          postUrl: null,
-          postWebpUrl: null,
-        };
-      });
-
-      // Show instantly
-      setAllImages((prev) => [...tempItems, ...prev]);
-
-      // Add to queue
-      uploadQueue.push(...tempItems);
-
-      // Start 5 parallel workers
-      for (let i = 0; i < MAX_PARALLEL_UPLOADS; i++) {
-        processNextUpload();
-      }
-    };
-
-    input.click();
-  };
-
-  async function handleSingleUpload(tempItem) {
-    const { file, id, isVideo } = tempItem;
-
-    try {
-      updateStatus(id, "uploading");
-
-      let uploadResult;
-
-      if (isVideo) {
-        uploadResult = await uploadVideo(file, userId, eventid, 'self-upload', (percent) =>
-          updateProgress(id, percent)
-        );
-      } else {
-        uploadResult = await uploadImage(file, userId, eventid, 'self-upload', (percent) =>
-          updateProgress(id, percent)
-        );
-      }
-
-      if (!uploadResult.success) {
-        updateStatus(id, "error");
-        return;
-      }
-
-      updateUploadedUrls(
-        id,
-        uploadResult.originalUrl,
-        uploadResult.thumbnailUrl
-      );
-
-      // Create DB post
-      const postPayload = {
-        postById: userId,
-        postByName: userData?.name || "Guest",
-        postType: "selfUploaded",
-        postUrl: uploadResult.originalUrl,
-        postKey: uploadResult.originalKey,
-        postWebpUrl: uploadResult.thumbnailUrl,
-        postWebpKey: uploadResult.thumbnailKey,
-      };
-
-      await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
-
-      updateStatus(id, "done");
-    } catch (err) {
-      console.error(err);
-      updateStatus(id, "error");
-    }
-  }
-
-  async function processNextUpload() {
-    if (activeUploads >= MAX_PARALLEL_UPLOADS) return;
-    if (uploadQueue.length === 0) return;
-
-    const nextItem = uploadQueue.shift();
-    activeUploads++;
-
-    handleSingleUpload(nextItem).finally(() => {
-      activeUploads--;
-      processNextUpload();
-    });
-  }
+  useEffect(() => {
+    const clear = () => clearAllEventCache();
+    window.addEventListener("beforeunload", clear);
+    return () => window.removeEventListener("beforeunload", clear);
+  }, []);
 
   const actionButtons = [
     {
@@ -192,15 +75,11 @@ const EventwallSection = ({ userData }) => {
     {
       label: "Upload Pictures",
       icon: GalleryButtonIcon.src,
-      onClick: handleUploadPictureClick,
+      // onClick: handleUploadPictureClick,
+      onClick: () => setShowUploadPhotoModal(true),
     },
   ];
 
-  useEffect(() => {
-    const clear = () => clearAllEventCache();
-    window.addEventListener("beforeunload", clear);
-    return () => window.removeEventListener("beforeunload", clear);
-  }, []);
 
   function getBlockType(index) {
     const pos = index % 6;
@@ -283,6 +162,14 @@ const EventwallSection = ({ userData }) => {
           </div>
         )}
       </div>
+      <UploadPhotoModal
+        isOpen={showUploadPhotoModal}
+        onClose={() => setShowUploadPhotoModal(false)}
+        eventid={eventid}
+        userId={userId}
+        userData={userData}
+        setAllImages={setAllImages}
+      />
     </>
   );
 };
