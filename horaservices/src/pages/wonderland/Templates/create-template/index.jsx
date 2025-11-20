@@ -7,10 +7,10 @@ import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "./dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
-import SequentialLoader from "@/components/SequentialLoader";
 import CalendarModal from "@/components/wonderland/create-invite/CalendarModal";
 import TimeModal from "@/components/wonderland/create-invite/TimeModal";
 import CustomButton from "@/components/wonderland/common/CustomButton";
+import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 
 /* ---------- helpers ---------- */
 const toText = (val) => (val ?? "").toString();
@@ -71,6 +71,17 @@ const renderTemplate = (templateHtml = "", rawData = {}, formData) => {
   });
 
   return wrapEditable(rendered, formData);
+};
+
+const setCaretAtEnd = (node) => {
+  if (!node || typeof window === "undefined") return;
+  const selection = window.getSelection?.();
+  if (!selection) return;
+  const range = document.createRange();
+  range.selectNodeContents(node);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
 };
 
 /* ---------- component ---------- */
@@ -134,6 +145,44 @@ const DynamicTemplateRenderer = () => {
       image: uploadedImage || originalImage || DefaultImageBgCircle.src,
     };
   }, [formData, templateMeta?.dateFormatCase, templateId, uploadedImage, originalImage]);
+
+  /* --- enforce char limits on pre-filled data --- */
+  useEffect(() => {
+    if (!templateMeta?.charLimits) return;
+
+    const fields = ["eventType", "name", "address"];
+    const updates = {};
+    const nextCounts = {};
+    let needsUpdate = false;
+
+    fields.forEach((field) => {
+      const limit = parseInt(templateMeta.charLimits[field], 10);
+      const value = formData[field] || "";
+      if (Number.isFinite(limit) && limit > 0 && value.length > limit) {
+        const trimmed = value.slice(0, limit);
+        updates[field] = trimmed;
+        nextCounts[field] = trimmed.length;
+        needsUpdate = true;
+      } else {
+        nextCounts[field] = value.length;
+      }
+    });
+
+    if (needsUpdate) {
+      setFormData((prev) => ({ ...prev, ...updates }));
+    }
+
+    setCharCounts((prev) => {
+      if (
+        prev.eventType === nextCounts.eventType &&
+        prev.name === nextCounts.name &&
+        prev.address === nextCounts.address
+      ) {
+        return prev;
+      }
+      return { ...prev, ...nextCounts };
+    });
+  }, [formData.eventType, formData.name, formData.address, templateMeta?.charLimits]);
 
   /* --- fetch template --- */
   useEffect(() => {
@@ -596,8 +645,7 @@ wrapper.removeEventListener("gesturechange", onGesture);
     }
   };
 
-  if (loading) return <SequentialLoader />;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) return <div style={{padding:"10px"}}><TemplatecardSkeleton /></div>;
 
   return (
     <div className="d-flex justify-content-center">

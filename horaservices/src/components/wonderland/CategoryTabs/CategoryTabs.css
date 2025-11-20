@@ -1,132 +1,53 @@
-/* .category-tabs-scroll {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding: 4px 8px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  justify-content: flex-start;
-}
-
-.category-tabs-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.categories-Button {
-  position: relative;
-  flex-shrink: 0;
-  white-space: nowrap;
-  transition: all 0.25s ease;
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 800;
-  font-family: "Inter", sans-serif;
-  border-radius: 50px;
-  border: 3px solid transparent;
-  color: white;
-  cursor: pointer;
-  z-index: 1;
-  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
-  transform: scale(1); 
-  
-}
-
-
-.categories-Button.active {
-  color: #fff;
-  transform: scale(1.15); 
-
-}
-
-
-.categories-Button.active::before {
-  content: "";
-  position: absolute;
-  inset: 0px;
-  background: white;
-  border-radius: 50px;
-  z-index: -1;
-}
-
-.categories-Button.active::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
-  border-radius: 50px;
-  z-index: -1;
-}
-
-
-.categories-Button:hover {
-  transform: scale(1.1);
-}
-
-.categories-Button.active:hover {
-  transform: scale(1.18);
-} */
-
-
 .category-tabs-scroll {
   display: flex;
-  gap: clamp(10px, 4vw, 20px); /* bigger gap, scales with screen width */
+  gap: 5px;
   overflow-x: auto;
-  padding: clamp(4px, 1vw, 8px) clamp(6px, 2vw, 12px);
+   padding: 5px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   justify-content: flex-start;
 }
-
 .category-tabs-scroll::-webkit-scrollbar {
   display: none;
 }
-
 .categories-Button {
+  padding: clamp(2px, 0.9vw, 6px) clamp(10px, 3vw, 20px) !important;
+  font-size: clamp(10px, 2.8vw, 14px) !important;
+  font-weight: 700 !important;
+  box-sizing: border-box;
+
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%) !important;
+  color: #fff !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none !important;
   position: relative;
   flex-shrink: 0;
-  white-space: nowrap;
-  transition: all 0.25s ease;
-  padding: clamp(4px, 0.8vw, 6px) clamp(8px, 2vw, 14px); /* vertical | horizontal padding */
-  font-size: clamp(11px, 2vw, 14px);
-  font-weight: 800;
-  font-family: "Inter", sans-serif;
-  border-radius: 50px;
-  border: 3px solid transparent;
-  color: white;
-  cursor: pointer;
-  z-index: 1;
-  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
-  transform: scale(1);
-  height: clamp(30px, 4vw, 36px); /* responsive height */
+  overflow: visible;
+
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
+
+
 
 .categories-Button.active {
-  color: #fff;
-  transform: scale(1.15);
-}
-
-.categories-Button.active::before {
-  content: "";
-  position: absolute;
-  inset: 0px;
-  background: white;
-  border-radius: 50px;
-  z-index: -1;
+  color: #fff !important;
+  transform: scale(1.1);
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(90deg, #572381 0%, #c9266d 100%) border-box !important;
+  border: clamp(2px, 0.6vw, 3px) solid transparent !important;
 }
 
 .categories-Button.active::after {
   content: "";
   position: absolute;
-  inset: 2px;
+  inset: clamp(2px, 1vw, 2px);
+  border-radius: inherit;
   background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
-  border-radius: 50px;
   z-index: -1;
-}
-
-.categories-Button:hover {
-  transform: scale(1.1);
-}
-
-.categories-Button.active:hover {
-  transform: scale(1.18);
 }

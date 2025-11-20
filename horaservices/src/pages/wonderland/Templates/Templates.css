@@ -1,5 +1,5 @@
 .templates-page {
-  padding: 10px;
+  padding: 8px;
   text-align: center;
 }
 
@@ -15,7 +15,7 @@
   position: relative;
   border-radius: 10px;
   padding: 2px;
-  margin: 5px 0 5px;
+  margin: 8px 0 8px;
   background: linear-gradient(90deg, #572381 0%, #C9266D 100%) ;
   color: #fff;
   text-align: center;
@@ -56,20 +56,25 @@
   text-transform: uppercase;
 }
 
-.templates-grid {
+/* .templates-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); 
-  gap: clamp(10px, 4vw, 15px) clamp(8px, 3vw, 10px); 
+  gap: clamp(5px, 2vw, 5px) clamp(5px, 2vw, 5px);
   justify-items: center;
-  margin: 10px;
+  margin: 8px 0px;
+} */
+.templates-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
 }
 
 .template-card {
+  max-width: calc(50% - 4px);
   position: relative;
-  display: inline-block;
+  border-radius: 5px;
   overflow: hidden;
- border: 0.93px solid #AEAEAE;
- border-radius: 5px;
 }
 
 .try-pill {
@@ -94,14 +99,6 @@
   width: 100%;
   height: auto;
   display: block;
-}
-
-.template-img-wrapper {
-  width: clamp(140px, 45vw, 184px);
-  height: clamp(200px, 55vw, 240px);
-  position: relative;
-  overflow: hidden;
-  border-radius: 6px;
 }
 
 

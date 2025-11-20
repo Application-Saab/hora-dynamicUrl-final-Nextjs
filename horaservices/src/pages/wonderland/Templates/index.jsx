@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import CategoryTabs from "@/components/wonderland/CategoryTabs";
 import TemplateSkeleton from "@/components/wonderland/TemplateSkeleton";
-import SequentialLoader from "@/components/SequentialLoader";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import "./Templates.css";
 
@@ -100,7 +99,7 @@ const TemplatesPage = () => {
     }
   };
 
-  if (loading) return <SequentialLoader />;
+  if (loading) return <TemplateSkeleton />;
 
   return (
     <div className="templates-page">

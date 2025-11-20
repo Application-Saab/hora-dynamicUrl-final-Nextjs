@@ -1,107 +1,47 @@
 export function dateFormatter(dateString, caseNo) {
   if (!dateString) return "";
 
-  if (caseNo === 1 || caseNo === "1") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-    // Output: "December 31, 2023"
+  const formatCase = String(caseNo);
+  const date = new Date(dateString);
+
+  switch (formatCase) {
+    case "1":
+      return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+    case "2":
+      return date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+    case "3":
+      return date.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
+
+    case "4": {
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+
+    case "5":
+      return date.toLocaleDateString("en-GB", { month: "long", day: "numeric" });
+
+    case "6":
+    case "7": {
+      const dateObject = {
+        day: String(date.getDate()).padStart(2, "0"),
+        month:
+          formatCase === "6"
+            ? date.toLocaleDateString("en-GB", { month: "long" })
+            : date.toLocaleDateString("en-GB", { month: "short" }),
+        year: date.getFullYear(),
+      };
+      return dateObject;
+    }
+
+    default:
+      return "";
   }
-
-  if (caseNo === 2 || caseNo === "2") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    // Output: "31 December 2023"
-  }
-
-  if (caseNo === 3 || caseNo === "3") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-    });
-    // Output: "31 December"
-  }
-
-  if (caseNo === 4 || caseNo === "4") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-    // Output: "02.05.2030"
-  }
-
-  if (caseNo === 5 || caseNo === "5") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      month: "long",
-      day: "numeric",
-    });
-    // Output: "December 31"
-  }
-
-  if (caseNo === 6 || caseNo === "6") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    let dateObject = {
-      day: "",
-      month: "",
-      year: "",
-    };
-    let day = String(date.getDate()).padStart(2, "0");
-    let month = date.toLocaleDateString("en-GB", {
-      month: "long",
-    });
-    let year = date.getFullYear();
-    dateObject.day = day;
-    dateObject.month = month;
-    dateObject.year = year;
-    return dateObject;
-    // Output: {day: "31", month: "December", year: "2023"}
-  }
-
-    if (caseNo === 7 || caseNo === "7") {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    let dateObject = {
-      day: "",
-      month: "",
-      year: "",
-    };
-    let day = String(date.getDate()).padStart(2, "0");
-    let month = date.toLocaleDateString("en-GB", {
-      month: "short",
-    });
-    let year = date.getFullYear();
-    dateObject.day = day;
-    dateObject.month = month;
-    dateObject.year = year;
-    return dateObject;
-    // Output: {day: "31", month: "Dec", year: "2023"}
-  }
-
-
 }
 
 export function timeFormatter(timeString, caseNo) {
-  switch (caseNo) {
-    case "1":
-      break;
-
-    default:
-      break;
-  }
+  return timeString;
 }
