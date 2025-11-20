@@ -161,7 +161,7 @@ const InvitesPage = () => {
           </div>
           <div className="event-wall-container">
             <p className="wall-heading text-center m-0 p-0">Celebration Wall</p>
-            <EventwallSection />
+            <EventwallSection userData={userData}  />
           </div>
         </div>
       </div>

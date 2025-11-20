@@ -7,7 +7,6 @@ const LazyImage = ({
   className, // For the <img> tag
   wrapperClassName, // For the main div wrapper of this component (.masonry-item)
   onClick,
-  isEventWall = false
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
@@ -47,7 +46,6 @@ const LazyImage = ({
       ref={wrapperRef}
       className={`lazy-image-container-wrapper ${wrapperClassName || ''}`} // This is the .masonry-item
       onClick={onClick}
-      style={{backgroundColor: isEventWall && (isLoaded ? "#FFFFFF" : "#e9ecef")}}
     >
       {/* Render img tag only when in view to start loading */}
       {isInView && (
