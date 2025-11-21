@@ -45,3 +45,4 @@ export function dateFormatter(dateString, caseNo) {
 export function timeFormatter(timeString, caseNo) {
   return timeString;
 }
+

@@ -38,6 +38,7 @@ const TemplatesPage = () => {
     fetchTemplates();
   }, []);
 
+
   useEffect(() => {
     if (loading) return;
     setCategoryLoading(true);
@@ -45,13 +46,41 @@ const TemplatesPage = () => {
     return () => clearTimeout(timer);
   }, [activeCategory, loading]);
 
-  const filteredTemplates = useMemo(
-    () =>
-      templates.filter(
-        (template) => template.category === activeCategory && !template.isDisabled
-      ),
-    [templates, activeCategory]
-  );
+const filteredTemplates = useMemo(
+  () =>
+    templates.filter(
+      (template) =>
+        template.category?.trim().toLowerCase() === activeCategory.toLowerCase().trim() && 
+        !template.isDisabled
+    ),
+  [templates, activeCategory]
+);
+
+const smallTemplates = filteredTemplates.filter(
+  t => t.templateSize === "small" || !t.templateSize
+);
+
+const bigTemplates = filteredTemplates.filter(
+  t => t.templateSize?.toLowerCase() === "big"
+);
+
+
+
+const smartOrdered = [];
+const maxLen = Math.max(smallTemplates.length, bigTemplates.length);
+let smallIndex = 0;
+let bigIndex = 0;
+
+while (smallIndex < smallTemplates.length || bigIndex < bigTemplates.length) {
+  // 2 small
+  if (smallTemplates[smallIndex]) smartOrdered.push(smallTemplates[smallIndex++]);
+  if (smallTemplates[smallIndex]) smartOrdered.push(smallTemplates[smallIndex++]);
+
+  // 2 big
+  if (bigTemplates[bigIndex]) smartOrdered.push(bigTemplates[bigIndex++]);
+  if (bigTemplates[bigIndex]) smartOrdered.push(bigTemplates[bigIndex++]);
+}
+
 
   const handleApply = (templateId) => {
     if (!eventId) {
@@ -128,28 +157,29 @@ const TemplatesPage = () => {
 
       {categoryLoading ? (
         <TemplateSkeleton onlyCards />
-      ) : filteredTemplates.length ? (
+      ) : smartOrdered.length ? (
         <div className="templates-grid">
-          {filteredTemplates.map((template) => (
-            <div key={template._id} className="template-card" onClick={() => handleApply(template._id)}>
-              <span className="try-pill">Try</span>
-              <Image
-                src={template.webpUrl}
-                alt={template.fileName}
-                width={250}
-                height={350}
-                className="template-image"
-                onLoad={() =>
-                  setLoadedImages((prev) => ({
-                    ...prev,
-                    [template._id]: true,
-                  }))
-                }
-                style={{ visibility: loadedImages[template._id] ? "visible" : "hidden" }}
-              />
-              {!loadedImages[template._id] && <div className="template-skeleton" />}
-            </div>
-          ))}
+       {smartOrdered.map((template) => (
+  <div key={template._id} className="template-card" onClick={() => handleApply(template._id)}>
+    <span className="try-pill">Try</span>
+    <Image
+      src={template.webpUrl}
+      alt={template.fileName}
+      width={250}
+      height={350}
+      className="template-image"
+      onLoad={() =>
+        setLoadedImages((prev) => ({
+          ...prev,
+          [template._id]: true,
+        }))
+      }
+      style={{ visibility: loadedImages[template._id] ? "visible" : "hidden" }}
+    />
+    {!loadedImages[template._id] && <div className="template-skeleton" />}
+  </div>
+))}
+
         </div>
       ) : (
         <p className="no-templates-text">No templates found.</p>

@@ -259,7 +259,9 @@
   width:max-content;
   line-height: normal;
 }
-
+.editable:focus {
+  outline: none;  /* ye border remove karega */
+}
 .saved .editborder {
   outline: none;
   padding: 0;

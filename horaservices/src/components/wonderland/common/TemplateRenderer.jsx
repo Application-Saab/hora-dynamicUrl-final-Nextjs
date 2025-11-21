@@ -49,11 +49,20 @@ const TemplateRenderer = ({
     else setDynamicFontSize(baseStyles.fontSize);
   }, [eventDetails?.hostName, baseStyles]);
 
-const imageUrl =
-  orderDetails?.externalTemplateImageUrl ||
+
+// useEffect(() => {
+//   // DB se image mil gayi ya orderDetails update hua
+//   if (orderDetails?.externalTemplateImageUrl) {
+//     localStorage.removeItem("localTemplateImage");
+//   }
+// }, [orderDetails?.externalTemplateImageUrl]);
+
+
+  const imageUrl =
+  localStorage.getItem("localTemplateImage") ||  // ⭐ Instant preview
+  orderDetails?.externalTemplateImageUrl ||      // ⭐ DB image
   orderDetails?.Image ||
   orderDetails?.hostImage ||
-  orderDetails?.imageUrl ||
   DefaultTemplate.src;
 
   return (

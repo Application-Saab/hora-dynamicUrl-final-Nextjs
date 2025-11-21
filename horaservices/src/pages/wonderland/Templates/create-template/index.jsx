@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
@@ -312,83 +311,10 @@ const DynamicTemplateRenderer = () => {
       dayFontSize: scale * info.templatedayfontSize,
       dayPosition: scale * info.templatedayposition,
     });
+    setLoading(false);
   }, [templateMeta?.templateInfo]);
 
-  /* --- editable clicks --- */
-  // const handleEditableClick = useCallback(
-  //   (field, node) => {
-  //     const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
-  //     node.contentEditable = "true";
-  //     node.dataset.editing = "true";
-  //     node.classList.add("editing");
-  //     node.innerText = node.innerText?.trim()
-  //       ? node.innerText
-  //       : formData[field] || (field === "address" ? "Type your address" : "");
-  //     node.focus();
-
-  //     const onKeyDown = (ev) => {
-  //       const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
-  //       if (printable && node.innerText.length >= charLimit) {
-  //         const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
-  //         if (!allowed.includes(ev.key)) {
-  //           ev.preventDefault();
-  //           setFormErrors((prev) => ({ ...prev, [field]: `Character limit of ${charLimit} reached` }));
-  //           return;
-  //         }
-  //       } else {
-  //         setFormErrors((prev) => ({ ...prev, [field]: "" }));
-  //       }
-  //       if (ev.key === "Enter") {
-  //         ev.preventDefault();
-  //         node.blur();
-  //       }
-  //       if (ev.key === "Escape") {
-  //         node.innerText = formData[field] || "";
-  //         node.blur();
-  //       }
-  //     };
-
-  //     const onInput = () => {
-  //       if (node.innerText.length > charLimit) {
-  //         node.innerText = node.innerText.slice(0, charLimit);
-  //       }
-  //       setCharCounts((prev) => ({ ...prev, [field]: node.innerText.length }));
-  //       if (node.innerText.length <= charLimit) {
-  //         setFormErrors((prev) => ({ ...prev, [field]: "" }));
-  //       }
-  //     };
-
-  //     const onPaste = (ev) => {
-  //       ev.preventDefault();
-  //       const pasted = (ev.clipboardData || window.clipboardData).getData("text");
-  //       const allowed = Math.max(0, charLimit - node.innerText.length);
-  //       document.execCommand("insertText", false, pasted.slice(0, allowed));
-  //     };
-
-  //     const onBlur = () => {
-  //       let value = node.innerText.trim();
-  //       if (!value && field === "address") value = "Type your address";
-  //       if (value.length > charLimit) value = value.slice(0, charLimit);
-  //       setFormData((prev) => ({ ...prev, [field]: value }));
-  //       setCharCounts((prev) => ({ ...prev, [field]: value.length }));
-  //       setFormErrors((prev) => ({ ...prev, [field]: "" }));
-  //       node.contentEditable = "false";
-  //       node.removeAttribute("data-editing");
-  //       node.classList.remove("editing");
-  //       node.removeEventListener("keydown", onKeyDown);
-  //       node.removeEventListener("input", onInput);
-  //       node.removeEventListener("paste", onPaste);
-  //       node.removeEventListener("blur", onBlur);
-  //     };
-
-  //     node.addEventListener("keydown", onKeyDown);
-  //     node.addEventListener("input", onInput);
-  //     node.addEventListener("paste", onPaste);
-  //     node.addEventListener("blur", onBlur);
-  //   },
-  //   [formData, templateMeta?.charLimits]
-  // );
-  const handleEditableClick = useCallback(
+ const handleEditableClick = useCallback(
     (field, node) => {
       const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
       node.contentEditable = "true";
@@ -579,33 +505,52 @@ wrapper.removeEventListener("gesturechange", onGesture);
     };
   }, [renderedHTML]);
 
-  /* --- save + download --- */
   const handleDownload = async () => {
-    const canvas = await html2canvas(templateRef.current, { backgroundColor: null, useCORS: true });
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const file = new File([blob], `invite_${templateMeta?.bgImageName}`, {
-        type: "image/png",
-        lastModified: Date.now(),
-      });
-      const form = new FormData();
-      form.append("image", file);
-      form.append("userId", userId);
+  const canvas = await html2canvas(templateRef.current, {
+    backgroundColor: null,
+    useCORS: true,
+  });
 
-      try {
-        await fetch(`${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`, {
+  const base64Img = canvas.toDataURL("image/png");
+
+  localStorage.setItem("localTemplateImage", base64Img);
+
+  router.replace(`/wonderland/invite?eventid=${eventId}`);
+
+  // ⭐ Continue upload in background
+  canvas.toBlob(async (blob) => {
+    if (!blob) return;
+
+    const file = new File([blob], `invite_${templateMeta?.bgImageName}`, {
+      type: "image/png",
+      lastModified: Date.now(),
+    });
+
+    const form = new FormData();
+    form.append("image", file);
+    form.append("userId", userId);
+
+    try {
+      await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+        {
           method: "PUT",
-          headers: { Authorization: token || "" },
+          headers: {
+            Authorization: token || "",
+          },
           body: form,
-        });
-        router.replace(`/wonderland/invite?eventid=${eventId}`);
-      } catch (err) {
-        console.error("Upload failed:", err);
-      } finally {
-        setSaving(false);
-      }
-    }, "image/png", 1.0);
-  };
+        }
+      );
+
+      // 🎯 When DB upload finishes, remove localStorage cache
+      localStorage.removeItem("localTemplateImage");
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setSaving(false);
+    }
+  }, "image/png", 1.0);
+};
 
   const handleSave = async () => {
     if (!userId) {
@@ -648,15 +593,16 @@ wrapper.removeEventListener("gesturechange", onGesture);
   if (loading) return <div style={{padding:"10px"}}><TemplatecardSkeleton /></div>;
 
   return (
-    <div className="d-flex justify-content-center">
-      <div style={{ padding: "10px", width: "100%" }}>
-        <div ref={templateRef} className={`template-container ${isSaved ? "saved" : ""}`} style={{ position: "relative" }}>
+    <div className="d-flex justify-content-center" style={{maxWidth:"480px"}}>
+      <div style={{ padding: "8px",maxWidth:"480px"}}>
+        <div ref={templateRef} className={`template-container ${isSaved ? "saved" : ""}`} style={{ position: "relative", }}>
           <img
             ref={imgRef}
             src={`/assets/templates/${templateMeta?.bgImageName}`}
             id="bg-image"
             alt="bg"
             onLoad={handleImageLoad}
+            onError={() => setLoading(false)}   
           />
 
           {templateMeta?.fontUrls?.map((url, idx) => (
@@ -689,7 +635,8 @@ wrapper.removeEventListener("gesturechange", onGesture);
         />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <CustomButton title={saving ? "Saving..." : "Submit"} onClick={saving ? undefined : handleSave} disabled={saving} />
+         <CustomButton title="Submit" onClick={handleSave} />
+
         </div>
       </div>
 
