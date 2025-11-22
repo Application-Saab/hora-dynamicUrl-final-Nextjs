@@ -1,14 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import eventIcon from "../../assets/nav_icon/events.svg";
 import eventsIconFill from "@/assets/nav_icon/fillevents.svg";
-import messageIcon from "../../assets/nav_icon/message.svg";
-import messageIconFill from "../../assets/nav_icon/fillmessage.svg";
-import servicesIcon from "../../assets/nav_icon/services.svg";
-import serviceIconFill from "@/assets/nav_icon/fillservice.svg";
+import CheerChatIcon from "@/assets/wonderland/NavCheerChatIcon.svg";
+import CheerChatIconFilled from "@/assets/wonderland/NavCheerChatIconFilled.svg";
+import ExploreIcon from "@/assets/wonderland/NavExploreIcon.svg";
+import ExploreIconFilled from "@/assets/wonderland/NavExploreIconFilled.svg";
 import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 import "./bottomNav.css";
@@ -19,49 +18,51 @@ export default function BottomNav() {
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
   const [showServices, setShowServices] = useState(false);
-  const [totalUnreadCount, setTotalUnreadCount] = useState(localStorage.getItem("totalUnread") || 0);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(
+    localStorage.getItem("totalUnread") || 0
+  );
   const [loadingGroups, setLoadingGroups] = useState(true);
-useEffect(() => {
-  const handleRouteChange = (url) => {
-    // Route change ke baad latest data fetch karo
-    const storedUserId = localStorage.getItem("userID") || "";
-    const unread = localStorage.getItem("totalUnread") || 0;
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      // Route change ke baad latest data fetch karo
+      const storedUserId = localStorage.getItem("userID") || "";
+      const unread = localStorage.getItem("totalUnread") || 0;
 
-    setUserId(storedUserId);
-    setTotalUnreadCount(unread);
-    setShowServices(false);  // Overlay hata do agar open hai
-    // Add any other state reset here
-  };
+      setUserId(storedUserId);
+      setTotalUnreadCount(unread);
+      setShowServices(false); // Overlay hata do agar open hai
+      // Add any other state reset here
+    };
 
-  router.events.on("routeChangeComplete", handleRouteChange);
+    router.events.on("routeChangeComplete", handleRouteChange);
 
-  return () => {
-    router.events.off("routeChangeComplete", handleRouteChange);
-  };
-}, [router]);
-useEffect(() => {
-  const syncUnread = () => {
-    const count = parseInt(localStorage.getItem("totalUnread") || "0");
-    setTotalUnreadCount(count);
-  };
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router]);
+  useEffect(() => {
+    const syncUnread = () => {
+      const count = parseInt(localStorage.getItem("totalUnread") || "0");
+      setTotalUnreadCount(count);
+    };
 
-  // Initial sync
-  syncUnread();
+    // Initial sync
+    syncUnread();
 
-  // Listen to same-tab event
-  window.addEventListener("unreadCountChange", syncUnread);
+    // Listen to same-tab event
+    window.addEventListener("unreadCountChange", syncUnread);
 
-  // Listen to cross-tab storage change
-  const storageListener = (e) => {
-    if (e.key === "totalUnread") syncUnread();
-  };
-  window.addEventListener("storage", storageListener);
+    // Listen to cross-tab storage change
+    const storageListener = (e) => {
+      if (e.key === "totalUnread") syncUnread();
+    };
+    window.addEventListener("storage", storageListener);
 
-  return () => {
-    window.removeEventListener("unreadCountChange", syncUnread);
-    window.removeEventListener("storage", storageListener);
-  };
-}, []);
+    return () => {
+      window.removeEventListener("unreadCountChange", syncUnread);
+      window.removeEventListener("storage", storageListener);
+    };
+  }, []);
 
   useEffect(() => {
     const loadUserId = () => {
@@ -190,26 +191,11 @@ useEffect(() => {
         </div>
       )}
 
-{/*     
-     {showServices && (
-  <div className="iframe-wrapper">
-    <div className="iframe-overlay">
-      <iframe
-        src="/"
-        style={{
-          border: "none",
-          width: "100%",
-          height: "calc(100vh - 58px)",
-          marginBottom: "58px",
-        }}
-      />
-    </div>
-  </div>
-)} */}
-
-
       <div className="bottom-nav">
-        <Link href={`/wonderland?id=${userId || ""}`}  onClick={() => setShowServices(false)} >
+        <Link
+          href={`/wonderland?id=${userId || ""}`}
+          onClick={() => setShowServices(false)}
+        >
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("wonderland")
@@ -230,80 +216,47 @@ useEffect(() => {
           </div>
         </Link>
 
-        {/* <Link href={`/chat?id=${userId || ""}`}>
+        <Link href={`/chat?id=${userId || ""}`}>
           <div
             className={`nav-item ${
               !showServices && currentPath.includes("chat") ? "active" : ""
             }`}
-            // onClick={() => setShowServices(false)} 
-              onClick={(e) => {
-      e.preventDefault(); // 🛑 Prevent default navigation
-      window.location.href = `/chat?id=${userId || ""}`; // 🔁 Force full reload
-    }}
-            style={{ position: "relative" }} 
+            onClick={() => setShowServices(false)}
+            style={{ position: "relative" }}
           >
             <Image
               src={
                 !showServices && currentPath.includes("chat")
-                  ? messageIconFill
-                  : messageIcon
+                  ? CheerChatIconFilled
+                  : CheerChatIcon
               }
               alt="Chats"
               className="nav-icon"
             />
-            <span className="nav-text">Chats</span>
-
-          
-            {totalUnreadCount > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-4px",
-                  right: "-4px",
-                  background: "red",
-                  color: "#fff",
-                  borderRadius: "50%",
-                  padding: "2px 6px",
-                  fontSize: "12px",
-                  fontWeight: "600",
-                  lineHeight: "1",
-                  minWidth: "18px",
-                  textAlign: "center",
-                }}
-              >
-                {totalUnreadCount}
-              </span>
-            )}
+            <span className="nav-text">CheerChat</span>
           </div>
-        </Link> */}
+        </Link>
 
         {/* Services iframe trigger */}
-        {/* <div
-          className={`nav-item ${showServices ? "active" : ""}`}
-          onClick={() => setShowServices(true)}
-        >
-          <Image
-            src={showServices ? serviceIconFill : servicesIcon}
-            alt="Services"
-            className="nav-icon"
-          />
-          <span className="nav-text">Services</span>
-        </div> */}
-<Link href={`/services?userid=${userId}`}>
-  <div
-    className={`nav-item ${
-      currentPath.includes("services") ? "active" : ""
-    }`}
-    onClick={() => setShowServices(true)}
-  >
-    <Image
-      src={currentPath.includes("services") ? serviceIconFill : servicesIcon}
-      alt="Services"
-      className="nav-icon"
-    />
-    <span className="nav-text">Services</span>
-  </div>
-</Link>
+        <Link href={`/services?userid=${userId}`}>
+          <div
+            className={`nav-item ${
+              currentPath.includes("services") ? "active" : ""
+            }`}
+            onClick={() => setShowServices(true)}
+          >
+            <Image
+              src={
+                currentPath.includes("services")
+                  ? ExploreIconFilled
+                  : ExploreIcon
+              }
+              alt="Services"
+              className="nav-icon"
+            />
+            <span className="nav-text">Explore</span>
+          </div>
+        </Link>
 
         <Link href={`/accounts?userid=${userId}`}>
           <div

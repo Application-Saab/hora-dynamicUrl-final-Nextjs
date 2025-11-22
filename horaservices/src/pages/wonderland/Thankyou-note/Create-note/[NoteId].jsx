@@ -18,7 +18,6 @@ import useApi from "@/hooks/useApi";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
-
   const [note, setNote] = useState(null);
   const [liveData, setLiveData] = useState({
     title: "",
@@ -36,13 +35,14 @@ export default function NoteDetails() {
   const noteRef = useRef(null);
   const { makeRequest: createPost } = useApi();
   const [userName, setUserName] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const userId =
       typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
     if (!userId) {
-      console.warn("⚠️ No userId found in localStorage");
+      console.warn("No userId found in localStorage");
       return;
     }
 
@@ -50,14 +50,14 @@ export default function NoteDetails() {
       try {
         const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`);
         const result = await response.json();
-        console.log("🧩 API Response:", result);
+        console.log("API Response:", result);
 
         const data = result?.data || result?.user || {};
         const name = data.hostName || data.userName || data.name || "Guest";
 
         setUserName(name);
       } catch (err) {
-        console.error("❌ Error fetching user name:", err);
+        console.error("Error fetching user name:", err);
       }
     };
 
@@ -196,60 +196,69 @@ export default function NoteDetails() {
 
   const handleDownload = async () => {
     if (!noteRef.current) return;
+    setUploading(true);
     setShowBorders(false);
 
     const { eventid } = router.query;
-    if (!eventid) {
-      console.error("eventId is undefined");
-      return;
-    }
+    if (!eventid) return console.error("eventId is undefined");
 
     const userID =
       typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    if (!userID) return console.error("userID not found");
 
-    if (!userID) {
-      console.error("userID not found");
-      return;
-    }
-
+    // Capture blob
     const blob = await captureElementAsImage(noteRef.current, [
       ".emoji-button",
     ]);
-    if (!blob) {
-      console.error("Failed to capture image.");
-      return;
-    }
+    if (!blob) return console.error("Failed to capture image.");
 
-    const file = new File([blob], "note.png", { type: blob.type });
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
 
-    try {
-      let response = await uploadImage(
-        file,
-        userID,
-        eventid,
-        "thankyou-note",
-        (percent) => console.log(`Upload progress: ${percent}%`)
-      );
-      if (response.success) {
-        // Create DB post
-        const postPayload = {
-          postById: userID,
-          postByName: userName || "Guest",
-          postType: "selfUploaded",
-          postUrl: response.originalUrl,
-          postKey: response.originalKey,
-          postWebpUrl: response.thumbnailUrl,
-          postWebpKey: response.thumbnailKey,
-        };
-        await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
-        router.push(`/wonderland/invite?eventid=${eventid}`);
-      } else {
-        alert("Upload failed. Please try again.");
+    // Step 3: Save draft to localStorage & navigate back
+    localStorage.setItem("thankyou-note-draft", base64);
+    router.push(`/wonderland/invite?eventid=${eventid}`);
+
+    // API calls in background
+    (async () => {
+      try {
+        const file = new File([blob], "note.png", { type: blob.type });
+
+        const response = await uploadImage(
+          file,
+          userID,
+          eventid,
+          "thankyou-note",
+          (percent) => console.log(`Upload progress: ${percent}%`)
+        );
+
+        if (response?.success) {
+          const postPayload = {
+            postById: userID,
+            postByName: userName || "Guest",
+            postType: "thankYouNote",
+            postUrl: response.originalUrl,
+            postKey: response.originalKey,
+            postWebpUrl: response.thumbnailUrl,
+            postWebpKey: response.thumbnailKey,
+          };
+
+          await createPost(
+            `${CREATE_NEW_POST}/${eventid}`,
+            "POST",
+            postPayload
+          );
+        }
+      } catch (err) {
+        console.error("Background upload failed:", err);
       }
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Something went wrong while uploading.");
-    }
+    })();
+
+    // Step 6: Stop uploading spinner (UI clean)
+    setUploading(false);
   };
 
   useEffect(() => {
@@ -359,7 +368,11 @@ export default function NoteDetails() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <CustomButton title={"Submit"} onClick={handleDownload} />
+            <CustomButton
+              title={"Submit"}
+              onClick={!uploading && handleDownload}
+              loading={uploading}
+            />
           </div>
         </div>
       )}

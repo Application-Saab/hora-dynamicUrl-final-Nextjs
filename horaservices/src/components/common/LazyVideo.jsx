@@ -33,7 +33,7 @@ const LazyVideo = ({
         }
       },
       {
-        threshold: 0.9,
+        threshold: 1,
       }
     );
 
@@ -78,8 +78,8 @@ const LazyVideo = ({
 
       {/* Spinner while loading */}
       {!isLoaded && (
-        <div className="lazy-video-spinner-container">
-          <div className="lazy-video-spinner"></div>
+        <div className="lazy-video-spinner-container placeholder-glow p-1">
+          <div className="placeholder w-100 h-100"></div>
         </div>
       )}
 
