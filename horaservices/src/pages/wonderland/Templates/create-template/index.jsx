@@ -10,8 +10,9 @@ import CalendarModal from "@/components/wonderland/create-invite/CalendarModal";
 import TimeModal from "@/components/wonderland/create-invite/TimeModal";
 import CustomButton from "@/components/wonderland/common/CustomButton";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
+import { applyCase } from "./fontsizeformat";
 
-/* ---------- helpers ---------- */
+
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) => toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -131,19 +132,26 @@ const DynamicTemplateRenderer = () => {
 
     const formatted = dateFormatter(formData.date || fallback, templateMeta?.dateFormatCase || "1");
 
+    
     return {
       eventType: formData.eventType,
-      name: formData.name,
-      date: formatted || "",
+      name: applyCase(formData.name || "", templateMeta?.nameCase),
+      // date: formatted || "",
+       date: applyCase(formatted?.full || formatted || "",templateMeta?.dateCase || "default"),
       day: formatted?.day || fallback.slice(-2),
-      month: formatted?.month || fallback.slice(5, 7),
+   
+
+      month: applyCase(formatted?.month || fallback.slice(5, 7),templateMeta?.monthCase || "default"),
       year: formatted?.year || fallback.slice(0, 4),
-      time: formData.time || "",
-      address: formData.address || "Type your address",
+       time: formData.time || "",
+      
+
+      address: applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
       image: uploadedImage || originalImage || DefaultImageBgCircle.src,
     };
-  }, [formData, templateMeta?.dateFormatCase, templateId, uploadedImage, originalImage]);
+  }, [formData, templateMeta?.dateFormatCase, templateId, uploadedImage, originalImage,   templateMeta?.configs?.nameCase, templateMeta?.configs?.addressCase,templateMeta?.configs?.monthCase]);
+
 
   /* --- enforce char limits on pre-filled data --- */
   useEffect(() => {
@@ -219,6 +227,9 @@ const DynamicTemplateRenderer = () => {
           dateFormatCase: template.configs?.dateFormatCase || "1",
           templateInfo: template.configs?.templateinfo || {},
           cropShape,
+           nameCase: template.configs?.nameCase || "default",
+           addressCase: template.configs?.addressCase || "default",
+           monthCase: template.configs?.monthCase || "default",
           aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
         });
       } catch (err) {
@@ -351,17 +362,30 @@ const DynamicTemplateRenderer = () => {
         }
       };
   
-      const onInput = () => {
-        if (node.innerText.length > charLimit) {
-          node.innerText = node.innerText.slice(0, charLimit);
-          setCaretAtEnd(node);
-        }
-        setCharCounts((prev) => ({ ...prev, [field]: node.innerText.length }));
-        if (node.innerText.length <= charLimit) {
-          setFormErrors((prev) => ({ ...prev, [field]: "" }));
-        }
-      };
-  
+ 
+
+const onInput = (ev) => {
+  const el = ev.target;
+  let text = el.innerText;
+
+  if (text.length > charLimit) {
+    text = text.slice(0, charLimit);
+    el.innerText = text;
+    setCaretAtEnd(el);
+  }
+
+  // Apply case formatting live
+  const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
+  if (formattedValue !== text) {
+    const caret = saveCaretPosition(el);
+    el.innerText = formattedValue;
+    restoreCaretPosition(el, caret);
+  }
+
+  setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
+  setFormErrors((prev) => ({ ...prev, [field]: "" }));
+};
+
       const onPaste = (ev) => {
         ev.preventDefault();
         const pasted = (ev.clipboardData || window.clipboardData).getData("text");
@@ -369,21 +393,27 @@ const DynamicTemplateRenderer = () => {
         document.execCommand("insertText", false, pasted.slice(0, allowed));
       };
   
-      const onBlur = () => {
-        let value = node.innerText.trim();
-        if (!value && field === "address") value = "Type your address";
-        if (value.length > charLimit) value = value.slice(0, charLimit);
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        setCharCounts((prev) => ({ ...prev, [field]: value.length }));
-        setFormErrors((prev) => ({ ...prev, [field]: "" }));
-        node.contentEditable = "false";
-        node.removeAttribute("data-editing");
-        node.classList.remove("editing");
-        node.removeEventListener("keydown", onKeyDown);
-        node.removeEventListener("input", onInput);
-        node.removeEventListener("paste", onPaste);
-        node.removeEventListener("blur", onBlur);
-      };
+    const onBlur = (ev) => {
+  const el = ev.target;
+  let value = el.innerText.trim();
+
+  if (!value && field === "address") value = "Type your address";
+  if (value.length > charLimit) value = value.slice(0, charLimit);
+
+  setFormData((prev) => ({ ...prev, [field]: value }));
+  setCharCounts((prev) => ({ ...prev, [field]: value.length }));
+  setFormErrors((prev) => ({ ...prev, [field]: "" }));
+
+  el.contentEditable = "false";
+  el.removeAttribute("data-editing");
+  el.classList.remove("editing");
+
+  el.removeEventListener("keydown", onKeyDown);
+  el.removeEventListener("input", onInput);
+  el.removeEventListener("paste", onPaste);
+  el.removeEventListener("blur", onBlur);
+};
+
   
       node.addEventListener("keydown", onKeyDown);
       node.addEventListener("input", onInput);
@@ -491,7 +521,7 @@ const DynamicTemplateRenderer = () => {
     window.addEventListener("touchend", end);
     wrapper.addEventListener("click", openUpload);
     wrapper.addEventListener("wheel", onWheel, { passive: false });
-wrapper.addEventListener("gesturechange", onGesture);
+     wrapper.addEventListener("gesturechange", onGesture);
     return () => {
       wrapper.removeEventListener("mousedown", start);
       window.removeEventListener("mousemove", move);
@@ -541,9 +571,7 @@ wrapper.removeEventListener("gesturechange", onGesture);
           body: form,
         }
       );
-
-      // 🎯 When DB upload finishes, remove localStorage cache
-      localStorage.removeItem("localTemplateImage");
+      // localStorage.removeItem("localTemplateImage");
     } catch (err) {
       console.error("Upload failed:", err);
     } finally {
@@ -589,6 +617,19 @@ wrapper.removeEventListener("gesturechange", onGesture);
       setIsSaved(false);
     }
   };
+const saveCaretPosition = (el) => {
+  const selection = window.getSelection();
+  return selection.focusOffset;
+};
+
+const restoreCaretPosition = (el, offset) => {
+  const range = document.createRange();
+  const selection = window.getSelection();
+  range.setStart(el.childNodes[0] || el, offset);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
 
   if (loading) return <div style={{padding:"10px"}}><TemplatecardSkeleton /></div>;
 

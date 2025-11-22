@@ -1,25 +1,3 @@
-// applyCase() → text formatting helper
-// --------------------------------------
-// INPUT  text:     "lakshya jain from bhanpura"
-// CASES / EXAMPLES
-//
-// "uppercase" / "upper"
-//   → "LAKSHYA JAIN FROM BHANPURA"
-//
-// "lowercase" / "lower"
-//   → "lakshya jain from bhanpura"
-//
-// "capitalize"
-//   → "Lakshya jain from bhanpura"
-//
-// "titlecase" / "title"
-//   → "Lakshya Jain From Bhanpura"
-//
-// "sentence"
-//   → "Lakshya jain from bhanpura"
-//
-// DEFAULT → same text return
-
 export function applyCase(text, type) {
   if (!text || typeof text !== "string") return "";
 
