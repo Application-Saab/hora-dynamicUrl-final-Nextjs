@@ -4,9 +4,8 @@
 }
 
 .createNote-container {
-  position: relative;
-  width: 100%;
-  padding: 14px;
+  width: 88%;
+  padding: 8px 14px 0 14px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -15,7 +14,7 @@
   transition: all 0.3s ease;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  margin:  40px auto;
+  margin:  0 auto;
    pointer-events: auto;
        
 } 
@@ -27,26 +26,42 @@
   align-items: center;
   margin-bottom: 6px;
   position: relative;
+  margin: 0 auto 0px;
 }
 .createNote-container .textArea-title  {
    font-family: 'Kadwa', serif; 
 }
 .createNote-container .textArea-Content {
-    font-family: Recursive;
+    font-family: "Recursive", sans-serif;
     font-size: clamp(20px, 6vw, 30px);
-    overflow: hidden;
+    overflow-y: auto;
     width: 99%;
-    height: clamp(250px, 80vw, 325px);
+    /* height: clamp(250px, 80vw, 325px); */
+    min-height: 35vh;
 }
-
+.emojisec {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.icon-sec {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin: 0 0 7px 0;
+}s
 
 
 .createNote-icon {
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  top: 0;
-  right: 0;
+  width: 25px;
+  height: 25px;
+}
+.textArea-Content::placeholder {
+  color: white;
+  opacity: 1; /* ensures full white, browsers sometimes lower opacity */
 }
 .textArea-title {
   background: transparent;
@@ -55,7 +70,7 @@
   resize: none;
   font-family: 'Kadwa', serif;
   text-transform: uppercase;
-  font-size: 24px;
+ font-size: clamp(20px, calc(16px + 2vw), 28px);
   text-align: center;
   color: #fff;
   width: 100%;
@@ -77,7 +92,6 @@
     line-height: 1.4em;
     overflow: hidden;
     margin-bottom: 10px;
-    min-height: 120px;
     align-items: center;
     padding: 13px;
 }
@@ -87,7 +101,7 @@
   outline: none;
   resize: none;
   width: 100%;
-  font-family: cursive;
+font-family: "Recursive", sans-serif;
   color: #fff;
   font-size: 18px;
   text-align: left;
@@ -111,13 +125,13 @@
 }
 
 .active-border {
- border: 2px dashed rgba(255, 255, 255, 0.9); 
+ border: 1px dashed rgba(255, 255, 255); 
  border-radius: 5px;
 }
 
 
 .always-border {
-  border: 2px dashed rgba(255, 255, 255, 0.9);
+  border: 1px dashed rgba(255, 255, 255);
   border-radius: 5px;
   animation: borderMove 1.5s  linear infinite;
 }
