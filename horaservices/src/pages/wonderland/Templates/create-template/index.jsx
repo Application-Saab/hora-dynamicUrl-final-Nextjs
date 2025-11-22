@@ -293,6 +293,7 @@ const DynamicTemplateRenderer = () => {
     if (!templateMeta?.jsCode) return;
     const merged = { ...templatePayload, ...scaledData };
     if (!merged.address) merged.address = "Type your address";
+    if(!merged.name)merged.name ="type your name";
     setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
@@ -337,7 +338,10 @@ const DynamicTemplateRenderer = () => {
         node.innerText = formData[field] || (field === "address" ? "Type your address" : "");
         setCaretAtEnd(node); // sirf tab call karo jab humne text set kiya
       }
-  
+   if (isEmpty) {
+        node.innerText = formData[field] || (field === "name" ? "Type your name" : "");
+        setCaretAtEnd(node); // sirf tab call karo jab humne text set kiya
+      }
       node.focus();
   
       const onKeyDown = (ev) => {
@@ -363,18 +367,26 @@ const DynamicTemplateRenderer = () => {
       };
   
  
-
 const onInput = (ev) => {
   const el = ev.target;
+  const field = el.getAttribute("data-field");
   let text = el.innerText;
 
+
   if (text.length > charLimit) {
-    text = text.slice(0, charLimit);
-    el.innerText = text;
-    setCaretAtEnd(el);
+    const trimmed = text.slice(0, charLimit);
+
+    const caret = saveCaretPosition(el);
+    el.innerText = trimmed;
+    restoreCaretPosition(el, caret);
+
+    setCharCounts((prev) => ({ ...prev, [field]: trimmed.length }));
+    setFormErrors((prev) => ({ ...prev, [field]: `Limit ${charLimit} reached` }));
+
+    return;
   }
 
-  // Apply case formatting live
+
   const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
   if (formattedValue !== text) {
     const caret = saveCaretPosition(el);
@@ -382,9 +394,12 @@ const onInput = (ev) => {
     restoreCaretPosition(el, caret);
   }
 
+  // Live update character counter
   setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
   setFormErrors((prev) => ({ ...prev, [field]: "" }));
 };
+
+
 
       const onPaste = (ev) => {
         ev.preventDefault();
@@ -396,7 +411,7 @@ const onInput = (ev) => {
     const onBlur = (ev) => {
   const el = ev.target;
   let value = el.innerText.trim();
-
+  if(!value && field === "name")value ="Type your name"
   if (!value && field === "address") value = "Type your address";
   if (value.length > charLimit) value = value.slice(0, charLimit);
 
@@ -617,26 +632,45 @@ wrapper.removeEventListener("gesturechange", onGesture);
       setIsSaved(false);
     }
   };
+
 const saveCaretPosition = (el) => {
   const selection = window.getSelection();
-  return selection.focusOffset;
+  if (!selection || !selection.rangeCount) return 0;
+
+  const range = selection.getRangeAt(0);
+  return range.startOffset;
 };
 
 const restoreCaretPosition = (el, offset) => {
-  const range = document.createRange();
-  const selection = window.getSelection();
-  range.setStart(el.childNodes[0] || el, offset);
-  range.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(range);
+  try {
+    const selection = window.getSelection();
+    const range = document.createRange();
+
+    let node = el;
+
+    if (el.childNodes.length > 0) {
+      node = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE) || el;
+    }
+
+    const textLength = node.textContent?.length ?? 0;
+    const safeOffset = Math.min(offset, textLength);
+
+    range.setStart(node, safeOffset);
+    range.collapse(true);
+
+    selection.removeAllRanges();
+    selection.addRange(range);
+  } catch (err) {
+    console.warn("restoreCaretPosition failed on device:", err);
+  }
 };
 
   if (loading) return <div style={{padding:"10px"}}><TemplatecardSkeleton /></div>;
 
   return (
-    <div className="d-flex justify-content-center" style={{maxWidth:"480px"}}>
+    <div className="d-flex justify-content-center" style={{maxWidth:"480px", margin:"0 auto"}}>
       <div style={{ padding: "8px",maxWidth:"480px"}}>
-        <div ref={templateRef} className={`template-container ${isSaved ? "saved" : ""}`} style={{ position: "relative", }}>
+        <div ref={templateRef} className="template-container" style={{ position: "relative", }}>
           <img
             ref={imgRef}
             src={`/assets/templates/${templateMeta?.bgImageName}`}
