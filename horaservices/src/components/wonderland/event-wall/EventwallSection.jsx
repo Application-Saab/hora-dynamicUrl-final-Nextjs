@@ -23,11 +23,6 @@ const EventwallSection = ({ userData }) => {
   const { makeRequest: getAllPosts } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
-  console.log(
-    "%c [ allImages ]-26",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    allImages
-  );
 
   const MAX_PARALLEL_UPLOADS = 5;
   let activeUploads = 0;
