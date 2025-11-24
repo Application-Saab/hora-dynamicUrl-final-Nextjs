@@ -569,7 +569,7 @@ export default function Home() {
             </div>
             <div className="service-image-container">
               <Image src="https://horaservices.com/api/uploads/homepage_photography.webp" alt="Photography" className="service-image" width={200} height={100} />
-              <button className="book-now2" onClick={photographyUrl} >Book Now</button>
+              <button className="book-now2" onClick={() => window.location.href = `${city}/photography-page`} >Book Now</button>
 
             </div>
           </div>
