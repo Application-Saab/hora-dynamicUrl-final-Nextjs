@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import NotesButtonIcon from "@/assets/wonderland/NotesButtonIcon.svg";
 import PostBadgeButtonIcon from "@/assets/wonderland/PostBadgeButtonIcon.svg";
@@ -23,6 +23,11 @@ const EventwallSection = ({ userData }) => {
   const { makeRequest: getAllPosts } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
+  const imagesRef = useRef([]);
+
+  useEffect(() => {
+    imagesRef.current = allImages;
+  }, [allImages]);
 
   const MAX_PARALLEL_UPLOADS = 5;
   let activeUploads = 0;
@@ -67,7 +72,7 @@ const EventwallSection = ({ userData }) => {
 
   // Measure heights + reorder
   async function processImagesWithHeight(list) {
-    const enriched = await Promise.all(
+    const enriched = await Promise?.all(
       list?.map(async (item) => ({
         ...item,
         height: await measureImageHeight(
@@ -139,20 +144,19 @@ const EventwallSection = ({ userData }) => {
   };
 
   const updateUploadedUrls = async (id, postUrl, thumbnailUrl) => {
-    let updatedList;
+    const current = imagesRef.current;
 
-    // update URLs synchronously
-    setAllImages((prev) => {
-      updatedList = prev.map((item) =>
-        item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item
-      );
-      return updatedList;
-    });
+    if (!Array.isArray(current) || current.length === 0) return;
 
-    // reorder asynchronously using height
+    const updatedList = current.map((item) =>
+      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item
+    );
+
+    // UI updates immediately
+    setAllImages(updatedList);
+
     const processed = await processImagesWithHeight(updatedList);
 
-    // finally update reordered list
     setAllImages(processed);
   };
 
