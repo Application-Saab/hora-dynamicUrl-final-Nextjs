@@ -11,6 +11,9 @@
   /* border-top-left-radius: 16px;
   border-top-right-radius: 16px; */
 }
+.emoji-open {
+  padding-bottom: 350px; 
+}
 
 .emoji-picker-container.open {
   bottom: 0;

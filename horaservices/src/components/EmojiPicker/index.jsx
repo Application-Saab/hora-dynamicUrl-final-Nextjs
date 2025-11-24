@@ -15,29 +15,61 @@ export default function EmojiPickerButton({
   const pickerVisible = isPickerOpen ?? false;
   const togglePicker = setIsPickerOpen ?? (() => { });
 
+  useEffect(() => {
+    if (pickerVisible) {
+      document.body.classList.add("emoji-open");
+    } else {
+      document.body.classList.remove("emoji-open");
+    }
+  }, [pickerVisible]);
+
   const handleButtonClick = (e) => {
     e.preventDefault();
+
     if (pickerVisible) {
       togglePicker(false);
-      setTimeout(() => {
-        const input =
-          document.querySelector("textarea:focus") ||
-          document.querySelector("textarea");
-        input?.focus();
-      }, 150);
+      document.body.classList.remove("emoji-open");
     } else {
       const focused = document.activeElement;
-      if (focused && (focused.tagName === "TEXTAREA" || focused.tagName === "INPUT")) {
+      if (focused && (focused.tagName === "TEXTAREA" || focused.isContentEditable)) {
         focused.blur();
       }
       togglePicker(true);
+      document.body.classList.add("emoji-open");
     }
   };
 
-  const handleEmojiClick = (emojiData, e) => {
-    e.stopPropagation();
-    if (emojiData?.emoji) onEmojiSelect?.(emojiData.emoji);
+  const handleEmojiClick = (emojiObject, event) => {
+    event.stopPropagation();
+    onEmojiSelect?.(emojiObject);
   };
+
+  useEffect(() => {
+
+    if (pickerVisible) {
+      window.history.pushState({ pickerOpen: true }, "");
+    }
+
+    const handleBackButton = (e) => {
+      const focused = document.activeElement;
+
+      if (pickerVisible) {
+        e.preventDefault();
+        togglePicker(false);
+        window.history.pushState({}, "");
+      } else if (focused && (focused.tagName === "TEXTAREA" || focused.isContentEditable)) {
+        e.preventDefault();
+        focused.blur();
+      }
+
+    };
+
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, [pickerVisible]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

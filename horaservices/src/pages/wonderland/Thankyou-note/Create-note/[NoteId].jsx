@@ -40,7 +40,7 @@ export default function NoteDetails() {
   const { makeRequest: createPost } = useApi();
   const [userName, setUserName] = useState("");
 
-  // Fetch User Name
+
   useEffect(() => {
     const userId =
       typeof window !== "undefined" ? localStorage.getItem("userID") : null;
@@ -64,7 +64,7 @@ export default function NoteDetails() {
     fetchUserName();
   }, []);
 
-  // Load Note Data
+ 
   useEffect(() => {
     if (NoteId) {
       const found = notesData.find((n) => n.id === Number(NoteId));
@@ -79,18 +79,10 @@ export default function NoteDetails() {
     }
   }, [NoteId]);
 
-  // Auto height expand textareas
   const adjustHeight = (el) => {
     if (!el) return;
-
-    const currentY = window.scrollY;
-    const caret = el.selectionStart;
-
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
-
-    window.scrollTo({ top: currentY });
-    el.setSelectionRange(caret, caret);
   };
 
   const handleChange = (field, value, ref) => {
@@ -98,70 +90,61 @@ export default function NoteDetails() {
     adjustHeight(ref.current);
   };
 
-  // Track cursor selection
+
   const handleFocus = (field, ref) => {
     setActiveField(field);
     const el = ref.current;
 
     const updateSelection = () => {
-      setLastSelection({
-        start: el.selectionStart,
-        end: el.selectionEnd,
-      });
+      if (el.selectionStart !== undefined) {
+        setLastSelection({
+          start: el.selectionStart,
+          end: el.selectionEnd,
+        });
+      }
     };
 
     el.addEventListener("keyup", updateSelection);
     el.addEventListener("mouseup", updateSelection);
   };
 
-  // Insert emoji AND scroll page to bottom
-  const handleEmojiSelect = (emoji) => {
-    const ref =
-      activeField === "title"
-        ? titleRef.current
-        : activeField === "content"
-        ? contentRef.current
-        : authorRef.current;
+  const handleEmojiSelect = (emojiObject) => {
+    const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
 
+    let ref = activeField === "title" ? titleRef.current : contentRef.current;
     if (!ref) return;
 
-    const start = lastSelection.start ?? ref.value.length;
-    const end = lastSelection.end ?? ref.value.length;
+    const sel = window.getSelection();
 
-    const newValue =
-      ref.value.slice(0, start) + emoji + ref.value.slice(end);
 
-    ref.value = newValue;
+    let range;
+    if (sel.rangeCount > 0) {
+      range = sel.getRangeAt(0);
+    } else {
+      ref.focus();
+      range = document.createRange();
+      range.selectNodeContents(ref);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
 
-    const newCursor = start + emoji.length;
 
-    setLiveData((prev) => ({ ...prev, [activeField]: newValue }));
-    setLastSelection({ start: newCursor, end: newCursor });
+    const img = document.createElement("img");
+    img.src = emojiImgUrl;
+    img.className = "emoji-inline";
 
-    adjustHeight(ref);
+    range.insertNode(img);
+    range.setStartAfter(img);
+    range.setEndAfter(img);
 
-    // ⭐ Scroll full window to bottom
-    setTimeout(() => {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 50);
+
+    const fieldValue = activeField === "title" ? ref.innerText : ref.innerHTML;
+    setLiveData((prev) => ({ ...prev, [activeField]: fieldValue }));
+
+    sel.removeAllRanges();
   };
 
-  // // Scroll full page when emoji picker opens
-  // useEffect(() => {
-  //   if (showEmojiPicker) {
-  //     setTimeout(() => {
-  //       window.scrollTo({
-  //         top: document.body.scrollHeight,
-  //         behavior: "smooth",
-  //       });
-  //     }, 100);
-  //   }
-  // }, [showEmojiPicker]);
-
-  // Close emoji picker on outside click
   useEffect(() => {
     const clickOutside = (e) => {
       if (
@@ -170,49 +153,14 @@ export default function NoteDetails() {
         !e.target.closest(".emoji-button")
       ) {
         setShowEmojiPicker(false);
+        document.body.classList.remove("emoji-open");
       }
     };
     document.addEventListener("click", clickOutside);
     return () => document.removeEventListener("click", clickOutside);
   }, [showEmojiPicker]);
 
-// // 👇 The new logic to handle browser back button
-// useEffect(() => {
-//   // 1. When the picker opens, push a new state onto the history stack.
-//   // This makes the browser's "back" action first target this new state.
-//   if (showEmojiPicker) {
-//     // Push a new state only when the picker is opened.
-//     window.history.pushState({ isPickerOpen: true }, '', null); 
-//   }
 
-//   const handlePopState = (e) => {
-//     // Check if the component believes the picker is open.
-//     if (showEmojiPicker) {
-//       // Prevent default back navigation.
-//       e.preventDefault(); 
-      
-//       // Close the picker.
-//       setShowEmojiPicker(false);
-      
-//       // Push a new, clean state back onto history to "undo" the pop state.
-//       // This ensures the next 'back' action goes to the previous route.
-//       window.history.pushState({ isPickerOpen: false }, '', null);
-
-//     } else {
-//       // If the picker is not open, allow the default navigation to occur.
-//     }
-//   };
-
-//   // Attach the listener
-//   window.addEventListener('popstate', handlePopState);
-
-//   // Cleanup: Remove the listener when the component unmounts or effect reruns.
-//   return () => {
-//     window.removeEventListener('popstate', handlePopState);
-//   };
-// }, [showEmojiPicker]);
-
-  // Download + Upload
   const handleDownload = async () => {
     if (!noteRef.current) return;
     setShowBorders(false);
@@ -281,61 +229,71 @@ export default function NoteDetails() {
           style={{ background: note.color, position: "relative" }}
         >
           <div className="icon-sec">
-              {note.icon && (
+            {note.icon && (
               <Image src={note.icon} alt="" className="createNote-icon" />
             )}
 
           </div>
           <div className="createNote-header">
-          
-            <textarea
-              ref={titleRef}
-              value={liveData.title}
-              rows={1}
-              onChange={(e) => handleChange("title", e.target.value, titleRef)}
-              onFocus={() => handleFocus("title", titleRef)}
-              placeholder="TITLE..."
-              className={`textArea-title ${
-                showBorders ? "always-border" : ""
-              }`}
-            />
-          </div>
 
-          <textarea
+            <div
+              ref={titleRef}
+              contentEditable
+              onInput={(e) =>
+                handleChange("title", e.currentTarget.innerText, titleRef)
+              }
+              onFocus={(e) => {
+                handleFocus("title", titleRef);
+                if (e.currentTarget.innerText === "TITLE...") {
+                  e.currentTarget.innerText = "";
+                }
+              }}
+              onBlur={(e) => {
+                if (!e.currentTarget.innerText.trim()) {
+                  e.currentTarget.innerText = "TITLE...";
+                }
+              }}
+              suppressContentEditableWarning={true}
+              className={`textArea-title ${showBorders ? "always-border" : ""}`}
+            >
+              {liveData.title || "TITLE..."}
+            </div>
+          </div>
+          <div
             ref={contentRef}
-            // value={liveData.content}
-            rows={2}
-            onChange={(e) =>
-              handleChange("content", e.target.value, contentRef)
+            contentEditable
+            onInput={(e) =>
+              handleChange("content", e.currentTarget.innerHTML, contentRef)
             }
             onFocus={() => handleFocus("content", contentRef)}
-            placeholder="Write your note..."
-            className={`textArea-Content ${
-              showBorders ? "always-border" : ""
-            }`}
+            suppressContentEditableWarning={true}
+            className={`textArea-Content ${showBorders ? "always-border" : ""}`}
+            data-placeholder="Write your note..."
           />
+
+
           <div className="emojisec">
             <div className="textArea-Author">
-        {userName ? `- ${userName}` : "- Fetching your name..."}
-        </div>
-             <div
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              zIndex: 300,
-            }}
-          >
-            <EmojiPickerButton
-              onEmojiSelect={handleEmojiSelect}
-              isPickerOpen={showEmojiPicker}
-              setIsPickerOpen={setShowEmojiPicker}
-            />
+              {userName ? `- ${userName}` : "- Fetching your name..."}
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                zIndex: 300,
+              }}
+            >
+              <EmojiPickerButton
+                onEmojiSelect={handleEmojiSelect}
+                isPickerOpen={showEmojiPicker}
+                setIsPickerOpen={setShowEmojiPicker}
+              />
+            </div>
           </div>
-          </div>
-         
 
-       
+
+
         </div>
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
