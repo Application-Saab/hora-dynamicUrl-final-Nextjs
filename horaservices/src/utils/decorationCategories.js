@@ -111,4 +111,28 @@ export const decCat = [
     catValue: "Proposal-Decorations",
     imgAlt: "proposal decorations",
   },
+  {
+    id: "13",
+    Image: "",
+    name: "Naming Ceremony Decoration",
+    subCategory: "NamingCeremony",
+    catValue: "Naming-ceremony-decoration",
+    imgAlt: "Naming Ceremony Decoration",
+  },
+  {
+    id: "14",
+    Image: "",
+    name: "House warming Decoration",
+    subCategory: "HouseWarming",
+    catValue: "House-warming-decoration",
+    imgAlt: "House Warming Decoration",
+  },
+  {
+    id: "15",
+    Image: "",
+    name: "Car Decoration",
+    subCategory: "CarDecoration",
+    catValue: "Car-decoration",
+    imgAlt: "Car Decoration",
+  },
 ];
