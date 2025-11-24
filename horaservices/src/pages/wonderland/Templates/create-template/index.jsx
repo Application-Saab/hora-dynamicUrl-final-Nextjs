@@ -245,7 +245,7 @@ const DynamicTemplateRenderer = () => {
     };
   }, [templateId]);
 
-  /* --- fetch order details --- */
+
   useEffect(() => {
     if (!eventId) return;
     let active = true;
@@ -297,7 +297,7 @@ const DynamicTemplateRenderer = () => {
     setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
-  /* --- scale template metrics on image load --- */
+  
   const handleImageLoad = useCallback(() => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
