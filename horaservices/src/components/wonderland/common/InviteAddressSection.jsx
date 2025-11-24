@@ -64,7 +64,14 @@ const InviteAddressSection = ({ eventData }) => {
           className="d-flex align-items-center"
           style={{ marginLeft: "-30px" }}
         >
-          <div className="direction-ctn"></div>
+          <div className="direction-ctn">
+            <img
+              src="/assets/wonderland/MapGraphImage.png"
+              alt="Location Map Graphic"
+              className="direction-bg-img"
+            />
+          </div>
+
           <div
             className="d-flex justify-content-center align-items-center flex-column direction-icon-ctn"
             onClick={handleLocationClick}
