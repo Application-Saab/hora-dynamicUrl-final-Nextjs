@@ -25,7 +25,8 @@ const EventwallSection = ({ userData }) => {
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
   const [showUploadPhotoModal, setShowUploadPhotoModal] = useState(false);
-
+  const [selectedImage, setSelectedImage] = useState(null);
+ 
   let activeUploads = 0;
   let uploadQueue = [];
 
@@ -80,10 +81,8 @@ const EventwallSection = ({ userData }) => {
     },
   ];
 
-
   function getBlockType(index) {
     const pos = index % 6;
-
     if (pos === 0 || pos === 1 || pos === 2) return "small";
     if (pos === 3) return "big";
     if (pos === 4) return "small-right-top";
@@ -148,6 +147,7 @@ const EventwallSection = ({ userData }) => {
                         display: "grid",
                       }}
                       className={`grid-item ${type}`}
+                      
                     >
                       <EventwallGalleryItem
                         isVideo={isVideo}

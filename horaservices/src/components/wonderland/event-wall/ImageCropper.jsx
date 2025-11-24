@@ -26,9 +26,9 @@ const ImageCropper = ({ isOpen, onClose, selectedImages }) => {
       showHeader={false}
       verticalCenter={false}
       body={
-        <div style={{ padding: "10px" }}>
+        <div style={{ padding: "5px", width: "100%" }}>
           <Slider {...settings}>
-            {selectedImages.map((item, index) => (
+            {selectedImages?.map((item, index) => (
               <div key={index} style={{ padding: "5px" }}>
                 <Image
                   src={item.localPreview}
@@ -36,10 +36,11 @@ const ImageCropper = ({ isOpen, onClose, selectedImages }) => {
                   width={50}
                   height={50}
                   style={{
-                    width: "50px",
-                    height: "50px",
+                    width: "60px",
+                    height: "60px",
                     objectFit: "cover",
-                    borderRadius: "6px",
+                    borderRadius: "0px",
+                    paddingInline: '2px'
                   }}
                 />
               </div>

@@ -78,16 +78,17 @@ const UploadPhotoModal = ({
       });
 
       // Show instantly
-      //   setAllImages((prev) => [...tempItems, ...prev]);
-      setSelectedImages((prev) => [...tempItems, ...prev]);
+      setAllImages((prev) => [...tempItems, ...prev]);
+      // setSelectedImages((prev) => [...tempItems, ...prev]);
 
-      //   // Add to queue
-      //   uploadQueue.push(...tempItems);
+      // Add to queue
+      uploadQueue.push(...tempItems);
+      onClose();
 
-      //   // Start 5 parallel workers
-      //   for (let i = 0; i < 5; i++) {
-      //     processNextUpload();
-      //   }
+      // Start 5 parallel workers
+      for (let i = 0; i < 5; i++) {
+        processNextUpload();
+      }
     };
 
     input.click();
@@ -170,11 +171,11 @@ const UploadPhotoModal = ({
     }
   };
 
-  useEffect(() => {
-    if (selectedImages.length > 0) {
-      setShowCropImageModal(true);
-    }
-  }, [selectedImages]);
+  // useEffect(() => {
+  //   if (selectedImages.length > 0) {
+  //     setShowCropImageModal(true);
+  //   }
+  // }, [selectedImages]);
 
   return (
     <>
