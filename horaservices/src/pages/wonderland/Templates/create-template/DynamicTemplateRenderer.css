@@ -257,7 +257,7 @@
   border-radius: 4px;
   width: max-content;
   line-height: normal;
-  --borderColor: #a4236c;
+  border:  var(--borderColor) !important;
   overflow: visible; 
 }
 
