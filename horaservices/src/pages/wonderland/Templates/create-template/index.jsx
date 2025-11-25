@@ -493,6 +493,45 @@ useEffect(() => {
     let offsetX = 0;
     let offsetY = 0;
     let moved = false;
+    // Pinch Zoom Support
+let pointers = new Map();
+let startDistance = 0;
+let startScale = heroTransform.scale;
+
+const getDistance = (p1, p2) =>
+  Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
+
+const onPointerDown = (e) => {
+  pointers.set(e.pointerId, e);
+};
+
+const onPointerMove = (e) => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, e);
+
+  if (pointers.size === 2) {
+    const [a, b] = Array.from(pointers.values());
+    const distance = getDistance(a, b);
+
+    if (!startDistance) {
+      startDistance = distance;
+      startScale = heroTransform.scale;
+    }
+
+    let newScale = startScale * (distance / startDistance);
+    newScale = Math.min(3, Math.max(0.5, newScale));
+
+    heroTransform.scale = newScale;
+    setHeroTransform({ ...heroTransform });
+
+    applyTransform();
+  }
+};
+
+const onPointerUp = (e) => {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) startDistance = 0;
+};
 
     const getPos = (e) =>
       e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
@@ -553,6 +592,11 @@ useEffect(() => {
     wrapper.addEventListener("click", openUpload);
     wrapper.addEventListener("wheel", onWheel, { passive: false });
      wrapper.addEventListener("gesturechange", onGesture);
+     imgEl.addEventListener("pointerdown", onPointerDown);
+     imgEl.addEventListener("pointermove", onPointerMove);
+     imgEl.addEventListener("pointerup", onPointerUp);
+     imgEl.addEventListener("pointercancel", onPointerUp);
+
     return () => {
       wrapper.removeEventListener("mousedown", start);
       window.removeEventListener("mousemove", move);
@@ -643,20 +687,24 @@ const handleDownload = async () => {
           eventTime: formData.time || "",
           location: formData.address,
         }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || "Unknown error");
       }
+    );
 
-      await handleDownload();
-    } catch (err) {
-      alert(`Failed to save: ${err.message}`);
-      setSaving(false);
-      setIsSaved(false);
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.message || "Unknown error");
     }
-  };
+
+    await handleDownload();
+  } catch (err) {
+    alert(`Failed to save: ${err.message}`);
+    setSaving(false);
+    setIsSaved(false);
+    document.body.classList.remove("saved-mode");
+  } finally {
+    document.body.classList.remove("saved-mode");
+  }
+};
 
   const saveCaretPosition = (el) => {
     const selection = window.getSelection();

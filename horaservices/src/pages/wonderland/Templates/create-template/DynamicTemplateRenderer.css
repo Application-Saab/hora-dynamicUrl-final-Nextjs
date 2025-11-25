@@ -253,6 +253,7 @@
 
 .editborder {
   display: inline-block;
+  border: 1px dashed transparent;
   border: 1px dashed var(--borderColor) !important;
   padding: 2px 4px;
   border-radius: 1px;
@@ -270,6 +271,9 @@
   border-radius: 12px;
   border: 1px solid #000000;
   overflow: hidden;
+}
+#heroImage, .template-image {
+  touch-action: none;
 }
 
 /* *********** Template Wise Css ****************** */
