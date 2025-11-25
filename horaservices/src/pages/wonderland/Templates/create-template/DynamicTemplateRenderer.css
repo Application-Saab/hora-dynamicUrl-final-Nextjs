@@ -250,23 +250,48 @@
 .crop-icon{
   margin-right: 5px;
 }
-
-.editborder {
+ .editborder {
+  position: relative;
   display: inline-block;
-  border: 1px dashed transparent;
-  border: 1px dashed var(--borderColor) !important;
   padding: 2px 4px;
-  border-radius: 1px;
-  width:max-content;
+  border-radius: 4px;
+  width: max-content;
   line-height: normal;
+  --borderColor: #a4236c;
+  overflow: visible; 
 }
 
-.editable:focus {
-  outline: none; 
+.editborder::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  padding: 1px;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--borderColor) 0,
+    var(--borderColor) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  animation: moveBorder 5s linear infinite; 
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
 }
-.saved-mode .editborder {
-  border: none !important;
+
+@keyframes moveBorder {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 0; }
 }
+
+.saved-mode .editborder::before {
+  display: none;
+}
+
 .template-container {
   border-radius: 12px;
   border: 1px solid #000000;
