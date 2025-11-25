@@ -10,7 +10,8 @@ import CalendarModal from "@/components/wonderland/create-invite/CalendarModal";
 import TimeModal from "@/components/wonderland/create-invite/TimeModal";
 import CustomButton from "@/components/wonderland/common/CustomButton";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
-import { applyCase } from "./fontsizeformat";
+import { applyCase } from "@/components/wonderland/fontsizeformat";
+import { captureElementAsImage } from "@/utils/captureElementAsImage";
 
 
 const toText = (val) => (val ?? "").toString();
@@ -95,8 +96,12 @@ const DynamicTemplateRenderer = () => {
 
   const templateId = searchParams.get("templateId") || "";
   const eventId = searchParams.get("id");
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+
+  const loadUserId = () => typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const loadToken = () => typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const userId = loadUserId();
+  const token = loadToken();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -132,12 +137,12 @@ const DynamicTemplateRenderer = () => {
 
     const formatted = dateFormatter(formData.date || fallback, templateMeta?.dateFormatCase || "1");
 
-    
+
     return {
       eventType: formData.eventType,
       name: applyCase(formData.name || "", templateMeta?.nameCase),
       // date: formatted || "",
-       date: applyCase(formatted?.full || formatted || "",templateMeta?.dateCase || "default"),
+      date: applyCase(formatted?.full || formatted || "", templateMeta?.dateCase || "default"),
       day: formatted?.day || fallback.slice(-2),
    
 
@@ -289,16 +294,23 @@ const DynamicTemplateRenderer = () => {
     };
   }, [eventId, token]);
 
-  /* --- render template html --- */
-  useEffect(() => {
-    if (!templateMeta?.jsCode) return;
-    const merged = { ...templatePayload, ...scaledData };
-    if (!merged.address) merged.address = "Type your address";
-    if(!merged.name)merged.name ="type your name";
-    setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
-  }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
-  
+ const applyPlaceholders = (data) => ({
+  ...data,
+  name: data.name?.trim() || "Type your name",
+  address: data.address?.trim() || "Type your address",
+});
+useEffect(() => {
+  if (!templateMeta?.jsCode) return;
+
+  const merged = applyPlaceholders({
+    ...templatePayload,
+    ...scaledData,
+  });
+
+  setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
+}, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
+
   const handleImageLoad = useCallback(() => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
@@ -327,24 +339,27 @@ const DynamicTemplateRenderer = () => {
     setLoading(false);
   }, [templateMeta?.templateInfo]);
 
- const handleEditableClick = useCallback(
+  const handleEditableClick = useCallback(
     (field, node) => {
       const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
       node.contentEditable = "true";
       node.dataset.editing = "true";
       node.classList.add("editing");
-  
+
+
+      const placeholderText =
+        field === "name"
+          ? "Type your name"
+          : field === "address"
+            ? "Type your address"
+            : "";
+
       const isEmpty = !node.innerText?.trim();
       if (isEmpty) {
-        node.innerText = formData[field] || (field === "address" ? "Type your address" : "");
-        setCaretAtEnd(node); // sirf tab call karo jab humne text set kiya
-      }
-   if (isEmpty) {
-        node.innerText = formData[field] || (field === "name" ? "Type your name" : "");
-        setCaretAtEnd(node); // sirf tab call karo jab humne text set kiya
+        node.innerText = formData[field] || placeholderText;
+        setCaretAtEnd(node);
       }
       node.focus();
-  
       const onKeyDown = (ev) => {
         const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
         if (printable && node.innerText.length >= charLimit) {
@@ -366,39 +381,39 @@ const DynamicTemplateRenderer = () => {
           node.blur();
         }
       };
-  
- 
-const onInput = (ev) => {
-  const el = ev.target;
-  const field = el.getAttribute("data-field");
-  let text = el.innerText;
 
 
-  if (text.length > charLimit) {
-    const trimmed = text.slice(0, charLimit);
-
-    const caret = saveCaretPosition(el);
-    el.innerText = trimmed;
-    restoreCaretPosition(el, caret);
-
-    setCharCounts((prev) => ({ ...prev, [field]: trimmed.length }));
-    setFormErrors((prev) => ({ ...prev, [field]: `Limit ${charLimit} reached` }));
-
-    return;
-  }
+       const onInput = (ev) => {
+        const el = ev.target;
+        const field = el.getAttribute("data-field");
+        let text = el.innerText;
 
 
-  const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
-  if (formattedValue !== text) {
-    const caret = saveCaretPosition(el);
-    el.innerText = formattedValue;
-    restoreCaretPosition(el, caret);
-  }
+        if (text.length > charLimit) {
+          const trimmed = text.slice(0, charLimit);
 
-  // Live update character counter
-  setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
-  setFormErrors((prev) => ({ ...prev, [field]: "" }));
-};
+          const caret = saveCaretPosition(el);
+          el.innerText = trimmed;
+          restoreCaretPosition(el, caret);
+
+          setCharCounts((prev) => ({ ...prev, [field]: trimmed.length }));
+          setFormErrors((prev) => ({ ...prev, [field]: `Limit ${charLimit} reached` }));
+
+          return;
+        }
+
+
+        const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
+        if (formattedValue !== text) {
+          const caret = saveCaretPosition(el);
+          el.innerText = formattedValue;
+          restoreCaretPosition(el, caret);
+        }
+
+        // Live update character counter
+        setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
+        setFormErrors((prev) => ({ ...prev, [field]: "" }));
+      };
 
 
 
@@ -408,29 +423,29 @@ const onInput = (ev) => {
         const allowed = Math.max(0, charLimit - node.innerText.length);
         document.execCommand("insertText", false, pasted.slice(0, allowed));
       };
-  
-    const onBlur = (ev) => {
-  const el = ev.target;
-  let value = el.innerText.trim();
-  if(!value && field === "name")value ="Type your name"
-  if (!value && field === "address") value = "Type your address";
-  if (value.length > charLimit) value = value.slice(0, charLimit);
 
-  setFormData((prev) => ({ ...prev, [field]: value }));
-  setCharCounts((prev) => ({ ...prev, [field]: value.length }));
-  setFormErrors((prev) => ({ ...prev, [field]: "" }));
+      const onBlur = (ev) => {
+        const el = ev.target;
+        let value = el.innerText.trim();
+        if (!value && field === "name") value = "Type your name"
+        if (!value && field === "address") value = "Type your address";
+        if (value.length > charLimit) value = value.slice(0, charLimit);
 
-  el.contentEditable = "false";
-  el.removeAttribute("data-editing");
-  el.classList.remove("editing");
+        setFormData((prev) => ({ ...prev, [field]: value }));
+        setCharCounts((prev) => ({ ...prev, [field]: value.length }));
+        setFormErrors((prev) => ({ ...prev, [field]: "" }));
 
-  el.removeEventListener("keydown", onKeyDown);
-  el.removeEventListener("input", onInput);
-  el.removeEventListener("paste", onPaste);
-  el.removeEventListener("blur", onBlur);
-};
+        el.contentEditable = "false";
+        el.removeAttribute("data-editing");
+        el.classList.remove("editing");
 
-  
+        el.removeEventListener("keydown", onKeyDown);
+        el.removeEventListener("input", onInput);
+        el.removeEventListener("paste", onPaste);
+        el.removeEventListener("blur", onBlur);
+      };
+
+
       node.addEventListener("keydown", onKeyDown);
       node.addEventListener("input", onInput);
       node.addEventListener("paste", onPaste);
@@ -463,7 +478,7 @@ const onInput = (ev) => {
     return () => container.removeEventListener("click", handleClick);
   }, [handleEditableClick]);
 
-  /* --- hero image drag/open upload --- */
+ 
   useEffect(() => {
     const wrapper = document.getElementById("heroImage");
     const imgEl = wrapper?.querySelector(".template-image");
@@ -499,7 +514,7 @@ const onInput = (ev) => {
       const { x, y } = getPos(e);
       offsetX = x - startX;
       offsetY = y - startY;
-     imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${heroTransform.scale})`;
+      imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${heroTransform.scale})`;
       moved = true;
     };
 
@@ -551,49 +566,58 @@ wrapper.removeEventListener("gesturechange", onGesture);
     };
   }, [renderedHTML]);
 
-  const handleDownload = async () => {
-  const canvas = await html2canvas(templateRef.current, {
-    backgroundColor: null,
-    useCORS: true,
-  });
 
-  const base64Img = canvas.toDataURL("image/png");
+const handleDownload = async () => {
+  if (!templateRef.current) return;
 
-  localStorage.setItem("localTemplateImage", base64Img);
+  setSaving(true);
 
-  router.replace(`/wonderland/invite?eventid=${eventId}`);
+  const blob = await captureElementAsImage(templateRef.current, [
+    ".hide-in-download", 
+  ]);
 
-  // ⭐ Continue upload in background
-  canvas.toBlob(async (blob) => {
-    if (!blob) return;
+  if (!blob) {
+    setSaving(false);
+    return;
+  }
 
-    const file = new File([blob], `invite_${templateMeta?.bgImageName}`, {
+  // 🧾 Convert blob → file
+  const file = new File(
+    [blob],
+    `invite_${templateMeta?.bgImageName || "image"}.png`,
+    {
       type: "image/png",
       lastModified: Date.now(),
-    });
-
-    const form = new FormData();
-    form.append("image", file);
-    form.append("userId", userId);
-
-    try {
-      await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: token || "",
-          },
-          body: form,
-        }
-      );
-      // localStorage.removeItem("localTemplateImage");
-    } catch (err) {
-      console.error("Upload failed:", err);
-    } finally {
-      setSaving(false);
     }
-  }, "image/png", 1.0);
+  );
+
+  // 🔗 Create Base64 preview also (optional)
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    localStorage.setItem("localTemplateImage", reader.result);
+    router.replace(`/wonderland/invite?eventid=${eventId}`);
+  };
+  reader.readAsDataURL(blob);
+
+  // 🚀 Upload in background
+  const form = new FormData();
+  form.append("image", file);
+  form.append("userId", userId);
+
+  try {
+    await fetch(
+      `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+      {
+        method: "PUT",
+        headers: { Authorization: token || "" },
+        body: form,
+      }
+    );
+  } catch (err) {
+    console.error("Upload failed:", err);
+  } finally {
+    setSaving(false);
+  }
 };
 
   const handleSave = async () => {
@@ -603,7 +627,7 @@ wrapper.removeEventListener("gesturechange", onGesture);
     }
     setSaving(true);
     setIsSaved(true);
-   document.body.classList.add("saved-mode");
+    document.body.classList.add("saved-mode");
     try {
       const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`, {
         method: "PUT",
@@ -634,50 +658,50 @@ wrapper.removeEventListener("gesturechange", onGesture);
     }
   };
 
-const saveCaretPosition = (el) => {
-  const selection = window.getSelection();
-  if (!selection || !selection.rangeCount) return 0;
-
-  const range = selection.getRangeAt(0);
-  return range.startOffset;
-};
-
-const restoreCaretPosition = (el, offset) => {
-  try {
+  const saveCaretPosition = (el) => {
     const selection = window.getSelection();
-    const range = document.createRange();
+    if (!selection || !selection.rangeCount) return 0;
 
-    let node = el;
+    const range = selection.getRangeAt(0);
+    return range.startOffset;
+  };
 
-    if (el.childNodes.length > 0) {
-      node = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE) || el;
+  const restoreCaretPosition = (el, offset) => {
+    try {
+      const selection = window.getSelection();
+      const range = document.createRange();
+
+      let node = el;
+
+      if (el.childNodes.length > 0) {
+        node = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE) || el;
+      }
+
+      const textLength = node.textContent?.length ?? 0;
+      const safeOffset = Math.min(offset, textLength);
+
+      range.setStart(node, safeOffset);
+      range.collapse(true);
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } catch (err) {
+      console.warn("restoreCaretPosition failed on device:", err);
     }
+  };
+  useEffect(() => {
+    if (!templateMeta?.borderColor) return;
+    document.documentElement.style.setProperty(
+      "--borderColor",
+      templateMeta.borderColor
+    );
+  }, [templateMeta?.borderColor]);
 
-    const textLength = node.textContent?.length ?? 0;
-    const safeOffset = Math.min(offset, textLength);
-
-    range.setStart(node, safeOffset);
-    range.collapse(true);
-
-    selection.removeAllRanges();
-    selection.addRange(range);
-  } catch (err) {
-    console.warn("restoreCaretPosition failed on device:", err);
-  }
-};
-useEffect(() => {
-  if (!templateMeta?.borderColor) return;
-  document.documentElement.style.setProperty(
-    "--borderColor",
-    templateMeta.borderColor
-  );
-}, [templateMeta?.borderColor]);
-
-  if (loading) return <div style={{padding:"10px"}}><TemplatecardSkeleton /></div>;
+  if (loading) return <div style={{ padding: "10px" }}><TemplatecardSkeleton /></div>;
 
   return (
-    <div className="d-flex justify-content-center" style={{maxWidth:"480px", margin:"0 auto"}}>
-      <div style={{ padding: "8px",maxWidth:"480px"}}>
+    <div className="d-flex justify-content-center" style={{ maxWidth: "480px", margin: "0 auto" }}>
+      <div style={{ padding: "8px", maxWidth: "480px" }}>
         <div ref={templateRef} className="template-container" style={{ position: "relative", }}>
           <img
             ref={imgRef}
@@ -685,8 +709,10 @@ useEffect(() => {
             id="bg-image"
             alt="bg"
             onLoad={handleImageLoad}
-            onError={() => setLoading(false)}   
+            onError={() => setLoading(false)}
           />
+
+
 
           {templateMeta?.fontUrls?.map((url, idx) => (
             <link key={idx} href={url} rel="stylesheet" />
@@ -718,7 +744,7 @@ useEffect(() => {
         />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-         <CustomButton title="Submit" onClick={handleSave} />
+          <CustomButton title="Submit" onClick={handleSave} />
 
         </div>
       </div>
