@@ -144,7 +144,7 @@ const DynamicTemplateRenderer = () => {
       month: applyCase(formatted?.month || fallback.slice(5, 7),templateMeta?.monthCase || "default"),
       year: formatted?.year || fallback.slice(0, 4),
        time: formData.time || "",
-      
+      borderColor: templateMeta?.borderColor,
 
       address: applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
@@ -231,6 +231,7 @@ const DynamicTemplateRenderer = () => {
            addressCase: template.configs?.addressCase || "default",
            monthCase: template.configs?.monthCase || "default",
           aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
+           borderColor: template.configs?.borderColor,
         });
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
@@ -498,7 +499,7 @@ const onInput = (ev) => {
       const { x, y } = getPos(e);
       offsetX = x - startX;
       offsetY = y - startY;
-      imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+     imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${heroTransform.scale})`;
       moved = true;
     };
 
@@ -602,7 +603,7 @@ wrapper.removeEventListener("gesturechange", onGesture);
     }
     setSaving(true);
     setIsSaved(true);
-
+   document.body.classList.add("saved-mode");
     try {
       const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`, {
         method: "PUT",
@@ -664,6 +665,13 @@ const restoreCaretPosition = (el, offset) => {
     console.warn("restoreCaretPosition failed on device:", err);
   }
 };
+useEffect(() => {
+  if (!templateMeta?.borderColor) return;
+  document.documentElement.style.setProperty(
+    "--borderColor",
+    templateMeta.borderColor
+  );
+}, [templateMeta?.borderColor]);
 
   if (loading) return <div style={{padding:"10px"}}><TemplatecardSkeleton /></div>;
 

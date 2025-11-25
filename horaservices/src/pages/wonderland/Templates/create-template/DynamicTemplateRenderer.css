@@ -253,20 +253,19 @@
 
 .editborder {
   display: inline-block;
-  outline: 1px dashed #ffffff;
+  border: 1px dashed var(--borderColor) !important;
   padding: 2px 4px;
   border-radius: 1px;
   width:max-content;
   line-height: normal;
 }
-.editable:focus {
-  outline: none;  /* ye border remove karega */
-}
-.saved .editborder {
-  outline: none;
-  padding: 0;
-}
 
+.editable:focus {
+  outline: none; 
+}
+.saved-mode .editborder {
+  border: none !important;
+}
 .template-container {
   border-radius: 12px;
   border: 1px solid #000000;

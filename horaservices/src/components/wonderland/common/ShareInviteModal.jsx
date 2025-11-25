@@ -161,7 +161,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
       isOpen={isOpen}
       onClose={() => onClose()}
       title="Share Invitation"
-      verticalCenter={false}
+      verticalCenter={true}
       bodyClass="share-invite-modal-body"
       body={
         <>
