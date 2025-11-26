@@ -39,20 +39,44 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
     onClose();
   };
 
-  const Wheel = ({ range, value, setValue }) => (
-    <div className="wheel">
-      {range.map((num) => (
-        <div
-          key={num}
-          className={`wheel-item ${num === value ? "wheel-item-active" : ""}`}
-          onClick={() => setValue(num)}
-        >
-          {String(num).padStart(2, "0")}
-        </div>
-      ))}
-    </div>
-  );
-
+   const Wheel = ({ range, value, setValue }) => {
+    const listRef = useRef(null);
+  
+    useEffect(() => {
+      const active = listRef.current?.querySelector(".wheel-item-active");
+      if (active) {
+        active.scrollIntoView({
+          block: "center",
+          inline: "nearest",
+          behavior: "smooth",
+        });
+      }
+    }, [value]);
+  
+    const stopScroll = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+  
+    return (
+      <div
+        ref={listRef}
+        className="wheel"
+        onWheel={stopScroll}
+        onTouchMove={stopScroll}
+      >
+        {range.map((num) => (
+          <div
+            key={num}
+            className={`wheel-item ${num === value ? "wheel-item-active" : ""}`}
+            onClick={() => setValue(num)}
+          >
+            {String(num).padStart(2, "0")}
+          </div>
+        ))}
+      </div>
+    );
+  };
   return (
     <CustomModal
       isOpen={show}

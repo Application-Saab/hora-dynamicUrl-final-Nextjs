@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import ExploreTemplateIcon from "@/assets/wonderland/ExploreTemplateIcon.svg";
 import ShareInviteIcon from "@/assets/wonderland/ShareInviteIcon.svg";
 import AddDetailsIcon from "@/assets/wonderland/AddDetailsIcon.svg";
@@ -24,15 +25,23 @@ const actions = [
 ];
 
 const InviteActions = ({ eventData, refetchInvite }) => {
+  const router = useRouter();
+    const { eventid } = router.query;
   const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
   const [openShareInviteModal, setOpenShareInviteModal] = useState(false);
+
   const handleClick = (actionId) => {
-    // Handle action based on actionId
-    if (actionId === 3) {
-      setOpenAddDetailsModal(true);
-    }
+ if (actionId === 1) {
+
+  router.push(`/wonderland/templates?eventid=${eventid}`);
+  return;
+}
+
     if (actionId === 2) {
       setOpenShareInviteModal(true);
+    }
+    if (actionId === 3) {
+      setOpenAddDetailsModal(true);
     }
   };
 

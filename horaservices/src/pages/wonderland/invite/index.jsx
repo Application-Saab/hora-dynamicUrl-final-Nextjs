@@ -11,6 +11,7 @@ import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlas
 import InviteAddressSection from "@/components/wonderland/common/InviteAddressSection";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
+import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 
 const InvitesPage = () => {
@@ -128,19 +129,26 @@ const InvitesPage = () => {
     <>
       <div className="invite-page">
         <div className="invite-page-container">
-          <TemplateRenderer
-            fetchEventLoading={fetchEventLoading}
-            eventDetails={eventDetails}
-          />
+          <div className="invite-template-shell">
+            {fetchEventLoading || !eventDetails ? (
+              <TemplatecardSkeleton width="100%" height="480px" borderRadius="32px" />
+            ) : (
+              <TemplateRenderer
+                fetchEventLoading={fetchEventLoading}
+                eventDetails={eventDetails}
+                orderDetails={eventDetails}
+              />
+            )}
+          </div>
 
           {(eventDetails?.eventDate ||
             eventData?.location ||
             eventData?.googleMapLink ||
             eventData?.eventTime) && (
-            <div className="invite-address-section">
-              <InviteAddressSection eventData={eventDetails} />
-            </div>
-          )}
+              <div className="invite-address-section">
+                <InviteAddressSection eventData={eventDetails} />
+              </div>
+            )}
 
           {isHost && (
             <div className="invite-action-container">

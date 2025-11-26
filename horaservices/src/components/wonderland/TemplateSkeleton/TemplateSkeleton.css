@@ -1,0 +1,61 @@
+.tempskeleton-container {
+  padding: 10px;
+  text-align: center;
+}
+
+.tempskeleton-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.tempskeleton-tab {
+  width: 60px;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tempskeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px 10px;
+  justify-items: center;
+  margin: 5px;
+}
+
+.tempskeleton-card {
+  width: 100%;
+  height: 180px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.tempskeleton-tab::after,
+.tempskeleton-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(300px);
+  }
+}
