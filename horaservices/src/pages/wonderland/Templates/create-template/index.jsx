@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
 import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
-import { dateFormatter } from "./dateTimeFormatters";
+import { dateFormatter } from "../../../../utils/dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
 import CalendarModal from "@/components/wonderland/create-invite/CalendarModal";
 import TimeModal from "@/components/wonderland/create-invite/TimeModal";
