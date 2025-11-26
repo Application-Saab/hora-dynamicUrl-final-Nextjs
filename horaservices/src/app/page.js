@@ -536,27 +536,6 @@ handleTitleClick(item.title);
 </div>
 
   </div>
-  <div className="service decoration">
-    <div className="service-header">
-      <h2 className='services-h2'>
-        Decoration 
-        <Image src={DecorationIcon} alt="Decoration Icon" className="service-icon" />
-      </h2>
-    </div>
-    <div className="service-image-container">
-      <Image src="https://horaservices.com/api/uploads/homepage_decoration.webp" alt="Decoration" className="service-image" width={200} height={100}/>
-      <button className="book-now2" id="home-decoration-sec" 
-        onClick={() => {
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({
-            event: 'decoration_button_click',  // Custom event name
-            custom_button_id: 'decoration_button',  // Custom parameter name with your chosen value
-          });
-          window.location.href = '/balloon-decoration';
-        }}
-       >Book Now</button>
-    </div>
-  </div>
  
    </div>
 
