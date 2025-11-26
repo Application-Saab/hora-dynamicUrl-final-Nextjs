@@ -38,7 +38,7 @@ export default function Home() {
   const photographyUrl = () =>{
     window.open(
       'https://api.whatsapp.com/send?phone=+917338584828&text=I%20wanted%20to%20know%20about%2C%20photography',
-      '_blank'
+      '_blank'   
     );
   }
   const schemaOrg = getHomeOrganizationSchema();
@@ -541,25 +541,13 @@ export default function Home() {
           <div className="service">
             <div className="service-header">
               <h2 className='services-h2'>
-                Decoration
-                <Image src={DecorationIcon} alt="Decoration Icon" className="service-icon" />
-              </h2>
-            </div>
-            <div className="service-image-container">
-              <Image src="https://horaservices.com/api/uploads/homepage_decoration.webp" alt="Decoration" className="service-image" width={200} height={100} />
-              <button className="book-now2" onClick={() => window.location.href = `${locality}/balloon-decoration`} >Book Now</button>
-            </div>
-          </div>
-          <div className="service">
-            <div className="service-header">
-              <h2 className='services-h2'>
                 Photography
                 <Image src={PhotographyIcon} alt="Photography Icon" className="service-icon" />
               </h2>
             </div>
             <div className="service-image-container">
               <Image src="https://horaservices.com/api/uploads/homepage_photography.webp" alt="Photography" className="service-image" width={200} height={100} />
-              <button className="book-now2" onClick={photographyUrl} >Book Now</button>
+              <button className="book-now2" onClick={() => window.location.href = `${locality}/photography-page`} >Book Now</button>
 
             </div>
           </div>
