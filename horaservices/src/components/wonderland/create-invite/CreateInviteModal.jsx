@@ -17,7 +17,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
     if (!userId) return;
     let payload = {
       userId: userId,
-      hostName: occasion?.charAt(0)?.toUpperCase() + occasion?.slice(1),
+      hostName: occasion,
     };
     try {
       let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);
@@ -38,9 +38,9 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
     const formattedOccation = value.replace(/(^\w|(?<=\s)\w)/g, (char) =>
       char.toUpperCase()
     );
-    setOccation(formattedOccation);
+    setOccasion(formattedOccation);
   };
-  
+
   return (
     <CustomModal
       isOpen={isOpen}
@@ -49,9 +49,10 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
         router.push("/wonderland");
       }}
       title="Create Invitation"
+      titleClass="my-title-class"
       verticalCenter={false}
       disableBackdropClick={true}
-      bodyClass='create-invite-modal-body'
+      bodyClass="create-invite-modal-body"
       body={
         <>
           <h3 className="modal-question-text">What's the occasion?</h3>
@@ -68,15 +69,13 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               {occasion?.length}/30 Characters
             </small>
           </div>
-          <div className="d-flex justify-content-center">
             <CustomButton
               title={"Submit"}
               loading={loading}
               disabled={!occasion}
               onClick={occasion && handleSubmit}
-              buttonClass="create-invite-btn"
+              // buttonClass="create-invite-btn"
             />
-          </div>
         </>
       }
     />

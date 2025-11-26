@@ -1,39 +1,57 @@
 import useApi from "@/hooks/useApi";
-import { GET_GUESTS_BY_EVENTID } from "@/utils/apiconstants";
+import {
+  GET_GUESTS_BY_EVENTID,
+  UPDATE_RSVP_STATUS,
+} from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import RsvpListModal from "./RsvpListModal";
 import useScreenSize from "@/hooks/useScreenSize";
+import CustomButton from "../common/CustomButton";
+import { RSVP_STATUS } from "@/utils/constants";
 
-const colors = ["#FD8D0A", "#E8275F", "#A654B0", "#31B8CC", "#F2BB2F"]; //#6BB266
+const colors = [
+  "#FD8D0A",
+  "#E8275F",
+  "#A654B0",
+  "#31B8CC",
+  "#F2BB2F",
+  "#6BB266",
+];
 
-const WhosJoining = () => {
+const WhosJoining = ({
+  loggedinUserId,
+  isHost,
+  userData,
+  rsvpSubmitted,
+  onRsvpUpdate,
+}) => {
   const router = useRouter();
   const { eventid: eventId } = router.query;
   const { data, makeRequest } = useApi();
+  const { makeRequest: rsvpRequest, loading } = useApi();
   const [allGuestsData, setAllGuestsData] = useState([]);
   const [filledGuests, setFilledGuests] = useState([]);
   const [showListModal, setShowListModal] = useState(false);
   const { width } = useScreenSize();
+  const [refetchRsvpList, setRefetchRsvpList] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
-      if (eventId) {
+      if (eventId && loggedinUserId) {
         try {
           await makeRequest(`${GET_GUESTS_BY_EVENTID}/${eventId}`, "GET");
         } catch (err) {
-          console.error("Error fetching event details:", err);
+          console.error("Error fetching guests detail:", err);
         }
       }
     };
     fetchGuestsDetails();
-  }, [eventId]);
+  }, [eventId, loggedinUserId, refetchRsvpList]);
 
   useEffect(() => {
-    let arrSize = 5;
-    if (width >= 360) {
-      arrSize = 6;
-    }
+    let arrSize = width >= 360 ? 6 : 5;
     if (Array.isArray(data?.data)) {
       const guests = [...data.data.slice(0, arrSize)];
       while (guests.length < arrSize) guests.push(null);
@@ -44,10 +62,60 @@ const WhosJoining = () => {
     }
   }, [data?.data, width]);
 
+  const submitRsvp = async (rsvpStatus) => {
+    setSelectedStatus(rsvpStatus);
+    if (!userData?.name && !rsvpStatus) return;
+    try {
+      const response = await rsvpRequest(`${UPDATE_RSVP_STATUS}`, "PUT", {
+        eventId,
+        userId: loggedinUserId,
+        rsvpStatus,
+        name: userData?.name,
+      });
+
+      if (response.data.error) {
+        alert("Something went wrong. Please try again.");
+      } else {
+        localStorage.setItem(
+          `rsvp_submitted_${eventId}_${loggedinUserId}`,
+          "true"
+        );
+        setRefetchRsvpList((prev) => prev + 1);
+        onRsvpUpdate?.();
+      }
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <>
       <div className="whos-joining-wrapper">
-        <div className="whos-joining-status-box">
+        {!isHost && !rsvpSubmitted && (
+          <div className="guest-rsvp-box d-flex justify-content-center flex-column w-100">
+            <p>Will You be there ?</p>
+            <div className="d-flex justify-content-center  gap-2">
+              <CustomButton
+                title="I’m Coming!"
+                buttonClass="guest-rsvp-btn w-100"
+                onClick={() => submitRsvp(RSVP_STATUS?.WILL_COME)}
+                loading={selectedStatus === RSVP_STATUS?.WILL_COME && loading}
+              />
+              <CustomButton
+                title="Will Try!"
+                buttonClass="guest-rsvp-btn w-100"
+                onClick={() => submitRsvp(RSVP_STATUS?.WILL_TRY)}
+                loading={selectedStatus === RSVP_STATUS?.WILL_TRY && loading}
+              />
+            </div>
+          </div>
+        )}
+        <div
+          className="whos-joining-status-box"
+          style={{
+            marginTop: rsvpSubmitted && !isHost ? "10px" : "",
+          }}
+        >
           <div className="status-box-header">
             <h3>Who's joining?</h3>
             <span>{allGuestsData?.length || 0} guest confirmed</span>

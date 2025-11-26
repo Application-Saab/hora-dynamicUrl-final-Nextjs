@@ -1,0 +1,40 @@
+.emoji-picker-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -100%; 
+  width: 100%;
+  z-index: 999;
+  transition: bottom 0.3s ease;
+  background: white;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+  /* border-top-left-radius: 16px;
+  border-top-right-radius: 16px; */
+}
+
+.emoji-picker-container.open {
+  bottom: 0;
+}
+
+/* .note-scroll-container {
+  max-height: clamp(250px, calc(100vh - 500px), 750px);
+  overflow-y: auto;
+  margin: 14px 0 0 0;
+} */
+/* 
+.note-scroll-container.keyboard-open {
+ max-height: clamp(250px, calc(100vh - 500px), 750px);
+} */
+/*
+.note-scroll-container.keyboard-open .createNote-container{
+  max-height: calc(100vh - 250px); 
+}
+ */
+.emojisec {
+    position: relative;
+    width: 100%;
+}
+.textArea-Author {
+    margin-top: 2px;
+    margin-bottom: 10px;
+}

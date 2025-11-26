@@ -11,8 +11,6 @@ padding: 4px 3px;
   display: none;
 }
 .categories-Button {
-  padding: clamp(2px, 0.9vw, 6px) clamp(10px, 3vw, 20px) !important;
-  font-size: clamp(10px, 2.8vw, 14px) !important;
   font-weight: 700 !important;
   box-sizing: border-box;
 
@@ -30,6 +28,9 @@ padding: 4px 3px;
   overflow: visible;
 
   transition: transform 0.1s ease, box-shadow 0.1s ease;
+ height: clamp(22.5px, 8.1vw, 35.3px);
+width: clamp(56.7px, 15vw, 78px);
+font-size: clamp(10.66px, 2.8vw, 18px);
 }
 
 

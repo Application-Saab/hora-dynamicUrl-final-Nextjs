@@ -1,0 +1,21 @@
+.note-skeleton-box {
+  width: 92%;
+  height: 250px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+  margin: 0 auto;
+
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e0e0e0;
+  }
+  50% {
+    background-color: #d6d6d6;
+  }
+  100% {
+    background-color: #e0e0e0;
+  }
+}

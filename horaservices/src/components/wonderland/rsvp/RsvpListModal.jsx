@@ -4,11 +4,8 @@ import WillComeIcon from "@/assets/wonderland/RsvpListWillCome.svg";
 import "./RsvpListModal.css";
 import CustomModal from "../common/CustomModal";
 import useScreenSize from "@/hooks/useScreenSize";
+import { mobileBreakPoints, RSVP_STATUS } from "@/utils/constants.js";
 
-const RSVP_STATUS = {
-  WILL_COME: "will Come",
-  WILL_TRY: "Sure, will try",
-};
 const colorsArray = [
   "#ED9D58",
   "#E55380",
@@ -45,10 +42,18 @@ const RsvpListModal = ({ isOpen, onClose, guestData }) => {
                   <span>{item.name.charAt(0).toUpperCase()}</span>
                 </div>
                 <div className="d-flex align-items-center justify-content-between list-content-wrapper w-100 gap-2">
-                  <div className={`${width > 360 ? 'col-7' : 'col-6'} list-names`}>
+                  <div
+                    className={`${
+                      width > mobileBreakPoints?.small ? "col-7" : "col-6"
+                    } list-names`}
+                  >
                     <span>{item?.name}</span>
                   </div>
-                  <div className={`${width > 360 ? 'col-5' : 'col-6'} list-status-icon d-flex justify-content-start align-items-center`}>
+                  <div
+                    className={`${
+                      width > mobileBreakPoints?.small ? "col-5" : "col-6"
+                    } list-status-icon d-flex justify-content-start align-items-center`}
+                  >
                     <Image
                       src={
                         item?.rsvpStatus === RSVP_STATUS?.WILL_COME

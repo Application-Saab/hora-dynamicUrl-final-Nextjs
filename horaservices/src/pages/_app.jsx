@@ -5,12 +5,8 @@ import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "../store/store";
-import Link from "next/link";
-import Image from "next/image";
-import whatsppicon from "../assets/whatsapp-new.webp";
 import { useRouter } from "next/router"; // Import useRouter
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
-import A2HSPrompt from "@/components/AddToHomeScreen";
 import Head from "next/head";
 import { getMessaging, getToken } from "firebase/messaging";
 import { messaging } from "../firebase"; 
@@ -126,6 +122,10 @@ function MyApp({ Component, pageProps }) {
         <link rel="manifest" href="/manifest.json" />
         <title>Hora Services</title>
         <link rel="icon" href="/new_logo_light.png" />
+          <link
+          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
+          rel="stylesheet"
+        />
       </Head>
     
     <Provider store={store}>

@@ -14,7 +14,7 @@
 
 .common-custom-modal-content {
   background-color: #ffffff;
-  width: 85%;
+  width: clamp(300px, 84vw, 360px);
   max-width: 450px;
   border-radius: 20px;
   overflow: hidden;
@@ -24,7 +24,7 @@
 .common-custom-modal-header {
   background: linear-gradient(90deg, #6d247d 0%, #bd256f 100%);
   color: white;
-  padding: 23.54px 20px;
+  padding: clamp(16px, 6vw, 23.54px) clamp(14px, 5vw, 20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -33,13 +33,13 @@
 }
 
 .common-modal-header-icon {
-  width: 14.48px;
-  height: 25.92px;
+  width: clamp(10px, 4vw, 14.48px);
+  height: clamp(18px, 6.5vw, 25.92px);
   cursor: pointer;
 }
 
 .common-modal-title {
-  font-size: 24px;
+  font-size: clamp(18px, 6vw, 24px);
   font-family: "Roboto", sans-serif;
   font-weight: 700;
   margin: 0;
