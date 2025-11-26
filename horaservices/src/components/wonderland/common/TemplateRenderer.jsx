@@ -1,21 +1,24 @@
+"use client";
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
+import TemplatecardSkeleton from "../TemplateSkeleton/templatecardSkeleton";
 import { mobileBreakPoints } from "@/utils/constants";
 
 const TemplateRenderer = ({
   fetchEventLoading,
   eventDetails,
+  orderDetails,
   baseFontSize,
   isLandingPage = true,
 }) => {
   const textRef = useRef(null);
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Define base font-size + line-height dynamically based on screen size
+  // 🧩 Get base font style dynamically
   const getBaseFontStyles = () => {
-    // If baseFontSize is an object (responsive values)
     if (typeof baseFontSize === "object" && baseFontSize !== null) {
       if (width >= mobileBreakPoints?.medium) {
         return {
@@ -38,14 +41,8 @@ const TemplateRenderer = ({
       }
     }
 
-    // If baseFontSize is a simple string (single size)
-    if (typeof baseFontSize === "string") {
-      return {
-        fontSize: baseFontSize,
-        lineHeight: "40px",
-        top: "40%",
-      };
-    }
+    if (typeof baseFontSize === "string")
+      return { fontSize: baseFontSize, lineHeight: "40px", top: "40%" };
 
     // Default fallback sizes (when no prop is passed)
     if (width >= mobileBreakPoints?.medium) {
@@ -71,46 +68,98 @@ const TemplateRenderer = ({
 
   const [baseStyles, setBaseStyles] = useState(getBaseFontStyles());
 
-  // Update styles on width or prop change
   useEffect(() => {
     setBaseStyles(getBaseFontStyles());
   }, [width, baseFontSize]);
 
-  // ✨ Adjust font-size based on text length
+  // ✨ Adjust font size for shorter/longer names
   useEffect(() => {
     if (!eventDetails?.hostName) return;
-
     const baseFontRem = parseFloat(baseStyles.fontSize);
-    if (eventDetails.hostName.length <= 14) {
+    if (eventDetails.hostName.length <= 14)
       setDynamicFontSize((baseFontRem + 0.5).toFixed(2) + "rem");
-    } else {
-      setDynamicFontSize(baseStyles.fontSize);
-    }
+    else setDynamicFontSize(baseStyles.fontSize);
   }, [eventDetails?.hostName, baseStyles]);
+
+
+// useEffect(() => {
+//   // DB se image mil gayi ya orderDetails update hua
+//   if (orderDetails?.externalTemplateImageUrl) {
+//     localStorage.removeItem("localTemplateImage");
+//   }
+// }, [orderDetails?.externalTemplateImageUrl]);
+
+
+  const imageUrl =
+  localStorage.getItem("localTemplateImage") ||  // ⭐ Instant preview
+  orderDetails?.externalTemplateImageUrl ||      // ⭐ DB image
+  orderDetails?.Image ||
+  orderDetails?.hostImage ||
+  DefaultTemplate.src;
 
   return (
     <div
       className="default-template-wrapper"
-      style={{ paddingInline: !isLandingPage ? "25px" : "" }}
+      style={{
+        paddingInline: !isLandingPage ? "25px" : "",
+        textAlign: "center",
+      }}
     >
-      {!fetchEventLoading || eventDetails?.hostName ? (
+      {!fetchEventLoading ? (
         <>
-          <img
-            src={DefaultTemplate.src}
-            alt="Default Invitation Template"
-            className="default-invite-image"
-          />
           <div
-            ref={textRef}
-            className={`default-template-text w-100`}
+            className="template-preview-container"
             style={{
-              fontSize: dynamicFontSize,
-              lineHeight: baseStyles.lineHeight,
-              top: baseStyles.top,
-              paddingInline: !isLandingPage ? "45px" : "20"
+              position: "relative",
+              display: "inline-block",
+              width: "100%",
+              maxWidth: "450px",
+              borderRadius: "12px",
+              overflow: "hidden",
             }}
           >
-            <p>{eventDetails?.hostName}</p>
+            {!imageLoaded && <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />}
+
+            <img
+              src={imageUrl}
+              alt="Invitation Template"
+              className="default-invite-image"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "12px",
+                objectFit: "cover",
+                  visibility: imageLoaded ? "visible" : "hidden",
+              }}
+               onLoad={() => setImageLoaded(true)}
+            />
+
+         
+{imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
+  <div
+    ref={textRef}
+    className="default-template-text"
+    style={{
+      position: "absolute",
+      top: baseStyles.top,
+      left: "50%",
+      transform: "translateX(-50%)",
+      fontSize: dynamicFontSize,
+      lineHeight: baseStyles.lineHeight,
+      fontWeight: 700,
+      color: "#fff",
+      textShadow: "2px 2px 6px rgba(0,0,0,0.5)",
+      width: "100%",
+      textAlign: "center",
+      paddingInline: "20px",
+      fontFamily: "'Great Vibes', cursive",
+      pointerEvents: "auto",
+    }}
+  >
+    {eventDetails?.hostName}
+  </div>
+)}
+
           </div>
         </>
       ) : (

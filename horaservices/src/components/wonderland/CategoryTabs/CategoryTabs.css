@@ -1,0 +1,54 @@
+.category-tabs-scroll {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+padding: 4px 3px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: flex-start;
+}
+.category-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+.categories-Button {
+  font-weight: 700 !important;
+  box-sizing: border-box;
+
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%) !important;
+  color: #fff !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none !important;
+  position: relative;
+  flex-shrink: 0;
+  overflow: visible;
+
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+ height: clamp(22.5px, 8.1vw, 35.3px);
+width: clamp(56.7px, 15vw, 78px);
+font-size: clamp(10.66px, 2.8vw, 18px);
+}
+
+
+
+.categories-Button.active {
+  color: #fff !important;
+  transform: scale(1.1);
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(90deg, #572381 0%, #c9266d 100%) border-box !important;
+  border: clamp(2px, 0.6vw, 3px) solid transparent !important;
+}
+
+.categories-Button.active::after {
+  content: "";
+  position: absolute;
+  inset: clamp(2px, 1vw, 2px);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  z-index: -1;
+}

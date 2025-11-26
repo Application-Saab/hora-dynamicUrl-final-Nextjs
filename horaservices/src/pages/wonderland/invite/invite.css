@@ -19,7 +19,7 @@
 .default-template-wrapper {
   position: relative;
   width: 100%;
-  margin-top: 15px;
+  margin-top: 13px;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -78,13 +78,20 @@
   position: relative;
   width: 78px;
   height: 64px;
-  background-image: url("../../../../public/assets/wonderland/MapGraphImage.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
+}
+
+.direction-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+  z-index: 1;
 }
 
 /* Direction icon styling */

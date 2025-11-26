@@ -28,25 +28,96 @@ const EventwallSection = ({ userData }) => {
   let activeUploads = 0;
   let uploadQueue = [];
 
+  // Measure height of thumbnail/local image
+  function measureImageHeight(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => resolve(img.height);
+      img.onerror = () => resolve(0);
+    });
+  }
+
+  // Reorder — Tallest image → Big block (pos 3)
+  function reorderByHeight(items) {
+    const result = [];
+
+    for (let i = 0; i < items.length; i += 6) {
+      const chunk = items.slice(i, i + 6);
+
+      if (chunk.length < 6) {
+        result.push(...chunk);
+        continue;
+      }
+
+      const tallest = [...chunk].sort((a, b) => b.height - a.height)[0];
+
+      const arranged = [];
+      chunk.forEach((img) => {
+        if (img === tallest) return;
+        arranged.push(img);
+      });
+
+      arranged.splice(3, 0, tallest);
+      result.push(...arranged);
+    }
+
+    return result;
+  }
+
+  // Measure heights + reorder
+  async function processImagesWithHeight(list) {
+    const enriched = await Promise.all(
+      list?.map(async (item) => ({
+        ...item,
+        height: await measureImageHeight(
+          item?.postWebpUrl || item?.postUrl || item?.localPreview
+        ),
+      }))
+    );
+
+    return reorderByHeight(enriched);
+  }
+
   useEffect(() => {
     async function loadEventPosts() {
       if (!eventid) return;
 
-      // Try cache first
-      const cached = getCachedEvent(eventid);
-      if (cached) {
-        setAllImages(cached);
+      const draftBase64 = localStorage.getItem("thankyou-note-draft");
+      let draftItem = null;
+
+      if (draftBase64) {
+        draftItem = {
+          id: "draft-temp",
+          file: null,
+          localPreview: draftBase64,
+          isVideo: false,
+          progress: 0,
+          status: "draft",
+          postUrl: null,
+          postWebpUrl: null,
+          postType: "thankYouNote",
+        };
       }
 
-      // Get fresh data from API (for new posts only)
+      const cached = getCachedEvent(eventid);
+      let merged = cached ? [...cached] : [];
+
+      if (draftItem) merged = [draftItem, ...merged];
+
+      // measure height + reorder
+      setAllImages(await processImagesWithHeight(merged));
+
       const resp = await getAllPosts(`${GET_ALL_POSTS}/${eventid}`, "GET");
 
       if (resp.data) {
-        // Only update cache if new data exists
-        if (JSON.stringify(resp.data) !== JSON.stringify(cached)) {
-          setAllImages(resp.data);
-          cacheEvent(eventid, resp.data);
-        }
+        let fresh = [...resp.data];
+        if (draftItem) fresh = [draftItem, ...fresh];
+
+        const processed = await processImagesWithHeight(fresh);
+
+        setAllImages(processed);
+        cacheEvent(eventid, resp.data);
       }
     }
 
@@ -67,12 +138,22 @@ const EventwallSection = ({ userData }) => {
     );
   };
 
-  const updateUploadedUrls = (id, postUrl, thumbnailUrl) => {
-    setAllImages((prev) =>
-      prev.map((item) =>
+  const updateUploadedUrls = async (id, postUrl, thumbnailUrl) => {
+    let updatedList;
+
+    // update URLs synchronously
+    setAllImages((prev) => {
+      updatedList = prev.map((item) =>
         item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item
-      )
-    );
+      );
+      return updatedList;
+    });
+
+    // reorder asynchronously using height
+    const processed = await processImagesWithHeight(updatedList);
+
+    // finally update reordered list
+    setAllImages(processed);
   };
 
   const handleUploadPictureClick = async () => {
@@ -84,32 +165,23 @@ const EventwallSection = ({ userData }) => {
     input.onchange = async (e) => {
       const files = Array.from(e.target.files);
 
-      const tempItems = files.map((file) => {
-        const isVideo = file.type.startsWith("video");
-        const localPreview = URL.createObjectURL(file);
+      const tempItems = files.map((file) => ({
+        id: Math.random().toString(36).substring(2),
+        file,
+        localPreview: URL.createObjectURL(file),
+        isVideo: file.type.startsWith("video"),
+        progress: 0,
+        status: "queued",
+        postUrl: null,
+        postWebpUrl: null,
+        postType: "selfUploaded",
+      }));
 
-        return {
-          id: Math.random().toString(36).substring(2),
-          file,
-          localPreview,
-          isVideo,
-          progress: 0,
-          status: "queued",
-          postUrl: null,
-          postWebpUrl: null,
-        };
-      });
+      // instantly show + reorder
+      setAllImages(await processImagesWithHeight([...tempItems, ...allImages]));
 
-      // Show instantly
-      setAllImages((prev) => [...tempItems, ...prev]);
-
-      // Add to queue
       uploadQueue.push(...tempItems);
-
-      // Start 5 parallel workers
-      for (let i = 0; i < MAX_PARALLEL_UPLOADS; i++) {
-        processNextUpload();
-      }
+      for (let i = 0; i < MAX_PARALLEL_UPLOADS; i++) processNextUpload();
     };
 
     input.click();
@@ -124,12 +196,20 @@ const EventwallSection = ({ userData }) => {
       let uploadResult;
 
       if (isVideo) {
-        uploadResult = await uploadVideo(file, userId, eventid, 'self-upload', (percent) =>
-          updateProgress(id, percent)
+        uploadResult = await uploadVideo(
+          file,
+          userId,
+          eventid,
+          "self-upload",
+          (percent) => updateProgress(id, percent)
         );
       } else {
-        uploadResult = await uploadImage(file, userId, eventid, 'self-upload', (percent) =>
-          updateProgress(id, percent)
+        uploadResult = await uploadImage(
+          file,
+          userId,
+          eventid,
+          "self-upload",
+          (percent) => updateProgress(id, percent)
         );
       }
 
@@ -138,14 +218,13 @@ const EventwallSection = ({ userData }) => {
         return;
       }
 
-      updateUploadedUrls(
+      await updateUploadedUrls(
         id,
         uploadResult.originalUrl,
         uploadResult.thumbnailUrl
       );
 
-      // Create DB post
-      const postPayload = {
+      await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", {
         postById: userId,
         postByName: userData?.name || "Guest",
         postType: "selfUploaded",
@@ -153,9 +232,7 @@ const EventwallSection = ({ userData }) => {
         postKey: uploadResult.originalKey,
         postWebpUrl: uploadResult.thumbnailUrl,
         postWebpKey: uploadResult.thumbnailKey,
-      };
-
-      await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
+      });
 
       updateStatus(id, "done");
     } catch (err) {
@@ -168,13 +245,32 @@ const EventwallSection = ({ userData }) => {
     if (activeUploads >= MAX_PARALLEL_UPLOADS) return;
     if (uploadQueue.length === 0) return;
 
-    const nextItem = uploadQueue.shift();
     activeUploads++;
+    const nextItem = uploadQueue.shift();
 
-    handleSingleUpload(nextItem).finally(() => {
-      activeUploads--;
-      processNextUpload();
-    });
+    await handleSingleUpload(nextItem);
+
+    activeUploads--;
+    processNextUpload();
+  }
+
+  useEffect(() => {
+    const clear = () => {
+      clearAllEventCache();
+      localStorage.removeItem("thankyou-note-draft");
+    };
+
+    window.addEventListener("beforeunload", clear);
+    return () => window.removeEventListener("beforeunload", clear);
+  }, []);
+
+  function getBlockType(index) {
+    const pos = index % 6;
+
+    if (pos === 0 || pos === 1 || pos === 2) return "small";
+    if (pos === 3) return "big";
+    if (pos === 4) return "small-right-top";
+    if (pos === 5) return "small-right-bottom";
   }
 
   const actionButtons = [
@@ -195,21 +291,6 @@ const EventwallSection = ({ userData }) => {
       onClick: handleUploadPictureClick,
     },
   ];
-
-  useEffect(() => {
-    const clear = () => clearAllEventCache();
-    window.addEventListener("beforeunload", clear);
-    return () => window.removeEventListener("beforeunload", clear);
-  }, []);
-
-  function getBlockType(index) {
-    const pos = index % 6;
-
-    if (pos === 0 || pos === 1 || pos === 2) return "small";
-    if (pos === 3) return "big";
-    if (pos === 4) return "small-right-top";
-    if (pos === 5) return "small-right-bottom";
-  }
 
   return (
     <>
@@ -257,7 +338,8 @@ const EventwallSection = ({ userData }) => {
                 {allImages?.map((thumbnail, indexOnPage) => {
                   const type = getBlockType(indexOnPage);
                   const isVideo =
-                    thumbnail.postUrl?.match(/\.(mp4|mov|avi|mkv)$/i);
+                    thumbnail.postUrl?.match(/\.(mp4|mov|avi|mkv)$/i) ||
+                    thumbnail.isVideo;
 
                   return (
                     <div
