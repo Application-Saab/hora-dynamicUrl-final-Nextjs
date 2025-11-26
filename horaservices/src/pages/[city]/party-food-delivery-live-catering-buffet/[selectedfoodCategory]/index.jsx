@@ -551,18 +551,6 @@ export default function Home() {
           <div className="service">
             <div className="service-header">
               <h2 className='services-h2'>
-                Decoration
-                <Image src={DecorationIcon} alt="Decoration Icon" className="service-icon" />
-              </h2>
-            </div>
-            <div className="service-image-container">
-              <Image src="https://horaservices.com/api/uploads/homepage_decoration.webp" alt="Decoration" className="service-image" width={200} height={100} />
-              <button className="book-now2" onClick={() => window.location.href = `${city}/balloon-decoration`} >Book Now</button>
-            </div>
-          </div>
-          <div className="service">
-            <div className="service-header">
-              <h2 className='services-h2'>
                 Photography
                 <Image src={PhotographyIcon} alt="Photography Icon" className="service-icon" />
               </h2>

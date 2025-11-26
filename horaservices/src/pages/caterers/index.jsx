@@ -574,7 +574,7 @@ export default function Home() {
           </div>
         </div>
         <div className="dec-photo-con sec-container">
-          <div className="service">
+          {/* <div className="service">
             <div className="service-header">
               <h2 className="services-h2">
                 Decoration
@@ -601,7 +601,7 @@ export default function Home() {
                 Book Now
               </button>
             </div>
-          </div>
+          </div> */}
           <div className="service">
             <div className="service-header">
               <h2 className="services-h2">

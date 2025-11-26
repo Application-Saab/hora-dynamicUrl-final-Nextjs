@@ -4,7 +4,7 @@ import React from "react";
 
 export function PhotographyFAQ({faqData}) {
   return (
-    <div className="faq-container citypage m-4">
+    <div className="faq-container citypage">
       <div className="page-width">
         <h2 className="faq-title">Frequently Asked Questions</h2>
         <FAQAccordion faqData={faqData} />
