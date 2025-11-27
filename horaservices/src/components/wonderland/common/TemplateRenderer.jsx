@@ -72,7 +72,7 @@ const TemplateRenderer = ({
     setBaseStyles(getBaseFontStyles());
   }, [width, baseFontSize]);
 
-  // ✨ Adjust font size for shorter/longer names
+
   useEffect(() => {
     if (!eventDetails?.hostName) return;
     const baseFontRem = parseFloat(baseStyles.fontSize);
@@ -82,20 +82,16 @@ const TemplateRenderer = ({
   }, [eventDetails?.hostName, baseStyles]);
 
 
-// useEffect(() => {
-//   // DB se image mil gayi ya orderDetails update hua
-//   if (orderDetails?.externalTemplateImageUrl) {
-//     localStorage.removeItem("localTemplateImage");
-//   }
-// }, [orderDetails?.externalTemplateImageUrl]);
 
+const localKey = `localTemplateImage_${eventDetails?._id || eventDetails?.eventId}`;
 
-  const imageUrl =
-  localStorage.getItem("localTemplateImage") ||  // ⭐ Instant preview
-  orderDetails?.externalTemplateImageUrl ||      // ⭐ DB image
+const imageUrl =
+  localStorage.getItem(localKey) ||
+  orderDetails?.externalTemplateImageUrl ||
   orderDetails?.Image ||
   orderDetails?.hostImage ||
   DefaultTemplate.src;
+
 
   return (
     <div

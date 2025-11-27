@@ -3,30 +3,8 @@ import React, { useState } from "react";
 import DirectionsImage from "@/assets/wonderland/addressLocationIcon.svg";
 import Image from "next/image";
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
-const LocationAlertModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-  return (
-    <>
-      <div className="custom-modal-backdrop justify-content-center align-items-center">
-        <div className="custom-modal-content">
-          <div className="modal-header-custom">
-            <Image src={AlertIcon} height={24} width={27} />
-            <h2 className="modal-title-custom">Missing Location</h2>
-          </div>
+import AlertModal from "../../common/ErrorPopup";
 
-          <div className="modal-body-custom">
-            <h3 className="location-modal-question-text mb-4">
-              Map location is not available{" "}
-            </h3>
-            <button className="submit-button-custom" onClick={onClose}>
-              OK
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
 
 const InviteAddressSection = ({ eventData }) => {
   const [openLocationAlertModal, setOpenLocationAlertModal] = useState(false);
@@ -85,10 +63,15 @@ const InviteAddressSection = ({ eventData }) => {
           </div>
         </div>
       </div>
-      <LocationAlertModal
-        isOpen={openLocationAlertModal}
-        onClose={() => setOpenLocationAlertModal(false)}
-      />
+<AlertModal
+  isOpen={openLocationAlertModal}
+  onClose={() => setOpenLocationAlertModal(false)}
+  heading="Location Missing"
+  message= "Map location is not available"
+  buttonLabel="OK"
+  icon={AlertIcon}
+/>
+
     </>
   );
 };
