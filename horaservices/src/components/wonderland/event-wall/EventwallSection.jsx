@@ -16,7 +16,12 @@ import {
 import "../../common/EventLazyImage.css";
 import EventwallGalleryItem from "./EventwallGalleryItem";
 
-const EventwallSection = ({ userData }) => {
+const EventwallSection = ({
+  userData,
+  rsvpSubmitted,
+  setPushRsvpClick,
+  isHost,
+}) => {
   const router = useRouter();
   const { eventid } = router.query;
   const { makeRequest: createPost } = useApi();
@@ -88,7 +93,9 @@ const EventwallSection = ({ userData }) => {
     async function loadEventPosts() {
       if (!eventid) return;
 
-      const draftBase64 = localStorage.getItem("thankyou-note-draft");
+      const draftBase64 = localStorage.getItem(
+        `thankyou-note-draft-${eventid}`
+      );
       let draftItem = null;
 
       if (draftBase64) {
@@ -128,6 +135,28 @@ const EventwallSection = ({ userData }) => {
 
     loadEventPosts();
   }, [eventid]);
+
+  useEffect(() => {
+    if (!eventid) return;
+
+    const handleRouteChange = (url) => {
+      const nextPathname = new URL(url, window.location.origin).pathname;
+
+      const isCurrentlyInvite = router.pathname.includes("/invite");
+      const isNextInvite = nextPathname.includes("/invite");
+
+      // If leaving the invite page
+      if (isCurrentlyInvite && !isNextInvite) {
+        localStorage.removeItem(`thankyou-note-draft-${eventid}`);
+      }
+    };
+
+    router.events.on("routeChangeStart", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChange);
+    };
+  }, [eventid, router.pathname]);
 
   const updateProgress = (id, percent) => {
     setAllImages((prev) =>
@@ -303,7 +332,13 @@ const EventwallSection = ({ userData }) => {
           <button
             key={index}
             className={`event-wall-action-btn event-wall-action-btn-${index}`}
-            onClick={onClick}
+            onClick={() => {
+              isHost
+                ? onClick()
+                : rsvpSubmitted
+                ? onClick()
+                : setPushRsvpClick(true);
+            }}
           >
             <img
               src={icon}
@@ -318,7 +353,7 @@ const EventwallSection = ({ userData }) => {
       </div>
 
       <div>
-        {allImages.length === 0 ? (
+        {allImages.length === 0 || (!rsvpSubmitted && !isHost) ? (
           <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img src={NopostCamera.src} alt="No Post Camera" className="" />
