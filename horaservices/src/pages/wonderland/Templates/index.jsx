@@ -101,32 +101,40 @@ while (smallIndex < smallTemplates.length || bigIndex < bigTemplates.length) {
     uploadCustomTemplate(file);
   };
 
-  const uploadCustomTemplate = async (file) => {
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("userId", userId);
+ const uploadCustomTemplate = async (file) => {
+  setUploading(true);
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("userId", userId);
 
-    try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
-        {
-          method: "PUT",
-          headers: { Authorization: token || "" },
-          body: formData,
-        }
-      );
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Upload failed");
+  try {
+    const res = await fetch(
+      `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+      {
+        method: "PUT",
+        headers: { Authorization: token || "" },
+        body: formData,
       }
-      router.replace(`/wonderland/invite?eventid=${eventId}`);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setUploading(false);
+    );
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || "Upload failed");
     }
-  };
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result;
+      localStorage.setItem(`localTemplateImage_${eventId}`, base64);
+      router.replace(`/wonderland/invite?eventid=${eventId}`);
+    };
+
+    reader.readAsDataURL(file);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    setUploading(false);
+  }
+};
 
   if (loading) return <TemplateSkeleton />;
 
