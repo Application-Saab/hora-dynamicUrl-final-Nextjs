@@ -8,7 +8,7 @@ import hostandGuest from "@/assets/hostandGuest.webp";
 import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
-import  socket  from "../../socket";
+import socket from "../../socket";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
@@ -59,7 +59,6 @@ const WonderlandMainPage = () => {
     };
   }, []);
 
-  
   useEffect(() => {
     socket.on("connect", () => {
       console.log("✅ Connected:", socket.id);
@@ -75,16 +74,20 @@ const WonderlandMainPage = () => {
     };
   }, []);
 
+  // const sendMessage = () => {
+  //   // socket.emit("message:send", {
+  //   //   eventId: "6884a4ff6210988005d87ba5",
+  //   //   message: "Frontend se hello for testing",
+  //   //   tempId: Date.now().toString()
+  //   // });
 
-    const sendMessage = () => {
-    socket.emit("message:send", {
-      eventId: "6884a4ff6210988005d87ba5",
-      message: "Frontend se hello for testing",
-      tempId: Date.now().toString()
-    });
-  };
-
-  
+  //   socket.emit("message:send", {
+  //     roomId: "6884a4ff6210988005d87ba5",
+  //     message: "New Socket System Message",
+  //     type: "text",
+  //     tempId: Date.now().toString(),
+  //   });
+  // };
 
   return (
     <>
@@ -105,7 +108,7 @@ const WonderlandMainPage = () => {
           </button>
         </div>
 
-         <button onClick={sendMessage}>Send</button>
+        {/* <button onClick={sendMessage}>Send</button> */}
 
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
