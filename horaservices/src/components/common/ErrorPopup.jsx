@@ -1,6 +1,6 @@
 import Image from "next/image";
 import "@/pages/wonderland/invite/invite.css"
-const AlertModal = ({
+const ErrorPopup = ({
 isOpen,
 onClose,
 heading ,
@@ -35,4 +35,4 @@ return (
 );
 };
 
-export default AlertModal;
+export default ErrorPopup;

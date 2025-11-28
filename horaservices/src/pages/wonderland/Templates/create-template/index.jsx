@@ -12,7 +12,7 @@ import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templ
 import { applyCase } from "@/components/wonderland/fontsizeformat";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
-import AlertModal from "@/components/common/ErrorPopup";
+import ErrorPopup from "@/components/common/ErrorPopup";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 const toText = (val) => (val ?? "").toString();
@@ -840,14 +840,38 @@ if (addressExistsInTemplate) {
     <div className="d-flex justify-content-center" style={{ maxWidth: "480px", margin: "0 auto" }}>
       <div style={{ padding: "8px", maxWidth: "480px" }}>
         <div ref={templateRef} className="template-container" style={{ position: "relative", }}>
-          <img
+          {/* <img
             ref={imgRef}
             src={`/assets/templates/${templateMeta?.bgImageName}`}
             id="bg-image"
             alt="bg"
             onLoad={handleImageLoad}
             onError={() => setLoading(false)}
-          />
+          /> */}
+ {loading && (
+    <div
+      style={{
+        width: "100%",
+        height: scaledData?.imgHeight || 400,
+        background: "#eaeaea",
+        borderRadius: "10px",
+        animation: "pulse 1.4s ease-in-out infinite"
+      }}
+    />
+  )}
+
+  {/* ORIGINAL IMAGE */}
+  {!loading && (
+    <img
+      ref={imgRef}
+      src={`/assets/templates/${templateMeta?.bgImageName}`}
+      id="bg-image"
+      alt="bg"
+      onLoad={handleImageLoad}
+      onError={() => setLoading(false)}
+      style={{ width: "100%", display: loading ? "none" : "block" }}
+    />
+  )}
 
 
 
@@ -905,7 +929,7 @@ if (addressExistsInTemplate) {
           setFormData((prev) => ({ ...prev, time: t }));
         }}
       />
-      <AlertModal
+      <ErrorPopup
         isOpen={errorModal.open}
         onClose={() => setErrorModal({ open: false, message: "" })}
         heading="Missing information"

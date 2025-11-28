@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import DirectionsImage from "@/assets/wonderland/addressLocationIcon.svg";
 import Image from "next/image";
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
-import AlertModal from "../../common/ErrorPopup";
+import ErrorPopup from "../../common/ErrorPopup";
 
 
 const InviteAddressSection = ({ eventData }) => {
@@ -63,7 +63,7 @@ const InviteAddressSection = ({ eventData }) => {
           </div>
         </div>
       </div>
-<AlertModal
+<ErrorPopup
   isOpen={openLocationAlertModal}
   onClose={() => setOpenLocationAlertModal(false)}
   heading="Location Missing"

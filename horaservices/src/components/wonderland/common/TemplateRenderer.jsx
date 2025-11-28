@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
@@ -11,13 +12,15 @@ const TemplateRenderer = ({
   orderDetails,
   baseFontSize,
   isLandingPage = true,
+  templatewrapperclass,
+  enableHeightOverride = false,
 }) => {
   const textRef = useRef(null);
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [templateSizeClass, setTemplateSizeClass] = useState(""); // ADD
 
-  // 🧩 Get base font style dynamically
   const getBaseFontStyles = () => {
     if (typeof baseFontSize === "object" && baseFontSize !== null) {
       if (width >= mobileBreakPoints?.medium) {
@@ -44,7 +47,6 @@ const TemplateRenderer = ({
     if (typeof baseFontSize === "string")
       return { fontSize: baseFontSize, lineHeight: "40px", top: "40%" };
 
-    // Default fallback sizes (when no prop is passed)
     if (width >= mobileBreakPoints?.medium) {
       return {
         fontSize: "2.5rem",
@@ -72,7 +74,6 @@ const TemplateRenderer = ({
     setBaseStyles(getBaseFontStyles());
   }, [width, baseFontSize]);
 
-
   useEffect(() => {
     if (!eventDetails?.hostName) return;
     const baseFontRem = parseFloat(baseStyles.fontSize);
@@ -81,17 +82,26 @@ const TemplateRenderer = ({
     else setDynamicFontSize(baseStyles.fontSize);
   }, [eventDetails?.hostName, baseStyles]);
 
+  const localKey = `localTemplateImage_${eventDetails?._id || eventDetails?.eventId}`;
 
+  const imageUrl =
+    localStorage.getItem(localKey) ||
+    orderDetails?.externalTemplateImageUrl ||
+    orderDetails?.Image ||
+    orderDetails?.hostImage ||
+    DefaultTemplate.src;
 
-const localKey = `localTemplateImage_${eventDetails?._id || eventDetails?.eventId}`;
+  const handleImageLoad = (e) => {
+    const img = e.target;
+    const ratio = img.naturalWidth / img.naturalHeight;
 
-const imageUrl =
-  localStorage.getItem(localKey) ||
-  orderDetails?.externalTemplateImageUrl ||
-  orderDetails?.Image ||
-  orderDetails?.hostImage ||
-  DefaultTemplate.src;
-
+    if (ratio > 1.1) {
+      setTemplateSizeClass("share-small-template");
+    } else {
+      setTemplateSizeClass("share-large-template");
+    }
+    setImageLoaded(true);
+  };
 
   return (
     <div
@@ -104,7 +114,7 @@ const imageUrl =
       {!fetchEventLoading ? (
         <>
           <div
-            className="template-preview-container"
+            className={`template-preview-container ${templatewrapperclass} ${templateSizeClass}`}
             style={{
               position: "relative",
               display: "inline-block",
@@ -114,7 +124,9 @@ const imageUrl =
               overflow: "hidden",
             }}
           >
-            {!imageLoaded && <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />}
+            {!imageLoaded && (
+              <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />
+            )}
 
             <img
               src={imageUrl}
@@ -125,37 +137,33 @@ const imageUrl =
                 height: "auto",
                 borderRadius: "12px",
                 objectFit: "cover",
-                  visibility: imageLoaded ? "visible" : "hidden",
+                visibility: imageLoaded ? "visible" : "hidden",
               }}
-               onLoad={() => setImageLoaded(true)}
+              onLoad={handleImageLoad}
             />
 
-         
-{imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
-  <div
-    ref={textRef}
-    className="default-template-text"
-    style={{
-      position: "absolute",
-      top: baseStyles.top,
-      left: "50%",
-      transform: "translateX(-50%)",
-      fontSize: dynamicFontSize,
-      lineHeight: baseStyles.lineHeight,
-      fontWeight: 700,
-      color: "#fff",
-      textShadow: "2px 2px 6px rgba(0,0,0,0.5)",
-      width: "100%",
-      textAlign: "center",
-      paddingInline: "20px",
-      fontFamily: "'Great Vibes', cursive",
-      pointerEvents: "auto",
-    }}
-  >
-    {eventDetails?.hostName}
-  </div>
-)}
-
+            {imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
+              <div
+                ref={textRef}
+                className="default-template-text"
+                style={{
+                  position: "absolute",
+                  top: baseStyles.top,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  fontSize: dynamicFontSize,
+                  lineHeight: baseStyles.lineHeight,
+                  fontWeight: 700,
+                  color: "#fff",
+                  width: "100%",
+                  textAlign: "center",
+                  paddingInline: "20px",
+                  pointerEvents: "auto",
+                }}
+              >
+                {eventDetails?.hostName}
+              </div>
+            )}
           </div>
         </>
       ) : (
