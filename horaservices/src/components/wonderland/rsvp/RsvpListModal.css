@@ -11,6 +11,15 @@
   margin-bottom: 12px;
   margin-top: 6px;
 }
+
+.guest-rsvp-box.highlight-rsvp {
+  position: relative;
+  z-index: 1000;
+  border: 3px solid #97538c;
+  box-shadow: 0 0 15px #97538c;
+  border-radius: 10px;
+}
+
 .guest-rsvp-box p {
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -327,4 +336,3 @@
   color: #3f3e3e;
   margin-top: 20px;
 }
-
