@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
 import TemplatecardSkeleton from "../TemplateSkeleton/templatecardSkeleton";
-import { mobileBreakPoints } from "@/utils/constants";
+import { getScreenSize,defaultFontSizeMap} from "@/utils/constants";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -21,57 +21,41 @@ const TemplateRenderer = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [templateSizeClass, setTemplateSizeClass] = useState(""); // ADD
 
-  const getBaseFontStyles = () => {
-    if (typeof baseFontSize === "object" && baseFontSize !== null) {
-      if (width >= mobileBreakPoints?.medium) {
-        return {
-          fontSize: baseFontSize.large || "2.5rem",
-          lineHeight: baseFontSize.large ? "40px" : "45px",
-          top: "38%",
-        };
-      } else if (width >= mobileBreakPoints?.small) {
-        return {
-          fontSize: baseFontSize.medium || "2rem",
-          lineHeight: baseFontSize.medium ? "34px" : "42px",
-          top: "40%",
-        };
-      } else {
-        return {
-          fontSize: baseFontSize.small || "1.7rem",
-          lineHeight: baseFontSize.small ? "25px" : "34px",
-          top: "42%",
-        };
-      }
-    }
+  const getResponsiveFontStyles = () => {
+  const size = getScreenSize(width);
 
-    if (typeof baseFontSize === "string")
-      return { fontSize: baseFontSize, lineHeight: "40px", top: "40%" };
+  if (typeof baseFontSize === "object" && baseFontSize !== null) {
+    return {
+      fontSize:
+        baseFontSize[size] ||
+        defaultFontSizeMap[size].fontSize,
 
-    if (width >= mobileBreakPoints?.medium) {
-      return {
-        fontSize: "2.5rem",
-        lineHeight: "45px",
-        top: "38%",
-      };
-    } else if (width >= mobileBreakPoints?.small) {
-      return {
-        fontSize: "2rem",
-        lineHeight: "42px",
-        top: "40%",
-      };
-    } else {
-      return {
-        fontSize: "1.7rem",
-        lineHeight: "34px",
-        top: "42%",
-      };
-    }
-  };
+      lineHeight:
+        baseFontSize[size]
+          ? "auto"
+          : defaultFontSizeMap[size].lineHeight,
 
-  const [baseStyles, setBaseStyles] = useState(getBaseFontStyles());
+      top: defaultFontSizeMap[size].top,
+    };
+  }
+
+  if (typeof baseFontSize === "string") {
+    return {
+      ...defaultFontSizeMap[size],
+      fontSize: baseFontSize,
+    };
+  }
+
+  return defaultFontSizeMap[size];
+};
+
+
+const [baseStyles, setBaseStyles] = useState(getResponsiveFontStyles());
+
 
   useEffect(() => {
-    setBaseStyles(getBaseFontStyles());
+   setBaseStyles(getResponsiveFontStyles());
+
   }, [width, baseFontSize]);
 
   useEffect(() => {

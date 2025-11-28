@@ -13,6 +13,7 @@ import { applyCase } from "@/components/wonderland/fontsizeformat";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
 import ErrorPopup from "@/components/common/ErrorPopup";
+import { getCurrentTimeAMPM, formatToAMPM } from "@/utils/timeFormatters";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 const toText = (val) => (val ?? "").toString();
@@ -134,30 +135,30 @@ const DynamicTemplateRenderer = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [heroTransform, setHeroTransform] = useState({ x: 0, y: 0, scale: 1 });
-  function getCurrentTimeAMPM() {
-    const now = new Date();
-    let h = now.getHours();
-    const m = String(now.getMinutes()).padStart(2, "0");
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${String(h).padStart(2, "0")}:${m} ${ampm}`;
-  }
-  function formatToAMPM(timeString) {
-    if (!timeString) return "";
+  // function getCurrentTimeAMPM() {
+  //   const now = new Date();
+  //   let h = now.getHours();
+  //   const m = String(now.getMinutes()).padStart(2, "0");
+  //   const ampm = h >= 12 ? "PM" : "AM";
+  //   h = h % 12 || 12;
+  //   return `${String(h).padStart(2, "0")}:${m} ${ampm}`;
+  // }
+  // function formatToAMPM(timeString) {
+  //   if (!timeString) return "";
 
-    if (/am|pm/i.test(timeString)) {
-      const [time, ampm] = timeString.split(/(am|pm)/i);
-      let [h, m] = time.trim().split(":");
-      h = parseInt(h, 10) % 12 || 12;
-      return `${String(h).padStart(2, "0")}:${m} ${ampm.toUpperCase()}`;
-    }
+  //   if (/am|pm/i.test(timeString)) {
+  //     const [time, ampm] = timeString.split(/(am|pm)/i);
+  //     let [h, m] = time.trim().split(":");
+  //     h = parseInt(h, 10) % 12 || 12;
+  //     return `${String(h).padStart(2, "0")}:${m} ${ampm.toUpperCase()}`;
+  //   }
 
-    const [hour, minute] = timeString.split(":");
-    let h = parseInt(hour, 10);
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${String(h).padStart(2, "0")}:${minute} ${ampm}`;
-  }
+  //   const [hour, minute] = timeString.split(":");
+  //   let h = parseInt(hour, 10);
+  //   const ampm = h >= 12 ? "PM" : "AM";
+  //   h = h % 12 || 12;
+  //   return `${String(h).padStart(2, "0")}:${minute} ${ampm}`;
+  // }
 
   const templatePayload = useMemo(() => {
     const today = new Date();
