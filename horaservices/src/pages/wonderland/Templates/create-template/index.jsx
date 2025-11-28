@@ -718,9 +718,21 @@ const DynamicTemplateRenderer = () => {
       errors.push("Name is required");
     }
 
-    if (!formData.address?.trim() || formData.address === "Type your address") {
-      errors.push("Address is required");
-    }
+const addressExistsInTemplate =
+  renderedHTML.includes("address") ||
+  renderedHTML.includes("{{address}}") ||
+  renderedHTML.includes("Type your address");
+
+
+if (addressExistsInTemplate) {
+  if (
+    !formData.address?.trim() ||
+    formData.address === "Type your address"
+  ) {
+    errors.push("Address is required");
+  }
+}
+
 
     if (errors.length > 0) {
       setErrorModal({
