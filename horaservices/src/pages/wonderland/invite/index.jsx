@@ -33,6 +33,7 @@ const InvitesPage = () => {
     skipRsvpCheck,
     rsvpRefetch
   );
+  const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const {
     data: eventData,
     loading: fetchEventLoading,
@@ -164,12 +165,19 @@ const InvitesPage = () => {
               userData={userData}
               loggedinUserId={loggedinUserId}
               rsvpSubmitted={rsvpSubmitted}
+              setPushRsvpClick={setPushRsvpClick}
+              pushRsvpClick={pushRsvpClick}
               onRsvpUpdate={() => setRsvpRefetch((prev) => prev + 1)}
             />
           </div>
           <div className="event-wall-container">
             <p className="wall-heading text-center m-0 p-0">Celebration Wall</p>
-            <EventwallSection userData={userData}  />
+            <EventwallSection
+              userData={userData}
+              setPushRsvpClick={setPushRsvpClick}
+              rsvpSubmitted={rsvpSubmitted}
+              isHost={isHost}
+            />
           </div>
         </div>
       </div>

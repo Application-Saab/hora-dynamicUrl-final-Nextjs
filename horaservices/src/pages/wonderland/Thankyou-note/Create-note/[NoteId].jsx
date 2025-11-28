@@ -237,8 +237,8 @@ export default function NoteDetails() {
       reader.readAsDataURL(blob);
     });
 
-    // Step 3: Save draft to localStorage & navigate back
-    localStorage.setItem("thankyou-note-draft", base64);
+    // Save draft to localStorage & navigate back
+    localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
     router.push(`/wonderland/invite?eventid=${eventid}`);
 
     // API calls in background
