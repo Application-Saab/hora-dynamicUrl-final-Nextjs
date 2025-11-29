@@ -171,10 +171,11 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
               large: "1.7rem",
             }}
             isLandingPage={false}
+            templatewrapperclass="sharetemplatepreview"
           />
 
           {/* Info section */}
-          <div className="d-flex justify-content-between w-100 mt-3 gap-3">
+          <div className="d-flex justify-content-between w-100 mt-1 gap-2">
             <InfoBox
               icon={LockIcon}
               title="Private & Secure"
@@ -226,7 +227,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
           </div>
 
           {/* Copy + open apps */}
-          <div className="copy-share-ctn d-flex justify-content-around w-100 mt-3">
+          <div className="copy-share-ctn d-flex justify-content-around w-100 mt-2">
             {Object.entries(copySharePlatforms).map(([key, platform]) => (
               <div
                 key={key}
