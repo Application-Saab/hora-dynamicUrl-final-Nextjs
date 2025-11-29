@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
-import html2canvas from "html2canvas";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "../../../../utils/dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
@@ -13,8 +12,10 @@ import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templ
 import { applyCase } from "@/components/wonderland/fontsizeformat";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
+import ErrorPopup from "@/components/common/ErrorPopup";
+import { getCurrentTimeAMPM, formatToAMPM } from "@/utils/timeFormatters";
 
-
+import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) => toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -107,6 +108,10 @@ const DynamicTemplateRenderer = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [errorModal, setErrorModal] = useState({
+    open: false,
+    message: "",
+  });
 
   const [formData, setFormData] = useState({
     eventType: "",
@@ -136,7 +141,14 @@ const DynamicTemplateRenderer = () => {
       today.getDate()
     ).padStart(2, "0")}`;
 
+
     const formatted = dateFormatter(formData.date || fallback, templateMeta?.dateFormatCase || "1");
+
+    const finalTime =
+      formData.time?.trim()
+        ? formData.time         // DB time present → Use it
+        : getCurrentTimeAMPM(); // No DB time → current time
+
 
 
     return {
@@ -145,18 +157,18 @@ const DynamicTemplateRenderer = () => {
       // date: formatted || "",
       date: applyCase(formatted?.full || formatted || "", templateMeta?.dateCase || "default"),
       day: formatted?.day || fallback.slice(-2),
-   
 
-      month: applyCase(formatted?.month || fallback.slice(5, 7),templateMeta?.monthCase || "default"),
+
+      month: applyCase(formatted?.month || fallback.slice(5, 7), templateMeta?.monthCase || "default"),
       year: formatted?.year || fallback.slice(0, 4),
-       time: formData.time || "",
+      time: finalTime,
       borderColor: templateMeta?.borderColor,
 
       address: applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
       image: uploadedImage || originalImage || DefaultImageBgCircle.src,
     };
-  }, [formData, templateMeta?.dateFormatCase, templateId, uploadedImage, originalImage,   templateMeta?.configs?.nameCase, templateMeta?.configs?.addressCase,templateMeta?.configs?.monthCase]);
+  }, [formData, templateMeta?.dateFormatCase, templateId, uploadedImage, originalImage, templateMeta?.configs?.nameCase, templateMeta?.configs?.addressCase, templateMeta?.configs?.monthCase]);
 
 
   /* --- enforce char limits on pre-filled data --- */
@@ -233,11 +245,11 @@ const DynamicTemplateRenderer = () => {
           dateFormatCase: template.configs?.dateFormatCase || "1",
           templateInfo: template.configs?.templateinfo || {},
           cropShape,
-           nameCase: template.configs?.nameCase || "default",
-           addressCase: template.configs?.addressCase || "default",
-           monthCase: template.configs?.monthCase || "default",
+          nameCase: template.configs?.nameCase || "default",
+          addressCase: template.configs?.addressCase || "default",
+          monthCase: template.configs?.monthCase || "default",
           aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
-           borderColor: template.configs?.borderColor,
+          borderColor: template.configs?.borderColor,
         });
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
@@ -265,7 +277,9 @@ const DynamicTemplateRenderer = () => {
         if (!active || res.status !== 200 || !data) return;
 
         const formattedDate = data.eventDate ? new Date(data.eventDate).toISOString().split("T")[0] : "";
-        const formattedTime = data.eventTime ? data.eventTime.slice(0, 5) : "";
+        const formattedTime = data.eventTime
+          ? formatToAMPM(data.eventTime) // DB time exists → Convert & use
+          : "";
 
         setFormData((prev) => ({
           ...prev,
@@ -296,21 +310,21 @@ const DynamicTemplateRenderer = () => {
   }, [eventId, token]);
 
 
- const applyPlaceholders = (data) => ({
-  ...data,
-  name: data.name?.trim() || "Type your name",
-  address: data.address?.trim() || "Type your address",
-});
-useEffect(() => {
-  if (!templateMeta?.jsCode) return;
-
-  const merged = applyPlaceholders({
-    ...templatePayload,
-    ...scaledData,
+  const applyPlaceholders = (data) => ({
+    ...data,
+    name: data.name?.trim() || "Type your name",
+    address: data.address?.trim() || "Type your address",
   });
+  useEffect(() => {
+    if (!templateMeta?.jsCode) return;
 
-  setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
-}, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
+    const merged = applyPlaceholders({
+      ...templatePayload,
+      ...scaledData,
+    });
+
+    setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
+  }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
   const handleImageLoad = useCallback(() => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
@@ -340,13 +354,12 @@ useEffect(() => {
     setLoading(false);
   }, [templateMeta?.templateInfo]);
 
-  const handleEditableClick = useCallback(
+ const handleEditableClick = useCallback(
     (field, node) => {
       const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
       node.contentEditable = "true";
       node.dataset.editing = "true";
       node.classList.add("editing");
-
 
       const placeholderText =
         field === "name"
@@ -356,11 +369,21 @@ useEffect(() => {
             : "";
 
       const isEmpty = !node.innerText?.trim();
-      if (isEmpty) {
+
+      // ⭐ Time field: if empty -> show current time AM/PM
+      if (field === "time" && isEmpty) {
+        node.innerText = formData.time ||
+          new Date().toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+      } else if (isEmpty) {
         node.innerText = formData[field] || placeholderText;
-        setCaretAtEnd(node);
       }
+
+      setCaretAtEnd(node);
       node.focus();
+
       const onKeyDown = (ev) => {
         const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
         if (printable && node.innerText.length >= charLimit) {
@@ -373,7 +396,7 @@ useEffect(() => {
         } else {
           setFormErrors((prev) => ({ ...prev, [field]: "" }));
         }
-  
+
         if (ev.key === "Enter") {
           ev.preventDefault();
           node.blur();
@@ -383,40 +406,31 @@ useEffect(() => {
         }
       };
 
-
-       const onInput = (ev) => {
+      const onInput = (ev) => {
         const el = ev.target;
         const field = el.getAttribute("data-field");
         let text = el.innerText;
 
-
         if (text.length > charLimit) {
           const trimmed = text.slice(0, charLimit);
-
           const caret = saveCaretPosition(el);
           el.innerText = trimmed;
           restoreCaretPosition(el, caret);
-
-          setCharCounts((prev) => ({ ...prev, [field]: trimmed.length }));
-          setFormErrors((prev) => ({ ...prev, [field]: `Limit ${charLimit} reached` }));
-
           return;
         }
 
-
-        const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
-        if (formattedValue !== text) {
-          const caret = saveCaretPosition(el);
-          el.innerText = formattedValue;
-          restoreCaretPosition(el, caret);
+        // ⭐ NO applyCase on time field
+        if (field !== "time") {
+          const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
+          if (formattedValue !== text) {
+            const caret = saveCaretPosition(el);
+            el.innerText = formattedValue;
+            restoreCaretPosition(el, caret);
+          }
         }
 
-        // Live update character counter
         setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
-        setFormErrors((prev) => ({ ...prev, [field]: "" }));
       };
-
-
 
       const onPaste = (ev) => {
         ev.preventDefault();
@@ -428,13 +442,22 @@ useEffect(() => {
       const onBlur = (ev) => {
         const el = ev.target;
         let value = el.innerText.trim();
-        if (!value && field === "name") value = "Type your name"
-        if (!value && field === "address") value = "Type your address";
-        if (value.length > charLimit) value = value.slice(0, charLimit);
+
+        // ⭐ Set current time if left empty
+        if (field === "time") {
+          if (!value) {
+            value = new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          }
+        } else {
+          if (!value && field === "name") value = "Type your name";
+          if (!value && field === "address") value = "Type your address";
+          if (value.length > charLimit) value = value.slice(0, charLimit);
+        }
 
         setFormData((prev) => ({ ...prev, [field]: value }));
-        setCharCounts((prev) => ({ ...prev, [field]: value.length }));
-        setFormErrors((prev) => ({ ...prev, [field]: "" }));
 
         el.contentEditable = "false";
         el.removeAttribute("data-editing");
@@ -446,7 +469,6 @@ useEffect(() => {
         el.removeEventListener("blur", onBlur);
       };
 
-
       node.addEventListener("keydown", onKeyDown);
       node.addEventListener("input", onInput);
       node.addEventListener("paste", onPaste);
@@ -454,6 +476,7 @@ useEffect(() => {
     },
     [formData, templateMeta?.charLimits]
   );
+
   useEffect(() => {
     const container = templateRef.current;
     if (!container) return;
@@ -479,109 +502,159 @@ useEffect(() => {
     return () => container.removeEventListener("click", handleClick);
   }, [handleEditableClick]);
 
- 
 
-useHeroImageTransform(
-  heroTransform,
-  setHeroTransform,
-  fileInputRef,
-  [renderedHTML] 
-);
 
-const handleDownload = async () => {
-  if (!templateRef.current) return;
-
-  setSaving(true);
-
-  const blob = await captureElementAsImage(templateRef.current, [
-    ".hide-in-download", 
-  ]);
-
-  if (!blob) {
-    setSaving(false);
-    return;
-  }
-
-  // 🧾 Convert blob → file
-  const file = new File(
-    [blob],
-    `invite_${templateMeta?.bgImageName || "image"}.png`,
-    {
-      type: "image/png",
-      lastModified: Date.now(),
-    }
+  useHeroImageTransform(
+    heroTransform,
+    setHeroTransform,
+    fileInputRef,
+    [renderedHTML]
   );
 
-  // 🔗 Create Base64 preview also (optional)
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    localStorage.setItem("localTemplateImage", reader.result);
-    router.replace(`/wonderland/invite?eventid=${eventId}`);
-  };
-  reader.readAsDataURL(blob);
+  const handleDownload = async () => {
+    if (!templateRef.current) return;
 
-  // 🚀 Upload in background
-  const form = new FormData();
-  form.append("image", file);
-  form.append("userId", userId);
+    setSaving(true);
 
-  try {
-    await fetch(
-      `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+    const blob = await captureElementAsImage(templateRef.current, [
+      ".hide-in-download",
+    ]);
+
+    if (!blob) {
+      setSaving(false);
+      return;
+    }
+
+    // 🧾 Convert blob → file
+    const file = new File(
+      [blob],
+      `invite_${templateMeta?.bgImageName || "image"}.png`,
       {
-        method: "PUT",
-        headers: { Authorization: token || "" },
-        body: form,
+        type: "image/png",
+        lastModified: Date.now(),
       }
     );
-  } catch (err) {
-    console.error("Upload failed:", err);
-  } finally {
-    setSaving(false);
-  }
-};
+
+    // 🔗 Create Base64 preview also (optional)
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      localStorage.setItem(`localTemplateImage_${eventId}`, reader.result);
+
+      router.replace(`/wonderland/invite?eventid=${eventId}`);
+    };
+    reader.readAsDataURL(blob);
+
+    // 🚀 Upload in background
+    const form = new FormData();
+    form.append("image", file);
+    form.append("userId", userId);
+
+    try {
+      await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+        {
+          method: "PUT",
+          headers: { Authorization: token || "" },
+          body: form,
+        }
+      );
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!userId) {
-      alert("User not logged in or UserId missing.");
+      setErrorModal({
+        open: true,
+        message: "User not logged in or UserId missing.",
+      });
       return;
     }
+    const errors = [];
+
+    if (!formData.name?.trim() || formData.name === "Type your name") {
+      errors.push("Name is required");
+    }
+
+const addressExistsInTemplate =
+  renderedHTML.includes("address") ||
+  renderedHTML.includes("{{address}}") ||
+  renderedHTML.includes("Type your address");
+
+
+if (addressExistsInTemplate) {
+  if (
+    !formData.address?.trim() ||
+    formData.address === "Type your address"
+  ) {
+    errors.push("Address is required");
+  }
+}
+
+
+    if (errors.length > 0) {
+      setErrorModal({
+        open: true,
+        message: errors.join("\n"),
+      });
+      return;
+    }
+
     setSaving(true);
     setIsSaved(true);
     document.body.classList.add("saved-mode");
+
+    const finalDate = formData.date
+      ? new Date(formData.date).toISOString()
+      : new Date().toISOString();
+
+    const finalTime = formData.time
+      ? formatToAMPM(formData.time)
+      : formatToAMPM(new Date().toLocaleTimeString());
+
     try {
-      const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token || "",
-        },
-        body: JSON.stringify({
-          userId,
-          eventType: formData.eventType,
-          hostName: formData.name,
-          eventDate: formData.date ? new Date(formData.date).toISOString() : "",
-          eventTime: formData.time || "",
-          location: formData.address,
-        }),
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token || "",
+          },
+
+          body: JSON.stringify({
+            userId,
+            eventType: formData.eventType,
+            hostName: formData.name,
+            eventDate: finalDate,
+            eventTime: finalTime,
+            location: formData.address,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Unknown error");
       }
-    );
 
-    if (!res.ok) {
-      const errData = await res.json();
-      throw new Error(errData.message || "Unknown error");
+      await handleDownload();
+    } catch (err) {
+      setErrorModal({
+        open: true,
+        message: err.message || "Something went wrong",
+      });
+
+      setSaving(false);
+      setIsSaved(false);
+      document.body.classList.remove("saved-mode");
+    } finally {
+      document.body.classList.remove("saved-mode");
     }
-
-    await handleDownload();
-  } catch (err) {
-    alert(`Failed to save: ${err.message}`);
-    setSaving(false);
-    setIsSaved(false);
-    document.body.classList.remove("saved-mode");
-  } finally {
-    document.body.classList.remove("saved-mode");
-  }
-};
+  };
 
   const saveCaretPosition = (el) => {
     const selection = window.getSelection();
@@ -628,14 +701,38 @@ const handleDownload = async () => {
     <div className="d-flex justify-content-center" style={{ maxWidth: "480px", margin: "0 auto" }}>
       <div style={{ padding: "8px", maxWidth: "480px" }}>
         <div ref={templateRef} className="template-container" style={{ position: "relative", }}>
-          <img
+          {/* <img
             ref={imgRef}
             src={`/assets/templates/${templateMeta?.bgImageName}`}
             id="bg-image"
             alt="bg"
             onLoad={handleImageLoad}
             onError={() => setLoading(false)}
-          />
+          /> */}
+ {loading && (
+    <div
+      style={{
+        width: "100%",
+        height: scaledData?.imgHeight || 400,
+        background: "#eaeaea",
+        borderRadius: "10px",
+        animation: "pulse 1.4s ease-in-out infinite"
+      }}
+    />
+  )}
+
+  {/* ORIGINAL IMAGE */}
+  {!loading && (
+    <img
+      ref={imgRef}
+      src={`/assets/templates/${templateMeta?.bgImageName}`}
+      id="bg-image"
+      alt="bg"
+      onLoad={handleImageLoad}
+      onError={() => setLoading(false)}
+      style={{ width: "100%", display: loading ? "none" : "block" }}
+    />
+  )}
 
 
 
@@ -693,6 +790,15 @@ const handleDownload = async () => {
           setFormData((prev) => ({ ...prev, time: t }));
         }}
       />
+      <ErrorPopup
+        isOpen={errorModal.open}
+        onClose={() => setErrorModal({ open: false, message: "" })}
+        heading="Missing information"
+        message={errorModal.message}
+        buttonLabel="OK"
+        icon={AlertIcon}
+      />
+
     </div>
   );
 };
