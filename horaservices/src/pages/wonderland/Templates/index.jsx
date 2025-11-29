@@ -8,6 +8,7 @@ import TemplateSkeleton from "@/components/wonderland/TemplateSkeleton";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import "./Templates.css";
 import TemplateGrid from "@/components/wonderland/TemplatesGrid";
+import UploadCustomTemplate from "@/components/wonderland/UploadCustomTemplate";
 
 const TemplatesPage = () => {
   const router = useRouter();
@@ -18,8 +19,7 @@ const TemplatesPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Birthday");
   const [categoryLoading, setCategoryLoading] = useState(false);
-  const [loadedImages, setLoadedImages] = useState({});
-  const [uploading, setUploading] = useState(false);
+
 
   const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -91,51 +91,6 @@ const TemplatesPage = () => {
     router.push(`/wonderland/templates/create-template?id=${eventId}&templateId=${templateId}`);
   };
 
-  const handleUploadClick = () => document.getElementById("custom-template-upload")?.click();
-
-  const handleUploadChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!eventId || !userId) {
-      return;
-    }
-    uploadCustomTemplate(file);
-  };
-
-  const uploadCustomTemplate = async (file) => {
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("userId", userId);
-
-    try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
-        {
-          method: "PUT",
-          headers: { Authorization: token || "" },
-          body: formData,
-        }
-      );
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Upload failed");
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result;
-        localStorage.setItem(`localTemplateImage_${eventId}`, base64);
-        router.replace(`/wonderland/invite?eventid=${eventId}`);
-      };
-
-      reader.readAsDataURL(file);
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   if (loading) return <TemplateSkeleton />;
 
@@ -148,21 +103,14 @@ const TemplatesPage = () => {
         selectedCategory={activeCategory}
         onSelectCategory={setActiveCategory}
       />
+      <UploadCustomTemplate
+        eventId={eventId}
+        userId={userId}
+        token={token}
+      />
 
-      <div className="upload-banner" onClick={handleUploadClick}>
-        <div className="upload-icon-wrapper">
-          <span className="upload-plus">+</span>
-        </div>
-        <p>Upload Our Own Design</p>
-        <input
-          id="custom-template-upload"
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={handleUploadChange}
-        />
-        {uploading && <div className="upload-overlay">Uploading…</div>}
-      </div>
+
+
 
       {categoryLoading ? (
         <TemplateSkeleton onlyCards />
