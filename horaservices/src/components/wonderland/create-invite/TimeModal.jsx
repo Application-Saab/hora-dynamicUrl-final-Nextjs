@@ -38,7 +38,8 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
         ref.current.scrollTop =
           (range.length + index) * ITEM_HEIGHT;
       }
-    }, [show]);
+   }, [show, value]);
+
 
     const updateValue = () => {
       const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
@@ -95,19 +96,61 @@ return (
 
   };
 
-  const AmPmWheel = () => (
-    <div className="wheel no-scroll">
-      {["AM", "PM"].map((p) => (
+ const AmPmWheel = () => {
+  const ref = useRef(null);
+  const range = ["AM", "PM"];
+
+  // जब modal open हो या जब period change हो → सही position पर scroll करा दो
+  useEffect(() => {
+    if (show && ref.current) {
+      const index = range.indexOf(period);
+      ref.current.scrollTop = index * ITEM_HEIGHT;
+    }
+  }, [show, period]);
+
+  // Scroll par active item detect karo
+  const handleScroll = () => {
+    if (!ref.current) return;
+
+    const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+
+    // Ensure AM/PM ke beech hi rahe
+    const safeIndex = Math.max(0, Math.min(index, range.length - 1));
+
+    setPeriod(range[safeIndex]);
+  };
+
+  // Click par smooth scroll + center highlight
+  const handleClick = (i) => {
+    if (!ref.current) return;
+
+    ref.current.scrollTo({
+      top: i * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+
+    setPeriod(range[i]);
+  };
+
+  return (
+    <div className="wheel" ref={ref} onScroll={handleScroll}>
+      <div className="wheel-item buffer"></div>
+
+      {range.map((p, i) => (
         <div
-          key={p}
+          key={i}
           className={`wheel-item ${p === period ? "wheel-item-active" : ""}`}
-          onClick={() => setPeriod(p)}
+          onClick={() => handleClick(i)}
         >
           {p}
         </div>
       ))}
+
+      <div className="wheel-item buffer"></div>
     </div>
   );
+};
+
 
   if (!show) return null;
 

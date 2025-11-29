@@ -29,43 +29,44 @@ const UploadCustomTemplate = ({ eventId, userId, token, label = "Upload Your Own
     uploadCustomTemplate(file);
   };
 
-  const uploadCustomTemplate = async (file) => {
-    setUploading(true);
-
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("userId", userId);
-
-    try {
-      const apiUrl = `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`;
-      console.log("API URL:", apiUrl);
-
-      const res = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          Authorization: token || "",
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Upload failed");
-
-    
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        localStorage.setItem(`localTemplateImage_${eventId}`, reader.result);
-        router.replace(`/wonderland/invite?eventid=${eventId}`);
-      };
-      reader.readAsDataURL(file);
-
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-    } finally {
-      setUploading(false);
-    }
+ 
+const uploadCustomTemplate = async (file) => {
+  // 🔹 Redirect Immediately
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    localStorage.setItem(`localTemplateImage_${eventId}`, reader.result);
+    router.replace(`/wonderland/invite?eventid=${eventId}`);
   };
+  reader.readAsDataURL(file);
+
+  // 🔹 Continue upload in background
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("userId", userId);
+
+  try {
+    const apiUrl = `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`;
+ 
+    const res = await fetch(apiUrl, {
+      method: "PUT",
+      headers: {
+        Authorization: token || "",
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data?.message || "Backend upload failed");
+    }
+
+    console.log("✔ Upload Success");
+
+  } catch (error) {
+    console.error("Upload failed:", error);
+  
+  }
+};
 
   return (
     <div 

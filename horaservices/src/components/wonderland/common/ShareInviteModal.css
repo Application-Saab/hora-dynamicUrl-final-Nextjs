@@ -83,16 +83,13 @@
   font-size: 14.06px;
   border-radius: 50%;
 }
+
 .copy-share-ctn img {
   height: 28px;
   width: 28px;
   cursor: pointer;
 }
-/* Large templates */
-.share-invite-modal-body .share-large-template img.default-invite-image {
-  height: 240px !important;
-  object-fit: cover !important;
-}
+
 
 /* Small templates */
 .share-invite-modal-body .share-small-template img.default-invite-image {
@@ -100,14 +97,5 @@
   object-fit: cover !important;
 }
 
-/* Mobile Responsive */
-@media (max-width: 480px) {
-  .share-invite-modal-body .share-large-template img.default-invite-image {
-    height: 240px !important;
-  }
 
-  .share-invite-modal-body .share-small-template img.default-invite-image {
-    height: 122px !important;
-  }
-}
 
