@@ -14,6 +14,7 @@ import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
 import ErrorPopup from "@/components/common/ErrorPopup";
 import { getCurrentTimeAMPM, formatToAMPM } from "@/utils/timeFormatters";
+import { saveTemplate } from "@/utils/indexedDB";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 const toText = (val) => (val ?? "").toString();
@@ -511,59 +512,64 @@ const DynamicTemplateRenderer = () => {
     [renderedHTML]
   );
 
-  const handleDownload = async () => {
-    if (!templateRef.current) return;
+const handleDownload = async () => {
+  if (!templateRef.current) return;
 
-    setSaving(true);
+  setSaving(true);
 
-    const blob = await captureElementAsImage(templateRef.current, [
-      ".hide-in-download",
-    ]);
+  const blob = await captureElementAsImage(templateRef.current, [
+    ".hide-in-download",
+  ]);
 
-    if (!blob) {
-      setSaving(false);
-      return;
+  if (!blob) {
+    setSaving(false);
+    return;
+  }
+
+  // 🧾 Convert blob → file
+  const file = new File(
+    [blob],
+    `invite_${templateMeta?.bgImageName || "image"}.png`,
+    {
+      type: "image/png",
+      lastModified: Date.now(),
     }
+  );
 
-    // 🧾 Convert blob → file
-    const file = new File(
-      [blob],
-      `invite_${templateMeta?.bgImageName || "image"}.png`,
-      {
-        type: "image/png",
-        lastModified: Date.now(),
-      }
-    );
 
-    // 🔗 Create Base64 preview also (optional)
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      localStorage.setItem(`localTemplateImage_${eventId}`, reader.result);
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    try {
+     
+      await saveTemplate(`template_${eventId}`, reader.result);
+
 
       router.replace(`/wonderland/invite?eventid=${eventId}`);
-    };
-    reader.readAsDataURL(blob);
-
-    // 🚀 Upload in background
-    const form = new FormData();
-    form.append("image", file);
-    form.append("userId", userId);
-
-    try {
-      await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
-        {
-          method: "PUT",
-          headers: { Authorization: token || "" },
-          body: form,
-        }
-      );
     } catch (err) {
-      console.error("Upload failed:", err);
-    } finally {
-      setSaving(false);
+      console.error("Failed to save template in IndexedDB:", err);
     }
   };
+  reader.readAsDataURL(blob);
+
+  const form = new FormData();
+  form.append("image", file);
+  form.append("userId", userId);
+
+  try {
+    await fetch(
+      `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+      {
+        method: "PUT",
+        headers: { Authorization: token || "" },
+        body: form,
+      }
+    );
+  } catch (err) {
+    console.error("Upload failed:", err);
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleSave = async () => {
     if (!userId) {
