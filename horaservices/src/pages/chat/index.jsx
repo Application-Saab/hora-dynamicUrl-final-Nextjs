@@ -1023,11 +1023,6 @@
 
 // export default GroupsList;
 
-
-
-
-
-
 // // components/GroupsListSocket.jsx
 // import React, { useEffect, useRef, useState } from "react";
 // import Image from "next/image";
@@ -1348,10 +1343,6 @@
 
 // export default GroupsList;
 
-
-
-
-
 // components/GroupsList.jsx  (replace your old file content with this)
 import React, { useRef, useEffect, useState } from "react";
 import "./GroupsList.css";
@@ -1370,6 +1361,7 @@ import {
   GET_USER_BY_ID,
   GET_CHAT_MESSAGES, // ensure this is present in your apiconstants
 } from "@/utils/apiconstants";
+import { askAndSubscribe } from "@/utils/pushClient";
 import { usePathname } from "next/navigation";
 import useApi from "@/hooks/useApi";
 import socket from "@/socket"; // your socket client
@@ -1392,7 +1384,35 @@ const GroupsList = () => {
     }
   }, [chatRoomsData]);
 
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js");
+    }
+  }, []);
+
+  async function enableNotifications() {
+    const PUBLIC_VAPID =
+      "BHBPued2H9tMC6x97EOQchgTE8P5d6QGaoTsfN3diqNq5oYa8nZoBv0Qb29iabLpi43C9-fFTalSAJdqCYNSA-0";
+    // const userId = localStorage.getItem("userID");
+
+    try {
+      const sub = await askAndSubscribe(
+        PUBLIC_VAPID,
+        userId,
+        selectedGroup?.roomId
+      );
+      console.log("Subscribed:", sub);
+    } catch (e) {
+      console.log("Push error", e);
+    }
+  }
+
   const [selectedGroup, setSelectedGroup] = useState(null);
+  console.log(
+    "%c [ selectedGroup ]-1406",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    selectedGroup
+  );
   const [messages, setMessages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
@@ -1406,12 +1426,14 @@ const GroupsList = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
   const [text, setText] = useState("");
-  const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const userID =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const eventId = selectedGroup?._id || selectedGroup?.id || null;
   const textareaRef = useRef(null);
   const chatOpenRef = useRef(false);
   const [unreadCounts, setUnreadCounts] = useState({});
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const [orderDetails, setOrderDetails] = useState(null);
   const [guestDetails, setGuestDetails] = useState(null);
   const [userData, setUserData] = useState({});
@@ -1426,8 +1448,16 @@ const GroupsList = () => {
   // ---------- basic helpers (kept)
   const getAvatarColor = (name) => {
     const colors = [
-      "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5",
-      "#2196F3", "#009688", "#4CAF50", "#FF9800", "#795548"
+      "#F44336",
+      "#E91E63",
+      "#9C27B0",
+      "#673AB7",
+      "#3F51B5",
+      "#2196F3",
+      "#009688",
+      "#4CAF50",
+      "#FF9800",
+      "#795548",
     ];
     let hash = 0;
     if (!name) return colors[0];
@@ -1439,7 +1469,13 @@ const GroupsList = () => {
   };
 
   const customDecorator = (href, text, key) => (
-    <a key={key} href={href} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", fontWeight: "bold" }}>
+    <a
+      key={key}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ color: "#fff", fontWeight: "bold" }}
+    >
       {text}
     </a>
   );
@@ -1453,7 +1489,10 @@ const GroupsList = () => {
       }
       try {
         const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`, {
-          headers: { Authorization: `${token}`, "Content-Type": "application/json" }
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
         });
         const data = await response.json();
         if (data.error) {
@@ -1471,10 +1510,13 @@ const GroupsList = () => {
   // ---------- fetch order/guest details (kept)
   const fetchOrderDetails = async (eventIdParam) => {
     try {
-      const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventIdParam}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", Authorization: token }
-      });
+      const res = await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/${eventIdParam}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json", Authorization: token },
+        }
+      );
       const result = await res.json();
       if (res.status === 200 && result.data) {
         const data = result.data;
@@ -1489,7 +1531,10 @@ const GroupsList = () => {
     try {
       const endpoint = `${BASE_URL}${GET_GUEST_DETTAILS}/${eventIdParam}/user/${uid}`;
       const response = await fetch(endpoint, {
-        headers: { Authorization: `${token}`, "Content-Type": "application/json" }
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
       if (data && data.data) {
@@ -1516,7 +1561,8 @@ const GroupsList = () => {
 
   // ---------- scroll to bottom when messages change (kept)
   useEffect(() => {
-    const chatContainer = chatBodyRef.current || document.querySelector(".chat-messages");
+    const chatContainer =
+      chatBodyRef.current || document.querySelector(".chat-messages");
     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
   }, [messages]);
 
@@ -1527,13 +1573,18 @@ const GroupsList = () => {
         const uid = localStorage.getItem("userID");
         if (!uid) return;
         // We assume room.members is available in room object (from GET_CHAT_ROOMS).
-        const memberEntry = (selectedGroup.members || []).find(m => {
+        const memberEntry = (selectedGroup.members || []).find((m) => {
           // m might be object { _id, role } or simple id; try both
           if (!m) return false;
           if (typeof m === "string") return m === uid;
-          return String(m._id || m.id) === String(uid) || String(m.userId || m.user) === String(uid);
+          return (
+            String(m._id || m.id) === String(uid) ||
+            String(m.userId || m.user) === String(uid)
+          );
         });
-        const role = memberEntry?.role || (memberEntry && memberEntry.isHost ? "host" : null);
+        const role =
+          memberEntry?.role ||
+          (memberEntry && memberEntry.isHost ? "host" : null);
         if (role === "host") {
           await fetchOrderDetails(selectedGroup._id || selectedGroup.id);
         } else {
@@ -1568,16 +1619,23 @@ const GroupsList = () => {
       const roomId = msg.roomId || msg.eventId;
       if (!roomId) return;
 
-      setMessages(prev => {
+      setMessages((prev) => {
         // if optimistic message exists replace it by server message
         if (msg.tempId) {
-          const found = prev.some(m => m.tempId === msg.tempId);
-          if (found) return prev.map(m => m.tempId === msg.tempId ? { ...msg, id: msg._id } : m);
+          const found = prev.some((m) => m.tempId === msg.tempId);
+          if (found)
+            return prev.map((m) =>
+              m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+            );
         }
         // prevent duplicate id
-        if (prev.some(m => String(m._id || m.id) === String(msg._id))) return prev;
+        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+          return prev;
         // if currently in this open room append, else leave messages unchanged and update unread
-        if (selectedGroup && String(selectedGroup._id || selectedGroup.id) === String(roomId)) {
+        if (
+          selectedGroup &&
+          String(selectedGroup._id || selectedGroup.id) === String(roomId)
+        ) {
           // auto mark read for currently open chat
           // push and emit read
           setTimeout(() => {
@@ -1586,7 +1644,7 @@ const GroupsList = () => {
           return [...prev, { ...msg, id: msg._id }];
         } else {
           // update unread counter
-          setUnreadCounts(old => {
+          setUnreadCounts((old) => {
             const cur = Number(old[roomId] || 0) + 1;
             return { ...old, [roomId]: cur };
           });
@@ -1595,25 +1653,38 @@ const GroupsList = () => {
       });
 
       // show notification if chat not open
-      if (!chatOpenRef.current && Notification.permission === "granted" && "serviceWorker" in navigator) {
-        if (!notifiedMessageIdsForPush.current.has(msg._id)) {
-          navigator.serviceWorker.ready.then(reg => {
-            reg.showNotification(msg.senderName ? `New message from ${msg.senderName}` : "New message", {
-              body: msg.message || msg.text || "",
-              icon: "/new_logo_light.png",
-            });
-          });
-          notifiedMessageIdsForPush.current.add(msg._id);
-        }
-      }
+      // if (
+      //   !chatOpenRef.current &&
+      //   Notification.permission === "granted" &&
+      //   "serviceWorker" in navigator
+      // ) {
+      //   if (!notifiedMessageIdsForPush.current.has(msg._id)) {
+      //     navigator.serviceWorker.ready.then((reg) => {
+      //       reg.showNotification(
+      //         msg.senderName
+      //           ? `New message from ${msg.senderName}`
+      //           : "New message",
+      //         {
+      //           body: msg.message || msg.text || "",
+      //           icon: "/new_logo_light.png",
+      //         }
+      //       );
+      //     });
+      //     notifiedMessageIdsForPush.current.add(msg._id);
+      //   }
+      // }
     };
 
     const onReadUpdate = (update) => {
       // update = { roomId, userId, lastReadAt }
       // update local unread counts if needed (safer to refetch messages or recompute)
       // For simplicity, if active room is same and userId === me, reset unread
-      if (String(update.userId) === String(userID) && selectedGroup && String(selectedGroup._id || selectedGroup.id) === String(update.roomId)) {
-        setUnreadCounts(prev => ({ ...prev, [update.roomId]: 0 }));
+      if (
+        String(update.userId) === String(userID) &&
+        selectedGroup &&
+        String(selectedGroup._id || selectedGroup.id) === String(update.roomId)
+      ) {
+        setUnreadCounts((prev) => ({ ...prev, [update.roomId]: 0 }));
       }
     };
 
@@ -1632,25 +1703,41 @@ const GroupsList = () => {
   const fetchMessagesForRoom = async (roomId, page = 1, limit = 50) => {
     if (!roomId) return;
     try {
-      const res = await fetch(`${BASE_URL}${GET_CHAT_MESSAGES}/${roomId}?page=${page}&limit=${limit}`, {
-        headers: { Authorization: token || "", "Content-Type": "application/json" },
-      });
+      const res = await fetch(
+        `${BASE_URL}${GET_CHAT_MESSAGES}/${roomId}?page=${page}&limit=${limit}`,
+        {
+          headers: {
+            Authorization: token || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const json = await res.json();
       if (!json.error && json.data) {
         // ensure ascending order for UI (old -> new)
         setMessages(json.data || []);
         // compute unread for this room using lastReadAt from room
-        const roomObj = allChatRooms.find(r => String(r._id || r.id) === String(roomId));
+        const roomObj = allChatRooms.find(
+          (r) => String(r._id || r.id) === String(roomId)
+        );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-        const lastReadForMe = lastReadMap ? (lastReadMap[userID] ? new Date(lastReadMap[userID]) : null) : null;
-        const unread = (json.data || []).filter(m => {
+        const lastReadForMe = lastReadMap
+          ? lastReadMap[userID]
+            ? new Date(lastReadMap[userID])
+            : null
+          : null;
+        const unread = (json.data || []).filter((m) => {
           if (!m.createdAt && !m.sentAt) return false;
-          const created = m.createdAt ? new Date(m.createdAt) : (m.sentAt ? new Date(m.sentAt) : null);
+          const created = m.createdAt
+            ? new Date(m.createdAt)
+            : m.sentAt
+            ? new Date(m.sentAt)
+            : null;
           if (!created) return false;
           if (String(m.senderId) === String(userID)) return false;
           return lastReadForMe ? created > lastReadForMe : true;
         }).length;
-        setUnreadCounts(prev => ({ ...prev, [roomId]: unread }));
+        setUnreadCounts((prev) => ({ ...prev, [roomId]: unread }));
       } else {
         console.warn("Failed fetch messages", json);
       }
@@ -1666,7 +1753,7 @@ const GroupsList = () => {
     const roomId = group._id || group.id;
     await fetchMessagesForRoom(roomId);
     // reset unread locally
-    setUnreadCounts(prev => ({ ...prev, [roomId]: 0 }));
+    setUnreadCounts((prev) => ({ ...prev, [roomId]: 0 }));
     // mark read via socket and optional REST mark-read
     markRoomRead(roomId, userID);
   };
@@ -1676,19 +1763,23 @@ const GroupsList = () => {
     if (!roomId || !uid) return;
     try {
       // emit socket event (server will update room.lastReadAt and broadcast)
-      if (socket && socket.connected) socket.emit("message:read", { roomId, userId: uid });
+      if (socket && socket.connected)
+        socket.emit("message:read", { roomId, userId: uid });
       // optional REST fallback if you add mark-read endpoint
       try {
         await fetch(`${BASE_URL}/api/customer/event/mark-read`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: token || "" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token || "",
+          },
           body: JSON.stringify({ roomId, userId: uid }),
         });
       } catch (e) {
         // ignore if not implemented
       }
       // local UI update
-      setUnreadCounts(prev => ({ ...prev, [roomId]: 0 }));
+      setUnreadCounts((prev) => ({ ...prev, [roomId]: 0 }));
     } catch (err) {
       console.error("markRoomRead err", err);
     }
@@ -1700,7 +1791,7 @@ const GroupsList = () => {
     // mark read before close
     await markRoomRead(selectedGroup._id || selectedGroup.id, userID);
     setSelectedGroup(null);
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
     chatOpenRef.current = false;
     setMessages([]);
   };
@@ -1713,10 +1804,13 @@ const GroupsList = () => {
       return;
     }
     const roomId = eventId;
-    const localSenderName = localStorage.getItem("wonderLandUserName") || userData?.name || "";
+    const localSenderName =
+      localStorage.getItem("wonderLandUserName") || userData?.name || "";
 
     // create optimistic message
-    const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+    const tempId = `temp_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
     const optimistic = {
       id: tempId,
       tempId,
@@ -1731,7 +1825,7 @@ const GroupsList = () => {
       createdAt: new Date().toISOString(),
     };
 
-    setMessages(prev => [...prev, optimistic]);
+    setMessages((prev) => [...prev, optimistic]);
     tempIdToClientMap.current.set(tempId, true);
 
     // emit socket
@@ -1752,23 +1846,37 @@ const GroupsList = () => {
 
   // ---------- compute unread counts across rooms (keeps behaviour of original)
   useEffect(() => {
-    if (!allChatRooms || allChatRooms.length === 0 || !userId || chatOpenRef.current) return;
+    if (
+      !allChatRooms ||
+      allChatRooms.length === 0 ||
+      !userId ||
+      chatOpenRef.current
+    )
+      return;
     const timeout = setTimeout(() => {
       const counts = {};
       let total = 0;
-      (allChatRooms || []).forEach(group => {
+      (allChatRooms || []).forEach((group) => {
         const roomId = group._id || group.id;
         const lastReadMap = group.lastReadAt || group.lastReadAtMap || {};
-        const lastSeen = lastReadMap && lastReadMap[userID] ? new Date(lastReadMap[userID]) : null;
+        const lastSeen =
+          lastReadMap && lastReadMap[userID]
+            ? new Date(lastReadMap[userID])
+            : null;
 
         // use current messages if they belong to this room, else we can't compute precisely without fetching
-        const msgsForRoom = (messages || []).filter(m => String(m.roomId || m.eventId || m.room || "") === String(roomId));
+        const msgsForRoom = (messages || []).filter(
+          (m) =>
+            String(m.roomId || m.eventId || m.room || "") === String(roomId)
+        );
         // If no local messages for that room, we cannot compute here reliably. We'll assume 0 unless previously stored in unreadCounts
         let unreadForRoom = unreadCounts[roomId] || 0;
         if (msgsForRoom.length > 0) {
-          unreadForRoom = msgsForRoom.filter(msg => {
+          unreadForRoom = msgsForRoom.filter((msg) => {
             if (!msg.createdAt && !msg.sentAt) return false;
-            const msgDate = msg.sentAt ? new Date(msg.sentAt) : new Date(msg.createdAt);
+            const msgDate = msg.sentAt
+              ? new Date(msg.sentAt)
+              : new Date(msg.createdAt);
             if (String(msg.senderId) === String(userID)) return false;
             return lastSeen ? msgDate > lastSeen : true;
           }).length;
@@ -1776,7 +1884,7 @@ const GroupsList = () => {
         counts[roomId] = unreadForRoom;
         total += unreadForRoom;
       });
-      setUnreadCounts(prev => ({ ...prev, ...counts }));
+      setUnreadCounts((prev) => ({ ...prev, ...counts }));
       localStorage.setItem("totalUnread", total.toString());
       window.dispatchEvent(new Event("unreadCountChange"));
     }, 300);
@@ -1789,7 +1897,11 @@ const GroupsList = () => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return textVal.split(urlRegex).map((part, index) => {
       if (part.match(urlRegex)) {
-        return <a key={index} href={part} target="_blank" rel="noopener noreferrer">{part}</a>;
+        return (
+          <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+            {part}
+          </a>
+        );
       }
       return part;
     });
@@ -1801,7 +1913,10 @@ const GroupsList = () => {
       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
       if (addToHomeScreenPopup !== "true") setShowInstall(true);
     }
-    const handler = (e) => { e.preventDefault(); setDeferredPrompt(e); };
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, [pathname]);
@@ -1811,24 +1926,14 @@ const GroupsList = () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") localStorage.setItem("addToHomeScreenPopup", "true");
+      if (outcome === "accepted")
+        localStorage.setItem("addToHomeScreenPopup", "true");
       else localStorage.setItem("addToHomeScreenPopup", "false");
       setDeferredPrompt(null);
     }
   };
 
-  // ---------- test emit (kept)
-  const testSendMessage = () => {
-    if (!socket) return;
-    socket.emit("message:send", {
-      roomId: selectedGroup?._id || selectedGroup?.id || allChatRooms[0]?._id,
-      message: "New Socket System Message",
-      type: "text",
-      tempId: Date.now().toString(),
-    });
-  };
-
-  // ---------- handle image upload placeholder (kept stub)
+  // --------- handle image upload placeholder (kept stub)
   const handleImageUpload = async (e) => {
     // Implement: upload to S3 via your API, then socket.emit message:send with type:image + mediaUrl
     console.log("image upload - not implemented here", e?.target?.files);
@@ -1840,42 +1945,83 @@ const GroupsList = () => {
       <div className="groups-header">
         <div className="search-wrapper">
           <i className="fas fa-search search-icon"></i>
-          <input type="text" placeholder="Search" className="search-box" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input
+            type="text"
+            placeholder="Search"
+            className="search-box"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
-
-      <button onClick={sendMessage}>Send Test Message</button>
 
       {pathname === "/chat" && showInstall && (
         <div className="chat-banner">
           <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
-          <button className="chat-banner-btn" onClick={handleInstallClick}>Add To Phone Screen</button>
+          <button className="chat-banner-btn" onClick={handleInstallClick}>
+            Add To Phone Screen
+          </button>
         </div>
       )}
 
       <div className="groups-list">
         {allChatRooms
-          .filter((group) => (group.roomName || "").toLowerCase().includes(searchTerm.toLowerCase()))
+          .filter((group) =>
+            (group.roomName || "")
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+          )
           .map((group) => {
             const id = group._id || group.id;
             return (
-              <div key={id} className="group-item" onClick={() => handleOpenMessages(group)}>
+              <div
+                key={id}
+                className="group-item"
+                onClick={() => handleOpenMessages(group)}
+              >
                 {group.imageUrl ? (
-                  <img src={group.imageUrl} alt={group.name} className="group-avatar" />
+                  <img
+                    src={group.imageUrl}
+                    alt={group.name}
+                    className="group-avatar"
+                  />
                 ) : (
-                  <div className="group-avatar-placeholder" style={{ backgroundColor: "#27ae60", color: "white", fontSize: "24px", width: "50px", height: "50px", borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    {group.roomName ? group.roomName.charAt(0).toUpperCase() : "?"}
+                  <div
+                    className="group-avatar-placeholder"
+                    style={{
+                      backgroundColor: "#27ae60",
+                      color: "white",
+                      fontSize: "24px",
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {group.roomName
+                      ? group.roomName.charAt(0).toUpperCase()
+                      : "?"}
                   </div>
                 )}
 
                 <div className="group-info">
-                  <p className="group-name">{group.roomName || "Unnamed Group"}</p>
+                  <p className="group-name">
+                    {group.roomName || "Unnamed Group"}
+                  </p>
                   <span className="group-last">
-                    { (unreadCounts[id] || 0) > 0 ? `${unreadCounts[id]} New Message${unreadCounts[id] > 1 ? "s" : ""}` : "No new messages" }
+                    {(unreadCounts[id] || 0) > 0
+                      ? `${unreadCounts[id]} New Message${
+                          unreadCounts[id] > 1 ? "s" : ""
+                        }`
+                      : "No new messages"}
                   </span>
                 </div>
 
-                {(unreadCounts[id] || 0) > 0 && <span className="unread-dot"></span>}
+                {(unreadCounts[id] || 0) > 0 && (
+                  <span className="unread-dot"></span>
+                )}
               </div>
             );
           })}
@@ -1885,29 +2031,72 @@ const GroupsList = () => {
         <div className="chat-overlay">
           <div className="chat-header">
             <div className="chat-user-info">
-              <button className="btn back-arrow-chat" onClick={() => { handleCloseChat(); }}>
+              <button
+                className="btn back-arrow-chat"
+                onClick={() => {
+                  handleCloseChat();
+                }}
+              >
                 <FaArrowLeft fontSize={16} />
               </button>
-              <span className="mx-2">{`${selectedGroup.roomName || selectedGroup.name || ""}`}</span>
+              <span className="mx-2">{`${
+                selectedGroup.roomName || selectedGroup.name || ""
+              }`}</span>
             </div>
           </div>
-
+          <button onClick={enableNotifications}>Send Test Message</button>
           <div className="chat-messages" ref={chatBodyRef}>
             {messages.map((msg) => {
               const isMe = String(msg.senderId) === String(userID);
               const senderName = msg.senderName;
               return (
-                <div key={msg.id || msg._id} className={`chat-message ${isMe ? "sender" : "receiver"}`}>
+                <div
+                  key={msg.id || msg._id}
+                  className={`chat-message ${isMe ? "sender" : "receiver"}`}
+                >
                   {!isMe && (
-                    <div className="chat-avatar-receiver" style={{ backgroundColor: getAvatarColor(senderName || msg.senderPhoneNumber) }}>
-                      {senderName ? senderName.charAt(0).toUpperCase() : (msg.senderPhoneNumber || "U").charAt(0)}
+                    <div
+                      className="chat-avatar-receiver"
+                      style={{
+                        backgroundColor: getAvatarColor(
+                          senderName || msg.senderPhoneNumber
+                        ),
+                      }}
+                    >
+                      {senderName
+                        ? senderName.charAt(0).toUpperCase()
+                        : (msg.senderPhoneNumber || "U").charAt(0)}
                     </div>
                   )}
-                  <div className={`chat-bubble ${isMe ? "sender" : "receiver"}`}>
-                    {!isMe && <div className="chat-sender">{senderName ? senderName : `+91 ${ (msg.senderPhoneNumber||'').slice(0,-4) }XXXX`}</div>}
-                    <div className="chat-text">{linkify(msg.message || msg.text || "")}</div>
+                  <div
+                    className={`chat-bubble ${isMe ? "sender" : "receiver"}`}
+                  >
+                    {!isMe && (
+                      <div className="chat-sender">
+                        {senderName
+                          ? senderName
+                          : `+91 ${(msg.senderPhoneNumber || "").slice(
+                              0,
+                              -4
+                            )}XXXX`}
+                      </div>
+                    )}
+                    <div className="chat-text">
+                      {linkify(msg.message || msg.text || "")}
+                    </div>
                     <div className="chat-time">
-                      {msg.sentAt?.toDate ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }) : (msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }) : "")}
+                      {msg.sentAt?.toDate
+                        ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
+                            "en-IN",
+                            { hour: "2-digit", minute: "2-digit", hour12: true }
+                          )
+                        : msg.createdAt
+                        ? new Date(msg.createdAt).toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : ""}
                     </div>
                   </div>
                 </div>
@@ -1916,56 +2105,104 @@ const GroupsList = () => {
           </div>
 
           <div className="chat-input-container">
-            <button type="button" onPointerDown={(e) => e.preventDefault()} onClick={() => {
-              if (showEmojiPicker) {
-                setShowEmojiPicker(false); setTimeout(() => { textareaRef.current?.focus(); }, 0);
-              } else {
-                textareaRef.current?.blur();
-                setTimeout(() => { setShowEmojiPicker(true); }, 50);
-              }
-            }} className="emoji-btn">
-              {showEmojiPicker ? <FaRegKeyboard fontSize={20} /> : <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />}
+            <button
+              type="button"
+              onPointerDown={(e) => e.preventDefault()}
+              onClick={() => {
+                if (showEmojiPicker) {
+                  setShowEmojiPicker(false);
+                  setTimeout(() => {
+                    textareaRef.current?.focus();
+                  }, 0);
+                } else {
+                  textareaRef.current?.blur();
+                  setTimeout(() => {
+                    setShowEmojiPicker(true);
+                  }, 50);
+                }
+              }}
+              className="emoji-btn"
+            >
+              {showEmojiPicker ? (
+                <FaRegKeyboard fontSize={20} />
+              ) : (
+                <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
+              )}
               <div>
-                <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} style={{ display: "none" }} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                />
               </div>
             </button>
 
-            <textarea value={text} ref={textareaRef} className="chat-input" rows={1} onFocus={() => {
-              if (showEmojiPicker) setShowEmojiPicker(false);
-              setTimeout(() => {
-                textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-                window.scrollBy(0, -180);
-              }, 300);
-            }} onChange={(e) => {
-              setText(e.target.value);
-              if (e.target.value.length > 0) setShowEmojiPicker(false);
-            }} onInput={(e) => {
-              e.target.style.height = "auto";
-              e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
-            }} placeholder="Type message here..." />
+            <textarea
+              value={text}
+              ref={textareaRef}
+              className="chat-input"
+              rows={1}
+              onFocus={() => {
+                if (showEmojiPicker) setShowEmojiPicker(false);
+                setTimeout(() => {
+                  textareaRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "end",
+                  });
+                  window.scrollBy(0, -180);
+                }, 300);
+              }}
+              onChange={(e) => {
+                setText(e.target.value);
+                if (e.target.value.length > 0) setShowEmojiPicker(false);
+              }}
+              onInput={(e) => {
+                e.target.style.height = "auto";
+                e.target.style.height =
+                  Math.min(e.target.scrollHeight, 120) + "px";
+              }}
+              placeholder="Type message here..."
+            />
 
-            <button onClick={() => {
-              sendMessage();
-              if (textareaRef.current) textareaRef.current.style.height = "auto";
-            }} className="chat-send-btn">
+            <button
+              onClick={() => {
+                sendMessage();
+                if (textareaRef.current)
+                  textareaRef.current.style.height = "auto";
+              }}
+              className="chat-send-btn"
+            >
               <Image src={sendIcon} alt="Send" className="send-icon" />
             </button>
           </div>
 
           {showEmojiPicker && (
-            <div className="emoji-container" onPointerDown={(e) => e.preventDefault()}>
-              <EmojiPicker width={emojiWidth} searchDisabled={true} onEmojiClick={(emojiData) => {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                setText(prevText => {
-                  const newText = prevText.substring(0, start) + emojiData.emoji + prevText.substring(end);
-                  requestAnimationFrame(() => {
-                    textarea.selectionStart = textarea.selectionEnd = start + emojiData.emoji.length;
+            <div
+              className="emoji-container"
+              onPointerDown={(e) => e.preventDefault()}
+            >
+              <EmojiPicker
+                width={emojiWidth}
+                searchDisabled={true}
+                onEmojiClick={(emojiData) => {
+                  const textarea = textareaRef.current;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+                  setText((prevText) => {
+                    const newText =
+                      prevText.substring(0, start) +
+                      emojiData.emoji +
+                      prevText.substring(end);
+                    requestAnimationFrame(() => {
+                      textarea.selectionStart = textarea.selectionEnd =
+                        start + emojiData.emoji.length;
+                    });
+                    return newText;
                   });
-                  return newText;
-                });
-              }} />
+                }}
+              />
             </div>
           )}
         </div>

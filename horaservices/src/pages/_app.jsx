@@ -97,22 +97,22 @@ function MyApp({ Component, pageProps }) {
   }, [router.asPath]);
 
 
-  useEffect(() => {
-  if (typeof window !== "undefined" && "Notification" in window) {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        getToken(messaging, { vapidKey: VAPID_KEY })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log("FCM Token:", currentToken);
-              // Send token to server
-            }
-          })
-          .catch((err) => console.error("Error getting token:", err));
-      }
-    });
-  }
-}, []);
+//   useEffect(() => {
+//   if (typeof window !== "undefined" && "Notification" in window) {
+//     Notification.requestPermission().then((permission) => {
+//       if (permission === "granted") {
+//         getToken(messaging, { vapidKey: VAPID_KEY })
+//           .then((currentToken) => {
+//             if (currentToken) {
+//               console.log("FCM Token:", currentToken);
+//               // Send token to server
+//             }
+//           })
+//           .catch((err) => console.error("Error getting token:", err));
+//       }
+//     });
+//   }
+// }, []);
 
 
 
