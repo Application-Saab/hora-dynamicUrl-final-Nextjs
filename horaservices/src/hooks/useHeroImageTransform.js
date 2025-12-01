@@ -1,3 +1,5 @@
+
+
 import { useEffect } from "react";
 
 export function useHeroImageTransform(
@@ -17,52 +19,31 @@ export function useHeroImageTransform(
     let dragging = false;
     let startX = 0;
     let startY = 0;
-    let offsetX = 0;
-    let offsetY = 0;
     let moved = false;
-    // Pinch Zoom Support
-let pointers = new Map();
-let startDistance = 0;
-let startScale = heroTransform.scale;
 
-const getDistance = (p1, p2) =>
-  Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
+    // Local offsets for live updates
+    let offsetX = heroTransform.x || 0;
+    let offsetY = heroTransform.y || 0;
+    let scale = heroTransform.scale || 1;
 
-const onPointerDown = (e) => {
-  pointers.set(e.pointerId, e);
-};
+    // Pinch zoom support
+    let pointers = new Map();
+    let startDistance = 0;
+    let startScale = scale;
 
-const onPointerMove = (e) => {
-  if (!pointers.has(e.pointerId)) return;
-  pointers.set(e.pointerId, e);
-
-  if (pointers.size === 2) {
-    const [a, b] = Array.from(pointers.values());
-    const distance = getDistance(a, b);
-
-    if (!startDistance) {
-      startDistance = distance;
-      startScale = heroTransform.scale;
-    }
-
-    let newScale = startScale * (distance / startDistance);
-    newScale = Math.min(3, Math.max(0.5, newScale));
-
-    heroTransform.scale = newScale;
-    setHeroTransform({ ...heroTransform });
-
-    applyTransform();
-  }
-};
-
-const onPointerUp = (e) => {
-  pointers.delete(e.pointerId);
-  if (pointers.size < 2) startDistance = 0;
-};
+    const getDistance = (p1, p2) =>
+      Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
 
     const getPos = (e) =>
       e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
 
+    const clampScale = (value) => Math.min(3, Math.max(0.5, value));
+
+    const applyTransform = () => {
+      imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    };
+
+    // Drag
     const start = (e) => {
       const { x, y } = getPos(e);
       dragging = true;
@@ -71,45 +52,67 @@ const onPointerUp = (e) => {
       startY = y - offsetY;
       imgEl.style.cursor = "grabbing";
     };
-    const applyTransform = () => {
-      imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${heroTransform.scale})`;
-    };
-    
+
     const move = (e) => {
       if (!dragging) return;
       const { x, y } = getPos(e);
       offsetX = x - startX;
       offsetY = y - startY;
-      imgEl.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${heroTransform.scale})`;
       moved = true;
+      applyTransform();
     };
 
     const end = () => {
       dragging = false;
       imgEl.style.cursor = "grab";
+      setHeroTransform(prev => ({ ...prev, x: offsetX, y: offsetY, scale }));
       setTimeout(() => (moved = false), 50);
     };
-    const clampScale = (value) => Math.min(3, Math.max(0.5, value));
 
+    // Wheel zoom
     const onWheel = (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      heroTransform.scale = clampScale(heroTransform.scale + delta);
-      setHeroTransform((prev) => ({ ...prev, scale: heroTransform.scale }));
+      scale = clampScale(scale + delta);
       applyTransform();
     };
-    
+
+    // Gesture zoom
     const onGesture = (e) => {
       if (e.scale === undefined) return;
-      heroTransform.scale = clampScale(e.scale);
-      setHeroTransform((prev) => ({ ...prev, scale: heroTransform.scale }));
+      scale = clampScale(e.scale);
       applyTransform();
     };
+
+    // Pointer pinch
+    const onPointerDown = (e) => pointers.set(e.pointerId, e);
+    const onPointerMove = (e) => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, e);
+      if (pointers.size === 2) {
+        const [a, b] = Array.from(pointers.values());
+        const distance = getDistance(a, b);
+        if (!startDistance) {
+          startDistance = distance;
+          startScale = scale;
+        }
+        scale = clampScale(startScale * (distance / startDistance));
+        applyTransform();
+      }
+    };
+    const onPointerUp = (e) => {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) startDistance = 0;
+      // Update state after pinch ends
+      setHeroTransform(prev => ({ ...prev, x: offsetX, y: offsetY, scale }));
+    };
+
     const openUpload = (e) => {
       if (!moved) fileInputRef.current?.click();
       e.stopPropagation();
     };
 
+    // Event listeners
     wrapper.addEventListener("mousedown", start);
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseup", end);
@@ -118,11 +121,14 @@ const onPointerUp = (e) => {
     window.addEventListener("touchend", end);
     wrapper.addEventListener("click", openUpload);
     wrapper.addEventListener("wheel", onWheel, { passive: false });
-     wrapper.addEventListener("gesturechange", onGesture);
-     imgEl.addEventListener("pointerdown", onPointerDown);
-     imgEl.addEventListener("pointermove", onPointerMove);
-     imgEl.addEventListener("pointerup", onPointerUp);
-     imgEl.addEventListener("pointercancel", onPointerUp);
+    wrapper.addEventListener("gesturechange", onGesture);
+    imgEl.addEventListener("pointerdown", onPointerDown);
+    imgEl.addEventListener("pointermove", onPointerMove);
+    imgEl.addEventListener("pointerup", onPointerUp);
+    imgEl.addEventListener("pointercancel", onPointerUp);
+
+    // Initial transform
+    applyTransform();
 
     return () => {
       wrapper.removeEventListener("mousedown", start);
@@ -133,8 +139,11 @@ const onPointerUp = (e) => {
       window.removeEventListener("touchend", end);
       wrapper.removeEventListener("click", openUpload);
       wrapper.removeEventListener("wheel", onWheel);
-wrapper.removeEventListener("gesturechange", onGesture);
+      wrapper.removeEventListener("gesturechange", onGesture);
+      imgEl.removeEventListener("pointerdown", onPointerDown);
+      imgEl.removeEventListener("pointermove", onPointerMove);
+      imgEl.removeEventListener("pointerup", onPointerUp);
+      imgEl.removeEventListener("pointercancel", onPointerUp);
     };
-  }, [dependency]);
-
+  }, [dependency, fileInputRef]);
 }
