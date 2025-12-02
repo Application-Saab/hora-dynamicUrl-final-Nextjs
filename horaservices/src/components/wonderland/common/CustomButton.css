@@ -16,6 +16,13 @@
  height: clamp(42px, 12.7vw, 60px);
   font-size: clamp(15px, 5.5vw, 22px);
 }
+/* Apply when button is disabled */
+.common-custom-button:disabled {
+  background: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
 
 /* Variants */
 .common-custom-button.primary {

@@ -19,7 +19,7 @@ const services = [
     description: "SATISFY YOUR GUESTS WITH DELICIOUS FOOD.",
     color: "#089D94",
     img: CATERING,
-    link: "#"
+    link: "/party-food-delivery-live-catering-buffet/party-live-buffet-catering"
   },
   {
     title: "ENTERTAINMENT",

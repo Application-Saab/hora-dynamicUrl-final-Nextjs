@@ -25,17 +25,21 @@ const WhosJoining = ({
   userData,
   rsvpSubmitted,
   onRsvpUpdate,
+  setPushRsvpClick,
+  pushRsvpClick,
 }) => {
   const router = useRouter();
   const { eventid: eventId } = router.query;
   const { data, makeRequest } = useApi();
   const { makeRequest: rsvpRequest, loading } = useApi();
   const [allGuestsData, setAllGuestsData] = useState([]);
+  const [rsvpSubmittedGuests, setRsvpSubmittedGuests] = useState([]);
   const [filledGuests, setFilledGuests] = useState([]);
   const [showListModal, setShowListModal] = useState(false);
   const { width } = useScreenSize();
   const [refetchRsvpList, setRefetchRsvpList] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [highlightRsvpClick, setHighlightRsvpClick] = useState(false);
 
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
@@ -52,14 +56,21 @@ const WhosJoining = ({
 
   useEffect(() => {
     let arrSize = width >= 360 ? 6 : 5;
-    if (Array.isArray(data?.data)) {
-      const guests = [...data.data.slice(0, arrSize)];
-      while (guests.length < arrSize) guests.push(null);
-      setFilledGuests(guests);
-      setAllGuestsData(data.data || []);
-    } else {
-      setFilledGuests(new Array(arrSize).fill(null));
-    }
+
+    const submittedGuests =
+      data?.data?.filter(
+        (guest) =>
+          guest?.rsvpStatus === RSVP_STATUS.WILL_COME ||
+          guest?.rsvpStatus === RSVP_STATUS.WILL_TRY
+      ) || [];
+
+    setRsvpSubmittedGuests(submittedGuests);
+
+    const guests = [...submittedGuests.slice(0, arrSize)];
+    while (guests.length < arrSize) guests.push(null);
+
+    setFilledGuests(guests);
+    setAllGuestsData(data?.data || []);
   }, [data?.data, width]);
 
   const submitRsvp = async (rsvpStatus) => {
@@ -88,11 +99,34 @@ const WhosJoining = ({
     }
   };
 
+  // Detect pushRsvpClick trigger
+  useEffect(() => {
+    if (pushRsvpClick) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setHighlightRsvpClick(true);
+      setPushRsvpClick(false);
+    }
+  }, [pushRsvpClick]);
+
+  // Reset highlight
+  useEffect(() => {
+    if (highlightRsvpClick) {
+      const timer = setTimeout(() => {
+        setHighlightRsvpClick(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightRsvpClick]);
+
   return (
     <>
       <div className="whos-joining-wrapper">
         {!isHost && !rsvpSubmitted && (
-          <div className="guest-rsvp-box d-flex justify-content-center flex-column w-100">
+          <div
+            className={`guest-rsvp-box d-flex justify-content-center flex-column w-100 ${
+              highlightRsvpClick ? "highlight-rsvp" : ""
+            }`}
+          >
             <p>Will You be there ?</p>
             <div className="d-flex justify-content-center  gap-2">
               <CustomButton
@@ -118,7 +152,7 @@ const WhosJoining = ({
         >
           <div className="status-box-header">
             <h3>Who's joining?</h3>
-            <span>{allGuestsData?.length || 0} guest confirmed</span>
+            <span>{rsvpSubmittedGuests?.length || 0} guest confirmed</span>
           </div>
           <div className="status-box-list-ctn">
             <div className="avatar-container">
@@ -135,7 +169,13 @@ const WhosJoining = ({
             <div className="list-btn-ctn">
               <button
                 className="list-view-btn"
-                onClick={() => setShowListModal(true)}
+                onClick={() => {
+                  isHost
+                    ? setShowListModal(true)
+                    : rsvpSubmitted
+                    ? setShowListModal(true)
+                    : setPushRsvpClick(true);
+                }}
               >
                 Full guest list
               </button>
@@ -147,6 +187,7 @@ const WhosJoining = ({
         isOpen={showListModal}
         onClose={() => setShowListModal(false)}
         guestData={allGuestsData}
+        totalSubmitted={rsvpSubmittedGuests?.length || 0}
       />
     </>
   );

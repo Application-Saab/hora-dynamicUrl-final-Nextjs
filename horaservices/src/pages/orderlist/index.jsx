@@ -303,14 +303,31 @@ const Orderlist = () => {
     window.location.href = `tel:${phoneNumber}`;
   };
 
-  return (
+  return (   
     <main className="order-list">
       <div className="order-container">
       {!isLoggedIn ? (
     // Case 2: User is NOT logged in
     <div className="no-orders">
       <h2 className="no-record-heading">Please log in to check all your orders.</h2>
+      <button
+  style={{
+    backgroundColor: "#9252AA",
+    fontSize: "14px",
+    border: "none",          
+    borderRadius: "8px",     
+    padding: "8px 16px",     
+    color: "#fff",           
+    cursor: "pointer"        
+  }}
+  onClick={() => setIsModalOpen(true)}
+>
+  Login
+</button>
+
+      {isModalOpen &&
       <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+      }
     </div>
   ):
 

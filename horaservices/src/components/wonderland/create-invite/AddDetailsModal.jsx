@@ -28,6 +28,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
     location: eventData?.location || "",
     googleMapLink: eventData?.googleMapLink || "",
   });
+const isSubmitDisabled = !formData.eventDate; // true if eventDate is empty
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -152,12 +153,16 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
               ></textarea>
             </div>
             <div className="d-flex justify-content-center mt-1">
-              <CustomButton
-                title={"Submit"}
-                loading={loading}
-                onClick={handleSubmit}
-                buttonClass="add-details-submit"
-              />
+        
+  <CustomButton
+  title={"Submit"}
+  loading={loading}
+  onClick={handleSubmit}
+  buttonClass="add-details-submit"
+  disabled={!formData.eventDate} 
+/>
+
+
             </div>
           </>
         }

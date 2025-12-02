@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 .share-invite-modal-body{
-  padding: 0px 9.5px 26.93px 9.5px !important;
+  padding: 0px 9.5px 9.93px 9.5px !important;
 }
 
 .Share-icon-wrapper {
@@ -83,8 +83,21 @@
   font-size: 14.06px;
   border-radius: 50%;
 }
+
 .copy-share-ctn img {
   height: 28px;
   width: 28px;
   cursor: pointer;
 }
+
+
+/* Small templates */
+.share-invite-modal-body .share-large-template img.default-invite-image {
+  height: clamp(150px, 20vw, 300px);
+}
+
+.share-invite-modal-body .share-small-template img.default-invite-image {
+  height: clamp(80px, 12vw, 150px);
+}
+
+
