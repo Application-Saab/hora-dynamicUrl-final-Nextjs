@@ -151,6 +151,7 @@ useEffect(() => {
                   textAlign: "center",
                   paddingInline: "20px",
                   pointerEvents: "auto",
+                  fontFamily: "Archivo Black",
                 }}
               >
                 {eventDetails?.hostName}
