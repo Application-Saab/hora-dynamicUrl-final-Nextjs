@@ -27,7 +27,9 @@ export default function NoteDetails() {
   });
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [activeField, setActiveField] = useState(null);
+ 
+const [activeField, setActiveField] = useState("content"); 
+
   const [lastSelection, setLastSelection] = useState({ start: 0, end: 0 });
   const [showBorders, setShowBorders] = useState(true);
 
@@ -91,64 +93,73 @@ export default function NoteDetails() {
   };
 
 
-  const handleFocus = (field, ref) => {
-    setActiveField(field);
-    const el = ref.current;
+ const [lastRange, setLastRange] = useState(null);
 
-    const updateSelection = () => {
-      if (el.selectionStart !== undefined) {
-        setLastSelection({
-          start: el.selectionStart,
-          end: el.selectionEnd,
-        });
-      }
-    };
+const handleFocus = (field, ref) => {
+  setActiveField(field);
 
-  el.addEventListener("keyup", updateSelection);
-  el.addEventListener("mouseup", updateSelection);
-
-  // Clean up to avoid multiple listeners
-  return () => {
-    el.removeEventListener("keyup", updateSelection);
-    el.removeEventListener("mouseup", updateSelection);
-  };
-};
-
-  const handleEmojiSelect = (emojiObject) => {
-    const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
-
-    let ref = activeField === "title" ? titleRef.current : contentRef.current;
-    if (!ref) return;
-
+  const saveSelection = () => {
     const sel = window.getSelection();
-
-
-    let range;
     if (sel.rangeCount > 0) {
-      range = sel.getRangeAt(0);
-    } else {
-      ref.focus();
-      range = document.createRange();
-      range.selectNodeContents(ref);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
+      setLastRange(sel.getRangeAt(0));
     }
+  };
 
-
-    const img = document.createElement("img");
-    img.src = emojiImgUrl;
-    img.className = "emoji-inline";
-
-    range.insertNode(img);
-    range.setStartAfter(img);
-    range.setEndAfter(img);
-
-  const fieldValue = ref.innerHTML;
-  setLiveData((prev) => ({ ...prev, [activeField]: fieldValue }));
-
-  sel.removeAllRanges();
+  const el = ref.current;
+  el.addEventListener("keyup", saveSelection);
+  el.addEventListener("mouseup", saveSelection);
+  el.addEventListener("focus", saveSelection);
 };
+
+
+const handleEmojiSelect = (emojiObject) => {
+  const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
+
+  // Default: content if title not active
+  let ref;
+  if (activeField === "title" && titleRef.current) ref = titleRef.current;
+  else ref = contentRef.current;
+
+  if (!ref) return;
+
+  ref.focus();
+
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+
+  
+  const range = lastRange?.cloneRange() || document.createRange();
+  if (!lastRange || !ref.contains(lastRange.startContainer)) {
+    // cursor at end if lastRange is outside
+    range.selectNodeContents(ref);
+    range.collapse(false);
+  }
+
+  sel.addRange(range);
+
+  // Create emoji img
+  const img = document.createElement("img");
+  img.src = emojiImgUrl;
+  img.className = "emoji-inline";
+
+  range.insertNode(img);
+
+  // Move cursor after emoji
+  range.setStartAfter(img);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+ 
+  setLiveData((prev) => ({
+    ...prev,
+    [activeField === "title" ? "title" : "content"]: ref.innerHTML,
+  }));
+
+
+  setLastRange(range);
+};
+
 
   useEffect(() => {
     const clickOutside = (e) => {
@@ -178,7 +189,7 @@ export default function NoteDetails() {
       typeof window !== "undefined" ? localStorage.getItem("userID") : null;
     if (!userID) return console.error("userID not found");
 
-    // Capture blob
+   
     const blob = await captureElementAsImage(noteRef.current, [
       ".emoji-button",
     ]);
@@ -190,11 +201,11 @@ export default function NoteDetails() {
       reader.readAsDataURL(blob);
     });
 
-    // Save draft to localStorage & navigate back
+   
     localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
     router.push(`/wonderland/invite?eventid=${eventid}`);
 
-    // API calls in background
+   
     (async () => {
       try {
         const file = new File([blob], "note.png", { type: blob.type });
@@ -229,9 +240,15 @@ export default function NoteDetails() {
       }
     })();
 
-    // Step 6: Stop uploading spinner (UI clean)
     setUploading(false);
   };
+const handleOpenEmojiPicker = () => {
+  if (!activeField) {
+    setActiveField("content");  
+    contentRef.current?.focus(); 
+  }
+  setShowEmojiPicker((prev) => !prev);
+};
 
   if (!note) return <NoteSkeleton />;
 
@@ -269,7 +286,7 @@ export default function NoteDetails() {
             onFocus={() => handleFocus("title", titleRef)}
             suppressContentEditableWarning={true}
             className={`textArea-title ${showBorders ? "always-border" : ""}`}
-            data-placeholder="Write your note..."
+            data-placeholder="Write your title..."
           />
 
           <div
@@ -298,6 +315,7 @@ export default function NoteDetails() {
               }}
             >
               <EmojiPickerButton
+                onClick={handleOpenEmojiPicker}
                 onEmojiSelect={handleEmojiSelect}
                 isPickerOpen={showEmojiPicker}
                 setIsPickerOpen={setShowEmojiPicker}

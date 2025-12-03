@@ -8,7 +8,7 @@ import "./emoji.css";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-// Preload picker
+
 if (typeof window !== "undefined") import("emoji-picker-react");
 
 export default function EmojiPickerButton({
@@ -20,9 +20,9 @@ export default function EmojiPickerButton({
   const togglePicker = setIsPickerOpen ?? (() => {});
 
   const lastFocusedRef = useRef(null);
-  const blockKeyboard = useRef(false); // FIXED
+  const blockKeyboard = useRef(false); 
 
-  // Store last focus target
+
   useEffect(() => {
     const handleFocus = (e) => {
       if (
@@ -36,20 +36,20 @@ export default function EmojiPickerButton({
     return () => document.removeEventListener("focusin", handleFocus);
   }, []);
 
-  // Disable page scroll
+
   useEffect(() => {
     document.body.classList.toggle("emoji-open", pickerVisible);
   }, [pickerVisible]);
 
-  // Toggle button
+
   const handleButtonClick = (e) => {
     e.preventDefault();
 
     if (pickerVisible) {
-      // ---------- CLOSE PICKER ----------
+      
       togglePicker(false);
 
-      // restore focus (without opening keyboard)
+    
       if (lastFocusedRef.current) {
         setTimeout(() => {
           lastFocusedRef.current.focus({ preventScroll: true });
@@ -60,30 +60,33 @@ export default function EmojiPickerButton({
       return;
     }
 
-    // ---------- OPEN PICKER ----------
     const active = document.activeElement;
     if (active && (active.tagName === "TEXTAREA" || active.isContentEditable)) {
-      active.blur(); // CLOSE KEYBOARD
+      active.blur();
     }
 
-    blockKeyboard.current = true; // BLOCK REOPEN
+    blockKeyboard.current = true; 
     togglePicker(true);
   };
 
-  // Emoji click handler
+ 
   const handleEmojiClick = (emojiObj, event) => {
-    event.stopPropagation();
-    blockKeyboard.current = true; // important fix
+  event.stopPropagation();
 
-    // prevent keyboard from showing after insertion
+  
+  onEmojiSelect?.(emojiObj);
+
+ 
+  const active = document.activeElement;
+  if (active && (active.isContentEditable || active.tagName === "TEXTAREA")) {
     setTimeout(() => {
-      if (document.activeElement) document.activeElement.blur();
-    }, 10);
+      active.blur();
+    }, 20); 
+  }
+};
 
-    onEmojiSelect?.(emojiObj);
-  };
 
-  // Prevent keyboard if it tries to open
+ 
   useEffect(() => {
     const block = (e) => {
       if (pickerVisible && blockKeyboard.current) {
@@ -97,7 +100,6 @@ export default function EmojiPickerButton({
     return () => window.removeEventListener("focus", block, true);
   }, [pickerVisible]);
 
-  // Back button closing
   useEffect(() => {
     if (!pickerVisible) return;
 
@@ -115,7 +117,7 @@ export default function EmojiPickerButton({
     return () => window.removeEventListener("popstate", back);
   }, [pickerVisible]);
 
-  // Close picker on outside click
+ 
   useEffect(() => {
     const handler = (e) => {
       if (
