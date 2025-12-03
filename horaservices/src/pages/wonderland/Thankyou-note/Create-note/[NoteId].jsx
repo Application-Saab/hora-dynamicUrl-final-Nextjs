@@ -42,6 +42,11 @@ const [activeField, setActiveField] = useState("content");
   const [userName, setUserName] = useState("");
   const [uploading, setUploading] = useState(false);
 
+useEffect(() => {
+  if (titleRef.current) {
+    titleRef.current.innerHTML = liveData.title || "";
+  }
+}, [note]); // Only once when note loads
 
   useEffect(() => {
     const userId =
@@ -114,30 +119,23 @@ const handleFocus = (field, ref) => {
 
 const handleEmojiSelect = (emojiObject) => {
   const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
-
-  // Default: content if title not active
-  let ref;
-  if (activeField === "title" && titleRef.current) ref = titleRef.current;
-  else ref = contentRef.current;
+  const ref = titleRef.current; 
 
   if (!ref) return;
 
   ref.focus();
 
   const sel = window.getSelection();
-  sel.removeAllRanges();
+  const range = lastRange?.cloneRange() || sel.getRangeAt(0) || document.createRange();
 
-  
-  const range = lastRange?.cloneRange() || document.createRange();
   if (!lastRange || !ref.contains(lastRange.startContainer)) {
-    // cursor at end if lastRange is outside
     range.selectNodeContents(ref);
     range.collapse(false);
   }
 
+  sel.removeAllRanges();
   sel.addRange(range);
 
-  // Create emoji img
   const img = document.createElement("img");
   img.src = emojiImgUrl;
   img.className = "emoji-inline";
@@ -150,15 +148,15 @@ const handleEmojiSelect = (emojiObject) => {
   sel.removeAllRanges();
   sel.addRange(range);
 
- 
+  // Update liveData only for title
   setLiveData((prev) => ({
     ...prev,
-    [activeField === "title" ? "title" : "content"]: ref.innerHTML,
+    title: ref.innerHTML,
   }));
-
 
   setLastRange(range);
 };
+
 
 
   useEffect(() => {
@@ -277,17 +275,16 @@ const handleOpenEmojiPicker = () => {
 
         
           </div>
-             <div
-            ref={titleRef}
-            contentEditable
-            onInput={(e) =>
-             handleChange("title", e.currentTarget.innerHTML, titleRef)
-            }
-            onFocus={() => handleFocus("title", titleRef)}
-            suppressContentEditableWarning={true}
-            className={`textArea-title ${showBorders ? "always-border" : ""}`}
-            data-placeholder="Write your title..."
-          />
+            <div
+  ref={titleRef}
+  contentEditable
+  onInput={(e) =>
+    handleChange("title", e.currentTarget.innerHTML, titleRef)
+  }
+  onFocus={() => handleFocus("title", titleRef)}
+  suppressContentEditableWarning={true}
+  className={`textArea-title ${showBorders ? "always-border" : ""}`}
+/>
 
           <div
             ref={contentRef}
