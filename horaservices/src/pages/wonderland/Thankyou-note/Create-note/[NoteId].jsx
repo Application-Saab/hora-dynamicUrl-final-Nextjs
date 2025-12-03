@@ -102,7 +102,7 @@ useEffect(() => {
 
 const handleFocus = (field, ref) => {
   setActiveField(field);
-
+  
   const saveSelection = () => {
     const sel = window.getSelection();
     if (sel.rangeCount > 0) {
@@ -116,24 +116,26 @@ const handleFocus = (field, ref) => {
   el.addEventListener("focus", saveSelection);
 };
 
-
 const handleEmojiSelect = (emojiObject) => {
   const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
-  const ref = titleRef.current; 
 
+  let ref = activeField === "title" ? titleRef.current : contentRef.current;
   if (!ref) return;
 
   ref.focus();
 
   const sel = window.getSelection();
-  const range = lastRange?.cloneRange() || sel.getRangeAt(0) || document.createRange();
+  sel.removeAllRanges();
 
-  if (!lastRange || !ref.contains(lastRange.startContainer)) {
+  let range;
+  if (lastRange && ref.contains(lastRange.startContainer)) {
+    range = lastRange.cloneRange();
+  } else {
+    range = document.createRange();
     range.selectNodeContents(ref);
-    range.collapse(false);
+    range.collapse(false); 
   }
 
-  sel.removeAllRanges();
   sel.addRange(range);
 
   const img = document.createElement("img");
@@ -142,20 +144,31 @@ const handleEmojiSelect = (emojiObject) => {
 
   range.insertNode(img);
 
-  // Move cursor after emoji
+ 
   range.setStartAfter(img);
   range.collapse(true);
   sel.removeAllRanges();
   sel.addRange(range);
 
-  // Update liveData only for title
+
   setLiveData((prev) => ({
     ...prev,
-    title: ref.innerHTML,
+    [activeField]: ref.innerHTML,
   }));
 
   setLastRange(range);
 };
+
+const handleOpenEmojiPicker = () => {
+
+  if (!activeField) {
+    setActiveField("content");  
+    contentRef.current?.focus(); 
+  }
+  setShowEmojiPicker((prev) => !prev);
+};
+
+
 
 
 
@@ -240,13 +253,7 @@ const handleEmojiSelect = (emojiObject) => {
 
     setUploading(false);
   };
-const handleOpenEmojiPicker = () => {
-  if (!activeField) {
-    setActiveField("content");  
-    contentRef.current?.focus(); 
-  }
-  setShowEmojiPicker((prev) => !prev);
-};
+
 
   if (!note) return <NoteSkeleton />;
 
