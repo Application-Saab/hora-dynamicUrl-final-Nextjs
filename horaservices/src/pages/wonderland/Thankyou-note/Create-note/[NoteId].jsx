@@ -104,9 +104,15 @@ export default function NoteDetails() {
       }
     };
 
-    el.addEventListener("keyup", updateSelection);
-    el.addEventListener("mouseup", updateSelection);
+  el.addEventListener("keyup", updateSelection);
+  el.addEventListener("mouseup", updateSelection);
+
+  // Clean up to avoid multiple listeners
+  return () => {
+    el.removeEventListener("keyup", updateSelection);
+    el.removeEventListener("mouseup", updateSelection);
   };
+};
 
   const handleEmojiSelect = (emojiObject) => {
     const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
@@ -138,12 +144,11 @@ export default function NoteDetails() {
     range.setStartAfter(img);
     range.setEndAfter(img);
 
+  const fieldValue = ref.innerHTML;
+  setLiveData((prev) => ({ ...prev, [activeField]: fieldValue }));
 
-    const fieldValue = activeField === "title" ? ref.innerText : ref.innerHTML;
-    setLiveData((prev) => ({ ...prev, [activeField]: fieldValue }));
-
-    sel.removeAllRanges();
-  };
+  sel.removeAllRanges();
+};
 
   useEffect(() => {
     const clickOutside = (e) => {
@@ -253,29 +258,20 @@ export default function NoteDetails() {
           </div>
           <div className="createNote-header">
 
-            <div
-              ref={titleRef}
-              contentEditable
-              onInput={(e) =>
-                handleChange("title", e.currentTarget.innerText, titleRef)
-              }
-              onFocus={(e) => {
-                handleFocus("title", titleRef);
-                if (e.currentTarget.innerText === "TITLE...") {
-                  e.currentTarget.innerText = "";
-                }
-              }}
-              onBlur={(e) => {
-                if (!e.currentTarget.innerText.trim()) {
-                  e.currentTarget.innerText = "TITLE...";
-                }
-              }}
-              suppressContentEditableWarning={true}
-              className={`textArea-title ${showBorders ? "always-border" : ""}`}
-            >
-              {liveData.title || "TITLE..."}
-            </div>
+        
           </div>
+             <div
+            ref={titleRef}
+            contentEditable
+            onInput={(e) =>
+             handleChange("title", e.currentTarget.innerHTML, titleRef)
+            }
+            onFocus={() => handleFocus("title", titleRef)}
+            suppressContentEditableWarning={true}
+            className={`textArea-title ${showBorders ? "always-border" : ""}`}
+            data-placeholder="Write your note..."
+          />
+
           <div
             ref={contentRef}
             contentEditable

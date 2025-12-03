@@ -14,7 +14,7 @@
   transition: all 0.3s ease;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  margin:  0 auto;
+  margin:  10px auto;
    pointer-events: auto;
        
 } 
@@ -84,7 +84,7 @@
     outline: none;
     resize: none;
     width: 100%;
-    font-family: cursive;
+  font-family: 'Recursive', sans-serif !important;
     color: #fff;
     font-size: 20px;
     text-align: left;
@@ -136,5 +136,18 @@ font-family: "Recursive", sans-serif;
 .textArea-Content img.emoji-inline {
   width: 24px;
   height: 24px;
+  vertical-align: middle;
+}
+
+
+.no-keyboard {
+  caret-color: auto; /* cursor visible */
+  outline: none;
+}
+
+.emoji-inserted {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
   vertical-align: middle;
 }

@@ -1,22 +1,10 @@
-.emoji-picker-container {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: -100%; 
-  width: 100%;
-  z-index: 999;
-  transition: bottom 0.3s ease;
-  background: white;
-  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
-  /* border-top-left-radius: 16px;
-  border-top-right-radius: 16px; */
-}
+
 .emoji-open {
   padding-bottom: 350px; 
 }
 
 .emoji-picker-container.open {
-  bottom: 0;
+  bottom: 0 !important;
 }
 
 /* .note-scroll-container {
@@ -40,4 +28,40 @@
 .textArea-Author {
     margin-top: 2px;
     margin-bottom: 10px;
+}
+
+
+
+.emoji-picker-container {
+  position: fixed;
+  left: 0;
+  bottom: -10;
+  width: 100%;
+  background: #fff;
+  z-index: 99999;
+
+  /* initially hidden like keyboard */
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+
+  /* smooth slide animation */
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.2s ease;
+}
+
+
+
+
+/* When open → slide up like keyboard */
+.emoji-picker-container.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.emoji-real-component {
+  width: 100% !important;
+  /* height: 310px !important; like keyboard height */
+  border-radius: 16px 16px 0 0;
 }
