@@ -93,7 +93,12 @@ useEffect(() => {
     const ref =
       activeField === "title" ? titleRef.current : contentRef.current;
 
-    ref.focus();
+    // Focus without triggering keyboard by temporarily setting inputmode
+    ref.setAttribute('inputmode', 'none');
+    ref.focus({ preventScroll: true });
+    setTimeout(() => {
+      ref.removeAttribute('inputmode');
+    }, 50);
 
     let sel = window.getSelection();
     let range;

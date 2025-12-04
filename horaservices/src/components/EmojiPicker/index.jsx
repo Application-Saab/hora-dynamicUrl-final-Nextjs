@@ -60,39 +60,41 @@ export default function EmojiPickerButton({
       return;
     }
 
+    // Keep cursor visible but prevent keyboard from opening
     const active = document.activeElement;
     if (active && (active.tagName === "TEXTAREA" || active.isContentEditable)) {
-      active.blur();
+      // Instead of blurring, temporarily make it readonly to prevent keyboard
+      active.setAttribute('inputmode', 'none');
+      active.setAttribute('readonly', 'true');
+      setTimeout(() => {
+        active.removeAttribute('readonly');
+        active.removeAttribute('inputmode');
+      }, 100);
     }
 
-    blockKeyboard.current = true; 
+    blockKeyboard.current = true;
     togglePicker(true);
   };
 
  
   const handleEmojiClick = (emojiObj, event) => {
-  event.stopPropagation();
+    event.stopPropagation();
 
-  
-  onEmojiSelect?.(emojiObj);
 
- 
-  const active = document.activeElement;
-  if (active && (active.isContentEditable || active.tagName === "TEXTAREA")) {
-    setTimeout(() => {
-      active.blur();
-    }, 20); 
-  }
-};
+    onEmojiSelect?.(emojiObj);
+
+    // Don't blur the element - keep cursor visible for multiple emoji selections
+    // The parent component (insertEmoji) will handle cursor positioning
+  };
 
 
  
   useEffect(() => {
     const block = (e) => {
       if (pickerVisible && blockKeyboard.current) {
+        // Prevent focus events that might trigger keyboard, but don't blur
         e.stopPropagation();
         e.preventDefault();
-        document.activeElement?.blur();
       }
     };
     window.addEventListener("focus", block, true);
