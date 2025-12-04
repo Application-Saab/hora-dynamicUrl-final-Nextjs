@@ -163,7 +163,7 @@ export default function EmojiPickerButton({
           <EmojiPicker
             onEmojiClick={handleEmojiClick}
             width="100%"
-            height={270}
+            height={260}
             searchDisabled
             previewConfig={{ showPreview: false }}
             lazyLoadEmojis

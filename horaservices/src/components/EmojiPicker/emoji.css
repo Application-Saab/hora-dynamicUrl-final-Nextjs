@@ -6,21 +6,6 @@
 .emoji-picker-container.open {
   bottom: 0 !important;
 }
-
-/* .note-scroll-container {
-  max-height: clamp(250px, calc(100vh - 500px), 750px);
-  overflow-y: auto;
-  margin: 14px 0 0 0;
-} */
-/* 
-.note-scroll-container.keyboard-open {
- max-height: clamp(250px, calc(100vh - 500px), 750px);
-} */
-/*
-.note-scroll-container.keyboard-open .createNote-container{
-  max-height: calc(100vh - 250px); 
-}
- */
 .emojisec {
     position: relative;
     width: 100%;
@@ -35,17 +20,15 @@
 .emoji-picker-container {
   position: fixed;
   left: 0;
-  bottom: -10;
+  bottom:0;
   width: 100%;
   background: #fff;
   z-index: 99999;
 
-  /* initially hidden like keyboard */
+ 
   transform: translateY(100%);
   opacity: 0;
   pointer-events: none;
-
-  /* smooth slide animation */
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
               opacity 0.2s ease;
 }
@@ -53,7 +36,7 @@
 
 
 
-/* When open → slide up like keyboard */
+
 .emoji-picker-container.open {
   transform: translateY(0);
   opacity: 1;
@@ -62,6 +45,5 @@
 
 .emoji-real-component {
   width: 100% !important;
-  /* height: 310px !important; like keyboard height */
   border-radius: 16px 16px 0 0;
 }
