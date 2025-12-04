@@ -36,7 +36,6 @@
     font-size: clamp(20px, 6vw, 30px);
     overflow-y: auto;
     width: 99%;
-    /* height: clamp(250px, 80vw, 325px); */
     min-height: 35vh;
 }
 .emojisec {
@@ -61,7 +60,7 @@
 }
 .textArea-Content::placeholder {
   color: white;
-   opacity: 1;/* ensures full white, browsers sometimes lower opacity */
+   opacity: 1;
 }
 .textArea-title {
   background: transparent;
@@ -141,7 +140,7 @@ font-family: "Recursive", sans-serif;
 
 
 .no-keyboard {
-  caret-color: auto; /* cursor visible */
+  caret-color: auto; 
   outline: none;
 }
 

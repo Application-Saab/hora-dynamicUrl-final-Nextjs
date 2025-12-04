@@ -102,7 +102,7 @@ useEffect(() => {
 
 const handleFocus = (field, ref) => {
   setActiveField(field);
-  
+
   const saveSelection = () => {
     const sel = window.getSelection();
     if (sel.rangeCount > 0) {
@@ -116,10 +116,15 @@ const handleFocus = (field, ref) => {
   el.addEventListener("focus", saveSelection);
 };
 
+
 const handleEmojiSelect = (emojiObject) => {
   const emojiImgUrl = emojiObject?.imageUrl || "/default-emoji.png";
 
-  let ref = activeField === "title" ? titleRef.current : contentRef.current;
+  // Default: content if title not active
+  let ref;
+  if (activeField === "title" && titleRef.current) ref = titleRef.current;
+  else ref = contentRef.current;
+
   if (!ref) return;
 
   ref.focus();
@@ -127,49 +132,38 @@ const handleEmojiSelect = (emojiObject) => {
   const sel = window.getSelection();
   sel.removeAllRanges();
 
-  let range;
-  if (lastRange && ref.contains(lastRange.startContainer)) {
-    range = lastRange.cloneRange();
-  } else {
-    range = document.createRange();
+  
+  const range = lastRange?.cloneRange() || document.createRange();
+  if (!lastRange || !ref.contains(lastRange.startContainer)) {
+    // cursor at end if lastRange is outside
     range.selectNodeContents(ref);
-    range.collapse(false); 
+    range.collapse(false);
   }
 
   sel.addRange(range);
 
+  // Create emoji img
   const img = document.createElement("img");
   img.src = emojiImgUrl;
   img.className = "emoji-inline";
 
   range.insertNode(img);
 
- 
+  // Move cursor after emoji
   range.setStartAfter(img);
   range.collapse(true);
   sel.removeAllRanges();
   sel.addRange(range);
 
-
+ 
   setLiveData((prev) => ({
     ...prev,
-    [activeField]: ref.innerHTML,
+    [activeField === "title" ? "title" : "content"]: ref.innerHTML,
   }));
+
 
   setLastRange(range);
 };
-
-const handleOpenEmojiPicker = () => {
-
-  if (!activeField) {
-    setActiveField("content");  
-    contentRef.current?.focus(); 
-  }
-  setShowEmojiPicker((prev) => !prev);
-};
-
-
-
 
 
   useEffect(() => {
@@ -253,7 +247,13 @@ const handleOpenEmojiPicker = () => {
 
     setUploading(false);
   };
-
+const handleOpenEmojiPicker = () => {
+  if (!activeField) {
+    setActiveField("content");  
+    contentRef.current?.focus(); 
+  }
+  setShowEmojiPicker((prev) => !prev);
+};
 
   if (!note) return <NoteSkeleton />;
 
@@ -310,21 +310,22 @@ const handleOpenEmojiPicker = () => {
             <div className="textArea-Author">
               {userName ? `- ${userName}` : "- Fetching your name..."}
             </div>
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,
-                zIndex: 300,
-              }}
-            >
-              <EmojiPickerButton
-                onClick={handleOpenEmojiPicker}
-                onEmojiSelect={handleEmojiSelect}
-                isPickerOpen={showEmojiPicker}
-                setIsPickerOpen={setShowEmojiPicker}
-              />
-            </div>
+           <div
+  className="emoji-button"
+  style={{
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 300,
+  }}
+>
+  <EmojiPickerButton
+    onEmojiSelect={handleEmojiSelect}
+    isPickerOpen={showEmojiPicker}
+    setIsPickerOpen={setShowEmojiPicker}
+  />
+</div>
+
           </div>
 
 
