@@ -34,6 +34,8 @@ export default function NoteDetails() {
   const lastRangeRef = useRef(null); // ✔ cursor memory
 
   const { makeRequest: createPost } = useApi();
+const userId =
+  typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
   // ----------- Load Note ------------
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function NoteDetails() {
 
   // ----------- Load User Name ------------
   useEffect(() => {
-    const userId = localStorage.getItem("userID");
+   
     if (!userId) return;
 
     const fetchUser = async () => {
@@ -54,9 +56,7 @@ export default function NoteDetails() {
         const data = await res.json();
         const u = data?.data || data?.user || {};
         setUserName(u.hostName || u.userName || u.name || "Guest");
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
     };
 
     fetchUser();
@@ -135,71 +135,69 @@ useEffect(() => {
   };
 
   // ----------- Download/Submit ------------
-  const handleDownload = async () => {
-    if (!noteRef.current) return;
-    setUploading(true);
-    setShowBorders(false);
+const uploadInBackground = async (blob, eventid) => {
+  try {
+    if (!userId) return;
 
-    const { eventid } = router.query;
-    if (!eventid) return;
+    const file = new File([blob], "note.png", { type: blob.type });
 
-    const userID =
-      typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-    if (!userID) return console.error("userID not found");
+    const response = await uploadImage(
+      file,
+      userId,
+      eventid,
+      "thankyou-note"
+    );
 
-   
-    const blob = await captureElementAsImage(noteRef.current, [
-      ".emoji-button",
-    ]);
-    if (!blob) return console.error("Failed to capture image.");
+    if (response?.success) {
+      const postPayload = {
+        postById: userId,
+        postByName: userName || "Guest",
+        postType: "thankYouNote",
+        postUrl: response.originalUrl,
+        postKey: response.originalKey,
+        postWebpUrl: response.thumbnailUrl,
+        postWebpKey: response.thumbnailKey,
+      };
 
-    const base64 = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
+      await createPost(
+        `${CREATE_NEW_POST}/${eventid}`,
+        "POST",
+        postPayload
+      );
+    }
+  } catch (err) {}
+};
 
-   
-    localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
-    router.push(`/wonderland/invite?eventid=${eventid}`);
+const handleDownload = async () => {
+  if (!noteRef.current) return;
 
-   
-    (async () => {
-      try {
-        const file = new File([blob], "note.png", { type: blob.type });
+  setUploading(true);
+  setShowBorders(false);
 
-        const response = await uploadImage(
-          file,
-          userID,
-          eventid,
-          "thankyou-note",
-          (percent) => console.log(`Upload progress: ${percent}%`)
-        );
+  const { eventid } = router.query;
+  if (!eventid) return;
+  if (!userId) return;
 
-        if (response?.success) {
-          const postPayload = {
-            postById: userID,
-            postByName: userName || "Guest",
-            postType: "thankYouNote",
-            postUrl: response.originalUrl,
-            postKey: response.originalKey,
-            postWebpUrl: response.thumbnailUrl,
-            postWebpKey: response.thumbnailKey,
-          };
+  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
+  if (!blob) return;
 
-          await createPost(
-            `${CREATE_NEW_POST}/${eventid}`,
-            "POST",
-            postPayload
-          );
-        }
-      } catch (err) {
-        console.error("Background upload failed:", err);
-      }
-    })();
+  const base64 = await new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
 
-    setUploading(false);
-    };
+  localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
+
+  router.push(`/wonderland/invite?eventid=${eventid}`);
+
+  uploadInBackground(blob, eventid);
+
+  setUploading(false);
+};
+
+
+
 
   if (!note) return <NoteSkeleton />;
 
