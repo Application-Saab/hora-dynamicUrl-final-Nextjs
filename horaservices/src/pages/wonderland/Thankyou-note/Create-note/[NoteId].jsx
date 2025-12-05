@@ -145,7 +145,8 @@ const uploadInBackground = async (blob, eventid) => {
       file,
       userId,
       eventid,
-      "thankyou-note"
+      "thankyou-note",
+      (percent) => console.log(`Upload progress: ${percent}%`)
     );
 
     if (response?.success) {
