@@ -25,6 +25,9 @@ import sendIcon from "@/assets/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
 import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
+import SearchIcon  from "@/assets/chat/Searchicon.svg"
+import chatBgImage from "@/assets/chat/chatbackground.jpg"; // local image
+
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
@@ -54,7 +57,7 @@ const eventId = selectedGroup?.id || null;
   const textareaRef = useRef(null);
 const chatOpenRef = useRef(false);
 const [unreadCounts, setUnreadCounts] = useState({});
-
+ const [chatBg, setChatBg] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -717,6 +720,41 @@ const handleCloseChat = async () => {
     setRefreshKey((prev) => prev + 1);
 };
 
+const convertImageToBase64 = async (url) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error("Base64 conversion failed:", error);
+      return null;
+    }
+  };
+
+ useEffect(() => {
+    const saved = localStorage.getItem("chatBgImage");
+
+    if (saved) {
+      // Use the cached background
+      setChatBg(saved);
+    } else {
+      // First load, use imported image src
+      setChatBg(chatBgImage.src);
+      localStorage.setItem("chatBgImage", chatBgImage.src);
+    }
+  }, []);
+useEffect(() => {
+  const setVh = () => {
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  };
+  window.addEventListener('resize', setVh);
+  setVh();
+  return () => window.removeEventListener('resize', setVh);
+}, []);
 
 
   //------------------------------------------------------------------------------------------------------------------------------
@@ -724,8 +762,8 @@ const handleCloseChat = async () => {
   return (
     <div className="groups-container">
       <div className="groups-header">
-        {/* <h3>Chats</h3> */}
-        <div className="search-wrapper">
+       
+        {/* <div className="search-wrapper">
           <i className="fas fa-search search-icon"></i>
           <input
             type="text"
@@ -734,7 +772,21 @@ const handleCloseChat = async () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
+        </div> */}
+        <div className="search-wrapper">
+  <div className="search-icon-img">
+    <Image src={SearchIcon} alt="search" />
+  </div>
+
+  <input
+    type="text"
+    placeholder="Search"
+    className="search-box"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+</div>
+
       </div>
 
 {pathname === "/chat" && showInstall && (
@@ -786,15 +838,18 @@ const handleCloseChat = async () => {
                   </div>
                 )}
 
+              
                 <div className="group-info">
-                  <p className="group-name">{group.name || "Unnamed Group"}</p>
- <span className="group-last">
-  {getUnreadCount(group) > 0
-    ? `${getUnreadCount(group)} New Message${getUnreadCount(group) > 1 ? "s" : ""}`
-    : "No new messages"}
-</span>
-                </div>
-               
+  <p className="group-name">{group.name || "Unnamed Group"}</p>
+
+  {getUnreadCount(group) > 0 && (
+    <span className="group-last">
+      {getUnreadCount(group)} New Message
+      {getUnreadCount(group) > 1 ? "s" : ""} *
+    </span>
+  )}
+</div>
+
 {unreadCounts[group.id] > 0 && <span className="unread-dot"></span>}
               </div>
             );
@@ -802,23 +857,46 @@ const handleCloseChat = async () => {
       </div>
 
       {selectedGroup && (
-        <div className="chat-overlay">
-          <div className="chat-header">
-            <div className="chat-user-info">
-              <button
-                className="btn back-arrow-chat"
-                 onClick={() => {
-          
-    handleCloseChat()
-  }}
-             >
-                <FaArrowLeft fontSize={16} />
-              </button>
-              <span className="mx-2">{`${selectedGroup.name}`}</span>{" "}
-              {/* <span>{orderDetails?.eventType} </span> */}
-            </div>
-          </div>
- 
+   <div
+      className="chat-overlay"
+      style={{
+        backgroundImage: `url(${chatBg})`, // no ternary, always set
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+
+
+
+<div className="chat-header-wrapper">
+  <div className="chat-header">
+    <div className="chat-user-info">
+      <button className="btn back-arrow-chat" onClick={handleCloseChat}>
+        <FaArrowLeft />
+      </button>
+
+      {selectedGroup?.imageUrl ? (
+        <img
+          src={selectedGroup.imageUrl}
+          alt={selectedGroup.name}
+          className="chat-group-img"
+        />
+      ) : (
+        <div className="placeholder-avatar">
+          {selectedGroup?.name
+            ? selectedGroup.name.charAt(0).toUpperCase()
+            : "?"}
+        </div>
+      )}
+
+      <span className="chat-group-name">{selectedGroup.name}</span>
+    </div>
+  </div>
+</div>
+
+
+
 
           <div className="chat-messages" ref={chatBodyRef}>
  {messages.map((msg) => {
