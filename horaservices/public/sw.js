@@ -277,6 +277,5 @@ define(['./workbox-e43f5367'], function (workbox) {
       })
     );
   });
-
 });
 

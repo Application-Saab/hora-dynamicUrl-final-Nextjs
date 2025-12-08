@@ -9,6 +9,7 @@ import RsvpListModal from "./RsvpListModal";
 import useScreenSize from "@/hooks/useScreenSize";
 import CustomButton from "../common/CustomButton";
 import { RSVP_STATUS } from "@/utils/constants";
+import RsvpNameModal from "./RsvpNameModal";
 
 const colors = [
   "#FD8D0A",
@@ -36,6 +37,9 @@ const WhosJoining = ({
   const { width } = useScreenSize();
   const [refetchRsvpList, setRefetchRsvpList] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [showNameModal, setShowNameModal] = useState("");
+  const [userName, setUserName] = useState("");
+  console.log('%c [ userName ]-42', 'font-size:13px; background:pink; color:#bf2c9f;', userName)
 
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
@@ -63,14 +67,15 @@ const WhosJoining = ({
   }, [data?.data, width]);
 
   const submitRsvp = async (rsvpStatus) => {
+    setShowNameModal(false);
     setSelectedStatus(rsvpStatus);
-    if (!userData?.name && !rsvpStatus) return;
+    if (!rsvpStatus) return;
     try {
       const response = await rsvpRequest(`${UPDATE_RSVP_STATUS}`, "PUT", {
         eventId,
         userId: loggedinUserId,
         rsvpStatus,
-        name: userData?.name,
+        name: userData?.name || userName,
       });
 
       if (response.data.error) {
@@ -98,13 +103,23 @@ const WhosJoining = ({
               <CustomButton
                 title="I’m Coming!"
                 buttonClass="guest-rsvp-btn w-100"
-                onClick={() => submitRsvp(RSVP_STATUS?.WILL_COME)}
+                onClick={() => {
+                  userData?.name
+                    ? submitRsvp(RSVP_STATUS?.WILL_COME)
+                    : setShowNameModal(true);
+                  setSelectedStatus(RSVP_STATUS?.WILL_COME);
+                }}
                 loading={selectedStatus === RSVP_STATUS?.WILL_COME && loading}
               />
               <CustomButton
                 title="Will Try!"
                 buttonClass="guest-rsvp-btn w-100"
-                onClick={() => submitRsvp(RSVP_STATUS?.WILL_TRY)}
+                onClick={() => {
+                  userData?.name
+                    ? submitRsvp(RSVP_STATUS?.WILL_TRY)
+                    : setShowNameModal(true);
+                  setSelectedStatus(RSVP_STATUS?.WILL_TRY);
+                }}
                 loading={selectedStatus === RSVP_STATUS?.WILL_TRY && loading}
               />
             </div>
@@ -147,6 +162,13 @@ const WhosJoining = ({
         isOpen={showListModal}
         onClose={() => setShowListModal(false)}
         guestData={allGuestsData}
+      />
+      <RsvpNameModal
+        isOpen={showNameModal}
+        onClose={() => setShowNameModal(false)}
+        setUserName={setUserName}
+        userName={userName}
+        onDone={() => submitRsvp(selectedStatus)}
       />
     </>
   );

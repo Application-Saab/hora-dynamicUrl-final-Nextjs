@@ -97,3 +97,6 @@ export const mobileBreakPoints = {
   medium : 390,
   large : 480
 }
+
+export const PUBLIC_VAPID =
+      "BHBPued2H9tMC6x97EOQchgTE8P5d6QGaoTsfN3diqNq5oYa8nZoBv0Qb29iabLpi43C9-fFTalSAJdqCYNSA-0";

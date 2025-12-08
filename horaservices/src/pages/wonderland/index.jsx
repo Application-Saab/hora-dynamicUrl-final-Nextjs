@@ -8,7 +8,6 @@ import hostandGuest from "@/assets/hostandGuest.webp";
 import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
-import socket from "../../socket";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
@@ -58,36 +57,6 @@ const WonderlandMainPage = () => {
       window.removeEventListener("loginStateChange", syncLoginState);
     };
   }, []);
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("✅ Connected:", socket.id);
-    });
-
-    socket.on("message:new", (msg) => {
-      console.log("📩 New message:", msg);
-    });
-
-    return () => {
-      socket.off("connect");
-      socket.off("message:new");
-    };
-  }, []);
-
-  // const sendMessage = () => {
-  //   // socket.emit("message:send", {
-  //   //   eventId: "6884a4ff6210988005d87ba5",
-  //   //   message: "Frontend se hello for testing",
-  //   //   tempId: Date.now().toString()
-  //   // });
-
-  //   socket.emit("message:send", {
-  //     roomId: "6884a4ff6210988005d87ba5",
-  //     message: "New Socket System Message",
-  //     type: "text",
-  //     tempId: Date.now().toString(),
-  //   });
-  // };
 
   return (
     <>

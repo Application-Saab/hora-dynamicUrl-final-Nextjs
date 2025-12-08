@@ -53,5 +53,6 @@ export const UPDATE_USER_BY_ID = "/api/user/user-details";
 export const UPDATE_USER_AVATAR_BY_ID = "/api/user/user-avatar";
 
 // Chat Routes
-export const GET_CHAT_ROOMS = "/api/customer/event/chatrooms/user"
-export const GET_CHAT_MESSAGES = "/api/customer/event/chat/messages"
+export const GET_CHAT_ROOMS = "/api/customer/event/chatrooms/user";
+export const GET_CHAT_MESSAGES = "/api/customer/event/chat/messages";
+export const MARK_READ_MESSAGE = "/api/customer/event/mark-read";
