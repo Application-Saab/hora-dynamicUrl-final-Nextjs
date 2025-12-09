@@ -16,17 +16,18 @@ import {
 } from "firebase/firestore";
 import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
-import emojiIcon from "../../assets/Emoji.png";
+import emojiIcon from "@/assets/chat/Emoji.svg";
 import Image from "next/image";
 import { FaArrowLeft } from "react-icons/fa";
 import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";
-import sendIcon from "@/assets/sendicon.png";
+import sendIcon from "@/assets/chat/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
 import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
 import SearchIcon  from "@/assets/chat/Searchicon.svg"
 import chatBgImage from "@/assets/chat/chatbackground.jpg"; // local image
+import backIcon from "@/assets/chat/BackIcon.png";
 
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -826,8 +827,8 @@ useEffect(() => {
                       backgroundColor: "#27ae60",
                       color: "white",
                       fontSize: "24px",
-                      width: "50px",
-                      height: "50px",
+                        width: "clamp(40px, calc((53 / 393) * 100vw), 70px)",
+                      height: "clamp(40px, calc((53 / 393) * 100vw), 70px)",
                       borderRadius: "50%",
                       display: "flex",
                       justifyContent: "center",
@@ -872,10 +873,14 @@ useEffect(() => {
 <div className="chat-header-wrapper">
   <div className="chat-header">
     <div className="chat-user-info">
-      <button className="btn back-arrow-chat" onClick={handleCloseChat}>
-        <FaArrowLeft />
-      </button>
+    
 
+ <Image
+        src={backIcon}
+        alt="Back"
+        className="back-arrow-img"
+        onClick={handleCloseChat}
+      />
       {selectedGroup?.imageUrl ? (
         <img
           src={selectedGroup.imageUrl}
@@ -936,7 +941,7 @@ const isMe = msg.senderId === userID;
 
       <div className="chat-text">{linkify(msg.text)}</div>
 
-      <div className="chat-time">
+     <div className="chat-time">
         {msg.sentAt?.toDate
           ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
               hour: "2-digit",
