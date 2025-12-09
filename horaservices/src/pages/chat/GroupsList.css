@@ -193,8 +193,30 @@
   background-position: center;
   background-repeat: no-repeat;
 
+  /* Ensure complete coverage */
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+
+  /* Prevent any background from showing through */
+  background-attachment: fixed;
+  background-color: rgba(0, 0, 0, 0.1); /* Fallback background */
+
+  /* Prevent scrolling and overflow */
   overflow: hidden;
-  /* ⚡️ prevent overlay from scrolling */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+
+  /* Ensure it covers safe areas */
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+
+  /* Force hardware acceleration for smooth rendering */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 :root {
@@ -294,8 +316,14 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
   align-items: center;
   background: #ffffff;
   width: clamp(250px, calc((377 / 393) * 100vw), 377px);
-  height: clamp(40px, calc((50 / 393) * 100vw), 60px);
-  padding: clamp(4px, calc((7 / 393) * 100vw), 9px);
+   min-height: clamp(40px, calc((50 / 393) * 100vw), 60px);
+  height: auto;
+  padding: 
+  0                                  
+  clamp(4px, calc((7 / 393) * 100vw), 9px)   
+  0                                
+  clamp(4px, calc((7 / 393) * 100vw), 9px); 
+
   border-radius: clamp(30px, calc((48.35 / 393) * 100vw), 55px);
   border: 1px solid #ddd;
   margin: clamp(5px, calc((10 / 393) * 100vw), 12px);
@@ -388,18 +416,67 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
 .chat-messages {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 15px 0px 10px;
   display: flex;
   flex-direction: column;
+
+  /* Account for fixed header - start below header area */
+  margin-top: calc(clamp(48px, calc((59 / 393) * 100vw), 72px) + clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px);
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+
+  /* Ensure smooth scrolling and prevent background bleed */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+
+  /* Prevent content from going behind safe areas */
+  padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(10px, env(safe-area-inset-left, 10px));
+  padding-right: max(15px, env(safe-area-inset-right, 15px));
+
+  /* Ensure messages don't show background */
+  background: transparent;
 }
 
 /* Each chat row (bubble + avatar) */
 .chat-message {
   display: flex;
   align-items: flex-end;
- margin: clamp(10px, calc((12 / 393) * 100vw), 16px) 0 0 0;
+ margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0;
+
   cursor: pointer;
   transition: background 0.3s ease;
+}
+
+/* Consecutive messages (same sender) */
+.chat-message.consecutive {
+  margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0; /* 5px gap for consecutive messages */
+}
+
+.chat-message.consecutive .chat-bubble {
+  margin-left: 0; /* Align with previous message since no avatar */
+}
+
+/* Messages from different senders */
+.chat-message.different-sender {
+  margin: clamp(8px, calc((8 / 393) * 100vw), 8px) 0 0 0; /* 8px gap for different senders */
+}
+
+/* Ensure consecutive receiver messages align properly */
+.chat-message.receiver.consecutive {
+  margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0; /* 5px gap for consecutive receiver messages */
+}
+
+/* Consecutive message bubbles should align with avatar space */
+.chat-message.receiver.consecutive .chat-bubble {
+  margin-left: calc(clamp(31px, calc((47 / 393) * 100vw), 47px) + 12px); /* Avatar width + margin */
+  min-width: clamp(70px, calc((70 / 393) * 100vw), 70px); /* Min-width for consecutive messages without avatar */
+}
+
+/* Consecutive sender messages */
+.chat-message.sender.consecutive .chat-bubble {
+  min-width: clamp(70px, calc((70 / 393) * 100vw), 70px); /* Min-width for consecutive sender messages */
 }
 
 .chat-message.selected {
@@ -413,7 +490,6 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
 
 .chat-message.sender {
   justify-content: flex-end;
- /* margin: clamp(4px, calc((5 / 393) * 100vw), 8px); */
 }
 
 .chat-message.receiver {
@@ -454,10 +530,12 @@ width: clamp(31px, calc((47 / 393) * 100vw), 47px);
 }
 
 .chat-bubble {
-padding: clamp(8px, calc((10 / 393) * 100vw), 12px)
-  clamp(12px, calc((16 / 393) * 100vw), 20px);
-  /* clamp(8px, calc((10 / 393) * 100vw), 12px)
-  clamp(6px, calc((8 / 393) * 100vw), 10px); */
+
+padding: clamp(8px, calc((8 / 393) * 100vw), 8px)
+         clamp(10px, calc((16 / 393) * 100vw), 16px)
+         clamp(8px, calc((8 / 393) * 100vw), 8px)
+         clamp(9px, calc((13 / 393) * 100vw), 13px);
+      /* LEFT */
 
    
   background: #D4EDFF;
@@ -511,6 +589,7 @@ font-weight: 400;
   line-height: 1.4;
   min-width: clamp(100px, calc((156 / 393) * 100vw), 156px);
 
+
 }
 
 .chat-message.receiver .chat-text {
@@ -559,5 +638,42 @@ font-weight: 400;
   text-overflow: ellipsis;
 }
 
+/* ===================== */
+/* 📱 Mobile View Styles */
+/* ===================== */
+@media (max-width: 600px) {
+  /* Ensure overlay covers full mobile viewport completely */
+  .chat-overlay {
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
 
+    /* Additional mobile-specific properties */
+    min-height: -webkit-fill-available !important;
+    min-height: fill-available !important;
 
+    /* Prevent any background from showing through on mobile */
+    background-attachment: fixed !important;
+    background-color: rgba(0, 0, 0, 0.05) !important; /* Slightly darker fallback */
+
+    /* Ensure it covers notches and home indicators */
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+
+  /* Mobile chat messages container */
+  .chat-messages {
+    /* Ensure messages don't show any background bleed */
+    background: rgba(255, 255, 255, 0.02) !important; /* Very subtle background */
+    backdrop-filter: blur(0.5px); /* Slight blur to hide any bleed-through */
+    -webkit-backdrop-filter: blur(0.5px);
+
+    /* Ensure proper spacing from header on mobile */
+    margin-top: calc(clamp(48px, calc((59 / 393) * 100vw), 72px) + clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px) !important;
+  }
+}

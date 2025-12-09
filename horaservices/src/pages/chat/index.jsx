@@ -237,6 +237,59 @@ const getAvatarColor = (name) => {
     checkRoleAndFetch();
   }, [selectedGroup]);
 
+  // Prevent body scroll when chat overlay is open
+  useEffect(() => {
+    if (selectedGroup) {
+      // Store original values
+      const originalOverflow = document.body.style.overflow;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalWidth = document.body.style.width;
+      const originalHeight = document.body.style.height;
+
+      // Get current scroll position
+      const scrollY = window.scrollY;
+
+      // Prevent scrolling completely
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+
+      // Also prevent html element scrolling
+      const htmlElement = document.documentElement;
+      const originalHtmlOverflow = htmlElement.style.overflow;
+      htmlElement.style.overflow = 'hidden';
+
+      // Prevent touch scrolling on mobile when not in chat messages
+      const preventScroll = (e) => {
+        if (!e.target.closest('.chat-messages') && !e.target.closest('.emoji-container')) {
+          e.preventDefault();
+        }
+      };
+
+      document.addEventListener('touchmove', preventScroll, { passive: false });
+      document.addEventListener('wheel', preventScroll, { passive: false });
+
+      // Restore on cleanup
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.width = originalWidth;
+        document.body.style.height = originalHeight;
+
+        htmlElement.style.overflow = originalHtmlOverflow;
+
+        document.removeEventListener('touchmove', preventScroll);
+        document.removeEventListener('wheel', preventScroll);
+
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [selectedGroup]);
+
   const [emojiWidth, setEmojiWidth] = useState(400);
   useEffect(() => {
     const updateWidth = () => {
@@ -904,18 +957,23 @@ useEffect(() => {
 
 
           <div className="chat-messages" ref={chatBodyRef}>
- {messages.map((msg) => {
+ {messages.map((msg, index) => {
                // message render
 const isMe = msg.senderId === userID;
+const senderName = msg.senderName;
 
-                const senderName =
-                  msg.senderName
+// Check if this is a consecutive message from the same sender
+const previousMsg = messages[index - 1];
+const isConsecutive = previousMsg &&
+                     previousMsg.senderId === msg.senderId &&
+                     !isMe; // Only for receiver messages
+
               return (
                 <div
                   key={msg.id}
-                  className={`chat-message ${isMe ? "sender" : "receiver"}`}
+                  className={`chat-message ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""}`}
                 >
- {!isMe && (
+ {!isMe && !isConsecutive && (
   <div
     className="chat-avatar-receiver"
     style={{
@@ -929,9 +987,9 @@ const isMe = msg.senderId === userID;
       : msg.senderPhoneNumber.charAt(3)}
   </div>
 )}
-                    <div className={`chat-bubble ${isMe ? "sender" : "receiver"}`}>
-      {/* Sirf receiver ka naam/number */}
-      {!isMe && (
+                    <div className={`chat-bubble ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""}`}>
+      {/* Sirf receiver ka naam/number - only show for first message in sequence */}
+      {!isMe && !isConsecutive && (
         <div className="chat-sender">
           {senderName
             ? senderName
@@ -941,7 +999,7 @@ const isMe = msg.senderId === userID;
 
       <div className="chat-text">{linkify(msg.text)}</div>
 
-     <div className="chat-time">
+     {/* <div className="chat-time">
         {msg.sentAt?.toDate
           ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
               hour: "2-digit",
@@ -949,7 +1007,7 @@ const isMe = msg.senderId === userID;
               hour12: true,
             })
           : ""}
-      </div>
+      </div> */}
     </div>
 
                   {/* Sender avatar (right side) */}
