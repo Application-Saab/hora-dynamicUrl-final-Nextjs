@@ -708,11 +708,7 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
       senderPhoneNumber: localStorage.getItem("mobileNumber"),
       sentAt: serverTimestamp(),
     });
-    console.log(
-      "%c [ addDoc ]-1195",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      addDoc
-    );
+   
 
     setText("");
     setShowEmojiPicker(false);
@@ -965,8 +961,20 @@ const senderName = msg.senderName;
 // Check if this is a consecutive message from the same sender
 const previousMsg = messages[index - 1];
 const isConsecutive = previousMsg &&
-                     previousMsg.senderId === msg.senderId &&
-                     !isMe; // Only for receiver messages
+                     previousMsg.senderId === msg.senderId;
+
+// For alternating border radius in consecutive receiver messages
+let consecutiveIndex = 0;
+if (isConsecutive && !isMe) {
+  // Count how many consecutive messages from same sender came before this one
+  for (let i = index - 1; i >= 0; i--) {
+    if (messages[i].senderId === msg.senderId) {
+      consecutiveIndex++;
+    } else {
+      break;
+    }
+  }
+}
 
               return (
                 <div
@@ -987,7 +995,7 @@ const isConsecutive = previousMsg &&
       : msg.senderPhoneNumber.charAt(3)}
   </div>
 )}
-                    <div className={`chat-bubble ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""}`}>
+                    <div className={`chat-bubble ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""} ${isConsecutive && !isMe ? (consecutiveIndex % 2 === 0 ? "consecutive-even" : "consecutive-odd") : ""}`}>
       {/* Sirf receiver ka naam/number - only show for first message in sequence */}
       {!isMe && !isConsecutive && (
         <div className="chat-sender">

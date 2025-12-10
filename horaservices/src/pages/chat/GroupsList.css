@@ -123,7 +123,6 @@
 .group-item {
   display: flex;
   align-items: center;
-
   padding: clamp(5px, calc((7 / 393) * 100vw), 9px) clamp(5px, calc((7 / 393) * 100vw), 16px);
   cursor: pointer;
   position: relative;
@@ -193,28 +192,25 @@
   background-position: center;
   background-repeat: no-repeat;
 
-  /* Ensure complete coverage */
   min-height: 100vh;
   min-height: 100dvh;
   max-height: 100vh;
   max-height: 100dvh;
 
-  /* Prevent any background from showing through */
-  background-attachment: fixed;
-  background-color: rgba(0, 0, 0, 0.1); /* Fallback background */
 
-  /* Prevent scrolling and overflow */
+  background-attachment: fixed;
+  background-color: rgba(0, 0, 0, 0.1);
+
+
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 
-  /* Ensure it covers safe areas */
   padding-top: env(safe-area-inset-top, 0);
   padding-bottom: env(safe-area-inset-bottom, 0);
   padding-left: env(safe-area-inset-left, 0);
   padding-right: env(safe-area-inset-right, 0);
 
-  /* Force hardware acceleration for smooth rendering */
   transform: translateZ(0);
   will-change: transform;
 }
@@ -273,10 +269,10 @@
 
 .chat-group-img,
 .placeholder-avatar {
-height: clamp(24px, calc((37 / 393) * 100vw), 37px);
-width: clamp(24px, calc((37 / 393) * 100vw), 37px);
+  height: clamp(24px, calc((37 / 393) * 100vw), 37px);
+  width: clamp(24px, calc((37 / 393) * 100vw), 37px);
 
- border-radius: clamp(20px, calc((35 / 393) * 100vw), 35px);
+  border-radius: clamp(20px, calc((35 / 393) * 100vw), 35px);
   object-fit: cover;
 }
 
@@ -304,7 +300,7 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
 
 
 .chat-body {
-   padding-top: 70px;
+  padding-top: 70px;
   margin-top: calc(clamp(55px, 13vw, 65px) + var(--sat));
   height: calc(100dvh - clamp(55px, 13vw, 65px) - var(--sat));
   overflow-y: auto;
@@ -315,14 +311,10 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
   display: flex;
   align-items: center;
   background: #ffffff;
-  width: clamp(250px, calc((377 / 393) * 100vw), 377px);
-   min-height: clamp(40px, calc((50 / 393) * 100vw), 60px);
+  min-height: clamp(40px, calc((50 / 393) * 100vw), 60px);
   height: auto;
-  padding: 
-  0                                  
-  clamp(4px, calc((7 / 393) * 100vw), 9px)   
-  0                                
-  clamp(4px, calc((7 / 393) * 100vw), 9px); 
+  padding:
+    0 clamp(4px, calc((7 / 393) * 100vw), 9px) 0 clamp(4px, calc((7 / 393) * 100vw), 9px);
 
   border-radius: clamp(30px, calc((48.35 / 393) * 100vw), 55px);
   border: 1px solid #ddd;
@@ -367,7 +359,7 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
   font-size: clamp(15px, calc((18 / 393) * 100vw), 20px);
   line-height: clamp(20px, calc((24.87 / 393) * 100vw), 30px);
   letter-spacing: clamp(0.3px, calc((0.52 / 393) * 100vw), 0.7px);
-
+  font-weight: 400;
   resize: none;
   overflow-y: auto;
   background: transparent;
@@ -422,61 +414,56 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
   flex-direction: column;
 
   /* Account for fixed header - start below header area */
-  margin-top: calc(clamp(48px, calc((59 / 393) * 100vw), 72px) + clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px);
-  padding-top: max(16px, env(safe-area-inset-top, 16px));
-
-  /* Ensure smooth scrolling and prevent background bleed */
+  margin-top: calc(clamp(20px, calc((41/ 393) * 100vw), 59px) + clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
 
-  /* Prevent content from going behind safe areas */
   padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
-  padding-left: max(10px, env(safe-area-inset-left, 10px));
-  padding-right: max(15px, env(safe-area-inset-right, 15px));
-
-  /* Ensure messages don't show background */
   background: transparent;
 }
 
-/* Each chat row (bubble + avatar) */
 .chat-message {
   display: flex;
   align-items: flex-end;
- margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0;
-
+  margin: clamp(6px, calc((8 / 393) * 100vw), 10px) 0 0 0;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
-/* Consecutive messages (same sender) */
-.chat-message.consecutive {
-  margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0; /* 5px gap for consecutive messages */
-}
 
 .chat-message.consecutive .chat-bubble {
-  margin-left: 0; /* Align with previous message since no avatar */
+  margin-left: 0;
 }
 
-/* Messages from different senders */
-.chat-message.different-sender {
-  margin: clamp(8px, calc((8 / 393) * 100vw), 8px) 0 0 0; /* 8px gap for different senders */
-}
 
-/* Ensure consecutive receiver messages align properly */
+
 .chat-message.receiver.consecutive {
-  margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0; /* 5px gap for consecutive receiver messages */
+  margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0;
 }
 
-/* Consecutive message bubbles should align with avatar space */
+.chat-message.sender.consecutive {
+  margin: clamp(5px, calc((5 / 393) * 100vw), 5px) 0 0 0;
+}
+
+
 .chat-message.receiver.consecutive .chat-bubble {
-  margin-left: calc(clamp(31px, calc((47 / 393) * 100vw), 47px) + 12px); /* Avatar width + margin */
-  min-width: clamp(70px, calc((70 / 393) * 100vw), 70px); /* Min-width for consecutive messages without avatar */
+  margin-left: calc(clamp(29px, calc((40 / 393) * 100vw), 40px) + 12px);
+  min-width: clamp(70px, calc((70 / 393) * 100vw), 70px);
 }
 
-/* Consecutive sender messages */
+
 .chat-message.sender.consecutive .chat-bubble {
-  min-width: clamp(70px, calc((70 / 393) * 100vw), 70px); /* Min-width for consecutive sender messages */
+  min-width: clamp(70px, calc((70 / 393) * 100vw), 70px);
+}
+
+
+.chat-message.receiver .chat-bubble.consecutive-odd {
+  border-radius: 0px 11px 11px 11px;
+}
+
+.chat-message.receiver .chat-bubble.consecutive-even {
+  border-radius: 11px 11px 11px 0px;
 }
 
 .chat-message.selected {
@@ -495,12 +482,13 @@ width: clamp(24px, calc((37 / 393) * 100vw), 37px);
 .chat-message.receiver {
   justify-content: flex-start;
   align-items: center;
- margin: clamp(15px, calc((19 / 393) * 100vw), 21px) 0 0 0;
+  margin: clamp(11.77px, calc((13.77 / 393) * 100vw), 15.77px) 0 0 0;
+
 }
 
 .chat-avatar-receiver {
- height: clamp(31px, calc((47 / 393) * 100vw), 47px);
-width: clamp(31px, calc((47 / 393) * 100vw), 47px);
+  height: clamp(29px, calc((40 / 393) * 100vw), 40px);
+  width: clamp(29px, calc((40 / 393) * 100vw), 40px);
   border-radius: 50%;
   color: white;
   display: flex;
@@ -531,30 +519,24 @@ width: clamp(31px, calc((47 / 393) * 100vw), 47px);
 
 .chat-bubble {
 
-padding: clamp(8px, calc((8 / 393) * 100vw), 8px)
-         clamp(10px, calc((16 / 393) * 100vw), 16px)
-         clamp(8px, calc((8 / 393) * 100vw), 8px)
-         clamp(9px, calc((13 / 393) * 100vw), 13px);
-      /* LEFT */
-
-   
+  padding: clamp(8px, calc((8 / 393) * 100vw), 8px) clamp(10px, calc((16 / 393) * 100vw), 16px) clamp(8px, calc((8 / 393) * 100vw), 8px) clamp(9px, calc((13 / 393) * 100vw), 13px);
   background: #D4EDFF;
-  border-radius: 16px 16px 0px 16px;
+  border-radius: 11px 11px 0px 11px;
   position: relative;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-min-width: clamp(70px, calc((70 / 393) * 100vw), 120px);
-max-width: clamp(120px, calc((240 / 393) * 100vw), 240px);
-
+  min-width: clamp(70px, calc((70 / 393) * 100vw), 120px);
+  max-width: clamp(120px, calc((240 / 393) * 100vw), 240px);
+  line-height: 11px;
   display: inline-block;
 }
 
 .chat-text {
- font-size: clamp(10px, calc((12.77 / 393) * 100vw), 14px);
+  font-size: clamp(10px, calc((12.77 / 393) * 100vw), 12.77px);
   font-family: "Sora", sans-serif;
-  color: #302e2e;
+  color: #000000;
   display: inline-block;
- max-width: clamp(120px, calc((212 / 393) * 100vw), 212px);
-font-weight: 400;
+  max-width: clamp(120px, calc((212 / 393) * 100vw), 212px);
+  font-weight: 400;
   white-space: pre-wrap;
   word-break: break-word;
   user-select: text;
@@ -563,6 +545,7 @@ font-weight: 400;
   -ms-user-select: text;
   touch-action: auto;
   -webkit-user-drag: auto;
+  line-height: 16px;
 }
 
 .chat-time {
@@ -574,38 +557,40 @@ font-weight: 400;
 }
 
 .chat-message.receiver .chat-bubble {
- padding:
-  clamp(12px, calc((14 / 393) * 100vw), 14px)   /* top */
-  clamp(8px, calc((10 / 393) * 100vw), 10px)    /* right */
-  clamp(6px, calc((8 / 393) * 100vw), 8px)      /* bottom */
-  clamp(12px, calc((14 / 393) * 100vw), 14px);  /* left */
+  padding:
+    clamp(8px, calc((8 / 393) * 100vw), 8px) clamp(8px, calc((10 / 393) * 100vw), 10px) clamp(6px, calc((8 / 393) * 100vw), 8px) clamp(12px, calc((14 / 393) * 100vw), 14px);
 
   background: #FFFFFF;
   color: black;
   border: 1px solid #00000066;
-  border-radius: 16px 16px 16px 0px;
+  border-radius: 11px 11px 11px 0px;
   position: relative;
   display: inline-block;
-  line-height: 1.4;
-  min-width: clamp(100px, calc((156 / 393) * 100vw), 156px);
-
+  line-height: 11px;
+  min-width: clamp(100px, calc((132 / 393) * 100vw), 123px);
 
 }
 
+
+.chat-message.receiver:not(.consecutive) .chat-bubble {
+  border-radius: 11px 11px 11px 0px;
+}
+
 .chat-message.receiver .chat-text {
- font-size: clamp(10px, calc((12.77 / 393) * 100vw), 14px);
-   display: inline-block; 
-  color: #302e2e;
-  
+  font-size: clamp(10px, calc((12.77 / 393) * 100vw), 13px);
+  display: inline-block;
+  color: #363636;
+  line-height: 16px;
+
 }
 
 .chat-message.receiver .chat-sender {
   position: absolute;
-  top: -10px;
+  top: -9px;
   left: 12px;
   background: white;
-  padding: 0px 0px 0px 5px;
-  font-size: 13px;
+  padding: 1px 0px 3px 0px;
+  font-size: 12.77px !important;
   font-weight: 400;
   color: #377300;
   max-width: 95px;
@@ -628,21 +613,16 @@ font-weight: 400;
   top: -10px;
   left: 12px;
   background: white;
-  padding: 0px 3px;
-  font-size: 13px !important;
+  font-size: 13px;
   font-weight: 400;
   color: green;
-  max-width: 60px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ===================== */
-/* 📱 Mobile View Styles */
-/* ===================== */
+/* 
 @media (max-width: 600px) {
-  /* Ensure overlay covers full mobile viewport completely */
   .chat-overlay {
     height: 100vh !important;
     height: 100dvh !important;
@@ -650,30 +630,15 @@ font-weight: 400;
     min-height: 100dvh !important;
     max-height: 100vh !important;
     max-height: 100dvh !important;
-
-    /* Additional mobile-specific properties */
     min-height: -webkit-fill-available !important;
     min-height: fill-available !important;
-
-    /* Prevent any background from showing through on mobile */
     background-attachment: fixed !important;
-    background-color: rgba(0, 0, 0, 0.05) !important; /* Slightly darker fallback */
-
-    /* Ensure it covers notches and home indicators */
+    background-color: rgba(0, 0, 0, 0.05) !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
   }
 
-  /* Mobile chat messages container */
-  .chat-messages {
-    /* Ensure messages don't show any background bleed */
-    background: rgba(255, 255, 255, 0.02) !important; /* Very subtle background */
-    backdrop-filter: blur(0.5px); /* Slight blur to hide any bleed-through */
-    -webkit-backdrop-filter: blur(0.5px);
 
-    /* Ensure proper spacing from header on mobile */
-    margin-top: calc(clamp(48px, calc((59 / 393) * 100vw), 72px) + clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px) !important;
-  }
-}
+} */
