@@ -92,11 +92,14 @@ export const RSVP_STATUS = {
 };
 
 export const mobileBreakPoints = {
-  extraSmall : 320,
-  small : 360,
-  medium : 390,
-  large : 480
-}
+  extraSmall: 320,
+  small: 360,
+  medium: 390,
+  large: 480,
+};
 
 export const PUBLIC_VAPID =
-      "BHBPued2H9tMC6x97EOQchgTE8P5d6QGaoTsfN3diqNq5oYa8nZoBv0Qb29iabLpi43C9-fFTalSAJdqCYNSA-0";
+  "BHBPued2H9tMC6x97EOQchgTE8P5d6QGaoTsfN3diqNq5oYa8nZoBv0Qb29iabLpi43C9-fFTalSAJdqCYNSA-0";
+
+export const FIREBASE_VAPID_KEY =
+  "BOZNXy9qbUIXWfQ2KiAbapxBegzkO6pE1s6cDcNFVRCELKjsLXTPoxob0OwGmv1-oUAp-7ngNiHdify3j39OuZw";

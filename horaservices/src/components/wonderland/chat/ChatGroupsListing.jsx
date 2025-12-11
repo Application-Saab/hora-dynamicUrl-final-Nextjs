@@ -1,11 +1,13 @@
 import React from "react";
 import "../../../pages/chat/GroupsList.css";
+import { getRoomDetails } from "@/utils/setGroupDetails";
 
 const ChatGroupsListing = ({
   allChatRooms,
   handleOpenMessages,
   unreadCounts,
-  searchTerm
+  searchTerm,
+  userId,
 }) => {
   return (
     <div className="groups-list">
@@ -17,16 +19,18 @@ const ChatGroupsListing = ({
         )
         .map((group) => {
           const id = group._id || group.id;
+          const roomDetails = getRoomDetails(group, userId);
+
           return (
             <div
               key={id}
               className="group-item"
               onClick={() => handleOpenMessages(group)}
             >
-              {group?.roomProfileUrl ? (
+              {roomDetails?.avatar ? (
                 <img
-                  src={group?.roomProfileUrl}
-                  alt={group?.name}
+                  src={roomDetails?.avatar}
+                  alt={roomDetails?.name}
                   className="group-avatar"
                 />
               ) : (
@@ -44,15 +48,13 @@ const ChatGroupsListing = ({
                     alignItems: "center",
                   }}
                 >
-                  {group.roomName
-                    ? group.roomName.charAt(0).toUpperCase()
-                    : "?"}
+                  {roomDetails?.avatarText}
                 </div>
               )}
 
               <div className="group-info">
                 <p className="group-name">
-                  {group.roomName || "Unnamed Group"}
+                  {roomDetails?.name || "Unnamed Group"}
                 </p>
                 <span className="group-last">
                   {(unreadCounts[id] || 0) > 0

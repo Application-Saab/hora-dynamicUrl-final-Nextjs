@@ -1,2175 +1,3 @@
-// import React, { useRef, useEffect, useState } from "react";
-// import { db } from "../../firebase";
-// import {
-//   collection,
-//   getDocs,
-//   query,
-//   orderBy,
-//   addDoc,
-//   serverTimestamp,
-//   onSnapshot,
-//   doc,
-//   updateDoc,
-//   setDoc,
-// } from "firebase/firestore";
-// import "./GroupsList.css";
-// import EmojiPicker from "emoji-picker-react";
-// import emojiIcon from "../../assets/Emoji.png";
-// import Image from "next/image";
-// import { FaArrowLeft } from "react-icons/fa";
-// import "../wonderland/EventInvitation.css";
-// import { FaRegKeyboard } from "react-icons/fa6";
-// import sendIcon from "@/assets/sendicon.png";
-// import PinBanner from "../../assets/pinBanner.jpg";
-// import {
-//   BASE_URL,
-//   GET_CHAT_ROOMS,
-//   GET_GUEST_DETTAILS,
-//   GET_USER_BY_ID,
-// } from "@/utils/apiconstants";
-// import { usePathname } from "next/navigation";
-// import useApi from "@/hooks/useApi";
-// import socket from "@/socket";
-// const getUserIdFromUrl = () => {
-//   const params = new URLSearchParams(window.location.search);
-//   return params.get("id");
-// };
-
-// const GroupsList = () => {
-//   const [groups, setGroups] = useState([]);
-//   const userId = getUserIdFromUrl();
-//   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
-//   console.log(
-//     "%c [ groups ]-33",
-//     "font-size:13px; background:pink; color:#bf2c9f;",
-//     groups
-//   );
-
-//   const [allChatRooms, setAllChatRooms] = useState([]);
-//   console.log('%c [ allChatRooms ]-49', 'font-size:13px; background:pink; color:#bf2c9f;', allChatRooms)
-
-//   useEffect(() => {
-//     if (chatRoomsData?.data) {
-//       setAllChatRooms(chatRoomsData.data || []);
-//     }
-//   }, [chatRoomsData]);
-
-//   const [selectedGroup, setSelectedGroup] = useState(null);
-//   const [messages, setMessages] = useState([]);
-//   // const [newMessage, setNewMessage] = useState("");
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-//   const emojiPickerRef = useRef(null);
-//   const inputRef = useRef(null);
-//   const fileInputRef = useRef(null);
-//   const chatBodyRef = useRef(null);
-//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-//   const [totalUnread, setTotalUnread] = useState(0);
-//   const pathname = usePathname(); // ✅ Current route
-//   const [deferredPrompt, setDeferredPrompt] = useState(null);
-//   const [showInstall, setShowInstall] = useState(false);
-//   const [text, setText] = useState("");
-//   const userID =
-//     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-//   const eventId = selectedGroup?.id || null;
-//   const textareaRef = useRef(null);
-//   const chatOpenRef = useRef(false);
-//   const [unreadCounts, setUnreadCounts] = useState({});
-
-//   const token = localStorage.getItem("token");
-
-//   const [orderDetails, setOrderDetails] = useState(null);
-
-//   const [guestDetails, setGuestDetails] = useState(null);
-
-//   const [userData, setUserData] = useState({});
-
-//   const [refreshKey, setRefreshKey] = useState(0);
-
-//   useEffect(() => {
-//     const handleBackButton = (e) => {
-//       if (selectedGroup) {
-//         e.preventDefault();
-//         setSelectedGroup(null);
-//         window.history.pushState(null, "", window.location.href);
-//       }
-//     };
-
-//     window.addEventListener("popstate", handleBackButton);
-
-//     return () => {
-//       window.removeEventListener("popstate", handleBackButton);
-//     };
-//   }, [selectedGroup]);
-
-//   useEffect(() => {
-//     const handleResize = () => {
-//       textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-//     };
-//     window.addEventListener("resize", handleResize);
-//     return () => window.removeEventListener("resize", handleResize);
-//   }, []);
-
-//   useEffect(() => {
-//     const fetchUserAccountDetails = async () => {
-//       if (!userId) {
-//         console.log("User id not available");
-//         return;
-//       }
-
-//       try {
-//         const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`, {
-//           headers: {
-//             Authorization: `${token}`,
-//             "Content-Type": "application/json",
-//           },
-//         });
-//         const data = await response.json();
-//         if (data.error) {
-//           setUserData({});
-//           console.log(data.message || "Failed to fetch guests");
-//         } else {
-//           setUserData(data.data || {});
-//         }
-//       } catch (err) {
-//         console.log("Error fetching guests: " + err.message);
-//       }
-//     };
-//     // Initial call
-//     fetchUserAccountDetails();
-//   }, [userId]);
-
-//   const fetchOrderDetails = async (eventId) => {
-//     try {
-//       const res = await fetch(
-//         `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
-//         {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: token,
-//           },
-//         }
-//       );
-
-//       const result = await res.json();
-//       console.log(result.data.hostName, "result11");
-
-//       if (res.status === 200 && result.data) {
-//         const data = result.data;
-//         setOrderDetails({
-//           Name: data.hostName,
-//         });
-//       }
-//     } catch (err) {
-//       console.error("❌ Fetch failed:", err);
-//     }
-//   };
-
-//   // Fetch guest details for a given eventId and userId
-//   const fetchGuestDetails = async (eventId, userId) => {
-//     try {
-//       const endpoint = `${BASE_URL}${GET_GUEST_DETTAILS}/${eventId}/user/${userId}`;
-//       const response = await fetch(endpoint, {
-//         headers: {
-//           Authorization: `${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       });
-//       const data = await response.json();
-//       console.log("Guest Details Response11:", data.data.name);
-//       if (data && data.data) {
-//         setGuestDetails({ name: data.data.name });
-//       }
-//     } catch (err) {
-//       console.error("Error fetching guest:", err);
-//     }
-//   };
-//   const getAvatarColor = (name) => {
-//     const colors = [
-//       "#F44336", // red
-//       "#E91E63", // pink
-//       "#9C27B0", // purple
-//       "#673AB7", // deep purple
-//       "#3F51B5", // indigo
-//       "#2196F3", // blue
-//       "#009688", // teal
-//       "#4CAF50", // green
-//       "#FF9800", // orange
-//       "#795548", // brown
-//     ];
-//     let hash = 0;
-//     for (let i = 0; i < name.length; i++) {
-//       hash = name.charCodeAt(i) + ((hash << 5) - hash);
-//     }
-//     const index = Math.abs(hash % colors.length);
-//     return colors[index];
-//   };
-
-//   useEffect(() => {
-//     const checkRoleAndFetch = async () => {
-//       if (selectedGroup && selectedGroup.id) {
-//         const userIdFromStorage = localStorage.getItem("userID");
-//         if (!userIdFromStorage) {
-//           console.warn("No userId found in localStorage");
-//           return;
-//         }
-//         try {
-//           const memberDocRef = doc(
-//             db,
-//             "groups",
-//             selectedGroup.id,
-//             "members",
-//             userIdFromStorage
-//           );
-//           const memberSnap = await getDocs(
-//             query(collection(db, "groups", selectedGroup.id, "members"))
-//           );
-//           let role = null;
-//           memberSnap.forEach((docSnap) => {
-//             if (docSnap.id === userIdFromStorage) {
-//               role = docSnap.data().role;
-//             }
-//           });
-//           if (role === "host") {
-//             fetchOrderDetails(selectedGroup.id).then((orderDetails) => {
-//               console.log("Order Details:", orderDetails);
-//             });
-//           } else {
-//             fetchGuestDetails(selectedGroup.id, userIdFromStorage).then(
-//               (guestDetails) => {
-//                 console.log("Guest Details:", guestDetails);
-//               }
-//             );
-//           }
-//         } catch (err) {
-//           console.error("Error checking member role:", err);
-//         }
-//       }
-//     };
-//     checkRoleAndFetch();
-//   }, [selectedGroup]);
-
-//   const [emojiWidth, setEmojiWidth] = useState(400);
-//   useEffect(() => {
-//     const updateWidth = () => {
-//       const screenWidth = window.innerWidth;
-//       if (screenWidth > 450) {
-//         setEmojiWidth(450);
-//       } else if (screenWidth <= 450) {
-//         setEmojiWidth(screenWidth - 20);
-//       } else {
-//         setEmojiWidth(screenWidth - 50);
-//       }
-//     };
-
-//     updateWidth();
-//     window.addEventListener("resize", updateWidth);
-
-//     return () => window.removeEventListener("resize", updateWidth);
-//   }, []);
-
-//   useEffect(() => {
-//     const chatContainer = document.querySelector(".chat-messages");
-//     if (chatContainer) {
-//       chatContainer.scrollTop = chatContainer.scrollHeight;
-//     }
-//   }, [messages]);
-
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (
-//         emojiPickerRef.current &&
-//         !emojiPickerRef.current.contains(event.target) &&
-//         !event.target.closest(".emoji-btn")
-//       ) {
-//         setIsEmojiPickerOpen(false);
-//       }
-//     };
-
-//     if (isEmojiPickerOpen) {
-//       document.addEventListener("mousedown", handleClickOutside);
-//     }
-
-//     return () => {
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   }, [isEmojiPickerOpen]);
-
-//   useEffect(() => {
-//     const handleKeyDown = (e) => {
-//       if (e.key === "Escape") {
-//         setIsEmojiPickerOpen(false);
-//       }
-//     };
-
-//     if (isEmojiPickerOpen) {
-//       document.addEventListener("keydown", handleKeyDown);
-//     }
-
-//     return () => {
-//       document.removeEventListener("keydown", handleKeyDown);
-//     };
-//   }, [isEmojiPickerOpen]);
-
-//   useEffect(() => {
-//     if (!userId) return;
-
-//     const fetchGroupsWithMembers = async () => {
-//       try {
-//         const groupsRef = collection(db, "groups");
-//         const snapshot = await getDocs(groupsRef);
-
-//         const groupsData = await Promise.all(
-//           snapshot.docs.map(async (groupDoc) => {
-//             const membersRef = collection(db, "groups", groupDoc.id, "members");
-//             const membersSnap = await getDocs(membersRef);
-
-//             const members = membersSnap.docs.map((doc) => ({
-//               id: doc.id,
-//               ...doc.data(),
-//             }));
-
-//             const messagesRef = collection(
-//               db,
-//               "groups",
-//               groupDoc.id,
-//               "messages"
-//             );
-//             const q = query(messagesRef, orderBy("sentAt", "asc"));
-
-//             let messagesArr = [];
-//             onSnapshot(q, (snap) => {
-//               messagesArr = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-//               setGroups((prev) =>
-//                 prev.map((g) =>
-//                   g.id === groupDoc.id ? { ...g, messages: messagesArr } : g
-//                 )
-//               );
-//             });
-
-//             return {
-//               id: groupDoc.id,
-//               ...groupDoc.data(),
-//               members,
-//               messages: [],
-//             };
-//           })
-//         );
-
-//         const filteredGroups = groupsData.filter((group) =>
-//           group.members.some((member) => member.id === userId)
-//         );
-
-//         setGroups(filteredGroups);
-//       } catch (error) {
-//         console.error("Error fetching groups:", error);
-//       }
-//     };
-
-//     fetchGroupsWithMembers();
-//   }, [userId, refreshKey]);
-
-//   const markAsRead = (groupId) => {
-//     setGroups((prev) =>
-//       prev.map((g) =>
-//         g.id === groupId
-//           ? {
-//               ...g,
-//               members: g.members.map((m) =>
-//                 m.id === userId
-//                   ? { ...m, lastSeen: { toDate: () => new Date() } }
-//                   : m
-//               ),
-//             }
-//           : g
-//       )
-//     );
-//   };
-
-//   const handleImageUpload = async (e) => {};
-
-//   const userPhoneNumber = localStorage.getItem("mobileNumber");
-
-//   const getUnreadCount = (group) => {
-//     return unreadCounts[group.id] || 0;
-//   };
-
-//   const customDecorator = (href, text, key) => (
-//     <a
-//       key={key}
-//       href={href}
-//       target="_blank"
-//       rel="noopener noreferrer"
-//       style={{ color: "#fff", fontWeight: "bold" }}
-//     >
-//       {text}
-//     </a>
-//   );
-
-//   useEffect(() => {
-//     if (!groups || groups.length === 0 || !userId || chatOpenRef.current)
-//       return;
-
-//     // Delay execution slightly
-//     const timeout = setTimeout(() => {
-//       const counts = {};
-//       let total = 0;
-//       groups.forEach((group) => {
-//         const userMember = group.members.find((m) => m.id === userId);
-//         const lastSeen = userMember?.lastSeenAt?.toDate
-//           ? userMember.lastSeenAt.toDate()
-//           : userMember?.lastSeenAt;
-
-//         const unreadMessages = (group.messages || []).filter((msg) => {
-//           if (!msg.sentAt || msg.senderId === userId) return false;
-//           const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-//           return lastSeen ? msgDate > lastSeen : true;
-//         });
-
-//         counts[group.id] = unreadMessages.length;
-//         total += unreadMessages.length;
-//       });
-
-//       setUnreadCounts(counts);
-//       localStorage.setItem("totalUnread", total.toString());
-//       window.dispatchEvent(new Event("unreadCountChange"));
-//     }, 500); // wait 500ms for Firestore update to apply
-
-//     return () => clearTimeout(timeout);
-//   }, [groups, userId, refreshKey]);
-
-//   function linkify(text) {
-//     const urlRegex = /(https?:\/\/[^\s]+)/g;
-//     return text.split(urlRegex).map((part, index) => {
-//       if (part.match(urlRegex)) {
-//         return (
-//           <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-//             {part}
-//           </a>
-//         );
-//       }
-//       return part;
-//     });
-//   }
-
-//   // useEffect(() => {
-//   //   if (pathname === "/chat") {
-//   //     if (typeof window !== "undefined") {
-//   //       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
-//   //     console.log("addToHomeScreenPopup",addToHomeScreenPopup);
-
-//   //       if (addToHomeScreenPopup !== "true") {
-//   //         setShowInstall(true);
-//   //       }
-//   //     }
-
-//   //     const handler = (e) => {
-//   //       e.preventDefault();
-//   //       setDeferredPrompt(e);
-//   //     };
-
-//   //     window.addEventListener("beforeinstallprompt", handler);
-
-//   //     return () => {
-//   //       window.removeEventListener("beforeinstallprompt", handler);
-//   //     };
-//   //   }
-//   // }, [pathname]);
-
-//   useEffect(() => {
-//     if (typeof window !== "undefined") {
-//       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
-//       console.log("addToHomeScreenPopup", addToHomeScreenPopup);
-
-//       if (addToHomeScreenPopup !== "true") {
-//         setShowInstall(true);
-//       }
-//     }
-
-//     const handler = (e) => {
-//       e.preventDefault();
-//       setDeferredPrompt(e);
-//     };
-
-//     window.addEventListener("beforeinstallprompt", handler);
-
-//     return () => {
-//       window.removeEventListener("beforeinstallprompt", handler);
-//     };
-//   }, [pathname]);
-
-//   const handleInstallClick = async () => {
-//     setShowInstall(false);
-
-//     if (deferredPrompt) {
-//       deferredPrompt.prompt();
-//       const { outcome } = await deferredPrompt.userChoice;
-//       if (outcome === "accepted") {
-//         localStorage.setItem("addToHomeScreenPopup", "true");
-//         console.log(
-//           "outcome",
-//           outcome,
-//           localStorage.getItem("addToHomeScreenPopup")
-//         );
-//       } else {
-//         localStorage.setItem("addToHomeScreenPopup", "false");
-//       }
-
-//       setDeferredPrompt(null);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const handler = (e) => {
-//       e.preventDefault();
-//       setDeferredPrompt(e);
-//       setShowInstall(true);
-//     };
-
-//     window.addEventListener("beforeinstallprompt", handler);
-
-//     return () => window.removeEventListener("beforeinstallprompt", handler);
-//   }, []);
-
-//   // --------------------------------------------------------------------------------------------------------------------------
-//   useEffect(() => {
-//     if (!eventId || !userId) return;
-
-//     const unsubscribe = listenToMessages(eventId, userId);
-
-//     return () => unsubscribe();
-//   }, [eventId, userId, selectedGroup]);
-
-//   useEffect(() => {
-//     chatOpenRef.current = !!selectedGroup;
-
-//     if (selectedGroup && eventId && userId) {
-//       const updatedCounts = {
-//         ...unreadCounts,
-//         [eventId]: 0,
-//       };
-//       setUnreadCounts(updatedCounts);
-//     }
-//   }, [selectedGroup, eventId, userId]);
-
-//   const lastSeenAtRef = useRef(null);
-//   const notifiedMessageIdsRef = useRef(new Set());
-
-//   const updateLocalUnread = (updatedCounts) => {
-//     const total = Object.values(updatedCounts).reduce(
-//       (sum, count) => sum + count,
-//       0
-//     );
-//     localStorage.setItem("totalUnread", total.toString());
-//     window.dispatchEvent(new Event("unreadCountChange"));
-//     return total;
-//   };
-
-//   const listenToMessages = (eventId, userId) => {
-//     if (!eventId || !userId) return () => {};
-
-//     const messagesRef = collection(db, "groups", eventId, "messages");
-//     const q = query(messagesRef, orderBy("sentAt", "asc"));
-//     const userRef = doc(db, "groups", eventId, "members", userId);
-
-//     const unsubscribeUser = onSnapshot(userRef, (memberSnap) => {
-//       lastSeenAtRef.current =
-//         memberSnap.exists() && memberSnap.data().lastSeenAt
-//           ? memberSnap.data().lastSeenAt.toDate()
-//           : null;
-//     });
-
-//     const unsubscribeMessages = onSnapshot(q, (snapshot) => {
-//       const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-//       setMessages(msgs);
-
-//       const unreadMessages = msgs.filter((msg) => {
-//         if (!msg.sentAt || msg.senderId === userId) return false;
-//         const msgDate = msg.sentAt.toDate ? msg.sentAt.toDate() : msg.sentAt;
-//         return lastSeenAtRef.current ? msgDate > lastSeenAtRef.current : true;
-//       });
-
-//       setUnreadCounts((prev) => {
-//         const updated = {
-//           ...prev,
-//           [eventId]: chatOpenRef.current ? 0 : unreadMessages.length,
-//         };
-
-//         if (chatOpenRef.current) {
-//           // Update Firestore immediately for lastSeen
-//           const userRef = doc(db, "groups", eventId, "members", userId);
-//           setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
-//           lastSeenAtRef.current = new Date(); // local reference
-//         }
-
-//         updateLocalUnread(updated);
-//         return updated;
-//       });
-
-//       // Notifications
-//       if (!chatOpenRef.current && unreadMessages.length > 0) {
-//         unreadMessages.forEach((msg) => {
-//           if (
-//             Notification.permission === "granted" &&
-//             !notifiedMessageIdsRef.current.has(msg.id) &&
-//             "Notification" in window
-//           ) {
-//             navigator.serviceWorker.ready.then((registration) => {
-//               registration.showNotification(
-//                 `New message from ${msg.senderName}`,
-//                 {
-//                   body: msg.text,
-//                   icon: "/new_logo_light.png",
-//                 }
-//               );
-//             });
-//             notifiedMessageIdsRef.current.add(msg.id);
-//           }
-//         });
-//       }
-//     });
-
-//     return () => {
-//       unsubscribeUser();
-//       unsubscribeMessages();
-//     };
-//   };
-
-//   const sendMessage = async () => {
-//     if (!text.trim()) return;
-//     if (!eventId || !userID) {
-//       console.warn("Missing eventId or userId — cannot send message.");
-//       return;
-//     }
-//     const localSenderName = localStorage.getItem("wonderLandUserName") || "";
-
-//     await addDoc(collection(db, "groups", eventId, "messages"), {
-//       text,
-//       senderId: userID,
-
-//       // senderName:
-//       //   urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
-//       senderName: localSenderName ? localSenderName : userData?.name,
-//       senderPhoneNumber: localStorage.getItem("mobileNumber"),
-//       sentAt: serverTimestamp(),
-//     });
-//     console.log(
-//       "%c [ addDoc ]-1195",
-//       "font-size:13px; background:pink; color:#bf2c9f;",
-//       addDoc
-//     );
-
-//     setText("");
-//     setShowEmojiPicker(false);
-//   };
-
-//   const handleOpenMessages = async (group) => {
-//     chatOpenRef.current = true;
-//     setSelectedGroup(group);
-
-//     // reset unread immediately
-//     setUnreadCounts((prev) => {
-//       const updated = { ...prev, [group.id]: 0 };
-//       updateLocalUnread(updated);
-//       return updated;
-//     });
-
-//     // update lastSeen both local + Firestore
-//     lastSeenAtRef.current = new Date();
-//     if (userId) {
-//       const userRef = doc(db, "groups", group.id, "members", userId);
-//       await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
-//     }
-//   };
-
-//   // const handleCloseChat = async () => {
-//   //   chatOpenRef.current = false;
-//   //   lastSeenAtRef.current = new Date();
-
-//   //   if (userId && selectedGroup) {
-//   //     const userRef = doc(db, "groups", selectedGroup.id, "members", userId);
-//   //     await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
-//   //   }
-
-//   //   setSelectedGroup(null);
-//   // };
-
-//   const handleCloseChat = async () => {
-//     if (!selectedGroup || !userId) return;
-
-//     // Forcefully mark all messages as seen
-//     const userRef = doc(db, "groups", selectedGroup.id, "members", userId);
-//     await setDoc(
-//       userRef,
-//       { lastSeenAt: serverTimestamp() }, // Firestore timestamp
-//       { merge: true }
-//     );
-//     lastSeenAtRef.current = new Date(); // local reference
-
-//     // Reset unread count for this chat locally
-//     setUnreadCounts((prev) => {
-//       const updated = { ...prev, [selectedGroup.id]: 0 };
-//       updateLocalUnread(updated);
-//       return updated;
-//     });
-
-//     setSelectedGroup(null);
-//     setRefreshKey((prev) => prev + 1);
-//   };
-
-//   //------------------------------------------------------------------------------------------------------------------------------
-//   const testSendMessage = () => {
-//     // socket.emit("message:send", {
-//     //   eventId: "6884a4ff6210988005d87ba5",
-//     //   message: "Frontend se hello for testing",
-//     //   tempId: Date.now().toString()
-//     // });
-
-//     socket.emit("message:send", {
-//       roomId: "6884a4ff6210988005d87ba5",
-//       message: "New Socket System Message",
-//       type: "text",
-//       tempId: Date.now().toString(),
-//     });
-//   };
-//   return (
-//     <div className="groups-container">
-//       <div className="groups-header">
-//         {/* <h3>Chats</h3> */}
-//         <div className="search-wrapper">
-//           <i className="fas fa-search search-icon"></i>
-//           <input
-//             type="text"
-//             placeholder="Search"
-//             className="search-box"
-//             value={searchTerm}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//           />
-//         </div>
-//       </div>
-
-//       <button onClick={sendMessage}>Send Test Message</button>
-
-//       {pathname === "/chat" && showInstall && (
-//         <div className="chat-banner">
-//           <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
-//           <button className="chat-banner-btn" onClick={handleInstallClick}>
-//             Add To Phone Screen
-//           </button>
-//         </div>
-//       )}
-
-//       <div className="groups-list">
-//         {allChatRooms
-//           .filter((group) =>
-//             group.roomName?.toLowerCase().includes(searchTerm.toLowerCase())
-//           )
-//           .map((group) => {
-//             return (
-//               <div
-//                 key={group._id}
-//                 className="group-item"
-//                 onClick={() => handleOpenMessages(group)}
-//               >
-//                 {group.imageUrl ? (
-//                   <img
-//                     src={group.imageUrl}
-//                     alt={group.name}
-//                     className="group-avatar"
-//                   />
-//                 ) : (
-//                   <div
-//                     className="group-avatar-placeholder"
-//                     style={{
-//                       backgroundColor: "#27ae60",
-//                       color: "white",
-//                       fontSize: "24px",
-//                       width: "50px",
-//                       height: "50px",
-//                       borderRadius: "50%",
-//                       display: "flex",
-//                       justifyContent: "center",
-//                       alignItems: "center",
-//                     }}
-//                   >
-//                     {group.roomName ? group.roomName.charAt(0).toUpperCase() : "?"}
-//                   </div>
-//                 )}
-
-//                 <div className="group-info">
-//                   <p className="group-name">{group.roomName || "Unnamed Group"}</p>
-//                   <span className="group-last">
-//                     {getUnreadCount(group) > 0
-//                       ? `${getUnreadCount(group)} New Message${
-//                           getUnreadCount(group) > 1 ? "s" : ""
-//                         }`
-//                       : "No new messages"}
-//                   </span>
-//                 </div>
-
-//                 {unreadCounts[group.id] > 0 && (
-//                   <span className="unread-dot"></span>
-//                 )}
-//               </div>
-//             );
-//           })}
-//       </div>
-
-//       {selectedGroup && (
-//         <div className="chat-overlay">
-//           <div className="chat-header">
-//             <div className="chat-user-info">
-//               <button
-//                 className="btn back-arrow-chat"
-//                 onClick={() => {
-//                   handleCloseChat();
-//                 }}
-//               >
-//                 <FaArrowLeft fontSize={16} />
-//               </button>
-//               <span className="mx-2">{`${selectedGroup.name}`}</span>{" "}
-//               {/* <span>{orderDetails?.eventType} </span> */}
-//             </div>
-//           </div>
-
-//           <div className="chat-messages" ref={chatBodyRef}>
-//             {messages.map((msg) => {
-//               // message render
-//               const isMe = msg.senderId === userID;
-
-//               const senderName = msg.senderName;
-//               return (
-//                 <div
-//                   key={msg.id}
-//                   className={`chat-message ${isMe ? "sender" : "receiver"}`}
-//                 >
-//                   {!isMe && (
-//                     <div
-//                       className="chat-avatar-receiver"
-//                       style={{
-//                         backgroundColor: getAvatarColor(
-//                           senderName || msg.senderPhoneNumber
-//                         ),
-//                       }}
-//                     >
-//                       {senderName
-//                         ? senderName.charAt(0).toUpperCase()
-//                         : msg.senderPhoneNumber.charAt(3)}
-//                     </div>
-//                   )}
-//                   <div
-//                     className={`chat-bubble ${isMe ? "sender" : "receiver"}`}
-//                   >
-//                     {/* Sirf receiver ka naam/number */}
-//                     {!isMe && (
-//                       <div className="chat-sender">
-//                         {senderName
-//                           ? senderName
-//                           : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-//                       </div>
-//                     )}
-
-//                     <div className="chat-text">{linkify(msg.text)}</div>
-
-//                     <div className="chat-time">
-//                       {msg.sentAt?.toDate
-//                         ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-//                             "en-IN",
-//                             {
-//                               hour: "2-digit",
-//                               minute: "2-digit",
-//                               hour12: true,
-//                             }
-//                           )
-//                         : ""}
-//                     </div>
-//                   </div>
-
-//                   {/* Sender avatar (right side) */}
-//                   {/* {isMe && (
-//                     <div className="chat-avatar">
-//                       {senderName
-//                         ? senderName.charAt(0).toUpperCase()
-//                         : msg.senderPhoneNumber.charAt(3)}
-//                     </div>
-//                   )} */}
-//                 </div>
-//               );
-//             })}
-//           </div>
-
-//           <div className="chat-input-container">
-//             <button
-//               type="button"
-//               onPointerDown={(e) => e.preventDefault()}
-//               onClick={() => {
-//                 if (showEmojiPicker) {
-//                   setShowEmojiPicker(false);
-//                   setTimeout(() => {
-//                     textareaRef.current?.focus();
-//                   }, 0);
-//                 } else {
-//                   // setShowEmojiPicker(true);
-//                   // textareaRef.current?.blur();
-//                   textareaRef.current?.blur();
-//                   setTimeout(() => {
-//                     setShowEmojiPicker(true);
-//                   }, 50);
-//                 }
-//               }}
-//               className="emoji-btn"
-//             >
-//               {showEmojiPicker ? (
-//                 <FaRegKeyboard fontSize={20} />
-//               ) : (
-//                 <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-//               )}
-
-//               <div>
-//                 {/* Hidden file input */}
-//                 <input
-//                   type="file"
-//                   accept="image/*"
-//                   ref={fileInputRef}
-//                   onChange={handleImageUpload}
-//                   style={{ display: "none" }}
-//                 />
-//               </div>
-//             </button>
-
-//             <textarea
-//               value={text}
-//               ref={textareaRef}
-//               className="chat-input"
-//               rows={1}
-//               onFocus={() => {
-//                 if (showEmojiPicker) {
-//                   setShowEmojiPicker(false);
-//                 }
-//                 setTimeout(() => {
-//                   textareaRef.current?.scrollIntoView({
-//                     behavior: "smooth",
-//                     block: "end",
-//                   });
-//                   window.scrollBy(0, -180);
-//                 }, 300);
-//               }}
-//               onChange={(e) => {
-//                 setText(e.target.value);
-//                 if (e.target.value.length > 0) {
-//                   setShowEmojiPicker(false);
-//                 }
-//               }}
-//               onInput={(e) => {
-//                 e.target.style.height = "auto";
-//                 e.target.style.height =
-//                   Math.min(e.target.scrollHeight, 120) + "px";
-//               }}
-//               placeholder="Type message here..."
-//             />
-
-//             <button
-//               onClick={() => {
-//                 sendMessage();
-//                 if (textareaRef.current) {
-//                   textareaRef.current.style.height = "auto";
-//                 }
-//               }}
-//               className="chat-send-btn"
-//             >
-//               <Image src={sendIcon} alt="Send" className="send-icon" />
-//             </button>
-//           </div>
-
-//           {showEmojiPicker && (
-//             <div
-//               className="emoji-container"
-//               onPointerDown={(e) => e.preventDefault()}
-
-//               // onMouseDown={(e) => e.preventDefault()}
-//               // onTouchStart={(e) => e.preventDefault()}
-//             >
-//               <EmojiPicker
-//                 width={emojiWidth}
-//                 searchDisabled={true}
-//                 onEmojiClick={(emojiData) => {
-//                   const textarea = textareaRef.current;
-//                   const start = textarea.selectionStart;
-//                   const end = textarea.selectionEnd;
-
-//                   setText((prevText) => {
-//                     const newText =
-//                       prevText.substring(0, start) +
-//                       emojiData.emoji +
-//                       prevText.substring(end);
-
-//                     requestAnimationFrame(() => {
-//                       textarea.selectionStart = textarea.selectionEnd =
-//                         start + emojiData.emoji.length;
-//                     });
-
-//                     return newText;
-//                   });
-//                 }}
-//               />
-//             </div>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default GroupsList;
-
-// // components/GroupsListSocket.jsx
-// import React, { useEffect, useRef, useState } from "react";
-// import Image from "next/image";
-// import { FaArrowLeft } from "react-icons/fa";
-// import EmojiPicker from "emoji-picker-react";
-// import emojiIcon from "../../assets/Emoji.png";
-// import sendIcon from "@/assets/sendicon.png";
-// import PinBanner from "../../assets/pinBanner.jpg";
-// import {
-//   BASE_URL,
-//   GET_CHAT_ROOMS,
-//   GET_CHAT_MESSAGES, // add this constant: '/chat/messages'
-//   GET_USER_BY_ID,
-//   GET_GUEST_DETTAILS,
-// } from "@/utils/apiconstants";
-// import { usePathname } from "next/navigation";
-// import useApi from "@/hooks/useApi";
-// import socket from "@/socket"; // ensure socket connects on client with userId
-// import "./GroupsList.css";
-// const getUserIdFromUrl = () => {
-//   if (typeof window === "undefined") return null;
-//   const params = new URLSearchParams(window.location.search);
-//   return params.get("id") || localStorage.getItem("userID");
-// };
-
-// const GroupsList = () => {
-//   const userId = getUserIdFromUrl();
-//   const pathname = usePathname();
-//   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-//   // Rooms from backend API (your existing hook)
-//   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
-//   const [allChatRooms, setAllChatRooms] = useState([]);
-//   useEffect(() => {
-//     if (chatRoomsData?.data) setAllChatRooms(chatRoomsData.data || []);
-//   }, [chatRoomsData]);
-
-//   // chat UI state
-//   const [selectedGroup, setSelectedGroup] = useState(null); // room object
-//   const [messages, setMessages] = useState([]); // messages for opened room
-//   const [text, setText] = useState("");
-//   const textareaRef = useRef(null);
-//   const chatBodyRef = useRef(null);
-
-//   // emoji
-//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-//   const [emojiWidth, setEmojiWidth] = useState(400);
-
-//   // unread
-//   const [unreadCounts, setUnreadCounts] = useState({});
-//   const chatOpenRef = useRef(false);
-
-//   // temp message map for optimistic UI
-//   const tempIdToClientMap = useRef(new Map());
-
-//   // socket listeners setup (only client-side)
-//   useEffect(() => {
-//     if (typeof window === "undefined") return;
-//     if (!socket) return;
-
-//     // on connect log
-//     const onConnect = () => console.log("Socket connected:", socket.id);
-//     socket.on("connect", onConnect);
-
-//     // incoming message handler
-//     const onMessageNew = (msg) => {
-//       // ensure msg has roomId
-//       const roomId = msg.roomId || msg.eventId;
-//       if (!roomId) return;
-
-//       // If current open room -> push into messages
-//       setMessages((prev) => {
-//         // If msg.tempId exists, replace optimistic
-//         if (msg.tempId) {
-//           const replaced = prev.map((m) => (m.tempId === msg.tempId ? { ...msg, id: msg._id } : m));
-//           // if not found, append
-//           const found = prev.some((m) => m.tempId === msg.tempId);
-//           return found ? replaced : [...prev, { ...msg, id: msg._id }];
-//         } else {
-//           // prevent duplicate by _id
-//           if (prev.some((m) => m._id === msg._id || m.id === msg._id)) return prev;
-//           // if message is for open chat, append; otherwise increase unread
-//           if (selectedGroup && selectedGroup._id === roomId) {
-//             return [...prev, { ...msg, id: msg._id }];
-//           } else {
-//             // update unreadCounts
-//             setUnreadCounts((old) => {
-//               const cur = Number(old[roomId] || 0) + 1;
-//               return { ...old, [roomId]: cur };
-//             });
-//             return prev;
-//           }
-//         }
-//       });
-//     };
-
-//     socket.on("message:new", onMessageNew);
-
-//     return () => {
-//       socket.off("connect", onConnect);
-//       socket.off("message:new", onMessageNew);
-//     };
-//   }, [selectedGroup]); // re-register when selectedGroup changes (safe)
-
-//   // scroll to bottom on messages change
-//   useEffect(() => {
-//     if (!chatBodyRef.current) return;
-//     chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-//   }, [messages]);
-
-//   // emoji width responsivity
-//   useEffect(() => {
-//     const updateWidth = () => {
-//       const screenWidth = window.innerWidth;
-//       setEmojiWidth(screenWidth > 450 ? 450 : Math.max(200, screenWidth - 20));
-//     };
-//     updateWidth();
-//     window.addEventListener("resize", updateWidth);
-//     return () => window.removeEventListener("resize", updateWidth);
-//   }, []);
-
-//   // helper: fetch messages from REST API
-//   const fetchMessagesForRoom = async (roomId, page = 1, limit = 50) => {
-//     try {
-//       const res = await fetch(`${BASE_URL}${GET_CHAT_MESSAGES}/${roomId}?page=${page}&limit=${limit}`, {
-//         headers: { Authorization: token || "" },
-//       });
-//       const json = await res.json();
-//       if (!json.error && json.data) {
-//         // ensure messages ascending
-//         setMessages(json.data);
-//         // reset unread for that room
-//         setUnreadCounts((old) => ({ ...old, [roomId]: 0 }));
-//       } else {
-//         console.warn("Failed fetch messages", json);
-//       }
-//     } catch (err) {
-//       console.error("Fetch messages failed", err);
-//     }
-//   };
-
-//   // handle opening a room (click)
-//   const handleOpenMessages = async (group) => {
-//     setSelectedGroup(group);
-//     chatOpenRef.current = true;
-//     // fetch messages via API
-//     await fetchMessagesForRoom(group._id || group.id);
-//     // reset unread locally
-//     setUnreadCounts((prev) => ({ ...prev, [group._id || group.id]: 0 }));
-//     // (Optional) notify backend about lastSeen via API if you implement it
-//   };
-
-//   // handle closing chat
-//   const handleCloseChat = () => {
-//     if (!selectedGroup) return;
-//     // we could call an API to mark lastSeen if implemented; for now, local only
-//     setSelectedGroup(null);
-//     chatOpenRef.current = false;
-//     setMessages([]);
-//   };
-
-//   // send message (optimistic)
-//   const sendMessage = () => {
-//     if (!text.trim()) return;
-//     if (!selectedGroup) return;
-
-//     const roomId = selectedGroup._id || selectedGroup.id;
-//     const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-//     const tempId = `t_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-//     // create optimistic message object (same shape as server will send)
-//     const optimistic = {
-//       tempId,
-//       _id: tempId,
-//       id: tempId,
-//       roomId,
-//       senderId: userID,
-//       message: text,
-//       type: "text",
-//       mediaUrl: "",
-//       createdAt: new Date().toISOString(),
-//       senderName: localStorage.getItem("wonderLandUserName") || "",
-//     };
-
-//     // add to UI immediately
-//     setMessages((prev) => [...prev, optimistic]);
-//     tempIdToClientMap.current.set(tempId, true);
-
-//     // emit to socket
-//     if (socket && socket.connected) {
-//       socket.emit("message:send", {
-//         roomId,
-//         message: text,
-//         type: "text",
-//         tempId,
-//       });
-//     } else {
-//       // If socket not connected, fallback: POST to messages API (optional)
-//       console.warn("Socket not connected — message queued (not implemented queue).");
-//     }
-
-//     // clear input
-//     setText("");
-//     textareaRef.current && (textareaRef.current.style.height = "auto");
-//     // scroll
-//     setTimeout(() => {
-//       chatBodyRef.current && (chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight);
-//     }, 100);
-//   };
-
-//   // helper for display avatar color
-//   const getAvatarColor = (name) => {
-//     const colors = ["#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#2196F3","#009688","#4CAF50","#FF9800","#795548"];
-//     let hash = 0; for (let i = 0; i < (name || "").length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-//     return colors[Math.abs(hash % colors.length)];
-//   };
-
-//   // test emit (kept for debug)
-//   const testSendMessage = () => {
-//     if (!socket) return;
-//     socket.emit("message:send", {
-//       roomId: selectedGroup?._id || selectedGroup?.id || allChatRooms[0]?._id,
-//       message: "New Socket System Message",
-//       type: "text",
-//       tempId: Date.now().toString(),
-//     });
-//   };
-
-//   return (
-//     <div className="groups-container">
-//       <div className="groups-header">
-//         <div className="search-wrapper">
-//           <i className="fas fa-search search-icon"></i>
-//           <input type="text" placeholder="Search" className="search-box" />
-//         </div>
-//       </div>
-
-//       <div className="groups-list">
-//         {allChatRooms.map((group) => {
-//           const roomId = group._id || group.id;
-//           const unread = unreadCounts[roomId] || 0;
-//           return (
-//             <div key={roomId} className="group-item" onClick={() => handleOpenMessages(group)}>
-//               {group.imageUrl ? (
-//                 <img src={group.imageUrl} alt={group.roomName} className="group-avatar" />
-//               ) : (
-//                 <div className="group-avatar-placeholder"
-//                      style={{ backgroundColor: "#27ae60", color: "white", fontSize: "24px", width: "50px", height: "50px", borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-//                   {group.roomName ? group.roomName.charAt(0).toUpperCase() : "?"}
-//                 </div>
-//               )}
-
-//               <div className="group-info">
-//                 <p className="group-name">{group.roomName || "Unnamed Group"}</p>
-//                 <span className="group-last">{unread > 0 ? `${unread} New Message${unread>1?'s':''}` : "No new messages"}</span>
-//               </div>
-
-//               {unread > 0 && <span className="unread-dot" />}
-//             </div>
-//           );
-//         })}
-//       </div>
-
-//       {selectedGroup && (
-//         <div className="chat-overlay">
-//           <div className="chat-header">
-//             <div className="chat-user-info">
-//               <button className="btn back-arrow-chat" onClick={handleCloseChat}><FaArrowLeft fontSize={16} /></button>
-//               <span className="mx-2">{selectedGroup.roomName || selectedGroup.roomName}</span>
-//             </div>
-//           </div>
-
-//           <div className="chat-messages" ref={chatBodyRef} style={{ overflowY: "auto", maxHeight: "60vh", padding: "16px" }}>
-//             {messages.map((msg) => {
-//               const isMe = msg.senderId === (typeof window !== "undefined" ? localStorage.getItem("userID") : null);
-//               const senderName = msg.senderName || "";
-//               return (
-//                 <div key={msg.id || msg._id} className={`chat-message ${isMe ? "sender" : "receiver"}`}>
-//                   {!isMe && <div className="chat-avatar-receiver" style={{ backgroundColor: getAvatarColor(senderName || msg.senderPhoneNumber) }}>
-//                     {senderName ? senderName.charAt(0).toUpperCase() : (msg.senderPhoneNumber || "U").charAt(0)}
-//                   </div>}
-
-//                   <div className={`chat-bubble ${isMe ? "sender" : "receiver"}`}>
-//                     {!isMe && <div className="chat-sender">{senderName || `+91 ${ (msg.senderPhoneNumber||'').slice(0,-4) }XXXX`}</div>}
-//                     <div className="chat-text">{ msg.message || msg.text || "" }</div>
-//                     <div className="chat-time">{ msg.sentAt ? (new Date(msg.sentAt).toLocaleTimeString()) : (msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : "") }</div>
-//                   </div>
-//                 </div>
-//               );
-//             })}
-//           </div>
-
-//           <div className="chat-input-container" style={{ display: "flex", alignItems: "center", padding: "8px" }}>
-//             <button type="button" onClick={() => setShowEmojiPicker((s) => !s)} className="emoji-btn">
-//               <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-//             </button>
-
-//             <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)}
-//                       className="chat-input" placeholder="Type message here..."
-//                       style={{ flex: 1, minHeight: 40, maxHeight: 120, resize: "none" }} />
-
-//             <button onClick={sendMessage} className="chat-send-btn">
-//               <Image src={sendIcon} alt="Send" className="send-icon" />
-//             </button>
-//           </div>
-
-//           {showEmojiPicker && (
-//             <div style={{ position: "absolute", bottom: 80, right: 16 }}>
-//               <EmojiPicker width={emojiWidth} onEmojiClick={(e) => setText((t) => t + e.emoji)} />
-//             </div>
-//           )}
-
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default GroupsList;
-
-// // components/GroupsList.jsx  (replace your old file content with this)
-// import React, { useRef, useEffect, useState } from "react";
-// import "./GroupsList.css";
-// import EmojiPicker from "emoji-picker-react";
-// import emojiIcon from "../../assets/Emoji.png";
-// import Image from "next/image";
-// import { FaArrowLeft } from "react-icons/fa";
-// import "../wonderland/EventInvitation.css";
-// import { FaRegKeyboard } from "react-icons/fa6";
-// import sendIcon from "@/assets/sendicon.png";
-// import PinBanner from "../../assets/pinBanner.jpg";
-// import {
-//   GET_CHAT_ROOMS,
-//   GET_USER_BY_ID,
-//   GET_CHAT_MESSAGES,
-//   MARK_READ_MESSAGE,
-//   BASE_URL,
-// } from "@/utils/apiconstants";
-// import { askAndSubscribe } from "@/utils/pushClient";
-// import { usePathname } from "next/navigation";
-// import useApi from "@/hooks/useApi";
-// import socket from "@/socket";
-// import { getAvatarColor } from "@/utils/chatHelpers";
-// import { PUBLIC_VAPID } from "@/utils/constants";
-// import ChatGroupsListing from "@/components/wonderland/chat/ChatGroupsListing";
-// import { useChatStore } from "@/hooks/ChatContext";
-// // helper to read userId from url
-// const getUserIdFromUrl = () => {
-//   if (typeof window === "undefined") return null;
-//   const params = new URLSearchParams(window.location.search);
-//   return params.get("id");
-// };
-
-// const GroupsList = () => {
-//   const userId = getUserIdFromUrl();
-//   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
-//   const { makeRequest: fetchUserRequest } = useApi();
-//   const { makeRequest: fetchMessagesRequest } = useApi();
-//   const { makeRequest: markReadRequest } = useApi();
-//   const [allChatRooms, setAllChatRooms] = useState([]);
-//   const [userDetails, setUserDetails] = useState({});
-//   const { unreadCounts, setUnreadCountsContext } = useChatStore();
-//   useEffect(() => {
-//     if (chatRoomsData?.data) {
-//       setAllChatRooms(chatRoomsData.data || []);
-//     }
-//   }, [chatRoomsData]);
-
-//   // fetch user details
-//   useEffect(() => {
-//     const fetchUserDetails = async () => {
-//       if (!userId) return;
-//       try {
-//         const resp = await fetchUserRequest(
-//           `${GET_USER_BY_ID}/${userId}`,
-//           "GET"
-//         );
-//         if (resp?.data) {
-//           setUserDetails(resp?.data || {});
-//         }
-//       } catch (err) {
-//         console.log("Error fetching user:", err.message);
-//       }
-//     };
-//     fetchUserDetails();
-//   }, [userId]);
-
-//   useEffect(() => {
-//     if ("serviceWorker" in navigator) {
-//       navigator.serviceWorker.register("/firebase-messaging-sw.js");
-//     }
-//   }, []);
-
-//   async function enableNotifications() {
-//     try {
-//       const sub = await askAndSubscribe(PUBLIC_VAPID, userId);
-//       console.log("Subscribed:", sub);
-//     } catch (e) {
-//       console.log("Push error", e);
-//     }
-//   }
-
-//   const [selectedGroup, setSelectedGroup] = useState(null);
-//   const [messages, setMessages] = useState([]);
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-//   const emojiPickerRef = useRef(null);
-//   const inputRef = useRef(null);
-//   const fileInputRef = useRef(null);
-//   const chatBodyRef = useRef(null);
-//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-//   const [totalUnread, setTotalUnread] = useState(0);
-//   const pathname = usePathname();
-//   const [deferredPrompt, setDeferredPrompt] = useState(null);
-//   const [showInstall, setShowInstall] = useState(false);
-//   const [text, setText] = useState("");
-//   const userID =
-//     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-//   const eventId = selectedGroup?._id || selectedGroup?.id || null;
-//   const textareaRef = useRef(null);
-//   const chatOpenRef = useRef(false);
-//   // const [unreadCounts, setUnreadCounts] = useState({});
-//   const [orderDetails, setOrderDetails] = useState(null);
-//   const [guestDetails, setGuestDetails] = useState(null);
-//   const [refreshKey, setRefreshKey] = useState(0);
-//   const lastSeenAtRef = useRef(null);
-//   const notifiedMessageIdsRef = useRef(new Set());
-//   const notifiedMessageIdsForPush = useRef(new Set());
-
-//   // keep a map for optimistic messages
-//   const tempIdToClientMap = useRef(new Map());
-
-//   // ---------- responsive emoji width (kept)
-//   const [emojiWidth, setEmojiWidth] = useState(400);
-//   useEffect(() => {
-//     const updateWidth = () => {
-//       const screenWidth = window.innerWidth;
-//       if (screenWidth > 450) setEmojiWidth(450);
-//       else if (screenWidth <= 450) setEmojiWidth(screenWidth - 20);
-//       else setEmojiWidth(screenWidth - 50);
-//     };
-//     updateWidth();
-//     window.addEventListener("resize", updateWidth);
-//     return () => window.removeEventListener("resize", updateWidth);
-//   }, []);
-
-//   // ---------- scroll to bottom when messages change (kept)
-//   useEffect(() => {
-//     const chatContainer =
-//       chatBodyRef.current || document.querySelector(".chat-messages");
-//     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-//   }, [messages]);
-
-//   // ---------- handle back button (kept)
-//   useEffect(() => {
-//     const handleBackButton = (e) => {
-//       if (selectedGroup) {
-//         e.preventDefault();
-//         setSelectedGroup(null);
-//         window.history.pushState(null, "", window.location.href);
-//       }
-//     };
-//     window.addEventListener("popstate", handleBackButton);
-//     return () => window.removeEventListener("popstate", handleBackButton);
-//   }, [selectedGroup]);
-
-//   // SOCKET: receive messages + read updates
-//   useEffect(() => {
-//     if (typeof window === "undefined") return;
-//     if (!socket) return;
-
-//     const onConnect = () => {
-//       try {
-//         console.log("Socket connected:", socket.id);
-//       } catch (e) {
-//         console.log("Socket connected");
-//       }
-//     };
-
-//     const onMessageNew = (msg) => {
-//       const roomId = msg.roomId || msg.eventId;
-//       if (!roomId) return;
-
-//       setMessages((prev) => {
-//         // replace optimistic message if tempId present
-//         if (msg.tempId) {
-//           const found = prev.some((m) => m.tempId === msg.tempId);
-//           if (found)
-//             return prev.map((m) =>
-//               m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
-//             );
-//         }
-
-//         // prevent duplicate id
-//         if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
-//           return prev;
-
-//         // if room open -> append and mark read
-//         if (
-//           selectedGroup &&
-//           String(selectedGroup._id || selectedGroup.id) === String(roomId)
-//         ) {
-//           // auto mark read for currently open chat (debounced a little)
-//           setTimeout(() => {
-//             markRoomRead(roomId, userID);
-//           }, 50);
-//           return [...prev, { ...msg, id: msg._id }];
-//         } else {
-//           // update unread counter (functional - safe from stale closures)
-//           // setUnreadCounts((old) => {
-//           //   const cur = Number(old[roomId] || 0) + 1;
-//           //   const next = { ...old, [roomId]: cur };
-//           //   return next;
-//           // });
-//           setUnreadCountsContext((old) => {
-//             const cur = Number(old[roomId] || 0) + 1;
-//             const next = { ...old, [roomId]: cur };
-//             return next;
-//           });
-//           return prev;
-//         }
-//       });
-//     };
-
-//     const onReadUpdate = (update) => {
-//       // update local unread counts if this update is for me and applies to current open room
-//       if (String(update.userId) === String(userID)) {
-//         // setUnreadCounts((prev) => {
-//         //   const next = { ...prev, [update.roomId]: 0 };
-//         //   const total = Object.values(next).reduce(
-//         //     (s, v) => s + (Number(v) || 0),
-//         //     0
-//         //   );
-//         //   // setGlobalTotalUnread(total);
-//         //   return next;
-//         // });
-//         setUnreadCountsContext((prev) => {
-//           const next = { ...prev, [update.roomId]: 0 };
-//           return next;
-//         });
-//       }
-//     };
-
-//     const onUnreadInit = (map) => {
-//       // seed authoritative unread map from server
-//       // setUnreadCounts((prev) => {
-//       //   const next = { ...prev, ...map };
-//       //   const total = Object.values(next).reduce(
-//       //     (s, v) => s + (Number(v) || 0),
-//       //     0
-//       //   );
-//       //   // setGlobalTotalUnread(total);
-//       //   return next;
-//       // });
-//       setUnreadCountsContext((prev) => {
-//         const next = { ...prev, ...map };
-//         return next;
-//       });
-//     };
-
-//     const onUnreadUpdate = ({ roomId, count, userId: forUser }) => {
-//       if (!forUser || String(forUser) === String(userID)) {
-//         // setUnreadCounts((prev) => {
-//         //   const next = { ...prev, [roomId]: count };
-//         //   const total = Object.values(next).reduce((s, v) => s + (Number(v) || 0), 0);
-//         //   // setGlobalTotalUnread(total);
-//         //   return next;
-//         // });
-//         setUnreadCountsContext((prev) => {
-//           const next = { ...prev, [roomId]: count };
-//           return next;
-//         });
-//       }
-//     };
-
-//     // const onUnreadUpdate = ({ roomId, count, userId: forUser }) => {
-//     //   if (!forUser || String(forUser) === String(userID)) {
-//     //     setUnreadCounts((prev) => {
-//     //       const updated = { ...prev, [roomId]: count };
-//     //       setGlobalTotalUnread(
-//     //         Object.values(updated).reduce((a, b) => a + Number(b || 0), 0)
-//     //       );
-//     //       return updated;
-//     //     });
-//     //   }
-//     // };
-
-//     socket.on("connect", onConnect);
-//     socket.on("message:new", onMessageNew);
-//     socket.on("message:read:update", onReadUpdate);
-//     socket.on("unread:counts:init", onUnreadInit);
-//     socket.on("unread:update", onUnreadUpdate);
-
-//     return () => {
-//       socket.off("connect", onConnect);
-//       socket.off("message:new", onMessageNew);
-//       socket.off("message:read:update", onReadUpdate);
-//       socket.off("unread:counts:init", onUnreadInit);
-//       socket.off("unread:update", onUnreadUpdate);
-//     };
-//     // include socket and userID and selectedGroup in deps so handlers re-bind correctly
-//   }, [socket, userID, selectedGroup]);
-
-//   useEffect(() => {
-//     // try REST unread map if socket didn't send or if user refreshes before socket ready
-//     const fetchUnreadMap = async () => {
-//       try {
-//         const resp = await fetch(
-//           `${BASE_URL}/api/customer/event/chatrooms/${userId}/unread`
-//         ); // if you added endpoint
-//         const json = await resp.json();
-//         if (!json.error && json.data){
-//           // setUnreadCounts((prev) => ({ ...prev, ...json.data }));
-//           setUnreadCountsContext((prev) => ({ ...prev, ...json.data }));
-//         }
-//       } catch (e) {
-//         console.error("Error fetching unread counts");
-//       }
-//     };
-
-//     // call after chatRoomsData loaded or on mount
-//     if (userId) fetchUnreadMap();
-//   }, [userId, chatRoomsData]);
-
-//   // ---------- fetch messages REST API (paginated)
-//   const fetchMessagesForRoom = async (roomId, page = 1, limit = 50) => {
-//     if (!roomId) return;
-//     try {
-//       const resp = await fetchMessagesRequest(
-//         `${GET_CHAT_MESSAGES}/${roomId}?page=${page}&limit=${limit}`,
-//         "GET"
-//       );
-//       if (!resp.error && resp.data) {
-//         // ensure ascending order for UI (old -> new)
-//         setMessages(resp?.data || []);
-//         // compute unread for this room using lastReadAt from room
-//         const roomObj = allChatRooms.find(
-//           (r) => String(r._id || r.id) === String(roomId)
-//         );
-//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-//         const lastReadForMe = lastReadMap
-//           ? lastReadMap[userID]
-//             ? new Date(lastReadMap[userID])
-//             : null
-//           : null;
-//         const unread = (resp.data || []).filter((m) => {
-//           if (!m.createdAt && !m.sentAt) return false;
-//           const created = m.createdAt
-//             ? new Date(m.createdAt)
-//             : m.sentAt
-//             ? new Date(m.sentAt)
-//             : null;
-//           if (!created) return false;
-//           if (String(m.senderId) === String(userID)) return false;
-//           return lastReadForMe ? created > lastReadForMe : true;
-//         }).length;
-//         // setUnreadCounts((prev) => ({ ...prev, [roomId]: unread }));
-//         setUnreadCountsContext((prev) => ({ ...prev, [roomId]: unread }));
-//       } else {
-//         console.warn("Failed fetch messages", resp);
-//       }
-//     } catch (err) {
-//       console.error("Fetch messages failed", err);
-//     }
-//   };
-
-//   // ---------- handle opening a room (kept UI behavior same)
-//   const handleOpenMessages = async (group) => {
-//     chatOpenRef.current = true;
-//     setSelectedGroup(group);
-//     const roomId = group._id || group.id;
-//     await fetchMessagesForRoom(roomId);
-//     // reset unread locally
-//     // setUnreadCounts((prev) => ({ ...prev, [roomId]: 0 }));
-//     setUnreadCountsContext((prev) => ({ ...prev, [roomId]: 0 }));
-//     // mark read via socket and optional REST mark-read
-//     markRoomRead(roomId, userID);
-//   };
-
-//   // // ---------- mark room read (emit socket + try REST)
-//   // const markRoomRead = async (roomId, uid) => {
-//   //   if (!roomId || !uid) return;
-//   //   try {
-//   //     // emit socket event (server will update room.lastReadAt and broadcast)
-//   //     if (socket && socket.connected)
-//   //       socket.emit("message:read", { roomId, userId: uid });
-//   //     // optional REST fallback if you add mark-read endpoint
-//   //     try {
-//   //       await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
-//   //         roomId,
-//   //         userId: uid,
-//   //       });
-//   //     } catch (e) {
-//   //       // ignore if not implemented
-//   //     }
-//   //     // local UI update
-//   //     setUnreadCounts((prev) => ({ ...prev, [roomId]: 0 }));
-//   //   } catch (err) {
-//   //     console.error("markRoomRead err", err);
-//   //   }
-//   // };
-
-//   const markRoomRead = async (roomId, uid) => {
-//     if (!roomId || !uid) return;
-//     try {
-//       if (socket && socket.connected)
-//         socket.emit("message:read", { roomId, userId: uid });
-
-//       // Call REST to set lastReadAt and get back updated unreadCounts
-//       try {
-//         const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
-//           roomId,
-//           userId: uid,
-//         });
-//         if (!resp.error && resp.unreadCounts) {
-//           // setUnreadCounts((prev) => ({ ...prev, ...resp.unreadCounts }));
-//           setUnreadCountsContext((prev) => ({ ...prev, ...resp.unreadCounts }));
-//         } else if (!resp.error && resp.data && resp.data.unreadCounts) {
-//           // setUnreadCounts((prev) => ({ ...prev, ...resp.data.unreadCounts }));
-//           setUnreadCountsContext((prev) => ({ ...prev, ...resp.data.unreadCounts }));
-//         } else {
-//           // fallback: just set the room to 0 locally
-//           // setUnreadCounts((prev) => ({ ...prev, [roomId]: 0 }));
-//           setUnreadCountsContext((prev) => ({ ...prev, [roomId]: 0 }));
-//         }
-//       } catch (e) {
-//         // ignore and set locally
-//         // setUnreadCounts((prev) => ({ ...prev, [roomId]: 0 }));
-//         setUnreadCountsContext((prev) => ({ ...prev, [roomId]: 0 }));
-//       }
-//     } catch (err) {
-//       console.error("markRoomRead err", err);
-//     }
-//   };
-
-//   // ---------- handle closing chat (kept UI behavior)
-//   const handleCloseChat = async () => {
-//     if (!selectedGroup || !userId) return;
-//     // mark read before close
-//     await markRoomRead(selectedGroup._id || selectedGroup.id, userID);
-//     setSelectedGroup(null);
-//     setRefreshKey((prev) => prev + 1);
-//     chatOpenRef.current = false;
-//     setMessages([]);
-//   };
-
-//   // ---------- send message (optimistic, same UI)
-//   const sendMessage = async () => {
-//     if (!text.trim()) return;
-//     if (!eventId || !userID) {
-//       console.warn("Missing eventId or userId — cannot send message.");
-//       return;
-//     }
-//     const roomId = eventId;
-//     // create optimistic message
-//     const tempId = `temp_${Date.now()}_${Math.random()
-//       .toString(36)
-//       .slice(2, 8)}`;
-//     const optimistic = {
-//       id: tempId,
-//       tempId,
-//       _id: tempId,
-//       roomId,
-//       senderId: userID,
-//       message: text,
-//       text,
-//       type: "text",
-//       senderName: userDetails?.name,
-//       senderPhoneNumber: localStorage.getItem("mobileNumber"),
-//       createdAt: new Date().toISOString(),
-//     };
-
-//     setMessages((prev) => [...prev, optimistic]);
-//     tempIdToClientMap.current.set(tempId, true);
-
-//     // emit socket
-//     if (socket && socket.connected) {
-//       socket.emit("message:send", {
-//         roomId,
-//         message: text,
-//         type: "text",
-//         tempId,
-//         senderName: userDetails?.name,
-//         senderPhone: userDetails?.phone,
-//       });
-//     } else {
-//       console.warn("Socket not connected — fallback not implemented");
-//     }
-
-//     setText("");
-//     setShowEmojiPicker(false);
-//   };
-
-//   // ---------- compute unread counts across rooms (keeps behaviour of original)
-//   useEffect(() => {
-//     if (
-//       !allChatRooms ||
-//       allChatRooms.length === 0 ||
-//       !userId ||
-//       chatOpenRef.current
-//     )
-//       return;
-//     const timeout = setTimeout(() => {
-//       const counts = {};
-//       let total = 0;
-//       (allChatRooms || []).forEach((group) => {
-//         const roomId = group._id || group.id;
-//         const lastReadMap = group.lastReadAt || group.lastReadAtMap || {};
-//         const lastSeen =
-//           lastReadMap && lastReadMap[userID]
-//             ? new Date(lastReadMap[userID])
-//             : null;
-
-//         // use current messages if they belong to this room, else we can't compute precisely without fetching
-//         const msgsForRoom = (messages || []).filter(
-//           (m) =>
-//             String(m.roomId || m.eventId || m.room || "") === String(roomId)
-//         );
-//         // If no local messages for that room, we cannot compute here reliably. We'll assume 0 unless previously stored in unreadCounts
-//         let unreadForRoom = unreadCounts[roomId] || 0;
-//         if (msgsForRoom.length > 0) {
-//           unreadForRoom = msgsForRoom.filter((msg) => {
-//             if (!msg.createdAt && !msg.sentAt) return false;
-//             const msgDate = msg.sentAt
-//               ? new Date(msg.sentAt)
-//               : new Date(msg.createdAt);
-//             if (String(msg.senderId) === String(userID)) return false;
-//             return lastSeen ? msgDate > lastSeen : true;
-//           }).length;
-//         }
-//         counts[roomId] = unreadForRoom;
-//         total += unreadForRoom;
-//       });
-//       // setUnreadCounts((prev) => ({ ...prev, ...counts }));
-//       setUnreadCountsContext((prev) => ({ ...prev, ...counts }));
-//       localStorage.setItem("totalUnread", total.toString());
-//       window.dispatchEvent(new Event("unreadCountChange"));
-//     }, 300);
-//     return () => clearTimeout(timeout);
-//   }, [allChatRooms, userId, messages, refreshKey]);
-
-//   // ---------- helper to convert link text to anchor (kept)
-//   function linkify(textVal) {
-//     if (!textVal) return "";
-//     const urlRegex = /(https?:\/\/[^\s]+)/g;
-//     return textVal.split(urlRegex).map((part, index) => {
-//       if (part.match(urlRegex)) {
-//         return (
-//           <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-//             {part}
-//           </a>
-//         );
-//       }
-//       return part;
-//     });
-//   }
-
-//   // ---------- install prompt logic (kept)
-//   useEffect(() => {
-//     if (typeof window !== "undefined") {
-//       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
-//       if (addToHomeScreenPopup !== "true") setShowInstall(true);
-//     }
-//     const handler = (e) => {
-//       e.preventDefault();
-//       setDeferredPrompt(e);
-//     };
-//     window.addEventListener("beforeinstallprompt", handler);
-//     return () => window.removeEventListener("beforeinstallprompt", handler);
-//   }, [pathname]);
-
-//   const handleInstallClick = async () => {
-//     setShowInstall(false);
-//     if (deferredPrompt) {
-//       deferredPrompt.prompt();
-//       const { outcome } = await deferredPrompt.userChoice;
-//       if (outcome === "accepted")
-//         localStorage.setItem("addToHomeScreenPopup", "true");
-//       else localStorage.setItem("addToHomeScreenPopup", "false");
-//       setDeferredPrompt(null);
-//     }
-//   };
-
-//   // ---------- render UI (kept exact structure/classes as original)
-//   return (
-//     <div className="groups-container">
-//       <div className="groups-header">
-//         <div className="search-wrapper">
-//           <i className="fas fa-search search-icon"></i>
-//           <input
-//             type="text"
-//             placeholder="Search"
-//             className="search-box"
-//             value={searchTerm}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//           />
-//         </div>
-//       </div>
-
-//       {pathname === "/chat" && showInstall && (
-//         <div className="chat-banner">
-//           <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
-//           <button className="chat-banner-btn" onClick={handleInstallClick}>
-//             Add To Phone Screen
-//           </button>
-//         </div>
-//       )}
-
-//       <ChatGroupsListing
-//         allChatRooms={allChatRooms}
-//         handleOpenMessages={(group) => handleOpenMessages(group)}
-//         unreadCounts={unreadCounts}
-//         searchTerm={searchTerm}
-//       />
-
-//       {selectedGroup && (
-//         <div className="chat-overlay">
-//           <div className="chat-header">
-//             <div className="chat-user-info">
-//               <button
-//                 className="btn back-arrow-chat"
-//                 onClick={() => {
-//                   handleCloseChat();
-//                 }}
-//               >
-//                 <FaArrowLeft fontSize={16} />
-//               </button>
-//               <span className="mx-2">{`${
-//                 selectedGroup.roomName || selectedGroup.name || ""
-//               }`}</span>
-//             </div>
-//           </div>
-//           <button onClick={enableNotifications}>Send Test Message</button>
-//           <div className="chat-messages" ref={chatBodyRef}>
-//             {messages.map((msg) => {
-//               const isMe = String(msg.senderId) === String(userID);
-//               const senderName = msg.senderName;
-//               return (
-//                 <div
-//                   key={msg.id || msg._id}
-//                   className={`chat-message ${isMe ? "sender" : "receiver"}`}
-//                 >
-//                   {!isMe && (
-//                     <div
-//                       className="chat-avatar-receiver"
-//                       style={{
-//                         backgroundColor: getAvatarColor(
-//                           senderName || msg.senderPhoneNumber
-//                         ),
-//                       }}
-//                     >
-//                       {senderName
-//                         ? senderName.charAt(0).toUpperCase()
-//                         : (msg.senderPhoneNumber || "U").charAt(0)}
-//                     </div>
-//                   )}
-//                   <div
-//                     className={`chat-bubble ${isMe ? "sender" : "receiver"}`}
-//                   >
-//                     {!isMe && (
-//                       <div className="chat-sender">
-//                         {senderName
-//                           ? senderName
-//                           : `+91 ${(msg.senderPhoneNumber || "").slice(
-//                               0,
-//                               -4
-//                             )}XXXX`}
-//                       </div>
-//                     )}
-//                     <div className="chat-text">
-//                       {linkify(msg.message || msg.text || "")}
-//                     </div>
-//                     <div className="chat-time">
-//                       {msg.sentAt?.toDate
-//                         ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-//                             "en-IN",
-//                             { hour: "2-digit", minute: "2-digit", hour12: true }
-//                           )
-//                         : msg.createdAt
-//                         ? new Date(msg.createdAt).toLocaleTimeString("en-IN", {
-//                             hour: "2-digit",
-//                             minute: "2-digit",
-//                             hour12: true,
-//                           })
-//                         : ""}
-//                     </div>
-//                   </div>
-//                 </div>
-//               );
-//             })}
-//           </div>
-
-//           <div className="chat-input-container">
-//             <button
-//               type="button"
-//               onPointerDown={(e) => e.preventDefault()}
-//               onClick={() => {
-//                 if (showEmojiPicker) {
-//                   setShowEmojiPicker(false);
-//                   setTimeout(() => {
-//                     textareaRef.current?.focus();
-//                   }, 0);
-//                 } else {
-//                   textareaRef.current?.blur();
-//                   setTimeout(() => {
-//                     setShowEmojiPicker(true);
-//                   }, 50);
-//                 }
-//               }}
-//               className="emoji-btn"
-//             >
-//               {showEmojiPicker ? (
-//                 <FaRegKeyboard fontSize={20} />
-//               ) : (
-//                 <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-//               )}
-//             </button>
-
-//             <textarea
-//               value={text}
-//               ref={textareaRef}
-//               className="chat-input"
-//               rows={1}
-//               onFocus={() => {
-//                 if (showEmojiPicker) setShowEmojiPicker(false);
-//                 setTimeout(() => {
-//                   textareaRef.current?.scrollIntoView({
-//                     behavior: "smooth",
-//                     block: "end",
-//                   });
-//                   window.scrollBy(0, -180);
-//                 }, 300);
-//               }}
-//               onChange={(e) => {
-//                 setText(e.target.value);
-//                 if (e.target.value.length > 0) setShowEmojiPicker(false);
-//               }}
-//               onInput={(e) => {
-//                 e.target.style.height = "auto";
-//                 e.target.style.height =
-//                   Math.min(e.target.scrollHeight, 120) + "px";
-//               }}
-//               placeholder="Type message here..."
-//             />
-
-//             <button
-//               onClick={() => {
-//                 sendMessage();
-//                 if (textareaRef.current)
-//                   textareaRef.current.style.height = "auto";
-//               }}
-//               className="chat-send-btn"
-//             >
-//               <Image src={sendIcon} alt="Send" className="send-icon" />
-//             </button>
-//           </div>
-
-//           {showEmojiPicker && (
-//             <div
-//               className="emoji-container"
-//               onPointerDown={(e) => e.preventDefault()}
-//             >
-//               <EmojiPicker
-//                 width={emojiWidth}
-//                 searchDisabled={true}
-//                 onEmojiClick={(emojiData) => {
-//                   const textarea = textareaRef.current;
-//                   const start = textarea.selectionStart;
-//                   const end = textarea.selectionEnd;
-//                   setText((prevText) => {
-//                     const newText =
-//                       prevText.substring(0, start) +
-//                       emojiData.emoji +
-//                       prevText.substring(end);
-//                     requestAnimationFrame(() => {
-//                       textarea.selectionStart = textarea.selectionEnd =
-//                         start + emojiData.emoji.length;
-//                     });
-//                     return newText;
-//                   });
-//                 }}
-//               />
-//             </div>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default GroupsList;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// components/GroupsList.jsx (updated)
 import React, { useRef, useEffect, useState } from "react";
 import "./GroupsList.css";
 import EmojiPicker from "emoji-picker-react";
@@ -2186,6 +14,8 @@ import {
   GET_CHAT_MESSAGES,
   MARK_READ_MESSAGE,
   BASE_URL,
+  CREATE_DIRECT_CHAT_ROOM,
+  UNREAD_MESSAGE_COUNT,
 } from "@/utils/apiconstants";
 import { askAndSubscribe } from "@/utils/pushClient";
 import { usePathname } from "next/navigation";
@@ -2195,6 +25,7 @@ import { getAvatarColor } from "@/utils/chatHelpers";
 import { PUBLIC_VAPID } from "@/utils/constants";
 import ChatGroupsListing from "@/components/wonderland/chat/ChatGroupsListing";
 import { useChatStore } from "@/hooks/ChatContext";
+import { getRoomDetails } from "@/utils/setGroupDetails";
 
 // helper to read userId from url
 const getUserIdFromUrl = () => {
@@ -2209,6 +40,7 @@ const GroupsList = () => {
   const { makeRequest: fetchUserRequest } = useApi();
   const { makeRequest: fetchMessagesRequest } = useApi();
   const { makeRequest: markReadRequest } = useApi();
+  const { makeRequest: createDirectChatRequest } = useApi();
   const [allChatRooms, setAllChatRooms] = useState([]);
   const [userDetails, setUserDetails] = useState({});
   const { unreadCounts, setUnreadCountsContext } = useChatStore();
@@ -2254,7 +86,7 @@ const GroupsList = () => {
   }
 
   const [selectedGroup, setSelectedGroup] = useState(null);
-  console.log('%c [ selectedGroup ]-2257', 'font-size:13px; background:pink; color:#bf2c9f;', selectedGroup)
+  const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
   const [messages, setMessages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
@@ -2283,7 +115,7 @@ const GroupsList = () => {
   // keep a map for optimistic messages
   const tempIdToClientMap = useRef(new Map());
 
-  // ---------- responsive emoji width (kept)
+  // responsive emoji width
   const [emojiWidth, setEmojiWidth] = useState(400);
   useEffect(() => {
     const updateWidth = () => {
@@ -2297,14 +129,14 @@ const GroupsList = () => {
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
-  // ---------- scroll to bottom when messages change (kept)
+  // scroll to bottom when messages change
   useEffect(() => {
     const chatContainer =
       chatBodyRef.current || document.querySelector(".chat-messages");
     if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
   }, [messages]);
 
-  // ---------- handle back button (kept)
+  // handle back button
   useEffect(() => {
     const handleBackButton = (e) => {
       if (selectedGroup) {
@@ -2317,43 +149,45 @@ const GroupsList = () => {
     return () => window.removeEventListener("popstate", handleBackButton);
   }, [selectedGroup]);
 
-  // SOCKET: Only local listeners for this chat UI (messages append when open)
+  // Only local listeners
   useEffect(() => {
-    if (typeof window === 'undefined' || !socket || !selectedGroup) return;
+    if (typeof window === "undefined" || !socket || !selectedGroup) return;
 
-    const roomId = selectedGroup._id || selectedGroup.id;
+    const groupId = selectedGroup._id || selectedGroup.id;
 
     const onMessageNewLocal = (msg) => {
-      if (String(msg.roomId || msg.eventId) !== String(roomId)) return;
+      if (String(msg.groupId) !== String(groupId)) return;
 
       setMessages((prev) => {
         // replace optimistic if tempId
         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
-          return prev.map((m) => m.tempId === msg.tempId ? { ...msg, id: msg._id } : m);
+          return prev.map((m) =>
+            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+          );
         }
 
         // prevent duplicate
-        if (prev.some((m) => String(m._id || m.id) === String(msg._id))) return prev;
+        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+          return prev;
 
         // append and mark read (global provider handles unread reset)
-        setTimeout(() => markRoomRead(roomId, userID), 50);
+        setTimeout(() => markRoomRead(groupId, userID), 50);
         return [...prev, { ...msg, id: msg._id }];
       });
     };
 
-    socket.on('message:new', onMessageNewLocal);
+    socket.on("message:new", onMessageNewLocal);
 
     return () => {
-      socket.off('message:new', onMessageNewLocal);
+      socket.off("message:new", onMessageNewLocal);
     };
   }, [selectedGroup, userID]);
 
   useEffect(() => {
-    // try REST unread map if needed (keep as is)
     const fetchUnreadMap = async () => {
       try {
         const resp = await fetch(
-          `${BASE_URL}/api/customer/event/chatrooms/${userId}/unread`
+          `${BASE_URL}${UNREAD_MESSAGE_COUNT}/${userId}/unread`
         );
         const json = await resp.json();
         if (!json.error && json.data) {
@@ -2367,26 +201,33 @@ const GroupsList = () => {
     if (userId) fetchUnreadMap();
   }, [userId, chatRoomsData]);
 
-  // ---------- fetch messages REST API (paginated)
-  const fetchMessagesForRoom = async (roomId, page = 1, limit = 50) => {
-    if (!roomId) return;
+  // fetch messages REST API
+  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
+    if (!groupId) return;
     try {
       const resp = await fetchMessagesRequest(
-        `${GET_CHAT_MESSAGES}/${roomId}?page=${page}&limit=${limit}`,
+        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
         "GET"
       );
       if (!resp.error && resp.data) {
         setMessages(resp?.data || []);
-        // compute unread locally if needed, but global handles now
-        const roomObj = allChatRooms.find((r) => String(r._id || r.id) === String(roomId));
+        const roomObj = allChatRooms.find(
+          (r) => String(r._id || r.id) === String(groupId)
+        );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-        const lastReadForMe = lastReadMap[userID] ? new Date(lastReadMap[userID]) : null;
+        const lastReadForMe = lastReadMap[userID]
+          ? new Date(lastReadMap[userID])
+          : null;
         const unread = (resp.data || []).filter((m) => {
-          const created = m.createdAt ? new Date(m.createdAt) : m.sentAt ? new Date(m.sentAt) : null;
+          const created = m.createdAt
+            ? new Date(m.createdAt)
+            : m.sentAt
+            ? new Date(m.sentAt)
+            : null;
           if (!created || String(m.senderId) === String(userID)) return false;
           return lastReadForMe ? created > lastReadForMe : true;
         }).length;
-        setUnreadCountsContext((prev) => ({ ...prev, [roomId]: unread }));
+        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
       } else {
         console.warn("Failed fetch messages", resp);
       }
@@ -2395,39 +236,48 @@ const GroupsList = () => {
     }
   };
 
-  // ---------- handle opening a room
+  // handle opening a room
   const handleOpenMessages = async (group) => {
     chatOpenRef.current = true;
     setSelectedGroup(group);
-    const roomId = group._id || group.id;
-    await fetchMessagesForRoom(roomId);
-    setUnreadCountsContext((prev) => ({ ...prev, [roomId]: 0 }));
-    markRoomRead(roomId, userID);
+    const groupId = group._id || group.id;
+    await fetchMessagesForRoom(groupId);
+    setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+    markRoomRead(groupId, userID);
   };
 
-  const markRoomRead = async (roomId, uid) => {
-    if (!roomId || !uid) return;
+  const markRoomRead = async (groupId, uid) => {
+    if (!groupId || !uid) return;
     try {
       if (socket && socket.connected) {
-        socket.emit("message:read", { roomId, userId: uid });
+        socket.emit("message:read", { groupId: groupId, userId: uid });
       }
       // REST call
       try {
-        const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", { roomId, userId: uid });
-        if (!resp.error && (resp.unreadCounts || (resp.data && resp.data.unreadCounts))) {
-          setUnreadCountsContext((prev) => ({ ...prev, ...(resp.unreadCounts || resp.data.unreadCounts) }));
+        const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
+          groupId: groupId,
+          userId: uid,
+        });
+        if (
+          !resp.error &&
+          (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
+        ) {
+          setUnreadCountsContext((prev) => ({
+            ...prev,
+            ...(resp.unreadCounts || resp.data.unreadCounts),
+          }));
         } else {
-          setUnreadCountsContext((prev) => ({ ...prev, [roomId]: 0 }));
+          setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
         }
       } catch (e) {
-        setUnreadCountsContext((prev) => ({ ...prev, [roomId]: 0 }));
+        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
       }
     } catch (err) {
       console.error("markRoomRead err", err);
     }
   };
 
-  // ---------- handle closing chat
+  // handle closing chat
   const handleCloseChat = async () => {
     if (!selectedGroup || !userId) return;
     await markRoomRead(selectedGroup._id || selectedGroup.id, userID);
@@ -2437,22 +287,25 @@ const GroupsList = () => {
     setMessages([]);
   };
 
-  // send message (optimistic)
+  // send message
   const sendMessage = async () => {
     if (!text.trim() || !eventId || !userID) return;
-    const roomId = eventId;
-    const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const groupId = selectedGroup?._id;
+    const tempId = `temp_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
     const optimistic = {
       id: tempId,
       tempId,
       _id: tempId,
-      roomId,
+      eventId,
+      groupId,
       senderId: userID,
       message: text,
       text,
       type: "text",
       senderName: userDetails?.name,
-      senderPhoneNumber: localStorage.getItem("mobileNumber"),
+      senderPhone: localStorage.getItem("mobileNumber"),
       createdAt: new Date().toISOString(),
     };
 
@@ -2461,7 +314,8 @@ const GroupsList = () => {
 
     if (socket && socket.connected) {
       socket.emit("message:send", {
-        roomId,
+        eventId,
+        groupId,
         message: text,
         type: "text",
         tempId,
@@ -2474,26 +328,38 @@ const GroupsList = () => {
     setShowEmojiPicker(false);
   };
 
-  // ---------- compute unread counts across rooms (if needed, but global handles most)
+  // compute unread counts across rooms
   useEffect(() => {
-    if (!allChatRooms || allChatRooms.length === 0 || !userId || chatOpenRef.current) return;
+    if (
+      !allChatRooms ||
+      allChatRooms.length === 0 ||
+      !userId ||
+      chatOpenRef.current
+    )
+      return;
     const timeout = setTimeout(() => {
       const counts = {};
       let total = 0;
       allChatRooms.forEach((group) => {
-        const roomId = group._id || group.id;
+        const groupId = group._id || group.id;
         const lastReadMap = group.lastReadAt || group.lastReadAtMap || {};
-        const lastSeen = lastReadMap[userID] ? new Date(lastReadMap[userID]) : null;
-        const msgsForRoom = messages.filter((m) => String(m.roomId || m.eventId || m.room || "") === String(roomId));
-        let unreadForRoom = unreadCounts[roomId] || 0;
+        const lastSeen = lastReadMap[userID]
+          ? new Date(lastReadMap[userID])
+          : null;
+        const msgsForRoom = messages.filter(
+          (m) => String(m.groupId || "") === String(groupId)
+        );
+        let unreadForRoom = unreadCounts[groupId] || 0;
         if (msgsForRoom.length > 0) {
           unreadForRoom = msgsForRoom.filter((msg) => {
-            const msgDate = msg.sentAt ? new Date(msg.sentAt) : new Date(msg.createdAt);
+            const msgDate = msg.sentAt
+              ? new Date(msg.sentAt)
+              : new Date(msg.createdAt);
             if (String(msg.senderId) === String(userID)) return false;
             return lastSeen ? msgDate > lastSeen : true;
           }).length;
         }
-        counts[roomId] = unreadForRoom;
+        counts[groupId] = unreadForRoom;
         total += unreadForRoom;
       });
       setUnreadCountsContext((prev) => ({ ...prev, ...counts }));
@@ -2503,7 +369,7 @@ const GroupsList = () => {
     return () => clearTimeout(timeout);
   }, [allChatRooms, userId, messages, refreshKey]);
 
-  // ---------- helper to convert link text to anchor
+  // helper to convert link text to anchor
   function linkify(textVal) {
     if (!textVal) return "";
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -2519,7 +385,7 @@ const GroupsList = () => {
     });
   }
 
-  // ---------- install prompt logic
+  //  install prompt logic
   useEffect(() => {
     if (typeof window !== "undefined") {
       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
@@ -2538,13 +404,56 @@ const GroupsList = () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") localStorage.setItem("addToHomeScreenPopup", "true");
+      if (outcome === "accepted")
+        localStorage.setItem("addToHomeScreenPopup", "true");
       else localStorage.setItem("addToHomeScreenPopup", "false");
       setDeferredPrompt(null);
     }
   };
 
-  // ---------- render UI
+  const handleClickUserName = async (senderId) => {
+    try {
+      // Check if a direct room already exists
+      const existingRoom = allChatRooms.find((room) => {
+        if (room.roomType !== "direct") return false;
+
+        const memberIds = room.members.map((m) => m.userId);
+        return memberIds.includes(userId) && memberIds.includes(senderId);
+      });
+
+      // If found -> Open that chat directly
+      if (existingRoom) {
+        console.log("Direct chat already exists:", existingRoom);
+        handleOpenMessages(existingRoom);
+        return;
+      }
+
+      // No room found -> Call backend API to create one
+      const resp = await createDirectChatRequest(
+        `${CREATE_DIRECT_CHAT_ROOM}`,
+        "POST",
+        {
+          members: [userId, senderId],
+          eventId: selectedGroup?.eventId,
+        }
+      );
+
+      if (resp?.data) {
+        setAllChatRooms((prev) => [...prev, resp?.data]);
+        handleOpenMessages(resp?.data);
+      }
+    } catch (err) {
+      console.log("Error:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedGroup) {
+      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+    }
+  }, [selectedGroup]);
+
+  // render UI
   return (
     <div className="groups-container">
       <div className="groups-header">
@@ -2574,6 +483,7 @@ const GroupsList = () => {
         handleOpenMessages={(group) => handleOpenMessages(group)}
         unreadCounts={unreadCounts}
         searchTerm={searchTerm}
+        userId={userId}
       />
 
       {selectedGroup && (
@@ -2589,7 +499,7 @@ const GroupsList = () => {
                 <FaArrowLeft fontSize={16} />
               </button>
               <span className="mx-2">{`${
-                selectedGroup.roomName || selectedGroup.name || ""
+                roomDisplayDetails?.name || selectedGroup.roomName
               }`}</span>
             </div>
           </div>
@@ -2597,7 +507,7 @@ const GroupsList = () => {
             {messages.map((msg) => {
               const isMe = String(msg.senderId) === String(userID);
               const senderName = msg.senderName;
-              return (
+              return msg?.type !== "info" ? (
                 <div
                   key={msg.id || msg._id}
                   className={`chat-message ${isMe ? "sender" : "receiver"}`}
@@ -2607,36 +517,38 @@ const GroupsList = () => {
                       className="chat-avatar-receiver"
                       style={{
                         backgroundColor: getAvatarColor(
-                          senderName || msg.senderPhoneNumber
+                          senderName || msg.senderPhone
                         ),
                       }}
                     >
                       {senderName
                         ? senderName.charAt(0).toUpperCase()
-                        : (msg.senderPhoneNumber || "U").charAt(0)}
+                        : (msg.senderPhone || "U").charAt(0)}
                     </div>
                   )}
                   <div
                     className={`chat-bubble ${isMe ? "sender" : "receiver"}`}
                   >
                     {!isMe && (
-                      <div className="chat-sender">
+                      <div
+                        className="chat-sender"
+                        onClick={() => handleClickUserName(msg.senderId)}
+                      >
                         {senderName
                           ? senderName
-                          : `+91 ${(msg.senderPhoneNumber || "").slice(
-                              0,
-                              -4
-                            )}XXXX`}
+                          : `+91 ${(msg.senderPhone || "").slice(0, -4)}XXXX`}
                       </div>
                     )}
-                    <div className="chat-text">
-                      {linkify(msg.message || msg.text || "")}
-                    </div>
+                    <div className="chat-text">{linkify(msg.message)}</div>
                     <div className="chat-time">
                       {msg.sentAt?.toDate
                         ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
                             "en-IN",
-                            { hour: "2-digit", minute: "2-digit", hour12: true }
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
                           )
                         : msg.createdAt
                         ? new Date(msg.createdAt).toLocaleTimeString("en-IN", {
@@ -2647,6 +559,10 @@ const GroupsList = () => {
                         : ""}
                     </div>
                   </div>
+                </div>
+              ) : (
+                <div className="d-flex justify-content-center align-items-center">
+                  <p className="text-info">{msg?.message}</p>
                 </div>
               );
             })}

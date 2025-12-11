@@ -56,3 +56,7 @@ export const UPDATE_USER_AVATAR_BY_ID = "/api/user/user-avatar";
 export const GET_CHAT_ROOMS = "/api/customer/event/chatrooms/user";
 export const GET_CHAT_MESSAGES = "/api/customer/event/chat/messages";
 export const MARK_READ_MESSAGE = "/api/customer/event/mark-read";
+export const CREATE_DIRECT_CHAT_ROOM = '/api/customer/event/create-direct-room'
+export const SUBSCRIBE_NOTIFICATION = "/api/customer/event/subscribe";
+export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/unsubscribe";
+export const UNREAD_MESSAGE_COUNT = '/api/customer/event/chatrooms';

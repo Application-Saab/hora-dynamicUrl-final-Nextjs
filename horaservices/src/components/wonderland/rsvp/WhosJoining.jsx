@@ -10,6 +10,7 @@ import useScreenSize from "@/hooks/useScreenSize";
 import CustomButton from "../common/CustomButton";
 import { RSVP_STATUS } from "@/utils/constants";
 import RsvpNameModal from "./RsvpNameModal";
+import socket from "@/socket";
 
 const colors = [
   "#FD8D0A",
@@ -39,7 +40,14 @@ const WhosJoining = ({
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showNameModal, setShowNameModal] = useState("");
   const [userName, setUserName] = useState("");
-  console.log('%c [ userName ]-42', 'font-size:13px; background:pink; color:#bf2c9f;', userName)
+
+  useEffect(() => {
+    socket.emit("joinEvent", eventId);
+
+    return () => {
+      socket.emit("leaveEvent", eventId);
+    };
+  }, [eventId]);
 
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
@@ -69,6 +77,9 @@ const WhosJoining = ({
   const submitRsvp = async (rsvpStatus) => {
     setShowNameModal(false);
     setSelectedStatus(rsvpStatus);
+    const tempId = `temp_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
     if (!rsvpStatus) return;
     try {
       const response = await rsvpRequest(`${UPDATE_RSVP_STATUS}`, "PUT", {
@@ -85,6 +96,18 @@ const WhosJoining = ({
           `rsvp_submitted_${eventId}_${loggedinUserId}`,
           "true"
         );
+        if (socket && socket.connected) {
+          socket.emit("message:send", {
+            eventId,
+            // groupId,
+            message: `${userData?.name || userName} joined the group`,
+            type: "info",
+            tempId,
+            senderName: userData?.name || userName,
+            senderPhone: userData?.phone,
+          });
+        }
+        socket.emit("rsvp:updated", { eventId });
         setRefetchRsvpList((prev) => prev + 1);
         onRsvpUpdate?.();
       }
@@ -92,6 +115,22 @@ const WhosJoining = ({
       alert("Something went wrong. Please try again.");
     }
   };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (data) => {
+      if (data.eventId === eventId) {
+        setRefetchRsvpList((prev) => prev + 1);
+      }
+    };
+
+    socket.on("rsvp:refetch", handler);
+
+    return () => {
+      socket.off("rsvp:refetch", handler);
+    };
+  }, [eventId]);
 
   return (
     <>

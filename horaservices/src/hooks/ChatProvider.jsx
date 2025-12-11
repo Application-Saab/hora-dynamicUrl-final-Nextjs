@@ -1,6 +1,5 @@
-// src/providers/ChatProvider.jsx
 import React, { useEffect } from 'react';
-import socket from '@/socket'; // your socket import
+import socket from '@/socket';
 import { useChatStore } from './ChatContext';
 
 const ChatProviderMain = ({ children }) => {
@@ -14,21 +13,21 @@ const ChatProviderMain = ({ children }) => {
       console.log('Global socket connected for unread updates');
     };
 
-    // Handle new message: Always increment unread (since if chat open, GroupsList will handle mark read separately)
+    // Handle new message: Always increment unread
     const onMessageNew = (msg) => {
-      const roomId = msg.roomId || msg.eventId;
-      if (!roomId) return;
+      const groupId = msg.groupId;
+      if (!groupId) return;
 
-      // Increment unread for this room (GroupsList will reset to 0 if open)
+      // Increment unread for this room
       setUnreadCountsContext((old) => {
-        const cur = Number(old[roomId] || 0) + 1;
-        return { ...old, [roomId]: cur };
+        const cur = Number(old[groupId] || 0) + 1;
+        return { ...old, [groupId]: cur };
       });
     };
 
     const onReadUpdate = (update) => {
       if (String(update.userId) === String(userID)) {
-        setUnreadCountsContext((prev) => ({ ...prev, [update.roomId]: 0 }));
+        setUnreadCountsContext((prev) => ({ ...prev, [update.groupId]: 0 }));
       }
     };
 
@@ -36,9 +35,9 @@ const ChatProviderMain = ({ children }) => {
       setUnreadCountsContext((prev) => ({ ...prev, ...map }));
     };
 
-    const onUnreadUpdate = ({ roomId, count, userId: forUser }) => {
+    const onUnreadUpdate = ({ groupId, count, userId: forUser }) => {
       if (!forUser || String(forUser) === String(userID)) {
-        setUnreadCountsContext((prev) => ({ ...prev, [roomId]: count }));
+        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: count }));
       }
     };
 
