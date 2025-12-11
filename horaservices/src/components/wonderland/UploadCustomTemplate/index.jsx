@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -5,67 +6,69 @@ import { useRouter } from "next/navigation";
 import PropTypes from "prop-types";
 import "./UploadCustomTemplate.css";
 import { BASE_URL } from "@/utils/apiconstants";
+import { saveTemplate } from "@/utils/indexedDB";
 
 const UploadCustomTemplate = ({ eventId, userId, token, label = "Upload Your Own Design" }) => {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(""); 
 
   const handleUploadChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!eventId) {
-      console.error("Missing Event ID");
-      alert("Event ID missing!");
+      setError("Event ID missing!");
       return;
     }
 
     if (!userId) {
-      console.error("Missing User ID");
-      alert("User ID missing!");
+      setError("User ID missing!");
       return;
     }
 
+    setError(""); // Clear previous errors
     uploadCustomTemplate(file);
   };
 
-  const uploadCustomTemplate = async (file) => {
-    setUploading(true);
-
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("userId", userId);
-
+ const uploadCustomTemplate = async (file) => {
+  setUploading(true);
+  const reader = new FileReader();
+  reader.onloadend = async () => {
     try {
-      const apiUrl = `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`;
-      console.log("API URL:", apiUrl);
-
-      const res = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          Authorization: token || "",
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Upload failed");
-
     
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        localStorage.setItem(`localTemplateImage_${eventId}`, reader.result);
-        router.replace(`/wonderland/invite?eventid=${eventId}`);
-      };
-      reader.readAsDataURL(file);
+      await saveTemplate(`template_${eventId}`, reader.result);
 
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-    } finally {
-      setUploading(false);
+      router.replace(`/wonderland/invite?eventid=${eventId}`);
+    } catch (err) {
+      setError("Failed to save template locally.");
     }
   };
+  reader.readAsDataURL(file);
+
+  
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("userId", userId);
+
+  try {
+    const apiUrl = `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`;
+    const res = await fetch(apiUrl, {
+      method: "PUT",
+      headers: { Authorization: token || "" },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data?.message || "Backend upload failed");
+    }
+  } catch (err) {
+    setError(err.message || "Upload failed. Please try again.");
+  } finally {
+    setUploading(false);
+  }
+};
 
   return (
     <div 
@@ -86,6 +89,8 @@ const UploadCustomTemplate = ({ eventId, userId, token, label = "Upload Your Own
       />
 
       {uploading && <div className="upload-overlay">Uploading…</div>}
+
+      {error && <div className="error-popup">{error}</div>}
     </div>
   );
 };

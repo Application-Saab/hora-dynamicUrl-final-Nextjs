@@ -187,6 +187,7 @@ const WhosJoining = ({
         isOpen={showListModal}
         onClose={() => setShowListModal(false)}
         guestData={allGuestsData}
+        totalSubmitted={rsvpSubmittedGuests?.length || 0}
       />
     </>
   );

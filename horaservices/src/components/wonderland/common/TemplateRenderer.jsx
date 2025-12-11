@@ -5,6 +5,7 @@ import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
 import TemplatecardSkeleton from "../TemplateSkeleton/templatecardSkeleton";
 import { getScreenSize,defaultFontSizeMap} from "@/utils/constants";
+import { getTemplate } from "@/utils/indexedDB";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -58,22 +59,29 @@ const [baseStyles, setBaseStyles] = useState(getResponsiveFontStyles());
 
   }, [width, baseFontSize]);
 
-  useEffect(() => {
-    if (!eventDetails?.hostName) return;
-    const baseFontRem = parseFloat(baseStyles.fontSize);
-    if (eventDetails.hostName.length <= 14)
-      setDynamicFontSize((baseFontRem + 0.5).toFixed(2) + "rem");
-    else setDynamicFontSize(baseStyles.fontSize);
-  }, [eventDetails?.hostName, baseStyles]);
+const [imageUrl, setImageUrl] = useState(DefaultTemplate.src);
 
-  const localKey = `localTemplateImage_${eventDetails?._id || eventDetails?.eventId}`;
+useEffect(() => {
+  const localKey = `template_${eventDetails?._id || eventDetails?.eventId}`;
 
-  const imageUrl =
-    localStorage.getItem(localKey) ||
-    orderDetails?.externalTemplateImageUrl ||
-    orderDetails?.Image ||
-    orderDetails?.hostImage ||
-    DefaultTemplate.src;
+  const fetchImage = async () => {
+    const savedImage = await getTemplate(localKey); // Fetch from IndexedDB
+    if (savedImage) {
+      setImageUrl(savedImage);
+    } else {
+      setImageUrl(
+        orderDetails?.externalTemplateImageUrl ||
+        orderDetails?.Image ||
+        orderDetails?.hostImage ||
+        DefaultTemplate.src
+      );
+    }
+  };
+
+  fetchImage();
+}, [eventDetails, orderDetails]);
+
+
 
   const handleImageLoad = (e) => {
     const img = e.target;
@@ -135,7 +143,7 @@ const [baseStyles, setBaseStyles] = useState(getResponsiveFontStyles());
                   top: baseStyles.top,
                   left: "50%",
                   transform: "translateX(-50%)",
-                  fontSize: dynamicFontSize,
+                  fontSize: baseStyles.fontSize,
                   lineHeight: baseStyles.lineHeight,
                   fontWeight: 700,
                   color: "#fff",

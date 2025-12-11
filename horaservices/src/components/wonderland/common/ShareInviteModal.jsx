@@ -164,7 +164,8 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
           {/* Template preview */}
           <TemplateRenderer
             fetchEventLoading={false}
-            eventDetails={eventData}
+             eventDetails={eventData}
+            orderDetails={eventData}
             baseFontSize={{
               small: "1.1rem",
               medium: "1.2rem",
