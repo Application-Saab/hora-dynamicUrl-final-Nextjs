@@ -179,7 +179,7 @@ const handleDownload = async () => {
   if (!eventid) return;
   if (!userId) return;
 
-  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
+  const blob = await captureElementAsImage(noteRef.current, [".emoji-btn"]);
   if (!blob) return;
 
   const base64 = await new Promise((resolve) => {
@@ -250,7 +250,7 @@ const handleDownload = async () => {
             </div>
 
             <div
-              className="emoji-button"
+              className="emoji-btn"
               style={{ position: "absolute", right: 0, top: 0 }}
             >
               <EmojiPickerButton

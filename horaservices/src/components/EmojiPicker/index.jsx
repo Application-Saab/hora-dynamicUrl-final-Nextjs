@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import emojiIcon from "@/assets/Emoji.png";
@@ -15,9 +15,11 @@ export default function EmojiPickerButton({
   onEmojiSelect,
   isPickerOpen,
   setIsPickerOpen,
+  simple = false, // New prop to control behavior
 }) {
   const pickerVisible = isPickerOpen ?? false;
   const togglePicker = setIsPickerOpen ?? (() => {});
+  const [forceOpen, setForceOpen] = useState(false);
 
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false); 
@@ -38,18 +40,28 @@ export default function EmojiPickerButton({
 
 
   useEffect(() => {
-    document.body.classList.toggle("emoji-open", pickerVisible);
-  }, [pickerVisible]);
+    if (!simple) {
+      document.body.classList.toggle("emoji-open", pickerVisible);
+    }
+  }, [pickerVisible, simple]);
 
 
   const handleButtonClick = (e) => {
     e.preventDefault();
 
+    if (simple) {
+      // Simple mode for chat
+      setForceOpen(false); // Reset force open
+      togglePicker(!pickerVisible);
+      return;
+    }
+
+    // Complex mode for Thankyou-note
     if (pickerVisible) {
-      
+
       togglePicker(false);
 
-    
+
       if (lastFocusedRef.current) {
         setTimeout(() => {
           lastFocusedRef.current.focus({ preventScroll: true });
@@ -78,18 +90,20 @@ export default function EmojiPickerButton({
 
  
   const handleEmojiClick = (emojiObj, event) => {
-    event.stopPropagation();
-
-
     onEmojiSelect?.(emojiObj);
 
-    // Don't blur the element - keep cursor visible for multiple emoji selections
-    // The parent component (insertEmoji) will handle cursor positioning
+    // In simple mode, reopen picker immediately after selection
+    if (simple) {
+      // Use queueMicrotask for immediate execution after current task
+      queueMicrotask(() => setIsPickerOpen(true));
+    }
   };
 
 
  
   useEffect(() => {
+    if (simple) return; // Skip complex logic in simple mode
+
     const block = (e) => {
       if (pickerVisible && blockKeyboard.current) {
         // Prevent focus events that might trigger keyboard, but don't blur
@@ -100,10 +114,10 @@ export default function EmojiPickerButton({
     window.addEventListener("focus", block, true);
 
     return () => window.removeEventListener("focus", block, true);
-  }, [pickerVisible]);
+  }, [pickerVisible, simple]);
 
   useEffect(() => {
-    if (!pickerVisible) return;
+    if (simple || !pickerVisible) return;
 
     window.history.pushState({ picker: true }, "");
 
@@ -117,44 +131,49 @@ export default function EmojiPickerButton({
     window.addEventListener("popstate", back);
 
     return () => window.removeEventListener("popstate", back);
-  }, [pickerVisible]);
+  }, [pickerVisible, simple]);
+
 
  
   useEffect(() => {
     const handler = (e) => {
       if (
         pickerVisible &&
+        !forceOpen && // Don't close if forceOpen is true
         !e.target.closest(".emoji-picker-container") &&
-        !e.target.closest(".emoji-button")
+        !e.target.closest(".emoji-btn")
       ) {
         togglePicker(false);
-        blockKeyboard.current = false;
+        setForceOpen(false);
+        if (!simple) {
+          blockKeyboard.current = false;
+        }
       }
     };
 
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
-  }, [pickerVisible]);
+  }, [pickerVisible, simple, forceOpen]);
 
   return (
     <>
       {/* BUTTON */}
       <div
-        className="emoji-button"
-        onMouseDown={(e) => {
+        className="emoji-btn"
+        onClick={(e) => {
           e.preventDefault();
           handleButtonClick(e);
         }}
       >
         <Image
-          src={pickerVisible ? ThankYouKeyboard : emojiIcon}
+          src={simple ? emojiIcon : (pickerVisible ? ThankYouKeyboard : emojiIcon)}
           alt="emoji"
           width={30}
           height={30}
           style={{
             cursor: "pointer",
-            transition: "transform 0.2s",
-            transform: pickerVisible ? "scale(0.9)" : "scale(1)",
+            transition: simple ? "none" : "transform 0.2s",
+            transform: simple ? "none" : (pickerVisible ? "scale(0.9)" : "scale(1)"),
           }}
         />
       </div>
@@ -162,16 +181,26 @@ export default function EmojiPickerButton({
       {/* PICKER */}
       {pickerVisible && (
         <div className="emoji-picker-container open">
-          <EmojiPicker
-            onEmojiClick={handleEmojiClick}
-            width="100%"
-            height={260}
-            searchDisabled
-            previewConfig={{ showPreview: false }}
-            lazyLoadEmojis
-            skinTonesDisabled
-            theme="auto"
-          />
+          <div
+            onClick={(e) => {
+              // Prevent emoji picker from closing when clicking inside in simple mode
+              if (simple) {
+                e.stopPropagation();
+              }
+            }}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <EmojiPicker
+              onEmojiClick={(emojiObject, event) => handleEmojiClick(emojiObject, event)}
+              width="100%"
+              height={260}
+              searchDisabled
+              previewConfig={{ showPreview: false }}
+              lazyLoadEmojis
+              skinTonesDisabled
+              theme="auto"
+            />
+          </div>
         </div>
       )}
     </>

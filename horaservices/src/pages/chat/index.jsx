@@ -1,5 +1,6 @@
 
 
+
 import React, { useRef, useEffect, useState } from "react";
 import { db } from "../../firebase";
 import {
@@ -15,12 +16,11 @@ import {
   setDoc,
 } from "firebase/firestore";
 import "./GroupsList.css";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPickerButton from "@/components/EmojiPicker";
 import emojiIcon from "@/assets/chat/Emoji.svg";
 import Image from "next/image";
 import { FaArrowLeft } from "react-icons/fa";
 import "../wonderland/EventInvitation.css";
-import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/chat/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
 import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
@@ -41,13 +41,12 @@ const GroupsList = () => {
   const [messages, setMessages] = useState([]);
   // const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
   const chatBodyRef = useRef(null);
   const userId = getUserIdFromUrl();
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 const [totalUnread, setTotalUnread] = useState(0);
  const pathname = usePathname(); // ✅ Current route
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -56,7 +55,66 @@ const [text, setText] = useState("");
 const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 const eventId = selectedGroup?.id || null;
   const textareaRef = useRef(null);
+  const lastRangeRef = useRef(null); // cursor memory
 const chatOpenRef = useRef(false);
+
+  // Cursor memory for emoji insertion
+  const saveCursor = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      lastRangeRef.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  // INSERT EMOJI (same as Create-note - insert as images)
+  const insertEmoji = (emojiObject) => {
+    const emojiUrl = emojiObject?.imageUrl;
+
+    // Focus without triggering keyboard by temporarily setting inputmode
+    textareaRef.current.setAttribute('inputmode', 'none');
+    textareaRef.current.focus({ preventScroll: true });
+    setTimeout(() => {
+      textareaRef.current.removeAttribute('inputmode');
+    }, 50);
+
+    let sel = window.getSelection();
+    let range;
+
+    if (
+      lastRangeRef.current &&
+      textareaRef.current.contains(lastRangeRef.current.startContainer)
+    ) {
+      range = lastRangeRef.current;
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(textareaRef.current);
+      range.collapse(false);
+    }
+
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    const img = document.createElement("img");
+    img.src = emojiUrl;
+    img.className = "emoji-inline";
+    img.style.width = "24px";
+    img.style.height = "24px";
+    img.style.verticalAlign = "middle";
+    img.style.display = "inline-block";
+    img.style.margin = "0 2px";
+
+    range.insertNode(img);
+
+    // Move cursor after emoji
+    const newRange = document.createRange();
+    newRange.setStartAfter(img);
+    newRange.collapse(true);
+
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+
+    lastRangeRef.current = newRange; // save new cursor
+  };
 const [unreadCounts, setUnreadCounts] = useState({});
  const [chatBg, setChatBg] = useState(null);
 
@@ -264,7 +322,7 @@ const getAvatarColor = (name) => {
 
       // Prevent touch scrolling on mobile when not in chat messages
       const preventScroll = (e) => {
-        if (!e.target.closest('.chat-messages') && !e.target.closest('.emoji-container')) {
+        if (!e.target.closest('.chat-messages') && !e.target.closest('.emoji-picker-container')) {
           e.preventDefault();
         }
       };
@@ -290,24 +348,6 @@ const getAvatarColor = (name) => {
     }
   }, [selectedGroup]);
 
-  const [emojiWidth, setEmojiWidth] = useState(400);
-  useEffect(() => {
-    const updateWidth = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth > 450) {
-        setEmojiWidth(450);
-      } else if (screenWidth <= 450) {
-        setEmojiWidth(screenWidth - 20);
-      } else {
-        setEmojiWidth(screenWidth - 50);
-      }
-    };
-
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
 
   
  useEffect(() => {
@@ -323,20 +363,20 @@ const getAvatarColor = (name) => {
       if (
         emojiPickerRef.current &&
         !emojiPickerRef.current.contains(event.target) &&
-        !event.target.closest(".emoji-btn")
+        !event.target.closest(".emoji-button")
       ) {
         setIsEmojiPickerOpen(false);
       }
     };
 
-    if (isEmojiPickerOpen) {
+    if (showEmojiPicker) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isEmojiPickerOpen]);
+  }, [showEmojiPicker]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -345,14 +385,14 @@ const getAvatarColor = (name) => {
       }
     };
 
-    if (isEmojiPickerOpen) {
+    if (showEmojiPicker) {
       document.addEventListener("keydown", handleKeyDown);
     }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isEmojiPickerOpen]);
+  }, [showEmojiPicker]);
 
 
   useEffect(() => {
@@ -691,7 +731,10 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
 };
 
   const sendMessage = async () => {
-    if (!text.trim()) return;
+    const messageHTML = textareaRef.current?.innerHTML?.trim();
+    const messageText = textareaRef.current?.textContent?.trim();
+    // Check if there's any content (text or images)
+    if (!messageText && (!messageHTML || messageHTML === '<br>' || messageHTML === '<div><br></div>')) return;
     if (!eventId || !userID) {
       console.warn("Missing eventId or userId — cannot send message.");
       return;
@@ -699,18 +742,23 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
     const localSenderName = localStorage.getItem("wonderLandUserName") || "";
 
     await addDoc(collection(db, "groups", eventId, "messages"), {
-      text,
+      text: messageText,
+      html: messageHTML, // Store HTML content for emojis
       senderId: userID,
-      
+
       // senderName:
       //   urlParams?.userType === "host" ? orderDetails?.Name : localSenderName,
       senderName: localSenderName ? localSenderName : userData?.name,
       senderPhoneNumber: localStorage.getItem("mobileNumber"),
       sentAt: serverTimestamp(),
     });
-   
 
-    setText("");
+
+    // Clear contentEditable
+    if (textareaRef.current) {
+      textareaRef.current.innerHTML = "";
+      textareaRef.current.style.height = "auto";
+    }
     setShowEmojiPicker(false);
   };
 
@@ -1005,7 +1053,7 @@ if (isConsecutive && !isMe) {
         </div>
       )}
 
-      <div className="chat-text">{linkify(msg.text)}</div>
+      <div className="chat-text" dangerouslySetInnerHTML={{ __html: msg.html || linkify(msg.text) }} />
 
      {/* <div className="chat-time">
         {msg.sentAt?.toDate
@@ -1033,84 +1081,61 @@ if (isConsecutive && !isMe) {
 
        <div className="chat-input-container">
         
-                  <button
-                    type="button"
-                    onPointerDown={(e) => e.preventDefault()}
-                    onClick={() => {
+                  <EmojiPickerButton
+                    onEmojiSelect={insertEmoji}
+                    isPickerOpen={showEmojiPicker}
+                    setIsPickerOpen={setShowEmojiPicker}
+                    simple={true}
+                  />
+
+                  <div>
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      style={{ display: "none" }}
+                    />
+                  </div>
+    
+                  <div
+                    ref={textareaRef}
+                    contentEditable
+                    suppressContentEditableWarning={true}
+                    onFocus={() => {
                       if (showEmojiPicker) {
                         setShowEmojiPicker(false);
-                        setTimeout(() => {
-                          textareaRef.current?.focus();
-                        }, 0);
-                      } else {
-                          // setShowEmojiPicker(true);
-                          // textareaRef.current?.blur();
-                            textareaRef.current?.blur();
-        setTimeout(() => {
-          setShowEmojiPicker(true);
-        },50);
                       }
-                    }}
-                    className="emoji-btn"
-                  >
-                    {showEmojiPicker ? (
-                      <FaRegKeyboard fontSize={20} />
-                    ) : (
-                      <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-                    )}
-    
-                    <div>
-                      {/* Hidden file input */}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={handleImageUpload}
-                        style={{ display: "none" }}
-                      />
-    
-                    </div>
-                  </button>
-    
-                  <textarea
-                    value={text}
-                    ref={textareaRef}
-                    className="chat-input"
-                    rows={1}
-                    onFocus={() => {
-                     if (showEmojiPicker) {
-                          setShowEmojiPicker(false);
-                        }
-                        setTimeout(() => {
-                          textareaRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "end",
-                          });
-                          window.scrollBy(0, -180); 
-                        }, 300);
-                    }}
-                    
-                    onChange={(e) => {
-                      setText(e.target.value);
-                      if (e.target.value.length > 0) {
-                          setShowEmojiPicker(false); 
-                        }
+                      setTimeout(() => {
+                        textareaRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "end",
+                        });
+                        window.scrollBy(0, -180);
+                      }, 300);
+
+                      // Add cursor saving listeners
+                      const el = textareaRef.current;
+                      el.addEventListener("keyup", saveCursor);
+                      el.addEventListener("mouseup", saveCursor);
+                      el.addEventListener("focus", saveCursor);
                     }}
                     onInput={(e) => {
-                      e.target.style.height = "auto"; 
-                      e.target.style.height =
-                        Math.min(e.target.scrollHeight, 120) + "px"; 
+                      const el = e.target;
+                      if (el.textContent.trim().length > 0) {
+                        setShowEmojiPicker(false);
+                      }
+                      // Auto-resize logic for contentEditable
+                      el.style.height = "auto";
+                      el.style.height = Math.min(el.scrollHeight, 120) + "px";
                     }}
-                    placeholder="Type message here..."
+                    className="chat-input"
+                    data-placeholder="Type message here..."
                   />
     
                   <button
-                    onClick={() => {
-                      sendMessage();
-                      if (textareaRef.current) {
-                        textareaRef.current.style.height = "auto"; 
-                      }
-                    }}
+                    onClick={sendMessage}
                     className="chat-send-btn"
                   >
                     <Image src={sendIcon} alt="Send" className="send-icon" />
@@ -1118,41 +1143,6 @@ if (isConsecutive && !isMe) {
     
                 </div>
     
-                {showEmojiPicker && (
-                  <div
-                    className="emoji-container"
-                      onPointerDown={(e) => e.preventDefault()} 
-    
-                    // onMouseDown={(e) => e.preventDefault()}
-                    // onTouchStart={(e) => e.preventDefault()}
-                  >
-    
-    
-                    <EmojiPicker
-                      width={emojiWidth}
-                      searchDisabled={true}
-                      onEmojiClick={(emojiData) => {
-                        const textarea = textareaRef.current;
-                        const start = textarea.selectionStart;
-                        const end = textarea.selectionEnd;
-    
-                        setText((prevText) => {
-                          const newText =
-                            prevText.substring(0, start) +
-                            emojiData.emoji +
-                            prevText.substring(end);
-    
-                          requestAnimationFrame(() => {
-                            textarea.selectionStart = textarea.selectionEnd =
-                              start + emojiData.emoji.length;
-                          });
-    
-                          return newText;
-                        });
-                      }}
-                    />
-                  </div>
-                )}
 
         </div>
       )}

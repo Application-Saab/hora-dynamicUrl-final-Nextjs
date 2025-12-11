@@ -344,6 +344,14 @@
   height: clamp(26px, calc((36 / 393) * 100vw), 36px);
 }
 
+.emoji-inline {
+  width: 13px;
+  height: 13px;
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 2px;
+}
+
 
 /* TEXTAREA */
 .chat-input {
@@ -371,6 +379,15 @@
   font-size: clamp(15px, calc((18 / 393) * 100vw), 20px);
   letter-spacing: clamp(0.3px, calc((0.52 / 393) * 100vw), 0.7px);
 }
+
+/* ContentEditable placeholder */
+.chat-input:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  pointer-events: none;
+}
+
+
 
 /* SEND BUTTON */
 .chat-send-btn {
