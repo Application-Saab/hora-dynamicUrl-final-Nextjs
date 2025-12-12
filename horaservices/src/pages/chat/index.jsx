@@ -962,6 +962,7 @@ useEffect(() => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        paddingBottom: showEmojiPicker ? "260px" : "0px", // Add padding when emoji picker is open
       }}
     >
 
@@ -1086,6 +1087,7 @@ if (isConsecutive && !isMe) {
                     isPickerOpen={showEmojiPicker}
                     setIsPickerOpen={setShowEmojiPicker}
                     simple={true}
+                    emojiIcon={emojiIcon}
                   />
 
                   <div>

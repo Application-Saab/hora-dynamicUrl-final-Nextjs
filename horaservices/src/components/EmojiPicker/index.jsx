@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import emojiIcon from "@/assets/Emoji.png";
+import emojiicon from "@/assets/Emoji.png";
 import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
 import "./emoji.css";
 
@@ -16,6 +16,7 @@ export default function EmojiPickerButton({
   isPickerOpen,
   setIsPickerOpen,
   simple = false, // New prop to control behavior
+  emojiIcon=emojiicon
 }) {
   const pickerVisible = isPickerOpen ?? false;
   const togglePicker = setIsPickerOpen ?? (() => {});
