@@ -70,7 +70,6 @@ const OrderDetail = () => {
       setOrderDetail(responseData?.data);
       setDecorationItems(responseData?.data?.items[0]?.decoration);
       setDecorationComments(responseData?.data?.decoration_comments);
-      console.log("111" , responseData?.data?.add_on);
       setAddOn(responseData?.data?.add_on);
       setLoading(false);
     } catch (error) {
