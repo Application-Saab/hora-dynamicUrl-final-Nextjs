@@ -1,3 +1,38 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  background: #000; 
+  height: 100%;
+}
+
+body {
+  height: 100dvh; /* NOT 100vh */
+  background: #000; 
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Safe-area padding disable */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
+body {
+  padding-bottom: calc(0px + var(--sab)); 
+  background-color: #fff; 
+}
+
+
+.emoji-picker-react {
+  background: #fff !important;
+  border-radius: 0 !important;
+}
 
 .note-scroll-container {
   scroll-behavior: smooth;
@@ -14,7 +49,7 @@
   transition: all 0.3s ease;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  margin:  0 auto;
+  margin:  10px auto;
    pointer-events: auto;
        
 } 
@@ -36,7 +71,6 @@
     font-size: clamp(20px, 6vw, 30px);
     overflow-y: auto;
     width: 99%;
-    /* height: clamp(250px, 80vw, 325px); */
     min-height: 35vh;
 }
 .emojisec {
@@ -61,7 +95,7 @@
 }
 .textArea-Content::placeholder {
   color: white;
-  opacity: 1; /* ensures full white, browsers sometimes lower opacity */
+   opacity: 1;
 }
 .textArea-title {
   background: transparent;
@@ -84,7 +118,7 @@
     outline: none;
     resize: none;
     width: 100%;
-    font-family: cursive;
+  font-family: 'Recursive', sans-serif !important;
     color: #fff;
     font-size: 20px;
     text-align: left;
@@ -109,20 +143,6 @@ font-family: "Recursive", sans-serif;
   overflow: hidden;
 }
 
-.textArea-title,
-.textArea-Content,
-.textArea-Author {
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 100%;
-  resize: none;
-  transition: border 0.2s ease;
-  -webkit-user-select: text;
-  user-select: text;
-  caret-color: black;
-  touch-action: manipulation;
-}
 
 .active-border {
  border: 1px dashed rgba(255, 255, 255); 
@@ -137,8 +157,32 @@ font-family: "Recursive", sans-serif;
 }
 
 
+.textArea-title:empty::before,
+.textArea-Content:empty::before {
+  content: attr(data-placeholder);
+  color: white;
+  pointer-events: none;
+  display: block;
+}
 
 
+.textArea-title img.emoji-inline,
+.textArea-Content img.emoji-inline {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
 
 
+.no-keyboard {
+  caret-color: auto; 
+  outline: none;
+}
 
+.emoji-inserted {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
