@@ -50,9 +50,10 @@ export default function BottomNav() {
   };
 
   // Reusable Nav Item Component
-  const NavItem = ({ href, isActive, icon, iconFilled, label }) => (
-    <Link href={href}>
-      <div className={`nav-item ${isActive ? "active" : ""}`}>
+  const NavItem  = ({ href, isActive, icon, iconFilled, label, className = "" }) => (
+  <Link href={href}>
+    <div className={`nav-item ${isActive ? "active" : ""} ${className}`}>
+
         <Image
           src={isActive ? iconFilled : icon}
           alt={label}
@@ -105,6 +106,7 @@ export default function BottomNav() {
           icon={CheerChatIcon}
           iconFilled={CheerChatIconFilled}
           label="CheerChat"
+          className="chatter-icon" 
         />
         <span>{totalUnread}</span>
 
@@ -114,6 +116,7 @@ export default function BottomNav() {
           icon={ExploreIcon}
           iconFilled={ExploreIconFilled}
           label="Explore"
+            className="Explore-icon" 
         />
 
         <NavItem

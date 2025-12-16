@@ -1,35 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./CreateInviteModal.css";
 import CustomModal from "../common/CustomModal";
+import "./CreateInviteModal.css";
+
+const ITEM_HEIGHT = 50;
 
 const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
-  const modalRef = useRef(null);
-  const [hour, setHour] = useState(6);
-  const [minute, setMinute] = useState(30);
-  const [period, setPeriod] = useState("PM");
+  const [hour, setHour] = useState(1);
+  const [minute, setMinute] = useState(0);
+  const [period, setPeriod] = useState("AM");
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
-  // Set wheel to selectedTime when modal opens
-  useEffect(() => {
-    if (show && selectedTime) {
+    if (!show) return;
+    if (selectedTime) {
       const [time, per] = selectedTime.split(" ");
       const [h, m] = time.split(":");
-      setHour(parseInt(h, 10));
-      setMinute(parseInt(m, 10));
+      setHour(parseInt(h));
+      setMinute(parseInt(m));
       setPeriod(per);
     }
   }, [show, selectedTime]);
-
-  if (!show) return null;
 
   const handleSave = () => {
     const formatted = `${String(hour).padStart(2, "0")}:${String(
@@ -39,83 +28,163 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
     onClose();
   };
 
-   const Wheel = ({ range, value, setValue }) => {
-    const listRef = useRef(null);
-  
+  const InfiniteWheel = ({ range, value, setValue }) => {
+    const ref = useRef(null);
+    const data = [...range, ...range, ...range];
+
     useEffect(() => {
-      const active = listRef.current?.querySelector(".wheel-item-active");
-      if (active) {
-        active.scrollIntoView({
-          block: "center",
-          inline: "nearest",
-          behavior: "smooth",
-        });
+      if (show && ref.current) {
+        const index = range.indexOf(value);
+        ref.current.scrollTop =
+          (range.length + index) * ITEM_HEIGHT;
       }
-    }, [value]);
-  
-    const stopScroll = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+   }, [show, value]);
+
+
+    const updateValue = () => {
+      const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+      const actualIndex = ((index % range.length) + range.length) % range.length;
+      setValue(range[actualIndex]);
     };
-  
-    return (
+
+    const loopScroll = () => {
+      const scrollTop = ref.current.scrollTop;
+      const maxIndex = ITEM_HEIGHT * range.length * 2;
+      const minIndex = ITEM_HEIGHT * range.length * 0.5;
+
+      if (scrollTop > maxIndex) {
+        ref.current.scrollTop = scrollTop - ITEM_HEIGHT * range.length;
+      }
+      if (scrollTop < minIndex) {
+        ref.current.scrollTop = scrollTop + ITEM_HEIGHT * range.length;
+      }
+    };
+
+    const handleScroll = () => {
+      loopScroll();
+      updateValue();
+    };
+
+    const handleClick = (i) => {
+      const baseIndex = range.length + i;
+      ref.current.scrollTo({
+        top: baseIndex * ITEM_HEIGHT,
+        behavior: "smooth",
+      });
+      setValue(range[i]);
+    };
+
+return (
+  <div className="wheel" ref={ref} onScroll={handleScroll}>
+    <div className="wheel-item buffer"></div>
+    
+
+    {data.map((num, i) => (
       <div
-        ref={listRef}
-        className="wheel"
-        onWheel={stopScroll}
-        onTouchMove={stopScroll}
+        key={i}
+        className={`wheel-item ${num === value ? "wheel-item-active" : ""}`}
+        onClick={() => handleClick(i % range.length)}
       >
-        {range.map((num) => (
-          <div
-            key={num}
-            className={`wheel-item ${num === value ? "wheel-item-active" : ""}`}
-            onClick={() => setValue(num)}
-          >
-            {String(num).padStart(2, "0")}
-          </div>
-        ))}
+        {String(num).padStart(2, "0")}
       </div>
-    );
+    ))}
+
+    <div className="wheel-item buffer"></div>
+ 
+  </div>
+);
+
   };
+
+ const AmPmWheel = () => {
+  const ref = useRef(null);
+  const range = ["AM", "PM"];
+
+  // जब modal open हो या जब period change हो → सही position पर scroll करा दो
+  useEffect(() => {
+    if (show && ref.current) {
+      const index = range.indexOf(period);
+      ref.current.scrollTop = index * ITEM_HEIGHT;
+    }
+  }, [show, period]);
+
+  // Scroll par active item detect karo
+  const handleScroll = () => {
+    if (!ref.current) return;
+
+    const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+
+    // Ensure AM/PM ke beech hi rahe
+    const safeIndex = Math.max(0, Math.min(index, range.length - 1));
+
+    setPeriod(range[safeIndex]);
+  };
+
+  // Click par smooth scroll + center highlight
+  const handleClick = (i) => {
+    if (!ref.current) return;
+
+    ref.current.scrollTo({
+      top: i * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+
+    setPeriod(range[i]);
+  };
+
+  return (
+    <div className="wheel" ref={ref} onScroll={handleScroll}>
+      <div className="wheel-item buffer"></div>
+
+      {range.map((p, i) => (
+        <div
+          key={i}
+          className={`wheel-item ${p === period ? "wheel-item-active" : ""}`}
+          onClick={() => handleClick(i)}
+        >
+          {p}
+        </div>
+      ))}
+
+      <div className="wheel-item buffer"></div>
+    </div>
+  );
+};
+
+
+  if (!show) return null;
+
   return (
     <CustomModal
       isOpen={show}
       onClose={onClose}
-      verticalCenter={false}
       showHeader={false}
       modalClass="calendar-modal-body"
-      bodyClass="p-0"
       body={
-        <>
-      <div ref={modalRef} className="custom-time-modal">
-         <h3 className="time-modal-title">Set time</h3>
+        <div className="custom-time-modal">
+          <h3 className="time-modal-title">Set time</h3>
 
-         <div className="time-wheel-container my-5">
-           <Wheel
-             range={[...Array(12).keys()].map((i) => i + 1)}
-             value={hour}
-             setValue={setHour}
-           />
-           <span className="colon">:</span>
-           <Wheel
-             range={[...Array(60).keys()]}
-             value={minute}
-             setValue={setMinute}
-           />
-           <span className="colon">:</span>
-           <Wheel range={["AM", "PM"]} value={period} setValue={setPeriod} />
-         </div>
+          <div className="time-wheel-container">
+             <div className="center-highlight"></div>
+            <InfiniteWheel
+              range={[...Array(12).keys()].map((i) => i + 1)}
+              value={hour}
+              setValue={setHour}
+            />
+            <span className="colon">:</span>
+            <InfiniteWheel
+              range={[...Array(60).keys()]}
+              value={minute}
+              setValue={setMinute}
+            />
+            <AmPmWheel />
+          </div>
 
-         <div className="time-modal-actions mt-5">
-           <button className="cancel-btn w-100" onClick={onClose}>
-             Cancel
-           </button>
-           <button className="save-btn w-100" onClick={handleSave}>
-             Save
-           </button>
-         </div>
-      </div>
-        </>
+          <div className="time-modal-actions">
+            <button className="cancel-btn w-100" onClick={onClose}>Cancel</button>
+            <button className="save-btn w-100" onClick={handleSave}>Save</button>
+          </div>
+        </div>
       }
     />
   );

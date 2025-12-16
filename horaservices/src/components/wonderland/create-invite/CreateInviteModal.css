@@ -29,18 +29,19 @@
 
 /* Custom Gradient Header */
 .modal-header-custom {
-  background: linear-gradient(90deg, #6d247d 0%, #bd256f 100%);
-  color: white;
-  padding: 23px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+    background: linear-gradient(90deg, #6d247d 0%, #bd256f 100%);
+    color: white;
+    padding: 20px ;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    gap: 10px;
 }
 
 .modal-title-custom {
-  font-size: 24px;
+  font-size: 20px;
   font-family: "Roboto", sans-serif;
   font-weight: 700;
   margin: 0;
@@ -51,7 +52,7 @@
 
 /* Modal Body */
 .modal-body-custom {
-  padding: 24px 20px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,8 +84,8 @@ margin-right: 0;
 
 .input-group-custom input , .add-details-input  {
   width: clamp(250px, 72vw, 310px);
-  height: clamp(48px, 14vw, 65px);
-  padding-left: 10px;
+  height: clamp(50px, 16vw, 67px);
+  padding-left: 0px;
   padding-right: 10px;
   background-color: #fff;
   border: 1px solid #00000066;
@@ -94,6 +95,8 @@ margin-right: 0;
   box-shadow: 0px 4px 4px 0px #0000003b;
   outline: none;
   transition: border-color 0.3s;
+  border-left: none;
+ align-content: center;
 }
 
 .input-group-custom input:focus {
@@ -193,6 +196,8 @@ margin-right: 0;
   display: flex;
   align-items: center;
 }
+/* Apply when button is disabled */
+
 .add-details-date-btn img {
   margin-right: 8px;
 }

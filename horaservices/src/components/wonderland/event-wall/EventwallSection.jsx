@@ -15,8 +15,14 @@ import {
 } from "@/utils/eventCache";
 import "../../common/EventLazyImage.css";
 import EventwallGalleryItem from "./EventwallGalleryItem";
+import { processImagesWithHeight } from "@/utils/eventWallHelpers";
 
-const EventwallSection = ({ userData }) => {
+const EventwallSection = ({
+  userData,
+  rsvpSubmitted,
+  setPushRsvpClick,
+  isHost,
+}) => {
   const router = useRouter();
   const { eventid } = router.query;
   const { makeRequest: createPost } = useApi();
@@ -33,62 +39,13 @@ const EventwallSection = ({ userData }) => {
   let activeUploads = 0;
   let uploadQueue = [];
 
-  // Measure height of thumbnail/local image
-  function measureImageHeight(url) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = url;
-      img.onload = () => resolve(img.height);
-      img.onerror = () => resolve(0);
-    });
-  }
-
-  // Reorder — Tallest image → Big block (pos 3)
-  function reorderByHeight(items) {
-    const result = [];
-
-    for (let i = 0; i < items.length; i += 6) {
-      const chunk = items.slice(i, i + 6);
-
-      if (chunk.length < 6) {
-        result.push(...chunk);
-        continue;
-      }
-
-      const tallest = [...chunk].sort((a, b) => b.height - a.height)[0];
-
-      const arranged = [];
-      chunk.forEach((img) => {
-        if (img === tallest) return;
-        arranged.push(img);
-      });
-
-      arranged.splice(3, 0, tallest);
-      result.push(...arranged);
-    }
-
-    return result;
-  }
-
-  // Measure heights + reorder
-  async function processImagesWithHeight(list) {
-    const enriched = await Promise?.all(
-      list?.map(async (item) => ({
-        ...item,
-        height: await measureImageHeight(
-          item?.postWebpUrl || item?.postUrl || item?.localPreview
-        ),
-      }))
-    );
-
-    return reorderByHeight(enriched);
-  }
-
   useEffect(() => {
     async function loadEventPosts() {
       if (!eventid) return;
 
-      const draftBase64 = localStorage.getItem("thankyou-note-draft");
+      const draftBase64 = localStorage.getItem(
+        `thankyou-note-draft-${eventid}`
+      );
       let draftItem = null;
 
       if (draftBase64) {
@@ -128,6 +85,28 @@ const EventwallSection = ({ userData }) => {
 
     loadEventPosts();
   }, [eventid]);
+
+  useEffect(() => {
+    if (!eventid) return;
+
+    const handleRouteChange = (url) => {
+      const nextPathname = new URL(url, window.location.origin).pathname;
+
+      const isCurrentlyInvite = router.pathname.includes("/invite");
+      const isNextInvite = nextPathname.includes("/invite");
+
+      // If leaving the invite page
+      if (isCurrentlyInvite && !isNextInvite) {
+        localStorage.removeItem(`thankyou-note-draft-${eventid}`);
+      }
+    };
+
+    router.events.on("routeChangeStart", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChange);
+    };
+  }, [eventid, router.pathname]);
 
   const updateProgress = (id, percent) => {
     setAllImages((prev) =>
@@ -303,7 +282,13 @@ const EventwallSection = ({ userData }) => {
           <button
             key={index}
             className={`event-wall-action-btn event-wall-action-btn-${index}`}
-            onClick={onClick}
+            onClick={() => {
+              isHost
+                ? onClick()
+                : rsvpSubmitted
+                ? onClick()
+                : setPushRsvpClick(true);
+            }}
           >
             <img
               src={icon}
@@ -318,7 +303,7 @@ const EventwallSection = ({ userData }) => {
       </div>
 
       <div>
-        {allImages.length === 0 ? (
+        {allImages.length === 0 || (!rsvpSubmitted && !isHost) ? (
           <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img src={NopostCamera.src} alt="No Post Camera" className="" />

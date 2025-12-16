@@ -92,10 +92,22 @@ export const RSVP_STATUS = {
 };
 
 export const mobileBreakPoints = {
-  extraSmall: 320,
-  small: 360,
-  medium: 390,
-  large: 480,
+  extraSmall : 320,
+  small : 360,
+  medium : 390,
+  large : 480
+}
+
+export function getScreenSize(width) {
+  if (width >= mobileBreakPoints.medium) return "large";
+  if (width >= mobileBreakPoints.small) return "medium";
+  return "small";
+}
+
+export const defaultFontSizeMap = {
+  large: { fontSize: "2.5rem", lineHeight: "45px", top: "38%" },
+  medium: { fontSize: "2rem", lineHeight: "42px", top: "40%" },
+  small: { fontSize: "1.7rem", lineHeight: "34px", top: "42%" },
 };
 
 export const PUBLIC_VAPID =

@@ -1,9 +1,11 @@
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
 import TemplatecardSkeleton from "../TemplateSkeleton/templatecardSkeleton";
-import { mobileBreakPoints } from "@/utils/constants";
+import { getScreenSize,defaultFontSizeMap} from "@/utils/constants";
+import { getTemplate } from "@/utils/indexedDB";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -11,91 +13,87 @@ const TemplateRenderer = ({
   orderDetails,
   baseFontSize,
   isLandingPage = true,
+  templatewrapperclass,
+  enableHeightOverride = false,
 }) => {
   const textRef = useRef(null);
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [templateSizeClass, setTemplateSizeClass] = useState(""); // ADD
 
-  // 🧩 Get base font style dynamically
-  const getBaseFontStyles = () => {
-    if (typeof baseFontSize === "object" && baseFontSize !== null) {
-      if (width >= mobileBreakPoints?.medium) {
-        return {
-          fontSize: baseFontSize.large || "2.5rem",
-          lineHeight: baseFontSize.large ? "40px" : "45px",
-          top: "38%",
-        };
-      } else if (width >= mobileBreakPoints?.small) {
-        return {
-          fontSize: baseFontSize.medium || "2rem",
-          lineHeight: baseFontSize.medium ? "34px" : "42px",
-          top: "40%",
-        };
-      } else {
-        return {
-          fontSize: baseFontSize.small || "1.7rem",
-          lineHeight: baseFontSize.small ? "25px" : "34px",
-          top: "42%",
-        };
-      }
-    }
+  const getResponsiveFontStyles = () => {
+  const size = getScreenSize(width);
 
-    if (typeof baseFontSize === "string")
-      return { fontSize: baseFontSize, lineHeight: "40px", top: "40%" };
+  if (typeof baseFontSize === "object" && baseFontSize !== null) {
+    return {
+      fontSize:
+        baseFontSize[size] ||
+        defaultFontSizeMap[size].fontSize,
 
-    // Default fallback sizes (when no prop is passed)
-    if (width >= mobileBreakPoints?.medium) {
-      return {
-        fontSize: "2.5rem",
-        lineHeight: "45px",
-        top: "38%",
-      };
-    } else if (width >= mobileBreakPoints?.small) {
-      return {
-        fontSize: "2rem",
-        lineHeight: "42px",
-        top: "40%",
-      };
+      lineHeight:
+        baseFontSize[size]
+          ? "auto"
+          : defaultFontSizeMap[size].lineHeight,
+
+      top: defaultFontSizeMap[size].top,
+    };
+  }
+
+  if (typeof baseFontSize === "string") {
+    return {
+      ...defaultFontSizeMap[size],
+      fontSize: baseFontSize,
+    };
+  }
+
+  return defaultFontSizeMap[size];
+};
+
+
+const [baseStyles, setBaseStyles] = useState(getResponsiveFontStyles());
+
+
+  useEffect(() => {
+   setBaseStyles(getResponsiveFontStyles());
+
+  }, [width, baseFontSize]);
+
+const [imageUrl, setImageUrl] = useState(DefaultTemplate.src);
+
+useEffect(() => {
+  const localKey = `template_${eventDetails?._id || eventDetails?.eventId}`;
+
+  const fetchImage = async () => {
+    const savedImage = await getTemplate(localKey); // Fetch from IndexedDB
+    if (savedImage) {
+      setImageUrl(savedImage);
     } else {
-      return {
-        fontSize: "1.7rem",
-        lineHeight: "34px",
-        top: "42%",
-      };
+      setImageUrl(
+        orderDetails?.externalTemplateImageUrl ||
+        orderDetails?.Image ||
+        orderDetails?.hostImage ||
+        DefaultTemplate.src
+      );
     }
   };
 
-  const [baseStyles, setBaseStyles] = useState(getBaseFontStyles());
-
-  useEffect(() => {
-    setBaseStyles(getBaseFontStyles());
-  }, [width, baseFontSize]);
-
-  // ✨ Adjust font size for shorter/longer names
-  useEffect(() => {
-    if (!eventDetails?.hostName) return;
-    const baseFontRem = parseFloat(baseStyles.fontSize);
-    if (eventDetails.hostName.length <= 14)
-      setDynamicFontSize((baseFontRem + 0.5).toFixed(2) + "rem");
-    else setDynamicFontSize(baseStyles.fontSize);
-  }, [eventDetails?.hostName, baseStyles]);
+  fetchImage();
+}, [eventDetails, orderDetails]);
 
 
-// useEffect(() => {
-//   // DB se image mil gayi ya orderDetails update hua
-//   if (orderDetails?.externalTemplateImageUrl) {
-//     localStorage.removeItem("localTemplateImage");
-//   }
-// }, [orderDetails?.externalTemplateImageUrl]);
 
+  const handleImageLoad = (e) => {
+    const img = e.target;
+    const ratio = img.naturalWidth / img.naturalHeight;
 
-  const imageUrl =
-  localStorage.getItem("localTemplateImage") ||  // ⭐ Instant preview
-  orderDetails?.externalTemplateImageUrl ||      // ⭐ DB image
-  orderDetails?.Image ||
-  orderDetails?.hostImage ||
-  DefaultTemplate.src;
+    if (ratio > 1.1) {
+      setTemplateSizeClass("share-small-template");
+    } else {
+      setTemplateSizeClass("share-large-template");
+    }
+    setImageLoaded(true);
+  };
 
   return (
     <div
@@ -108,7 +106,7 @@ const TemplateRenderer = ({
       {!fetchEventLoading ? (
         <>
           <div
-            className="template-preview-container"
+            className={`template-preview-container ${templatewrapperclass} ${templateSizeClass}`}
             style={{
               position: "relative",
               display: "inline-block",
@@ -118,7 +116,9 @@ const TemplateRenderer = ({
               overflow: "hidden",
             }}
           >
-            {!imageLoaded && <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />}
+            {!imageLoaded && (
+              <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />
+            )}
 
             <img
               src={imageUrl}
@@ -129,37 +129,34 @@ const TemplateRenderer = ({
                 height: "auto",
                 borderRadius: "12px",
                 objectFit: "cover",
-                  visibility: imageLoaded ? "visible" : "hidden",
+                visibility: imageLoaded ? "visible" : "hidden",
               }}
-               onLoad={() => setImageLoaded(true)}
+              onLoad={handleImageLoad}
             />
 
-         
-{imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
-  <div
-    ref={textRef}
-    className="default-template-text"
-    style={{
-      position: "absolute",
-      top: baseStyles.top,
-      left: "50%",
-      transform: "translateX(-50%)",
-      fontSize: dynamicFontSize,
-      lineHeight: baseStyles.lineHeight,
-      fontWeight: 700,
-      color: "#fff",
-      textShadow: "2px 2px 6px rgba(0,0,0,0.5)",
-      width: "100%",
-      textAlign: "center",
-      paddingInline: "20px",
-      fontFamily: "'Great Vibes', cursive",
-      pointerEvents: "auto",
-    }}
-  >
-    {eventDetails?.hostName}
-  </div>
-)}
-
+            {imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
+              <div
+                ref={textRef}
+                className="default-template-text"
+                style={{
+                  position: "absolute",
+                  top: baseStyles.top,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  fontSize: baseStyles.fontSize,
+                  lineHeight: baseStyles.lineHeight,
+                  fontWeight: 700,
+                  color: "#fff",
+                  width: "100%",
+                  textAlign: "center",
+                  paddingInline: "20px",
+                  pointerEvents: "auto",
+                  fontFamily: "Archivo Black",
+                }}
+              >
+                {eventDetails?.hostName}
+              </div>
+            )}
           </div>
         </>
       ) : (

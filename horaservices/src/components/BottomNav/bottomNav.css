@@ -1,3 +1,34 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  background: #000; 
+  height: 100%;
+}
+
+body {
+  height: 100dvh; /* NOT 100vh */
+  background: #000; 
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Safe-area padding disable */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
+body {
+  padding-bottom: calc(0px + var(--sab)); 
+  background-color: #fff; 
+}
+
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -17,30 +48,45 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #333;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
+
+  width: 70px;
+  height: 100%;
+
   text-align: center;
   text-decoration: none;
-  height: 100%;
-  width: 70px;
+
+  color: #333;
+
+  /* ---- Your font specs ---- */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0;
 }
 
 .nav-icon {
   width: 24px;
   height: 24px;
-  margin-bottom: 4px;
+ margin-bottom: 5px;
 }
 
-/* Highlight active tab */
-.nav-item.active {
-  color: #8a3a78; /* your purple color */
+.chatter-icon .nav-icon {
+  width: 26px;
+  height: 28px;
+  transform: rotate(0deg);
+  opacity: 1;
+   margin-bottom: 2px !important;
+}
+.Explore-icon .nav-icon{
+    width: 26px;
+  height: 28px;
+  transform: rotate(0deg);
+  opacity: 1;
+   margin-bottom: 2px !important;
 }
 
-.nav-item.active .nav-icon {
-  filter: brightness(0) saturate(100%) invert(25%) sepia(33%) saturate(733%) hue-rotate(266deg) brightness(94%) contrast(88%);
-}
 
 .iframe-wrapper{
   padding-bottom: 100px;
