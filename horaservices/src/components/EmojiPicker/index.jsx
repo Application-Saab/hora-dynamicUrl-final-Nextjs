@@ -47,13 +47,34 @@ export default function EmojiPickerButton({
   }, [pickerVisible, simple]);
 
 
+  useEffect(() => {
+    if (!simple) return;
+   
+    const handleFocus = (e) => {
+      if (
+        (e.target.tagName === "TEXTAREA" || e.target.isContentEditable) &&
+        pickerVisible
+      ) {
+        togglePicker(false);
+      }
+    };
+    document.addEventListener("focusin", handleFocus);
+    return () => document.removeEventListener("focusin", handleFocus);
+  }, [pickerVisible, simple]);
+
   const handleButtonClick = (e) => {
     e.preventDefault();
 
     if (simple) {
-      // Simple mode for chat
-      setForceOpen(false); // Reset force open
+      setForceOpen(false); 
       togglePicker(!pickerVisible);
+      // Blur input to hide keyboard when opening picker
+      if (!pickerVisible) {
+        const active = document.activeElement;
+        if (active && (active.tagName === "TEXTAREA" || active.isContentEditable)) {
+          active.blur();
+        }
+      }
       return;
     }
 
@@ -140,15 +161,17 @@ export default function EmojiPickerButton({
     const handler = (e) => {
       if (
         pickerVisible &&
-        !forceOpen && // Don't close if forceOpen is true
+        !forceOpen &&
         !e.target.closest(".emoji-picker-container") &&
         !e.target.closest(".emoji-btn")
       ) {
-        togglePicker(false);
-        setForceOpen(false);
+        // Only close on outside click if not in simple mode
         if (!simple) {
+          togglePicker(false);
+          setForceOpen(false);
           blockKeyboard.current = false;
         }
+        // In simple mode, do nothing (picker stays open)
       }
     };
 

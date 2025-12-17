@@ -278,35 +278,6 @@ const ChatPage = () => {
 
   const handleImageUpload = async () => {};
 
-  // const sendMessage = async () => {
-  //   const messageHTML = textareaRef.current?.innerHTML?.trim();
-  //   const messageText = textareaRef.current?.textContent?.trim();
-
-  //   if (!messageText && (!messageHTML || messageHTML === "<br>" || messageHTML === "<div><br></div>")) {
-  //     return;
-  //   }
-  //   if (!eventId || !userID) return;
-
-  //   const localSenderName = typeof window !== "undefined"
-  //     ? localStorage.getItem("wonderLandUserName") || ""
-  //     : "";
-
-  //   await addDoc(collection(db, "groups", eventId, "messages"), {
-  //     text: messageText,
-  //     html: messageHTML,
-  //     senderId: userID,
-  //     senderName: localSenderName ? localSenderName : userData?.name,
-  //     senderPhoneNumber:
-  //       typeof window !== "undefined" ? localStorage.getItem("mobileNumber") : "",
-  //     sentAt: serverTimestamp(),
-  //   });
-
-  //   if (textareaRef.current) {
-  //     textareaRef.current.innerHTML = "";
-  //     textareaRef.current.style.height = "auto";
-  //   }
-  //   setShowEmojiPicker(false);
-  // };
 const sendMessage = async () => {
   if (!textareaRef.current) return;
 
@@ -343,17 +314,13 @@ const sendMessage = async () => {
           : "",
       sentAt: serverTimestamp(),
     });
-
-    // ✅ Clear input WITHOUT losing focus
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
-
-    setShowEmojiPicker(false);
-
-    // 🔥 IMPORTANT: keep keyboard open
-    requestAnimationFrame(() => {
-      textareaRef.current?.focus({ preventScroll: true });
-    });
+    if (!showEmojiPicker) {
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus({ preventScroll: true });
+      });
+    }
   } catch (error) {
     console.error("Message send failed:", error);
   }
@@ -368,6 +335,19 @@ const sendMessage = async () => {
       router.push(basePath);
     }
   };
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    if (showEmojiPicker) {
+      el.setAttribute("readonly", "true");
+      el.setAttribute("inputmode", "none");
+      el.blur(); 
+    } else {
+      el.removeAttribute("readonly");
+      el.setAttribute("inputmode", "text");
+    }
+  }, [showEmojiPicker]);
 
   return (
    <div
@@ -495,9 +475,6 @@ const sendMessage = async () => {
           inputMode="text"
           suppressContentEditableWarning={true}
           onFocus={() => {
-            if (showEmojiPicker) {
-              setShowEmojiPicker(false);
-            }
             const el = textareaRef.current;
             if (!el) return;
             el.addEventListener("keyup", saveCursor);
@@ -506,9 +483,7 @@ const sendMessage = async () => {
           }}
           onInput={(e) => {
             const el = e.target;
-            if (el.textContent.trim().length > 0) {
-              setShowEmojiPicker(false);
-            }
+           
             el.style.height = "auto";
             el.style.height = Math.min(el.scrollHeight, 120) + "px";
           }}
