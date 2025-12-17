@@ -319,8 +319,8 @@ const ChatPage = () => {
   };
 
   return (
-    <div
-      className="chat-overlay"
+   <div
+      className="chat-layout"
       style={{
         backgroundImage: `url(${chatBg})`,
         backgroundSize: "cover",
@@ -328,17 +328,7 @@ const ChatPage = () => {
         backgroundRepeat: "no-repeat",
         paddingBottom: showEmojiPicker ? "260px" : "0px",
       }}
-    >
-      {pathname === "/chat" && showInstall && (
-        <div className="chat-banner">
-          <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
-          <button className="chat-banner-btn" onClick={handleInstallClick}>
-            Add To Phone Screen
-          </button>
-        </div>
-      )}
-
-      <div className="chat-header-wrapper">
+      >    <div className="chat-header-wrapper">
         <div className="chat-header">
           <div className="chat-user-info">
             <Image

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
-import BottomNav from "./BottomNav"; 
+import BottomNav from "./BottomNav";
 import "../app/globals.css";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
@@ -11,23 +11,33 @@ const PageLayout = ({ children }) => {
   const pathname = usePathname();
   const [userId, setUserId] = useState("");
 
-  // Get userID from localStorage on client side
+  // Get userID from localStorage
   useEffect(() => {
     const storedId = localStorage.getItem("userID");
-    if (storedId) {
-      setUserId(storedId);
-    }
+    if (storedId) setUserId(storedId);
   }, []);
 
-  // Show BottomNav only on these paths
+  /* ---------------- ROUTE CHECKS ---------------- */
+
+  // Chat detail page → /chat/[id]
+  const isChatDetailPage =
+    pathname?.startsWith("/chat/") && pathname !== "/chat";
+
+  // Wonderland paths
+  const isWonderlandPath = pathname?.startsWith("/wonderland");
+
+  // BottomNav sirf in exact pages par
   const showBottomNav =
+    pathname === "/chat" ||
     pathname === "/wonderland" ||
     pathname === "/wonderland/create-invite-template" ||
+    pathname === "/wonderland/invite" ||
     pathname === "/templates" ||
-    pathname?.startsWith("/chat") || // covers /chat?id=123 also
-    pathname === "/about" || pathname === '/accounts' || pathname === "/services" || pathname === '/wonderland/invite';
+    pathname === "/about" ||
+    pathname === "/accounts" ||
+    pathname === "/services";
 
-  const isWonderlandPath = pathname?.startsWith("/wonderland");
+  /* ------------------------------------------------ */
 
   return (
     <div className="page-container container-fluid p-0">
@@ -38,14 +48,19 @@ const PageLayout = ({ children }) => {
         />
       </Head>
 
-      {pathname !== "/services" && <Header />
-      }
+      {/* Header */}
+      {!isChatDetailPage && pathname !== "/services" && <Header />}
+
       <main className="page-main row m-0">
         <section className="p-0">{children}</section>
       </main>
 
-      {/*  Show BottomNav on selected pages, passing userId */}
-      {showBottomNav ? <BottomNav id={userId} /> : !isWonderlandPath && <Footer />}
+      {/* BottomNav / Footer */}
+      {!isChatDetailPage && showBottomNav ? (
+        <BottomNav id={userId} />
+      ) : !isChatDetailPage && !isWonderlandPath ? (
+        <Footer />
+      ) : null}
     </div>
   );
 };
