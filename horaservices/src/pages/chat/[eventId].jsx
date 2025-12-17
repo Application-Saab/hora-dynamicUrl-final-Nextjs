@@ -278,35 +278,86 @@ const ChatPage = () => {
 
   const handleImageUpload = async () => {};
 
-  const sendMessage = async () => {
-    const messageHTML = textareaRef.current?.innerHTML?.trim();
-    const messageText = textareaRef.current?.textContent?.trim();
+  // const sendMessage = async () => {
+  //   const messageHTML = textareaRef.current?.innerHTML?.trim();
+  //   const messageText = textareaRef.current?.textContent?.trim();
 
-    if (!messageText && (!messageHTML || messageHTML === "<br>" || messageHTML === "<div><br></div>")) {
-      return;
-    }
-    if (!eventId || !userID) return;
+  //   if (!messageText && (!messageHTML || messageHTML === "<br>" || messageHTML === "<div><br></div>")) {
+  //     return;
+  //   }
+  //   if (!eventId || !userID) return;
 
-    const localSenderName = typeof window !== "undefined"
+  //   const localSenderName = typeof window !== "undefined"
+  //     ? localStorage.getItem("wonderLandUserName") || ""
+  //     : "";
+
+  //   await addDoc(collection(db, "groups", eventId, "messages"), {
+  //     text: messageText,
+  //     html: messageHTML,
+  //     senderId: userID,
+  //     senderName: localSenderName ? localSenderName : userData?.name,
+  //     senderPhoneNumber:
+  //       typeof window !== "undefined" ? localStorage.getItem("mobileNumber") : "",
+  //     sentAt: serverTimestamp(),
+  //   });
+
+  //   if (textareaRef.current) {
+  //     textareaRef.current.innerHTML = "";
+  //     textareaRef.current.style.height = "auto";
+  //   }
+  //   setShowEmojiPicker(false);
+  // };
+const sendMessage = async () => {
+  if (!textareaRef.current) return;
+
+  const messageHTML = textareaRef.current.innerHTML.trim();
+  const messageText = textareaRef.current.textContent.trim();
+
+  // ❌ Empty message check
+  if (
+    !messageText &&
+    (!messageHTML ||
+      messageHTML === "<br>" ||
+      messageHTML === "<div><br></div>")
+  ) {
+    return;
+  }
+
+  if (!eventId || !userID) return;
+
+  const localSenderName =
+    typeof window !== "undefined"
       ? localStorage.getItem("wonderLandUserName") || ""
       : "";
 
+  try {
+    // ✅ Message send
     await addDoc(collection(db, "groups", eventId, "messages"), {
       text: messageText,
       html: messageHTML,
       senderId: userID,
-      senderName: localSenderName ? localSenderName : userData?.name,
+      senderName: localSenderName || userData?.name || "User",
       senderPhoneNumber:
-        typeof window !== "undefined" ? localStorage.getItem("mobileNumber") : "",
+        typeof window !== "undefined"
+          ? localStorage.getItem("mobileNumber")
+          : "",
       sentAt: serverTimestamp(),
     });
 
-    if (textareaRef.current) {
-      textareaRef.current.innerHTML = "";
-      textareaRef.current.style.height = "auto";
-    }
+    // ✅ Clear input WITHOUT losing focus
+    textareaRef.current.innerHTML = "";
+    textareaRef.current.style.height = "auto";
+
     setShowEmojiPicker(false);
-  };
+
+    // 🔥 IMPORTANT: keep keyboard open
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus({ preventScroll: true });
+    });
+  } catch (error) {
+    console.error("Message send failed:", error);
+  }
+};
 
   const handleBack = () => {
 
@@ -441,6 +492,7 @@ const ChatPage = () => {
         <div
           ref={textareaRef}
           contentEditable
+          inputMode="text"
           suppressContentEditableWarning={true}
           onFocus={() => {
             if (showEmojiPicker) {
@@ -464,7 +516,7 @@ const ChatPage = () => {
           data-placeholder="Type message here..."
         />
 
-        <button onClick={sendMessage} className="chat-send-btn">
+        <button onClick={sendMessage}onMouseDown={(e) => e.preventDefault()} className="chat-send-btn">
           <Image src={sendIcon} alt="Send" className="send-icon" />
         </button>
       </div>

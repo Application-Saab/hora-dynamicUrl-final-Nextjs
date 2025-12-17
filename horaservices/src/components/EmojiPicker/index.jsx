@@ -200,6 +200,9 @@ export default function EmojiPickerButton({
               lazyLoadEmojis
               skinTonesDisabled
               theme="auto"
+                pickerStyle={{
+    borderRadius: "0px",
+  }}
             />
           </div>
         </div>

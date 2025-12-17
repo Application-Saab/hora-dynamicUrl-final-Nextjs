@@ -147,13 +147,13 @@
 .group-info {
   margin-left: clamp(8px, calc((12 / 393) * 100vw), 18px);
   flex-grow: 1;
-  line-height: 20px;
+  line-height: 24px;
 }
 
 
 .group-name {
   font-size: clamp(14px, calc((17 / 393) * 100vw), 24px);
-  font-weight: 400;
+  font-weight: 500;
   color: #040404;
   margin: 0;
   font-family: 'Sora';

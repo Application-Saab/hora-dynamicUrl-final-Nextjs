@@ -24,7 +24,7 @@
   width: 100%;
   background: #fff;
   z-index: 99999;
-
+    border-radius: 0;
  
   transform: translateY(100%);
   opacity: 0;
@@ -46,4 +46,12 @@
 .emoji-real-component {
   width: 100% !important;
   border-radius: 16px 16px 0 0;
+}
+/* emoji-picker-react exact radius fix */
+
+.emoji-picker-react,
+.emoji-picker-react .epr-main,
+.emoji-picker-react .epr-body {
+  border-radius: 0 !important;
+  overflow: hidden !important;
 }

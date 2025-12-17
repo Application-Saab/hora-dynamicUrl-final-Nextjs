@@ -559,6 +559,10 @@ useEffect(() => {
   return () => window.removeEventListener('resize', setVh);
 }, []);
 
+const capitalizeFirstLetter = (text = "") => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
 
   //------------------------------------------------------------------------------------------------------------------------------
 
@@ -643,7 +647,9 @@ useEffect(() => {
 
               
                 <div className="group-info">
-  <p className="group-name">{group.name || "Unnamed Group"}</p>
+ <p className="group-name">
+  {capitalizeFirstLetter(group.name || "Unnamed group")}
+</p>
 
   {getUnreadCount(group) > 0 && (
     <span className="group-last">
