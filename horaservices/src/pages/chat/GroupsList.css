@@ -1,3 +1,4 @@
+
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap");
 
 .chat-banner {
@@ -184,7 +185,9 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100dvh;
+  height: var(--vvh, 100vh);
+  min-height: var(--vvh, 100vh);
+  max-height: var(--vvh, 100vh);
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -192,15 +195,8 @@
   background-position: center;
   background-repeat: no-repeat;
 
-  min-height: 100vh;
-  min-height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-
-
   background-attachment: fixed;
   background-color: rgba(0, 0, 0, 0.1);
-
 
   overflow: hidden;
   overscroll-behavior: none;
@@ -219,23 +215,23 @@
   --sat: env(safe-area-inset-top);
 }
 
-/* HEADER WRAPPER */
 .chat-header-wrapper {
   position: fixed;
   top: clamp(6px, calc((8 / 393) * 100vw), 14px);
   left: 0;
+  right: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   z-index: 9999;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* MAIN HEADER BAR */
 .chat-header {
   width: calc(100% - clamp(8px, calc((10 / 393) * 100vw), 30px));
   max-width: 480px;
-
-  /* height from Figma → 59px on 393px */
   height: clamp(48px, calc((59 / 393) * 100vw), 72px);
 
   background: linear-gradient(90deg, #572381 0%, #C9266D 100%);
@@ -300,14 +296,18 @@
 
 
 .chat-body {
-  padding-top: 70px;
-  margin-top: calc(clamp(55px, 13vw, 65px) + var(--sat));
-  height: calc(100dvh - clamp(55px, 13vw, 65px) - var(--sat));
+  margin-top: calc(70px + env(safe-area-inset-top, 0px));
+  height: calc(var(--vvh, 100vh) - 70px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding: 0;
 }
 
 .chat-input-container {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom, 0px);
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   background: #ffffff;
@@ -321,6 +321,7 @@
   margin: clamp(5px, calc((10 / 393) * 100vw), 12px);
   max-width: 480px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  z-index: 999;
 }
 
 
@@ -426,7 +427,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 15px 0px 10px;
+  padding: 16px 15px 20px 10px; /* Extra bottom padding for sticky input */
   display: flex;
   flex-direction: column;
 
@@ -616,7 +617,7 @@
   text-overflow: ellipsis;
 }
 
-/* Receiver time */
+
 .chat-message.receiver .chat-time {
   position: absolute;
   bottom: 0px;
@@ -638,24 +639,9 @@
   text-overflow: ellipsis;
 }
 
-/* 
-@media (max-width: 600px) {
-  .chat-overlay {
-    height: 100vh !important;
-    height: 100dvh !important;
-    min-height: 100vh !important;
-    min-height: 100dvh !important;
-    max-height: 100vh !important;
-    max-height: 100dvh !important;
-    min-height: -webkit-fill-available !important;
-    min-height: fill-available !important;
-    background-attachment: fixed !important;
-    background-color: rgba(0, 0, 0, 0.05) !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-  }
+:root {
+  --sat: env(safe-area-inset-top);
+  --vvh: 100vh; 
+}
 
 
-} */

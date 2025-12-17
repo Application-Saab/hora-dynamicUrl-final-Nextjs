@@ -1,33 +1,16 @@
 
 
 
-import React, { useRef, useEffect, useState } from "react";
+import React, {useRef, useEffect, useState } from "react";
 import { db } from "../../firebase";
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  addDoc,
-  serverTimestamp,
-  onSnapshot,
-  doc,
-  updateDoc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, getDocs, query, orderBy, onSnapshot } from "firebase/firestore";
 import "./GroupsList.css";
-import EmojiPickerButton from "@/components/EmojiPicker";
-import emojiIcon from "@/assets/chat/Emoji.svg";
 import Image from "next/image";
-import { FaArrowLeft } from "react-icons/fa";
-import "../wonderland/EventInvitation.css";
-import sendIcon from "@/assets/chat/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
-import { BASE_URL, GET_GUEST_DETTAILS, GET_USER_BY_ID } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
-import SearchIcon  from "@/assets/chat/Searchicon.svg"
-import chatBgImage from "@/assets/chat/chatbackground.jpg"; // local image
-import backIcon from "@/assets/chat/BackIcon.png";
+import { useRouter } from "next/router";
+import SearchIcon from "@/assets/chat/Searchicon.svg";
+import chatBgImage from "@/assets/chat/chatbackground.jpg";
 
 const getUserIdFromUrl = () => {
   const params = new URLSearchParams(window.location.search);
@@ -35,202 +18,22 @@ const getUserIdFromUrl = () => {
 };
 
 const GroupsList = () => {
-  const [groups, setGroups] = useState([]);
-  console.log('%c [ groups ]-33', 'font-size:13px; background:pink; color:#bf2c9f;', groups)
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [messages, setMessages] = useState([]);
-  // const [newMessage, setNewMessage] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const emojiPickerRef = useRef(null);
-  const inputRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const chatBodyRef = useRef(null);
+  const router = useRouter();
+  const [groups, setGroups] = useState([]);const [selectedGroup, setSelectedGroup] = useState(null);
+ const [messages, setMessages] = useState([]);
+   const [searchTerm, setSearchTerm] = useState("");
+  const [totalUnread, setTotalUnread] = useState(0);
+  const [unreadCounts, setUnreadCounts] = useState({});
+  const [refreshKey] = useState(0);
   const userId = getUserIdFromUrl();
-const [totalUnread, setTotalUnread] = useState(0);
- const pathname = usePathname(); // ✅ Current route
+  const pathname = usePathname(); // ✅ Current route
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
-const [text, setText] = useState("");
-const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 const eventId = selectedGroup?.id || null;
-  const textareaRef = useRef(null);
-  const lastRangeRef = useRef(null); // cursor memory
 const chatOpenRef = useRef(false);
 
-  // Cursor memory for emoji insertion
-  const saveCursor = () => {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      lastRangeRef.current = sel.getRangeAt(0).cloneRange();
-    }
-  };
-
-  // INSERT EMOJI (same as Create-note - insert as images)
-  const insertEmoji = (emojiObject) => {
-    const emojiUrl = emojiObject?.imageUrl;
-
-    // Focus without triggering keyboard by temporarily setting inputmode
-    textareaRef.current.setAttribute('inputmode', 'none');
-    textareaRef.current.focus({ preventScroll: true });
-    setTimeout(() => {
-      textareaRef.current.removeAttribute('inputmode');
-    }, 50);
-
-    let sel = window.getSelection();
-    let range;
-
-    if (
-      lastRangeRef.current &&
-      textareaRef.current.contains(lastRangeRef.current.startContainer)
-    ) {
-      range = lastRangeRef.current;
-    } else {
-      range = document.createRange();
-      range.selectNodeContents(textareaRef.current);
-      range.collapse(false);
-    }
-
-    sel.removeAllRanges();
-    sel.addRange(range);
-
-    const img = document.createElement("img");
-    img.src = emojiUrl;
-    img.className = "emoji-inline";
-    img.style.width = "24px";
-    img.style.height = "24px";
-    img.style.verticalAlign = "middle";
-    img.style.display = "inline-block";
-    img.style.margin = "0 2px";
-
-    range.insertNode(img);
-
-    // Move cursor after emoji
-    const newRange = document.createRange();
-    newRange.setStartAfter(img);
-    newRange.collapse(true);
-
-    sel.removeAllRanges();
-    sel.addRange(newRange);
-
-    lastRangeRef.current = newRange; // save new cursor
-  };
-const [unreadCounts, setUnreadCounts] = useState({});
  const [chatBg, setChatBg] = useState(null);
-
-  const token = localStorage.getItem("token");
-
-  const [orderDetails, setOrderDetails] = useState(null);
-
-  const [guestDetails, setGuestDetails] = useState(null);
-
-    const [userData, setUserData] = useState({});
-
-    const [refreshKey, setRefreshKey] = useState(0);
-
-useEffect(() => {
-  const handleBackButton = (e) => {
-    if (selectedGroup) {
-      e.preventDefault();
-      setSelectedGroup(null); 
-      window.history.pushState(null, "", window.location.href); 
-    }
-  };
-
-  window.addEventListener("popstate", handleBackButton);
-
-  return () => {
-    window.removeEventListener("popstate", handleBackButton);
-  };
-}, [selectedGroup]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      textareaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  
-
-  useEffect(() => {
-    const fetchUserAccountDetails = async () => {
-      if (!userId) {
-        console.log('User id not available')
-        return;
-      }
-
-      try {
-        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`, {
-          headers: {
-            Authorization: `${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        if (data.error) {
-          setUserData({});
-          console.log(data.message || "Failed to fetch guests");
-        } else {
-          setUserData(data.data || {});
-        }
-      } catch (err) {
-        console.log("Error fetching guests: " + err.message);
-      }
-    };
-    // Initial call
-    fetchUserAccountDetails();
-  }, [userId] );
-
-
-  const fetchOrderDetails = async (eventId) => {
-    try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        }
-      );
-
-      const result = await res.json();
-      console.log(result.data.hostName, "result11");
-
-      if (res.status === 200 && result.data) {
-        const data = result.data;
-        setOrderDetails({
-          Name: data.hostName,
-        });
-      }
-    } catch (err) {
-      console.error("❌ Fetch failed:", err);
-    }
-  };
-
-  // Fetch guest details for a given eventId and userId
-  const fetchGuestDetails = async (eventId, userId) => {
-    try {
-      const endpoint = `${BASE_URL}${GET_GUEST_DETTAILS}/${eventId}/user/${userId}`;
-      const response = await fetch(endpoint, {
-        headers: {
-          Authorization: `${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      console.log("Guest Details Response11:", data.data.name);
-      if (data && data.data) {
-        setGuestDetails({ name: data.data.name });
-      }
-    } catch (err) {
-      console.error("Error fetching guest:", err);
-    }
-  };
-const getAvatarColor = (name) => {
+ const getAvatarColor = (name) => {
   const colors = [
     "#F44336", // red
     "#E91E63", // pink
@@ -320,7 +123,7 @@ const getAvatarColor = (name) => {
       const originalHtmlOverflow = htmlElement.style.overflow;
       htmlElement.style.overflow = 'hidden';
 
-      // Prevent touch scrolling on mobile when not in chat messages
+
       const preventScroll = (e) => {
         if (!e.target.closest('.chat-messages') && !e.target.closest('.emoji-picker-container')) {
           e.preventDefault();
@@ -358,41 +161,9 @@ const getAvatarColor = (name) => {
   }, [messages]);
 
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        emojiPickerRef.current &&
-        !emojiPickerRef.current.contains(event.target) &&
-        !event.target.closest(".emoji-button")
-      ) {
-        setIsEmojiPickerOpen(false);
-      }
-    };
+ 
 
-    if (showEmojiPicker) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showEmojiPicker]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
-        setIsEmojiPickerOpen(false);
-      }
-    };
-
-    if (showEmojiPicker) {
-      document.addEventListener("keydown", handleKeyDown);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [showEmojiPicker]);
+ 
 
 
   useEffect(() => {
@@ -455,28 +226,6 @@ const getAvatarColor = (name) => {
     fetchGroupsWithMembers();
   }, [userId,refreshKey]);
 
- const markAsRead = (groupId) => {
-    setGroups((prev) =>
-      prev.map((g) =>
-        g.id === groupId
-          ? {
-              ...g,
-              members: g.members.map((m) =>
-                m.id === userId
-                  ? { ...m, lastSeen: { toDate: () => new Date() } }
-                  : m
-              ),
-            }
-          : g
-      )
-    );
-  };
-
-  const handleImageUpload = async (e) => {};
-
-
-const userPhoneNumber = localStorage.getItem("mobileNumber");
-
 const getUnreadCount = (group) => {
   return unreadCounts[group.id] || 0;
 };
@@ -484,22 +233,8 @@ const getUnreadCount = (group) => {
 
 
 
-  const customDecorator = (href, text, key) => (
-    <a
-      key={key}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ color: "#fff", fontWeight: "bold" }}
-    >
-      {text}
-    </a>
-  );
-
-
-
 useEffect(() => {
-  if (!groups || groups.length === 0 || !userId || chatOpenRef.current) return;
+  if (!groups || groups.length === 0 || !userId) return;
 
   // Delay execution slightly
   const timeout = setTimeout(() => {
@@ -524,7 +259,7 @@ useEffect(() => {
     setUnreadCounts(counts);
     localStorage.setItem("totalUnread", total.toString());
     window.dispatchEvent(new Event("unreadCountChange"));
-  }, 500); // wait 500ms for Firestore update to apply
+  }, 500);
 
   return () => clearTimeout(timeout);
 }, [groups, userId,refreshKey]);
@@ -545,29 +280,6 @@ function linkify(text) {
   });
 }
 
-// useEffect(() => {
-//   if (pathname === "/chat") {
-//     if (typeof window !== "undefined") {
-//       const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
-//     console.log("addToHomeScreenPopup",addToHomeScreenPopup);
-    
-//       if (addToHomeScreenPopup !== "true") {
-//         setShowInstall(true);  
-//       }
-//     }
-
-//     const handler = (e) => {
-//       e.preventDefault();
-//       setDeferredPrompt(e);
-//     };
-
-//     window.addEventListener("beforeinstallprompt", handler);
-
-//     return () => {
-//       window.removeEventListener("beforeinstallprompt", handler);
-//     };
-//   }
-// }, [pathname]); 
 
 
 useEffect(() => {
@@ -762,23 +474,16 @@ const unsubscribeMessages = onSnapshot(q, (snapshot) => {
     setShowEmojiPicker(false);
   };
 
-const handleOpenMessages = async (group) => {
-  chatOpenRef.current = true;
-  setSelectedGroup(group);
+const handleOpenMessages = (group) => {
+  // Navigate to dedicated chat page instead of opening overlay
+  if (!group?.id) return;
 
-  // reset unread immediately
-  setUnreadCounts((prev) => {
-    const updated = { ...prev, [group.id]: 0 };
-    updateLocalUnread(updated);
-    return updated;
-  });
+  // Preserve existing `id` query param for userId if present
+  const searchParams = new URLSearchParams(window.location.search);
+  const userIdFromUrl = searchParams.get("id");
 
-  // update lastSeen both local + Firestore
-  lastSeenAtRef.current = new Date();
-  if (userId) {
-    const userRef = doc(db, "groups", group.id, "members", userId);
-    await setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
-  }
+  const query = userIdFromUrl ? `?id=${encodeURIComponent(userIdFromUrl)}` : "";
+  router.push(`/chat/${group.id}${query}`);
 };
 
 
@@ -954,200 +659,6 @@ useEffect(() => {
           })}
       </div>
 
-      {selectedGroup && (
-   <div
-      className="chat-overlay"
-      style={{
-        backgroundImage: `url(${chatBg})`, // no ternary, always set
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        paddingBottom: showEmojiPicker ? "260px" : "0px", // Add padding when emoji picker is open
-      }}
-    >
-
-
-
-<div className="chat-header-wrapper">
-  <div className="chat-header">
-    <div className="chat-user-info">
-    
-
- <Image
-        src={backIcon}
-        alt="Back"
-        className="back-arrow-img"
-        onClick={handleCloseChat}
-      />
-      {selectedGroup?.imageUrl ? (
-        <img
-          src={selectedGroup.imageUrl}
-          alt={selectedGroup.name}
-          className="chat-group-img"
-        />
-      ) : (
-        <div className="placeholder-avatar">
-          {selectedGroup?.name
-            ? selectedGroup.name.charAt(0).toUpperCase()
-            : "?"}
-        </div>
-      )}
-
-      <span className="chat-group-name">{selectedGroup.name}</span>
-    </div>
-  </div>
-</div>
-
-
-
-
-          <div className="chat-messages" ref={chatBodyRef}>
- {messages.map((msg, index) => {
-               // message render
-const isMe = msg.senderId === userID;
-const senderName = msg.senderName;
-
-// Check if this is a consecutive message from the same sender
-const previousMsg = messages[index - 1];
-const isConsecutive = previousMsg &&
-                     previousMsg.senderId === msg.senderId;
-
-// For alternating border radius in consecutive receiver messages
-let consecutiveIndex = 0;
-if (isConsecutive && !isMe) {
-  // Count how many consecutive messages from same sender came before this one
-  for (let i = index - 1; i >= 0; i--) {
-    if (messages[i].senderId === msg.senderId) {
-      consecutiveIndex++;
-    } else {
-      break;
-    }
-  }
-}
-
-              return (
-                <div
-                  key={msg.id}
-                  className={`chat-message ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""}`}
-                >
- {!isMe && !isConsecutive && (
-  <div
-    className="chat-avatar-receiver"
-    style={{
-      backgroundColor: getAvatarColor(
-        senderName || msg.senderPhoneNumber
-      )
-    }}
-  >
-    {senderName
-      ? senderName.charAt(0).toUpperCase()
-      : msg.senderPhoneNumber.charAt(3)}
-  </div>
-)}
-                    <div className={`chat-bubble ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""} ${isConsecutive && !isMe ? (consecutiveIndex % 2 === 0 ? "consecutive-even" : "consecutive-odd") : ""}`}>
-      {/* Sirf receiver ka naam/number - only show for first message in sequence */}
-      {!isMe && !isConsecutive && (
-        <div className="chat-sender">
-          {senderName
-            ? senderName
-            : `+91 ${msg.senderPhoneNumber.slice(0, -4)}XXXX`}
-        </div>
-      )}
-
-      <div className="chat-text" dangerouslySetInnerHTML={{ __html: msg.html || linkify(msg.text) }} />
-
-     {/* <div className="chat-time">
-        {msg.sentAt?.toDate
-          ? new Date(msg.sentAt.toDate()).toLocaleTimeString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })
-          : ""}
-      </div> */}
-    </div>
-
-                  {/* Sender avatar (right side) */}
-                  {/* {isMe && (
-                    <div className="chat-avatar">
-                      {senderName
-                        ? senderName.charAt(0).toUpperCase()
-                        : msg.senderPhoneNumber.charAt(3)}
-                    </div>
-                  )} */}
-                </div>
-              );
-            })}
-          </div>
-
-       <div className="chat-input-container">
-        
-                  <EmojiPickerButton
-                    onEmojiSelect={insertEmoji}
-                    isPickerOpen={showEmojiPicker}
-                    setIsPickerOpen={setShowEmojiPicker}
-                    simple={true}
-                    emojiIcon={emojiIcon}
-                  />
-
-                  <div>
-                    {/* Hidden file input */}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      onChange={handleImageUpload}
-                      style={{ display: "none" }}
-                    />
-                  </div>
-    
-                  <div
-                    ref={textareaRef}
-                    contentEditable
-                    suppressContentEditableWarning={true}
-                    onFocus={() => {
-                      if (showEmojiPicker) {
-                        setShowEmojiPicker(false);
-                      }
-                      setTimeout(() => {
-                        textareaRef.current?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "end",
-                        });
-                        window.scrollBy(0, -180);
-                      }, 300);
-
-                      // Add cursor saving listeners
-                      const el = textareaRef.current;
-                      el.addEventListener("keyup", saveCursor);
-                      el.addEventListener("mouseup", saveCursor);
-                      el.addEventListener("focus", saveCursor);
-                    }}
-                    onInput={(e) => {
-                      const el = e.target;
-                      if (el.textContent.trim().length > 0) {
-                        setShowEmojiPicker(false);
-                      }
-                      // Auto-resize logic for contentEditable
-                      el.style.height = "auto";
-                      el.style.height = Math.min(el.scrollHeight, 120) + "px";
-                    }}
-                    className="chat-input"
-                    data-placeholder="Type message here..."
-                  />
-    
-                  <button
-                    onClick={sendMessage}
-                    className="chat-send-btn"
-                  >
-                    <Image src={sendIcon} alt="Send" className="send-icon" />
-                  </button>
-    
-                </div>
-    
-
-        </div>
-      )}
     </div>
   );
 };
