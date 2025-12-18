@@ -17,9 +17,6 @@ import "./GroupsList.css";
 import EmojiPickerButton from "@/components/EmojiPicker";
 import emojiIcon from "@/assets/chat/Emoji.svg";
 import sendIcon from "@/assets/chat/sendicon.png";
-import PinBanner from "../../assets/pinBanner.jpg";
-import { BASE_URL, GET_USER_BY_ID } from "@/utils/apiconstants";
-import { usePathname } from "next/navigation";
 import chatBgImage from "@/assets/chat/chatbackground.jpg";
 import backIcon from "@/assets/chat/BackIcon.png";
 
@@ -58,15 +55,12 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg, setChatBg] = useState(null);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstall, setShowInstall] = useState(false);
   const [userData, setUserData] = useState({});
 
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
   const lastRangeRef = useRef(null);
 
-  const pathname = usePathname();
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const userID = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const userId = getUserIdFromUrl();
@@ -241,91 +235,6 @@ const ChatPage = () => {
   }, []);
 
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const addToHomeScreenPopup = localStorage.getItem("addToHomeScreenPopup");
-      if (addToHomeScreenPopup !== "true") {
-        setShowInstall(true);
-      }
-    }
-
-    const handler = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
-  }, [pathname]);
-
-  const handleInstallClick = async () => {
-    setShowInstall(false);
-
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        localStorage.setItem("addToHomeScreenPopup", "true");
-      } else {
-        localStorage.setItem("addToHomeScreenPopup", "false");
-      }
-      setDeferredPrompt(null);
-    }
-  };
-
-  const handleImageUpload = async () => {};
-
-const sendMessage = async () => {
-  if (!textareaRef.current) return;
-
-  const messageHTML = textareaRef.current.innerHTML.trim();
-  const messageText = textareaRef.current.textContent.trim();
-
-  // ❌ Empty message check
-  if (
-    !messageText &&
-    (!messageHTML ||
-      messageHTML === "<br>" ||
-      messageHTML === "<div><br></div>")
-  ) {
-    return;
-  }
-
-  if (!eventId || !userID) return;
-
-  const localSenderName =
-    typeof window !== "undefined"
-      ? localStorage.getItem("wonderLandUserName") || ""
-      : "";
-
-  try {
-    // ✅ Message send
-    await addDoc(collection(db, "groups", eventId, "messages"), {
-      text: messageText,
-      html: messageHTML,
-      senderId: userID,
-      senderName: localSenderName || userData?.name || "User",
-      senderPhoneNumber:
-        typeof window !== "undefined"
-          ? localStorage.getItem("mobileNumber")
-          : "",
-      sentAt: serverTimestamp(),
-    });
-    textareaRef.current.innerHTML = "";
-    textareaRef.current.style.height = "auto";
-    if (!showEmojiPicker) {
-      requestAnimationFrame(() => {
-        textareaRef.current?.focus({ preventScroll: true });
-      });
-    }
-  } catch (error) {
-    console.error("Message send failed:", error);
-  }
-};
-
   const handleBack = () => {
 
     const basePath = "/chat";
@@ -335,7 +244,9 @@ const sendMessage = async () => {
       router.push(basePath);
     }
   };
+  const handleImageUpload = async () => {};
 
+  
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -348,6 +259,54 @@ const sendMessage = async () => {
       el.setAttribute("inputmode", "text");
     }
   }, [showEmojiPicker]);
+
+  const sendMessage = async () => {
+    if (!textareaRef.current) return;
+
+    const messageHTML = textareaRef.current.innerHTML.trim();
+    const messageText = textareaRef.current.textContent.trim();
+
+    // ❌ Empty message check
+    if (
+      !messageText &&
+      (!messageHTML ||
+        messageHTML === "<br>" ||
+        messageHTML === "<div><br></div>")
+    ) {
+      return;
+    }
+
+    if (!eventId || !userID) return;
+
+    const localSenderName =
+      typeof window !== "undefined"
+        ? localStorage.getItem("wonderLandUserName") || ""
+        : "";
+
+    try {
+      // ✅ Message send
+      await addDoc(collection(db, "groups", eventId, "messages"), {
+        text: messageText,
+        html: messageHTML,
+        senderId: userID,
+        senderName: localSenderName || userData?.name || "User",
+        senderPhoneNumber:
+          typeof window !== "undefined"
+            ? localStorage.getItem("mobileNumber")
+            : "",
+        sentAt: serverTimestamp(),
+      });
+      textareaRef.current.innerHTML = "";
+      textareaRef.current.style.height = "auto";
+      if (!showEmojiPicker) {
+        requestAnimationFrame(() => {
+          textareaRef.current?.focus({ preventScroll: true });
+        });
+      }
+    } catch (error) {
+      console.error("Message send failed:", error);
+    }
+  };
 
   return (
    <div
