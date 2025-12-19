@@ -16,6 +16,7 @@ import { db } from "../../firebase";
 import "./GroupsList.css";
 import EmojiPickerButton from "@/components/EmojiPicker";
 import emojiIcon from "@/assets/chat/Emoji.svg";
+import keyboardIcon from "@/assets/chat/KeyboardIcon.svg";
 import sendIcon from "@/assets/chat/sendicon.png";
 import chatBgImage from "@/assets/chat/chatbackground.jpg";
 import backIcon from "@/assets/chat/BackIcon.png";
@@ -456,6 +457,7 @@ const ChatPage = () => {
           setIsPickerOpen={setShowEmojiPicker}
           simple={true}
           emojiIcon={emojiIcon}
+          keyboardIcon={keyboardIcon}
         />
 
         <div>

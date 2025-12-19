@@ -5,6 +5,7 @@ import Image from "next/image";
 import emojiicon from "@/assets/Emoji.png";
 import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
 import "./emoji.css";
+import { Key } from "lucide-react";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -16,11 +17,13 @@ export default function EmojiPickerButton({
   isPickerOpen,
   setIsPickerOpen,
   simple = false, // New prop to control behavior
-  emojiIcon=emojiicon
+  emojiIcon=emojiicon,
+   keyboardIcon = ThankYouKeyboard, 
 }) {
   const pickerVisible = isPickerOpen ?? false;
   const togglePicker = setIsPickerOpen ?? (() => {});
   const [forceOpen, setForceOpen] = useState(false);
+  const [showKeyboardIcon, setShowKeyboardIcon] = useState(false);
 
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false); 
@@ -62,21 +65,39 @@ export default function EmojiPickerButton({
     return () => document.removeEventListener("focusin", handleFocus);
   }, [pickerVisible, simple]);
 
-  const handleButtonClick = (e) => {
-    e.preventDefault();
+ const handleButtonClick = (e) => {
+  e.preventDefault();
 
-    if (simple) {
-      setForceOpen(false); 
-      togglePicker(!pickerVisible);
-      // Blur input to hide keyboard when opening picker
-      if (!pickerVisible) {
-        const active = document.activeElement;
-        if (active && (active.tagName === "TEXTAREA" || active.isContentEditable)) {
-          active.blur();
-        }
+  /* ================= SIMPLE MODE ================= */
+ if (simple) {
+  setForceOpen(false);
+
+  // ⌨️ Keyboard icon clicked
+  if (pickerVisible) {
+    togglePicker(false);
+
+    // ⚠️ IMPORTANT: delay focus so picker actually closes
+    setTimeout(() => {
+      if (lastFocusedRef.current) {
+        lastFocusedRef.current.focus();
       }
-      return;
-    }
+    }, 150);
+
+    return;
+  }
+
+  // 😀 Emoji icon clicked
+  togglePicker(true);
+
+  const active = document.activeElement;
+  if (
+    active &&
+    (active.tagName === "TEXTAREA" || active.isContentEditable)
+  ) {
+    active.blur();
+  }
+  return;
+}
 
     // Complex mode for Thankyou-note
     if (pickerVisible) {
@@ -189,17 +210,22 @@ export default function EmojiPickerButton({
           handleButtonClick(e);
         }}
       >
-        <Image
-          src={simple ? emojiIcon : (pickerVisible ? ThankYouKeyboard : emojiIcon)}
-          alt="emoji"
-          width={30}
-          height={30}
-          style={{
-            cursor: "pointer",
-            transition: simple ? "none" : "transform 0.2s",
-            transform: simple ? "none" : (pickerVisible ? "scale(0.9)" : "scale(1)"),
-          }}
-        />
+    <Image
+  src={
+    simple
+      ? (pickerVisible ? keyboardIcon : emojiIcon) // ✅ SIMPLE MODE FIX
+      : (pickerVisible ? keyboardIcon : emojiIcon)
+  }
+  alt="emoji"
+  width={30}
+  height={30}
+  style={{
+    cursor: "pointer",
+    transition: simple ? "none" : "transform 0.2s",
+    transform: simple ? "none" : (pickerVisible ? "scale(0.9)" : "scale(1)"),
+  }}
+/>
+
       </div>
 
       {/* PICKER */}
