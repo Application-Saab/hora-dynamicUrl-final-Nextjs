@@ -145,53 +145,57 @@ const ChatPage = () => {
     }
   };
 
-  const insertEmoji = (emojiObject) => {
-    const emojiUrl = emojiObject?.imageUrl;
-    if (!textareaRef.current) return;
+ const insertEmoji = (emojiObject) => {
+  const emojiUrl = emojiObject?.imageUrl;
+  if (!textareaRef.current) return;
 
-    textareaRef.current.setAttribute("inputmode", "none");
-    textareaRef.current.focus({ preventScroll: true });
-    setTimeout(() => {
-      textareaRef.current.removeAttribute("inputmode");
-    }, 50);
+  textareaRef.current.setAttribute("inputmode", "none");
+  textareaRef.current.focus({ preventScroll: true });
+  setTimeout(() => {
+    textareaRef.current.removeAttribute("inputmode");
+  }, 50);
 
-    let sel = window.getSelection();
-    let range;
+  let sel = window.getSelection();
+  let range;
 
-    if (
-      lastRangeRef.current &&
-      textareaRef.current.contains(lastRangeRef.current.startContainer)
-    ) {
-      range = lastRangeRef.current;
-    } else {
-      range = document.createRange();
-      range.selectNodeContents(textareaRef.current);
-      range.collapse(false);
-    }
+  if (
+    lastRangeRef.current &&
+    textareaRef.current.contains(lastRangeRef.current.startContainer)
+  ) {
+    range = lastRangeRef.current;
+  } else {
+    range = document.createRange();
+    range.selectNodeContents(textareaRef.current);
+    range.collapse(false);
+  }
 
-    sel.removeAllRanges();
-    sel.addRange(range);
+  sel.removeAllRanges();
+  sel.addRange(range);
 
-    const img = document.createElement("img");
-    img.src = emojiUrl;
-    img.className = "emoji-inline";
-    img.style.width = "24px";
-    img.style.height = "24px";
-    img.style.verticalAlign = "middle";
-    img.style.display = "inline-block";
-    img.style.margin = "0 2px";
+  const img = document.createElement("img");
+  img.src = emojiUrl;
+  img.className = "emoji-inline";
+  img.style.width = "24px";
+  img.style.height = "24px";
+  img.style.verticalAlign = "middle";
+  img.style.display = "inline-block";
+  img.style.margin = "0 2px";
 
-    range.insertNode(img);
+  range.insertNode(img);
 
-    const newRange = document.createRange();
-    newRange.setStartAfter(img);
-    newRange.collapse(true);
+  const newRange = document.createRange();
+  newRange.setStartAfter(img);
+  newRange.collapse(true);
 
-    sel.removeAllRanges();
-    sel.addRange(newRange);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
 
-    lastRangeRef.current = newRange;
-  };
+  lastRangeRef.current = newRange;
+
+  // ✅ Resize chat input after inserting emoji
+  resizeTextarea();
+};
+
 
   useEffect(() => {
     if (!eventId) return;
@@ -286,19 +290,6 @@ const ChatPage = () => {
   };
   const handleImageUpload = async () => {};
 
-  
-  useEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    if (showEmojiPicker) {
-      el.setAttribute("readonly", "true");
-      el.setAttribute("inputmode", "none");
-      el.blur(); 
-    } else {
-      el.removeAttribute("readonly");
-      el.setAttribute("inputmode", "text");
-    }
-  }, [showEmojiPicker]);
 
   const sendMessage = async () => {
     if (!textareaRef.current) return;
@@ -347,6 +338,13 @@ const ChatPage = () => {
       console.error("Message send failed:", error);
     }
   };
+const resizeTextarea = () => {
+  const el = textareaRef.current;
+  if (!el) return;
+  el.style.height = "auto"; // reset
+  const newHeight = Math.min(el.scrollHeight, 120); // max height 120px
+  el.style.height = newHeight + "px";
+};
 
   return (
    <div
@@ -356,7 +354,7 @@ const ChatPage = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        paddingBottom: showEmojiPicker ? "260px" : "0px",
+        paddingBottom: showEmojiPicker ? "260px" : "5px"
       }}
       >    <div className="chat-header-wrapper">
         <div className="chat-header">
@@ -482,11 +480,9 @@ const ChatPage = () => {
             el.addEventListener("focus", saveCursor);
           }}
           onInput={(e) => {
-            const el = e.target;
-           
-            el.style.height = "auto";
-            el.style.height = Math.min(el.scrollHeight, 120) + "px";
-          }}
+  resizeTextarea();
+}}
+
           className="chat-input"
           data-placeholder="Type message here..."
         />
