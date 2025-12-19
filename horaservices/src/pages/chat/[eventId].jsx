@@ -72,27 +72,66 @@ const ChatPage = () => {
 
     const setVvh = () => {
       const vv = window.visualViewport;
-      const height = vv ? vv.height : window.innerHeight;
-      docEl.style.setProperty("--vvh", `${height}px`);
+      // Use vv.height for --vvh when keyboard is open, else window.innerHeight
+      if (vv && vv.height < window.innerHeight) {
+        docEl.style.setProperty("--vvh", `${vv.height}px`);
+        // Scroll chat-input into view to avoid white space
+        setTimeout(() => {
+          const input = document.querySelector('.chat-input-container');
+          if (input) input.scrollIntoView({ block: 'end', behavior: 'smooth' });
+        }, 100);
+        // Lock all scroll on body
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100vw';
+        // Lock chat-layout scroll except for .chat-messages
+        const chatLayout = document.querySelector('.chat-layout');
+        if (chatLayout) {
+          chatLayout.addEventListener('touchmove', allowChatMessagesScroll, { passive: false });
+          chatLayout.addEventListener('wheel', allowChatMessagesScroll, { passive: false });
+        }
+      } else {
+        docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
+        // Restore scroll
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        // Remove chat-layout scroll lock
+        const chatLayout = document.querySelector('.chat-layout');
+        if (chatLayout) {
+          chatLayout.removeEventListener('touchmove', allowChatMessagesScroll);
+          chatLayout.removeEventListener('wheel', allowChatMessagesScroll);
+        }
+      }
     };
+    // Allow scroll only on .chat-messages
+    function allowChatMessagesScroll(e) {
+      const chatMessages = document.querySelector('.chat-messages');
+      if (!chatMessages) return e.preventDefault();
+      if (chatMessages.contains(e.target)) {
+        // Allow scroll inside chat-messages
+        return;
+      }
+      e.preventDefault();
+    }
 
     setVvh();
 
-    const vv = window.visualViewport;
-    if (vv) {
-      vv.addEventListener("resize", setVvh);
-      vv.addEventListener("scroll", setVvh);
-    } else {
-      window.addEventListener("resize", setVvh);
-    }
+    window.visualViewport?.addEventListener("resize", setVvh);
+    window.visualViewport?.addEventListener("scroll", setVvh);
 
     return () => {
-      const vvCleanup = window.visualViewport;
-      if (vvCleanup) {
-        vvCleanup.removeEventListener("resize", setVvh);
-        vvCleanup.removeEventListener("scroll", setVvh);
-      } else {
-        window.removeEventListener("resize", setVvh);
+      window.visualViewport?.removeEventListener("resize", setVvh);
+      window.visualViewport?.removeEventListener("scroll", setVvh);
+      // Clean up scroll lock
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      // Remove chat-layout scroll lock
+      const chatLayout = document.querySelector('.chat-layout');
+      if (chatLayout) {
+        chatLayout.removeEventListener('touchmove', allowChatMessagesScroll);
+        chatLayout.removeEventListener('wheel', allowChatMessagesScroll);
       }
     };
   }, []);
