@@ -1,41 +1,55 @@
 export function dateFormatter(dateString, caseNo) {
   if (!dateString) return "";
 
-  const formatCase = String(caseNo);
   const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const monthNum = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
 
-  switch (formatCase) {
+  switch (String(caseNo)) {
+    // January 5, 2024
     case "1":
-      return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      return `${date.toLocaleDateString("en-US", {
+        month: "long",
+      })} ${day}, ${year}`;
 
+    // 5 January 2024
     case "2":
-      return date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+      return `${day} ${date.toLocaleDateString("en-GB", { month: "long" })} ${year}`;
 
+    // 5 January
     case "3":
-      return date.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
+      return `${day} ${date.toLocaleDateString("en-GB", { month: "long" })}`;
 
-    case "4": {
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}.${month}.${year}`;
-    }
-
-    case "5":
-      return date.toLocaleDateString("en-GB", { month: "long", day: "numeric" });
-
-    case "6":
-    case "7": {
-      const dateObject = {
-        day: String(date.getDate()).padStart(2, "0"),
-        month:
-          formatCase === "6"
-            ? date.toLocaleDateString("en-GB", { month: "long" })
-            : date.toLocaleDateString("en-GB", { month: "short" }),
-        year: date.getFullYear(),
+    // ✅ 05.12.2024 (NUMERIC MONTH)
+   case "4":
+      return {
+        full: `${day}.${monthNum}.${year}`,
+        day,
+        month: monthNum,
+        year,
       };
-      return dateObject;
-    }
+
+
+    // January 5
+    case "5":
+      return `${date.toLocaleDateString("en-GB", { month: "long" })} ${day}`;
+
+    // 🔹 Object return (String month)
+    case "6":
+      return {
+        day,
+        month: date.toLocaleDateString("en-GB", { month: "long" }),
+        year,
+      };
+
+    // 🔹 Object return (Short month)
+    case "7":
+      return {
+        day,
+        month: date.toLocaleDateString("en-GB", { month: "short" }),
+        year,
+      };
 
     default:
       return "";
