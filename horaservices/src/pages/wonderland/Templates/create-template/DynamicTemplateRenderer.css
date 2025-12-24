@@ -259,6 +259,7 @@
   line-height:1;
   border:  var(--borderColor) !important;
   overflow: visible; 
+ padding-inline: 3px;
 }
 
 .editborder::before {
