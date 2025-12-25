@@ -8,12 +8,13 @@ const firebaseConfig = {
   appId: "1:171662318448:web:aa881c252acba6fdd14db5",
 };
 
-import { initializeApp } from 'firebase/app';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getMessaging } from 'firebase/messaging';
 
 // initialize Firebase
-const app = initializeApp(firebaseConfig);
-
+const app = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
 // Get Messaging
 let messaging;
 if (typeof window !== 'undefined') {

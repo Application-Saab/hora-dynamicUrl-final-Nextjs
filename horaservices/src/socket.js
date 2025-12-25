@@ -5,7 +5,7 @@ let socket;
 export const connectSocket = (userId) => {
   if (!userId) return;
 
-  socket = io("https://horaservices.com:3000", {
+  socket = io(BASE_URL, {
     transports: ["websocket", "polling"],
     secure: true,
     query: { userId },
