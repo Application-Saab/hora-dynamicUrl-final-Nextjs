@@ -1,6 +1,6 @@
-export const BASE_URL="https://horaservices.com:3000";
-export const OTP_GENERATE_END_POINT= "/api/user/otp_generate";
-export const API_SUCCESS_CODE=200;
+export const BASE_URL = "https://horaservices.com:3000";
+export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
+export const API_SUCCESS_CODE = 200;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
 export const UPDATE_USER_DETAIL_ENDPOINT = "/api/users/user_update";
 export const UPDATE_ORDER_STATUS = "/api/order/update_order_status";
@@ -45,9 +45,19 @@ export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
 export const UPLOAD_THANKYOU_NOTE = "/api/customer/event/event-images";
 export const CREATE_NEW_POST = "/api/customer/event/event-posts";
 export const GET_ALL_POSTS = "/api/customer/event/event-posts";
-export const GET_PRESIGNED_POST_URL = '/api/customer/event/get-presigned-url';
+export const GET_PRESIGNED_POST_URL = "/api/customer/event/get-presigned-url";
 export const GET_GUEST_DETTAILS = "/api/customer/event/event-guest";
 export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/all";
 export const GET_USER_BY_ID = "/api/user/user-details";
 export const UPDATE_USER_BY_ID = "/api/user/user-details";
 export const UPDATE_USER_AVATAR_BY_ID = "/api/user/user-avatar";
+
+// Chat Routes
+export const GET_CHAT_ROOMS = "/api/customer/event/chat/chatrooms/user";
+export const GET_CHAT_MESSAGES = "/api/customer/event/chat/messages";
+export const MARK_READ_MESSAGE = "/api/customer/event/chat/mark-read";
+export const CREATE_DIRECT_CHAT_ROOM =
+  "/api/customer/event/chat/create-direct-room";
+export const SUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/subscribe";
+export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
+export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";

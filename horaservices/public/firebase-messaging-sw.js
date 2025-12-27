@@ -1,24 +1,27 @@
-importScripts("https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/9.24.0/firebase-messaging-compat.js");
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB8FU4YYnwLtRuGiSD5eYpEDIQSpFKh1zI",
+  authDomain: "wonderland-hora.firebaseapp.com",
+  projectId: "wonderland-hora",
+  storageBucket: "wonderland-hora.appspot.com",
+  messagingSenderId: "171662318448",
+  appId: "1:171662318448:web:aa881c252acba6fdd14db5",
+};
 
-firebase.initializeApp({
-  apiKey: "AIzaSyD8mkyjHXX_fGcdENJJnU3GWI60YWMItl0",
-  authDomain: "wonderland-inapp-chat.firebaseapp.com",
-  projectId: "wonderland-inapp-chat",
-  storageBucket: "wonderland-inapp-chat.appspot.com",
-  messagingSenderId: "336745779010",
-  appId: "1:336745779010:web:0f2125b937da40189942db",
-  measurementId: "G-QF6S6NZQL6",
-});
+importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
+const app = firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
-  console.log("[firebase-messaging-sw.js] Background message received:", payload);
-  const { title, body } = payload.notification;
+messaging.onBackgroundMessage((payload) => {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
 
-  self.registration.showNotification(title, {
-    body: body,
-    icon: "/new_logo_light.png", // You can replace this with your app icon
-  });
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/new_logo_light.png'
+  };
+  
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });

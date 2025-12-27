@@ -15,10 +15,12 @@ import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 
 import "./bottomNav.css";
+import { useChatStore } from "@/hooks/ChatContext";
 
 export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
+  const { totalUnread } = useChatStore();
 
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
@@ -71,11 +73,11 @@ export default function BottomNav() {
     <>
       {/* Access Restricted Popup */}
       {showPopup && (
-        <div
-          className="restricted-overlay"
-          onClick={handleClosePopup}
-        >
-          <div className="restricted-popup" onClick={(e) => e.stopPropagation()}>
+        <div className="restricted-overlay" onClick={handleClosePopup}>
+          <div
+            className="restricted-popup"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="restricted-title">Access Restricted</div>
             <div className="restricted-message">
               Currently unable to access this section.
@@ -104,6 +106,7 @@ export default function BottomNav() {
           iconFilled={CheerChatIconFilled}
           label="CheerChat"
         />
+        <span>{totalUnread}</span>
 
         <NavItem
           href={`/services?userid=${userId}`}
