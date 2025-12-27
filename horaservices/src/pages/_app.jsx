@@ -81,6 +81,18 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     requestPermission();
   }, []);
+  
+  useLayoutEffect(() => {
+    // reset any scroll lock
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.overflow = "";
+
+    // force scroll to top
+    window.scrollTo(0, 0);
+
+    console.log("scrolling app");
+  }, [pathname]);
 
   return (
     <>

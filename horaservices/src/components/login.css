@@ -19,8 +19,8 @@
 } */
 .close-icons{
   position: absolute;
-  top: 165px;
-  right: 25px;
+  top: auto;
+  right: 23px;
   font-size: 28px;
   font-weight: bold;
   color: #7d7d7d;
@@ -46,6 +46,7 @@
     font-family: Poppins, sans-serif;
     min-width: auto;
     max-width: 35%;
+    position: relative;
   }
 .otp-login {
     padding: 27px;
