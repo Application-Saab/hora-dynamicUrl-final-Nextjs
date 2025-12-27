@@ -23,6 +23,8 @@ function MyApp({ Component, pageProps }) {
   const { catValue, productName } = router.query;
   const pathname = usePathname();
 
+
+  // redirection isuse
   useEffect(() => {
     setCurrentUrl(router.asPath);
     // Google Tag Manager script
