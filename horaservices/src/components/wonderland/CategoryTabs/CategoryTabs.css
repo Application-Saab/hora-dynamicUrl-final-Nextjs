@@ -29,7 +29,8 @@ padding: 4px 3px;
 
   transition: transform 0.1s ease, box-shadow 0.1s ease;
  height: clamp(22.5px, 8.1vw, 35.3px);
-width: clamp(56.7px, 15vw, 78px);
+ padding: 0 clamp(12px, 4vw, 20px);   
+  width: auto;   
 font-size: clamp(10.66px, 2.8vw, 18px);
 }
 
