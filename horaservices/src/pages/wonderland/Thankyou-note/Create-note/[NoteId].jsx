@@ -223,7 +223,7 @@ const handleDownload = async () => {
             )}
           </div>
 
-          {/* -------- Title -------- */}
+      
    <div
   ref={titleRef}
   contentEditable
@@ -234,7 +234,6 @@ const handleDownload = async () => {
 
 
 
-          {/* -------- Content -------- */}
           <div
             ref={contentRef}
             contentEditable
