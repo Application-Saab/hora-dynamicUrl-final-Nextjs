@@ -16,7 +16,11 @@ const colorsArray = [
 ];
 
 const RsvpListModal = ({ isOpen, onClose, guestData, totalSubmitted }) => {
-
+  console.log(
+    "%c [ guestData ]-19",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    guestData
+  );
   if (!isOpen) return null;
   const { width } = useScreenSize();
   return (

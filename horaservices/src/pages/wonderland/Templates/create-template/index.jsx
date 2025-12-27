@@ -355,153 +355,128 @@ const DynamicTemplateRenderer = () => {
     setLoading(false);
   }, [templateMeta?.templateInfo]);
 
-// const handleEditableClick = useCallback(
-//   (field, node) => {
-//     const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
-//     node.contentEditable = "true";
-//     node.dataset.editing = "true";
-//     node.classList.add("editing");
+ const handleEditableClick = useCallback(
+    (field, node) => {
+      const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
+      node.contentEditable = "true";
+      node.dataset.editing = "true";
+      node.classList.add("editing");
 
-//     const placeholderText =
-//       field === "name" ? "Type your name" : field === "address" ? "Type your address" : "";
+      const placeholderText =
+        field === "name"
+          ? "Type your name"
+          : field === "address"
+            ? "Type your address"
+            : "";
 
-//     const isEmpty = !node.innerText?.trim();
+      const isEmpty = !node.innerText?.trim();
 
-//     // Only set caret at end if empty
-//     if (isEmpty) {
-//       if (field === "time") {
-//         node.innerText = formData.time || getCurrentTimeAMPM();
-//       } else {
-//         node.innerText = formData[field] || placeholderText;
-//       }
-//       setCaretAtEnd(node); // only now
-//     }
-
-//     node.focus();
-
-//     // The rest of your onKeyDown, onInput, onPaste, onBlur handlers...
-//   },
-//   [formData, templateMeta?.charLimits]
-// );
-
-const handleEditableClick = useCallback(
-  (field, node) => {
-    const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
-    node.contentEditable = "true";
-    node.dataset.editing = "true";
-    node.classList.add("editing");
-
-    const placeholderText =
-      field === "name"
-        ? "Type your name"
-        : field === "address"
-          ? "Type your address"
-          : "";
-
-    const isEmpty = !node.innerText?.trim();
-
-    // Only set caret at end if the field is empty
-    if (isEmpty) {
-      if (field === "time") {
-        node.innerText = formData.time || getCurrentTimeAMPM();
-      } else {
-        node.innerText = formData[field] || placeholderText;
-      }
-      setCaretAtEnd(node);
-    }
-
-    node.focus();
-
-    const onKeyDown = (ev) => {
-      const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
-      if (printable && node.innerText.length >= charLimit) {
-        const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
-        if (!allowed.includes(ev.key)) {
-          ev.preventDefault();
-          setFormErrors((prev) => ({ ...prev, [field]: `Character limit of ${charLimit} reached` }));
-          return;
-        }
-      } else {
-        setFormErrors((prev) => ({ ...prev, [field]: "" }));
-      }
-
-      if (ev.key === "Enter") {
-        ev.preventDefault();
-        node.blur();
-      } else if (ev.key === "Escape") {
-        node.innerText = formData[field] || "";
-        node.blur();
-      }
-    };
-
-    const onInput = (ev) => {
-      const el = ev.target;
-      const field = el.getAttribute("data-field");
-      let text = el.innerText;
-
-      if (text.length > charLimit) {
-        const trimmed = text.slice(0, charLimit);
-        const caret = saveCaretPosition(el);
-        el.innerText = trimmed;
-        restoreCaretPosition(el, caret);
-        return;
-      }
-
-      if (field !== "time") {
-        const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
-        if (formattedValue !== text) {
-          const caret = saveCaretPosition(el);
-          el.innerText = formattedValue;
-          restoreCaretPosition(el, caret);
-        }
-      }
-
-      setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
-    };
-
-    const onPaste = (ev) => {
-      ev.preventDefault();
-      const pasted = (ev.clipboardData || window.clipboardData).getData("text");
-      const allowed = Math.max(0, charLimit - node.innerText.length);
-      document.execCommand("insertText", false, pasted.slice(0, allowed));
-    };
-
-    const onBlur = (ev) => {
-      const el = ev.target;
-      let value = el.innerText.trim();
-
-      if (field === "time") {
-        if (!value) {
-          value = new Date().toLocaleTimeString("en-US", {
+      // ⭐ Time field: if empty -> show current time AM/PM
+      if (field === "time" && isEmpty) {
+        node.innerText = formData.time ||
+          new Date().toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
           });
-        }
-      } else {
-        if (!value && field === "name") value = "Type your name";
-        if (!value && field === "address") value = "Type your address";
-        if (value.length > charLimit) value = value.slice(0, charLimit);
+      } else if (isEmpty) {
+        node.innerText = formData[field] || placeholderText;
       }
 
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      setCaretAtEnd(node);
+      node.focus();
 
-      el.contentEditable = "false";
-      el.removeAttribute("data-editing");
-      el.classList.remove("editing");
+      const onKeyDown = (ev) => {
+        const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
+        if (printable && node.innerText.length >= charLimit) {
+          const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
+          if (!allowed.includes(ev.key)) {
+            ev.preventDefault();
+            setFormErrors((prev) => ({ ...prev, [field]: `Character limit of ${charLimit} reached` }));
+            return;
+          }
+        } else {
+          setFormErrors((prev) => ({ ...prev, [field]: "" }));
+        }
 
-      el.removeEventListener("keydown", onKeyDown);
-      el.removeEventListener("input", onInput);
-      el.removeEventListener("paste", onPaste);
-      el.removeEventListener("blur", onBlur);
-    };
+        if (ev.key === "Enter") {
+          ev.preventDefault();
+          node.blur();
+        } else if (ev.key === "Escape") {
+          node.innerText = formData[field] || "";
+          node.blur();
+        }
+      };
 
-    node.addEventListener("keydown", onKeyDown);
-    node.addEventListener("input", onInput);
-    node.addEventListener("paste", onPaste);
-    node.addEventListener("blur", onBlur);
-  },
-  [formData, templateMeta?.charLimits]
-);
+      const onInput = (ev) => {
+        const el = ev.target;
+        const field = el.getAttribute("data-field");
+        let text = el.innerText;
+
+        if (text.length > charLimit) {
+          const trimmed = text.slice(0, charLimit);
+          const caret = saveCaretPosition(el);
+          el.innerText = trimmed;
+          restoreCaretPosition(el, caret);
+          return;
+        }
+
+        // ⭐ NO applyCase on time field
+        if (field !== "time") {
+          const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
+          if (formattedValue !== text) {
+            const caret = saveCaretPosition(el);
+            el.innerText = formattedValue;
+            restoreCaretPosition(el, caret);
+          }
+        }
+
+        setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
+      };
+
+      const onPaste = (ev) => {
+        ev.preventDefault();
+        const pasted = (ev.clipboardData || window.clipboardData).getData("text");
+        const allowed = Math.max(0, charLimit - node.innerText.length);
+        document.execCommand("insertText", false, pasted.slice(0, allowed));
+      };
+
+      const onBlur = (ev) => {
+        const el = ev.target;
+        let value = el.innerText.trim();
+
+        // ⭐ Set current time if left empty
+        if (field === "time") {
+          if (!value) {
+            value = new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          }
+        } else {
+          if (!value && field === "name") value = "Type your name";
+          if (!value && field === "address") value = "Type your address";
+          if (value.length > charLimit) value = value.slice(0, charLimit);
+        }
+
+        setFormData((prev) => ({ ...prev, [field]: value }));
+
+        el.contentEditable = "false";
+        el.removeAttribute("data-editing");
+        el.classList.remove("editing");
+
+        el.removeEventListener("keydown", onKeyDown);
+        el.removeEventListener("input", onInput);
+        el.removeEventListener("paste", onPaste);
+        el.removeEventListener("blur", onBlur);
+      };
+
+      node.addEventListener("keydown", onKeyDown);
+      node.addEventListener("input", onInput);
+      node.addEventListener("paste", onPaste);
+      node.addEventListener("blur", onBlur);
+    },
+    [formData, templateMeta?.charLimits]
+  );
 
   useEffect(() => {
     const container = templateRef.current;
@@ -567,6 +542,8 @@ const handleDownload = async () => {
     try {
      
       await saveTemplate(`template_${eventId}`, reader.result);
+
+
       router.replace(`/wonderland/invite?eventid=${eventId}`);
     } catch (err) {
       console.error("Failed to save template in IndexedDB:", err);
@@ -730,6 +707,14 @@ if (addressExistsInTemplate) {
     <div className="d-flex justify-content-center" style={{ maxWidth: "480px", margin: "0 auto" }}>
       <div style={{ padding: "8px", maxWidth: "480px" }}>
         <div ref={templateRef} className="template-container" style={{ position: "relative", }}>
+          {/* <img
+            ref={imgRef}
+            src={`/assets/templates/${templateMeta?.bgImageName}`}
+            id="bg-image"
+            alt="bg"
+            onLoad={handleImageLoad}
+            onError={() => setLoading(false)}
+          /> */}
  {loading && (
     <div
       style={{
@@ -825,6 +810,3 @@ if (addressExistsInTemplate) {
 };
 
 export default DynamicTemplateRenderer;
-
-
-

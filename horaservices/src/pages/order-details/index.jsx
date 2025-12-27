@@ -67,10 +67,11 @@ const OrderDetail = () => {
       );
       const responseData = await response.json();
 
-      setOrderDetail(responseData?.data);
+      setOrderDetail(responseData?.data?._doc);
       setDecorationItems(responseData?.data?.items[0]?.decoration);
-      setDecorationComments(responseData?.data?.decoration_comments);
-      setAddOn(responseData?.data?.add_on);
+      setDecorationComments(responseData?.data?._doc.decoration_comments);
+      console.log("111" , responseData?.data?._doc.add_on);
+      setAddOn(responseData?.data?._doc.add_on);
       setLoading(false);
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
@@ -90,9 +91,9 @@ const OrderDetail = () => {
 
       console.log(responseData)
       //console.log(BASE_URL + GET_FOOD_DELIVERY_DETAILS + "/" + orderId)
-      setOrderDetail(responseData?.data);
-      setHospitalityServiceCount(responseData?.data?.no_of_people);
-      setHospitalityServiceTotalAmount(responseData?.data?.total_amount);
+      setOrderDetail(responseData.data);
+      setHospitalityServiceCount(responseData.data.no_of_people);
+      setHospitalityServiceTotalAmount(responseData.data.total_amount);
       setLoading(false);
     } catch (error) {
       console.log("fetchDecorationOrderDetails error", error);
@@ -107,9 +108,9 @@ const OrderDetail = () => {
       );
       const responseData = await response.json();
 
-      setOrderDetail(responseData?.data);
-      setHospitalityServiceCount(responseData?.data?.no_of_people);
-      setHospitalityServiceTotalAmount(responseData?.data?.total_amount);
+      setOrderDetail(responseData.data);
+      setHospitalityServiceCount(responseData.data.no_of_people);
+      setHospitalityServiceTotalAmount(responseData.data.total_amount);
       setLoading(false);
     } catch (error) {
       console.log("fetchOrderDetails error", error);

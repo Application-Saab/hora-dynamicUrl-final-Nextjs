@@ -19,186 +19,266 @@ import useApi from "@/hooks/useApi";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
-
   const [note, setNote] = useState(null);
-  const [userName, setUserName] = useState("");
+  const [liveData, setLiveData] = useState({
+    title: "",
+    content: "",
+    author: "",
+  });
+
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [activeField, setActiveField] = useState("content");
-  const [uploading, setUploading] = useState(false);
+  const [activeField, setActiveField] = useState(null);
+  const [lastSelection, setLastSelection] = useState({ start: 0, end: 0 });
   const [showBorders, setShowBorders] = useState(true);
 
   const titleRef = useRef(null);
   const contentRef = useRef(null);
+  const authorRef = useRef(null);
   const noteRef = useRef(null);
 
-  const lastRangeRef = useRef(null); // ✔ cursor memory
-
   const { makeRequest: createPost } = useApi();
-const userId =
-  typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const [userName, setUserName] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  // ----------- Load Note ------------
+  // Fetch User Name
+  useEffect(() => {
+    const userId =
+      typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+
+    if (!userId) return;
+
+    const fetchUserName = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`);
+        const result = await response.json();
+
+        const data = result?.data || result?.user || {};
+        const name = data.hostName || data.userName || data.name || "Guest";
+
+        setUserName(name);
+      } catch (err) {
+        console.error("Error fetching user name:", err);
+      }
+    };
+
+    fetchUserName();
+  }, []);
+
+  // Load Note Data
   useEffect(() => {
     if (NoteId) {
       const found = notesData.find((n) => n.id === Number(NoteId));
-      if (found) setNote(found);
+      if (found) {
+        setNote(found);
+        setLiveData({
+          title: found.title || "",
+          content: found.content || "",
+          author: found.author || "",
+        });
+      }
     }
   }, [NoteId]);
 
-  // ----------- Load User Name ------------
-  useEffect(() => {
-   
-    if (!userId) return;
+  // Auto height expand textareas
+  const adjustHeight = (el) => {
+    if (!el) return;
 
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`);
-        const data = await res.json();
-        const u = data?.data || data?.user || {};
-        setUserName(u.hostName || u.userName || u.name || "Guest");
-      } catch (e) {}
+    const currentY = window.scrollY;
+    const caret = el.selectionStart;
+
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+
+    window.scrollTo({ top: currentY });
+    el.setSelectionRange(caret, caret);
+  };
+
+  const handleChange = (field, value, ref) => {
+    setLiveData((prev) => ({ ...prev, [field]: value }));
+    adjustHeight(ref.current);
+  };
+
+  // Track cursor selection
+  const handleFocus = (field, ref) => {
+    setActiveField(field);
+    const el = ref.current;
+
+    const updateSelection = () => {
+      setLastSelection({
+        start: el.selectionStart,
+        end: el.selectionEnd,
+      });
     };
 
-    fetchUser();
-  }, []);
-
-  // ----------- Keep cursor saved -----------
-
-  const saveCursor = () => {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      lastRangeRef.current = sel.getRangeAt(0).cloneRange();
-    }
+    el.addEventListener("keyup", updateSelection);
+    el.addEventListener("mouseup", updateSelection);
   };
 
-  const onFocus = (field, ref) => {
-    setActiveField(field);
-
-    const el = ref.current;
-    el.addEventListener("keyup", saveCursor);
-    el.addEventListener("mouseup", saveCursor);
-    el.addEventListener("focus", saveCursor);
-  };
-useEffect(() => {
-  if (note && titleRef.current) {
-    titleRef.current.innerHTML = note.title || "";
-  }
-}, [note]);
-
-  // ----------- INSERT EMOJI (FIXED) -----------
-
-  const insertEmoji = (emojiObject) => {
-    const emojiUrl = emojiObject?.imageUrl;
-
+  // Insert emoji AND scroll page to bottom
+  const handleEmojiSelect = (emoji) => {
     const ref =
-      activeField === "title" ? titleRef.current : contentRef.current;
+      activeField === "title"
+        ? titleRef.current
+        : activeField === "content"
+        ? contentRef.current
+        : authorRef.current;
 
-    // Focus without triggering keyboard by temporarily setting inputmode
-    ref.setAttribute('inputmode', 'none');
-    ref.focus({ preventScroll: true });
+    if (!ref) return;
+
+    const start = lastSelection.start ?? ref.value.length;
+    const end = lastSelection.end ?? ref.value.length;
+
+    const newValue =
+      ref.value.slice(0, start) + emoji + ref.value.slice(end);
+
+    ref.value = newValue;
+
+    const newCursor = start + emoji.length;
+
+    setLiveData((prev) => ({ ...prev, [activeField]: newValue }));
+    setLastSelection({ start: newCursor, end: newCursor });
+
+    adjustHeight(ref);
+
+    // ⭐ Scroll full window to bottom
     setTimeout(() => {
-      ref.removeAttribute('inputmode');
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
     }, 50);
-
-    let sel = window.getSelection();
-    let range;
-
-    if (
-      lastRangeRef.current &&
-      ref.contains(lastRangeRef.current.startContainer)
-    ) {
-      range = lastRangeRef.current;
-    } else {
-      range = document.createRange();
-      range.selectNodeContents(ref);
-      range.collapse(false);
-    }
-
-    sel.removeAllRanges();
-    sel.addRange(range);
-
-    const img = document.createElement("img");
-    img.src = emojiUrl;
-    img.className = "emoji-inline";
-
-    range.insertNode(img);
-
-    // ⭐ FIX: Move cursor after emoji (THIS IS THE MAGIC FIX)
-    const newRange = document.createRange();
-    newRange.setStartAfter(img);
-    newRange.collapse(true);
-
-    sel.removeAllRanges();
-    sel.addRange(newRange);
-
-    lastRangeRef.current = newRange; // save new cursor
   };
 
-  // ----------- Download/Submit ------------
-const uploadInBackground = async (blob, eventid) => {
-  try {
-    if (!userId) return;
+  // // Scroll full page when emoji picker opens
+  // useEffect(() => {
+  //   if (showEmojiPicker) {
+  //     setTimeout(() => {
+  //       window.scrollTo({
+  //         top: document.body.scrollHeight,
+  //         behavior: "smooth",
+  //       });
+  //     }, 100);
+  //   }
+  // }, [showEmojiPicker]);
 
-    const file = new File([blob], "note.png", { type: blob.type });
+  // Close emoji picker on outside click
+  useEffect(() => {
+    const clickOutside = (e) => {
+      if (
+        showEmojiPicker &&
+        !e.target.closest(".emoji-picker-container") &&
+        !e.target.closest(".emoji-button")
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("click", clickOutside);
+    return () => document.removeEventListener("click", clickOutside);
+  }, [showEmojiPicker]);
 
-    const response = await uploadImage(
-      file,
-      userId,
-      eventid,
-      "thankyou-note",
-      (percent) => console.log(`Upload progress: ${percent}%`)
-    );
+// // 👇 The new logic to handle browser back button
+// useEffect(() => {
+//   // 1. When the picker opens, push a new state onto the history stack.
+//   // This makes the browser's "back" action first target this new state.
+//   if (showEmojiPicker) {
+//     // Push a new state only when the picker is opened.
+//     window.history.pushState({ isPickerOpen: true }, '', null); 
+//   }
 
-    if (response?.success) {
-      const postPayload = {
-        postById: userId,
-        postByName: userName || "Guest",
-        postType: "thankYouNote",
-        postUrl: response.originalUrl,
-        postKey: response.originalKey,
-        postWebpUrl: response.thumbnailUrl,
-        postWebpKey: response.thumbnailKey,
-      };
+//   const handlePopState = (e) => {
+//     // Check if the component believes the picker is open.
+//     if (showEmojiPicker) {
+//       // Prevent default back navigation.
+//       e.preventDefault(); 
+      
+//       // Close the picker.
+//       setShowEmojiPicker(false);
+      
+//       // Push a new, clean state back onto history to "undo" the pop state.
+//       // This ensures the next 'back' action goes to the previous route.
+//       window.history.pushState({ isPickerOpen: false }, '', null);
 
-      await createPost(
-        `${CREATE_NEW_POST}/${eventid}`,
-        "POST",
-        postPayload
-      );
-    }
-  } catch (err) {}
-};
+//     } else {
+//       // If the picker is not open, allow the default navigation to occur.
+//     }
+//   };
 
-const handleDownload = async () => {
-  if (!noteRef.current) return;
+//   // Attach the listener
+//   window.addEventListener('popstate', handlePopState);
 
-  setUploading(true);
-  setShowBorders(false);
+//   // Cleanup: Remove the listener when the component unmounts or effect reruns.
+//   return () => {
+//     window.removeEventListener('popstate', handlePopState);
+//   };
+// }, [showEmojiPicker]);
 
-  const { eventid } = router.query;
-  if (!eventid) return;
-  if (!userId) return;
+  // Download + Upload
+  const handleDownload = async () => {
+    if (!noteRef.current) return;
+    setUploading(true);
+    setShowBorders(false);
 
-  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
-  if (!blob) return;
+    const { eventid } = router.query;
+    if (!eventid) return;
 
-  const base64 = await new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
+    const userID =
+      typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    if (!userID) return console.error("userID not found");
 
-  localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
+    // Capture blob
+    const blob = await captureElementAsImage(noteRef.current, [
+      ".emoji-button",
+    ]);
+    if (!blob) return console.error("Failed to capture image.");
 
-  router.push(`/wonderland/invite?eventid=${eventid}`);
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
 
-  uploadInBackground(blob, eventid);
+    // Save draft to localStorage & navigate back
+    localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
+    router.push(`/wonderland/invite?eventid=${eventid}`);
 
-  setUploading(false);
-};
+    // API calls in background
+    (async () => {
+      try {
+        const file = new File([blob], "note.png", { type: blob.type });
 
+        const response = await uploadImage(
+          file,
+          userID,
+          eventid,
+          "thankyou-note",
+          (percent) => console.log(`Upload progress: ${percent}%`)
+        );
 
+        if (response?.success) {
+          const postPayload = {
+            postById: userID,
+            postByName: userName || "Guest",
+            postType: "thankYouNote",
+            postUrl: response.originalUrl,
+            postKey: response.originalKey,
+            postWebpUrl: response.thumbnailUrl,
+            postWebpKey: response.thumbnailKey,
+          };
 
+          await createPost(
+            `${CREATE_NEW_POST}/${eventid}`,
+            "POST",
+            postPayload
+          );
+        }
+      } catch (err) {
+        console.error("Background upload failed:", err);
+      }
+    })();
+
+    // Step 6: Stop uploading spinner (UI clean)
+    setUploading(false);
+  };
 
   if (!note) return <NoteSkeleton />;
 
@@ -215,59 +295,72 @@ const handleDownload = async () => {
         <div
           ref={noteRef}
           className="createNote-container"
-          style={{ background: note.color }}
+          style={{ background: note.color, position: "relative" }}
         >
           <div className="icon-sec">
-            {note.icon && (
+              {note.icon && (
               <Image src={note.icon} alt="" className="createNote-icon" />
             )}
+
+          </div>
+          <div className="createNote-header">
+          
+            <textarea
+              ref={titleRef}
+              value={liveData.title}
+              rows={1}
+              onChange={(e) => handleChange("title", e.target.value, titleRef)}
+              onFocus={() => handleFocus("title", titleRef)}
+              placeholder="TITLE..."
+              className={`textArea-title ${
+                showBorders ? "always-border" : ""
+              }`}
+            />
           </div>
 
-          {/* -------- Title -------- */}
-   <div
-  ref={titleRef}
-  contentEditable
-  suppressContentEditableWarning={true}
-  onFocus={() => onFocus("title", titleRef)}
-  className={`textArea-title ${showBorders ? "always-border" : ""}`}
-></div>
-
-
-
-          {/* -------- Content -------- */}
-          <div
+          <textarea
             ref={contentRef}
-            contentEditable
-            suppressContentEditableWarning
-            onFocus={() => onFocus("content", contentRef)}
-            className={`textArea-Content ${showBorders ? "always-border" : ""}`}
-            data-placeholder="Write your note..."
+            // value={liveData.content}
+            rows={2}
+            onChange={(e) =>
+              handleChange("content", e.target.value, contentRef)
+            }
+            onFocus={() => handleFocus("content", contentRef)}
+            placeholder="Write your note..."
+            className={`textArea-Content ${
+              showBorders ? "always-border" : ""
+            }`}
           />
-
           <div className="emojisec">
             <div className="textArea-Author">
-              {userName ? `- ${userName}` : "- Loading..."}
-            </div>
-
-            <div
-              className="emoji-button"
-              style={{ position: "absolute", right: 0, top: 0 }}
-            >
-              <EmojiPickerButton
-                onEmojiSelect={insertEmoji}
-                isPickerOpen={showEmojiPicker}
-                setIsPickerOpen={setShowEmojiPicker}
-              />
-            </div>
+        {userName ? `- ${userName}` : "- Fetching your name..."}
+        </div>
+             <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              zIndex: 300,
+            }}
+          >
+            <EmojiPickerButton
+              onEmojiSelect={handleEmojiSelect}
+              isPickerOpen={showEmojiPicker}
+              setIsPickerOpen={setShowEmojiPicker}
+            />
           </div>
+          </div>
+         
+
+       
         </div>
 
-        <div style={{ textAlign: "center", marginTop: 20 }}>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton
-            title="Submit"
-            onClick={handleDownload}
-            loading={uploading}
-          />
+              title={"Submit"}
+              onClick={!uploading && handleDownload}
+              loading={uploading}
+            />
         </div>
       </div>
     </>
