@@ -31,12 +31,6 @@ export async function askAndSubscribe(vapidPublicKey, userId, groupId = null) {
 
   const permission = await Notification.requestPermission();
   if (permission !== "granted") throw new Error("Permission denied");
-  console.log(
-    "%c [ vapidPublicKey ]-73",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    vapidPublicKey
-  );
-
   const reg = await registerServiceWorker();
 
   // subscribe web push

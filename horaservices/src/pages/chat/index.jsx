@@ -70,11 +70,11 @@ const GroupsList = () => {
     fetchUserDetails();
   }, [userId]);
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/firebase-messaging-sw.js");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if ("serviceWorker" in navigator) {
+  //     navigator.serviceWorker.register("/firebase-messaging-sw.js");
+  //   }
+  // }, []);
 
   async function enableNotifications() {
     try {
