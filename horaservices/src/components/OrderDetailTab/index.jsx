@@ -26,6 +26,7 @@ const OrderDetailTab = ({
   decorationComments,
   addOn,
 }) => {
+  const decorationArray = Array.isArray(decorationItems) ? decorationItems : [decorationItems];
   const router = useRouter();
   const [tab, setTab] = useState("Menu");
   const [name, setname] = useState();
@@ -309,7 +310,7 @@ const OrderDetailTab = ({
         </>
       ) : orderType === 1 ? (
         <div className="decoration-container orderdetails">
-          {decorationItems?.map((product, index) => {
+          {decorationArray?.map((product, index) => {
             return (
               <div className="decDetails"
                 style={{
