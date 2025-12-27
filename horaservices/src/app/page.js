@@ -26,11 +26,19 @@ import PhotographyIcon from '../assets/photography_icon.webp';
 import FoodIcon from '../assets/food_icon.png';
  import decorationbanner from '../assets/decoration-home-banner.jpg'
 import './homepage.css'
+import { useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
 
+
+// home page script
 export default function Home() {
 const router = useRouter();
+const pathname = usePathname();
 const [showButton, setShowButton] = useState(false);
 const [currentSlide, setCurrentSlide] = useState(0);
+
+
+
 // useEffect(() => {
 //   const blockContextMenu = (e) => e.preventDefault();
 //   const blockKeys = (e) => {
@@ -114,6 +122,18 @@ useEffect(() => {
   })(window,document,'script','dataLayer','GTM-K3SCKLTZ');
 }, []);
 
+
+   useLayoutEffect(() => {
+    // reset any scroll lock
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.overflow = "";
+
+    // force scroll to top
+    window.scrollTo(0, 0);
+
+    console.log("scrolling page");
+  }, [pathname]);
 
 const photographyUrl = () =>{
   window.open(
