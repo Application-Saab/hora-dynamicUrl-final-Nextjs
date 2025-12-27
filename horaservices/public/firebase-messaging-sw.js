@@ -1,11 +1,12 @@
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB8FU4YYnwLtRuGiSD5eYpEDIQSpFKh1zI",
-  authDomain: "wonderland-hora.firebaseapp.com",
-  projectId: "wonderland-hora",
-  storageBucket: "wonderland-hora.appspot.com",
-  messagingSenderId: "171662318448",
-  appId: "1:171662318448:web:aa881c252acba6fdd14db5",
+  apiKey: "AIzaSyD8mkyjHXX_fGcdENJJnU3GWI60YWMItl0",
+  authDomain: "wonderland-inapp-chat.firebaseapp.com",
+  projectId: "wonderland-inapp-chat",
+  storageBucket: "wonderland-inapp-chat.firebasestorage.app",
+  messagingSenderId: "336745779010",
+  appId: "1:336745779010:web:0f2125b937da40189942db",
+  measurementId: "G-QF6S6NZQL6",
 };
 
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');

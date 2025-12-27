@@ -114,4 +114,4 @@ export const PUBLIC_VAPID =
   "BHBPued2H9tMC6x97EOQchgTE8P5d6QGaoTsfN3diqNq5oYa8nZoBv0Qb29iabLpi43C9-fFTalSAJdqCYNSA-0";
 
 export const FIREBASE_VAPID_KEY =
-  "BOZNXy9qbUIXWfQ2KiAbapxBegzkO6pE1s6cDcNFVRCELKjsLXTPoxob0OwGmv1-oUAp-7ngNiHdify3j39OuZw";
+  "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
