@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect , useState } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pathname = usePathname();
+   const [currentUrl, setCurrentUrl] = useState("");
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
     const blockContextMenu = (e) => e.preventDefault();
@@ -47,6 +48,28 @@ function MyApp({ Component, pageProps }) {
       document.removeEventListener("dragstart", blockDrag);
     };
   }, []);
+
+  useEffect(() => {
+    setCurrentUrl(router.asPath);
+    // Google Tag Manager script
+    (function (w, d, s, l, i) {
+      console.log("run", router.pathname);
+      w[l] = w[l] || [];
+      w[l].push({
+        "gtm.start": new Date().getTime(),
+        event: "gtm.js",
+        pageName: router.pathname,
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != "dataLayer" ? "&l=" + l : "";
+      j.async = true;
+      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+      f.parentNode.insertBefore(j, f);
+      console.log("GTM Script Loaded"); // Debugging log
+    })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
+  }, [router.asPath]);
+
 
   // ================= FIREBASE PUSH =================
   const requestPermission = async () => {
