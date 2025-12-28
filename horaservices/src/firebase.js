@@ -1,16 +1,24 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getMessaging } from "firebase/messaging";
-
+// Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyD8mkyjHXX_fGcdENJJnU3GWI60YWMItl0",
-  authDomain: "wonderland-inapp-chat.firebaseapp.com",
-  projectId: "wonderland-inapp-chat",
-  storageBucket: "wonderland-inapp-chat.firebasestorage.app",
-  messagingSenderId: "336745779010",
-  appId: "1:336745779010:web:0f2125b937da40189942db",
-  measurementId: "G-QF6S6NZQL6",
+  apiKey: "AIzaSyB8FU4YYnwLtRuGiSD5eYpEDIQSpFKh1zI",
+  authDomain: "wonderland-hora.firebaseapp.com",
+  projectId: "wonderland-hora",
+  storageBucket: "wonderland-hora.appspot.com",
+  messagingSenderId: "171662318448",
+  appId: "1:171662318448:web:aa881c252acba6fdd14db5",
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+import { getApp, getApps, initializeApp } from 'firebase/app';
+import { getMessaging } from 'firebase/messaging';
+
+// initialize Firebase
+const app = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
+// Get Messaging
+let messaging;
+if (typeof window !== 'undefined') {
+  messaging = getMessaging(app);
+}
+
+export { messaging, app };

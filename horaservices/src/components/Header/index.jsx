@@ -8,7 +8,7 @@ import logoutImage from '../../assets/logout.png';
 import logoWhite from '../../../public/assets/logo_white.svg'
 import Link from "next/link";
 import Image from "next/image";
-import useScrollToTop from '../useScrollToTop'; // Import the custom hook
+// import useScrollToTop from '../useScrollToTop'; // Import the custom hook
 import ChefCitypage from "../../pages/[city]/chef-near-me";
  import Popup from "../../utils/popup";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,9 +16,10 @@ import logo from '../../assets/new_logo_light.png';
 import logolight from '../../assets/hora-light-innerpage.png'
 import loginIcon from '../../assets/profile_picture.png';
 import OtploginPopup from '../../components/OtpLoginPopup';
+import { useLayoutEffect } from "react";
 
 function Header() {
-  useScrollToTop(); // Use the custo hook
+  // useScrollToTop(); // Use the custo hook
 
 //   const location = useLocation();
   const router = useRouter();
@@ -44,6 +45,19 @@ function Header() {
     console.log('Opening modal...');
     setIsModalOpen(true);
   };
+
+      //useScrollToTop(); // Use the custo hook
+  useLayoutEffect(() => {
+    // reset any scroll lock
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.overflow = "";
+
+    // force scroll to top
+    window.scrollTo(0, 0);
+
+    console.log("scrolling header");
+  }, [routerPathname]);
 
   // const closeModal = () => {
   //   console.log('Closing modal...');

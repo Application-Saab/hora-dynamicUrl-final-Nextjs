@@ -11,7 +11,7 @@ icon,
 if (!isOpen) return null;
 
 return (
-   <div className="custom-modal-backdrop "> <div className="custom-modal-content">
+   <div className="custom-modal-backdrop  justify-content-center align-items-center"> <div className="custom-modal-content">
 
 
     <div className="modal-header-custom">

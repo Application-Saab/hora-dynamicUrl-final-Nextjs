@@ -109,3 +109,9 @@ export const defaultFontSizeMap = {
   medium: { fontSize: "2rem", lineHeight: "42px", top: "40%" },
   small: { fontSize: "1.7rem", lineHeight: "34px", top: "42%" },
 };
+
+export const PUBLIC_VAPID =
+  "BHBPued2H9tMC6x97EOQchgTE8P5d6QGaoTsfN3diqNq5oYa8nZoBv0Qb29iabLpi43C9-fFTalSAJdqCYNSA-0";
+
+export const FIREBASE_VAPID_KEY =
+  "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";

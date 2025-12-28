@@ -12,7 +12,7 @@
   max-width: 480px;
   width: 100%;
   flex-direction: column;
-  padding-inline: 8px;
+  padding-inline: 7px;
 }
 
 /* Default template image */
@@ -63,7 +63,7 @@
   line-height: normal;
 }
 .address-part-ctn .address-text {
-  font-size: 12px;
+  font-size: 10px;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   color: #505050;
@@ -129,7 +129,7 @@
 .invite-action-container {
   display: flex;
   justify-content: start;
-  margin-top: 5px;
+  margin-top: 15px;
   padding-inline: 10px;
   gap: 21px;
 }

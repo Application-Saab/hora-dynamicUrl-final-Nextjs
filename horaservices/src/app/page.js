@@ -26,9 +26,12 @@ import PhotographyIcon from '../assets/photography_icon.webp';
 import FoodIcon from '../assets/food_icon.png';
  import decorationbanner from '../assets/decoration-home-banner.jpg'
 import './homepage.css'
+import { useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Home() {
 const router = useRouter();
+const pathname = usePathname();
 const [showButton, setShowButton] = useState(false);
 const [currentSlide, setCurrentSlide] = useState(0);
 // useEffect(() => {
@@ -114,7 +117,17 @@ useEffect(() => {
   })(window,document,'script','dataLayer','GTM-K3SCKLTZ');
 }, []);
 
+ useLayoutEffect(() => {
+    // reset any scroll lock
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.overflow = "";
 
+    // force scroll to top
+    window.scrollTo(0, 0);
+
+    console.log("scrolling page");
+  }, [pathname]);
 const photographyUrl = () =>{
   window.open(
     'https://api.whatsapp.com/send?phone=917338584828&text=I%20wanted%20to%20know%20about%2C%20photography',

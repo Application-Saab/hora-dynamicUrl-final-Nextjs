@@ -84,8 +84,8 @@ margin-right: 0;
 
 .input-group-custom input , .add-details-input  {
   width: clamp(250px, 72vw, 310px);
-  height: clamp(50px, 16vw, 67px);
-  padding-left: 0px;
+  height: clamp(48px, 14vw, 65px);
+  padding-left: 10px;
   padding-right: 10px;
   background-color: #fff;
   border: 1px solid #00000066;
@@ -95,8 +95,6 @@ margin-right: 0;
   box-shadow: 0px 4px 4px 0px #0000003b;
   outline: none;
   transition: border-color 0.3s;
-  border-left: none;
- align-content: center;
 }
 
 .input-group-custom input:focus {

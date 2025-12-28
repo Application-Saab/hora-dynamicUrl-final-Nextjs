@@ -19,8 +19,8 @@
 } */
 .close-icons{
   position: absolute;
-  top: 165px;
-  right: 25px;
+  top: auto;
+  right: 23px;
   font-size: 28px;
   font-weight: bold;
   color: #7d7d7d;
@@ -28,6 +28,7 @@
   user-select: none;
   z-index: 1000;
   transition: color 0.3s ease;
+   position: relative;
 }
 .popup-header {
     display: block;
