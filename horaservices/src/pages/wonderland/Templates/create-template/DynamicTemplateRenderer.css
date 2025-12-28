@@ -253,12 +253,13 @@
  .editborder {
   position: relative;
   display: inline-block;
-  padding: 2px 4px;
+  /* padding: 2px 4px; */
   border-radius: 4px;
   width: max-content;
-  line-height: normal;
+  line-height:1;
   border:  var(--borderColor) !important;
   overflow: visible; 
+ padding-inline: 3px;
 }
 
 .editborder::before {
@@ -302,6 +303,7 @@
 
 #heroImage, .template-image {
   touch-action: none;
+
 }
 
 /* *********** Template Wise Css ****************** */

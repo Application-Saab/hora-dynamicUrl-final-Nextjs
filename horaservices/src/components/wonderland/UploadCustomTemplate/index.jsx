@@ -1,105 +1,258 @@
+// "use client";
+
+// import { useState, useCallback } from "react";
+// import Cropper from "react-easy-crop";
+// import { useRouter } from "next/navigation";
+// import getCroppedImg from "@/utils/cropImage";
+// import { BASE_URL } from "@/utils/apiconstants";
+// import { saveTemplate } from "@/utils/indexedDB";
+// import "./UploadCustomTemplate.css";
+
+// const UploadCustomTemplate = ({ eventId, userId, token, label = "Upload Your Own Design"  }) => {
+//   const router = useRouter();
+
+//   const [imageSrc, setImageSrc] = useState(null);
+//   const [crop, setCrop] = useState({ x: 0, y: 0 });
+//   const [zoom, setZoom] = useState(1);
+//   const [croppedPixels, setCroppedPixels] = useState(null);
+//   const [uploading, setUploading] = useState(false);
+
+//   const onSelectFile = (e) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     const reader = new FileReader();
+//     reader.onload = () => setImageSrc(reader.result);
+//     reader.readAsDataURL(file);
+//   };
+
+//   const onCropComplete = useCallback((_, croppedAreaPixels) => {
+//     setCroppedPixels(croppedAreaPixels);
+//   }, []);
+
+//   const handleUpload = async () => {
+//     try {
+//       setUploading(true);
+
+//       const croppedImage = await getCroppedImg(imageSrc, croppedPixels);
+//       await saveTemplate(`template_${eventId}`, croppedImage);
+
+//       const blob = await fetch(croppedImage).then((r) => r.blob());
+//       const formData = new FormData();
+//       formData.append("image", blob);
+//       formData.append("userId", userId);
+
+//       await fetch(
+//         `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+//         {
+//           method: "PUT",
+//           headers: { Authorization: token },
+//           body: formData,
+//         }
+//       );
+
+//       router.replace(`/wonderland/invite?eventid=${eventId}`);
+//     } finally {
+//       setUploading(false);
+//     }
+//   };
+
+//   return (
+//     <>
+//       {/* Upload Card */}
+//       <div
+//         className="upload-banner"
+//         onClick={() =>
+//           document.getElementById("custom-template-upload").click()
+//         }
+//       > 
+//       <div className="upload-icon-wrapper">
+//         <span className="upload-plus">+</span>
+//         </div>
+//         <p>{label}</p>
+//       </div>
+
+//       <input
+//         id="custom-template-upload"
+//         type="file"
+//         accept="image/*"
+//         hidden
+//         onChange={onSelectFile}
+//       />
+
+//       {/* ===== CROP MODAL ===== */}
+//       {imageSrc && (
+//         <div className="crop-modal">
+
+//           {/* 🔥 SAME IMAGE BLUR BACKGROUND */}
+//           <div
+//             className="crop-bg"
+//             style={{ backgroundImage: `url(${imageSrc})` }}
+//           />
+
+//           {/* 🔥 CROP FRAME */}
+//           <div className="crop-box">
+//             <Cropper
+//               image={imageSrc}
+//               crop={crop}
+//               zoom={zoom}
+//               aspect={377 / 416}
+//               onCropChange={setCrop}
+//               onZoomChange={setZoom}
+//               onCropComplete={onCropComplete}
+//               zoomWithScroll={false}
+//               restrictPosition={false}
+//               objectFit="contain"
+//             />
+//           </div>
+
+//           {/* 🔥 BOTTOM BAR */}
+//           <div className="crop-footer">
+//             <button onClick={() => setImageSrc(null)}>Cancel</button>
+//             <button onClick={handleUpload}>
+//               {uploading ? "Uploading..." : "Upload"}
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default UploadCustomTemplate;
+
 
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import Cropper from "react-easy-crop";
 import { useRouter } from "next/navigation";
-import PropTypes from "prop-types";
-import "./UploadCustomTemplate.css";
+import getCroppedImg from "@/utils/cropImage";
 import { BASE_URL } from "@/utils/apiconstants";
 import { saveTemplate } from "@/utils/indexedDB";
+import "./UploadCustomTemplate.css";
 
-const UploadCustomTemplate = ({ eventId, userId, token, label = "Upload Your Own Design" }) => {
+const UploadCustomTemplate = ({
+  eventId,
+  userId,
+  token,
+  label = "Upload Your Own Design",
+}) => {
   const router = useRouter();
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(""); 
 
-  const handleUploadChange = (e) => {
+  const [imageSrc, setImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedPixels, setCroppedPixels] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  /* ===== FILE SELECT ===== */
+  const onSelectFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!eventId) {
-      setError("Event ID missing!");
-      return;
-    }
-
-    if (!userId) {
-      setError("User ID missing!");
-      return;
-    }
-
-    setError(""); // Clear previous errors
-    uploadCustomTemplate(file);
+    const reader = new FileReader();
+    reader.onload = () => setImageSrc(reader.result);
+    reader.readAsDataURL(file);
   };
 
- const uploadCustomTemplate = async (file) => {
-  setUploading(true);
-  const reader = new FileReader();
-  reader.onloadend = async () => {
+  /* ===== CROP COMPLETE ===== */
+  const onCropComplete = useCallback((_, pixels) => {
+    setCroppedPixels(pixels);
+  }, []);
+
+  /* ===== FINAL UPLOAD ===== */
+  const handleUpload = async () => {
     try {
-    
-      await saveTemplate(`template_${eventId}`, reader.result);
+      setUploading(true);
+
+      const croppedImage = await getCroppedImg(imageSrc, croppedPixels);
+
+      // Save locally
+      await saveTemplate(`template_${eventId}`, croppedImage);
+
+      // Convert to blob
+      const blob = await fetch(croppedImage).then((r) => r.blob());
+      const formData = new FormData();
+      formData.append("image", blob);
+      formData.append("userId", userId);
+
+      await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+        {
+          method: "PUT",
+          headers: { Authorization: token },
+          body: formData,
+        }
+      );
 
       router.replace(`/wonderland/invite?eventid=${eventId}`);
     } catch (err) {
-      setError("Failed to save template locally.");
+      console.error(err);
+    } finally {
+      setUploading(false);
     }
   };
-  reader.readAsDataURL(file);
-
-  
-  const formData = new FormData();
-  formData.append("image", file);
-  formData.append("userId", userId);
-
-  try {
-    const apiUrl = `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`;
-    const res = await fetch(apiUrl, {
-      method: "PUT",
-      headers: { Authorization: token || "" },
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data?.message || "Backend upload failed");
-    }
-  } catch (err) {
-    setError(err.message || "Upload failed. Please try again.");
-  } finally {
-    setUploading(false);
-  }
-};
 
   return (
-    <div 
-      className="upload-banner"
-      onClick={() => document.getElementById("custom-template-upload").click()}
-    >
-      <div className="upload-icon-wrapper">
-        <span className="upload-plus">+</span>
+    <>
+      {/* ===== UPLOAD CARD ===== */}
+      <div
+        className="upload-banner"
+        onClick={() =>
+          document.getElementById("custom-template-upload").click()
+        }
+      >
+        <div className="upload-icon-wrapper">
+          <span className="upload-plus">+</span>
+        </div>
+        <p>{label}</p>
       </div>
-      <p>{label}</p>
 
       <input
         id="custom-template-upload"
         type="file"
         accept="image/*"
         hidden
-        onChange={handleUploadChange}
+        onChange={onSelectFile}
       />
 
-      {uploading && <div className="upload-overlay">Uploading…</div>}
+      {/* ===== CROP MODAL ===== */}
+      {imageSrc && (
+        <div className="crop-modal">
+          {/* BLUR BACKGROUND */}
+          <div
+            className="crop-bg"
+            style={{ backgroundImage: `url(${imageSrc})` }}
+          />
 
-      {error && <div className="error-popup">{error}</div>}
-    </div>
+          {/* CROP FRAME */}
+          <div className="crop-box">
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={377 / 416}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+              zoomWithScroll={false}
+              restrictPosition={false}
+              objectFit="contain"
+            />
+          </div>
+
+          {/* FOOTER */}
+          <div className="crop-footer">
+            <button onClick={() => setImageSrc(null)}>Cancel</button>
+            <button onClick={handleUpload}>
+              {uploading ? "Uploading..." : "Upload"}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
-};
-
-UploadCustomTemplate.propTypes = {
-  eventId: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired,
-  token: PropTypes.string.isRequired,
-  label: PropTypes.string,
 };
 
 export default UploadCustomTemplate;

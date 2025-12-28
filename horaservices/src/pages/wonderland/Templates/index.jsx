@@ -99,7 +99,7 @@ const TemplatesPage = () => {
       <h2 className="templates-title">Explore Themes</h2>
 
       <CategoryTabs
-        categories={["Birthday", "Sports", "Party", "Office", "Kitty", "Holiday"]}
+        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Wedding", "Anniversary", "Engagement", "Housewarming", "Corporate", "Festival", "Other"]}
         selectedCategory={activeCategory}
         onSelectCategory={setActiveCategory}
       />

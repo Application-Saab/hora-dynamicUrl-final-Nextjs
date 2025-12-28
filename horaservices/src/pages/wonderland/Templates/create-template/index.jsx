@@ -155,13 +155,10 @@ const DynamicTemplateRenderer = () => {
     return {
       eventType: formData.eventType,
       name: applyCase(formData.name || "", templateMeta?.nameCase),
-      // date: formatted || "",
-      date: applyCase(formatted?.full || formatted || "", templateMeta?.dateCase || "default"),
-      day: formatted?.day || fallback.slice(-2),
-
-
-      month: applyCase(formatted?.month || fallback.slice(5, 7), templateMeta?.monthCase || "default"),
-      year: formatted?.year || fallback.slice(0, 4),
+    date: applyCase(formatted?.full || "", templateMeta?.dateCase || "default"),
+     day: formatted?.day || "",
+     month: formatted?.month || "",
+      year: formatted?.year || "",
       time: finalTime,
       borderColor: templateMeta?.borderColor,
 
