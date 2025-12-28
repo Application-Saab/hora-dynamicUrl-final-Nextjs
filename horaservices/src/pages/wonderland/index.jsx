@@ -77,6 +77,8 @@ const WonderlandMainPage = () => {
           </button>
         </div>
 
+        {/* <button onClick={sendMessage}>Send</button> */}
+
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}

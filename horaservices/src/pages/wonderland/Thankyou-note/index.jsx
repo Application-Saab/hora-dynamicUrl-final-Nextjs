@@ -38,7 +38,7 @@ const EventNotes = () => {
               <p className="noteContent">
                 {note.content}
                 </p>
-                {/* <p className="noteContent auther">- {note.author}</p> */}
+                <p className="noteContent auther">- {note.author}</p>
             </div>
 
 
