@@ -1,6 +1,6 @@
 // Firebase Configuration
 const firebaseConfig = {
- apiKey: "AIzaSyD8mkyjHXX_fGcdENJJnU3GWI60YWMItl0",
+  apiKey: "AIzaSyD8mkyjHXX_fGcdENJJnU3GWI60YWMItl0",
   authDomain: "wonderland-inapp-chat.firebaseapp.com",
   projectId: "wonderland-inapp-chat",
   storageBucket: "wonderland-inapp-chat.firebasestorage.app",
