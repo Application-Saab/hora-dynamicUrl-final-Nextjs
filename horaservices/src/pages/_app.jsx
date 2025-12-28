@@ -14,10 +14,13 @@ import { ChatProvider } from "@/hooks/ChatContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
-
+import { useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const pathname = usePathname();
+    const [currentUrl, setCurrentUrl] = useState("");
    // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
     const blockContextMenu = (e) => e.preventDefault();

@@ -115,4 +115,3 @@ export const PUBLIC_VAPID =
 
 export const FIREBASE_VAPID_KEY =
   "BPpalhQL4beB7GAJYcjp7l9uU0ngzjaXpCwCstXa77g8wPiWnxQM7jVS4ffOePSje9nBx6yRWXWX-iY2fw5A2OA";
-s
