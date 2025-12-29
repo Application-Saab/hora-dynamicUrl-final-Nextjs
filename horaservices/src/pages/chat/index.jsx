@@ -8,6 +8,8 @@ import "../wonderland/EventInvitation.css";
 import { FaRegKeyboard } from "react-icons/fa6";
 import sendIcon from "@/assets/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
+import SearchIcon from "@/assets/wonderland/chat/SearchIcon.svg";
+import { useRouter } from "next/router";
 import {
   GET_CHAT_ROOMS,
   GET_USER_BY_ID,
@@ -36,6 +38,7 @@ const getUserIdFromUrl = () => {
 
 const GroupsList = () => {
   const userId = getUserIdFromUrl();
+  const router = useRouter()
   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
   const { makeRequest: fetchUserRequest } = useApi();
   const { makeRequest: fetchMessagesRequest } = useApi();
@@ -89,13 +92,8 @@ const GroupsList = () => {
   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
   const [messages, setMessages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-  const emojiPickerRef = useRef(null);
-  const inputRef = useRef(null);
-  const fileInputRef = useRef(null);
   const chatBodyRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [totalUnread, setTotalUnread] = useState(0);
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
@@ -105,12 +103,7 @@ const GroupsList = () => {
   const eventId = selectedGroup?._id || selectedGroup?.id || null;
   const textareaRef = useRef(null);
   const chatOpenRef = useRef(false);
-  const [orderDetails, setOrderDetails] = useState(null);
-  const [guestDetails, setGuestDetails] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const lastSeenAtRef = useRef(null);
-  const notifiedMessageIdsRef = useRef(new Set());
-  const notifiedMessageIdsForPush = useRef(new Set());
 
   // keep a map for optimistic messages
   const tempIdToClientMap = useRef(new Map());
@@ -237,7 +230,7 @@ const GroupsList = () => {
   };
 
   // handle opening a room
-  const handleOpenMessages = async (group) => {
+  const handleOpenMessagesOld = async (group) => {
     chatOpenRef.current = true;
     setSelectedGroup(group);
     const groupId = group._id || group.id;
@@ -245,6 +238,17 @@ const GroupsList = () => {
     setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
     markRoomRead(groupId, userID);
   };
+  
+  const handleOpenMessages = async (group) => {
+    // chatOpenRef.current = true;
+    // setSelectedGroup(group);
+    // const groupId = group._id || group.id;
+    // await fetchMessagesForRoom(groupId);
+    // setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+    // markRoomRead(groupId, userID);
+    router.push(`/chat/room?groupId=${group._id}&id=${userId}`);
+  };
+
 
   const markRoomRead = async (groupId, uid) => {
     if (!groupId || !uid) return;
@@ -458,7 +462,9 @@ const GroupsList = () => {
     <div className="groups-container">
       <div className="groups-header">
         <div className="search-wrapper">
-          <i className="fas fa-search search-icon"></i>
+          <div className="search-icon-img">
+            <Image src={SearchIcon} alt="search" />
+          </div>
           <input
             type="text"
             placeholder="Search"
