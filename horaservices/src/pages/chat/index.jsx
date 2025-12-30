@@ -242,11 +242,11 @@ const GroupsList = () => {
   const handleOpenMessages = async (group) => {
     // chatOpenRef.current = true;
     // setSelectedGroup(group);
-    // const groupId = group._id || group.id;
+    const groupId = group._id || group.id;
     // await fetchMessagesForRoom(groupId);
     // setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
-    // markRoomRead(groupId, userID);
-    router.push(`/chat/room?groupId=${group._id}&id=${userId}`);
+    markRoomRead(groupId, userID);
+    router.push(`/chat/room?groupId=${groupId}&id=${userId}`);
   };
 
 
@@ -491,7 +491,7 @@ const GroupsList = () => {
         searchTerm={searchTerm}
         userId={userId}
       />
-
+{/* 
       {selectedGroup && (
         <div className="chat-overlay">
           <div className="chat-header">
@@ -667,7 +667,7 @@ const GroupsList = () => {
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

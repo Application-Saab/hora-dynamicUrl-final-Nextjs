@@ -11,8 +11,10 @@ import backIcon from "@/assets/wonderland/chat/BackIcon.png";
 import useApi from "@/hooks/useApi";
 import {
   BASE_URL,
+  CREATE_DIRECT_CHAT_ROOM,
   GET_CHAT_MESSAGES,
   GET_CHAT_ROOMS,
+  GET_USER_BY_ID,
   MARK_READ_MESSAGE,
   UNREAD_MESSAGE_COUNT,
 } from "@/utils/apiconstants";
@@ -50,11 +52,6 @@ const getAvatarColor = (name) => {
 const ChatPage = () => {
   const router = useRouter();
   const { groupId } = router.query;
-  console.log(
-    "%c [ groupId ]-46",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    groupId
-  );
   const userId = getUserIdFromUrl();
   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
   const { makeRequest: fetchUserRequest } = useApi();
@@ -62,26 +59,10 @@ const ChatPage = () => {
   const { makeRequest: markReadRequest } = useApi();
   const { makeRequest: createDirectChatRequest } = useApi();
 
-  const [group, setGroup] = useState(null);
   const [allChatRooms, setAllChatRooms] = useState([]);
-  console.log(
-    "%c [ allChatRooms ]-53",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    allChatRooms
-  );
   const [selectedGroup, setSelectedGroup] = useState(null);
-  console.log(
-    "%c [ selectedGroup ]-54",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    selectedGroup
-  );
   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
   const [messages, setMessages] = useState([]);
-  console.log(
-    "%c [ messages ]-59",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    messages
-  );
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg, setChatBg] = useState(null);
   const [userData, setUserData] = useState({});
@@ -178,7 +159,6 @@ const ChatPage = () => {
   const insertEmoji = (emojiObject) => {
     const emojiUrl = emojiObject?.imageUrl;
     if (!textareaRef.current) return;
-
     textareaRef.current.setAttribute("inputmode", "none");
     textareaRef.current.focus({ preventScroll: true });
     setTimeout(() => {
@@ -257,33 +237,12 @@ const ChatPage = () => {
     }
   };
 
-  //   useEffect(() => {
-  //     if (!eventId) return;
-
-  //     const fetchGroup = async () => {
-  //       try {
-  //         const groupRef = doc(db, "groups", eventId);
-  //         const snap = await getDoc(groupRef);
-  //         if (snap.exists()) {
-  //           setGroup({ id: snap.id, ...snap.data() });
-  //         }
-  //       } catch (err) {
-  //         console.error("Error fetching group:", err);
-  //       }
-  //     };
-
-  //     fetchGroup();
-  //   }, [eventId]);
-
   // Only local listeners
   useEffect(() => {
     if (typeof window === "undefined" || !socket || !selectedGroup) return;
-
     const groupId = selectedGroup._id || selectedGroup.id;
-
     const onMessageNewLocal = (msg) => {
       if (String(msg.groupId) !== String(groupId)) return;
-
       setMessages((prev) => {
         // replace optimistic if tempId
         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
@@ -291,7 +250,6 @@ const ChatPage = () => {
             m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
           );
         }
-
         // prevent duplicate
         if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
           return prev;
@@ -303,7 +261,6 @@ const ChatPage = () => {
     };
 
     socket.on("message:new", onMessageNewLocal);
-
     return () => {
       socket.off("message:new", onMessageNewLocal);
     };
@@ -336,7 +293,7 @@ const ChatPage = () => {
       });
       setSelectedGroup(selected || null);
     }
-  }, [chatRoomsData]);
+  }, [chatRoomsData?.data, groupId]);
 
   // fetch messages REST API
   const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
@@ -392,30 +349,6 @@ const ChatPage = () => {
     fetchUserDetails();
   }, [userId]);
 
-  //   useEffect(() => {
-  //     if (!eventId || !userId) return;
-
-  //     const messagesRef = collection(db, "groups", eventId, "messages");
-  //     const q = query(messagesRef, orderBy("sentAt", "asc"));
-
-  //     const unsubscribe = onSnapshot(q, (snapshot) => {
-  //       const msgs = snapshot.docs.map((docSnap) => ({
-  //         id: docSnap.id,
-  //         ...docSnap.data(),
-  //       }));
-  //       setMessages(msgs);
-
-  //       if (chatBodyRef.current) {
-  //         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-  //       }
-  //     });
-
-  //     const userRef = doc(db, "groups", eventId, "members", userId);
-  //     setDoc(userRef, { lastSeenAt: serverTimestamp() }, { merge: true });
-
-  //     return () => unsubscribe();
-  //   }, [eventId, userId]);
-
   useEffect(() => {
     const saved =
       typeof window !== "undefined"
@@ -448,7 +381,6 @@ const ChatPage = () => {
 
     const messageHTML = textareaRef.current.innerHTML.trim();
     const messageText = textareaRef.current.textContent.trim();
-
     // Empty message check
     if (
       !messageText &&
@@ -458,7 +390,6 @@ const ChatPage = () => {
     ) {
       return;
     }
-    alert("Send message clicked internal");
 
     if (!selectedGroup?.eventId || !userId) return;
 
@@ -473,8 +404,8 @@ const ChatPage = () => {
       eventId: selectedGroup.eventId,
       groupId,
       senderId: userId,
-      message: messageText,
-      text: messageText,
+      message: messageHTML,
+      html: messageHTML,
       type: "text",
       senderName: userData?.name,
       senderPhone: localStorage.getItem("mobileNumber"),
@@ -488,7 +419,8 @@ const ChatPage = () => {
       socket.emit("message:send", {
         eventId: selectedGroup.eventId,
         groupId,
-        message: messageText,
+        message: messageHTML,
+        html: messageHTML,
         type: "text",
         tempId,
         senderName: userData?.name,
@@ -503,30 +435,6 @@ const ChatPage = () => {
         textareaRef.current?.focus({ preventScroll: true });
       });
     }
-
-    // try {
-    //   // ✅ Message send
-    //   await addDoc(collection(db, "groups", eventId, "messages"), {
-    //     text: messageText,
-    //     html: messageHTML,
-    //     senderId: userId,
-    //     senderName: localSenderName || userData?.name || "User",
-    //     senderPhoneNumber:
-    //       typeof window !== "undefined"
-    //         ? localStorage.getItem("mobileNumber")
-    //         : "",
-    //     sentAt: serverTimestamp(),
-    //   });
-    //   textareaRef.current.innerHTML = "";
-    //   textareaRef.current.style.height = "auto";
-    //   if (!showEmojiPicker) {
-    //     requestAnimationFrame(() => {
-    //       textareaRef.current?.focus({ preventScroll: true });
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Message send failed:", error);
-    // }
   };
 
   const resizeTextarea = () => {
@@ -543,6 +451,56 @@ const ChatPage = () => {
       fetchMessagesForRoom(selectedGroup._id || selectedGroup.id);
     }
   }, [selectedGroup]);
+
+  const handleClickUserName = async (senderId) => {
+    try {
+      // Check if a direct room already exists
+      const existingRoom = allChatRooms.find((room) => {
+        if (room.roomType !== "direct") return false;
+
+        const memberIds = room.members.map((m) => m.userId);
+        return memberIds.includes(userId) && memberIds.includes(senderId);
+      });
+
+      // If found -> Open that chat directly
+      if (existingRoom) {
+        console.log("Direct chat already exists:", existingRoom);
+        // handleOpenMessages(existingRoom);
+        router.push(
+          `/chat/room?groupId=${
+            existingRoom._id || existingRoom.id
+          }&id=${userId}`
+        );
+        return;
+      }
+
+      // No room found -> Call backend API to create one
+      const resp = await createDirectChatRequest(
+        `${CREATE_DIRECT_CHAT_ROOM}`,
+        "POST",
+        {
+          members: [userId, senderId],
+          eventId: selectedGroup?.eventId,
+        }
+      );
+
+      if (resp?.data) {
+        setAllChatRooms((prev) => [...prev, resp?.data]);
+        // handleOpenMessages(resp?.data);
+        router.push(
+          `/chat/room?groupId=${resp.data._id || resp.data.id}&id=${userId}`
+        );
+      }
+    } catch (err) {
+      console.log("Error:", err);
+    }
+  };
+
+  const handleClickGroupName = () => {
+    if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
+      router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
+    }
+  };
 
   return (
     <div
@@ -577,7 +535,9 @@ const ChatPage = () => {
               </div>
             )}
 
-            <span className="chat-group-name">{roomDisplayDetails?.name}</span>
+            <span className="chat-group-name" onClick={handleClickGroupName}>
+              {roomDisplayDetails?.name}
+            </span>
           </div>
         </div>
       </div>
@@ -600,9 +560,9 @@ const ChatPage = () => {
             }
           }
 
-          return (
+          return msg?.type !== "info" ? (
             <div
-              key={msg.id}
+              key={msg._id}
               className={`chat-message ${isMe ? "sender" : "receiver"} ${
                 isConsecutive ? "consecutive" : ""
               }`}
@@ -633,7 +593,10 @@ const ChatPage = () => {
                 }`}
               >
                 {!isMe && !isConsecutive && (
-                  <div className="chat-sender">
+                  <div
+                    className="chat-sender"
+                    onClick={() => handleClickUserName(msg.senderId)}
+                  >
                     {senderName
                       ? senderName
                       : `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
@@ -645,6 +608,10 @@ const ChatPage = () => {
                   dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
                 />
               </div>
+            </div>
+          ) : (
+            <div className="d-flex justify-content-center align-items-center" style={{ margin: "12px 0" }} key={msg._id}>
+              <p className="info-chat-message-box">{msg?.message}</p>
             </div>
           );
         })}
