@@ -9,6 +9,11 @@ const ChatGroupsListing = ({
   searchTerm,
   userId,
 }) => {
+  const capitalizeFirstLetter = (text = "") => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+
   return (
     <div className="groups-list">
       {allChatRooms
@@ -40,8 +45,8 @@ const ChatGroupsListing = ({
                     backgroundColor: "#27ae60",
                     color: "white",
                     fontSize: "24px",
-                    width: "50px",
-                    height: "50px",
+                    width: "clamp(40px, calc((53 / 393) * 100vw), 70px)",
+                    height: "clamp(40px, calc((53 / 393) * 100vw), 70px)",
                     borderRadius: "50%",
                     display: "flex",
                     justifyContent: "center",
@@ -54,18 +59,24 @@ const ChatGroupsListing = ({
 
               <div className="group-info">
                 <p className="group-name">
-                  {roomDetails?.name || "Unnamed Group"}
+                  {capitalizeFirstLetter(roomDetails?.name) || "Unnamed Group"}
                 </p>
-                <span className="group-last">
+                {/* <span className="group-last">
                   {(unreadCounts[id] || 0) > 0
                     ? `${unreadCounts[id]} New Message${
                         unreadCounts[id] > 1 ? "s" : ""
                       }`
                     : "No new messages"}
-                </span>
+                </span> */}
+                {unreadCounts[id] > 0 && (
+                  <span className="group-last">
+                    {unreadCounts[id]} New Message
+                    {unreadCounts[id] > 1 ? "s" : ""} *
+                  </span>
+                )}
               </div>
 
-              {(unreadCounts[id] || 0) > 0 && (
+              {(unreadCounts[id]) > 0 && (
                 <span className="unread-dot"></span>
               )}
             </div>
