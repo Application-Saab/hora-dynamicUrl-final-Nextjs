@@ -55,3 +55,23 @@
   border-radius: 0 !important;
   overflow: hidden !important;
 }
+
+
+/* WhatsApp-like backspace */
+.emoji-backspace-btn {
+  position: absolute;
+  top: 22%;
+  right: 10px;
+  z-index: 30;
+
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+
+  color: #666;
+}
+
+.emoji-backspace-btn:hover {
+  color: #000;
+}

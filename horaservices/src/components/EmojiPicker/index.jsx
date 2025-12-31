@@ -6,6 +6,7 @@ import emojiicon from "@/assets/Emoji.png";
 import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
 import "./emoji.css";
 import { Key } from "lucide-react";
+import { Delete } from "lucide-react";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -185,6 +186,36 @@ export default function EmojiPickerButton({
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
   }, [pickerVisible, simple, forceOpen]);
+const deleteLastChar = () => {
+  const el = lastFocusedRef.current;
+  if (!el) return;
+
+  // 🔒 MOBILE: block keyboard completely
+  el.setAttribute("readonly", "true");
+  el.setAttribute("inputmode", "none");
+
+  if (el.tagName === "TEXTAREA") {
+    const value = el.value;
+
+    if (!value.length) return;
+
+    // ❗ NO selectionStart usage (mobile sensitive)
+    el.value = value.slice(0, -1);
+
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  if (el.isContentEditable) {
+    document.execCommand("delete");
+  }
+
+  // ✅ restore silently
+  setTimeout(() => {
+    el.removeAttribute("readonly");
+    el.removeAttribute("inputmode");
+  }, 100);
+};
+
 
   return (
     <>
@@ -222,7 +253,7 @@ export default function EmojiPickerButton({
       </div>
 
       {/* PICKER */}
-      {pickerVisible && (
+      {/* {pickerVisible && (
         <div className="emoji-picker-container open">
           <div
             onClick={(e) => {
@@ -250,7 +281,41 @@ export default function EmojiPickerButton({
             />
           </div>
         </div>
-      )}
+      )} */}
+      {pickerVisible && (
+  <div
+    className="emoji-picker-container open emoji-relative"
+    onMouseDown={(e) => e.preventDefault()}
+  >
+    {/* ⌫ WHATSAPP STYLE BACKSPACE */}
+   <button
+  className="emoji-backspace-btn"
+  onPointerDown={(e) => {
+    e.preventDefault();   // ✅ mobile keyboard block
+    e.stopPropagation();
+  }}
+  onTouchStart={(e) => {
+    e.preventDefault();   // ✅ iOS SAFETY
+    e.stopPropagation();
+  }}
+  onClick={() => deleteLastChar()}
+>
+  <Delete size={25} />
+</button>
+
+
+    <EmojiPicker
+      onEmojiClick={(emojiObject) => handleEmojiClick(emojiObject)}
+      width="100%"
+      height={260}
+      searchDisabled
+      previewConfig={{ showPreview: false }}
+      skinTonesDisabled
+      lazyLoadEmojis
+    />
+  </div>
+)}
+
     </>
   );
 }
