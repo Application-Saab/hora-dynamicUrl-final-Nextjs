@@ -376,66 +376,68 @@ const ChatPage = () => {
 
   const handleImageUpload = async () => {};
 
-  const sendMessage = async () => {
-    if (!textareaRef.current) return;
+const sendMessage = async () => {
+  if (!textareaRef.current) return;
 
-    const messageHTML = textareaRef.current.innerHTML.trim();
-    const messageText = textareaRef.current.textContent.trim();
-    // Empty message check
-    if (
-      !messageText &&
-      (!messageHTML ||
-        messageHTML === "<br>" ||
-        messageHTML === "<div><br></div>")
-    ) {
-      return;
-    }
+  const messageHTML = textareaRef.current.innerHTML.trim();
+  const messageText = textareaRef.current.textContent.trim();
 
-    if (!selectedGroup?.eventId || !userId) return;
+  if (
+    !messageText &&
+    (!messageHTML || messageHTML === "<br>" || messageHTML === "<div><br></div>")
+  ) return;
 
-    const groupId = selectedGroup?._id;
-    const tempId = `temp_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2, 8)}`;
-    const optimistic = {
-      id: tempId,
-      tempId,
-      _id: tempId,
+  if (!selectedGroup?.eventId || !userId) return;
+
+  const groupId = selectedGroup._id;
+  const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+  const optimistic = {
+    id: tempId,
+    tempId,
+    _id: tempId,
+    eventId: selectedGroup.eventId,
+    groupId,
+    senderId: userId,
+    message: messageHTML,
+    html: messageHTML,
+    type: "text",
+    senderName: userData?.name || "User",
+    senderPhone: localStorage.getItem("mobileNumber") || "",
+    createdAt: new Date().toISOString(),
+  };
+
+  setMessages((prev) => [...prev, optimistic]);
+  tempIdToClientMap.current.set(tempId, true);
+
+  if (socket && socket.connected) {
+    socket.emit("message:send", {
       eventId: selectedGroup.eventId,
       groupId,
-      senderId: userId,
       message: messageHTML,
       html: messageHTML,
       type: "text",
-      senderName: userData?.name,
-      senderPhone: localStorage.getItem("mobileNumber"),
-      createdAt: new Date().toISOString(),
-    };
+      tempId,
+      senderName: userData?.name || "User",
+      senderPhone: localStorage.getItem("mobileNumber") || "",
+    });
+  }
 
-    setMessages((prev) => [...prev, optimistic]);
-    tempIdToClientMap.current.set(tempId, true);
+  textareaRef.current.innerHTML = "";
+  textareaRef.current.style.height = "auto";
 
-    if (socket && socket.connected) {
-      socket.emit("message:send", {
-        eventId: selectedGroup.eventId,
-        groupId,
-        message: messageHTML,
-        html: messageHTML,
-        type: "text",
-        tempId,
-        senderName: userData?.name,
-        senderPhone: userData?.phone,
-      });
-    }
 
-    textareaRef.current.innerHTML = "";
-    textareaRef.current.style.height = "auto";
-    if (!showEmojiPicker) {
-      requestAnimationFrame(() => {
-        textareaRef.current?.focus({ preventScroll: true });
-      });
-    }
-  };
+  if (!showEmojiPicker) {
+    setTimeout(() => {
+      textareaRef.current?.focus({ preventScroll: true });
+    }, 50);
+  } else {
+    textareaRef.current?.blur();
+  }
+};
+
+
+
 
   const resizeTextarea = () => {
     const el = textareaRef.current;

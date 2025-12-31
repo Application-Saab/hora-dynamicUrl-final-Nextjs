@@ -300,7 +300,7 @@ const deleteLastChar = () => {
   }}
   onClick={() => deleteLastChar()}
 >
-  <Delete size={25} />
+  <Delete size={25} strokeWidth={1}/>
 </button>
 
 
