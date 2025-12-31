@@ -13,13 +13,13 @@ import ExploreIcon from "@/assets/wonderland/NavExploreIcon.svg";
 import ExploreIconFilled from "@/assets/wonderland/NavExploreIconFilled.svg";
 import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
-
+import { useChatStore } from "@/hooks/ChatContext";
 import "./bottomNav.css";
 
 export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
-
+  const { totalUnread } = useChatStore();
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
 
