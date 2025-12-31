@@ -4,7 +4,6 @@ const ChatContext = createContext(null);
 
 export function ChatProvider({ children }) {
   const [unreadCounts, setUnreadCountsContext] = useState({});
-  console.log('%c [ unreadCounts ]-7', 'font-size:13px; background:pink; color:#bf2c9f;', unreadCounts)
   const [totalUnread, setGlobalTotalUnread] = useState(0);
 
   useEffect(() => {
