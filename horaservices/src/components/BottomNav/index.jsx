@@ -20,8 +20,6 @@ export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
   const { totalUnread } = useChatStore();
-  console.log('%c [ totalUnread ]-23', 'font-size:13px; background:pink; color:#bf2c9f;', totalUnread)
-
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
 
