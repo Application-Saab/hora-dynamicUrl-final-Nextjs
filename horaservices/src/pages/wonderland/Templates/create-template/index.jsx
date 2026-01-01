@@ -328,9 +328,14 @@ const DynamicTemplateRenderer = () => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
     if (!info.templateWidth || !info.templateHeight) return;
+//  const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
+//     const scale = 1 - ratio;
+    const scale = Math.min(
+  window.innerWidth / info.templateWidth,
+  window.innerHeight / info.templateHeight,
+  1
+);
 
-    const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
-    const scale = 1 - ratio;
 
     setScaledData({
       imgHeight: scale * info.templateHeight,
