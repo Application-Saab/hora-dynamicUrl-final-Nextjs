@@ -66,7 +66,7 @@ const ChatPage = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg, setChatBg] = useState(null);
   const [userData, setUserData] = useState({});
-  const { unreadCounts, setUnreadCountsContext } = useChatStore();
+  const { setUnreadCountsContext } = useChatStore();
   const [changeRoom, setChangeRoom] = useState(false);
 
   const textareaRef = useRef(null);
@@ -203,7 +203,7 @@ const ChatPage = () => {
 
     lastRangeRef.current = newRange;
 
-    // ✅ Resize chat input after inserting emoji
+    // Resize chat input after inserting emoji
     resizeTextarea();
   };
 
@@ -292,7 +292,6 @@ const ChatPage = () => {
         const id = room._id || room.id;
         return id === groupId;
       });
-      console.log('%c [ groupId ]-294', 'font-size:13px; background:pink; color:#bf2c9f;', groupId)
       setSelectedGroup(selected || null);
     }
   }, [chatRoomsData?.data, groupId, changeRoom]);
@@ -466,9 +465,7 @@ const ChatPage = () => {
 
       // If found -> Open that chat directly
       if (existingRoom) {
-        console.log("Direct chat already exists:", existingRoom);
         setChangeRoom(!changeRoom);
-        // handleOpenMessages(existingRoom);
         router.push(
           `/chat/room?groupId=${
             existingRoom._id || existingRoom.id
@@ -505,6 +502,11 @@ const ChatPage = () => {
       router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
     }
   };
+
+  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+    acc[member.userId] = member.profileImageUrl || "";
+    return acc;
+  }, {});
 
   return (
     <div
@@ -572,6 +574,13 @@ const ChatPage = () => {
               }`}
             >
               {!isMe && !isConsecutive && (
+                membersProfileMap?.[msg.senderId] ? (
+                  <img
+                    src={membersProfileMap?.[msg.senderId]}
+                    alt={senderName || "avatar"}
+                    className="chat-avatar-receiver"
+                  />
+                ) : (
                 <div
                   className="chat-avatar-receiver"
                   style={{
@@ -584,6 +593,7 @@ const ChatPage = () => {
                     ? senderName.charAt(0).toUpperCase()
                     : msg.senderPhone?.charAt(3)}
                 </div>
+                )
               )}
               <div
                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${

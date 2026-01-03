@@ -11,7 +11,7 @@ import Head from "next/head";
 import { getToken } from "firebase/messaging";
 import { messaging } from "../firebase";
 import { ChatProvider } from "@/hooks/ChatContext";
-import { UserContext } from "@/hooks/UserDetailsContext";
+import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
@@ -130,8 +130,8 @@ function MyApp({ Component, pageProps }) {
       </Head>
 
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <UserContext>
+        <UserDetailsProvider>
+          <PersistGate loading={null} persistor={persistor}>
             <ChatProvider>
               <ChatProviderMain>
                 <PageLayout>
@@ -152,8 +152,8 @@ function MyApp({ Component, pageProps }) {
                 </PageLayout>
               </ChatProviderMain>
             </ChatProvider>
-          </UserContext>
-        </PersistGate>
+          </PersistGate>
+        </UserDetailsProvider>
       </Provider>
     </>
   );

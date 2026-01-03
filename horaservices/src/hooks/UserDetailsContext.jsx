@@ -5,7 +5,7 @@ import { GET_USER_BY_ID } from "@/utils/apiconstants";
 const UserDetailsContext = createContext({
   userDetails: null,
   userLoading: false,
-  refreshUser: () => {},
+  refetchUser: () => {},
 });
 
 export function UserDetailsProvider({ children }) {
@@ -62,7 +62,7 @@ export function UserDetailsProvider({ children }) {
       value={{
         userDetails,
         userLoading: loading,
-        refreshUser: () => fetchUserDetails(userId),
+        refetchUser: () => fetchUserDetails(userId),
         setUserDetails,
       }}
     >

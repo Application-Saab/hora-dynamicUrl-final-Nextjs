@@ -98,6 +98,7 @@ const WhosJoining = ({
         userId: loggedinUserId,
         rsvpStatus,
         name: userData?.name || userName,
+        phone: userData?.phone,
       });
 
       if (response.data.error) {

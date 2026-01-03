@@ -122,11 +122,7 @@ const GroupsList = () => {
   }, [userId, chatRoomsData]);
 
   const handleOpenMessages = async (group) => {
-    // chatOpenRef.current = true;
-    // setSelectedGroup(group);
     const groupId = group._id || group.id;
-    // await fetchMessagesForRoom(groupId);
-    // setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
     markRoomRead(groupId, userID);
     router.push(`/chat/room?groupId=${groupId}&id=${userId}`);
   };

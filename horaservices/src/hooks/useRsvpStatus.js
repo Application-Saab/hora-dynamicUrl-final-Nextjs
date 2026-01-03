@@ -4,7 +4,7 @@ const {
   GET_GUEST_DETTAILS,
   CREATE_GUEST_BY_EVENTID,
 } = require("@/utils/apiconstants");
-const { useLayoutEffect, useState, useEffect } = require("react");
+const { useLayoutEffect, useState } = require("react");
 
 const useRsvpStatus = (eventId, skipCheck, refetch) => {
   const [rsvpSubmitted, setRsvpSubmitted] = useState(true);

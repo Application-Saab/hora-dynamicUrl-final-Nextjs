@@ -33,7 +33,6 @@ const InvitesListing = ({ userId }) => {
       <h3 className="section-heading">Cheer Story</h3>
       <ul className="event-list">
         {data?.data?.map((event) => (
-          <>
             <li key={event._id} className="event-item">
               <div className="event-info-list">
                 <div className="event-details-list">
@@ -45,7 +44,6 @@ const InvitesListing = ({ userId }) => {
                   </div>
                   <span className="list-event-title">
                     {event.hostName ? `${event.hostName}` : "Host Name"}{" "}
-                    {/* {event.eventType ? `${event.eventType}` : "Event Type"} */}
                   </span>
                   <div className="list-event-date">
                     <span>{formatDate(event.eventDate)}</span>
@@ -61,7 +59,6 @@ const InvitesListing = ({ userId }) => {
                 </button>
               </div>
             </li>
-          </>
         ))}
       </ul>
     </div>
