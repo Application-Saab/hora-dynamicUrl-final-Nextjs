@@ -11,6 +11,7 @@ import Head from "next/head";
 import { getToken } from "firebase/messaging";
 import { messaging } from "../firebase";
 import { ChatProvider } from "@/hooks/ChatContext";
+import { UserContext } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
@@ -20,8 +21,8 @@ import { usePathname } from "next/navigation";
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pathname = usePathname();
-    const [currentUrl, setCurrentUrl] = useState("");
-   // ================= BLOCK KEYS + CONTEXT MENU =================
+  const [currentUrl, setCurrentUrl] = useState("");
+  // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
     const blockContextMenu = (e) => e.preventDefault();
     const blockKeys = (e) => {
@@ -51,8 +52,9 @@ function MyApp({ Component, pageProps }) {
   const requestPermission = async () => {
     try {
       if ("Notification" in window && "serviceWorker" in navigator) {
-        const swRegistration =
-          await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        const swRegistration = await navigator.serviceWorker.register(
+          "/firebase-messaging-sw.js"
+        );
 
         const permission = await Notification.requestPermission();
 
@@ -81,7 +83,6 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     requestPermission();
   }, []);
-  
 
   useEffect(() => {
     setCurrentUrl(router.asPath);
@@ -116,43 +117,42 @@ function MyApp({ Component, pageProps }) {
     console.log("scrolling app");
   }, [pathname]);
 
-
-
-
   return (
     <>
       <Head>
         <title>Hora Services</title>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/new_logo_light.png" />
-          <link
+        <link
           href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
           rel="stylesheet"
         />
       </Head>
-    
-   <Provider store={store}>
+
+      <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <ChatProvider>
-            <ChatProviderMain>
-              <PageLayout>
-                <Component {...pageProps} />
+          <UserContext>
+            <ChatProvider>
+              <ChatProviderMain>
+                <PageLayout>
+                  <Component {...pageProps} />
 
-                <noscript>
-                  <iframe
-                    src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
-                    height="0"
-                    width="0"
-                    style={{ display: "none", visibility: "hidden" }}
-                  ></iframe>
-                </noscript>
+                  <noscript>
+                    <iframe
+                      src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
+                      height="0"
+                      width="0"
+                      style={{ display: "none", visibility: "hidden" }}
+                    ></iframe>
+                  </noscript>
 
-                <div className="whatsapp-container">
-                  <WhatsAppIcon router={router} />
-                </div>
-              </PageLayout>
-            </ChatProviderMain>
-          </ChatProvider>
+                  <div className="whatsapp-container">
+                    <WhatsAppIcon router={router} />
+                  </div>
+                </PageLayout>
+              </ChatProviderMain>
+            </ChatProvider>
+          </UserContext>
         </PersistGate>
       </Provider>
     </>

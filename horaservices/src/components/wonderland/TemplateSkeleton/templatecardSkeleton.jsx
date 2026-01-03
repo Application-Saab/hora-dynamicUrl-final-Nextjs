@@ -4,7 +4,7 @@ import React from "react";
 const TemplatecardSkeleton = ({ width = "100%", height = "200px", borderRadius = "12px" }) => {
   return (
     <div
-      className="skeleton-placeholder"
+      className="skeleton-placeholder mt-3"
       style={{
         width,
         height,

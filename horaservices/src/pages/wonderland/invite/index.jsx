@@ -27,7 +27,7 @@ const InvitesPage = () => {
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
-  const [isHost, setIsHost] = useState(false);
+  // const [isHost, setIsHost] = useState(true);
   const { rsvpSubmitted } = useRsvpStatus(
     queryEventId,
     skipRsvpCheck,
@@ -88,21 +88,21 @@ const InvitesPage = () => {
     fetchUserDetails();
   }, [queryEventId, loggedinUserId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (eventData?.data) {
       setEventDetails(eventData.data);
       setFullPageLoader(false);
     }
   }, [eventData]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
       if (eventDetails?.userId === loggedinUserId) {
-        setIsHost(true);
+        // setIsHost(true);
         setSkipRsvpCheck(true);
       } else {
         setSkipRsvpCheck(false);
-        setIsHost(false);
+        // setIsHost(false);
       }
     }
   }, [eventDetails, loggedinUserId]);
@@ -131,8 +131,8 @@ const InvitesPage = () => {
       <div className="invite-page">
         <div className="invite-page-container">
           <div className="invite-template-shell">
-            {fetchEventLoading || !eventDetails ? (
-              <TemplatecardSkeleton width="100%" height="480px" borderRadius="32px" />
+            {fetchEventLoading ? (
+              <TemplatecardSkeleton width="100%" height="200px" borderRadius="10px" />
             ) : (
               <TemplateRenderer
                 fetchEventLoading={fetchEventLoading}
@@ -151,7 +151,7 @@ const InvitesPage = () => {
               </div>
             )}
 
-          {isHost && (
+          {(eventDetails && eventDetails?.userId === loggedinUserId) && (
             <div className="invite-action-container">
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}
@@ -161,7 +161,7 @@ const InvitesPage = () => {
           )}
           <div className="whos-joining-container">
             <WhosJoining
-              isHost={isHost}
+              isHost={eventDetails?.userId === loggedinUserId}
               userData={userData}
               loggedinUserId={loggedinUserId}
               rsvpSubmitted={rsvpSubmitted}
@@ -176,7 +176,7 @@ const InvitesPage = () => {
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={rsvpSubmitted}
-              isHost={isHost}
+              isHost={eventDetails?.userId === loggedinUserId}
             />
           </div>
         </div>

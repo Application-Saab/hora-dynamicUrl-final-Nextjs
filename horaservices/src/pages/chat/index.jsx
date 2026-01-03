@@ -1,33 +1,21 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./GroupsList.css";
-import EmojiPicker from "emoji-picker-react";
-import emojiIcon from "../../assets/Emoji.png";
 import Image from "next/image";
-import { FaArrowLeft } from "react-icons/fa";
 import "../wonderland/EventInvitation.css";
-import { FaRegKeyboard } from "react-icons/fa6";
-import sendIcon from "@/assets/sendicon.png";
 import PinBanner from "../../assets/pinBanner.jpg";
 import SearchIcon from "@/assets/wonderland/chat/SearchIcon.svg";
 import { useRouter } from "next/router";
 import {
   GET_CHAT_ROOMS,
-  GET_USER_BY_ID,
-  GET_CHAT_MESSAGES,
   MARK_READ_MESSAGE,
   BASE_URL,
-  CREATE_DIRECT_CHAT_ROOM,
   UNREAD_MESSAGE_COUNT,
 } from "@/utils/apiconstants";
-import { askAndSubscribe } from "@/utils/pushClient";
 import { usePathname } from "next/navigation";
 import useApi from "@/hooks/useApi";
 import socket from "@/socket";
-import { getAvatarColor } from "@/utils/chatHelpers";
-import { PUBLIC_VAPID } from "@/utils/constants";
 import ChatGroupsListing from "@/components/wonderland/chat/ChatGroupsListing";
 import { useChatStore } from "@/hooks/ChatContext";
-import { getRoomDetails } from "@/utils/setGroupDetails";
 
 // helper to read userId from url
 const getUserIdFromUrl = () => {
@@ -38,14 +26,10 @@ const getUserIdFromUrl = () => {
 
 const GroupsList = () => {
   const userId = getUserIdFromUrl();
-  const router = useRouter()
+  const router = useRouter();
   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
-  const { makeRequest: fetchUserRequest } = useApi();
-  const { makeRequest: fetchMessagesRequest } = useApi();
   const { makeRequest: markReadRequest } = useApi();
-  const { makeRequest: createDirectChatRequest } = useApi();
   const [allChatRooms, setAllChatRooms] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
   const { unreadCounts, setUnreadCountsContext } = useChatStore();
 
   useEffect(() => {
@@ -54,73 +38,16 @@ const GroupsList = () => {
     }
   }, [chatRoomsData]);
 
-  // fetch user details
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      if (!userId) return;
-      try {
-        const resp = await fetchUserRequest(
-          `${GET_USER_BY_ID}/${userId}`,
-          "GET"
-        );
-        if (resp?.data) {
-          setUserDetails(resp?.data || {});
-        }
-      } catch (err) {
-        console.log("Error fetching user:", err.message);
-      }
-    };
-    fetchUserDetails();
-  }, [userId]);
-
-  // useEffect(() => {
-  //   if ("serviceWorker" in navigator) {
-  //     navigator.serviceWorker.register("/firebase-messaging-sw.js");
-  //   }
-  // }, []);
-
-  async function enableNotifications() {
-    try {
-      const sub = await askAndSubscribe(PUBLIC_VAPID, userId);
-      console.log("Subscribed:", sub);
-    } catch (e) {
-      console.log("Push error", e);
-    }
-  }
-
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
   const [messages, setMessages] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const chatBodyRef = useRef(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
-  const [text, setText] = useState("");
   const userID =
     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-  const eventId = selectedGroup?._id || selectedGroup?.id || null;
-  const textareaRef = useRef(null);
   const chatOpenRef = useRef(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  // keep a map for optimistic messages
-  const tempIdToClientMap = useRef(new Map());
-
-  // responsive emoji width
-  const [emojiWidth, setEmojiWidth] = useState(400);
-  useEffect(() => {
-    const updateWidth = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth > 450) setEmojiWidth(450);
-      else if (screenWidth <= 450) setEmojiWidth(screenWidth - 20);
-      else setEmojiWidth(screenWidth - 50);
-    };
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
 
   // scroll to bottom when messages change
   useEffect(() => {
@@ -194,51 +121,6 @@ const GroupsList = () => {
     if (userId) fetchUnreadMap();
   }, [userId, chatRoomsData]);
 
-  // fetch messages REST API
-  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
-    if (!groupId) return;
-    try {
-      const resp = await fetchMessagesRequest(
-        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
-        "GET"
-      );
-      if (!resp.error && resp.data) {
-        setMessages(resp?.data || []);
-        const roomObj = allChatRooms.find(
-          (r) => String(r._id || r.id) === String(groupId)
-        );
-        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-        const lastReadForMe = lastReadMap[userID]
-          ? new Date(lastReadMap[userID])
-          : null;
-        const unread = (resp.data || []).filter((m) => {
-          const created = m.createdAt
-            ? new Date(m.createdAt)
-            : m.sentAt
-            ? new Date(m.sentAt)
-            : null;
-          if (!created || String(m.senderId) === String(userID)) return false;
-          return lastReadForMe ? created > lastReadForMe : true;
-        }).length;
-        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
-      } else {
-        console.warn("Failed fetch messages", resp);
-      }
-    } catch (err) {
-      console.error("Fetch messages failed", err);
-    }
-  };
-
-  // handle opening a room
-  const handleOpenMessagesOld = async (group) => {
-    chatOpenRef.current = true;
-    setSelectedGroup(group);
-    const groupId = group._id || group.id;
-    await fetchMessagesForRoom(groupId);
-    setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
-    markRoomRead(groupId, userID);
-  };
-  
   const handleOpenMessages = async (group) => {
     // chatOpenRef.current = true;
     // setSelectedGroup(group);
@@ -248,7 +130,6 @@ const GroupsList = () => {
     markRoomRead(groupId, userID);
     router.push(`/chat/room?groupId=${groupId}&id=${userId}`);
   };
-
 
   const markRoomRead = async (groupId, uid) => {
     if (!groupId || !uid) return;
@@ -279,57 +160,6 @@ const GroupsList = () => {
     } catch (err) {
       console.error("markRoomRead err", err);
     }
-  };
-
-  // handle closing chat
-  const handleCloseChat = async () => {
-    if (!selectedGroup || !userId) return;
-    await markRoomRead(selectedGroup._id || selectedGroup.id, userID);
-    setSelectedGroup(null);
-    setRefreshKey((prev) => prev + 1);
-    chatOpenRef.current = false;
-    setMessages([]);
-  };
-
-  // send message
-  const sendMessage = async () => {
-    if (!text.trim() || !eventId || !userID) return;
-    const groupId = selectedGroup?._id;
-    const tempId = `temp_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2, 8)}`;
-    const optimistic = {
-      id: tempId,
-      tempId,
-      _id: tempId,
-      eventId,
-      groupId,
-      senderId: userID,
-      message: text,
-      text,
-      type: "text",
-      senderName: userDetails?.name,
-      senderPhone: localStorage.getItem("mobileNumber"),
-      createdAt: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, optimistic]);
-    tempIdToClientMap.current.set(tempId, true);
-
-    if (socket && socket.connected) {
-      socket.emit("message:send", {
-        eventId,
-        groupId,
-        message: text,
-        type: "text",
-        tempId,
-        senderName: userDetails?.name,
-        senderPhone: userDetails?.phone,
-      });
-    }
-
-    setText("");
-    setShowEmojiPicker(false);
   };
 
   // compute unread counts across rooms
@@ -371,23 +201,7 @@ const GroupsList = () => {
       window.dispatchEvent(new Event("unreadCountChange"));
     }, 300);
     return () => clearTimeout(timeout);
-  }, [allChatRooms, userId, messages, refreshKey]);
-
-  // helper to convert link text to anchor
-  function linkify(textVal) {
-    if (!textVal) return "";
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return textVal.split(urlRegex).map((part, index) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-            {part}
-          </a>
-        );
-      }
-      return part;
-    });
-  }
+  }, [allChatRooms, userId, messages]);
 
   //  install prompt logic
   useEffect(() => {
@@ -415,49 +229,6 @@ const GroupsList = () => {
     }
   };
 
-  const handleClickUserName = async (senderId) => {
-    try {
-      // Check if a direct room already exists
-      const existingRoom = allChatRooms.find((room) => {
-        if (room.roomType !== "direct") return false;
-
-        const memberIds = room.members.map((m) => m.userId);
-        return memberIds.includes(userId) && memberIds.includes(senderId);
-      });
-
-      // If found -> Open that chat directly
-      if (existingRoom) {
-        console.log("Direct chat already exists:", existingRoom);
-        handleOpenMessages(existingRoom);
-        return;
-      }
-
-      // No room found -> Call backend API to create one
-      const resp = await createDirectChatRequest(
-        `${CREATE_DIRECT_CHAT_ROOM}`,
-        "POST",
-        {
-          members: [userId, senderId],
-          eventId: selectedGroup?.eventId,
-        }
-      );
-
-      if (resp?.data) {
-        setAllChatRooms((prev) => [...prev, resp?.data]);
-        handleOpenMessages(resp?.data);
-      }
-    } catch (err) {
-      console.log("Error:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedGroup) {
-      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
-    }
-  }, [selectedGroup]);
-
-  // render UI
   return (
     <div className="groups-container">
       <div className="groups-header">
@@ -491,183 +262,6 @@ const GroupsList = () => {
         searchTerm={searchTerm}
         userId={userId}
       />
-{/* 
-      {selectedGroup && (
-        <div className="chat-overlay">
-          <div className="chat-header">
-            <div className="chat-user-info">
-              <button
-                className="btn back-arrow-chat"
-                onClick={() => {
-                  handleCloseChat();
-                }}
-              >
-                <FaArrowLeft fontSize={16} />
-              </button>
-              <span className="mx-2">{`${
-                roomDisplayDetails?.name || selectedGroup.roomName
-              }`}</span>
-            </div>
-          </div>
-          <div className="chat-messages" ref={chatBodyRef}>
-            {messages.map((msg) => {
-              const isMe = String(msg.senderId) === String(userID);
-              const senderName = msg.senderName;
-              return msg?.type !== "info" ? (
-                <div
-                  key={msg.id || msg._id}
-                  className={`chat-message ${isMe ? "sender" : "receiver"}`}
-                >
-                  {!isMe && (
-                    <div
-                      className="chat-avatar-receiver"
-                      style={{
-                        backgroundColor: getAvatarColor(
-                          senderName || msg.senderPhone
-                        ),
-                      }}
-                    >
-                      {senderName
-                        ? senderName.charAt(0).toUpperCase()
-                        : (msg.senderPhone || "U").charAt(0)}
-                    </div>
-                  )}
-                  <div
-                    className={`chat-bubble ${isMe ? "sender" : "receiver"}`}
-                  >
-                    {!isMe && (
-                      <div
-                        className="chat-sender"
-                        onClick={() => handleClickUserName(msg.senderId)}
-                      >
-                        {senderName
-                          ? senderName
-                          : `+91 ${(msg.senderPhone || "").slice(0, -4)}XXXX`}
-                      </div>
-                    )}
-                    <div className="chat-text">{linkify(msg.message)}</div>
-                    <div className="chat-time">
-                      {msg.sentAt?.toDate
-                        ? new Date(msg.sentAt.toDate()).toLocaleTimeString(
-                            "en-IN",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }
-                          )
-                        : msg.createdAt
-                        ? new Date(msg.createdAt).toLocaleTimeString("en-IN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                        : ""}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="d-flex justify-content-center align-items-center">
-                  <p className="text-info">{msg?.message}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="chat-input-container">
-            <button
-              type="button"
-              onPointerDown={(e) => e.preventDefault()}
-              onClick={() => {
-                if (showEmojiPicker) {
-                  setShowEmojiPicker(false);
-                  setTimeout(() => {
-                    textareaRef.current?.focus();
-                  }, 0);
-                } else {
-                  textareaRef.current?.blur();
-                  setTimeout(() => {
-                    setShowEmojiPicker(true);
-                  }, 50);
-                }
-              }}
-              className="emoji-btn"
-            >
-              {showEmojiPicker ? (
-                <FaRegKeyboard fontSize={20} />
-              ) : (
-                <Image src={emojiIcon} alt="Emoji" className="emoji-icon" />
-              )}
-            </button>
-
-            <textarea
-              value={text}
-              ref={textareaRef}
-              className="chat-input"
-              rows={1}
-              onFocus={() => {
-                if (showEmojiPicker) setShowEmojiPicker(false);
-                setTimeout(() => {
-                  textareaRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "end",
-                  });
-                  window.scrollBy(0, -180);
-                }, 300);
-              }}
-              onChange={(e) => {
-                setText(e.target.value);
-                if (e.target.value.length > 0) setShowEmojiPicker(false);
-              }}
-              onInput={(e) => {
-                e.target.style.height = "auto";
-                e.target.style.height =
-                  Math.min(e.target.scrollHeight, 120) + "px";
-              }}
-              placeholder="Type message here..."
-            />
-
-            <button
-              onClick={() => {
-                sendMessage();
-                if (textareaRef.current)
-                  textareaRef.current.style.height = "auto";
-              }}
-              className="chat-send-btn"
-            >
-              <Image src={sendIcon} alt="Send" className="send-icon" />
-            </button>
-          </div>
-
-          {showEmojiPicker && (
-            <div
-              className="emoji-container"
-              onPointerDown={(e) => e.preventDefault()}
-            >
-              <EmojiPicker
-                width={emojiWidth}
-                searchDisabled={true}
-                onEmojiClick={(emojiData) => {
-                  const textarea = textareaRef.current;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  setText((prevText) => {
-                    const newText =
-                      prevText.substring(0, start) +
-                      emojiData.emoji +
-                      prevText.substring(end);
-                    requestAnimationFrame(() => {
-                      textarea.selectionStart = textarea.selectionEnd =
-                        start + emojiData.emoji.length;
-                    });
-                    return newText;
-                  });
-                }}
-              />
-            </div>
-          )}
-        </div>
-      )} */}
     </div>
   );
 };
