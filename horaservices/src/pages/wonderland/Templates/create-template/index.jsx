@@ -150,14 +150,15 @@ const DynamicTemplateRenderer = () => {
         ? formData.time         // DB time present → Use it
         : getCurrentTimeAMPM(); // No DB time → current time
 
-
-
     return {
       eventType: formData.eventType,
       name: applyCase(formData.name || "", templateMeta?.nameCase),
     date: applyCase(formatted?.full || "", templateMeta?.dateCase || "default"),
      day: formatted?.day || "",
-     month: formatted?.month || "",
+    month: applyCase(
+  formatted?.month || "",
+  templateMeta?.monthCase || "default"
+),
       year: formatted?.year || "",
       time: finalTime,
       borderColor: templateMeta?.borderColor,
@@ -328,15 +329,10 @@ const DynamicTemplateRenderer = () => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
     if (!info.templateWidth || !info.templateHeight) return;
-//  const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
-//     const scale = 1 - ratio;
-    const scale = Math.min(
-  window.innerWidth / info.templateWidth,
-  window.innerHeight / info.templateHeight,
-  1
-);
+ const effectiveWidth = Math.min(window.innerWidth, 480);
 
-
+  // ✅ Scale relative to template width
+  const scale = effectiveWidth / info.templateWidth;
     setScaledData({
       imgHeight: scale * info.templateHeight,
       nameFontSize: scale * info.templateNameSize,
