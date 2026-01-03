@@ -157,7 +157,8 @@ const DynamicTemplateRenderer = () => {
       name: applyCase(formData.name || "", templateMeta?.nameCase),
     date: applyCase(formatted?.full || "", templateMeta?.dateCase || "default"),
      day: formatted?.day || "",
-     month: formatted?.month || "",
+    //  month: formatted?.month || "",
+    month: applyCase(formatted?.month || "",templateMeta?.monthCase || "default"),
       year: formatted?.year || "",
       time: finalTime,
       borderColor: templateMeta?.borderColor,
@@ -329,9 +330,12 @@ const DynamicTemplateRenderer = () => {
     const info = templateMeta.templateInfo;
     if (!info.templateWidth || !info.templateHeight) return;
 
-    const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
-    const scale = 1 - ratio;
+    // const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
+    // const scale = 1 - ratio;
 
+ const effectiveWidth = Math.min(window.innerWidth, 480);
+  const scale = effectiveWidth / info.templateWidth;
+  
     setScaledData({
       imgHeight: scale * info.templateHeight,
       nameFontSize: scale * info.templateNameSize,
