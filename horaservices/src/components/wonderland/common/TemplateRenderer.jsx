@@ -20,7 +20,7 @@ const TemplateRenderer = ({
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [templateSizeClass, setTemplateSizeClass] = useState(""); // ADD
+  const [templateSizeClass, setTemplateSizeClass] = useState("");
 
   const getResponsiveFontStyles = () => {
   const size = getScreenSize(width);

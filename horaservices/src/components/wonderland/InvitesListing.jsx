@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import useApi from "@/hooks/useApi";
 import { GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
@@ -9,30 +8,6 @@ const InvitesListing = ({ userId }) => {
     `${GET_ALL_EVENTS_BY_USERID}/${userId}`,
     "get"
   );
-  const [allEventsData, setAllEventsData] = useState([]);
-
-  useEffect(() => {
-    if (data?.data) {
-      // Hosted Events with role
-      const hosted = (data.data.hostedEvents || []).map((event) => ({
-        ...event,
-        eventRole: "host",
-      }));
-
-      // Guest Events with role
-      const guest = (data.data.asAGuestEvents || []).map((event) => ({
-        ...event,
-        eventRole: "guest",
-      }));
-
-      // Merge & Sort
-      const merged = [...hosted, ...guest].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-
-      setAllEventsData(merged);
-    }
-  }, [data?.data]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "Event Date";
@@ -57,8 +32,7 @@ const InvitesListing = ({ userId }) => {
     <div className="event-list-wrapper">
       <h3 className="section-heading">Cheer Story</h3>
       <ul className="event-list">
-        {allEventsData?.map((event) => (
-          <>
+        {data?.data?.map((event) => (
             <li key={event._id} className="event-item">
               <div className="event-info-list">
                 <div className="event-details-list">
@@ -70,7 +44,6 @@ const InvitesListing = ({ userId }) => {
                   </div>
                   <span className="list-event-title">
                     {event.hostName ? `${event.hostName}` : "Host Name"}{" "}
-                    {event.eventType ? `${event.eventType}` : "Event Type"}
                   </span>
                   <div className="list-event-date">
                     <span>{formatDate(event.eventDate)}</span>
@@ -86,7 +59,6 @@ const InvitesListing = ({ userId }) => {
                 </button>
               </div>
             </li>
-          </>
         ))}
       </ul>
     </div>

@@ -4,10 +4,10 @@ const {
   GET_GUEST_DETTAILS,
   CREATE_GUEST_BY_EVENTID,
 } = require("@/utils/apiconstants");
-const { useLayoutEffect, useState, useEffect } = require("react");
+const { useLayoutEffect, useState } = require("react");
 
 const useRsvpStatus = (eventId, skipCheck, refetch) => {
-  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(true);
   const userId = localStorage.getItem("userID");
   const [guestDetails, setGuestDetails] = useState({});
   const { makeRequest: fetchGuestData } = useApi();
@@ -52,7 +52,7 @@ const useRsvpStatus = (eventId, skipCheck, refetch) => {
     fetchGuestDetails();
   }, [eventId, userId, skipCheck, refetch]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (guestDetails) {
       if (guestDetails?.rsvpStatus) {
         setRsvpSubmitted(true);

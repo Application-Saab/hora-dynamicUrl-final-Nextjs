@@ -66,7 +66,8 @@ const ChatPage = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg, setChatBg] = useState(null);
   const [userData, setUserData] = useState({});
-  const { unreadCounts, setUnreadCountsContext } = useChatStore();
+  const { setUnreadCountsContext } = useChatStore();
+  const [changeRoom, setChangeRoom] = useState(false);
 
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
@@ -202,7 +203,7 @@ const ChatPage = () => {
 
     lastRangeRef.current = newRange;
 
-    // ✅ Resize chat input after inserting emoji
+    // Resize chat input after inserting emoji
     resizeTextarea();
   };
 
@@ -293,7 +294,7 @@ const ChatPage = () => {
       });
       setSelectedGroup(selected || null);
     }
-  }, [chatRoomsData?.data, groupId]);
+  }, [chatRoomsData?.data, groupId, changeRoom]);
 
   // fetch messages REST API
   const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
@@ -450,7 +451,7 @@ const ChatPage = () => {
       setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
       fetchMessagesForRoom(selectedGroup._id || selectedGroup.id);
     }
-  }, [selectedGroup]);
+  }, [selectedGroup, changeRoom]);
 
   const handleClickUserName = async (senderId) => {
     try {
@@ -464,8 +465,7 @@ const ChatPage = () => {
 
       // If found -> Open that chat directly
       if (existingRoom) {
-        console.log("Direct chat already exists:", existingRoom);
-        // handleOpenMessages(existingRoom);
+        setChangeRoom(!changeRoom);
         router.push(
           `/chat/room?groupId=${
             existingRoom._id || existingRoom.id
@@ -485,6 +485,7 @@ const ChatPage = () => {
       );
 
       if (resp?.data) {
+        setChangeRoom(!changeRoom);
         setAllChatRooms((prev) => [...prev, resp?.data]);
         // handleOpenMessages(resp?.data);
         router.push(
@@ -501,6 +502,11 @@ const ChatPage = () => {
       router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
     }
   };
+
+  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+    acc[member.userId] = member.profileImageUrl || "";
+    return acc;
+  }, {});
 
   return (
     <div
@@ -568,6 +574,13 @@ const ChatPage = () => {
               }`}
             >
               {!isMe && !isConsecutive && (
+                membersProfileMap?.[msg.senderId] ? (
+                  <img
+                    src={membersProfileMap?.[msg.senderId]}
+                    alt={senderName || "avatar"}
+                    className="chat-avatar-receiver"
+                  />
+                ) : (
                 <div
                   className="chat-avatar-receiver"
                   style={{
@@ -580,6 +593,7 @@ const ChatPage = () => {
                     ? senderName.charAt(0).toUpperCase()
                     : msg.senderPhone?.charAt(3)}
                 </div>
+                )
               )}
               <div
                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
@@ -610,7 +624,11 @@ const ChatPage = () => {
               </div>
             </div>
           ) : (
-            <div className="d-flex justify-content-center align-items-center" style={{ margin: "12px 0" }} key={msg._id}>
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ margin: "12px 0" }}
+              key={msg._id}
+            >
               <p className="info-chat-message-box">{msg?.message}</p>
             </div>
           );
