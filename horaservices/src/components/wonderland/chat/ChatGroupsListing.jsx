@@ -61,13 +61,6 @@ const ChatGroupsListing = ({
                 <p className="group-name">
                   {capitalizeFirstLetter(roomDetails?.name) || "Unnamed Group"}
                 </p>
-                {/* <span className="group-last">
-                  {(unreadCounts[id] || 0) > 0
-                    ? `${unreadCounts[id]} New Message${
-                        unreadCounts[id] > 1 ? "s" : ""
-                      }`
-                    : "No new messages"}
-                </span> */}
                 {unreadCounts[id] > 0 && (
                   <span className="group-last">
                     {unreadCounts[id]} New Message
