@@ -309,20 +309,22 @@ const DynamicTemplateRenderer = () => {
   }, [eventId, token]);
 
 
-  const applyPlaceholders = (data) => ({
-    ...data,
-    name: data.name?.trim() || "Type your name",
-    address: data.address?.trim() || "Type your address",
-  });
+
   useEffect(() => {
     if (!templateMeta?.jsCode) return;
 
-    const merged = applyPlaceholders({
-      ...templatePayload,
-      ...scaledData,
-    });
+   
+const payloadWithPlaceholder = {
+  ...templatePayload,
+  ...scaledData,
+  name: formData.name || "Type your name",
+  address: formData.address || "Type your address",
+};
 
-    setRenderedHTML(renderTemplate(templateMeta.jsCode, merged, formData));
+setRenderedHTML(
+  renderTemplate(templateMeta.jsCode, payloadWithPlaceholder, formData)
+);
+
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
   const handleImageLoad = useCallback(() => {
@@ -384,6 +386,10 @@ const DynamicTemplateRenderer = () => {
 //   },
 //   [formData, templateMeta?.charLimits]
 // );
+const PLACEHOLDERS = {
+  name: "Type your name",
+  address: "Type your address",
+};
 
 const handleEditableClick = useCallback(
   (field, node) => {
@@ -392,24 +398,20 @@ const handleEditableClick = useCallback(
     node.dataset.editing = "true";
     node.classList.add("editing");
 
-    const placeholderText =
-      field === "name"
-        ? "Type your name"
-        : field === "address"
-          ? "Type your address"
-          : "";
+   
+    
+const placeholder = PLACEHOLDERS[field] || "";
 
-    const isEmpty = !node.innerText?.trim();
+const isPlaceholder = node.innerText.trim() === placeholder;
+const isEmpty = !node.innerText.trim();
 
-    // Only set caret at end if the field is empty
-    if (isEmpty) {
-      if (field === "time") {
-        node.innerText = formData.time || getCurrentTimeAMPM();
-      } else {
-        node.innerText = formData[field] || placeholderText;
-      }
-      setCaretAtEnd(node);
-    }
+// 🔥 click pe placeholder clear
+if (isEmpty || isPlaceholder) {
+  node.innerText = "";
+  setCaretAtEnd(node);
+}
+
+  
 
     node.focus();
 
@@ -479,9 +481,7 @@ const handleEditableClick = useCallback(
           });
         }
       } else {
-        if (!value && field === "name") value = "Type your name";
-        if (!value && field === "address") value = "Type your address";
-        if (value.length > charLimit) value = value.slice(0, charLimit);
+          if (value.length > charLimit) value = value.slice(0, charLimit);
       }
 
       setFormData((prev) => ({ ...prev, [field]: value }));
