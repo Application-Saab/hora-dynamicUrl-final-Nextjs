@@ -106,7 +106,11 @@ const DynamicTemplateRenderer = () => {
   const userId = loadUserId();
   const token = loadToken();
 
-  const [loading, setLoading] = useState(true);
+  const [templateLoading, setTemplateLoading] = useState(true);
+const [imageLoaded, setImageLoaded] = useState(false);
+
+const loading = templateLoading || !imageLoaded;
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [errorModal, setErrorModal] = useState({
@@ -213,7 +217,8 @@ const DynamicTemplateRenderer = () => {
     let active = true;
     const fetchTemplate = async () => {
       if (!templateId) {
-        setLoading(false);
+     setTemplateLoading(false);
+
         return;
       }
       try {
@@ -253,7 +258,8 @@ const DynamicTemplateRenderer = () => {
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
       } finally {
-        if (active) setLoading(false);
+        if (active) setTemplateLoading(false);
+;
       }
     };
 
@@ -355,37 +361,10 @@ setRenderedHTML(
       dayFontSize: scale * info.templatedayfontSize,
       dayPosition: scale * info.templatedayposition,
     });
-    setLoading(false);
+  setImageLoaded(true);
+
   }, [templateMeta?.templateInfo]);
 
-// const handleEditableClick = useCallback(
-//   (field, node) => {
-//     const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
-//     node.contentEditable = "true";
-//     node.dataset.editing = "true";
-//     node.classList.add("editing");
-
-//     const placeholderText =
-//       field === "name" ? "Type your name" : field === "address" ? "Type your address" : "";
-
-//     const isEmpty = !node.innerText?.trim();
-
-//     // Only set caret at end if empty
-//     if (isEmpty) {
-//       if (field === "time") {
-//         node.innerText = formData.time || getCurrentTimeAMPM();
-//       } else {
-//         node.innerText = formData[field] || placeholderText;
-//       }
-//       setCaretAtEnd(node); // only now
-//     }
-
-//     node.focus();
-
-//     // The rest of your onKeyDown, onInput, onPaste, onBlur handlers...
-//   },
-//   [formData, templateMeta?.charLimits]
-// );
 const PLACEHOLDERS = {
   name: "Type your name",
   address: "Type your address",
@@ -725,104 +704,118 @@ if (addressExistsInTemplate) {
     );
   }, [templateMeta?.borderColor]);
 
-  if (loading) return <div style={{ padding: "10px" }}><TemplatecardSkeleton /></div>;
+ return (
+  <div
+    className="d-flex justify-content-center"style={{ maxWidth: "480px", margin: "0 auto" }} >
+    <div style={{ padding: "8px", maxWidth: "480px",width: "100%" }}>
 
-  return (
-    <div className="d-flex justify-content-center" style={{ maxWidth: "480px", margin: "0 auto" }}>
-      <div style={{ padding: "8px", maxWidth: "480px" }}>
-        <div ref={templateRef} className="template-container" style={{ position: "relative", }}>
- {loading && (
-    <div
-      style={{
-        width: "100%",
-        height: scaledData?.imgHeight || 400,
-        background: "#eaeaea",
-        borderRadius: "10px",
-        animation: "pulse 1.4s ease-in-out infinite"
-      }}
-    />
-  )}
-
-  {/* ORIGINAL IMAGE */}
-  {!loading && (
-    <img
-      ref={imgRef}
-      src={`/assets/templates/${templateMeta?.bgImageName}`}
-      id="bg-image"
-      alt="bg"
-      onLoad={handleImageLoad}
-      onError={() => setLoading(false)}
-      style={{ width: "100%", display: loading ? "none" : "block" }}
-    />
-  )}
-
-
-
-          {templateMeta?.fontUrls?.map((url, idx) => (
-            <link key={idx} href={url} rel="stylesheet" />
-          ))}
-
-          {templateMeta?.cssCode && <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />}
-
-          {renderedHTML && (
-            <div
-              style={{ position: "absolute", zIndex: 2, top: 0, left: 0, right: 0, bottom: 0, cursor: "text" }}
-              dangerouslySetInnerHTML={{ __html: renderedHTML }}
-            />
-          )}
+      {/*  SKELETON – OUTSIDE TEMPLATE (design safe) */}
+      {loading && (
+        <div style={{ padding: "8px" }}>
+          <TemplatecardSkeleton />
         </div>
+      )}
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          id="file-upload"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const url = URL.createObjectURL(file);
-            setUploadedImage(url);
-            setOriginalImage(url);
-          }}
-        />
+      {/*  TEMPLATE CONTAINER – ALWAYS PRESENT */}
+      <div
+        ref={templateRef}
+        className="template-container"
+        style={{
+          position: "relative",
+          visibility: loading ? "hidden" : "visible",
+        }}
+      >
+            {templateMeta && (
+          <img
+            ref={imgRef}
+            src={`/assets/templates/${templateMeta.bgImageName}`}
+            alt="bg"
+            onLoad={handleImageLoad}
+            onError={() => setImageLoaded(true)}
+            style={{
+              width: "100%",
+              visibility: imageLoaded ? "visible" : "hidden",
+            }}
+          />
+        )}
 
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <CustomButton title="Submit" onClick={handleSave} />
+        {/* 🔹 Fonts */}
+        {templateMeta?.fontUrls?.map((url, idx) => (
+          <link key={idx} href={url} rel="stylesheet" />
+        ))}
 
-        </div>
+        {/* 🔹 CSS */}
+        {templateMeta?.cssCode && (
+          <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
+        )}
+
+        {/* 🔹 Template HTML */}
+        {!loading && renderedHTML && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 2,
+              cursor: "text",
+            }}
+            dangerouslySetInnerHTML={{ __html: renderedHTML }}
+          />
+        )}
       </div>
 
-      <CalendarModal
-        show={modal.calendar}
-        onClose={() => setModal((prev) => ({ ...prev, calendar: false }))}
-        selectedDate={selectedDate}
-        setSelectedDate={(d) => {
-          setSelectedDate(d);
-          setFormData((prev) => ({ ...prev, date: d }));
+      {/* 🔹 File Upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const url = URL.createObjectURL(file);
+          setUploadedImage(url);
+          setOriginalImage(url);
         }}
       />
 
-      <TimeModal
-        show={modal.time}
-        onClose={() => setModal((prev) => ({ ...prev, time: false }))}
-        selectedTime={selectedTime}
-        setSelectedTime={(t) => {
-          setSelectedTime(t);
-          setFormData((prev) => ({ ...prev, time: t }));
-        }}
-      />
-      <ErrorPopup
-        isOpen={errorModal.open}
-        onClose={() => setErrorModal({ open: false, message: "" })}
-        heading="Missing information"
-        message={errorModal.message}
-        buttonLabel="OK"
-        icon={AlertIcon}
-      />
-
+      {/* 🔹 Submit */}
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <CustomButton title="Submit" onClick={handleSave} />
+      </div>
     </div>
-  );
+
+    {/* 🔹 Modals */}
+    <CalendarModal
+      show={modal.calendar}
+      onClose={() => setModal((p) => ({ ...p, calendar: false }))}
+      selectedDate={selectedDate}
+      setSelectedDate={(d) => {
+        setSelectedDate(d);
+        setFormData((p) => ({ ...p, date: d }));
+      }}
+    />
+
+    <TimeModal
+      show={modal.time}
+      onClose={() => setModal((p) => ({ ...p, time: false }))}
+      selectedTime={selectedTime}
+      setSelectedTime={(t) => {
+        setSelectedTime(t);
+        setFormData((p) => ({ ...p, time: t }));
+      }}
+    />
+
+    <ErrorPopup
+      isOpen={errorModal.open}
+      onClose={() => setErrorModal({ open: false, message: "" })}
+      heading="Missing information"
+      message={errorModal.message}
+      buttonLabel="OK"
+      icon={AlertIcon}
+    />
+  </div>
+);
+
 };
 
 export default DynamicTemplateRenderer;
