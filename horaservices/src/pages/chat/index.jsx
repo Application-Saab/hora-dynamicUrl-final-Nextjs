@@ -18,14 +18,15 @@ import ChatGroupsListing from "@/components/wonderland/chat/ChatGroupsListing";
 import { useChatStore } from "@/hooks/ChatContext";
 
 // helper to read userId from url
-const getUserIdFromUrl = () => {
-  if (typeof window === "undefined") return null;
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
-};
+// const getUserIdFromUrl = () => {
+//   if (typeof window === "undefined") return null;
+//   const params = new URLSearchParams(window.location.search);
+//   return params.get("id");
+// };
 
 const GroupsList = () => {
-  const userId = getUserIdFromUrl();
+  // const userId = getUserIdFromUrl();
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const router = useRouter();
   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
   const { makeRequest: markReadRequest } = useApi();
@@ -45,8 +46,6 @@ const GroupsList = () => {
   const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstall, setShowInstall] = useState(false);
-  const userID =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const chatOpenRef = useRef(false);
 
   // scroll to bottom when messages change
@@ -91,7 +90,7 @@ const GroupsList = () => {
           return prev;
 
         // append and mark read (global provider handles unread reset)
-        setTimeout(() => markRoomRead(groupId, userID), 50);
+        setTimeout(() => markRoomRead(groupId, userId), 50);
         return [...prev, { ...msg, id: msg._id }];
       });
     };
@@ -101,7 +100,7 @@ const GroupsList = () => {
     return () => {
       socket.off("message:new", onMessageNewLocal);
     };
-  }, [selectedGroup, userID]);
+  }, [selectedGroup, userId]);
 
   useEffect(() => {
     const fetchUnreadMap = async () => {
@@ -123,7 +122,7 @@ const GroupsList = () => {
 
   const handleOpenMessages = async (group) => {
     const groupId = group._id || group.id;
-    markRoomRead(groupId, userID);
+    markRoomRead(groupId, userId);
     router.push(`/chat/room?groupId=${groupId}&id=${userId}`);
   };
 
@@ -173,8 +172,8 @@ const GroupsList = () => {
       allChatRooms.forEach((group) => {
         const groupId = group._id || group.id;
         const lastReadMap = group.lastReadAt || group.lastReadAtMap || {};
-        const lastSeen = lastReadMap[userID]
-          ? new Date(lastReadMap[userID])
+        const lastSeen = lastReadMap[userId]
+          ? new Date(lastReadMap[userId])
           : null;
         const msgsForRoom = messages.filter(
           (m) => String(m.groupId || "") === String(groupId)
@@ -185,7 +184,7 @@ const GroupsList = () => {
             const msgDate = msg.sentAt
               ? new Date(msg.sentAt)
               : new Date(msg.createdAt);
-            if (String(msg.senderId) === String(userID)) return false;
+            if (String(msg.senderId) === String(userId)) return false;
             return lastSeen ? msgDate > lastSeen : true;
           }).length;
         }
@@ -242,14 +241,14 @@ const GroupsList = () => {
         </div>
       </div>
 
-      {pathname === "/chat" && showInstall && (
+      {/* {pathname === "/chat" && showInstall && (
         <div className="chat-banner">
           <Image src={PinBanner} alt="Banner" className="chat-banner-img" />
           <button className="chat-banner-btn" onClick={handleInstallClick}>
             Add To Phone Screen
           </button>
         </div>
-      )}
+      )} */}
 
       <ChatGroupsListing
         allChatRooms={allChatRooms}

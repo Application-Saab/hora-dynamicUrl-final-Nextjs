@@ -1,38 +1,40 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
-// Icons
 import eventIcon from "../../assets/nav_icon/events.svg";
 import eventsIconFill from "@/assets/nav_icon/fillevents.svg";
 import CheerChatIcon from "@/assets/wonderland/NavCheerChatIcon.svg";
 import CheerChatIconFilled from "@/assets/wonderland/NavCheerChatIconFilled.svg";
 import ExploreIcon from "@/assets/wonderland/NavExploreIcon.svg";
 import ExploreIconFilled from "@/assets/wonderland/NavExploreIconFilled.svg";
+import ChatModalImage from "@/assets/wonderland/ChatInstructionPopupImage.png";
 import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 import { useChatStore } from "@/hooks/ChatContext";
+import CustomModal from "../wonderland/common/CustomModal";
+import OtpLogin from "../OtpLoginPopup";
 import "./bottomNav.css";
 
 export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
   const { totalUnread } = useChatStore();
-  const [showPopup, setShowPopup] = useState(false);
+
   const [userId, setUserId] = useState("");
+  const [authChecked, setAuthChecked] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-  // Fetch & update userId in one place
+  const loadUserId = useCallback(() => {
+    const id = localStorage.getItem("userID") || "";
+    setUserId(id);
+    setAuthChecked(true);
+  }, []);
+
   useEffect(() => {
-    const loadUserId = () => {
-      if (typeof window !== "undefined") {
-        setUserId(localStorage.getItem("userID") || "");
-      }
-    };
-
     loadUserId();
-
     router.events.on("routeChangeComplete", loadUserId);
     window.addEventListener("loginSuccess", loadUserId);
 
@@ -40,18 +42,27 @@ export default function BottomNav() {
       router.events.off("routeChangeComplete", loadUserId);
       window.removeEventListener("loginSuccess", loadUserId);
     };
-  }, [router]);
+  }, [router.events, loadUserId]);
 
-  const handleClosePopup = (e) => {
-    e.stopPropagation();
-    setShowPopup(false);
-  };
+  const { isEvents, isChat, isServices, isAccount } = useMemo(() => {
+    return {
+      isEvents: currentPath.includes("wonderland"),
+      isChat: currentPath.includes("chat"),
+      isServices: currentPath.includes("services"),
+      isAccount: currentPath.includes("accounts"),
+    };
+  }, [currentPath]);
 
-  // Reusable Nav Item Component
-  const NavItem  = ({ href, isActive, icon, iconFilled, label, className = "" }) => (
-  <Link href={href}>
-    <div className={`nav-item ${isActive ? "active" : ""} ${className}`}>
+  useEffect(() => {
+    if (!router.isReady || !authChecked) return;
+    setShowPopup(isChat && !userId);
+  }, [router.isReady, authChecked, isChat, userId]);
 
+  const NavItem = ({ href, isActive, icon, iconFilled, label, className }) => (
+    <Link href={href}>
+      <div
+        className={`nav-item ${isActive ? "active" : ""} ${className || ""}`}
+      >
         <Image
           src={isActive ? iconFilled : icon}
           alt={label}
@@ -62,36 +73,46 @@ export default function BottomNav() {
     </Link>
   );
 
-  // Active route checks
-  const isEvents = currentPath.includes("wonderland");
-  const isChat = currentPath.includes("chat");
-  const isServices = currentPath.includes("services");
-  const isAccount = currentPath.includes("accounts");
-
   return (
     <>
-      {/* Access Restricted Popup */}
-      {showPopup && (
-        <div
-          className="restricted-overlay"
-          onClick={handleClosePopup}
-        >
-          <div className="restricted-popup" onClick={(e) => e.stopPropagation()}>
-            <div className="restricted-title">Access Restricted</div>
-            <div className="restricted-message">
-              Currently unable to access this section.
+      <CustomModal
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        showHeader={false}
+        disableBackdropClick
+        disableBgScroll
+        modalClass="chat-instruction-popup"
+        body={
+          <div>
+            <div className="chat-instruction-popup-image-ctn">
+              <Image src={ChatModalImage} alt="Chat Instruction" />
             </div>
-            <button className="restricted-close-btn" onClick={handleClosePopup}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* Bottom Navigation */}
+            <p className="chat-instruction-popup-heading text-center">
+              Welcome To Cheerchat
+            </p>
+            <p className="chat-instruction-popup-subheading text-center">
+              Plan, laugh, and keep the <br /> buzz going.
+            </p>
+
+            <div className="d-flex justify-content-center">
+              <button
+                className="chat-instruction-popup-btn"
+                onClick={() => {
+                  setShowPopup(false);
+                  setShowLoginModal(true);
+                }}
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        }
+      />
+
       <div className="bottom-nav">
         <NavItem
-          href={`/wonderland?id=${userId}`}
+          href="/wonderland"
           isActive={isEvents}
           icon={eventIcon}
           iconFilled={eventsIconFill}
@@ -99,31 +120,39 @@ export default function BottomNav() {
         />
 
         <NavItem
-          href={`/chat?id=${userId}`}
+          href="/chat"
           isActive={isChat}
           icon={CheerChatIcon}
           iconFilled={CheerChatIconFilled}
           label="CheerChat"
-          className="chatter-icon" 
+          className="chatter-icon"
         />
 
         <NavItem
-          href={`/services?userid=${userId}`}
+          href="/services"
           isActive={isServices}
           icon={ExploreIcon}
           iconFilled={ExploreIconFilled}
           label="Explore"
-            className="Explore-icon" 
+          className="Explore-icon"
         />
 
         <NavItem
-          href={`/accounts?userid=${userId}`}
+          href="/accounts"
           isActive={isAccount}
           icon={accountIcon}
           iconFilled={accountIconFill}
           label="Account"
         />
       </div>
+
+      {showLoginModal && (
+        <OtpLogin
+          setIsModalOpen={() => {
+            setShowLoginModal(false);
+          }}
+        />
+      )}
     </>
   );
 }

@@ -198,9 +198,11 @@ const AccountPage = () => {
               <div className="contact-item">
                 <Image src={CallIcon} height={18} width={18} />
                 <p>
-                  {userDetails ? userDetails?.phone?.includes(91)
-                    ? userDetails?.phone
-                    : `+91${userDetails?.phone}` : ''}
+                  {userDetails
+                    ? userDetails?.phone?.includes(91)
+                      ? userDetails?.phone
+                      : `+91${userDetails?.phone}`
+                    : ""}
                 </p>
               </div>
             </div>

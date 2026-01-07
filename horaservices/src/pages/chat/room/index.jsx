@@ -52,7 +52,8 @@ const getAvatarColor = (name) => {
 const ChatPage = () => {
   const router = useRouter();
   const { groupId } = router.query;
-  const userId = getUserIdFromUrl();
+  // const userId = getUserIdFromUrl();
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
   const { makeRequest: fetchUserRequest } = useApi();
   const { makeRequest: fetchMessagesRequest } = useApi();
