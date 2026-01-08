@@ -188,7 +188,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-                     <AiOutlineClose className="close-icons" onClick={hadelClose} size={15} />
+                     
 
         {!isUserLoggedIn ? (
           <>
@@ -199,6 +199,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                 ''
               )} */}
               <h2>Login to Hora!</h2> {/* Fixed missing closing quote */}
+              <AiOutlineClose className="close-icons" onClick={hadelClose} size={15} />
             </div>
             <div className="otp-login">
               {/* Render the form if not logged in */}
@@ -212,6 +213,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                       value={mobileNumber}
                       onChange={handleMobileNumberChange}
                       placeholder="Login 10 digit Mobile Number"
+                      className="login-input"
                     />
                   </div>
                 </div>
@@ -224,7 +226,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
                     value={otp}
                     onChange={handleOtpChange}
                     placeholder="Enter OTP"
-                    className="enterotp-input"
+                    className="enterotp-input login-input"
                   />
                 </div>
               )}

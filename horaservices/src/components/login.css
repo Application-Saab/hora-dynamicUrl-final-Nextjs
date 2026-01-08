@@ -30,8 +30,8 @@
   transition: color 0.3s ease;
 }
 .popup-header {
-    display: block;
-    /* justify-content: flex-end; */
+    display: flex;
+    justify-content: center;
     position: relative;
 }
   .popup-content {
@@ -191,5 +191,8 @@ font-size: 14px;
 .otp-error {
         font-size: 11px;
     }
+}
+.login-input {
+    color: #000;
 }
 
