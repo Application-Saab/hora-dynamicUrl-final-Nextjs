@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect,useLayoutEffect  } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -16,9 +16,11 @@ import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const { pathname } = router;
 
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const blockContextMenu = (e) => e.preventDefault();
 
     const blockKeys = (e) => {
@@ -49,6 +51,7 @@ function MyApp({ Component, pageProps }) {
 
   // ================= FIREBASE PUSH =================
   const requestPermission = async () => {
+     if (typeof window === "undefined") return;
     try {
       if ("Notification" in window && "serviceWorker" in navigator) {
         const swRegistration =
@@ -83,6 +86,7 @@ function MyApp({ Component, pageProps }) {
   }, []);
   
   useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
     // reset any scroll lock
     document.body.style.position = "";
     document.body.style.top = "";

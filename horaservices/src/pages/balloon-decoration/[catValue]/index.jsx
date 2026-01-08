@@ -127,6 +127,8 @@ const DecorationCatPage = ({ locality }) => {
       return "PremiumDecoration";
     } else if (catValue === "bachelorette-decoration") {
       return "bachelorette";
+    }else if (catValue === "shop-decoration") {
+      return "Shop Decoration";
     } else {
       const parts = catValue.split("-"); // Split by hyphens
       return parts
