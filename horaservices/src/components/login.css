@@ -28,11 +28,10 @@
   user-select: none;
   z-index: 1000;
   transition: color 0.3s ease;
-   position: relative;
 }
 .popup-header {
-    display: block;
-    /* justify-content: flex-end; */
+    display: flex;
+    justify-content: center; 
     position: relative;
 }
   .popup-content {
@@ -192,4 +191,6 @@ font-size: 14px;
         font-size: 11px;
     }
 }
-
+.login-input {
+    color: #000;
+}
