@@ -35,7 +35,7 @@ const Popup = ({ onClose, popupMessage }) => {
   return (
     <div className="popup-overlay">
       <div className="popup-content">
-        <div className="popup-header">
+        <div className="logout-popup-header">
           <AiOutlineClose className="close-icon" onClick={onClose} size={20} />
         </div>
         <div className="popup-body">
