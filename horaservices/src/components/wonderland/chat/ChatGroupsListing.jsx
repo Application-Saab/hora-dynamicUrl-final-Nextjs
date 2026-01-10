@@ -1,6 +1,7 @@
 import React from "react";
 import "../../../pages/chat/GroupsList.css";
 import { getRoomDetails } from "@/utils/setGroupDetails";
+import { sortRooms } from "@/hooks/ChatProvider";
 
 const ChatGroupsListing = ({
   allChatRooms,
@@ -16,7 +17,8 @@ const ChatGroupsListing = ({
 
   return (
     <div className="groups-list">
-      {allChatRooms
+      {/* {allChatRooms */}
+      {sortRooms(allChatRooms)
         .filter((group) =>
           (group.roomName || "")
             .toLowerCase()

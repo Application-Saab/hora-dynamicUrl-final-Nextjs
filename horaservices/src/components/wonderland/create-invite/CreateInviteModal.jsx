@@ -5,6 +5,7 @@ import { CREATE_EVENT_INVITE } from "@/utils/apiconstants";
 import { useRouter } from "next/router";
 import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
+import { useChatStore } from "@/hooks/ChatContext";
 
 const CreateInviteModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -12,6 +13,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
   const [occasion, setOccasion] = useState("");
   const { loading, makeRequest } = useApi();
   const userId = localStorage.getItem("userID");
+  const { refetchChatRooms } = useChatStore();
 
   const handleSubmit = async () => {
     if (!userId) return;
@@ -28,6 +30,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
         });
         setOccasion("");
         onClose();
+        refetchChatRooms();
       }
     } catch (err) {
       console.error("Error rejecting content:", err);
