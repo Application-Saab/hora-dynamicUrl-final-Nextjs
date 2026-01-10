@@ -19,7 +19,6 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
-import { AiOutlineConsoleSql } from "react-icons/ai";
 import { themeFilters } from "@/utils/themeFilters";
 import "./catvaluedecor.css"
 import ProductGrid from "@/components/productGrid";
@@ -42,7 +41,8 @@ import anniversaryBanner from "@/assets/categories/ANNVERSARY.webp"
 import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp";
 import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp";
 import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
-import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp"
+import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
+import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.png"
 import { useDecorationEvents } from "@/utils/decorationEvents";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
@@ -105,8 +105,8 @@ const DecorationCatPage = ({ locality }) => {
 
   function getSubCategory(catValue) {
     if (!catValue) {
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split("/"); // Split by '/'
+      const path = window.location.pathname; 
+      const parts = path.split("/"); 
       const dynamicValue = parts[2];
       return dynamicValue;
     }
@@ -127,14 +127,16 @@ const DecorationCatPage = ({ locality }) => {
       return "PremiumDecoration";
     } else if (catValue === "bachelorette-decoration") {
       return "bachelorette";
+    }else if (catValue === "naming-ceremony-decoration") {
+      return "NamingCeremony";
     } else {
-      const parts = catValue.split("-"); // Split by hyphens
+      const parts = catValue.split("-"); 
       return parts
-        .slice(0, 2) // Take only the first two parts
+        .slice(0, 2) 
         .map(
           (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-        ) // Capitalize each part
-        .join(""); // Join parts together without spaces
+        )
+        .join(""); 
     }
   }
 
@@ -142,30 +144,28 @@ const DecorationCatPage = ({ locality }) => {
     (state) => state.state || {}
   );
   const subCategory = getSubCategory(catValue) || stateSubCategory;
-  const imgAlt = stateImgAlt || "default alt text"; // Replace with a default alt text if needed
+  const imgAlt = stateImgAlt || "default alt text"; 
   const getRandomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  // Function to generate a random rating between 4.1 to 4.8
-  const getRandomRating = () => {
+   const getRandomRating = () => {
     return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
   };
   useEffect(() => {
     if (theme) {
-      setThemeFilter(theme); // This sets the theme dropdown based on URL
+      setThemeFilter(theme); 
     } else {
       setThemeFilter("all");
     }
   }, [theme]);
   useEffect(() => {
-    //console.log("useEffect1")
     addSpaces(subCategory);
     getSubCatId(subCategory);
   }, [subCategory]);
 
   useEffect(() => {
-    //console.log("useEffect2")
+   
     const handleStickyScroll = () => {
       const filterElement = document.querySelector(".filterdropdown");
       if (filterElement) {
@@ -184,7 +184,7 @@ const DecorationCatPage = ({ locality }) => {
   useEffect(() => {
     if (loading || !hasMore) return;
 
-    // Adjust rootMargin based on screen size
+    
     const isMobile = window.innerWidth <= 768;
     const rootMargin = isMobile ? "400px" : "1000px";
 
@@ -212,9 +212,9 @@ const DecorationCatPage = ({ locality }) => {
     };
   }, [loading, hasMore]);
 
-  // Fetch more data when page increases
+
   useEffect(() => {
-    //console.log("UseEffect4")
+   
     if (catValue && currentPage !== 1) {
       getSubCatItems(currentPage);
     }
@@ -222,7 +222,7 @@ const DecorationCatPage = ({ locality }) => {
 
 
 
-  // Filter change
+
   useEffect(() => {
     if (catValue) {
       setCatalogueData([]);
@@ -234,8 +234,7 @@ const DecorationCatPage = ({ locality }) => {
   useEffect(() => {
     if (catValue) {
       const content = DecorationCatDescriptionData[catValue] || [];
-      console.log("Setting category content for", catValue, content);
-      setCurrentCategoryContent(content);
+          setCurrentCategoryContent(content);
     }
   }, [catValue]);
 
@@ -251,20 +250,19 @@ const DecorationCatPage = ({ locality }) => {
     setSelCat(result);
   }
 
-  console.log(subCategory, "subCategory");
+ 
   const getSubCatId = async (subCategory) => {
     try {
       const response = await axios.get(
         BASE_URL + GET_DECORATION_CAT_ID + subCategory
       );
       const categoryId = response.data.data?._id;
-      console.log("Category ID:", categoryId);
+     
       if (categoryId) {
-        setCatId(categoryId); // ✅ only this
-        // remove setCatValue(subCategory)
+        setCatId(categoryId); 
       }
     } catch (error) {
-      console.log("Error:", error.message);
+    
     }
   };
 
@@ -290,9 +288,9 @@ const DecorationCatPage = ({ locality }) => {
     }
   }, [catId, themeFilter, priceFilter]);
 
-  // console.log("catId22", catId);
+  
   const getSubCatItems = async (page) => {
-    // console.log("catId11", catId);
+  
     if (!catId) return;
 
     try {
@@ -328,15 +326,14 @@ const DecorationCatPage = ({ locality }) => {
             discountDifference,
           };
         });
-        console.log(decoratedData);
+      
         setCatalogueData((prevData) =>
           page === 1 ? decoratedData : [...prevData, ...decoratedData]
         );
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
-      console.error("Error Fetching Data:", error.message);
-    } finally {
+        } finally {
       setLoading(false);
     }
   };
@@ -351,7 +348,8 @@ const DecorationCatPage = ({ locality }) => {
     "first-night-decoration": firstNightBanner,
     "haldi-mehendi-decoration": haldimehndiBanner,
     "Wedding": WeddingBanner,
-    "bachelorette-decoration": BacheloretteBanner
+    "bachelorette-decoration": BacheloretteBanner,
+    "naming-ceremony-decoration":NamingCeremonyBanner,
   };
 
   function trimText(text) {
@@ -364,8 +362,7 @@ const DecorationCatPage = ({ locality }) => {
   const normalizeCatValue = (val) => {
     if (!val) return "";
 
-    // Check if exact match (case-sensitive) exists in the map
-    const exactMatch = Object.keys(categoryBannerMap).find(
+     const exactMatch = Object.keys(categoryBannerMap).find(
       (key) => key.toLowerCase() === val.toLowerCase()
     );
 
@@ -412,7 +409,12 @@ const DecorationCatPage = ({ locality }) => {
       baseTitle = city
         ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
         : "Haldi Decoration with Latest Designs, Starting at ₹3000";
-    } else {
+    }else if (catValue === "naming-ceremony-decoration") {
+      baseTitle = city
+        ? `NamingCeremony Decoration in ${city} with Latest Designs, Starting at ₹3000`
+        :"NamingCeremony Decoration with Latest Designs, Starting at ₹3000";
+    }
+     else {
       baseTitle = city
         ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
         : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
@@ -441,7 +443,7 @@ const DecorationCatPage = ({ locality }) => {
         ? `Brighten up your Haldi ceremony in ${city} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
         : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
     }
-    // default description
+
     return city
       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";

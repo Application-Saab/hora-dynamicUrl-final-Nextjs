@@ -72,12 +72,10 @@ const GridhandleClick = (cat) => {
   </div>
 </div>
   ) : (
-    // ✅ Circle with Label inside Variant (for Product Page)
-    <div className="category-tabs">
+      <div className="category-tabs">
       {data
-        // .filter((cat) => cat.image && cat.image.trim() !== "")
-          .filter((cat) => cat.image)
-        .slice(0, 7)
+           .filter((cat) => cat.image)
+        .slice(0, 8)
         .map((cat) => (
           <button
             key={cat.id}
