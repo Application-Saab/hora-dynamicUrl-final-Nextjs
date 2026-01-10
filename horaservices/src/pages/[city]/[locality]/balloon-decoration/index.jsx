@@ -7,6 +7,7 @@ import { decorationCityDescription } from "@/utils//DecorationDescription";
 import { DecorationSEOKeywords } from "@/utils/GetSEOKeywords";
 import { useRouter } from "next/router";
 import { decCat } from "@/utils/decorationCategories";
+import FAQSection from "@/components/FAQSection";
 
 function DecorationLocalityPage() {
   const router = useRouter();
@@ -31,7 +32,9 @@ function DecorationLocalityPage() {
   return (
     <>
       <Decoration city={city} locality={locality} />
-      <FAQAccordion faqData={cityDecorationFAQ} />
+      <div className="tab-section-details-productpage">
+        <FAQSection faqData={cityDecorationFAQ} />
+      </div>
       <SectionDescription paragraphs={cityDescription} />
       <LocalitiesSection
         title={`Explore Other Decoration Category In ${city}`}
