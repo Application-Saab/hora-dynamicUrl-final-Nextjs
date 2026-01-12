@@ -51,7 +51,7 @@ function MyApp({ Component, pageProps }) {
       document.removeEventListener("dragstart", blockDrag);
     };
   }, []);
-  // ================= FIREBASE PUSH =================
+  
   const requestPermission = async () => {
     try {
       if ("Notification" in window && "serviceWorker" in navigator) {

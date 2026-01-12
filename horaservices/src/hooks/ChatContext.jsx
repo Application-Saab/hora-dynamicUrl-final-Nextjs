@@ -1,35 +1,3 @@
-// import { createContext, useContext, useEffect, useState } from "react";
-
-// const ChatContext = createContext(null);
-
-// export function ChatProvider({ children }) {
-//   const [unreadCounts, setUnreadCountsContext] = useState({});
-//   const [totalUnread, setGlobalTotalUnread] = useState(0);
-
-//   useEffect(() => {
-//     const total = Object.values(unreadCounts).reduce(
-//       (s, v) => s + (Number(v) || 0),
-//       0
-//     );
-//     setGlobalTotalUnread(total)
-//   }, [unreadCounts]);
-
-//   return (
-//     <ChatContext.Provider
-//       value={{
-//         unreadCounts,
-//         setUnreadCountsContext,
-//         totalUnread,
-//         setGlobalTotalUnread,
-//       }}
-//     >
-//       {children}
-//     </ChatContext.Provider>
-//   );
-// }
-
-// export const useChatStore = () => useContext(ChatContext);
-
 import { BASE_URL, GET_CHAT_ROOMS } from "@/utils/apiconstants";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { sortRooms } from "./ChatProvider";
@@ -49,12 +17,12 @@ export function ChatProvider({ children }) {
   const refetchChatRooms = useCallback(async () => {
     try {
       if (!loggedinUserId) return;
-
+      
       const response = await fetch(`${BASE_URL}${GET_CHAT_ROOMS}/${loggedinUserId}`);
       const json = await response.json();
 
       if (!json.error && json.data) {
-        const sorted = sortRooms(json.data || []); // Assuming sortRooms exported hai
+        const sorted = sortRooms(json.data || []);
         setChatRooms(sorted);
       }
     } catch (err) {
