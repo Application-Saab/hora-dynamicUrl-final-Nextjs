@@ -30,27 +30,22 @@
 
 /* Button styling + continuous bounce */
 .see-more-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #FFFFFF;
-  background-color: #97538C;
-  border: 1.14px solid #97538C;
-  border-radius: 50px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-
-  /* Drop shadow */
-  box-shadow:
-    0px 4.55px 3.42px 0px #00000040,
-    inset 0px 7.97px 7.97px 0px #00000026;
-
-  /* Continuous bounce animation */
-  animation: bounceLoop 2s infinite ease-in-out;
+      display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    color: #97538C;
+    background: none;
+    border: 1.14px solid #97538C;
+    border-radius: 50px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0px 4.55px 3.42px 0px #00000040, inset 0px 7.97px 7.97px 0px #00000026;
+    animation: bounceLoop 2s infinite ease-in-out;
 }
 
 
@@ -58,7 +53,7 @@
   .see-more-btn {
     padding: 8px 16px;
     font-size: 14px;
-    gap: 6px;
+    gap: 10px;
   }
 .dec-landing-page .page-width{
   width: 95% !important;

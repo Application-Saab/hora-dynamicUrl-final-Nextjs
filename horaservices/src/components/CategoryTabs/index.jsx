@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 const CategoryTabs = ({ data, city, hasCityPageParam, decCat, locality, variant = "grid",catValue ,heading, hasBg = false}) => {
  const router = useRouter();
   const { handleItemClick, openCatItems } = useDecorationEvents(
-    city,
+     city ,
     hasCityPageParam,
     decCat,
-    locality
+   locality,
   );
   
 const GridhandleClick = (cat) => {

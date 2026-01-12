@@ -19,7 +19,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  padding: 10px;
+  padding: 5px 10px;
 }
 
 /* === Individual Card === */
