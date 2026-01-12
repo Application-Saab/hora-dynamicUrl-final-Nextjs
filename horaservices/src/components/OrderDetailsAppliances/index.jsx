@@ -13,7 +13,7 @@ const OrderDetailsAppliances = ({ orderDetail, orderType }) => {
   }, [orderDetail]);
 
 
-  return (
+  return ( 
     <>
       <div className="appliances-section">
         <h4 className="application-section-heading">Required Burners</h4>
@@ -21,7 +21,8 @@ const OrderDetailsAppliances = ({ orderDetail, orderType }) => {
           (Burners would be used at your location)
         </p>
         <div className="burner-count">
-          <Image src={BurnerIcon} alt="Burner Icon" />
+          <Image src={BurnerIcon}
+          alt="Burner Icon" />
           <span>04</span>
         </div>
         <h4 className="application-section-heading">

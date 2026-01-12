@@ -6,7 +6,7 @@ import orderWarning from "../assets/OrderWarning.png"
   import imageivew from '../assets/logout.png';
 import Image from "next/image";
 
-const Popup = ({ onClose, popupMessage }) => {
+const Popup = ({ onClose, popupMessage, primaryButtonAction = () => { } }) => {
   const handleContinue = () => {
     onClose();
   };
@@ -83,6 +83,11 @@ const Popup = ({ onClose, popupMessage }) => {
         )}
         {popupMessage?.button === "Call Vendor" && (
           <button className="add-more-button" onClick={handleCallExecutor}>
+            {popupMessage?.button}
+          </button>
+      )}
+      {popupMessage?.button === "Yes ,Cancel Order" && (
+          <button className="add-more-button" onClick={primaryButtonAction}>
             {popupMessage?.button}
           </button>
       )}
