@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #FFFAF0;
+  background-color: #FFF3DB;
   height: 50px;
   margin-bottom: 0;
 }
@@ -24,7 +24,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  background-color: #FFFAF0;
+  background-color: #FFF3DB;
   margin: auto;
   padding: 10px;
 }
@@ -33,7 +33,7 @@
   flex: 1 1;
   overflow-y: auto;
   padding: 0px !important;
-  background-color: #FFFAF0;
+  background-color: #FFF3DB;
 }
 
 .modalcard {
