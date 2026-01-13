@@ -16,8 +16,14 @@
   color: #9252aa;
   padding-top: 14px;
 }
-
-
+.noProductsWrapper h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #97538c;
+  margin-bottom: 8px;
+    text-align: center;
+  padding: 60px 16px;
+}
 
 .priceContainer {
   display: flex;

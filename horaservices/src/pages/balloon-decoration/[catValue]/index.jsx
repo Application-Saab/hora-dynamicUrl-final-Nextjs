@@ -475,13 +475,17 @@ const DecorationCatPage = ({ locality }) => {
         <meta property="og:type" content="website" />
       </Head>
 
-      {loading ? (
-        <div className="skeleton-wrapper">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </div>
-      ) : (
+   {loading ? (
+  <div className="skeleton-wrapper">
+    {Array.from({ length: 6 }).map((_, index) => (
+      <CardSkeleton key={index} />
+    ))}
+  </div>
+) : catalogueData.length === 0 ? (
+  <div className="noProductsWrapper">
+    <h2>No products found</h2>
+  </div>
+) : (
         <>
           {!isThemePage && (
             <>
