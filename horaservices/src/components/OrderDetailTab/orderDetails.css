@@ -104,3 +104,11 @@
   border-top-right-radius: 0px ;
   padding: 8px;
 }
+.myordergoogle-location {
+  font-weight: 500;
+  cursor: pointer;
+  word-wrap: break-word;
+  color: #3856FF;
+  border-bottom: 1px solid #3856FF;
+  font-size: 13.72px;
+}

@@ -376,12 +376,7 @@ const OrderDetailTab = ({
             <div style={{ fontSize: "13.17px" }}>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Address :</span>
-                <span> {' '}
-                  {orderDetail?.addressId?.address1 || orderDetail?.addressId?.address2
-                    ? `${orderDetail?.addressId?.address1 || ""}${orderDetail?.addressId?.address1 && orderDetail?.addressId?.address2 ? ", " : ""}${orderDetail?.addressId?.address2 || ""}`
-                    :
-                    'NA'}
-                </span>
+                <span> {' '}{ `${orderDetail?.addressId?.address1 || "NA"}`}</span>
               </div>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">City :</span>
@@ -393,7 +388,7 @@ const OrderDetailTab = ({
               </div>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Google Map Location :</span>
-                <span>{' '} NA</span>
+                 <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
               </div>
             </div>
 
@@ -516,10 +511,7 @@ const OrderDetailTab = ({
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Address :</span>
                 <span> {' '}
-                  {orderDetail?.addressId?.address1 || orderDetail?.addressId?.address2
-                    ? `${orderDetail?.addressId?.address1 || ""}${orderDetail?.addressId?.address1 && orderDetail?.addressId?.address2 ? ", " : ""}${orderDetail?.addressId?.address2 || ""}`
-                    :
-                    'NA'}
+                  {`${orderDetail?.addressId?.address1 || 'NA'}`}
                 </span>
               </div>
               <div style={{ marginBottom: "8px" }}>
@@ -532,7 +524,7 @@ const OrderDetailTab = ({
               </div>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Google Map Location :</span>
-                <span>{' '} NA</span>
+                 <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
               </div>
             </div>
 
@@ -640,6 +632,103 @@ const OrderDetailTab = ({
             }
       
             </div>
+              <div className="fw-semiBold myOrderDetails-heading">
+                    Price Details
+                  </div>
+
+                  <div style={{ fontSize: "14px", color: "#97538C" }}>
+                    <div className="myOrder-amountList">
+                      <div className="myOrder-labelStyle">Original Price :</div>
+                      <div>₹ {orderDetail?.total_amount || 0}</div>
+                    </div>
+
+                    <div className="myOrder-amountList">
+                      <div className="myOrder-labelStyle">Discount :</div>
+                      <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
+                    </div>
+
+                    <div className="myOrder-amountList">
+                      <div className="myOrder-labelStyle">Final Amount :</div>
+                      <div>₹ {orderDetail?.payable_amount || 0}</div>
+                    </div>
+
+                    <div className="myOrder-amountList">
+                      <div className="myOrder-labelStyle">Advance Amount :</div>
+                      <div>₹ {orderDetail?.advance_amount || 0}</div>
+                    </div>
+
+                    <div className="myOrder-amountList">
+                      <div className="myOrder-labelStyle">Balance Amount :</div>
+                      <div>₹ {orderDetail?.balance_amount || 0}</div>
+                    </div>
+                  </div>
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Venue Details
+                  </div>
+
+                  <div style={{ fontSize: "13.17px" }}>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">Address :</span>
+                      <span> {' '}
+                        {orderDetail?.addressId?.address1 || "NA"}
+                      </span>
+                    </div>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">City :</span>
+                      <span>{' '}{orderDetail?.addressId?.city || "NA"}</span>
+                    </div>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">Pin Code :</span>
+                      <span>{' '}{orderDetail?.order_pincode || "NA"}</span>
+                    </div>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span className="fw-semiBold">Google Map Location :</span>
+                      <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
+                    </div>
+                  </div>
+
+                  <div className="fw-semiBold myOrderDetails-heading ">
+                    Points For Considerations
+                  </div>
+
+                  <div>
+                    {infoList.map((text, index) => (
+                      <div key={index} className="info-row">
+                        <div className="info-icon">
+                          <Image
+                            src={checkIcon}
+                            alt="Info"
+                            className="info-icon-img"
+                          />
+                        </div>
+                        <div>{text}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Cancellation and Order Change Policy */}
+                  <div className="mt-2 mx-3 cancellation-policy border-0">
+
+                    <div style={{ display: "flex", alignItems: "center", }}>
+                      <span>
+                        <Image
+                          src={cancellation}
+                          alt="cancellation"
+                          style={{ height: 15, width: 13, marginRight: '4px' }}
+                        />
+                      </span>
+                      <p
+                        style={{ fontSize: "13.54px", color: "#4C494A", margin: "0px" }} >
+                        Cancellation and Order Change Policy
+                      </p>
+                    </div>
+
+                    {cancellationPolicy.map((policy, index) => (
+                      <p key={index} style={{ fontSize: "11.6px", color: "#9D60B3" }} className="m-1">
+                        {index + 1}. {policy}
+                      </p>
+                    ))}
+                  </div>
             {/* <div class="live-catering-title">Exclusion:</div>
             <ul class="live-catering-exclusions">
               <li>
@@ -772,9 +861,7 @@ const OrderDetailTab = ({
                     <div style={{ marginBottom: "8px" }}>
                       <span className="fw-semiBold">Address :</span>
                       <span> {' '}
-                        {orderDetail?.addressId?.address1 || orderDetail?.addressId?.address2
-                          ? `${orderDetail?.addressId?.address1 || ""}${orderDetail?.addressId?.address1 && orderDetail?.addressId?.address2 ? ", " : ""}${orderDetail?.addressId?.address2 || ""}`
-                          : "NA"}
+                        {orderDetail?.addressId?.address1 || "NA"}
                       </span>
                     </div>
                     <div style={{ marginBottom: "8px" }}>
@@ -787,7 +874,7 @@ const OrderDetailTab = ({
                     </div>
                     <div style={{ marginBottom: "8px" }}>
                       <span className="fw-semiBold">Google Map Location :</span>
-                      <span>{' '} {orderDetail?.addressId?.googleLocation || "NA"}</span>
+                      <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
                     </div>
                   </div>
 
@@ -940,10 +1027,7 @@ const OrderDetailTab = ({
                 <div style={{ marginBottom: "8px" }}>
                   <span className="fw-semiBold">Address :</span>
                   <span> {' '}
-                    {orderDetail?.addressId?.address1 || orderDetail?.addressId?.address2
-                      ? `${orderDetail?.addressId?.address1 || ""}${orderDetail?.addressId?.address1 && orderDetail?.addressId?.address2 ? ", " : ""}${orderDetail?.addressId?.address2 || ""}`
-                      :
-                      'NA'}
+                    {orderDetail?.addressId?.address1 || 'NA'}
                   </span>
                 </div>
                 <div style={{ marginBottom: "8px" }}>
@@ -956,7 +1040,7 @@ const OrderDetailTab = ({
                 </div>
                 <div style={{ marginBottom: "8px" }}>
                   <span className="fw-semiBold">Google Map Location :</span>
-                  <span>{' '} NA</span>
+                  <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
                 </div>
               </div>
 
