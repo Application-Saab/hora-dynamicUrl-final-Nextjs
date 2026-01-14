@@ -66,25 +66,25 @@ const Orderlist = () => {
 
   const getOrderStatus = (orderStatusValue) => {
     if (orderStatusValue === 0) {
-      return { status: "Booked", className: "status-booked" };
+      return { status: "Booked", className: "status-booked myOrder-status-badge" };
     }
     if (orderStatusValue == 1) {
-      return { status: "Accepted", className: "status-accepted" };
+      return { status: "Accepted", className: "status-accepted myOrder-status-badge" };
     }
     if (orderStatusValue === 2) {
-      return { status: "In-progress", className: "status-in-progress" };
+      return { status: "In-progress", className: "status-in-progress myOrder-status-badge" };
     }
     if (orderStatusValue === 3) {
-      return { status: "Completed", className: "status-completed" };
+      return { status: "Completed", className: "status-completed myOrder-status-badge" };
     }
     if (orderStatusValue === 4) {
-      return { status: "Cancelled", className: "status-cancelled" };
+      return { status: "Cancelled", className: "status-cancelled myOrder-status-badge" };
     }
     if (orderStatusValue === 5) {
       return { status: "", className: "status-empty" };
     }
     if (orderStatusValue === 6) {
-      return { status: "Expired", className: "status-expired" };
+      return { status: "Expired", className: "status-expired myOrder-status-badge" };
     }
   };
 
