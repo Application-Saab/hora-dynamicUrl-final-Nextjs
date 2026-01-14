@@ -31,6 +31,10 @@ const Popup = ({ onClose, popupMessage, primaryButtonAction = () => { } }) => {
     }
     onClose();
   };
+  const cancleOrder = () => {
+    primaryButtonAction();
+    onClose();
+  };
 
   return (
     <div className="popup-overlay">
@@ -87,7 +91,7 @@ const Popup = ({ onClose, popupMessage, primaryButtonAction = () => { } }) => {
           </button>
       )}
       {popupMessage?.button === "Yes ,Cancel Order" && (
-          <button className="add-more-button" onClick={primaryButtonAction}>
+          <button className="add-more-button" onClick={cancleOrder}>
             {popupMessage?.button}
           </button>
       )}
