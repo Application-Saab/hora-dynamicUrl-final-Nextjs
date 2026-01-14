@@ -59,11 +59,34 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
         ref.current.scrollTop = scrollTop + ITEM_HEIGHT * range.length;
       }
     };
+const snapToNearest = () => {
+  if (!ref.current) return;
 
-    const handleScroll = () => {
-      loopScroll();
-      updateValue();
-    };
+  const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+  const actualIndex =
+    ((index % range.length) + range.length) % range.length;
+
+  ref.current.scrollTo({
+    top: index * ITEM_HEIGHT,
+    behavior: "smooth",
+  });
+
+  setValue(range[actualIndex]);
+};
+const scrollTimeout = useRef(null);
+
+const handleScroll = () => {
+  loopScroll();
+
+  if (scrollTimeout.current) {
+    clearTimeout(scrollTimeout.current);
+  }
+
+  scrollTimeout.current = setTimeout(() => {
+    snapToNearest();
+  }, 120); // 👈 finger chhodne ke baad
+};
+
 
     const handleClick = (i) => {
       const baseIndex = range.length + i;
@@ -159,6 +182,7 @@ return (
       isOpen={show}
       onClose={onClose}
       showHeader={false}
+        verticalCenter={false}
       modalClass="calendar-modal-body"
       body={
         <div className="custom-time-modal">

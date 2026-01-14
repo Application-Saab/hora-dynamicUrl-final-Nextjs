@@ -17,35 +17,58 @@ const TemplatesPage = () => {
 
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("Birthday");
-  const [categoryLoading, setCategoryLoading] = useState(false);
+  // const [activeCategory, setActiveCategory] = useState("Birthday");
+  // const [categoryLoading, setCategoryLoading] = useState(false);
+const [activeCategory, setActiveCategory] = useState(() => {
+  if (typeof window === "undefined") return "Birthday";
+  return sessionStorage.getItem("activeTemplateCategory") || "Birthday";
+});
+useEffect(() => {
+  sessionStorage.setItem("activeTemplateCategory", activeCategory);
+}, [activeCategory]);
 
 
   const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
-        const data = await res.json();
-        if (data.error) throw new Error(data.message || "Failed to fetch templates");
-        setTemplates(data.templates || []);
-      } catch (err) {
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTemplates();
-  }, []);
+ useEffect(() => {
+  const cached = sessionStorage.getItem("allTemplates");
+
+  if (cached) {
+    setTemplates(JSON.parse(cached));
+    setLoading(false);
+    return;
+  }
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+      const data = await res.json();
+
+      if (data.error) throw new Error();
+
+      setTemplates(data.templates || []);
+      sessionStorage.setItem(
+        "allTemplates",
+        JSON.stringify(data.templates || [])
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTemplates();
+}, []);
 
 
-  useEffect(() => {
-    if (loading) return;
-    setCategoryLoading(true);
-    const timer = setTimeout(() => setCategoryLoading(false), 400);
-    return () => clearTimeout(timer);
-  }, [activeCategory, loading]);
+  // useEffect(() => {
+  //   if (loading) return;
+  //   setCategoryLoading(true);
+  //   const timer = setTimeout(() => setCategoryLoading(false), 400);
+  //   return () => clearTimeout(timer);
+  // }, [activeCategory, loading]);
 
   const filteredTemplates = useMemo(
     () =>
@@ -95,37 +118,71 @@ const TemplatesPage = () => {
   if (loading) return <TemplateSkeleton />;
 
   return (
+    // <div className="templates-page">
+    //   <h2 className="templates-title">Explore Themes</h2>
+
+    //   <CategoryTabs
+    //     categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Wedding", "Anniversary", "Engagement", "Housewarming", "Corporate", "Festival", "Other"]}
+    //     selectedCategory={activeCategory}
+    //     onSelectCategory={setActiveCategory}
+    //   />
+    //   <UploadCustomTemplate
+    //     eventId={eventId}
+    //     userId={userId}
+    //     token={token}
+    //   />
+
+
+
+
+    //   {categoryLoading ? (
+    //     <TemplateSkeleton onlyCards />
+    //   ) : smartOrdered.length ? (
+
+    //     <TemplateGrid
+    //       templates={smartOrdered}
+    //       categoryLoading={categoryLoading}
+    //       onApply={handleApply}
+    //     />
+
+    //   ) : (
+    //     <p className="no-templates-text">No templates found.</p>
+    //   )}
+    // </div>
     <div className="templates-page">
-      <h2 className="templates-title">Explore Themes</h2>
+  <h2 className="templates-title">Explore Themes</h2>
 
-      <CategoryTabs
-        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Wedding", "Anniversary", "Engagement", "Housewarming", "Corporate", "Festival", "Other"]}
-        selectedCategory={activeCategory}
-        onSelectCategory={setActiveCategory}
-      />
-      <UploadCustomTemplate
-        eventId={eventId}
-        userId={userId}
-        token={token}
-      />
+  <CategoryTabs
+    categories={[
+      "Birthday",
+      "BabyShower",
+      "Annaprashan",
+      "WelcomeBaby",
+    
+    ]}
+    selectedCategory={activeCategory}
+    onSelectCategory={setActiveCategory}
+  />
 
+  <UploadCustomTemplate
+    eventId={eventId}
+    userId={userId}
+    token={token}
+  />
 
+  {/* ✅ ONLY FIRST LOAD SKELETON */}
+  {loading ? (
+    <TemplateSkeleton />
+  ) : smartOrdered.length ? (
+    <TemplateGrid
+      templates={smartOrdered}
+      onApply={handleApply}
+    />
+  ) : (
+    <p className="no-templates-text">No templates found.</p>
+  )}
+</div>
 
-
-      {categoryLoading ? (
-        <TemplateSkeleton onlyCards />
-      ) : smartOrdered.length ? (
-
-        <TemplateGrid
-          templates={smartOrdered}
-          categoryLoading={categoryLoading}
-          onApply={handleApply}
-        />
-
-      ) : (
-        <p className="no-templates-text">No templates found.</p>
-      )}
-    </div>
   );
 };
 
