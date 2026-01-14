@@ -20,15 +20,6 @@ import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
 import { sortRooms } from "@/hooks/ChatProvider";
 
-// helper to get userId
-const getUserId = () => {
-  if (typeof window === "undefined") return null;
-  const params = new URLSearchParams(window.location.search);
-  let uid = params.get("id");
-  if (!uid) uid = localStorage.getItem("userID");
-  return uid;
-};
-
 const getAvatarColor = (name) => {
   const colors = [
     "#F44336",
@@ -53,7 +44,6 @@ const getAvatarColor = (name) => {
 const ChatPage = () => {
   const router = useRouter();
   const { groupId } = router.query;
-  // const userId = getUserIdFromUrl();
   const userId =
     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
@@ -113,7 +103,7 @@ const ChatPage = () => {
     return () => socket.off("message:new", onMessageNewLocal);
   }, [selectedGroup, userId]);
 
-  // Visual viewport handling for keyboard (keep as is)
+  // Visual viewport handling for keyboard
   useEffect(() => {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
@@ -175,7 +165,7 @@ const ChatPage = () => {
     };
   }, []);
 
-  // Cursor memory for emoji insertion (keep as is)
+  // Cursor memory for emoji insertion
   const saveCursor = () => {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0) {
@@ -223,16 +213,16 @@ const ChatPage = () => {
     resizeTextarea();
   };
 
-  const markRoomRead = async (groupId, uid) => {
-    if (!groupId || !uid) return;
+  const markRoomRead = async (groupId, userId) => {
+    if (!groupId || !userId) return;
     try {
       setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
       if (socket && socket.connected) {
-        socket.emit("message:read", { groupId: groupId, userId: uid });
+        socket.emit("message:read", { groupId: groupId, userId: userId });
       }
       const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
         groupId: groupId,
-        userId: uid,
+        userId: userId,
       });
       if (
         !resp.error &&
@@ -284,7 +274,7 @@ const ChatPage = () => {
     }
   };
 
-  // Fetch user details (keep as is)
+  // Fetch user details
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (!userId) return;
@@ -418,7 +408,6 @@ const ChatPage = () => {
           setChatRooms((prev) => sortRooms([...prev, newRoom]));
           newGroupId = resp.data._id || resp.data.id;
 
-          // Sender khud bhi join kar le
           if (socket && socket.connected) {
             socket.emit("joinRoom", { groupId: newGroupId });
             console.log(`Sender emitted joinRoom for ${newGroupId}`);

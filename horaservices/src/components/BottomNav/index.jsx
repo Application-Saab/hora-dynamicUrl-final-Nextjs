@@ -21,14 +21,11 @@ export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
   const { totalUnread, chatRooms } = useChatStore();
-  console.log('%c [ chatRooms ]-24', 'font-size:13px; background:pink; color:#bf2c9f;', chatRooms)
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
   const [authChecked, setAuthChecked] = useState(false);
-  console.log('%c [ authChecked ]-28', 'font-size:13px; background:pink; color:#bf2c9f;', authChecked)
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [noChatsPopup, setNoChatsPopup] = useState(false);
-  console.log('%c [ noChatsPopup ]-30', 'font-size:13px; background:pink; color:#bf2c9f;', noChatsPopup)
 
   const loadUserId = useCallback(() => {
     const id = localStorage.getItem("userID") || "";

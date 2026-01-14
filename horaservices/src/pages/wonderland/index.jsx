@@ -11,8 +11,6 @@ import InvitesListing from "@/components/wonderland/InvitesListing";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
-  // const { id: queryId } = router.query;
-  // const slug = Array.isArray(queryId) ? queryId : queryId?.split("/") || [];
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
   );
@@ -25,7 +23,6 @@ const WonderlandMainPage = () => {
     let timer;
 
     if (isUserLoggedIn && loggedinUserId 
-      // && slug?.length === 0
     ) {
       timer = setTimeout(() => {
         router.push(`/wonderland`);
@@ -78,7 +75,6 @@ const WonderlandMainPage = () => {
             <span>CREATE INVITE</span>
           </button>
         </div>
-        {/* <button onClick={sendMessage}>Send</button> */}
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}

@@ -7,13 +7,12 @@ const ChatContext = createContext(null);
 export function ChatProvider({ children }) {
   const [chatRooms, setChatRooms] = useState([]);
   const [unreadCounts, setUnreadCountsContext] = useState({});
-  console.log('%c [ unreadCounts ]-42', 'font-size:13px; background:pink; color:#bf2c9f;', unreadCounts)
   const [totalUnread, setGlobalTotalUnread] = useState(0);
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && localStorage.getItem("userID")) || ""
   );
 
-  // New: Refetch function
+  // Refetch function
   const refetchChatRooms = useCallback(async () => {
     try {
       if (!loggedinUserId) return;
