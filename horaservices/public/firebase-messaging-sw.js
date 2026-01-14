@@ -21,8 +21,32 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: '/new_logo_light.png'
+    icon: '/new_logo_light.png',
+    data: payload.data
   };
   
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const data = event.notification.data || {};
+  const url =
+    data.url ||
+    `/chat/room?groupId=${data.groupId}&id=${data.senderId}`;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (client.url.includes("/chat") && "focus" in client) {
+          client.postMessage({ type: "NAVIGATE", url });
+          return client.focus();
+        }
+      }
+      return clients.openWindow(
+        new URL(url, self.location.origin).href
+      );
+    })
+  );
 });

@@ -10,7 +10,8 @@ import useScreenSize from "@/hooks/useScreenSize";
 import CustomButton from "../common/CustomButton";
 import { RSVP_STATUS } from "@/utils/constants";
 import RsvpNameModal from "./RsvpNameModal";
-import socket from "@/socket";
+import { useChatStore } from "@/hooks/ChatContext";
+// import socket from "@/socket";
 
 const colors = [
   "#FD8D0A",
@@ -44,14 +45,15 @@ const WhosJoining = ({
   const [showNameModal, setShowNameModal] = useState("");
   const [userName, setUserName] = useState("");
   const [highlightRsvpClick, setHighlightRsvpClick] = useState(false);
+  const { refetchChatRooms } = useChatStore();
 
-  useEffect(() => {
-    socket.emit("joinEvent", eventId);
+  // useEffect(() => {
+  //   socket.emit("joinEvent", eventId);
 
-    return () => {
-      socket.emit("leaveEvent", eventId);
-    };
-  }, [eventId]);
+  //   return () => {
+  //     socket.emit("leaveEvent", eventId);
+  //   };
+  // }, [eventId]);
 
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
@@ -108,19 +110,20 @@ const WhosJoining = ({
           `rsvp_submitted_${eventId}_${loggedinUserId}`,
           "true"
         );
-        if (socket && socket.connected) {
-          socket.emit("message:send", {
-            eventId,
-            // groupId,
-            message: `${userData?.name || userName} joined the group`,
-            type: "info",
-            tempId,
-            senderName: userData?.name || userName,
-            senderPhone: userData?.phone,
-          });
-        }
-        socket.emit("rsvp:updated", { eventId });
+        // if (socket && socket.connected) {
+        //   socket.emit("message:send", {
+        //     eventId,
+        //     // groupId,
+        //     message: `${userData?.name || userName} joined the group`,
+        //     type: "info",
+        //     tempId,
+        //     senderName: userData?.name || userName,
+        //     senderPhone: userData?.phone,
+        //   });
+        // }
+        // socket.emit("rsvp:updated", { eventId });
         setRefetchRsvpList((prev) => prev + 1);
+        refetchChatRooms();
         onRsvpUpdate?.();
       }
     } catch (err) {
@@ -128,19 +131,33 @@ const WhosJoining = ({
     }
   };
 
-  useEffect(() => {
-    if (!socket) return;
+  // useEffect(() => {
+  //   if (!socket) return;
 
-    const handler = (data) => {
-      if (data.eventId === eventId) {
+  //   const handler = (data) => {
+  //     if (data.eventId === eventId) {
+  //       setRefetchRsvpList((prev) => prev + 1);
+  //     }
+  //   };
+
+  //   socket.on("rsvp:refetch", handler);
+
+  //   return () => {
+  //     socket.off("rsvp:refetch", handler);
+  //   };
+  // }, [eventId]);
+
+  useEffect(() => {
+    const handleRsvpRefetch = (e) => {
+      if (e.detail?.eventId === eventId) {
         setRefetchRsvpList((prev) => prev + 1);
       }
     };
 
-    socket.on("rsvp:refetch", handler);
+    window.addEventListener("rsvp:refetch", handleRsvpRefetch);
 
     return () => {
-      socket.off("rsvp:refetch", handler);
+      window.removeEventListener("rsvp:refetch", handleRsvpRefetch);
     };
   }, [eventId]);
 

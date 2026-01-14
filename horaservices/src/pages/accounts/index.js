@@ -198,9 +198,11 @@ const AccountPage = () => {
               <div className="contact-item">
                 <Image src={CallIcon} height={18} width={18} />
                 <p>
-                  {userDetails ? userDetails?.phone?.includes(91)
-                    ? userDetails?.phone
-                    : `+91${userDetails?.phone}` : ''}
+                  {userDetails
+                    ? userDetails?.phone?.includes(91)
+                      ? userDetails?.phone
+                      : `+91${userDetails?.phone}`
+                    : ""}
                 </p>
               </div>
             </div>
@@ -233,11 +235,11 @@ const AccountPage = () => {
         <OtpLogin
           setIsModalOpen={() => setShowOtpLogin(false)}
           onSuccess={(user) => {
-            localStorage.setItem("userID", user.id);
-            localStorage.setItem("token", user.token);
+            // localStorage.setItem("userID", user.id);
+            // localStorage.setItem("token", user.token);
             setIsLoggedIn(true);
             setShowOtpLogin(false);
-            window.dispatchEvent(new Event("loginSuccess"));
+            // window.dispatchEvent(new Event("loginSuccess"));
           }}
         />
       )}

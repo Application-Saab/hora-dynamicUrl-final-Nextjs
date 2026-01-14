@@ -10,23 +10,15 @@ import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
 import backIcon from "@/assets/wonderland/chat/BackIcon.png";
 import useApi from "@/hooks/useApi";
 import {
-  BASE_URL,
   CREATE_DIRECT_CHAT_ROOM,
   GET_CHAT_MESSAGES,
-  GET_CHAT_ROOMS,
   GET_USER_BY_ID,
   MARK_READ_MESSAGE,
-  UNREAD_MESSAGE_COUNT,
 } from "@/utils/apiconstants";
 import { getRoomDetails } from "@/utils/setGroupDetails";
 import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
-
-const getUserIdFromUrl = () => {
-  if (typeof window === "undefined") return null;
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
-};
+import { sortRooms } from "@/hooks/ChatProvider";
 
 const getAvatarColor = (name) => {
   const colors = [
@@ -52,48 +44,81 @@ const getAvatarColor = (name) => {
 const ChatPage = () => {
   const router = useRouter();
   const { groupId } = router.query;
-  const userId = getUserIdFromUrl();
-  const { data: chatRoomsData } = useApi(`${GET_CHAT_ROOMS}/${userId}`, "get");
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
+    useChatStore();
   const { makeRequest: fetchUserRequest } = useApi();
   const { makeRequest: fetchMessagesRequest } = useApi();
   const { makeRequest: markReadRequest } = useApi();
   const { makeRequest: createDirectChatRequest } = useApi();
-
-  const [allChatRooms, setAllChatRooms] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
   const [messages, setMessages] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg, setChatBg] = useState(null);
   const [userData, setUserData] = useState({});
-  const { setUnreadCountsContext } = useChatStore();
-  const [changeRoom, setChangeRoom] = useState(false);
-
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
   const lastRangeRef = useRef(null);
   const tempIdToClientMap = useRef(new Map());
 
+  // Mark read on mount if selected
+  useEffect(() => {
+    if (selectedGroup && userId) {
+      const gid = selectedGroup._id || selectedGroup.id;
+      markRoomRead(gid, userId);
+      fetchMessagesForRoom(gid);
+    }
+  }, [selectedGroup, userId]);
+
+  // Set selected from groupId
+  useEffect(() => {
+    if (!groupId || !chatRooms.length) return;
+    const selected = chatRooms.find(
+      (room) => String(room._id || room.id) === String(groupId)
+    );
+    if (selected) setSelectedGroup(selected);
+  }, [groupId, chatRooms]);
+
+  // Local message listener
+  useEffect(() => {
+    if (!socket || !selectedGroup) return;
+    const gid = selectedGroup._id || selectedGroup.id;
+    const onMessageNewLocal = (msg) => {
+      if (String(msg.groupId) !== String(gid)) return;
+      setMessages((prev) => {
+        if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
+          return prev.map((m) =>
+            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+          );
+        }
+        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+          return prev;
+        return [...prev, { ...msg, id: msg._id }];
+      });
+      setTimeout(() => markRoomRead(gid, userId), 50);
+    };
+    socket.on("message:new", onMessageNewLocal);
+    return () => socket.off("message:new", onMessageNewLocal);
+  }, [selectedGroup, userId]);
+
+  // Visual viewport handling for keyboard
   useEffect(() => {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
     const docEl = document.documentElement;
-
     const setVvh = () => {
       const vv = window.visualViewport;
-      // Use vv.height for --vvh when keyboard is open, else window.innerHeight
       if (vv && vv.height < window.innerHeight) {
         docEl.style.setProperty("--vvh", `${vv.height}px`);
-        // Scroll chat-input into view to avoid white space
         setTimeout(() => {
           const input = document.querySelector(".chat-input-container");
           if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
         }, 100);
-        // Lock all scroll on body
         document.body.style.overflow = "hidden";
         document.body.style.position = "fixed";
         document.body.style.width = "100vw";
-        // Lock chat-layout scroll except for .chat-messages
         const chatLayout = document.querySelector(".chat-layout");
         if (chatLayout) {
           chatLayout.addEventListener("touchmove", allowChatMessagesScroll, {
@@ -105,11 +130,9 @@ const ChatPage = () => {
         }
       } else {
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
-        // Restore scroll
         document.body.style.overflow = "";
         document.body.style.position = "";
         document.body.style.width = "";
-        // Remove chat-layout scroll lock
         const chatLayout = document.querySelector(".chat-layout");
         if (chatLayout) {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
@@ -117,30 +140,23 @@ const ChatPage = () => {
         }
       }
     };
-    // Allow scroll only on .chat-messages
     function allowChatMessagesScroll(e) {
       const chatMessages = document.querySelector(".chat-messages");
       if (!chatMessages) return e.preventDefault();
       if (chatMessages.contains(e.target)) {
-        // Allow scroll inside chat-messages
         return;
       }
       e.preventDefault();
     }
-
     setVvh();
-
     window.visualViewport?.addEventListener("resize", setVvh);
     window.visualViewport?.addEventListener("scroll", setVvh);
-
     return () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", setVvh);
-      // Clean up scroll lock
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
-      // Remove chat-layout scroll lock
       const chatLayout = document.querySelector(".chat-layout");
       if (chatLayout) {
         chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
@@ -165,10 +181,8 @@ const ChatPage = () => {
     setTimeout(() => {
       textareaRef.current.removeAttribute("inputmode");
     }, 50);
-
     let sel = window.getSelection();
     let range;
-
     if (
       lastRangeRef.current &&
       textareaRef.current.contains(lastRangeRef.current.startContainer)
@@ -179,10 +193,8 @@ const ChatPage = () => {
       range.selectNodeContents(textareaRef.current);
       range.collapse(false);
     }
-
     sel.removeAllRanges();
     sel.addRange(range);
-
     const img = document.createElement("img");
     img.src = emojiUrl;
     img.className = "emoji-inline";
@@ -191,46 +203,36 @@ const ChatPage = () => {
     img.style.verticalAlign = "middle";
     img.style.display = "inline-block";
     img.style.margin = "0 2px";
-
     range.insertNode(img);
-
     const newRange = document.createRange();
     newRange.setStartAfter(img);
     newRange.collapse(true);
-
     sel.removeAllRanges();
     sel.addRange(newRange);
-
     lastRangeRef.current = newRange;
-
-    // Resize chat input after inserting emoji
     resizeTextarea();
   };
 
-  const markRoomRead = async (groupId, uid) => {
-    if (!groupId || !uid) return;
+  const markRoomRead = async (groupId, userId) => {
+    if (!groupId || !userId) return;
     try {
+      setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
       if (socket && socket.connected) {
-        socket.emit("message:read", { groupId: groupId, userId: uid });
+        socket.emit("message:read", { groupId: groupId, userId: userId });
       }
-      // REST call
-      try {
-        const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
-          groupId: groupId,
-          userId: uid,
-        });
-        if (
-          !resp.error &&
-          (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
-        ) {
-          setUnreadCountsContext((prev) => ({
-            ...prev,
-            ...(resp.unreadCounts || resp.data.unreadCounts),
-          }));
-        } else {
-          setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
-        }
-      } catch (e) {
+      const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
+        groupId: groupId,
+        userId: userId,
+      });
+      if (
+        !resp.error &&
+        (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
+      ) {
+        setUnreadCountsContext((prev) => ({
+          ...prev,
+          ...(resp.unreadCounts || resp.data.unreadCounts),
+        }));
+      } else {
         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
       }
     } catch (err) {
@@ -238,65 +240,6 @@ const ChatPage = () => {
     }
   };
 
-  // Only local listeners
-  useEffect(() => {
-    if (typeof window === "undefined" || !socket || !selectedGroup) return;
-    const groupId = selectedGroup._id || selectedGroup.id;
-    const onMessageNewLocal = (msg) => {
-      if (String(msg.groupId) !== String(groupId)) return;
-      setMessages((prev) => {
-        // replace optimistic if tempId
-        if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
-          return prev.map((m) =>
-            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
-          );
-        }
-        // prevent duplicate
-        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
-          return prev;
-
-        // append and mark read (global provider handles unread reset)
-        setTimeout(() => markRoomRead(groupId, userId), 50);
-        return [...prev, { ...msg, id: msg._id }];
-      });
-    };
-
-    socket.on("message:new", onMessageNewLocal);
-    return () => {
-      socket.off("message:new", onMessageNewLocal);
-    };
-  }, [selectedGroup, userId]);
-
-  useEffect(() => {
-    const fetchUnreadMap = async () => {
-      try {
-        const resp = await fetch(
-          `${BASE_URL}${UNREAD_MESSAGE_COUNT}/${userId}/unread`
-        );
-        const json = await resp.json();
-        if (!json.error && json.data) {
-          setUnreadCountsContext((prev) => ({ ...prev, ...json.data }));
-        }
-      } catch (e) {
-        console.error("Error fetching unread counts");
-      }
-    };
-
-    if (userId) fetchUnreadMap();
-  }, [userId, chatRoomsData]);
-
-  useEffect(() => {
-    if (chatRoomsData?.data) {
-      setAllChatRooms(chatRoomsData.data || []);
-      const selected = chatRoomsData.data.find((room) => {
-        const id = room._id || room.id;
-        return id === groupId;
-      });
-      setSelectedGroup(selected || null);
-    }
-  }, [chatRoomsData?.data, groupId, changeRoom]);
-
-  // fetch messages REST API
   const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
     if (!groupId) return;
     try {
@@ -306,7 +249,7 @@ const ChatPage = () => {
       );
       if (!resp.error && resp.data) {
         setMessages(resp?.data || []);
-        const roomObj = allChatRooms.find(
+        const roomObj = chatRooms.find(
           (r) => String(r._id || r.id) === String(groupId)
         );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
@@ -331,7 +274,7 @@ const ChatPage = () => {
     }
   };
 
-  // fetch user details
+  // Fetch user details
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (!userId) return;
@@ -355,7 +298,6 @@ const ChatPage = () => {
       typeof window !== "undefined"
         ? localStorage.getItem("chatBgImage")
         : null;
-
     if (saved) {
       setChatBg(saved);
     } else {
@@ -379,10 +321,8 @@ const ChatPage = () => {
 
   const sendMessage = async () => {
     if (!textareaRef.current) return;
-
     const messageHTML = textareaRef.current.innerHTML.trim();
     const messageText = textareaRef.current.textContent.trim();
-    // Empty message check
     if (
       !messageText &&
       (!messageHTML ||
@@ -391,9 +331,7 @@ const ChatPage = () => {
     ) {
       return;
     }
-
     if (!selectedGroup?.eventId || !userId) return;
-
     const groupId = selectedGroup?._id;
     const tempId = `temp_${Date.now()}_${Math.random()
       .toString(36)
@@ -412,10 +350,8 @@ const ChatPage = () => {
       senderPhone: localStorage.getItem("mobileNumber"),
       createdAt: new Date().toISOString(),
     };
-
     setMessages((prev) => [...prev, optimistic]);
     tempIdToClientMap.current.set(tempId, true);
-
     if (socket && socket.connected) {
       socket.emit("message:send", {
         eventId: selectedGroup.eventId,
@@ -428,7 +364,6 @@ const ChatPage = () => {
         senderPhone: userData?.phone,
       });
     }
-
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
     if (!showEmojiPicker) {
@@ -446,51 +381,41 @@ const ChatPage = () => {
     el.style.height = newHeight + "px";
   };
 
-  useEffect(() => {
-    if (selectedGroup) {
-      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
-      fetchMessagesForRoom(selectedGroup._id || selectedGroup.id);
-    }
-  }, [selectedGroup, changeRoom]);
-
   const handleClickUserName = async (senderId) => {
     try {
-      // Check if a direct room already exists
-      const existingRoom = allChatRooms.find((room) => {
+      const existingRoom = chatRooms.find((room) => {
         if (room.roomType !== "direct") return false;
-
         const memberIds = room.members.map((m) => m.userId);
         return memberIds.includes(userId) && memberIds.includes(senderId);
       });
-
-      // If found -> Open that chat directly
+      let newGroupId;
       if (existingRoom) {
-        setChangeRoom(!changeRoom);
-        router.push(
-          `/chat/room?groupId=${
-            existingRoom._id || existingRoom.id
-          }&id=${userId}`
+        newGroupId = existingRoom._id || existingRoom.id;
+      } else {
+        const resp = await createDirectChatRequest(
+          `${CREATE_DIRECT_CHAT_ROOM}`,
+          "POST",
+          {
+            members: [userId, senderId],
+            eventId: selectedGroup?.eventId,
+          }
         );
-        return;
-      }
+        if (resp?.data) {
+          const newRoom = {
+            ...resp.data,
+            lastMessageAt: null,
+          };
+          setChatRooms((prev) => sortRooms([...prev, newRoom]));
+          newGroupId = resp.data._id || resp.data.id;
 
-      // No room found -> Call backend API to create one
-      const resp = await createDirectChatRequest(
-        `${CREATE_DIRECT_CHAT_ROOM}`,
-        "POST",
-        {
-          members: [userId, senderId],
-          eventId: selectedGroup?.eventId,
+          if (socket && socket.connected) {
+            socket.emit("joinRoom", { groupId: newGroupId });
+            console.log(`Sender emitted joinRoom for ${newGroupId}`);
+          }
         }
-      );
-
-      if (resp?.data) {
-        setChangeRoom(!changeRoom);
-        setAllChatRooms((prev) => [...prev, resp?.data]);
-        // handleOpenMessages(resp?.data);
-        router.push(
-          `/chat/room?groupId=${resp.data._id || resp.data.id}&id=${userId}`
-        );
+      }
+      if (newGroupId) {
+        router.push(`/chat/room?groupId=${newGroupId}&id=${userId}`);
       }
     } catch (err) {
       console.log("Error:", err);
@@ -503,10 +428,18 @@ const ChatPage = () => {
     }
   };
 
-  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
-    acc[member.userId] = member.profileImageUrl || "";
-    return acc;
-  }, {});
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    if (selectedGroup) {
+      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+    }
+  }, [selectedGroup]);
 
   return (
     <div
@@ -540,7 +473,6 @@ const ChatPage = () => {
                 {roomDisplayDetails?.avatarText}
               </div>
             )}
-
             <span className="chat-group-name" onClick={handleClickGroupName}>
               {roomDisplayDetails?.name}
             </span>
@@ -554,7 +486,6 @@ const ChatPage = () => {
           const previousMsg = messages[index - 1];
           const isConsecutive =
             previousMsg && previousMsg.senderId === msg.senderId;
-
           let consecutiveIndex = 0;
           if (isConsecutive && !isMe) {
             for (let i = index - 1; i >= 0; i--) {
@@ -565,7 +496,6 @@ const ChatPage = () => {
               }
             }
           }
-
           return msg?.type !== "info" ? (
             <div
               key={msg._id}
@@ -574,13 +504,6 @@ const ChatPage = () => {
               }`}
             >
               {!isMe && !isConsecutive && (
-                membersProfileMap?.[msg.senderId] ? (
-                  <img
-                    src={membersProfileMap?.[msg.senderId]}
-                    alt={senderName || "avatar"}
-                    className="chat-avatar-receiver"
-                  />
-                ) : (
                 <div
                   className="chat-avatar-receiver"
                   style={{
@@ -593,7 +516,6 @@ const ChatPage = () => {
                     ? senderName.charAt(0).toUpperCase()
                     : msg.senderPhone?.charAt(3)}
                 </div>
-                )
               )}
               <div
                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
@@ -616,7 +538,6 @@ const ChatPage = () => {
                       : `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
                   </div>
                 )}
-
                 <div
                   className="chat-text"
                   dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
@@ -643,7 +564,6 @@ const ChatPage = () => {
           emojiIcon={emojiIcon}
           keyboardIcon={keyboardIcon}
         />
-
         <div>
           <input
             type="file"
@@ -652,7 +572,6 @@ const ChatPage = () => {
             style={{ display: "none" }}
           />
         </div>
-
         <div
           ref={textareaRef}
           contentEditable
@@ -671,7 +590,6 @@ const ChatPage = () => {
           className="chat-input"
           data-placeholder="Type message here..."
         />
-
         <button
           onClick={sendMessage}
           onMouseDown={(e) => e.preventDefault()}

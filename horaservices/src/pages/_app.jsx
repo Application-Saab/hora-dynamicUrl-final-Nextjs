@@ -22,6 +22,9 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pathname = usePathname();
   const [currentUrl, setCurrentUrl] = useState("");
+  const [loggedinUserId, setLoggedinUserId] = useState(
+    typeof window !== "undefined" && localStorage.getItem("userID") || ""
+  );
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
     const blockContextMenu = (e) => e.preventDefault();
@@ -48,7 +51,7 @@ function MyApp({ Component, pageProps }) {
       document.removeEventListener("dragstart", blockDrag);
     };
   }, []);
-  // ================= FIREBASE PUSH =================
+  
   const requestPermission = async () => {
     try {
       if ("Notification" in window && "serviceWorker" in navigator) {
@@ -65,12 +68,10 @@ function MyApp({ Component, pageProps }) {
           });
 
           if (currentToken) {
-            const userId = localStorage.getItem("userID");
-
             await fetch(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId, fcmToken: currentToken }),
+              body: JSON.stringify({ userId: loggedinUserId, fcmToken: currentToken }),
             });
           }
         }
@@ -81,7 +82,24 @@ function MyApp({ Component, pageProps }) {
   };
 
   useEffect(() => {
-    requestPermission();
+    if (loggedinUserId) requestPermission();
+  }, [loggedinUserId]);
+
+  // Listen local storage changes for login state
+  useEffect(() => {
+    const syncLoginState = () => {
+      setLoggedinUserId(localStorage.getItem("userID") || "");
+    };
+
+    window.addEventListener("storage", syncLoginState);
+
+    // Sync on same tab login without change page
+    window.addEventListener("loginStateChange", syncLoginState);
+
+    return () => {
+      window.removeEventListener("storage", syncLoginState);
+      window.removeEventListener("loginStateChange", syncLoginState);
+    };
   }, []);
 
   useEffect(() => {
