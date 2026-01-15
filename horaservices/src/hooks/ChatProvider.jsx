@@ -5,9 +5,8 @@ import { useChatStore } from "./ChatContext";
 import {
   BASE_URL,
   UNREAD_MESSAGE_COUNT,
-  GET_CHAT_ROOMS,
 } from "@/utils/apiconstants";
-import useApi from "@/hooks/useApi";
+import { messageCache } from "@/utils/messageCache";
 
 export const sortRooms = (rooms) => {
   return [...rooms].sort((a, b) => {
@@ -22,26 +21,48 @@ export const sortRooms = (rooms) => {
 };
 
 const ChatProviderMain = ({ children }) => {
-  const { setUnreadCountsContext, setChatRooms, refetchChatRooms } =
+  const { setUnreadCountsContext, setChatRooms, refetchChatRooms, chatRooms } =
     useChatStore();
   const userID =
     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
-  const { data: chatRoomsData } = useApi(
-    userID ? `${GET_CHAT_ROOMS}/${userID}` : null,
-    "get"
-  );
-
   // Prevent multiple listener attachments
   const listenersAttachedRef = useRef(false);
   const processedMessagesRef = useRef(new Set());
+  const cacheInitializedRef = useRef(false);
 
+  // Initialize cache for top 10 groups on mount
   useEffect(() => {
-    if (chatRoomsData?.data) {
-      const sortedRooms = sortRooms(chatRoomsData.data || []);
-      setChatRooms(sortedRooms);
-    }
-  }, [chatRoomsData]);
+    const initializeCache = async () => {
+      if (cacheInitializedRef.current || !chatRooms) return;
+      cacheInitializedRef.current = true;
+
+      const top10Groups = sortRooms(chatRooms).slice(0, 10);
+
+      for (const group of top10Groups) {
+        const groupId = group._id || group.id;
+        const lastSync = await messageCache.getLastSyncTime(groupId);
+        
+        // Cache if never synced or older than 5 minutes
+        if (!lastSync || Date.now() - lastSync > 5 * 60 * 1000) {
+          try {
+            const resp = await fetch(
+              `${BASE_URL}/api/customer/event/chat/messages/${groupId}?page=1&limit=10000`
+            );
+            const json = await resp.json();
+            
+            if (!json.error && json.data) {
+              await messageCache.saveMessages(groupId, json.data);
+            }
+          } catch (err) {
+            console.error(`Failed to cache group ${groupId}:`, err);
+          }
+        }
+      }
+    };
+
+    initializeCache();
+  }, [chatRooms]);
 
   useEffect(() => {
     if (!userID) return;
@@ -54,37 +75,25 @@ const ChatProviderMain = ({ children }) => {
     if (!socket || !userID) return;
 
     // Prevent duplicate listener setup
-    if (listenersAttachedRef.current) {
-      console.log("Listeners already attached, skipping...");
-      return;
-    }
+    if (listenersAttachedRef.current) return;
 
     const setupListeners = () => {
       if (listenersAttachedRef.current) return;
-
-      console.log("Setting up socket listeners for user:", userID);
       listenersAttachedRef.current = true;
 
       const onConnect = () => {
-        console.log("Socket connected");
         processedMessagesRef.current.clear();
       };
 
-      const onMessageNew = (msg) => {
-        console.log("message:new event received:", msg);
-
+      const onMessageNew = async (msg) => {
         const groupId = msg.groupId;
         const messageId = msg._id || msg.tempId;
 
-        if (!groupId || !messageId) {
-          console.warn("Missing groupId or messageId");
-          return;
-        }
+        if (!groupId || !messageId) return;
 
         // Check for duplicates
         const messageKey = `${groupId}_${messageId}_${msg.createdAt}`;
         if (processedMessagesRef.current.has(messageKey)) {
-          console.warn("DUPLICATE EVENT DETECTED - SKIPPING:", messageKey);
           return;
         }
 
@@ -96,22 +105,19 @@ const ChatProviderMain = ({ children }) => {
           processedMessagesRef.current = new Set(arr.slice(-100));
         }
 
+        // Add message to cache
+        await messageCache.addMessage(groupId, msg);
+
         const isSentByMe = String(msg.senderId) === String(userID);
 
         if (!isSentByMe) {
-          console.log("Incrementing unread for group:", groupId);
           setUnreadCountsContext((old) => {
             const newCount = Number(old[groupId] || 0) + 1;
-            console.log(
-              `Unread count for ${groupId}: ${old[groupId] || 0} → ${newCount}`
-            );
             return {
               ...old,
               [groupId]: newCount,
             };
           });
-        } else {
-          console.log("Message sent by me, not incrementing unread");
         }
 
         setChatRooms((prev) => {
@@ -141,19 +147,16 @@ const ChatProviderMain = ({ children }) => {
 
       const onReadUpdate = (update) => {
         if (String(update.userId) === String(userID)) {
-          console.log("Message read for group:", update.groupId);
           setUnreadCountsContext((prev) => ({ ...prev, [update.groupId]: 0 }));
         }
       };
 
       const onUnreadInit = (map) => {
-        console.log("Initial unread counts received:", map);
         setUnreadCountsContext((prev) => ({ ...prev, ...map }));
       };
 
       const onUnreadUpdate = ({ groupId, count, userId: forUser }) => {
         if (!forUser || String(forUser) === String(userID)) {
-          console.log(`Unread update for ${groupId}: ${count}`);
           setUnreadCountsContext((prev) => ({ ...prev, [groupId]: count }));
         }
       };
@@ -176,7 +179,7 @@ const ChatProviderMain = ({ children }) => {
         listenersAttachedRef.current = false;
       };
 
-      // FIX 3: Remove ALL existing listeners first
+      // Remove ALL existing listeners first
       socket.removeAllListeners("connect");
       socket.removeAllListeners("message:new");
       socket.removeAllListeners("message:read:update");
@@ -210,17 +213,9 @@ const ChatProviderMain = ({ children }) => {
     }
 
     return () => {
-      console.log("Cleaning up socket listeners");
       listenersAttachedRef.current = false;
       if (socket) {
-        socket.removeAllListeners("connect");
-        socket.removeAllListeners("message:new");
-        socket.removeAllListeners("message:read:update");
-        socket.removeAllListeners("unread:counts:init");
-        socket.removeAllListeners("unread:update");
-        socket.removeAllListeners("rsvp:refetch");
-        socket.removeAllListeners("chat:rooms:updated");
-        socket.removeAllListeners("disconnect");
+        socket.removeAllListeners();
       }
     };
   }, [userID, socket?.connected]);

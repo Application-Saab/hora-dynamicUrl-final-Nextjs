@@ -1,6 +1,14 @@
 import { BASE_URL, GET_CHAT_ROOMS } from "@/utils/apiconstants";
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import { sortRooms } from "./ChatProvider";
+import useApi from "./useApi";
 
 const ChatContext = createContext(null);
 
@@ -11,13 +19,16 @@ export function ChatProvider({ children }) {
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && localStorage.getItem("userID")) || ""
   );
+  const { makeRequest: fetchRoomsRequest, loading: roomsFetchLoading, isFetched: roomsDataFetched } = useApi();
 
   // Refetch function
   const refetchChatRooms = useCallback(async () => {
     try {
       if (!loggedinUserId) return;
-      
-      const response = await fetch(`${BASE_URL}${GET_CHAT_ROOMS}/${loggedinUserId}`);
+
+      const response = await fetch(
+        `${BASE_URL}${GET_CHAT_ROOMS}/${loggedinUserId}`
+      );
       const json = await response.json();
 
       if (!json.error && json.data) {
@@ -54,6 +65,26 @@ export function ChatProvider({ children }) {
     };
   }, []);
 
+  useLayoutEffect(() => {
+    const fetchAllRooms = async () => {
+      if (loggedinUserId) {
+        try {
+          let resp = await fetchRoomsRequest(
+            `${GET_CHAT_ROOMS}/${loggedinUserId}`,
+            "GET"
+          );
+          if (resp?.data) {
+            const sorted = sortRooms(resp.data || []);
+            setChatRooms(sorted);
+          }
+        } catch (err) {
+          console.error("Error fetching guest details:", err);
+        }
+      }
+    };
+    fetchAllRooms();
+  }, [loggedinUserId]);
+
   return (
     <ChatContext.Provider
       value={{
@@ -64,6 +95,8 @@ export function ChatProvider({ children }) {
         totalUnread,
         setGlobalTotalUnread,
         refetchChatRooms,
+        roomsFetchLoading,
+        roomsDataFetched
       }}
     >
       {children}
