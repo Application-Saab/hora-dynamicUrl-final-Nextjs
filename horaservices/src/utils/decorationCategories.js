@@ -22,7 +22,7 @@ export const decCat = [
     id: "3",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/primumdecoration.webp	",
-    name: "Big Celebration",
+    name: "Stage Decoration",
     subCategory: "PremiumDecoration",
     catValue: "premium-decoration",
     imgAlt: "Birthday party decoration ideas for adults",
