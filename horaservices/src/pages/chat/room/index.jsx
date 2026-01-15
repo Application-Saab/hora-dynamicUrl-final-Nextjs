@@ -441,6 +441,11 @@ const ChatPage = () => {
     }
   }, [selectedGroup]);
 
+  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+    acc[member.userId] = member.profileImageUrl || "";
+    return acc;
+  }, {});
+
   return (
     <div
       className="chat-layout"
@@ -503,20 +508,29 @@ const ChatPage = () => {
                 isConsecutive ? "consecutive" : ""
               }`}
             >
-              {!isMe && !isConsecutive && (
-                <div
-                  className="chat-avatar-receiver"
-                  style={{
-                    backgroundColor: getAvatarColor(
-                      senderName || msg.senderPhone
-                    ),
-                  }}
-                >
-                  {senderName
-                    ? senderName.charAt(0).toUpperCase()
-                    : msg.senderPhone?.charAt(3)}
-                </div>
-              )}
+              {!isMe &&
+                !isConsecutive &&
+                (membersProfileMap?.[msg.senderId] ? (
+                  <img
+                    src={membersProfileMap?.[msg.senderId]}
+                    alt={senderName || "avatar"}
+                    className="chat-avatar-receiver"
+                    style={{objectFit: 'cover'}}
+                  />
+                ) : (
+                  <div
+                    className="chat-avatar-receiver"
+                    style={{
+                      backgroundColor: getAvatarColor(
+                        senderName || msg.senderPhone
+                      ),
+                    }}
+                  >
+                    {senderName
+                      ? senderName.charAt(0).toUpperCase()
+                      : msg.senderPhone?.charAt(3)}
+                  </div>
+                ))}
               <div
                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
                   isConsecutive ? "consecutive" : ""
