@@ -701,13 +701,14 @@ h4.contact-us-heading a {
   gap: 5px;
 }
 .Executor-rate-btn button.view-details.order-details {
-  border: 1px solid #9252aa;
+  border: 1px solid #97538C;
   background-color: #fff;
-  color: #9252aa;
+  color: #97538C;
 }
 button.view-details.order-details {
-  background-color: #9252aa;
+  background-color: #97538C;
   color: #fff;
+  font-weight: 500;
 }
 
 /* select date chef flow */
@@ -716,15 +717,15 @@ button.view-details.order-details {
     padding: 0px 0 0px;
     /* margin: 0; */
 }
-  .right-details {
+  /* .right-details {
     font-size: 12px;
-  }
+  } */
   select.timeslot.form-control {
     font-size: 11px !important;
 }
-.left-details {
+/* .left-details {
   font-size: 12px;
-}
+} */
   .ordersummaryproduct div:first-child{
     width: 90%;
   }
@@ -758,29 +759,29 @@ button.view-details.order-details {
   }
 
   /* My order mobile view */
- 
-  .order-card {
+ /* only one place  */
+  /* .order-card {
     width: 100% !important;
-  }
+  } */
 
-  .button-div {
+  /* .button-div {
     padding: 0px !important;
     justify-content: space-between;
     margin-top: 0px !important;
-  }
+  } */
  
 
-  .view-details {
-    /* background-color: #6c63ff; */
+  /* .view-details {
+    background-color: #6c63ff;
     color: #ac108d;
     border: 1px solid #ac108d;
     padding: 4px 18px !important;
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px !important;
-  }
+  } */
 
-  .send-invite {
+  /* .send-invite {
     color: white;
     border: 1px solid #9252aa;
     background-color: #9252aa;
@@ -788,7 +789,7 @@ button.view-details.order-details {
     border-radius: 4px;
     cursor: pointer;
     margin-top: 10px !important;
-  }
+  } */
 
   /* Order detail mobile view */
 
@@ -833,30 +834,28 @@ button.view-details.order-details {
   .menu-items {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
-    justify-content: space-between;
-    padding: 10px !important;
+    gap: 10px;
   }
 
-  .tab.active {
+  /* .tab.active {
     width: 33% !important;
     border-top-right-radius: 15px !important;
     border-top-left-radius: 15px !important;
     color: #969696;
     font-size: 13px;
-  }
+  } */
 
   .tab {
     width: 33% !important;
-    border-top-right-radius: 15px !important;
-    border-top-left-radius: 15px !important;
+    border-top-right-radius: 10px !important;
+    border-top-left-radius: 10px !important;
     color: #823d9d;
-    font-size: 11px;
+    /* font-size: 11px; */
   }
 
-  .tabs {
+  /* .tabs {
     margin-bottom: 8px !important;
-  }
+  } */
 
   .advance-preparations-title {
     color: #9252aa;
@@ -881,7 +880,6 @@ button.view-details.order-details {
     border-radius: 8px;
     padding: 8px !important;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: flex-start !important;
     gap: 2px !important;
@@ -893,10 +891,9 @@ button.view-details.order-details {
   }
 
   .menu-item-image img {
-    width: 45.843px !important;
-    height: 40.978px !important;
-    border-radius: 36px !important;
-    margin-bottom: 8px;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
   }
 
   .menu-item-details {
@@ -909,45 +906,33 @@ button.view-details.order-details {
     align-items: center;
   }
 
-  .menu-item-name {
-    font-size: 12px !important;
-  }
-
-  .menu-section {
-    background-color: #fff;
-    padding: 5px !important;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 16px;
-  }
-
   /* Appliances mobile view css */
 
   .burner-count img {
     width: 39px !important;
-    height: 39px !important;
+    height: 29px !important;
   }
 
-  .application-section-heading {
+  /* .application-section-heading {
     color: #000;
     font-family: Roboto;
     font-size: 13px !important;
     font-style: normal !important;
     font-weight: 600;
-  }
+  } */
 
 
   .burner-count {
     display: flex;
     align-items: center;
-    gap: 30px !important;
+    gap: 10px !important;
     font-size: 24px;
     font-weight: bold;
     color: #9252aa;
-    margin-bottom: 16px;
+    /* margin-bottom: 16px; */
     border: 1px solid #dadada;
-    width: 40% !important;
-    padding: 7px !important;
+    width: 30% !important;
+    padding: 4px !important;
     border-radius: 15px;
     justify-content: space-around;
   }
@@ -1010,20 +995,11 @@ button.view-details.order-details {
   max-width: calc(50% - 16px);
 } */
 
-  .ingredients-header h3 {
-    color: #000;
-    font-family: Roboto;
-    font-size: 13px !important;
-    font-style: normal;
-    font-weight: 600;
-  }
+ 
 
   .ingredients-header p {
-    color: #969696;
-    font-family: Inter;
-    font-size: 11px !important;
+    font-size: 13px !important;
     font-style: normal;
-    font-weight: 500;
   }
 
   .ingredient-items {
@@ -1037,12 +1013,11 @@ button.view-details.order-details {
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: calc(50% - 16px) !important;
-    max-width: calc(50% - 16px) !important;
+    /* max-width: calc(50% - 16px) !important; */
     text-align: center;
     border: 1px solid #dadada;
     border-radius: 8px;
     padding: 8px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 104px !important;
     height: 65.303px !important;
     display: flex;
@@ -1053,9 +1028,10 @@ button.view-details.order-details {
   }
 
   .ingredient-item img {
-    width: 31px !important;
-    height: 24px !important;
+    width: 42px !important;
+    height: 38px !important;
     margin-bottom: 8px;
+    border-radius: 50% !important;
     background-color: #dadada;
   }
 
@@ -1070,22 +1046,13 @@ button.view-details.order-details {
 
   .ingredient-name {
     margin-bottom: 4px;
-    text-align: end !important;
-    color: #414141;
-    font-family: Roboto;
-    font-size: 10px !important;
-    font-style: normal;
-    font-weight: 500;
+    font-size: 13px !important;
   }
 
   .ingredient-quantity {
     color: #9252aa;
-
     text-align: right;
-    font-family: Roboto;
-    font-size: 14px !important;
-    font-style: normal;
-    font-weight: 700;
+    font-size: 13px !important;
   }
 
   .textContent {
@@ -1580,7 +1547,7 @@ button.view-details.order-details {
 
 @media (max-width: 480px) {
   button.view-details.order-details{
-    font-size: 12px !important;
+    font-size: 13.82px !important;
   }
   .order-id>div {
     font-size: 16px;
@@ -1880,7 +1847,8 @@ button.view-details.order-details {
   justify-content: center;
 }
 
-.order-card {
+/* only one place */
+/* .order-card {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -1888,16 +1856,17 @@ button.view-details.order-details {
   padding: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
-}
+} */
 
-.order-div {
+/* only one place */
+/* .order-div {
   display: flex;
     justify-content: space-between;
     background-color: rgb(224 219 219 / 53%);
     border-radius: 0;
     align-items: flex-start;
     padding: 9px 8px;
-}
+} */
 
 
 
@@ -1907,58 +1876,58 @@ button.view-details.order-details {
   text-align: start;
 }
 
-.order-details {
+/* .order-details {
   display: flex;
       justify-content: space-between;
       padding: 8px 4px 0px;
       margin-top: 5px;
       flex-direction: column;
-}
+} */
 
-.right-details {
+/* .right-details {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
   justify-content: space-between;
   margin: 10px 0;
-}
+} */
 
 /* .right-details , p{
   text-align: end;
 } */
-.left-details {
+/* .left-details {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
-}
+} */
 
 
 .view-details {
   /* background-color: #6c63ff; */
-  color: #9252aa;
-  border: 1px solid #9252aa;
+  color: #97538C;
+  border: 1px solid #97538C;
   padding: 6px 20px;
-  border-radius: 4px;
+  border-radius: 7px;
   cursor: pointer;
   /* margin-top: 40px !important; */
 }
 
-.send-invite {
+/* .send-invite {
   color: white;
   border: 1px solid #9252aa;
   background-color: #9252aa;
   padding: 6px 20px;
   border-radius: 4px;
   cursor: pointer;
-  /* margin-top: 42px !important; */
-}
+  margin-top: 42px !important;
+} */
 
-.button-div {
+/* .button-div {
   padding: 10px;
   justify-content: space-between;
   margin-top: 5px;
-}
+} */
 
 /* .view-details:hover {
   background-color: #5753d6;
@@ -1978,44 +1947,45 @@ button.view-details.order-details {
 
 /* order status */
 
-.status-booked {
+/* .status-booked {
   color: orange;
   background-color: #fff7e6;
-  /* border: 1px solid orange; */
+  border: 1px solid orange;
   border-radius: 13px;
   padding: 3px 13px;
-}
+} */
 
 .status-accepted {
   color: blue;
   font-weight: 600;
 }
 
-.status-in-progress {
-  color: yellow;
+/* .status-in-progress {
+  color: #496AC1;
   font-weight: 600;
-}
+} */
 
-.status-completed {
+/* .status-completed {
   color: green;
   font-weight: 600;
 
-}
+} */
+ 
 
-.status-cancelled {
+/* .status-cancelled {
   color: red;
   font-weight: 600;
-}
+} */
 
 .status-empty {
   color: grey;
   font-weight: 600;
 }
 
-.status-expired {
+/* .status-expired {
   color: rgb(245, 111, 111);
   font-weight: 600;
-}
+} */
 
 .no-record-heading {
   color: #9252aa;
@@ -2025,7 +1995,8 @@ button.view-details.order-details {
 /* Order detail css */
 
 .orderheader-orderdetail {
-  background-color: #f2f2f2;
+  /* background-color: #f2f2f2; */
+  font-family: 'Inter', sans-serif;
 }
 
 .order-detail-page-decoration {
@@ -2139,31 +2110,28 @@ button.view-details.order-details {
 
 .tabs {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 16px;
+  /* justify-content: space-around; */
+  gap: 4px;
+  /* margin-bottom: 16px; */
 }
 
 .tab {
-  padding: 8px 16px;
+  padding: 6px 14px;
   border: none;
+  font-weight: 600;
   color: #969696;
-  background-color: #e3e3e3;
+  background-color: #D9D9D9;
   cursor: pointer;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  /* border-radius: 4px; */
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
   width: 31%;
 }
 
 .tab.active {
-  background-color: #ffffff;
-  color: #823d9d;
-}
-
-.menu-section {
-  padding: 16px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #823d9d;
+  color: #ffffff;
+  
 }
 
 .advance-preparations {
@@ -2182,22 +2150,12 @@ button.view-details.order-details {
   font-weight: 400;
 }
 
-.meal-category {
-  margin-bottom: 16px;
-}
-
 .category-title {
   display: block;
   font-size: 16px;
   font-weight: 700;
   color: #4b4b4b;
   margin-bottom: 8px;
-}
-
-.menu-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
 }
 
 .menu-item {
@@ -2211,55 +2169,37 @@ button.view-details.order-details {
   border: 1px solid #b8b8b8;
   border-radius: 8px;
   /* background-color: #f8f8f8; */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   height: 100px;
-}
-
-.menu-item-image img {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  margin-bottom: 8px;
 }
 
 .menu-item-details {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 }
 
 .menu-item-name {
   font-size: 14px;
-  font-weight: 600;
-  color: #4b4b4b;
-  margin-bottom: 4px;
-  text-align: end;
 }
 
 .menu-item-price {
-  font-size: 14px;
-  font-weight: 700;
-  color: #9252aa;
+  font-size: 13px;
+  color: #97538C;
+  text-align: start;
 }
 
 /*  Css for appliances */
 
-.appliances-section {
-  padding-top: 20px;
-  background-color: #fff;
-  padding-left: 20px;
-}
 
 .application-section-heading {
   font-weight: 600;
-  color: #000;
-  font-size: 16px;
+  /* color: #000; */
+  font-size: 15px;
 }
 
 .application-section-para {
-  color: #969696;
-  font-size: 15px;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
 .burner-count {
@@ -2270,7 +2210,7 @@ button.view-details.order-details {
   padding: 10px 9px;
   justify-content: flex-start;
   align-items: center;
-  margin: 20px 0;
+  margin: 10px 0;
   gap: 10%;
 }
 
@@ -2378,35 +2318,26 @@ button.view-details.order-details {
 
 /* Ingredients CSS */
 
-.ingredients-section {
-  padding: 16px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
 .ingredients-header {
   margin-bottom: 16px;
 }
 
 .ingredients-header h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #4b4b4b;
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 4px;
 }
 
 .ingredients-header p {
-  font-size: 14px;
-  font-weight: 400;
-  color: #a1a1a1;
+  font-size: 13px;
   text-align: start;
 }
 
 .ingredients-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
 }
 
 .ingredient-item {
@@ -2416,7 +2347,6 @@ button.view-details.order-details {
   padding: 16px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   justify-content: space-between;
 }
@@ -2436,16 +2366,12 @@ button.view-details.order-details {
 }
 
 .ingredient-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #4b4b4b;
+  font-size: 13px;
   margin-bottom: 4px;
-  text-align: end !important;
 }
 
 .ingredient-quantity {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
   color: #9252aa;
   text-align: end !important;
 }
@@ -2459,7 +2385,7 @@ button.view-details.order-details {
   gap: 5%;
 }
 
-.decoration-container {
+/* .decoration-container {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin-bottom: 10px;
@@ -2467,7 +2393,7 @@ button.view-details.order-details {
   padding: 10px;
   min-height: 305px;
 
-}
+} */
 
 .product-image-container {
   display: flex;
@@ -2573,14 +2499,6 @@ f.product-add-ons ul {
 }
 
 /* inclusion for live catering */
-
-.live-catering-container {
-  margin-top: 1rem;
-  max-width: 100% !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
-  padding: 10px;
-}
 
 .live-catering-title {
   font-size: 1.2em;

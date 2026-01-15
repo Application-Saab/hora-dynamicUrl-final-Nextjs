@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../utils/apiconstants";
 import clock from "../../assets/clock.png";
-import people from "../../assets/people.png";
 import date_time_icon from "../../assets/date-time-icon.png";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import informationImage from "../../assets/information.webp";
-import dangerImage from "../../assets/danger.webp";
+import executerDetails from "../../assets/executerDetails.png";
+import dangerImage from "../../assets/danger.png";
 import Popup from "../../utils/popup";
 import OtpLoginPopup from '../../components/OtpLoginPopup';
+import './orderlist.css';
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -29,17 +29,17 @@ const Orderlist = () => {
   const [executor, setExecutor] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   useEffect(() => {
     const checkAuth = () => {
-      
-        if (isLoggedIn !== "true") {
-          setIsModalOpen(true);
-        }
-        else {
-          setIsModalOpen(false);
-        }
+
+      if (isLoggedIn !== "true") {
+        setIsModalOpen(true);
+      }
+      else {
+        setIsModalOpen(false);
+      }
     };
     checkAuth();
     const fetchOrderList = async () => {
@@ -54,9 +54,9 @@ const Orderlist = () => {
         const data = await response.json();
         if (data?.data?.order) {
           setOrders(data.data.order.sort((a, b) => new Date(b.order_date) - new Date(a.order_date)));
-      } 
-    } catch (error) {
-      console.error("Error fetching orders:", error);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
       } finally {
         setLoading(false);
       }
@@ -66,25 +66,25 @@ const Orderlist = () => {
 
   const getOrderStatus = (orderStatusValue) => {
     if (orderStatusValue === 0) {
-      return { status: "Booked", className: "status-booked" };
+      return { status: "Booked", className: "status-booked myOrder-status-badge" };
     }
     if (orderStatusValue == 1) {
-      return { status: "Accepted", className: "status-accepted" };
+      return { status: "Accepted", className: "status-accepted myOrder-status-badge" };
     }
     if (orderStatusValue === 2) {
-      return { status: "In-progress", className: "status-in-progress" };
+      return { status: "In-progress", className: "status-in-progress myOrder-status-badge" };
     }
     if (orderStatusValue === 3) {
-      return { status: "Completed", className: "status-completed" };
+      return { status: "Completed", className: "status-completed myOrder-status-badge" };
     }
     if (orderStatusValue === 4) {
-      return { status: "Cancelled", className: "status-cancelled" };
+      return { status: "Cancelled", className: "status-cancelled myOrder-status-badge" };
     }
     if (orderStatusValue === 5) {
       return { status: "", className: "status-empty" };
     }
     if (orderStatusValue === 6) {
-      return { status: "Expired", className: "status-expired" };
+      return { status: "Expired", className: "status-expired myOrder-status-badge" };
     }
   };
 
@@ -157,7 +157,7 @@ const Orderlist = () => {
     const orderType = type
     const orderId = order_id
     router.push({
-        pathname:`/order-details`, 
+      pathname: `/order-details`,
       query: { apiOrderId, orderType, orderId },
     });
   };
@@ -211,29 +211,34 @@ const Orderlist = () => {
       const apiOrderId = _id;
       const orderType = type;
       const orderId = toId;
-  
+
       try {
         // Fetch executor details from the API
         const response = await fetch(
           `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
         );
-  
+
         console.log(response, "response");
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch user details");
         }
-  
+
         const data = await response.json();
         console.log(data, "dataasss");
-  
+
         const executorName = data.data.name;
         const executorPhone = data.data.phone;
-  
+
         setPopupMessage({
-          img: informationImage,
-          title: `Executor Name: ${executorName}`,
-          body: `Executor Phone: ${executorPhone}`,
+          img: executerDetails,
+          title: (
+            <>
+              <div className="popup-title-main">{executorName}</div>
+              <div className="popup-title-sub">{executorPhone}</div>
+            </>
+          ),
+          body: 'You can contact the executor 30 minutes before the scheduled time to avoid early interruptions.',
           button: "Call Vendor",
           executorPhone: executorPhone,
           onButtonClick: (phone) => {
@@ -245,14 +250,14 @@ const Orderlist = () => {
             }
           },
         });
-  
+
         setIsPopupVisible(true);
       } catch (error) {
         console.error(error.message);
         setIsPopupVisible(true);
       }
     }
-   
+
   };
 
   const closePopup = () => {
@@ -303,108 +308,90 @@ const Orderlist = () => {
     window.location.href = `tel:${phoneNumber}`;
   };
 
-  return (   
+  return (
     <main className="order-list">
-      <div className="order-container">
-      {!isLoggedIn ? (
-    // Case 2: User is NOT logged in
-    <div className="no-orders">
-      <h2 className="no-record-heading">Please log in to check all your orders.</h2>
-      <button
-  style={{
-    backgroundColor: "#9252AA",
-    fontSize: "14px",
-    border: "none",          
-    borderRadius: "8px",     
-    padding: "8px 16px",     
-    color: "#fff",           
-    cursor: "pointer"        
-  }}
-  onClick={() => setIsModalOpen(true)}
->
-  Login
-</button>
+      <div className="myorder-container">
+        {!isLoggedIn ? (
+          // Case 2: User is NOT logged in
+          <div className="no-orders">
+            <h2 className="no-record-heading">Please log in to check all your orders.</h2>
+            <button
+              style={{
+                backgroundColor: "#97538C",
+                fontSize: "14px",
+                border: "none",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                color: "#fff",
+                cursor: "pointer"
+              }}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Login
+            </button>
 
-      {isModalOpen &&
-      <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
-      }
-    </div>
-  ):
+            {isModalOpen &&
+              <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+            }
+          </div>
+        ) :
 
-         orders.length  > 0 ? (
-          orders?.map((order) => {
-            const orderStatus = getOrderStatus(order?.order_status);
-            return (
-              <div key={order.order_id} className="order-card">
-                <div className="order-div header">
-                  <div className="order-id">
-                    <div style={{ color: "#9252AA" }}>
-                      Order Id: {getOrderId(order?.order_id)}
-                    </div>
-                    <div className="order-otp" style={{ color: "#9252AA" }}>
-                      OTP: {order?.otp}
-                    </div>
-                  </div>
-                  <div className="order-status">
-                    <span className={orderStatus.className}>
-                      {orderStatus.status}
-                    </span>
-                    <div className="m-0" style={{ color: "#9252AA" }}>
-                      {getOrderType(order?.type)}
-                    </div>
-                  </div>
-                </div>
-                <div className="order-details">
-                  <div className="left-details">
-                    <div>
-                      {/* <IoCalendarClear color="#9252AA" size={20}/>{" "} */}
-                      <Image
-                        className="contact-us-img"
-                        src={date_time_icon}
-                        height={20}
-                        width={20}
-                      />{" "}
-                      <span>{formatDate(order.order_date)}</span>
-                    </div>
-                    <div>
-                      {/* <FiClock color="#9252AA" size={20}/>{" "} */}
-                      <Image
-                        className="contact-us-img"
-                        src={clock}
-                        height={20}
-                        width={20}
-                      />{" "}
-                      <span>{order.order_time}</span>
-                    </div>
-                    {order?.type == 1 || order?.type == 8 ? (
-                      ""
-                    ) : (
-                      <div>
-
-<Image
-                          className="contact-us-img"
-                          src={people}
-                          height={20}
-                          width={20}
-                          alt="people"
-                        />{" "}
-                        <span>{order?.no_of_people} People</span>
-                     
+          orders.length > 0 ? (
+            orders?.map((order) => {
+              const orderStatus = getOrderStatus(order?.order_status);
+              return (
+                <div key={order.order_id} className="order-card">
+                  <div className="order-div header">
+                    <div className="order-left-container">
+                      <div style={{ color: "#fafafa", fontWeight: "600" }}>
+                        Order Id: {getOrderId(order?.order_id)}
                       </div>
-          )}
-                  </div>
-                  <div className="right-details">
-                    <div className="totalAmount">
-                      <strong style={{ color: "#9252AA" }}>
-                        Total Amount
-                        <p style={{textAlign: "start" , margin: 0}}>
-                          {" "}
-                          ₹{order?.payable_amount}
-                        </p>
-                      </strong>
+                      <div className="order-type" style={{ color: "#fafafa" }}>
+                        {getOrderType(order?.type)}
+                      </div>
                     </div>
-                    <div className="BalanceAmount">
-                      {/* <strong style={{ color: "#9252AA" }}>
+                    <div className="myorder-status">
+                      <span className={orderStatus.className}>
+                        {orderStatus.status}
+                      </span>
+
+                    </div>
+                  </div>
+                  <div className="order-details">
+                    <div className="left-details">
+                      <div className="date-time">
+                        {/* <IoCalendarClear color="#9252AA" size={20}/>{" "} */}
+                        <Image
+                          className="contact-us-img"
+                          src={date_time_icon}
+                          height={18}
+                          width={18}
+                        />{" "}
+                        <span className="date-time-text">{formatDate(order.order_date)}</span>
+                      </div>
+                      <div className="date-time">
+                        {/* <FiClock color="#9252AA" size={20}/>{" "} */}
+                        <Image
+                          className="contact-us-img"
+                          src={clock}
+                          height={18}
+                          width={18}
+                        />{" "}
+                        <span className="date-time-text">{order.order_time}</span>
+                      </div>
+                    </div>
+                    <div className="right-details">
+                      <div className="totalAmount">
+                        <strong>
+                          Total Amount
+                          <p className="amount" style={{ textAlign: "start", margin: 0 }}>
+                            {" "}
+                            ₹{order?.payable_amount}
+                          </p>
+                        </strong>
+                      </div>
+                      <div className="BalanceAmount">
+                        {/* <strong style={{ color: "#9252AA" }}>
                         Balance Amount
                         {order?.type === 2 || order?.type === 3 || order?.type === 4 || order?.type === 5 ? (
                         <p className="mb-0 price-para">
@@ -421,114 +408,120 @@ const Orderlist = () => {
                         )}
 
                       </strong> */}
-                      <strong style={{ color: "#9252AA" }}>
-                        Balance Amount
-                        <p style={{textAlign: "start" , margin: 0}}>
-                          {" "}
-                          ₹{order?.balance_amount}
-                        </p>
-                      </strong>
-                    </div>
-                  </div>
-                </div>
-                <hr className="m-0" />
-                <div className="d-flex button-div">
-                  <div>
-                    <button
-                      className="view-details order-details"
-                      onClick={() => handleViewDetail(order)}
-                    >
-                      View Details
-                    </button>
-                  </div>
-                  {order?.type == 2 &&
-                    (orderStatus?.status == "Booked" ||
-                      orderStatus?.status == "Accepted" ||
-                      orderStatus?.status == "In-progress" ? (
-                      <div>
-                        <WhatsappShareButton
-                          url="https://play.google.com/store/apps/details?id=com.hora"
-                          title={handleSendInvite(order)}
-                          separator="\n\n"
-                        >
-                          {/* <WhatsappIcon size={32} round /> */}
-                          <button
-                            className="send-invite"
-                            onClick={() => handleSendInvite(order)}
-                          >
-                            Send Invite
-                          </button>
-                        </WhatsappShareButton>
+                        <strong>
+                          Balance Amount
+                          <p className="amount" style={{ textAlign: "start", margin: 0 }}>
+                            {" "}
+                            ₹{order?.balance_amount || 0}
+                          </p>
+                        </strong>
                       </div>
-                    ) : null)}
-
-                  {(
-                    (order.type === 1 && orderStatus?.status !== "Expired") || 
-                    (order.type === 8 && orderStatus?.status !== "Expired")
-                  ) && (
-                    <div className="Executor-rate-btn">
-                        <>
-                          <button
-                            className="view-details order-details"
-                            onClick={() => {
-                              if (isWithinFourHourWindow(order.order_time, order.order_date)) {
-                                openSupplierPopup(order);
-                                setIsPopupVisible(true);
-                              } 
-                              else {
-                                setPopupMessage({
-                                  img: dangerImage,
-                                  title:
-                                    "Executor details will be shown 2 hours before your scheduled time to avoid distractions. 🙂",
-                                  body: "",
-                                  button: "OK",
-                                });
-                                console.log(order, "order");
-                                setIsPopupVisible(true);
-                              }
-                            }}
-                            style={{ marginLeft: "10px" }}
-                          >
-                            Executor Details
-                          </button>
-                          {isPopupVisible && (
-                            <Popup
-                              style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-                              onClose={closePopup}
-                              popupMessage={popupMessage}
-                            />
-                          )}
-                        </>
-                   
                     </div>
-                  )}
+                    <div className="order-otp">
+                      OTP : {order?.otp}
+                    </div>
+                  </div>
 
 
 
-                  {order?.type === 2 && orderStatus?.status == "Completed" ? (
+                  {/* <hr className="m-0" /> */}
+                  <div className="d-flex button-div">
                     <div>
                       <button
-                        className="send-invite"
-                        onClick={() => handleRateUs(order)}
+                        className="view-details order-details"
+                        onClick={() => handleViewDetail(order)}
                       >
-                        Rate us
+                        View Details
                       </button>
                     </div>
-                  ) : null}
+                    {order?.type == 2 &&
+                      (orderStatus?.status == "Booked" ||
+                        orderStatus?.status == "Accepted" ||
+                        orderStatus?.status == "In-progress" ? (
+                        <div>
+                          <WhatsappShareButton
+                            url="https://play.google.com/store/apps/details?id=com.hora"
+                            title={handleSendInvite(order)}
+                            separator="\n\n"
+                          >
+                            {/* <WhatsappIcon size={32} round /> */}
+                            <button
+                              className="send-invite"
+                              onClick={() => handleSendInvite(order)}
+                            >
+                              Send Invite
+                            </button>
+                          </WhatsappShareButton>
+                        </div>
+                      ) : null)}
+
+                    {(
+                      (order.type === 1 && orderStatus?.status !== "Expired") ||
+                      (order.type === 8 && orderStatus?.status !== "Expired")
+                    ) && (
+                        <div className="Executor-rate-btn">
+                          <>
+                            <button
+                              className="view-details order-details"
+                              onClick={() => {
+                                if (isWithinFourHourWindow(order.order_time, order.order_date)) {
+                                  openSupplierPopup(order);
+                                  setIsPopupVisible(true);
+                                }
+                                else {
+                                  setPopupMessage({
+                                    img: dangerImage,
+                                    title:
+                                      "Executor details will be shown 2 hours before your scheduled time to avoid distractions.",
+                                    body: "",
+                                    button: "OK",
+                                  });
+                                  console.log(order, "order");
+                                  setIsPopupVisible(true);
+                                }
+                              }}
+
+                            >
+                              Executor Details
+                            </button>
+                            {isPopupVisible && (
+                              <Popup
+                                style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+                                onClose={closePopup}
+                                popupMessage={popupMessage}
+                              />
+                            )}
+                          </>
+
+                        </div>
+                      )}
+
+
+
+                    {order?.type === 2 && orderStatus?.status == "Completed" ? (
+                      <div>
+                        <button
+                          className="send-invite"
+                          onClick={() => handleRateUs(order)}
+                        >
+                          Rate Us
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="no-record-div m-5">
-          <h2 className="no-record-heading">
-            No Orders.. Please continue shopping with Hora
-          </h2>
-          <button className="button-style" onClick={() => router.push("/")}>
-            Continue Shopping
-          </button>
-        </div>
-        )}
+              );
+            })
+          ) : (
+            <div className="no-record-div m-5">
+              <h2 className="no-record-heading">
+                No Orders.. Please continue shopping with Hora
+              </h2>
+              <button className="button-style" onClick={() => router.push("/")}>
+                Continue Shopping
+              </button>
+            </div>
+          )}
       </div>
     </main>
   );
