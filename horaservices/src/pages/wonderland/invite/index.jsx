@@ -27,7 +27,6 @@ const InvitesPage = () => {
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
-  // const [isHost, setIsHost] = useState(true);
   const { rsvpSubmitted } = useRsvpStatus(
     queryEventId,
     skipRsvpCheck,
@@ -98,11 +97,9 @@ const InvitesPage = () => {
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
       if (eventDetails?.userId === loggedinUserId) {
-        // setIsHost(true);
         setSkipRsvpCheck(true);
       } else {
         setSkipRsvpCheck(false);
-        // setIsHost(false);
       }
     }
   }, [eventDetails, loggedinUserId]);

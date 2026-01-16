@@ -20,7 +20,8 @@ import "./bottomNav.css";
 export default function BottomNav() {
   const router = useRouter();
   const currentPath = router.pathname;
-  const { totalUnread, chatRooms } = useChatStore();
+  const { totalUnread, chatRooms, roomsFetchLoading, roomsDataFetched } =
+    useChatStore();
   const [showPopup, setShowPopup] = useState(false);
   const [userId, setUserId] = useState("");
   const [authChecked, setAuthChecked] = useState(false);
@@ -55,24 +56,56 @@ export default function BottomNav() {
 
   useEffect(() => {
     if (!router.isReady || !authChecked) return;
+
+    setShowPopup(false);
+    setNoChatsPopup(false);
+
+    if (isChat && !userId) {
+      setShowPopup(true);
+    }
+
+    if (!roomsDataFetched || roomsFetchLoading) return;
+
     if (isChat && userId && chatRooms.length === 0) {
       setNoChatsPopup(true);
       setShowPopup(true);
       return;
     }
-    setShowPopup(isChat && !userId);
-  }, [router.isReady, authChecked, isChat, userId, chatRooms]);
+  }, [
+    router.isReady,
+    authChecked,
+    isChat,
+    userId,
+    chatRooms.length,
+    roomsDataFetched,
+    roomsFetchLoading,
+  ]);
 
-  const NavItem = ({ href, isActive, icon, iconFilled, label, className }) => (
+  const NavItem = ({
+    href,
+    isActive,
+    icon,
+    iconFilled,
+    label,
+    className,
+    badgeCount,
+  }) => (
     <Link href={href}>
       <div
         className={`nav-item ${isActive ? "active" : ""} ${className || ""}`}
       >
-        <Image
-          src={isActive ? iconFilled : icon}
-          alt={label}
-          className="nav-icon"
-        />
+        <div className="nav-icon-wrapper">
+          <Image
+            src={isActive ? iconFilled : icon}
+            alt={label}
+            className="nav-icon"
+          />
+          {badgeCount > 0 && (
+            <span className="unread-badge">
+              {badgeCount > 99 ? "99+" : badgeCount}
+            </span>
+          )}
+        </div>
         <span className="nav-text">{label}</span>
       </div>
     </Link>
@@ -150,8 +183,9 @@ export default function BottomNav() {
           isActive={isChat}
           icon={CheerChatIcon}
           iconFilled={CheerChatIconFilled}
-          label={`CheerChat ${totalUnread > 0 ? `(${totalUnread})` : ""}`}
+          label="CheerChat"
           className="chatter-icon"
+          badgeCount={totalUnread}
         />
 
         <NavItem
