@@ -348,6 +348,11 @@
   resize: none;
   overflow-y: auto;
   background: transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.chat-input::-webkit-scrollbar {
+  display: none;
 }
 
 .chat-input::placeholder {

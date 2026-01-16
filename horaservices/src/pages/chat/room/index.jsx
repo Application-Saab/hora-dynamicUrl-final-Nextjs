@@ -11,6 +11,7 @@ import backIcon from "@/assets/wonderland/chat/BackIcon.png";
 import useApi from "@/hooks/useApi";
 import {
   CREATE_DIRECT_CHAT_ROOM,
+  GET_CHAT_MESSAGES,
   GET_USER_BY_ID,
   MARK_READ_MESSAGE,
 } from "@/utils/apiconstants";
@@ -19,7 +20,6 @@ import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
 import { sortRooms } from "@/hooks/ChatProvider";
 
-import { useMessageCache } from "@/hooks/useMessageCache";
 const getAvatarColor = (name) => {
   const colors = [
     "#F44336",
@@ -49,10 +49,12 @@ const ChatPage = () => {
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
     useChatStore();
   const { makeRequest: fetchUserRequest } = useApi();
+  const { makeRequest: fetchMessagesRequest } = useApi();
   const { makeRequest: markReadRequest } = useApi();
   const { makeRequest: createDirectChatRequest } = useApi();
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
+  const [messages, setMessages] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg, setChatBg] = useState(null);
   const [userData, setUserData] = useState({});
@@ -61,16 +63,12 @@ const ChatPage = () => {
   const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
 
-  const {
-    messages,
-    addMessageToCache,
-  } = useMessageCache(selectedGroup?._id || selectedGroup?.id, userId);
-
   // Mark read on mount if selected
   useEffect(() => {
     if (selectedGroup && userId) {
       const gid = selectedGroup._id || selectedGroup.id;
       markRoomRead(gid, userId);
+      fetchMessagesForRoom(gid)
     }
   }, [selectedGroup, userId]);
 
@@ -87,32 +85,23 @@ const ChatPage = () => {
   useEffect(() => {
     if (!socket || !selectedGroup) return;
     const gid = selectedGroup._id || selectedGroup.id;
-    const onMessageNewLocal = async (msg) => {
+    const onMessageNewLocal = (msg) => {
       if (String(msg.groupId) !== String(gid)) return;
-
-      await addMessageToCache(msg);
-
-      // Auto scroll to bottom if user already at bottom
-      if (chatBodyRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = chatBodyRef.current;
-        const isAtBottom = scrollHeight - scrollTop - clientHeight < 100;
-
-        if (isAtBottom) {
-          setTimeout(() => {
-            chatBodyRef.current?.scrollTo({
-              top: chatBodyRef.current.scrollHeight,
-              behavior: "smooth",
-            });
-          }, 100);
+      setMessages((prev) => {
+        if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
+          return prev.map((m) =>
+            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+          );
         }
-      }
-
+        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+          return prev;
+        return [...prev, { ...msg, id: msg._id }];
+      });
       setTimeout(() => markRoomRead(gid, userId), 50);
     };
-
     socket.on("message:new", onMessageNewLocal);
     return () => socket.off("message:new", onMessageNewLocal);
-  }, [selectedGroup, userId, addMessageToCache]);
+  }, [selectedGroup, userId]);
 
   // Scroll to first unread or bottom on messages load
   useLayoutEffect(() => {
@@ -320,6 +309,40 @@ const ChatPage = () => {
     }
   };
 
+  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
+    if (!groupId) return;
+    try {
+      const resp = await fetchMessagesRequest(
+        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+        "GET"
+      );
+      if (!resp.error && resp.data) {
+        setMessages(resp?.data || []);
+        const roomObj = chatRooms.find(
+          (r) => String(r._id || r.id) === String(groupId)
+        );
+        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+        const lastReadForMe = lastReadMap[userId]
+          ? new Date(lastReadMap[userId])
+          : null;
+        const unread = (resp.data || []).filter((m) => {
+          const created = m.createdAt
+            ? new Date(m.createdAt)
+            : m.sentAt
+            ? new Date(m.sentAt)
+            : null;
+          if (!created || String(m.senderId) === String(userId)) return false;
+          return lastReadForMe ? created > lastReadForMe : true;
+        }).length;
+        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+      } else {
+        console.warn("Failed fetch messages", resp);
+      }
+    } catch (err) {
+      console.error("Fetch messages failed", err);
+    }
+  };
+
   // Fetch user details
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -396,6 +419,8 @@ const ChatPage = () => {
       senderPhone: localStorage.getItem("mobileNumber"),
       createdAt: new Date().toISOString(),
     };
+    setMessages((prev) => [...prev, optimistic]);
+    tempIdToClientMap.current.set(tempId, true);
     if (socket && socket.connected) {
       socket.emit("message:send", {
         eventId: selectedGroup.eventId,
