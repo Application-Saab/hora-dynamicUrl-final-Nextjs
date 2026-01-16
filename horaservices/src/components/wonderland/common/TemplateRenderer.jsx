@@ -1,11 +1,13 @@
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import DefaultTemplate from "@/assets/wonderland/NewDefaultTemplate.png";
 import useScreenSize from "@/hooks/useScreenSize";
 import TemplatecardSkeleton from "../TemplateSkeleton/templatecardSkeleton";
-import { getScreenSize,defaultFontSizeMap} from "@/utils/constants";
+import { getScreenSize, defaultFontSizeMap } from "@/utils/constants";
 import { getTemplate } from "@/utils/indexedDB";
+import { captureElementAsImage } from "@/utils/captureElementAsImage";
+import { BASE_URL } from "@/utils/apiconstants";
+import { useChatStore } from "@/hooks/ChatContext";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -15,73 +17,69 @@ const TemplateRenderer = ({
   isLandingPage = true,
   templatewrapperclass,
   enableHeightOverride = false,
+  isHost,
 }) => {
   const textRef = useRef(null);
+  const templateRef = useRef(null);
   const [dynamicFontSize, setDynamicFontSize] = useState("");
   const { width } = useScreenSize();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [templateSizeClass, setTemplateSizeClass] = useState("");
-
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const { refetchChatRooms } = useChatStore();
   const getResponsiveFontStyles = () => {
-  const size = getScreenSize(width);
+    const size = getScreenSize(width);
 
-  if (typeof baseFontSize === "object" && baseFontSize !== null) {
-    return {
-      fontSize:
-        baseFontSize[size] ||
-        defaultFontSizeMap[size].fontSize,
+    if (typeof baseFontSize === "object" && baseFontSize !== null) {
+      return {
+        fontSize: baseFontSize[size] || defaultFontSizeMap[size].fontSize,
 
-      lineHeight:
-        baseFontSize[size]
+        lineHeight: baseFontSize[size]
           ? "auto"
           : defaultFontSizeMap[size].lineHeight,
 
-      top: defaultFontSizeMap[size].top,
-    };
-  }
-
-  if (typeof baseFontSize === "string") {
-    return {
-      ...defaultFontSizeMap[size],
-      fontSize: baseFontSize,
-    };
-  }
-
-  return defaultFontSizeMap[size];
-};
-
-
-const [baseStyles, setBaseStyles] = useState(getResponsiveFontStyles());
-
-
-  useEffect(() => {
-   setBaseStyles(getResponsiveFontStyles());
-
-  }, [width, baseFontSize]);
-
-const [imageUrl, setImageUrl] = useState(DefaultTemplate.src);
-
-useEffect(() => {
-  const localKey = `template_${eventDetails?._id || eventDetails?.eventId}`;
-
-  const fetchImage = async () => {
-    const savedImage = await getTemplate(localKey); // Fetch from IndexedDB
-    if (savedImage) {
-      setImageUrl(savedImage);
-    } else {
-      setImageUrl(
-        orderDetails?.externalTemplateImageUrl ||
-        orderDetails?.Image ||
-        orderDetails?.hostImage ||
-        DefaultTemplate.src
-      );
+        top: defaultFontSizeMap[size].top,
+      };
     }
+
+    if (typeof baseFontSize === "string") {
+      return {
+        ...defaultFontSizeMap[size],
+        fontSize: baseFontSize,
+      };
+    }
+
+    return defaultFontSizeMap[size];
   };
 
-  fetchImage();
-}, [eventDetails, orderDetails]);
+  const [baseStyles, setBaseStyles] = useState(getResponsiveFontStyles());
 
+  useEffect(() => {
+    setBaseStyles(getResponsiveFontStyles());
+  }, [width, baseFontSize]);
 
+  const [imageUrl, setImageUrl] = useState(DefaultTemplate.src);
+
+  useEffect(() => {
+    const localKey = `template_${eventDetails?._id || eventDetails?.eventId}`;
+
+    const fetchImage = async () => {
+      const savedImage = await getTemplate(localKey); // Fetch from IndexedDB
+      if (savedImage) {
+        setImageUrl(savedImage);
+      } else {
+        setImageUrl(
+          orderDetails?.externalTemplateImageUrl ||
+            orderDetails?.Image ||
+            orderDetails?.hostImage ||
+            DefaultTemplate.src
+        );
+      }
+    };
+
+    fetchImage();
+  }, [eventDetails, orderDetails]);
 
   const handleImageLoad = (e) => {
     const img = e.target;
@@ -95,6 +93,57 @@ useEffect(() => {
     setImageLoaded(true);
   };
 
+  const handleDownload = async () => {
+    if (!templateRef.current) return;
+    const blob = await captureElementAsImage(templateRef.current, [
+      ".hide-in-download",
+    ]);
+
+    if (!blob) {
+      return;
+    }
+
+    // Convert blob to file
+    const file = new File([blob], `invite_image.png`, {
+      type: "image/png",
+      lastModified: Date.now(),
+    });
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {};
+    reader.readAsDataURL(blob);
+
+    const form = new FormData();
+    form.append("image", file);
+    form.append("userId", eventDetails?.userId);
+
+    try {
+      await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventDetails?._id}`,
+        {
+          method: "PUT",
+          headers: { Authorization: token || "" },
+          body: form,
+        }
+      );
+      refetchChatRooms();
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (
+        !eventDetails?.externalTemplateImageUrl &&
+        imageUrl === DefaultTemplate.src &&
+        isHost && imageLoaded
+      ) {
+        handleDownload();
+      }
+    }, 2500);
+  }, [eventDetails, imageUrl, isHost, imageLoaded]);
+
   return (
     <div
       className="default-template-wrapper"
@@ -107,6 +156,7 @@ useEffect(() => {
         <>
           <div
             className={`template-preview-container ${templatewrapperclass} ${templateSizeClass}`}
+            ref={templateRef}
             style={{
               position: "relative",
               display: "inline-block",
@@ -117,7 +167,11 @@ useEffect(() => {
             }}
           >
             {!imageLoaded && (
-              <TemplatecardSkeleton width="100%" height="auto" borderRadius="12px" />
+              <TemplatecardSkeleton
+                width="100%"
+                height="auto"
+                borderRadius="12px"
+              />
             )}
 
             <img

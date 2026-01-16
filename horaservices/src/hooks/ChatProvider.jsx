@@ -6,7 +6,6 @@ import {
   BASE_URL,
   UNREAD_MESSAGE_COUNT,
 } from "@/utils/apiconstants";
-import { messageCache } from "@/utils/messageCache";
 
 export const sortRooms = (rooms) => {
   return [...rooms].sort((a, b) => {
@@ -29,40 +28,6 @@ const ChatProviderMain = ({ children }) => {
   // Prevent multiple listener attachments
   const listenersAttachedRef = useRef(false);
   const processedMessagesRef = useRef(new Set());
-  const cacheInitializedRef = useRef(false);
-
-  // Initialize cache for top 10 groups on mount
-  useEffect(() => {
-    const initializeCache = async () => {
-      if (cacheInitializedRef.current || !chatRooms) return;
-      cacheInitializedRef.current = true;
-
-      const top10Groups = sortRooms(chatRooms).slice(0, 10);
-
-      for (const group of top10Groups) {
-        const groupId = group._id || group.id;
-        const lastSync = await messageCache.getLastSyncTime(groupId);
-        
-        // Cache if never synced or older than 5 minutes
-        if (!lastSync || Date.now() - lastSync > 5 * 60 * 1000) {
-          try {
-            const resp = await fetch(
-              `${BASE_URL}/api/customer/event/chat/messages/${groupId}?page=1&limit=10000`
-            );
-            const json = await resp.json();
-            
-            if (!json.error && json.data) {
-              await messageCache.saveMessages(groupId, json.data);
-            }
-          } catch (err) {
-            console.error(`Failed to cache group ${groupId}:`, err);
-          }
-        }
-      }
-    };
-
-    initializeCache();
-  }, [chatRooms]);
 
   useEffect(() => {
     if (!userID) return;
@@ -104,9 +69,6 @@ const ChatProviderMain = ({ children }) => {
           const arr = Array.from(processedMessagesRef.current);
           processedMessagesRef.current = new Set(arr.slice(-100));
         }
-
-        // Add message to cache
-        await messageCache.addMessage(groupId, msg);
 
         const isSentByMe = String(msg.senderId) === String(userID);
 

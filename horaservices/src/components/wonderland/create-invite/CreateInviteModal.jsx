@@ -7,7 +7,7 @@ import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
 import { useChatStore } from "@/hooks/ChatContext";
 
-const CreateInviteModal = ({ isOpen, onClose }) => {
+const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
   if (!isOpen) return null;
   const router = useRouter();
   const [occasion, setOccasion] = useState("");
@@ -31,6 +31,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
         setOccasion("");
         onClose();
         refetchChatRooms();
+        setSubmitTemplateImage(true);
       }
     } catch (err) {
       console.error("Error rejecting content:", err);
@@ -72,13 +73,13 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
               {occasion?.length}/30 Characters
             </small>
           </div>
-            <CustomButton
-              title={"Submit"}
-              loading={loading}
-              disabled={!occasion}
-              onClick={occasion && handleSubmit}
-              // buttonClass="create-invite-btn"
-            />
+          <CustomButton
+            title={"Submit"}
+            loading={loading}
+            disabled={!occasion}
+            onClick={occasion && handleSubmit}
+            // buttonClass="create-invite-btn"
+          />
         </>
       }
     />
