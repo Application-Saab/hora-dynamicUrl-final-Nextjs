@@ -235,6 +235,15 @@ const OrderDetailTab = ({
     "All dishes prepared as per selected menu",
     "Hygiene & quality maintained throughout the service"
   ];
+  const foodDeliveryPolicy = [
+    "If the order is not assigned to the kitchen: You are eligible for a 100% refund of the advance payment.",
+    "If the order is cancelled more than 24 hours before the scheduled delivery: You will receive a 50% refund of the advance payment.",
+    "If the order is cancelled within 24 hours of the scheduled delivery: The full advance amount will be non-refundable, and 100% of the payment is required.",
+  ];
+   const chefPolicy = [
+    "Till the order is not assign to the service provider , 100% of the amount will be refunded, othewise 50%of the advance will be deducted as a cancellation charges to componsate the service provider.",
+    "The order cannot be edited after paying the advance customers can cancel the order and replace it with a new order with the required changes.",
+    ];
 
   return (
     <>
@@ -343,7 +352,7 @@ const OrderDetailTab = ({
             </div>
 
             <div style={{ fontSize: "14px", color: "#97538C" }}>
-              <div className="myOrder-amountList">
+              {/* <div className="myOrder-amountList">
                 <div className="myOrder-labelStyle">Original Price :</div>
                 <div>₹ {orderDetail?.total_amount || 0}</div>
               </div>
@@ -351,7 +360,7 @@ const OrderDetailTab = ({
               <div className="myOrder-amountList">
                 <div className="myOrder-labelStyle">Discount :</div>
                 <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
-              </div>
+              </div> */}
 
               <div className="myOrder-amountList">
                 <div className="myOrder-labelStyle">Final Amount :</div>
@@ -392,7 +401,7 @@ const OrderDetailTab = ({
               </div>
             </div>
 
-            <div className="fw-semiBold myOrderDetails-heading ">
+            {/* <div className="fw-semiBold myOrderDetails-heading ">
               Points For Considerations
             </div>
 
@@ -409,7 +418,7 @@ const OrderDetailTab = ({
                   <div>{text}</div>
                 </div>
               ))}
-            </div>
+            </div> */}
 
             {/* Cancellation and Order Change Policy */}
             <div className="mt-2 mx-3 cancellation-policy border-0">
@@ -427,7 +436,7 @@ const OrderDetailTab = ({
                 </p>
               </div>
 
-              {cancellationPolicy.map((policy, index) => (
+              {chefPolicy.map((policy, index) => (
                 <p key={index} style={{ fontSize: "11.6px", color: "#9D60B3" }} className="m-1">
                   {index + 1}. {policy}
                 </p>
@@ -477,7 +486,7 @@ const OrderDetailTab = ({
             </div>
 
             <div style={{ fontSize: "14px", color: "#97538C" }}>
-              <div className="myOrder-amountList">
+              {/* <div className="myOrder-amountList">
                 <div className="myOrder-labelStyle">Original Price :</div>
                 <div>₹ {orderDetail?.total_amount || 0}</div>
               </div>
@@ -485,7 +494,7 @@ const OrderDetailTab = ({
               <div className="myOrder-amountList">
                 <div className="myOrder-labelStyle">Discount :</div>
                 <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
-              </div>
+              </div> */}
 
               <div className="myOrder-amountList">
                 <div className="myOrder-labelStyle">Final Amount :</div>
@@ -528,7 +537,7 @@ const OrderDetailTab = ({
               </div>
             </div>
 
-            <div className="fw-semiBold myOrderDetails-heading ">
+            {/* <div className="fw-semiBold myOrderDetails-heading ">
               Points For Considerations
             </div>
 
@@ -545,7 +554,7 @@ const OrderDetailTab = ({
                   <div>{text}</div>
                 </div>
               ))}
-            </div>
+            </div> */}
 
             {/* Cancellation and Order Change Policy */}
             <div className="mt-2 mx-3 cancellation-policy border-0">
@@ -564,7 +573,7 @@ const OrderDetailTab = ({
                 </p>
               </div>
 
-              {cancellationPolicy.map((policy, index) => (
+              {foodDeliveryPolicy.map((policy, index) => (
                 <p key={index} style={{ fontSize: "11.6px", color: "#9D60B3" }} className="m-1">
                   {index + 1}. {policy}
                 </p>
@@ -637,7 +646,7 @@ const OrderDetailTab = ({
                   </div>
 
                   <div style={{ fontSize: "14px", color: "#97538C" }}>
-                    <div className="myOrder-amountList">
+                    {/* <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Original Price :</div>
                       <div>₹ {orderDetail?.total_amount || 0}</div>
                     </div>
@@ -645,7 +654,7 @@ const OrderDetailTab = ({
                     <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Discount :</div>
                       <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
-                    </div>
+                    </div> */}
 
                     <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Final Amount :</div>
@@ -687,7 +696,7 @@ const OrderDetailTab = ({
                     </div>
                   </div>
 
-                  <div className="fw-semiBold myOrderDetails-heading ">
+                  {/* <div className="fw-semiBold myOrderDetails-heading ">
                     Points For Considerations
                   </div>
 
@@ -704,7 +713,7 @@ const OrderDetailTab = ({
                         <div>{text}</div>
                       </div>
                     ))}
-                  </div>
+                  </div> */}
 
                   {/* Cancellation and Order Change Policy */}
                   <div className="mt-2 mx-3 cancellation-policy border-0">
@@ -723,7 +732,7 @@ const OrderDetailTab = ({
                       </p>
                     </div>
 
-                    {cancellationPolicy.map((policy, index) => (
+                    {foodDeliveryPolicy.map((policy, index) => (
                       <p key={index} style={{ fontSize: "11.6px", color: "#9D60B3" }} className="m-1">
                         {index + 1}. {policy}
                       </p>
@@ -828,7 +837,7 @@ const OrderDetailTab = ({
                   </div>
 
                   <div style={{ fontSize: "14px", color: "#97538C" }}>
-                    <div className="myOrder-amountList">
+                    {/* <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Original Price :</div>
                       <div>₹ {orderDetail?.total_amount || 0}</div>
                     </div>
@@ -836,7 +845,7 @@ const OrderDetailTab = ({
                     <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Discount :</div>
                       <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
-                    </div>
+                    </div> */}
 
                     <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Final Amount :</div>
@@ -883,7 +892,7 @@ const OrderDetailTab = ({
                   </div>
 
                   <div>
-                    {infoList.map((text, index) => (
+                    {cancellationPolicy.map((text, index) => (
                       <div key={index} className="info-row">
                         <div className="info-icon">
                           <Image
@@ -993,7 +1002,7 @@ const OrderDetailTab = ({
               </div>
 
               <div style={{ fontSize: "14px", color: "#97538C" }}>
-                <div className="myOrder-amountList">
+                {/* <div className="myOrder-amountList">
                   <div className="myOrder-labelStyle">Original Price :</div>
                   <div>₹ {orderDetail?.total_amount || 0}</div>
                 </div>
@@ -1001,7 +1010,7 @@ const OrderDetailTab = ({
                 <div className="myOrder-amountList">
                   <div className="myOrder-labelStyle">Discount :</div>
                   <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
-                </div>
+                </div> */}
 
                 <div className="myOrder-amountList">
                   <div className="myOrder-labelStyle">Final Amount :</div>
@@ -1044,7 +1053,7 @@ const OrderDetailTab = ({
                 </div>
               </div>
 
-              <div className="fw-semiBold myOrderDetails-heading ">
+              {/* <div className="fw-semiBold myOrderDetails-heading ">
                 Points For Considerations
               </div>
 
@@ -1061,7 +1070,7 @@ const OrderDetailTab = ({
                     <div>{text}</div>
                   </div>
                 ))}
-              </div>
+              </div> */}
 
               {/* Cancellation and Order Change Policy */}
               <div className="mt-2 mx-3 cancellation-policy border-0">
