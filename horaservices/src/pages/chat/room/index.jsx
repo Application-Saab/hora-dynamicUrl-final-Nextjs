@@ -420,7 +420,7 @@ const ChatPage = () => {
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
-    tempIdToClientMap.current.set(tempId, true);
+    // tempIdToClientMap.current.set(tempId, true);
     if (socket && socket.connected) {
       socket.emit("message:send", {
         eventId: selectedGroup.eventId,
