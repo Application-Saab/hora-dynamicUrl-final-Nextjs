@@ -19,7 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
-import { themeFilters } from "@/utils/themeFilters";
+import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import "./catvaluedecor.css"
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
@@ -42,7 +42,7 @@ import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp";
 import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp";
 import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
-import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.png"
+import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.webp";
 import { useDecorationEvents } from "@/utils/decorationEvents";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
@@ -475,13 +475,17 @@ const DecorationCatPage = ({ locality }) => {
         <meta property="og:type" content="website" />
       </Head>
 
-      {loading ? (
-        <div className="skeleton-wrapper">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </div>
-      ) : (
+   {loading ? (
+  <div className="skeleton-wrapper">
+    {Array.from({ length: 6 }).map((_, index) => (
+      <CardSkeleton key={index} />
+    ))}
+  </div>
+) : catalogueData.length === 0 ? (
+  <div className="noProductsWrapper">
+    <h2>No products found</h2>
+  </div>
+) : (
         <>
           {!isThemePage && (
             <>
@@ -515,6 +519,25 @@ const DecorationCatPage = ({ locality }) => {
                   />
                 </div>
               )}
+{catValue?.toLowerCase() === "naming-ceremony-decoration" && (
+  <div className="category-tabs-outer">
+    <CategoryTabs
+      data={NamingCeremonyThemes.map((item) => ({
+        id: item.value,
+        name: item.label,
+        image: item.image,
+        value: item.value,
+        catValue: "naming-ceremony-decoration",
+      }))}
+      onSelect={(item) => openCatItems(item, themeFilter)}
+      city={city}
+      hasCityPageParam={hasCityPageParam}
+      locality={locality}
+      variant="grid"
+      catValue="naming-ceremony-decoration"
+    />
+  </div>
+)}
 
               <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
 

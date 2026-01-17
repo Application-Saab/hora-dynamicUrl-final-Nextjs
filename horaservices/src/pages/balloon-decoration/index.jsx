@@ -19,7 +19,7 @@ import Banner3 from "../../assets/decbanner1.webp";
 import Kidsbirthday from "../../assets/kidsBirthdayIMG.jpg";
 import BabyWelcome from "../../assets/BabyWelcomeIMG.png";
 import Anniversary from "../../assets/AnniversaryIMG.png";
-import arrowIcon from "../../assets/arrow-down.png";
+import arrowIcon from "../../assets/arrow-down.svg";
 import CategoryTabs from "@/components/CategoryTabs";
 import ReviewSlider from "@/components/ReviewSection";
 import {balloonreviews} from "@/utils/balloonReviews";

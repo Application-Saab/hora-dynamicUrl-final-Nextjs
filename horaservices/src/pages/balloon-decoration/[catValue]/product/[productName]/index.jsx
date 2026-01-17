@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
-import checkImage from "../../../../../assets/tick.jpeg";
+import checkImage from "../../../../../assets/tick.svg";
 import "./Decorproduct.css"
 import {
   getDecorationProductOrganizationSchema,
@@ -683,7 +683,7 @@ function DecorationCatDetails({ city, locality }) {
       statement.split("-").filter((item) => item.trim() !== "")
     );
     const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
+      <li key={index} className="inclusionstyle" style={ {fontFamily: "Inter, sans-serif"}}>
         <Image
           src={checkImage}
           alt="Info"
@@ -699,6 +699,9 @@ function DecorationCatDetails({ city, locality }) {
             fontSize: "21px",
             borderBottom: "1px solid #e7eff9",
             marginBottom: "10px",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: "600",
+           
           }}
         >
           Inclusions
@@ -879,8 +882,9 @@ function DecorationCatDetails({ city, locality }) {
               <h1
                 style={{
                   fontSize: "18px",
-                  color: "#222",
-                  fontWeight: "#500",
+                  color: "#000000",
+                  fontWeight: "#600",
+                  fontFamily: "Inter, sans-serif"
                 }}
               >
                 {product.name}
