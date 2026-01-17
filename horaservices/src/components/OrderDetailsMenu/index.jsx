@@ -15,7 +15,7 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
       ?.filter((item) => item.mealId[0].name === category)
       .map((item, index) => (
         <div className="menu-item" key={index}>
-          <div className="menu-item-image">
+          <div className="menu-item-image" style={{flexShrink: 0}}>
             <Image
               src={`https://horaservices.com/api/uploads/${item?.image}`}
               alt={item.name}
@@ -46,8 +46,8 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
 
   return (
     <>
-      <div className="menu-section">
-        {orderType !== 6 &&
+      <div className="menu-section"> 
+        {/* {orderType !== 6 &&
           orderType !== 7 &&
           orderType !== 8 &&
           orderType !== 1 && (
@@ -63,18 +63,18 @@ const OrderDetailsMenu = ({ orderDetail, orderType }) => {
             </div>
 
           </div>
-          )}
+          )} */}
 
         {categories.map((category) => {
           const items = categorizeItems(category);
           return (
             items?.length > 0 && (
               <div className="meal-category" key={category}>
-                 <span 
-                // className="category-title"
+                 <div 
+                 style={{fontSize: '15.72px', marginBottom: '10px', marginTop: '10px'}}
                 >
                   {category} ({items.length})
-                </span>
+                </div>
                 <div className="menu-items">{items}</div>
               </div>
             )

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import OrderDetailHeader from "../../components/OrderDetailHeader";
 import OrderDetailTab from "../../components/OrderDetailTab";
 import {
   BASE_URL,
@@ -138,7 +137,6 @@ const OrderDetail = () => {
   return (
     <>
       <div className="orderheader-orderdetail">
-        <OrderDetailHeader orderDetail={orderDetail} />
         <div className="order-detail-page-decoration">
           <OrderDetailTab
             orderDetail={orderDetail}
