@@ -1,4 +1,4 @@
-
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   box-sizing: border-box;
@@ -13,10 +13,9 @@
 }
 
 body {
-  padding-bottom: calc(0px + var(--sab)); 
-  background-color: #fff; 
+  padding-bottom: calc(0px + var(--sab));
+  background-color: #fff;
 }
-
 
 .bottom-nav {
   position: fixed;
@@ -32,22 +31,43 @@ body {
   z-index: 1000;
 }
 
+.nav-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unread-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background-color: rgba(255, 46, 46, 1);
+  color: white;
+  font-family: "Poppins", sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  z-index: 10;
+}
+
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   width: 70px;
   height: 100%;
-
   text-align: center;
   text-decoration: none;
-
   color: #333;
-
-  /* ---- Your font specs ---- */
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: 12px;
@@ -58,7 +78,7 @@ body {
 .nav-icon {
   width: 24px;
   height: 24px;
- margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .chatter-icon .nav-icon {
@@ -66,18 +86,17 @@ body {
   height: 28px;
   transform: rotate(0deg);
   opacity: 1;
-   margin-bottom: 2px !important;
+  margin-bottom: 2px !important;
 }
-.Explore-icon .nav-icon{
-    width: 26px;
+.Explore-icon .nav-icon {
+  width: 26px;
   height: 28px;
   transform: rotate(0deg);
   opacity: 1;
-   margin-bottom: 2px !important;
+  margin-bottom: 2px !important;
 }
 
-
-.iframe-wrapper{
+.iframe-wrapper {
   padding-bottom: 100px;
 }
 .iframe-overlay {
@@ -90,7 +109,7 @@ body {
   display: flex;
   justify-content: center;
   animation: fadeIn 0.3s ease-in-out;
-    overflow: auto; 
+  overflow: auto;
   align-items: flex-start;
 }
 .chat-instruction-popup {
@@ -117,7 +136,7 @@ body {
   margin-top: 5px;
   margin-bottom: 0px;
 }
-.chat-instruction-popup-btn{
+.chat-instruction-popup-btn {
   margin-top: 24.75px;
   margin-bottom: 24.92px;
   width: 70%;
@@ -130,13 +149,12 @@ body {
   font-size: 14.85px;
   line-height: 100%;
   letter-spacing: 0%;
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 
 @keyframes fadeIn {
   from {
@@ -146,4 +164,3 @@ body {
     opacity: 1;
   }
 }
-

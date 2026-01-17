@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import "../GroupsList.css";
@@ -60,15 +60,15 @@ const ChatPage = () => {
   const [userData, setUserData] = useState({});
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
+  const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
-  const tempIdToClientMap = useRef(new Map());
 
   // Mark read on mount if selected
   useEffect(() => {
     if (selectedGroup && userId) {
       const gid = selectedGroup._id || selectedGroup.id;
       markRoomRead(gid, userId);
-      fetchMessagesForRoom(gid);
+      fetchMessagesForRoom(gid)
     }
   }, [selectedGroup, userId]);
 
@@ -102,6 +102,75 @@ const ChatPage = () => {
     socket.on("message:new", onMessageNewLocal);
     return () => socket.off("message:new", onMessageNewLocal);
   }, [selectedGroup, userId]);
+
+  // Scroll to first unread or bottom on messages load
+  useLayoutEffect(() => {
+    if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+
+    // Only scroll once when messages first load
+    if (hasScrolledToUnreadRef.current) return;
+
+    const gid = selectedGroup._id || selectedGroup.id;
+    const unreadCount = unreadCounts[gid] || 0;
+
+    setTimeout(() => {
+      if (!chatBodyRef.current) return;
+
+      if (unreadCount > 0) {
+        const roomObj = chatRooms.find(
+          (r) => String(r._id || r.id) === String(gid)
+        );
+        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+        const lastReadForMe = lastReadMap[userId]
+          ? new Date(lastReadMap[userId])
+          : null;
+
+        // Find first unread message index
+        let firstUnreadIndex = -1;
+        if (lastReadForMe) {
+          for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
+            const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
+
+            // Skip own messages
+            if (String(msg.senderId) === String(userId)) continue;
+
+            // Find first message after lastReadAt
+            if (msgTime && msgTime > lastReadForMe) {
+              firstUnreadIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (firstUnreadIndex !== -1) {
+          // Scroll to first unread message
+          const messageElements =
+            chatBodyRef.current.querySelectorAll(".chat-message");
+          const targetElement = messageElements[firstUnreadIndex];
+
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: "auto",
+              block: "start",
+            });
+
+            // Add a visual indicator
+            targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
+            setTimeout(() => {
+              targetElement.style.backgroundColor = "";
+            }, 2000);
+          }
+        } else {
+          chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+        }
+      } else {
+        chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+      }
+
+      hasScrolledToUnreadRef.current = true;
+    }, 100);
+  }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
 
   // Visual viewport handling for keyboard
   useEffect(() => {
@@ -376,8 +445,8 @@ const ChatPage = () => {
   const resizeTextarea = () => {
     const el = textareaRef.current;
     if (!el) return;
-    el.style.height = "auto"; // reset
-    const newHeight = Math.min(el.scrollHeight, 120); // max height 120px
+    el.style.height = "auto";
+    const newHeight = Math.min(el.scrollHeight, 120);
     el.style.height = newHeight + "px";
   };
 
@@ -428,18 +497,16 @@ const ChatPage = () => {
     }
   };
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   useEffect(() => {
     if (selectedGroup) {
       setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
     }
   }, [selectedGroup]);
+
+  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+    acc[member.userId] = member.profileImageUrl || "";
+    return acc;
+  }, {});
 
   return (
     <div
@@ -503,20 +570,29 @@ const ChatPage = () => {
                 isConsecutive ? "consecutive" : ""
               }`}
             >
-              {!isMe && !isConsecutive && (
-                <div
-                  className="chat-avatar-receiver"
-                  style={{
-                    backgroundColor: getAvatarColor(
-                      senderName || msg.senderPhone
-                    ),
-                  }}
-                >
-                  {senderName
-                    ? senderName.charAt(0).toUpperCase()
-                    : msg.senderPhone?.charAt(3)}
-                </div>
-              )}
+              {!isMe &&
+                !isConsecutive &&
+                (membersProfileMap?.[msg.senderId] ? (
+                  <img
+                    src={membersProfileMap?.[msg.senderId]}
+                    alt={senderName || "avatar"}
+                    className="chat-avatar-receiver"
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <div
+                    className="chat-avatar-receiver"
+                    style={{
+                      backgroundColor: getAvatarColor(
+                        senderName || msg.senderPhone
+                      ),
+                    }}
+                  >
+                    {senderName
+                      ? senderName.charAt(0).toUpperCase()
+                      : msg.senderPhone?.charAt(3)}
+                  </div>
+                ))}
               <div
                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
                   isConsecutive ? "consecutive" : ""

@@ -27,7 +27,6 @@ const InvitesPage = () => {
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
-  // const [isHost, setIsHost] = useState(true);
   const { rsvpSubmitted } = useRsvpStatus(
     queryEventId,
     skipRsvpCheck,
@@ -98,11 +97,9 @@ const InvitesPage = () => {
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
       if (eventDetails?.userId === loggedinUserId) {
-        // setIsHost(true);
         setSkipRsvpCheck(true);
       } else {
         setSkipRsvpCheck(false);
-        // setIsHost(false);
       }
     }
   }, [eventDetails, loggedinUserId]);
@@ -132,12 +129,17 @@ const InvitesPage = () => {
         <div className="invite-page-container">
           <div className="invite-template-shell">
             {fetchEventLoading ? (
-              <TemplatecardSkeleton width="100%" height="200px" borderRadius="10px" />
+              <TemplatecardSkeleton
+                width="100%"
+                height="200px"
+                borderRadius="10px"
+              />
             ) : (
               <TemplateRenderer
                 fetchEventLoading={fetchEventLoading}
                 eventDetails={eventDetails}
                 orderDetails={eventDetails}
+                isHost={eventDetails?.userId === loggedinUserId}
               />
             )}
           </div>
@@ -146,12 +148,12 @@ const InvitesPage = () => {
             eventData?.location ||
             eventData?.googleMapLink ||
             eventData?.eventTime) && (
-              <div className="invite-address-section">
-                <InviteAddressSection eventData={eventDetails} />
-              </div>
-            )}
+            <div className="invite-address-section">
+              <InviteAddressSection eventData={eventDetails} />
+            </div>
+          )}
 
-          {(eventDetails && eventDetails?.userId === loggedinUserId) && (
+          {eventDetails && eventDetails?.userId === loggedinUserId && (
             <div className="invite-action-container">
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}

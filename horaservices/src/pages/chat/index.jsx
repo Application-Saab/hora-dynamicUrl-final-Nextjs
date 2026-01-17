@@ -12,16 +12,16 @@ import { MARK_READ_MESSAGE } from "@/utils/apiconstants";
 import useApi from "@/hooks/useApi";
 import socket from "@/socket";
 
-
 const GroupsList = () => {
-  const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const router = useRouter();
   const { chatRooms, unreadCounts, setUnreadCountsContext } = useChatStore();
   const { makeRequest: markReadRequest } = useApi();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Filter rooms: Show groups always, direct only if lastMessageAt exists (has messages)
-  const filteredChatRooms = chatRooms.filter(room => {
+  const filteredChatRooms = chatRooms.filter((room) => {
     if (room.roomType === "group") return true;
     return !!room.lastMessageAt; // Direct rooms only if message sent
   });
@@ -37,12 +37,15 @@ const GroupsList = () => {
         groupId,
         userId: uid,
       });
-      if (!resp.error && (resp.unreadCounts || (resp.data && resp.data.unreadCounts))) {
+      if (
+        !resp.error &&
+        (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
+      ) {
         setUnreadCountsContext((prev) => ({
           ...prev,
           ...(resp.unreadCounts || resp.data.unreadCounts),
         }));
-      }else{
+      } else {
         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
       }
     } catch (err) {

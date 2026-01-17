@@ -28,6 +28,7 @@ const useApi = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastRequest, setLastRequest] = useState(null);
+  const [isFetched, setIsFetched] = useState(false);
 
   // Main reusable API call function
   const makeRequest = useCallback(
@@ -36,6 +37,7 @@ const useApi = (
 
       setLoading(true);
       setError(null);
+      setIsFetched(false);
 
       try {
         const response = await api({
@@ -56,6 +58,7 @@ const useApi = (
         throw err;
       } finally {
         setLoading(false);
+        setIsFetched(true);
       }
     },
     []
@@ -70,6 +73,7 @@ const useApi = (
     const fetchInitialData = async () => {
       setLoading(true);
       setError(null);
+      setIsFetched(false);
 
       try {
         const response = await api.get(initialUrl, {
@@ -93,6 +97,7 @@ const useApi = (
         }
       } finally {
         setLoading(false);
+        setIsFetched(true);
       }
     };
 
@@ -118,7 +123,16 @@ const useApi = (
     setError(null);
   }, []);
 
-  return { data, loading, error, makeRequest, refetch, setData, reset };
+  return {
+    data,
+    loading,
+    isFetched,
+    error,
+    makeRequest,
+    refetch,
+    setData,
+    reset,
+  };
 };
 
 export default useApi;
