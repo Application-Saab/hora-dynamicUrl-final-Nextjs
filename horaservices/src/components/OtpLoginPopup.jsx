@@ -17,6 +17,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import loginImage from "../assets/successimage.png";
 import loginBgImage from "../assets/bgimage.svg";
+import ArrowImg from "../assets/arrow.svg";
 const OtpLogin = ({ setIsModalOpen }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -119,35 +120,47 @@ const handleMobileNumberChange = (e) => {
 const handleOtpChange = (e, index) => {
   const value = e.target.value.replace(/\D/g, "");
 
-  if (!value) return;
-
   setOtp((prev) => {
-    const newOtp = [...prev];
-    newOtp[index] = value;
-    return newOtp;
+    const next = [...prev];
+
+    // 🔥 agar blank hua → sirf clear
+    if (value === "") {
+      next[index] = "";
+      return next;
+    }
+
+    // 🔥 sirf last digit lo
+    next[index] = value[value.length - 1];
+    return next;
   });
 
-  if (index < 3) {
+  // 🔥 forward focus only when digit typed
+  if (value && index < 3) {
     inputsRef.current[index + 1]?.focus();
   }
 };
 
 
+
 const handleKeyDown = (e, index) => {
   if (e.key === "Backspace") {
-    e.preventDefault();
-
     setOtp((prev) => {
       const next = [...prev];
-      next[index] = "";
+
+      if (next[index]) {
+        next[index] = "";
+      } else if (index > 0) {
+        next[index - 1] = "";
+        setTimeout(() => {
+          inputsRef.current[index - 1]?.focus();
+        }, 0);
+      }
+
       return next;
     });
-
-    if (index > 0) {
-      inputsRef.current[index - 1]?.focus();
-    }
   }
 };
+
 
 
 
@@ -245,25 +258,40 @@ const handleBeforeInput = (e, index) => {
         {!isUserLoggedIn ? (
           <>
             {/* HEADER */}
-              <div className="login-content">
-            <div className="login-header">
-              <AiOutlineArrowLeft
+            <Image
+  src={ArrowImg}
+  alt="Back"
+  width={24}
+  height={24}
   className="login-back-icon"
   onClick={() => {
     if (isOtpSent) {
       setIsOtpSent(false);
       setOtp(["", "", "", ""]);
       setOtpError("");
-      return;
-    }
-    if (window.history.length > 1) {
-      router.back();
     } else {
-  
       setIsModalOpen(false);
     }
   }}
 />
+              <div className="login-content">
+                
+            <div className="login-header">
+      {/* <AiOutlineArrowLeft
+  className="login-back-icon"
+  onClick={() => {
+    if (isOtpSent) {
+      // 🔁 OTP → Get Started
+      setIsOtpSent(false);
+      setOtp(["", "", "", ""]);
+      setOtpError("");
+    } else {
+      // ❌ Get Started → Close Modal
+      setIsModalOpen(false);
+    }
+  }}
+/> */}
+
 
               <h1 className="login-title">
                 {isOtpSent ? "Verification" : "Get Started"}
@@ -315,10 +343,11 @@ const handleBeforeInput = (e, index) => {
     ref={(el) => (inputsRef.current[i] = el)}
     className="otp-box"
     value={otp[i]}
-    type="tel"                 // 🔥 MOBILE KE LIYE
+    type="tel"
     inputMode="numeric"
     autoComplete="one-time-code"
-    onBeforeInput={(e) => handleBeforeInput(e, i)}
+    maxLength={1}
+    onChange={(e) => handleOtpChange(e, i)}
     onKeyDown={(e) => handleKeyDown(e, i)}
   />
 ))}
