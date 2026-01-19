@@ -15,7 +15,7 @@ import { useTimer } from "../utils/useTimer";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import loginImage from "../assets/successimage.png";
+import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
 const OtpLogin = ({ setIsModalOpen }) => {

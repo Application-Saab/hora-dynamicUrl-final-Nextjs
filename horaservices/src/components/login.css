@@ -217,11 +217,13 @@ font-size: 24px;
 line-height: 100%;
 letter-spacing: 0%;
 text-align: center;
+margin-top: 10px;
 }
 .success-image {
-  width: clamp(130px, 40vw, 157px);
-  height: clamp(150px, 46vw, 180px);
+  width: clamp(120px, 35vw, 140px);
+  height: clamp(120px, 35vw, 140px);
   opacity: 1;
+  padding:15px;
 }
 
 .loginbtn {

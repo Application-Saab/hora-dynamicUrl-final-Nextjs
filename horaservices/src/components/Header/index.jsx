@@ -4,19 +4,21 @@ import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
 // import avtar from '../assets/avtar.jpg';
 import { FaCaretDown } from "react-icons/fa";
 import backIcon from '../../assets/back_arrow1.png';
-import logoutImage from '../../assets/logout.png';
+
 import logoWhite from '../../../public/assets/logo_white.svg'
 import Link from "next/link";
 import Image from "next/image";
+
 // import useScrollToTop from '../useScrollToTop'; // Import the custom hook
 import ChefCitypage from "../../pages/[city]/chef-near-me";
- import Popup from "../../utils/popup";
+
 import { usePathname, useRouter } from "next/navigation";
 import logo from '../../assets/new_logo_light.png';
 import logolight from '../../assets/hora-light-innerpage.png'
 import loginIcon from '../../assets/profile_picture.png';
 import OtploginPopup from '../../components/OtpLoginPopup';
 import { useLayoutEffect } from "react";
+import LogoutModal from "@/utils/LogoutModal";
 
 function Header() {
   // useScrollToTop(); // Use the custo hook
@@ -33,7 +35,7 @@ function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const isHomePage = routerPathname === '/';
   const isDelhiPage = routerPathname === '/delhi';
-
+const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer);
   };
@@ -70,10 +72,6 @@ function Header() {
 
 
   const drawerRef = useRef(null);
-
-  const [showPopup, setShowPopup] = useState(false); // State for controlling popup visibility
-  const [popupMessage, setPopupMessage] = useState({}); // State for popup message
-
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -212,20 +210,14 @@ useEffect(() => {
 
     };
 
-  const handleLogout = () => {
-    localStorage.setItem("isLoggedIn", "false");
-    localStorage.clear();
-    setPopupMessage({
-      img: logoutImage,
-      title: "Logout Successful",
-      body: "You have been logged out successfully.",
-      button: "OK"
-    });
-    setShowPopup(true); // Show the popup
-    router.push("/");
-  };
-
-
+ const handleLogoutClick = () => {
+  setIsLogoutOpen(true);
+};
+const performLogout = () => {
+  localStorage.setItem("isLoggedIn", "false");
+  localStorage.clear();
+  router.push("/"); // redirect to home
+};
   return (
     <>
      { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/party-food-delivery-live-catering-buffet" || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
@@ -283,10 +275,11 @@ useEffect(() => {
                 </>
                
                 ) : (
-                  <a style={styles.linkiconLogout} onClick={handleLogout}>
-                    <image src={loginIcon} />
-                    <span style={{ marginLeft: "3px" }}>Logout</span>
-                  </a>
+                <a style={styles.linkiconLogout} onClick={handleLogoutClick}>
+   <image src={loginIcon} />
+      <span style={{ marginLeft: "3px" }}>Logout</span>
+    </a>
+                  
                 ))}
               </li>
             </ul>
@@ -334,8 +327,8 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogout} openModal={openModal}/>}
-      {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
+      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogoutClick} openModal={openModal}/>}
+      {/* {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} Render the Popup */}
     </header>
       ) : (
     <header style={styles.headerContainerinnerpage} className="inner-page-header">
@@ -442,7 +435,7 @@ useEffect(() => {
                     <span style={{ marginLeft: "7px" }}>Login</span>
                   </div>
               ) : (
-                <a style={styles.linkiconLogout} onClick={handleLogout}>
+                <a style={styles.linkiconLogout} onClick={handleLogoutClick}>
                   <FontAwesomeIcon icon={faUser} style={styles.icon} />
                   <span style={{ marginLeft: "3px" }}>Logout</span>
                 </a>
@@ -483,8 +476,8 @@ useEffect(() => {
         </div>
       </div>
     </div>
-    {showDrawer && <Drawer closeDrawer={toggleDrawer} openModal={openModal} drawerRef={drawerRef} handleLogout={handleLogout} />}
-    {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} {/* Render the Popup */}
+    {showDrawer && <Drawer closeDrawer={toggleDrawer} openModal={openModal} drawerRef={drawerRef} handleLogout={handleLogoutClick} />}
+    {/* {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} Render the Popup */}
 
   </header>
       )
@@ -494,6 +487,12 @@ useEffect(() => {
   <OtploginPopup setIsModalOpen={setIsModalOpen} />
   : null
 }
+<LogoutModal
+  isOpen={isLogoutOpen}
+  onClose={() => setIsLogoutOpen(false)}
+  onLogoutConfirm={performLogout}
+/>
+
     </>
   );
 }

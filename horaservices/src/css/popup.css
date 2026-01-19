@@ -54,10 +54,6 @@
   padding: 10px;
 }
 
-.logout-popup-header {
-  display: flex;
-  justify-content: flex-end;
-}
 
 .close-icon {
   cursor: pointer;
