@@ -91,7 +91,7 @@ color: black;
     width: clamp(190px, 54vw, 240px);
   height: clamp(38px, 11vw, 48px);
 
-  margin: 10px auto 0;
+  margin: 20px auto 0;
   display: block;
   background: #97538c;
   color: #fff;
@@ -148,7 +148,14 @@ color: black;
   border-color: #ff4d4f;
 }
 
-.input-error-text,
+.input-error-text{
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 10px;
+  margin-bottom: 0px !important;
+  text-align: center;
+  font-weight: 500;
+}
 .otp-error-text {
     color: #ff4d4f;
     font-size: 12px;
@@ -238,4 +245,12 @@ margin-top: 10px;
     align-items: center;
     width: 100%;
     margin: 11px 0;
+}
+.otp-box {
+  caret-color: transparent;   /* 🔥 cursor hide */
+}
+.hidden-otp-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }

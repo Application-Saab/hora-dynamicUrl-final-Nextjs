@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef ,useEffect} from "react";
 import axios from "axios";
 import {
   BASE_URL,
@@ -118,23 +118,26 @@ const handleMobileNumberChange = (e) => {
 
   /* ---------------- OTP INPUT (BOX UI) ---------------- */
 const handleOtpChange = (e, index) => {
-  const value = e.target.value.replace(/\D/g, "");
+  const value = e.target.value;
 
-  setOtp((prev) => {
+  // 🔥 FULL OTP autofill case (Android / iOS)
+  if (value.length === 4) {
+    const splitOtp = value.split("").slice(0, 4);
+    setOtp(splitOtp);
+    inputsRef.current[3]?.focus();
+    return;
+  }
+
+  if (!/^\d?$/.test(value)) return;
+
+  setOtp(prev => {
     const next = [...prev];
-
-    // 🔥 agar blank hua → sirf clear
-    if (value === "") {
-      next[index] = "";
-      return next;
-    }
-
-    // 🔥 sirf last digit lo
-    next[index] = value[value.length - 1];
+    next[index] = value;
     return next;
   });
 
-  // 🔥 forward focus only when digit typed
+  setOtpError("");
+
   if (value && index < 3) {
     inputsRef.current[index + 1]?.focus();
   }
@@ -142,14 +145,20 @@ const handleOtpChange = (e, index) => {
 
 
 
+
+
 const handleKeyDown = (e, index) => {
   if (e.key === "Backspace") {
+    e.preventDefault();
+
     setOtp((prev) => {
       const next = [...prev];
 
       if (next[index]) {
+        // 🔥 digit hai → sirf clear, focus wahi
         next[index] = "";
       } else if (index > 0) {
+        // 🔥 empty hai → previous pe jao
         next[index - 1] = "";
         setTimeout(() => {
           inputsRef.current[index - 1]?.focus();
@@ -165,15 +174,15 @@ const handleKeyDown = (e, index) => {
 
 
 
+
   /* ---------------- VERIFY OTP (OLD LOGIC) ---------------- */
 const verifyOtp = async () => {
-    const finalOtp = otp.join("");
+ const finalOtp = otp.join("");
 
-  if (otp.length !== 4) {
-    setOtpError("Please enter valid OTP");
-    return;
-  }
-
+if (finalOtp.length !== 4) {
+  setOtpError("Please enter valid OTP");
+  return;
+}
   try {
     const res = await axios.post(
       BASE_URL + OTP_VERIFY_ENDPOINT,
@@ -224,26 +233,61 @@ const verifyOtp = async () => {
     setOtpError("");
     await sendOtp();
   };
-const handleBeforeInput = (e, index) => {
-  const data = e.data;
 
-  if (!/^\d$/.test(data)) {
-    e.preventDefault();
-    return;
-  }
-
+const handleOtpPaste = (e) => {
   e.preventDefault();
 
-  setOtp((prev) => {
-    const next = [...prev];
-    next[index] = data;
-    return next;
-  });
+  const pasted = e.clipboardData
+    .getData("text")
+    .replace(/\D/g, "")
+    .slice(0, 4);
 
-  if (index < 3) {
-    inputsRef.current[index + 1]?.focus();
-  }
+  if (pasted.length < 4) return;
+
+  const newOtp = pasted.split("");
+
+  setOtp(newOtp);
+
+  // 🔥 last box pe focus
+  setTimeout(() => {
+    inputsRef.current[3]?.focus();
+  }, 0);
 };
+
+useEffect(() => {
+  if (isOtpSent) {
+    setTimeout(() => {
+      inputsRef.current[0]?.focus();
+    }, 500);
+  }
+}, [isOtpSent]);
+useEffect(() => {
+  if (!isOtpSent) return;
+
+  if (!("OTPCredential" in window)) return;
+
+  const controller = new AbortController();
+
+  navigator.credentials
+    .get({
+      otp: { transport: ["sms"] },
+      signal: controller.signal,
+    })
+    .then((cred) => {
+      if (cred?.code) {
+        const digits = cred.code.slice(0, 4).split("");
+        setOtp(digits);
+
+        // 🔥 last box focus
+        setTimeout(() => {
+          inputsRef.current[3]?.focus();
+        }, 0);
+      }
+    })
+    .catch(() => {});
+
+  return () => controller.abort();
+}, [isOtpSent]);
 
   /* ---------------- UI ---------------- */
   return (
@@ -277,20 +321,7 @@ const handleBeforeInput = (e, index) => {
               <div className="login-content">
                 
             <div className="login-header">
-      {/* <AiOutlineArrowLeft
-  className="login-back-icon"
-  onClick={() => {
-    if (isOtpSent) {
-      // 🔁 OTP → Get Started
-      setIsOtpSent(false);
-      setOtp(["", "", "", ""]);
-      setOtpError("");
-    } else {
-      // ❌ Get Started → Close Modal
-      setIsModalOpen(false);
-    }
-  }}
-/> */}
+     
 
 
               <h1 className="login-title">
@@ -338,18 +369,24 @@ const handleBeforeInput = (e, index) => {
       className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
     >
 {[0, 1, 2, 3].map((i) => (
-  <input
-    key={i}
-    ref={(el) => (inputsRef.current[i] = el)}
-    className="otp-box"
-    value={otp[i]}
-    type="tel"
-    inputMode="numeric"
-    autoComplete="one-time-code"
-    maxLength={1}
-    onChange={(e) => handleOtpChange(e, i)}
-    onKeyDown={(e) => handleKeyDown(e, i)}
-  />
+ 
+<input
+  key={i}
+  ref={(el) => (inputsRef.current[i] = el)}
+  className="otp-box"
+  value={otp[i]}
+  type="text"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  maxLength={1}
+  autoComplete={i === 0 ? "one-time-code" : "off"}
+  onChange={(e) => handleOtpChange(e, i)}
+  onKeyDown={(e) => handleKeyDown(e, i)}
+  onPaste={handleOtpPaste}
+/>
+
+
+
 ))}
 
 
@@ -377,7 +414,14 @@ const handleBeforeInput = (e, index) => {
 
 
 
-<button className="login-primary-btn" onClick={verifyOtp} disabled={otp.length !== 4} > LOGIN </button>
+<button
+  className="login-primary-btn"
+  onClick={verifyOtp}
+  disabled={otp.join("").length !== 4}
+>
+  LOGIN
+</button>
+
   </>
 )}
 
