@@ -1,728 +1,174 @@
-import React, { useState, useRef, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faBars } from "@fortawesome/free-solid-svg-icons";
-// import avtar from '../assets/avtar.jpg';
-import { FaCaretDown } from "react-icons/fa";
-import backIcon from '../../assets/back_arrow1.png';
 
-import logoWhite from '../../../public/assets/logo_white.svg'
+"use client";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-
-// import useScrollToTop from '../useScrollToTop'; // Import the custom hook
-import ChefCitypage from "../../pages/[city]/chef-near-me";
-
+import "./header.css";
 import { usePathname, useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
+import loginImg from '../../assets/profile_picture.png'
 import logo from '../../assets/new_logo_light.png';
-import logolight from '../../assets/hora-light-innerpage.png'
-import loginIcon from '../../assets/profile_picture.png';
-import OtploginPopup from '../../components/OtpLoginPopup';
-import { useLayoutEffect } from "react";
+import MobileDrawer from "./MobileDrawer";
+import DesktopMenu from "./DesktopMenu";
+import OtploginPopup from "../OtpLoginPopup";
 import LogoutModal from "@/utils/LogoutModal";
 
-function Header() {
-  // useScrollToTop(); // Use the custo hook
-
-//   const location = useLocation();
+const Header = () => {
   const router = useRouter();
-  const routerPathname = usePathname();
+  const pathname = usePathname();
+
   const [showDrawer, setShowDrawer] = useState(false);
-  const [showDecorationSubMenu, setShowDecorationSubMenu] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [pageTitle, setPageTitle] = useState("");
-  const [isMounted, setIsMounted] = useState(false); // State to check if component has mounted
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
-  const isHomePage = routerPathname === '/';
-  const isDelhiPage = routerPathname === '/delhi';
-const [isLogoutOpen, setIsLogoutOpen] = useState(false);
-  const toggleDrawer = () => {
-    setShowDrawer(!showDrawer);
-  };
-  const handleBack = () => {
-    router.back(); // Go back to the previous page
-  };
-
-  const openModal = () => {
-    console.log('Opening modal...');
-    setIsModalOpen(true);
-  };
-
-      //useScrollToTop(); // Use the custo hook
-  useLayoutEffect(() => {
-    // reset any scroll lock
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.overflow = "";
-
-    // force scroll to top
-    window.scrollTo(0, 0);
-
-    console.log("scrolling header");
-  }, [routerPathname]);
-
-  // const closeModal = () => {
-  //   console.log('Closing modal...');
-  //   setIsModalOpen(false); // This will close the modal by setting the state to false
-  // };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-};
-
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const drawerRef = useRef(null);
 
+  /** -----------------------
+   * PAGE TYPE LOGIC
+   ------------------------ */
+  const homeLikeRoutes = [
+    "/",
+    "/photography-page",
+    "/photo-gallery",
+    "/wonderland",
+    "/templates",
+    "/services",
+  ];
+
+  const isCityPage = /^\/(delhi|mumbai|noida|pune|goa|bengaluru|chennai|hyderabad)/.test(
+    pathname
+  );
+
+  const isHomeLikePage = homeLikeRoutes.includes(pathname) || isCityPage;
+  const isInnerPage = !isHomeLikePage;
+
+  /** -----------------------
+   * AUTH
+   ------------------------ */
+  const isLoggedIn =
+    typeof window !== "undefined" &&
+    localStorage.getItem("isLoggedIn") === "true";
+
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push("/");
+  };
+
+  /** -----------------------
+   * EFFECTS
+   ------------------------ */
+  useEffect(() => setIsMounted(true), []);
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (drawerRef.current && !drawerRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target)) {
         setShowDrawer(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [drawerRef]);
-
-  useEffect(() => {
-    setIsMounted(true); // Set the component as mounted
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const openCatItems = (subCategory) => {
-    router.push(`/decoration-cat-page/${subCategory}`);
-  };
-  const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem("isLoggedIn") === "true";
-
-
-  const SearchBar = () => (
-    <div className="navbar-search">
-        <input type="text" placeholder="Search for Services" />
-        <button className="search-button">
-            <i className="search-icon"></i>
-        </button>
-    </div>
-);
-
-
-
-const Categories = ({ isDropdownOpen, toggleDropdown }) => (
-    <div className="navbar-categories">
-        <button onClick={toggleDropdown} className="categories-button">
-            <i className="categories-icon"></i>
-            Categories
-            <i className={`arrow-icon ${isDropdownOpen ? 'open' : ''}`}></i>
-        </button>
-        <ul className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-   
-                    <li>
-                      <Link href="/balloon-decoration" style={styles.subMenuLink}>
-                        Decoration
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/photography-page" style={styles.subMenuLink}>
-                        Photography
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/book-chef-cook-for-party" style={styles.subMenuLink}>
-                        Chef for Party
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={styles.subMenuLink}>
-                        Food Delivery
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={styles.subMenuLink}>
-                        Live Catering
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/" style={{ ...styles.subMenuLink, ...styles.lastChild }} onClick={() => openCatItems("FirstNight")}>
-                        Entertainment
-                      </Link>
-                    </li>
-                  
-        </ul>
-    </div>
-);
-
-
-useEffect(() => {
-  const getTitle = () => {
-    const pathname = routerPathname;
-
-    switch (true) {
-      case pathname === "/balloon-decoration":
-        return "Decoration";
-      case pathname === "/book-chef-cook-for-party":
-        return "Create Order";
-      case pathname === "/book-chef-cook-for-party/order-details":
-        return "Order Details";
-      case pathname === "/book-chef-checkout":
-        return "Checkout";
-      case pathname ===
-        "/party-food-delivery-live-catering-buffet/party-food-delivery":
-        return "Food Delivery";
-      case pathname ===
-        "/party-food-delivery-live-catering-buffet-select-date/party-food-delivery":
-        return "Food Delivery Order Details";
-      case pathname === "/party-food-delivery-live-catering-buffet-checkout":
-        return "Checkout";
-      case pathname ===
-        "/party-food-delivery-live-catering-buffet/party-live-buffet-catering":
-        return "Live Catering";
-      case pathname ===
-        "/party-food-delivery-live-catering-buffet-select-date/party-live-buffet-catering":
-        return "Live Catering Order Details";
-      case pathname === "/contactus":
-        return "Contact Us";
-      case pathname === "/aboutus":
-        return "About Us";
-      case pathname.match(/^\/balloon-decoration\/.+\/product\/.+$/) !== null:
-        return "Product";
-      case pathname.match(/^\/balloon-decoration\/.+$/) !== null:
-        return "Decoration category";
-      default:
-        return "";
-    }
-  };
-
-  if (routerPathname) {
-    setPageTitle(getTitle());
-  }
-}, [routerPathname]);
-
-  const openLink = () => {
-    window.open("https://play.google.com/store/apps/details?id=com.hora", "_blank");
-  };
-
-  const handleNavClick = (category, action, label) => {
-    window.dataLayer.push({
-      event: 'nav_click',
-      category: category,
-      action: action,
-      label: label,
-    });
-
-    };
-
- const handleLogoutClick = () => {
-  setIsLogoutOpen(true);
+const toggleDrawer = () => {
+  setShowDrawer(prev => !prev);
 };
-const performLogout = () => {
-  localStorage.setItem("isLoggedIn", "false");
-  localStorage.clear();
-  router.push("/"); // redirect to home
-};
+
+  /** -----------------------
+   * RENDER
+   ------------------------ */
   return (
     <>
-     { routerPathname === "/" || routerPathname === "/photography-page"  || routerPathname === "/party-food-delivery-live-catering-buffet" || routerPathname === "/photo-gallery" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
-    || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
-    || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa"  || routerPathname === "/wonderland" || routerPathname === '/wonderland/invite' || routerPathname === "/chat" || routerPathname === '/accounts' || routerPathname === '/wonderland/create-invite-template' || routerPathname === '/templates' || routerPathname === '/services' || routerPathname ==="/wonderland/Thankyou-note" || routerPathname?.startsWith("/wonderland/Thankyou-note/Create-note/") ||routerPathname?.startsWith("/wonderland/templates")
-
-
-     ?  (
-      <header style={styles.headerContainerhome} className="home-header">
-      <div className="pageWidth">
-        <div style={styles.headerContainerinner} className="headerContainerinner">
-          <div className="z-1">
-            <Link href="/">
-              <Image src={logo} alt="Logo" style={styles.logo} />
-            </Link>
-          </div>
-          <nav className="nav-li">
-            <ul style={styles.desktopMenu}>
-              {/* <li>
-              <SearchBar />
-              </li> */}
-              <li>
-              <Categories isDropdownOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
-              </li>
-              <li style={styles.desktopMenuli}>
-                <Link href="/contactus" style={styles.link}>
-                  Contact Us
-                </Link>
-              </li>
-              <li style={styles.desktopMenuli}>
-                <Link href="/aboutus" style={styles.link}>
-                  About Us
-                </Link>
-              </li>
-              <li style={styles.desktopMenuli}>
-                <Link href="/reviews" style={styles.link}>
-                  Customer Reviews
-                </Link>
-              </li>
-            </ul>
-          </nav>
-          <div>
-            <ul style={styles.desktopMenu}>
-              <li> <i className="cart-icon"></i></li>
-             <li><i className="profile-icon"></i></li>
-        {/* <li><i className="language-icon"></i></li> */}
-              <li style={styles.desktopMenuli1}>
-              {isMounted && (!isLoggedIn ? (
-                <>
-                 <div onClick={openModal} style={{ cursor:'pointer' }}>
-                 <Image  src={loginIcon} alt={'login icon'} width={20} height={20}/>
-                    <span style={{ marginLeft: "7px" }}>Login</span>
-                  </div>
-                </>
-               
-                ) : (
-                <a style={styles.linkiconLogout} onClick={handleLogoutClick}>
-   <image src={loginIcon} />
-      <span style={{ marginLeft: "3px" }}>Logout</span>
-    </a>
-                  
-                ))}
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
-          <div className="mobile-container" style={{ width:"100%"}}>
-            {isHomePage   || routerPathname === "/photography-page" || routerPathname === "/photo-gallery" || routerPathname === "/party-food-delivery-live-catering-buffet" ||  routerPathname === "/" || routerPathname === "/delhi" || routerPathname === "/mumbai" || routerPathname === "/gurugram"
-    || routerPathname === "/ghaziabad" || routerPathname === "/faridabad" || routerPathname === "/noida" || routerPathname === "/bengaluru"
-    || routerPathname === "/hyderabad" || routerPathname === "/mumbai" || routerPathname === "/indore" || routerPathname === "/chennai"
-    || routerPathname === "/pune" || routerPathname === "/surat" || routerPathname === "/bhopal" || routerPathname === "/lucknow" || routerPathname === "/goa" || routerPathname === "/wonderland" || routerPathname === '/wonderland/invite' || routerPathname === "/chat" || routerPathname === '/accounts' || routerPathname === '/wonderland/create-invite-template' || routerPathname === '/templates' || routerPathname === '/services' || routerPathname ==="/wonderland/Thankyou-note" ||  routerPathname?.startsWith("/wonderland/Thankyou-note/Create-note/") ||routerPathname?.startsWith("/wonderland/templates")
-
-
-     ?
-            
-            (
-              <>
-               <Link href="/">
-                  <Image src={logo} alt="Logo" style={{ width: "50px", height: "50px", margin:"0px auto"}} />
-                </Link>
-                <FontAwesomeIcon
-                  icon={faBars}
-                  className="mobileMenuIcon"
-                  style={styles.mobileMenuIcon}
-                  onClick={toggleDrawer}
-                />
-               
-              </>
-            ) : (
-              <>
-                <Image
-                  src={backIcon}
-                  alt="Back"
-                  style={{
-                    width: "35px",
-                    height: "auto",
-                    cursor: "pointer",
-                    color:"#96528D",
-                  }}
-                  onClick={handleBack}
-                />
-                <h1 style={{ margin: 0 , fontSize:"16px" }}>{pageTitle}</h1>
-              </>
-            )}  
-          </div>
-        </div>
-      </div>
-      {showDrawer && <Drawer closeDrawer={toggleDrawer} drawerRef={drawerRef} handleLogout={handleLogoutClick} openModal={openModal}/>}
-      {/* {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} Render the Popup */}
-    </header>
-      ) : (
-    <header style={styles.headerContainerinnerpage} className="inner-page-header">
-    <div className="pageWidth">
-      <div style={styles.headerContainerinner} className="headerContainerinner">
-        <div className="z-1">
+      <header className={isInnerPage ? "inner-header" : "home-header"}>
+        <div className="pageWidth header-wrapper">
+          {/* LOGO */}
           <Link href="/">
-            <Image src={logolight} alt="Logo" style={styles.logo} />
+           <Image src={logo} alt="Logo" className="header-logo"/>
           </Link>
-        </div>
-        <nav>
-          <ul style={styles.desktopMenu}>
-            <li
-              style={styles.innerpagedesktopMenuli}
-              onMouseEnter={() => {
-                setShowDecorationSubMenu(true);
-                setIsHovered(true);
-              }}
-              onMouseLeave={() => {
-                setShowDecorationSubMenu(false);
-                setIsHovered(false);
-              }}
-            >
-              <span style={styles.innerpagelink}>Categories</span>
-              {/* <FontAwesomeIcon
-                icon={isHovered ? faCaretUp : faCaretDown}
-                className={`dropdpwnarrow ${isHovered ? "rotate-icon" : ""}`}
-                
-              /> */} 
-              <FaCaretDown  className={`dropdpwnarrow ${isHovered ? "rotate-icon" : ""}`} />
-              {/* <Image src={dropdown} alt='logo'/> */}
-              {showDecorationSubMenu && (
-                <ul style={styles.subMenu}>
-                  <li>
-                    <Link href="/balloon-decoration" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Decoration')}>
-                      Decoration
-                    </Link>
-                  </li>
-                   <li>
-                    <Link href="/photography-page" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'photography')}>
-                      photography
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/book-chef-cook-for-party" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Chef For Party')}>
-                      Chef for Party
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Food Delivery')}>
-                      Food Delivery
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={styles.subMenuLink} onClick={() => handleNavClick('Categories', 'Click', 'Live Catering')}>
-                      Live Catering
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/" style={{ ...styles.subMenuLink, ...styles.lastChild }} 
-                     onClick={() => {
-                      handleNavClick('Categories', 'Click', 'Entertainment');
-                      openCatItems("FirstNight");
-                    }}>
-                      Entertainment
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </li>
-            <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/contactus" style={styles.innerpagelink}
-              onClick={() => handleNavClick('Navigation', 'Click', 'Contact Us')}
-              >
-                Contact Us
-              </Link>
-            </li>
-            <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/aboutus" style={styles.innerpagelink}
-              onClick={() => handleNavClick('Navigation', 'Click', 'About Us')}
-              >
-                About Us
-              </Link>
-            </li>
-            <li style={styles.innerpagedesktopMenuli}>
-              <Link href="/reviews" style={styles.innerpagelink}
-              onClick={() => handleNavClick('Navigation', 'Click', 'Customer Reviews')}
-              >
-                Customer Reviews
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        <div>
-          <ul style={styles.desktopMenu}>
-            <li style={styles.desktopMenuli1}>
-            {isMounted && (!isLoggedIn ? (
-                // <Link href="/login" style={styles.innerpagelinkicon}>
-                //   <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                //   <span style={{ marginLeft: "3px" }}>Login</span>
-                // </Link>
-                 <div onClick={openModal} style={{ cursor:'pointer' }}>
-                  <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                    <span style={{ marginLeft: "7px" }}>Login</span>
-                  </div>
-              ) : (
-                <a style={styles.linkiconLogout} onClick={handleLogoutClick}>
-                  <FontAwesomeIcon icon={faUser} style={styles.icon} />
-                  <span style={{ marginLeft: "3px" }}>Logout</span>
-                </a>
-              ))}
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div style={styles.mobileViewHeader} className='mobileViewHeader py-2'>
-        <div className="d-flex align-items-center gap-3 z-1" style={{ width:"100%"}}>
-          {isHomePage && ChefCitypage ? (
-            <>
+
+          {/* DESKTOP MENU */}
+          <div className="desktop-only" >
+            <DesktopMenu />
+          </div>
+
+          {/* AUTH (DESKTOP) */}
+          <div className="desktop-only auth-section">
+  {isMounted && !isLoggedIn ? (
+    /* LOGIN */
+    <div
+      onClick={() => setIsLoginOpen(true)}
+      className="auth-btn"
+    >
+      <Image
+        src={loginImg}   // 👈 sirf login image
+        alt="Login"
+        width={20}
+        height={20}
+      />
+      <span>Login</span>
+    </div>
+  ) : (
+    /* LOGOUT */
+    <div
+      onClick={() => setIsLogoutOpen(true)}
+      className="auth-btn"
+    >
+      <span>Logout</span>   {/* ❌ no image here */}
+    </div>
+  )}
+</div>
+
+
+          {/* MOBILE HEADER */}
+          <div className="mobile-only mobile-header">
+            {isHomeLikePage ? (
               <FontAwesomeIcon
                 icon={faBars}
-                className="mobileMenuIcon"
-                style={styles.mobileMenuIcon}
-                onClick={toggleDrawer}
+                className="menu-icon"
+                onClick={() => setShowDrawer(true)}
               />
-              <Link href="/" style={{ display:"flex" , width:"80%" , textAlign:"center"}}>
-                <Image src={logoWhite} alt="Logo" style={{ width: "85px", height: "auto", margin:"0px auto"}} />
-              </Link>
-            </>
-          ) : (
-            <>
-              <Image
-                src={backIcon}
-                alt="Back"
-                style={{
-                  width: "35px",
-                  height: "auto",
-                  cursor: "pointer",
-                }}
-                onClick={handleBack}
-              />
-              <h1 style={{ margin: 0 , fontSize:"16px" }}>{pageTitle}</h1>
-            </>
-          )}  
+            ) : (
+              <>
+           <div className="mobile-only mobile-header">
+  <FontAwesomeIcon
+    icon={faBars}
+    className="menu-icon"
+    onClick={toggleDrawer}
+  />
+</div>
+
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
-    {showDrawer && <Drawer closeDrawer={toggleDrawer} openModal={openModal} drawerRef={drawerRef} handleLogout={handleLogoutClick} />}
-    {/* {showPopup && <Popup onClose={() => setShowPopup(false)} popupMessage={popupMessage} />} Render the Popup */}
 
-  </header>
-      )
-    }
-     {
-  isModalOpen ?
-  <OtploginPopup setIsModalOpen={setIsModalOpen} />
-  : null
-}
-<LogoutModal
-  isOpen={isLogoutOpen}
-  onClose={() => setIsLogoutOpen(false)}
-  onLogoutConfirm={performLogout}
-/>
+        {/* MOBILE DRAWER */}
+        {showDrawer && (
+          <MobileDrawer
+            drawerRef={drawerRef}
+            onClose={() => setShowDrawer(false)}
+            onLogin={() => setIsLoginOpen(true)}
+            onLogout={() => setIsLogoutOpen(true)}
+            isLoggedIn={isLoggedIn}
+          />
+        )}
+      </header>
 
+      {/* LOGIN MODAL */}
+      {isLoginOpen && <OtploginPopup setIsModalOpen={setIsLoginOpen} />}
+
+      {/* LOGOUT MODAL */}
+      <LogoutModal
+        isOpen={isLogoutOpen}
+        onClose={() => setIsLogoutOpen(false)}
+        onLogoutConfirm={handleLogout}
+      />
     </>
   );
-}
-
-const Drawer = ({ closeDrawer, drawerRef, handleLogout ,openModal}) => {
-  const style = {
-    drawer: {
-      width: "60%",
-      backgroundColor: "#fff",
-      padding: "0px",
-      boxShadow: "0px 8px 16px 0px rgba(0, 0, 0, 0.2)",
-      position: "fixed",
-      top: "0%",
-      right: "0%",
-      zIndex: 999,
-      height: "100vh",
-      transition: "left 0.3s ease-in-out",
-    },
-    drawerLink: {
-      borderBottom: "1px solid #efefef",
-      color: "#000",
-      textDecoration: "none",
-      fontSize: "14px",
-      fontWeight: "500",
-      margin: "10px 0",
-      display: "block",
-      cursor:"pointer",
-      padding:"0 0 6px 0",
-    },
-    drawerLinklogin: {
-      color: "#fff",
-      cursor:"pointer",
-      textDecoration: "none",
-      fontSize: "16px",
-      fontWeight: "500",
-      margin: "10px 0",
-      display: "block",
-    }
-  };
-
-  const mobileMenuClicked = (category) => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: 'mobileMenuClicked',
-      category: category
-    });
-  };
-
-  
-
-  return (
-    <div style={style.drawer} ref={drawerRef}>
-      <div style={{ backgroundColor:"rgb(157, 74, 147)" , padding:"30px 10px 20px 20px"}}>
-      <Link href="/" style={{ textDecoration:"none"}}>
-        <span style={{ color:"#fff" , textDecoration:"none" , fontWeight:"bold"}}>Welcome to Hora</span>
-      </Link>
-      </div>
-      <div style={{ padding:"0px 10px 20px 20px"}}>
-      <Link href="/orderlist" style={style.drawerLink} onClick={() => { mobileMenuClicked('My Order'); closeDrawer(); }}>
-        My Order
-      </Link>
-      <Link href="/balloon-decoration" style={style.drawerLink} onClick={() => { mobileMenuClicked('Decoration'); closeDrawer(); }}>
-        Decoration
-      </Link>
-      <Link href="/photography-page" style={style.drawerLink} onClick={() => { mobileMenuClicked('photography'); closeDrawer(); }}>
-      Photography
-      </Link>
-      <Link href="/book-chef-cook-for-party" style={style.drawerLink} onClick={() => { mobileMenuClicked('Chef For Party'); closeDrawer(); }}>
-        Chef for Party
-      </Link>
-      <Link href="/party-food-delivery-live-catering-buffet/party-food-delivery" style={style.drawerLink} onClick={() => { mobileMenuClicked('Food Delivery'); closeDrawer(); }}>
-        Food Delivery
-      </Link>
-      <Link href="/party-food-delivery-live-catering-buffet/party-live-buffet-catering" style={style.drawerLink} onClick={() => { mobileMenuClicked('Live Catering'); closeDrawer(); }}>
-        Live Catering
-      </Link>
-      <Link href="/aboutus" style={style.drawerLink} onClick={() => { mobileMenuClicked('About Us'); closeDrawer(); }}>
-        About Us
-      </Link>
-      <Link href="/contactus" style={style.drawerLink} onClick={() => { mobileMenuClicked('Contact Us'); closeDrawer(); }}>
-        Contact Us
-      </Link>
-      {localStorage.getItem("isLoggedIn") !== "true" ? (
-      <a
-      style={style.drawerLink} 
-      onClick={(e) => { 
-        e.preventDefault(); // Prevent default navigation if opening modal
-        mobileMenuClicked('Login'); 
-        closeDrawer(); 
-        openModal(); 
-      }}
-    >
-      <span style={{ cursor: "pointer" }}>Login</span>
-    </a>
-    
-      ) : (
-        <>
-          <Link href="/" style={style.drawerLink} onClick={() => {
-            handleLogout();
-            closeDrawer();
-          }}>
-            Logout
-          </Link>
-        </>
-      )}
-      </div>
-    </div>
-  );
-};
-
-const styles = {
-  headerContainerhome: {
-    background: "#F1F5F7",
-    padding:"6px 47px 8px 31px",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-  },
-  headerContainerinnerpage:{
-   background: "linear-gradient(119deg, #6730B2 -20.39%, #EE7464 80.65%)",
-    padding: "1px 30px",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-  },
-  headerContainerinner: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    display: "flex",
-    window: "1200px",
-  },
-  logo: {
-    width: "50px",
-    height: "auto",
-    margin: "0px",
-    padding: "0px",
-  },
-  desktopMenu: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    listStyle: "none",
-    marginBottom: "0",
-  },
-  desktopMenuli: {
-    position: "relative",
-    color:"#333",
-  },
-  innerpagedesktopMenuli: {
-    paddingRight: "16px",
-    position: "relative",
-  },
-  desktopMenuli1: {
-    paddingRight: "3px",
-    position: "relative",
-  },
-  link: {
-    color: "#333",
-    textDecoration: "none",
-    fontSize: "16px",
-    fontWeight: "500",
-    cursor: "pointer",
-  },
-  innerpagelink:
-  {
-    color: "#fff",
-    textDecoration: "none",
-    fontSize: "16px",
-    fontWeight: "500",
-    cursor: "pointer", 
-  },
-  innerpagelogo: {
-    width: "109px",
-    height: "56px",
-    margin: "0px",
-    padding: "0px",
-  },
-  linkicon: {
-    color: "#333",
-    textDecoration: "none",
-    fontSize: "16px",
-    fontWeight: "500",
-  },
-  linkiconLogout: {
-    color: "#333",
-    textDecoration: "none",
-    fontSize: "16px",
-    fontWeight: "500",
-  },
-  innerpagelinkicon:{
-    color: "#fff",
-    textDecoration: "none",
-    fontSize: "16px",
-    fontWeight: "500",
-  },
-  linkicon1: {
-    padding: "0 18px",
-    color: "#333",
-    textDecoration: "none",
-    fontSize: "16px",
-    marginLeft: "1px",
-  },
-  subMenu: {
-    position: "absolute",
-  top: "82%",
-  left: "0",
-  backgroundColor: "#fff",
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  listStyle: "none",
-  padding: "10px",
-  margin: "5px 0 0 0",
-  borderRadius: "5px",
-  zIndex:"1111",
-  },
-  subMenuLink: {
-    display: "block",
-    color: "#333",
-    textDecoration: "none",
-    fontSize: "16px",
-    fontWeight: "500",
-    padding:"7px 5px 0px 4px",
-  },
-  lastChild: {
-    borderBottom: "none",
-  },
-  icon: {
-    marginRight: "5px",
-  },
-  mobileViewHeader: { display: "none" },
-  mobileMenuIcon:{
-    margin:'0px',
-    height:'18px',
-    color:"#96528D",
-  }
 };
 
 export default Header;
