@@ -397,20 +397,20 @@
 //   const insertEmoji = (emojiObject) => {
 //     const emoji = emojiObject.emoji || emojiObject.imageUrl;
 //     const textarea = textareaRef.current;
-    
+
 //     if (!textarea) return;
 
 //     const start = textarea.selectionStart;
 //     const end = textarea.selectionEnd;
-    
+
 //     // If emoji has imageUrl, use special marker
-//     const emojiText = emojiObject.imageUrl 
-//       ? `[emoji:${emojiObject.imageUrl}]` 
+//     const emojiText = emojiObject.imageUrl
+//       ? `[emoji:${emojiObject.imageUrl}]`
 //       : emoji;
-    
+
 //     const newValue = value.substring(0, start) + emojiText + value.substring(end);
 //     setValue(newValue);
-    
+
 //     // Set cursor after emoji
 //     setTimeout(() => {
 //       const newPos = start + emojiText.length;
@@ -418,7 +418,6 @@
 //       textarea.focus();
 //     }, 0);
 //   };
-
 
 //   const sendMessage = async () => {
 //     if (!textareaRef.current) return;
@@ -712,6 +711,1258 @@
 
 // export default ChatPage;
 
+// import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+// import { useRouter } from "next/router";
+// import Image from "next/image";
+// import TextareaAutosize from "react-textarea-autosize";
+// import "../GroupsList.css";
+// import EmojiPickerButton from "@/components/EmojiPicker";
+// import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
+// import keyboardIcon from "@/assets/wonderland/chat/KeyboardIcon.svg";
+// import sendIcon from "@/assets/wonderland/chat/sendicon.png";
+// import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
+// import backIcon from "@/assets/wonderland/chat/BackIcon.png";
+// import useApi from "@/hooks/useApi";
+// import {
+//   CREATE_DIRECT_CHAT_ROOM,
+//   GET_CHAT_MESSAGES,
+//   GET_USER_BY_ID,
+//   MARK_READ_MESSAGE,
+// } from "@/utils/apiconstants";
+// import { getRoomDetails } from "@/utils/setGroupDetails";
+// import { useChatStore } from "@/hooks/ChatContext";
+// import socket from "@/socket";
+// import { sortRooms } from "@/hooks/ChatProvider";
+
+// const getAvatarColor = (name) => {
+//   const colors = [
+//     "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5",
+//     "#2196F3", "#009688", "#4CAF50", "#FF9800", "#795548",
+//   ];
+//   let hash = 0;
+//   for (let i = 0; i < name.length; i++) {
+//     hash = name.charCodeAt(i) + ((hash << 5) - hash);
+//   }
+//   const index = Math.abs(hash % colors.length);
+//   return colors[index];
+// };
+
+// const ChatPage = () => {
+//   const router = useRouter();
+//   const { groupId } = router.query;
+//   const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+
+//   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } = useChatStore();
+//   const { makeRequest: fetchUserRequest } = useApi();
+//   const { makeRequest: fetchMessagesRequest } = useApi();
+//   const { makeRequest: markReadRequest } = useApi();
+//   const { makeRequest: createDirectChatRequest } = useApi();
+
+//   const [selectedGroup, setSelectedGroup] = useState(null);
+//   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
+//   const [messages, setMessages] = useState([]);
+//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+//   const [chatBg, setChatBg] = useState(null);
+//   const [userData, setUserData] = useState({});
+
+//   // New state for textarea
+//   const [inputValue, setInputValue] = useState("");
+
+//   const textareaRef = useRef(null);
+//   const chatBodyRef = useRef(null);
+//   const hasScrolledToUnreadRef = useRef(false);
+
+//   // Mark read on mount if selected
+//   useEffect(() => {
+//     if (selectedGroup && userId) {
+//       const gid = selectedGroup._id || selectedGroup.id;
+//       markRoomRead(gid, userId);
+//       fetchMessagesForRoom(gid);
+//     }
+//   }, [selectedGroup, userId]);
+
+//   // Set selected from groupId
+//   useEffect(() => {
+//     if (!groupId || !chatRooms.length) return;
+//     const selected = chatRooms.find(
+//       (room) => String(room._id || room.id) === String(groupId)
+//     );
+//     if (selected) {
+//       setSelectedGroup(selected);
+//       hasScrolledToUnreadRef.current = false;
+//     }
+//   }, [groupId, chatRooms]);
+
+//   // Local message listener
+//   useEffect(() => {
+//     if (!socket || !selectedGroup) return;
+//     const gid = selectedGroup._id || selectedGroup.id;
+
+//     const onMessageNewLocal = (msg) => {
+//       if (String(msg.groupId) !== String(gid)) return;
+
+//       setMessages((prev) => {
+//         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
+//           return prev.map((m) =>
+//             m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+//           );
+//         }
+//         if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+//           return prev;
+//         return [...prev, { ...msg, id: msg._id }];
+//       });
+
+//       setTimeout(() => markRoomRead(gid, userId), 50);
+//     };
+
+//     socket.on("message:new", onMessageNewLocal);
+//     return () => socket.off("message:new", onMessageNewLocal);
+//   }, [selectedGroup, userId]);
+
+//   // Scroll to first unread or bottom on messages load
+//   useLayoutEffect(() => {
+//     if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+//     if (hasScrolledToUnreadRef.current) return;
+
+//     const gid = selectedGroup._id || selectedGroup.id;
+//     const unreadCount = unreadCounts[gid] || 0;
+
+//     setTimeout(() => {
+//       if (!chatBodyRef.current) return;
+
+//       if (unreadCount > 0) {
+//         const roomObj = chatRooms.find((r) => String(r._id || r.id) === String(gid));
+//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+//         const lastReadForMe = lastReadMap[userId] ? new Date(lastReadMap[userId]) : null;
+
+//         let firstUnreadIndex = -1;
+//         if (lastReadForMe) {
+//           for (let i = 0; i < messages.length; i++) {
+//             const msg = messages[i];
+//             const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
+//             if (String(msg.senderId) === String(userId)) continue;
+//             if (msgTime && msgTime > lastReadForMe) {
+//               firstUnreadIndex = i;
+//               break;
+//             }
+//           }
+//         }
+
+//         if (firstUnreadIndex !== -1) {
+//           const messageElements = chatBodyRef.current.querySelectorAll(".chat-message");
+//           const targetElement = messageElements[firstUnreadIndex];
+
+//           if (targetElement) {
+//             targetElement.scrollIntoView({ behavior: "auto", block: "start" });
+//             targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
+//             setTimeout(() => {
+//               targetElement.style.backgroundColor = "";
+//             }, 2000);
+//           }
+//         } else {
+//           chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//         }
+//       } else {
+//         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//       }
+
+//       hasScrolledToUnreadRef.current = true;
+//     }, 100);
+//   }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
+
+//   // Visual viewport handling for keyboard
+//   useEffect(() => {
+//     if (typeof window === "undefined" || typeof document === "undefined") return;
+
+//     const docEl = document.documentElement;
+//     const setVvh = () => {
+//       const vv = window.visualViewport;
+//       if (vv && vv.height < window.innerHeight) {
+//         docEl.style.setProperty("--vvh", `${vv.height}px`);
+//         setTimeout(() => {
+//           const input = document.querySelector(".chat-input-container");
+//           if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
+//         }, 100);
+//       } else {
+//         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
+//       }
+//     };
+
+//     setVvh();
+//     window.visualViewport?.addEventListener("resize", setVvh);
+//     window.visualViewport?.addEventListener("scroll", setVvh);
+
+//     return () => {
+//       window.visualViewport?.removeEventListener("resize", setVvh);
+//       window.visualViewport?.removeEventListener("scroll", setVvh);
+//     };
+//   }, []);
+
+//   // 🔥 NEW: Insert Emoji Function
+//   const insertEmoji = (emojiObject) => {
+//     const textarea = textareaRef.current;
+//     if (!textarea) return;
+
+//     const start = textarea.selectionStart || 0;
+//     const end = textarea.selectionEnd || 0;
+
+//     // Use special marker for custom emojis with images
+//     const emojiText = emojiObject.imageUrl
+//       ? `[emoji:${emojiObject.imageUrl}]`
+//       : (emojiObject.emoji || '😀');
+
+//     const newValue = inputValue.substring(0, start) + emojiText + inputValue.substring(end);
+//     setInputValue(newValue);
+
+//     // Set cursor after emoji
+//     setTimeout(() => {
+//       const newPos = start + emojiText.length;
+//       textarea.setSelectionRange(newPos, newPos);
+//       textarea.focus();
+//     }, 10);
+//   };
+
+//   const markRoomRead = async (groupId, userId) => {
+//     if (!groupId || !userId) return;
+//     try {
+//       setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+//       if (socket && socket.connected) {
+//         socket.emit("message:read", { groupId, userId });
+//       }
+//       const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
+//         groupId,
+//         userId,
+//       });
+//       if (!resp.error && (resp.unreadCounts || (resp.data && resp.data.unreadCounts))) {
+//         setUnreadCountsContext((prev) => ({
+//           ...prev,
+//           ...(resp.unreadCounts || resp.data.unreadCounts),
+//         }));
+//       } else {
+//         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+//       }
+//     } catch (err) {
+//       console.error("markRoomRead err", err);
+//     }
+//   };
+
+//   const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
+//     if (!groupId) return;
+//     try {
+//       const resp = await fetchMessagesRequest(
+//         `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+//         "GET"
+//       );
+//       if (!resp.error && resp.data) {
+//         setMessages(resp?.data || []);
+//         const roomObj = chatRooms.find((r) => String(r._id || r.id) === String(groupId));
+//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+//         const lastReadForMe = lastReadMap[userId] ? new Date(lastReadMap[userId]) : null;
+
+//         const unread = (resp.data || []).filter((m) => {
+//           const created = m.createdAt ? new Date(m.createdAt) : m.sentAt ? new Date(m.sentAt) : null;
+//           if (!created || String(m.senderId) === String(userId)) return false;
+//           return lastReadForMe ? created > lastReadForMe : true;
+//         }).length;
+
+//         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+//       }
+//     } catch (err) {
+//       console.error("Fetch messages failed", err);
+//     }
+//   };
+
+//   // Fetch user details
+//   useEffect(() => {
+//     const fetchUserDetails = async () => {
+//       if (!userId) return;
+//       try {
+//         const resp = await fetchUserRequest(`${GET_USER_BY_ID}/${userId}`, "GET");
+//         if (resp?.data) {
+//           setUserData(resp?.data || {});
+//         }
+//       } catch (err) {
+//         console.log("Error fetching user:", err.message);
+//       }
+//     };
+//     fetchUserDetails();
+//   }, [userId]);
+
+//   useEffect(() => {
+//     const saved = typeof window !== "undefined" ? localStorage.getItem("chatBgImage") : null;
+//     if (saved) {
+//       setChatBg(saved);
+//     } else {
+//       setChatBg(chatBgImage.src);
+//       if (typeof window !== "undefined") {
+//         localStorage.setItem("chatBgImage", chatBgImage.src);
+//       }
+//     }
+//   }, []);
+
+//   const handleBack = () => {
+//     const basePath = "/chat";
+//     if (userId) {
+//       router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
+//     } else {
+//       router.push(basePath);
+//     }
+//   };
+
+//   // 🔥 NEW: Send Message with Textarea
+//   const sendMessage = () => {
+//     if (!inputValue.trim()) return;
+//     if (!selectedGroup?.eventId || !userId) return;
+
+//     const groupId = selectedGroup._id;
+//     const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+//     // Convert emoji markers to HTML
+//     let htmlContent = inputValue.replace(
+//       /\[emoji:(.*?)\]/g,
+//       '<img src="$1" class="emoji-inline" style="width:20px;height:20px;vertical-align:middle;display:inline-block;margin:0 2px;" />'
+//     );
+
+//     // Convert line breaks to <br>
+//     htmlContent = htmlContent.replace(/\n/g, '<br>');
+
+//     const optimistic = {
+//       id: tempId,
+//       tempId,
+//       _id: tempId,
+//       eventId: selectedGroup.eventId,
+//       groupId,
+//       senderId: userId,
+//       message: htmlContent,
+//       html: htmlContent,
+//       type: "text",
+//       senderName: userData?.name,
+//       senderPhone: localStorage.getItem("mobileNumber"),
+//       createdAt: new Date().toISOString(),
+//     };
+
+//     setMessages((prev) => [...prev, optimistic]);
+
+//     if (socket && socket.connected) {
+//       socket.emit("message:send", {
+//         eventId: selectedGroup.eventId,
+//         groupId,
+//         message: htmlContent,
+//         html: htmlContent,
+//         type: "text",
+//         tempId,
+//         senderName: userData?.name,
+//         senderPhone: userData?.phone,
+//       });
+//     }
+
+//     setInputValue("");
+
+//     // Scroll to bottom after sending
+//     setTimeout(() => {
+//       if (chatBodyRef.current) {
+//         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//       }
+//     }, 100);
+
+//     if (!showEmojiPicker) {
+//       requestAnimationFrame(() => {
+//         textareaRef.current?.focus({ preventScroll: true });
+//       });
+//     }
+//   };
+
+//   // Handle Enter key
+//   const handleKeyDown = (e) => {
+//     if (e.key === 'Enter' && !e.shiftKey) {
+//       e.preventDefault();
+//       sendMessage();
+//     }
+//   };
+
+//   const handleClickUserName = async (senderId) => {
+//     try {
+//       const existingRoom = chatRooms.find((room) => {
+//         if (room.roomType !== "direct") return false;
+//         const memberIds = room.members.map((m) => m.userId);
+//         return memberIds.includes(userId) && memberIds.includes(senderId);
+//       });
+
+//       let newGroupId;
+//       if (existingRoom) {
+//         newGroupId = existingRoom._id || existingRoom.id;
+//       } else {
+//         const resp = await createDirectChatRequest(
+//           `${CREATE_DIRECT_CHAT_ROOM}`,
+//           "POST",
+//           { members: [userId, senderId], eventId: selectedGroup?.eventId }
+//         );
+//         if (resp?.data) {
+//           const newRoom = { ...resp.data, lastMessageAt: null };
+//           setChatRooms((prev) => sortRooms([...prev, newRoom]));
+//           newGroupId = resp.data._id || resp.data.id;
+
+//           if (socket && socket.connected) {
+//             socket.emit("joinRoom", { groupId: newGroupId });
+//           }
+//         }
+//       }
+
+//       if (newGroupId) {
+//         router.push(`/chat/room?groupId=${newGroupId}&id=${userId}`);
+//       }
+//     } catch (err) {
+//       console.log("Error:", err);
+//     }
+//   };
+
+//   const handleClickGroupName = () => {
+//     if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
+//       router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (selectedGroup) {
+//       setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+//     }
+//   }, [selectedGroup]);
+
+//   const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+//     acc[member.userId] = member.profileImageUrl || "";
+//     return acc;
+//   }, {});
+
+//   return (
+//     <div
+//       className="chat-layout"
+//       style={{
+//         backgroundImage: `url(${chatBg})`,
+//         backgroundSize: "cover",
+//         backgroundPosition: "center",
+//         backgroundRepeat: "no-repeat",
+//         paddingBottom: showEmojiPicker ? "260px" : "5px",
+//       }}
+//     >
+//       {/* Header */}
+//       <div className="chat-header-wrapper">
+//         <div className="chat-header">
+//           <div className="chat-user-info">
+//             <Image
+//               src={backIcon}
+//               alt="Back"
+//               className="back-arrow-img"
+//               onClick={handleBack}
+//             />
+//             {roomDisplayDetails?.avatar ? (
+//               <img
+//                 src={roomDisplayDetails.avatar}
+//                 alt={roomDisplayDetails.name}
+//                 className="chat-group-img"
+//               />
+//             ) : (
+//               <div className="placeholder-avatar">
+//                 {roomDisplayDetails?.avatarText}
+//               </div>
+//             )}
+//             <span className="chat-group-name" onClick={handleClickGroupName}>
+//               {roomDisplayDetails?.name}
+//             </span>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Messages */}
+//       <div className="chat-messages" ref={chatBodyRef}>
+//         {messages.map((msg, index) => {
+//           const isMe = msg.senderId === userId;
+//           const senderName = msg.senderName;
+//           const previousMsg = messages[index - 1];
+//           const isConsecutive = previousMsg && previousMsg.senderId === msg.senderId;
+
+//           let consecutiveIndex = 0;
+//           if (isConsecutive && !isMe) {
+//             for (let i = index - 1; i >= 0; i--) {
+//               if (messages[i].senderId === msg.senderId) {
+//                 consecutiveIndex++;
+//               } else {
+//                 break;
+//               }
+//             }
+//           }
+
+//           return msg?.type !== "info" ? (
+//             <div
+//               key={msg._id}
+//               className={`chat-message ${isMe ? "sender" : "receiver"} ${
+//                 isConsecutive ? "consecutive" : ""
+//               }`}
+//             >
+//               {!isMe && !isConsecutive && (
+//                 membersProfileMap?.[msg.senderId] ? (
+//                   <img
+//                     src={membersProfileMap?.[msg.senderId]}
+//                     alt={senderName || "avatar"}
+//                     className="chat-avatar-receiver"
+//                     style={{ objectFit: "cover" }}
+//                   />
+//                 ) : (
+//                   <div
+//                     className="chat-avatar-receiver"
+//                     style={{
+//                       backgroundColor: getAvatarColor(senderName || msg.senderPhone),
+//                     }}
+//                   >
+//                     {senderName
+//                       ? senderName.charAt(0).toUpperCase()
+//                       : msg.senderPhone?.charAt(3)}
+//                   </div>
+//                 )
+//               )}
+
+//               <div
+//                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
+//                   isConsecutive ? "consecutive" : ""
+//                 } ${
+//                   isConsecutive && !isMe
+//                     ? consecutiveIndex % 2 === 0
+//                       ? "consecutive-even"
+//                       : "consecutive-odd"
+//                     : ""
+//                 }`}
+//               >
+//                 {!isMe && !isConsecutive && (
+//                   <div
+//                     className="chat-sender"
+//                     onClick={() => handleClickUserName(msg.senderId)}
+//                   >
+//                     {senderName || `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
+//                   </div>
+//                 )}
+//                 <div
+//                   className="chat-text"
+//                   dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
+//                 />
+//               </div>
+//             </div>
+//           ) : (
+//             <div
+//               className="d-flex justify-content-center align-items-center"
+//               style={{ margin: "12px 0" }}
+//               key={msg._id}
+//             >
+//               <p className="info-chat-message-box">{msg?.message}</p>
+//             </div>
+//           );
+//         })}
+//       </div>
+
+//       {/* 🔥 NEW: Input Container with TextareaAutosize */}
+//       <div className="chat-input-container">
+//         <EmojiPickerButton
+//           onEmojiSelect={insertEmoji}
+//           isPickerOpen={showEmojiPicker}
+//           setIsPickerOpen={setShowEmojiPicker}
+//           simple={true}
+//           emojiIcon={emojiIcon}
+//           keyboardIcon={keyboardIcon}
+//         />
+
+//         <TextareaAutosize
+//           ref={textareaRef}
+//           value={inputValue}
+//           onChange={(e) => setInputValue(e.target.value)}
+//           onKeyDown={handleKeyDown}
+//           placeholder="Type message here..."
+//           minRows={1}
+//           maxRows={5}
+//           className="chat-input"
+//           style={{
+//             flex: 1,
+//             border: "none",
+//             outline: "none",
+//             resize: "none",
+//             fontSize: "clamp(15px, calc((18 / 393) * 100vw), 20px)",
+//             fontFamily: "Sora, sans-serif",
+//             color: "#3D3D3D",
+//             lineHeight: "clamp(20px, calc((24.87 / 393) * 100vw), 30px)",
+//             letterSpacing: "clamp(0.3px, calc((0.52 / 393) * 100vw), 0.7px)",
+//             fontWeight: 400,
+//             padding: "clamp(10.96px, calc((13.47 / 393) * 100vw), 16.45px)",
+//             background: "transparent",
+//             scrollbarWidth: "none",
+//             msOverflowStyle: "none",
+//           }}
+//         />
+
+//         <button
+//           onClick={sendMessage}
+//           onMouseDown={(e) => e.preventDefault()}
+//           className="chat-send-btn"
+//           disabled={!inputValue.trim()}
+//           style={{
+//             opacity: inputValue.trim() ? 1 : 0.5,
+//             cursor: inputValue.trim() ? "pointer" : "not-allowed",
+//           }}
+//         >
+//           <Image src={sendIcon} alt="Send" className="send-icon" />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ChatPage;
+
+
+
+// TODO: This code is also working but have some issues.
+// import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+// import { useRouter } from "next/router";
+// import Image from "next/image";
+// import "../GroupsList.css";
+// import EmojiPickerButton from "@/components/EmojiPicker";
+// import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
+// import keyboardIcon from "@/assets/wonderland/chat/KeyboardIcon.svg";
+// import sendIcon from "@/assets/wonderland/chat/sendicon.png";
+// import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
+// import backIcon from "@/assets/wonderland/chat/BackIcon.png";
+// import useApi from "@/hooks/useApi";
+// import {
+//   CREATE_DIRECT_CHAT_ROOM,
+//   GET_CHAT_MESSAGES,
+//   GET_USER_BY_ID,
+//   MARK_READ_MESSAGE,
+// } from "@/utils/apiconstants";
+// import { getRoomDetails } from "@/utils/setGroupDetails";
+// import { useChatStore } from "@/hooks/ChatContext";
+// import socket from "@/socket";
+// import { sortRooms } from "@/hooks/ChatProvider";
+
+// const getAvatarColor = (name) => {
+//   const colors = [
+//     "#F44336",
+//     "#E91E63",
+//     "#9C27B0",
+//     "#673AB7",
+//     "#3F51B5",
+//     "#2196F3",
+//     "#009688",
+//     "#4CAF50",
+//     "#FF9800",
+//     "#795548",
+//   ];
+//   let hash = 0;
+//   for (let i = 0; i < name.length; i++) {
+//     hash = name.charCodeAt(i) + ((hash << 5) - hash);
+//   }
+//   const index = Math.abs(hash % colors.length);
+//   return colors[index];
+// };
+
+// const isMobile = () => /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+// const ChatPage = () => {
+//   const router = useRouter();
+//   const { groupId } = router.query;
+//   const userId =
+//     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+//   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
+//     useChatStore();
+//   const { makeRequest: fetchUserRequest } = useApi();
+//   const { makeRequest: fetchMessagesRequest } = useApi();
+//   const { makeRequest: markReadRequest } = useApi();
+//   const { makeRequest: createDirectChatRequest } = useApi();
+//   const [selectedGroup, setSelectedGroup] = useState(null);
+//   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
+//   const [messages, setMessages] = useState([]);
+//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+//   const [chatBg, setChatBg] = useState(null);
+//   const [userData, setUserData] = useState({});
+//   const [inputValue, setInputValue] = useState(""); // Now this is HTML string
+//   const inputRef = useRef(null); // Changed to div ref
+//   const chatBodyRef = useRef(null);
+//   const hasScrolledToUnreadRef = useRef(false);
+//   const sendButtonRef = useRef(null);
+
+//   useEffect(() => {
+//     if (selectedGroup && userId) {
+//       const gid = selectedGroup._id || selectedGroup.id;
+//       markRoomRead(gid, userId);
+//       fetchMessagesForRoom(gid);
+//     }
+//   }, [selectedGroup, userId]);
+
+//   useEffect(() => {
+//     if (!groupId || !chatRooms.length) return;
+//     const selected = chatRooms.find(
+//       (room) => String(room._id || room.id) === String(groupId),
+//     );
+//     if (selected) {
+//       setSelectedGroup(selected);
+//       hasScrolledToUnreadRef.current = false;
+//     }
+//   }, [groupId, chatRooms]);
+
+//   useEffect(() => {
+//     if (!socket || !selectedGroup) return;
+//     const gid = selectedGroup._id || selectedGroup.id;
+//     const onMessageNewLocal = (msg) => {
+//       if (String(msg.groupId) !== String(gid)) return;
+//       setMessages((prev) => {
+//         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
+//           return prev.map((m) =>
+//             m.tempId === msg.tempId ? { ...msg, id: msg._id } : m,
+//           );
+//         }
+//         if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+//           return prev;
+//         return [...prev, { ...msg, id: msg._id }];
+//       });
+//       setTimeout(() => markRoomRead(gid, userId), 50);
+//     };
+//     socket.on("message:new", onMessageNewLocal);
+//     return () => socket.off("message:new", onMessageNewLocal);
+//   }, [selectedGroup, userId]);
+
+//   useLayoutEffect(() => {
+//     if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+//     if (hasScrolledToUnreadRef.current) return;
+//     const gid = selectedGroup._id || selectedGroup.id;
+//     const unreadCount = unreadCounts[gid] || 0;
+//     setTimeout(() => {
+//       if (!chatBodyRef.current) return;
+//       if (unreadCount > 0) {
+//         const roomObj = chatRooms.find(
+//           (r) => String(r._id || r.id) === String(gid),
+//         );
+//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+//         const lastReadForMe = lastReadMap[userId]
+//           ? new Date(lastReadMap[userId])
+//           : null;
+//         let firstUnreadIndex = -1;
+//         if (lastReadForMe) {
+//           for (let i = 0; i < messages.length; i++) {
+//             const msg = messages[i];
+//             const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
+//             if (String(msg.senderId) === String(userId)) continue;
+//             if (msgTime && msgTime > lastReadForMe) {
+//               firstUnreadIndex = i;
+//               break;
+//             }
+//           }
+//         }
+//         if (firstUnreadIndex !== -1) {
+//           const messageElements =
+//             chatBodyRef.current.querySelectorAll(".chat-message");
+//           const targetElement = messageElements[firstUnreadIndex];
+//           if (targetElement) {
+//             targetElement.scrollIntoView({ behavior: "auto", block: "start" });
+//             targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
+//             setTimeout(() => {
+//               targetElement.style.backgroundColor = "";
+//             }, 2000);
+//           }
+//         } else {
+//           chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//         }
+//       } else {
+//         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//       }
+//       hasScrolledToUnreadRef.current = true;
+//     }, 100);
+//   }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
+
+//   useEffect(() => {
+//     if (typeof window === "undefined" || typeof document === "undefined")
+//       return;
+//     const docEl = document.documentElement;
+//     const setVvh = () => {
+//       const vv = window.visualViewport;
+//       if (vv && vv.height < window.innerHeight) {
+//         docEl.style.setProperty("--vvh", `${vv.height}px`);
+//         setTimeout(() => {
+//           const input = document.querySelector(".chat-input-container");
+//           if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
+//         }, 100);
+//       } else {
+//         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
+//       }
+//     };
+//     setVvh();
+//     window.visualViewport?.addEventListener("resize", setVvh);
+//     window.visualViewport?.addEventListener("scroll", setVvh);
+//     return () => {
+//       window.visualViewport?.removeEventListener("resize", setVvh);
+//       window.visualViewport?.removeEventListener("scroll", setVvh);
+//     };
+//   }, []);
+
+//   // 🔥 FIXED: Emoji insertion with inline rendering in contenteditable
+//   const insertEmoji = (emojiObject) => {
+//     const input = inputRef.current;
+//     if (!input) return;
+//     const selection = window.getSelection();
+//     if (!selection.rangeCount) return;
+//     const range = selection.getRangeAt(0);
+//     range.deleteContents();
+//     const emojiNode = document.createElement("img");
+//     emojiNode.src = emojiObject.imageUrl || emojiObject.emoji;
+//     emojiNode.className = "emoji-inline";
+//     emojiNode.style.width = "20px";
+//     emojiNode.style.height = "20px";
+//     emojiNode.style.verticalAlign = "middle";
+//     emojiNode.style.display = "inline-block";
+//     emojiNode.style.margin = "0 2px";
+//     range.insertNode(emojiNode);
+//     range.setStartAfter(emojiNode);
+//     range.setEndAfter(emojiNode);
+//     selection.removeAllRanges();
+//     selection.addRange(range);
+//     updateInputValue(); // Sync state
+//     input.focus();
+//   };
+
+//   const updateInputValue = () => {
+//     setInputValue(inputRef.current.innerHTML);
+//   };
+
+//   const markRoomRead = async (groupId, userId) => {
+//     if (!groupId || !userId) return;
+//     try {
+//       setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+//       if (socket && socket.connected) {
+//         socket.emit("message:read", { groupId, userId });
+//       }
+//       const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
+//         groupId,
+//         userId,
+//       });
+//       if (
+//         !resp.error &&
+//         (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
+//       ) {
+//         setUnreadCountsContext((prev) => ({
+//           ...prev,
+//           ...(resp.unreadCounts || resp.data.unreadCounts),
+//         }));
+//       } else {
+//         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+//       }
+//     } catch (err) {
+//       console.error("markRoomRead err", err);
+//     }
+//   };
+
+//   const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
+//     if (!groupId) return;
+//     try {
+//       const resp = await fetchMessagesRequest(
+//         `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+//         "GET",
+//       );
+//       if (!resp.error && resp.data) {
+//         setMessages(resp?.data || []);
+//         const roomObj = chatRooms.find(
+//           (r) => String(r._id || r.id) === String(groupId),
+//         );
+//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+//         const lastReadForMe = lastReadMap[userId]
+//           ? new Date(lastReadMap[userId])
+//           : null;
+//         const unread = (resp.data || []).filter((m) => {
+//           const created = m.createdAt
+//             ? new Date(m.createdAt)
+//             : m.sentAt
+//               ? new Date(m.sentAt)
+//               : null;
+//           if (!created || String(m.senderId) === String(userId)) return false;
+//           return lastReadForMe ? created > lastReadForMe : true;
+//         }).length;
+//         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+//       }
+//     } catch (err) {
+//       console.error("Fetch messages failed", err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchUserDetails = async () => {
+//       if (!userId) return;
+//       try {
+//         const resp = await fetchUserRequest(
+//           `${GET_USER_BY_ID}/${userId}`,
+//           "GET",
+//         );
+//         if (resp?.data) {
+//           setUserData(resp?.data || {});
+//         }
+//       } catch (err) {
+//         console.log("Error fetching user:", err.message);
+//       }
+//     };
+//     fetchUserDetails();
+//   }, [userId]);
+
+//   useEffect(() => {
+//     const saved =
+//       typeof window !== "undefined"
+//         ? localStorage.getItem("chatBgImage")
+//         : null;
+//     if (saved) {
+//       setChatBg(saved);
+//     } else {
+//       setChatBg(chatBgImage.src);
+//       if (typeof window !== "undefined") {
+//         localStorage.setItem("chatBgImage", chatBgImage.src);
+//       }
+//     }
+//   }, []);
+
+//   const handleBack = () => {
+//     const basePath = "/chat";
+//     if (userId) {
+//       router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
+//     } else {
+//       router.push(basePath);
+//     }
+//   };
+
+//   const sendMessage = () => {
+//     if (!inputValue.trim()) return;
+//     if (!selectedGroup?.eventId || !userId) return;
+//     const groupId = selectedGroup._id;
+//     const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+//     // Already HTML from contenteditable
+//     let htmlContent = inputValue.replace(/\n/g, "<br>"); // Just handle new lines
+//     const optimistic = {
+//       id: tempId,
+//       tempId,
+//       _id: tempId,
+//       eventId: selectedGroup.eventId,
+//       groupId,
+//       senderId: userId,
+//       message: htmlContent,
+//       html: htmlContent,
+//       type: "text",
+//       senderName: userData?.name,
+//       senderPhone: localStorage.getItem("mobileNumber"),
+//       createdAt: new Date().toISOString(),
+//     };
+//     setMessages((prev) => [...prev, optimistic]);
+//     if (socket && socket.connected) {
+//       socket.emit("message:send", {
+//         eventId: selectedGroup.eventId,
+//         groupId,
+//         message: htmlContent,
+//         html: htmlContent,
+//         type: "text",
+//         tempId,
+//         senderName: userData?.name,
+//         senderPhone: userData?.phone,
+//       });
+//     }
+//     setInputValue("");
+//     inputRef.current.innerHTML = "";
+//     setTimeout(() => {
+//       if (chatBodyRef.current) {
+//         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//       }
+//     }, 100);
+//     if (!showEmojiPicker) {
+//       requestAnimationFrame(() => {
+//         inputRef.current?.focus({ preventScroll: true });
+//       });
+//     }
+//   };
+
+//   // 🔥 FIXED: Handle send click/touch
+//   const handleSendClick = (e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     sendMessage();
+//   };
+
+//   const handleKeyDown = (e) => {
+//     if (e.key === "Enter") {
+//       if (isMobile() || e.shiftKey) {
+//         // On mobile or shift+enter: new line
+//         e.preventDefault();
+//         document.execCommand("insertLineBreak");
+//       } else {
+//         // Desktop enter: send
+//         e.preventDefault();
+//         sendMessage();
+//       }
+//     }
+//   };
+
+//   // 🔥 FIXED: Simplified paste - let browser handle, works on mobile
+// const handlePaste = (e) => {
+//   // Prevent default sirf tabhi jab hum custom clipboard se handle kar rahe hain
+//   // Long-press paste ke liye browser ko allow kar dena better hai
+//   const pastedData = (e.clipboardData || window.clipboardData)?.getData('text/plain');
+
+//   if (pastedData) {
+//     // Agar programmatic paste hai (Ctrl+V ya keyboard se), hum handle kar lenge
+//     e.preventDefault(); // ← Yeh sirf custom paste ke liye
+
+//     const input = inputRef.current;
+//     if (!input) return;
+
+//     const selection = window.getSelection();
+//     if (selection.rangeCount) {
+//       const range = selection.getRangeAt(0);
+//       range.deleteContents();
+//       range.insertNode(document.createTextNode(pastedData));
+//       range.collapse(false);
+//       selection.removeAllRanges();
+//       selection.addRange(range);
+//     } else {
+//       input.innerHTML += pastedData;
+//     }
+
+//     updateInputValue();
+//   }
+//   // Agar long-press paste hai → e.preventDefault() mat karo → browser khud handle karega
+//   // Aur phir onInput event se sync ho jayega
+// };
+
+//   const handleInput = () => {
+//     updateInputValue();
+//   };
+
+//   const handleClickUserName = async (senderId) => {
+//     try {
+//       const existingRoom = chatRooms.find((room) => {
+//         if (room.roomType !== "direct") return false;
+//         const memberIds = room.members.map((m) => m.userId);
+//         return memberIds.includes(userId) && memberIds.includes(senderId);
+//       });
+//       let newGroupId;
+//       if (existingRoom) {
+//         newGroupId = existingRoom._id || existingRoom.id;
+//       } else {
+//         const resp = await createDirectChatRequest(
+//           `${CREATE_DIRECT_CHAT_ROOM}`,
+//           "POST",
+//           { members: [userId, senderId], eventId: selectedGroup?.eventId },
+//         );
+//         if (resp?.data) {
+//           const newRoom = { ...resp.data, lastMessageAt: null };
+//           setChatRooms((prev) => sortRooms([...prev, newRoom]));
+//           newGroupId = resp.data._id || resp.data.id;
+//           if (socket && socket.connected) {
+//             socket.emit("joinRoom", { groupId: newGroupId });
+//           }
+//         }
+//       }
+//       if (newGroupId) {
+//         router.push(`/chat/room?groupId=${newGroupId}&id=${userId}`);
+//       }
+//     } catch (err) {
+//       console.log("Error:", err);
+//     }
+//   };
+
+//   const handleClickGroupName = () => {
+//     if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
+//       router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (selectedGroup) {
+//       setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+//     }
+//   }, [selectedGroup]);
+
+//   const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+//     acc[member.userId] = member.profileImageUrl || "";
+//     return acc;
+//   }, {});
+
+//   return (
+//     <div
+//       className="chat-layout"
+//       style={{
+//         backgroundImage: `url(${chatBg})`,
+//         backgroundSize: "cover",
+//         backgroundPosition: "center",
+//         backgroundRepeat: "no-repeat",
+//         paddingBottom: showEmojiPicker ? "260px" : "5px",
+//       }}
+//     >
+//       <div className="chat-header-wrapper">
+//         <div className="chat-header">
+//           <div className="chat-user-info">
+//             <Image
+//               src={backIcon}
+//               alt="Back"
+//               className="back-arrow-img"
+//               onClick={handleBack}
+//             />
+//             {roomDisplayDetails?.avatar ? (
+//               <img
+//                 src={roomDisplayDetails.avatar}
+//                 alt={roomDisplayDetails.name}
+//                 className="chat-group-img"
+//               />
+//             ) : (
+//               <div className="placeholder-avatar">
+//                 {roomDisplayDetails?.avatarText}
+//               </div>
+//             )}
+//             <span className="chat-group-name" onClick={handleClickGroupName}>
+//               {roomDisplayDetails?.name}
+//             </span>
+//           </div>
+//         </div>
+//       </div>
+//       <div className="chat-messages" ref={chatBodyRef}>
+//         {messages.map((msg, index) => {
+//           const isMe = msg.senderId === userId;
+//           const senderName = msg.senderName;
+//           const previousMsg = messages[index - 1];
+//           const isConsecutive =
+//             previousMsg && previousMsg.senderId === msg.senderId;
+//           let consecutiveIndex = 0;
+//           if (isConsecutive && !isMe) {
+//             for (let i = index - 1; i >= 0; i--) {
+//               if (messages[i].senderId === msg.senderId) {
+//                 consecutiveIndex++;
+//               } else {
+//                 break;
+//               }
+//             }
+//           }
+//           return msg?.type !== "info" ? (
+//             <div
+//               key={msg._id}
+//               className={`chat-message ${isMe ? "sender" : "receiver"} ${
+//                 isConsecutive ? "consecutive" : ""
+//               }`}
+//             >
+//               {!isMe &&
+//                 !isConsecutive &&
+//                 (membersProfileMap?.[msg.senderId] ? (
+//                   <img
+//                     src={membersProfileMap?.[msg.senderId]}
+//                     alt={senderName || "avatar"}
+//                     className="chat-avatar-receiver"
+//                     style={{ objectFit: "cover" }}
+//                   />
+//                 ) : (
+//                   <div
+//                     className="chat-avatar-receiver"
+//                     style={{
+//                       backgroundColor: getAvatarColor(
+//                         senderName || msg.senderPhone,
+//                       ),
+//                     }}
+//                   >
+//                     {senderName
+//                       ? senderName.charAt(0).toUpperCase()
+//                       : msg.senderPhone?.charAt(3)}
+//                   </div>
+//                 ))}
+//               <div
+//                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
+//                   isConsecutive ? "consecutive" : ""
+//                 } ${
+//                   isConsecutive && !isMe
+//                     ? consecutiveIndex % 2 === 0
+//                       ? "consecutive-even"
+//                       : "consecutive-odd"
+//                     : ""
+//                 }`}
+//               >
+//                 {!isMe && !isConsecutive && (
+//                   <div
+//                     className="chat-sender"
+//                     onClick={() => handleClickUserName(msg.senderId)}
+//                   >
+//                     {senderName ||
+//                       `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
+//                   </div>
+//                 )}
+//                 <div
+//                   className="chat-text"
+//                   dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
+//                 />
+//               </div>
+//             </div>
+//           ) : (
+//             <div
+//               className="d-flex justify-content-center align-items-center"
+//               style={{ margin: "12px 0" }}
+//               key={msg._id}
+//             >
+//               <p className="info-chat-message-box">{msg?.message}</p>
+//             </div>
+//           );
+//         })}
+//       </div>
+//       {/* 🔥 FIXED: Input as contenteditable div */}
+//       <div className="chat-input-container">
+//         <EmojiPickerButton
+//           onEmojiSelect={insertEmoji}
+//           isPickerOpen={showEmojiPicker}
+//           setIsPickerOpen={setShowEmojiPicker}
+//           simple={true}
+//           emojiIcon={emojiIcon}
+//           keyboardIcon={keyboardIcon}
+//         />
+//         <div
+//           ref={inputRef}
+//           contentEditable={true}
+//           suppressContentEditableWarning={true} // React warning avoid
+//           onInput={handleInput}
+//           onKeyDown={handleKeyDown}
+//           onPaste={handlePaste}
+//           className="chat-input"
+//           role="textbox"
+//           aria-multiline="true"
+//           placeholder="Type message here..."
+//           style={{
+//             flex: 1,
+//             WebkitUserModify: 'read-write-plaintext-only',
+//             outline: "none",
+//             minHeight: "24px",
+//             maxHeight: "120px", // Equivalent to maxRows=5
+//             overflowY: "auto",
+//             fontSize: "16px", // Prevent zoom
+//             fontFamily: "Sora, sans-serif",
+//             color: "#3D3D3D",
+//             lineHeight: "24px",
+//             letterSpacing: "0.3px",
+//             fontWeight: 400,
+//             padding: "12px",
+//             background: "transparent",
+//             whiteSpace: "pre-wrap",
+//             wordWrap: "break-word",
+//             touchAction: "manipulation",
+//           }}
+//         />
+//         <button
+//           ref={sendButtonRef}
+//           onClick={handleSendClick}
+//           className="chat-send-btn"
+//           disabled={!inputValue.trim()}
+//           style={{
+//             opacity: inputValue.trim() ? 1 : 0.5,
+//             cursor: inputValue.trim() ? "pointer" : "not-allowed",
+//             touchAction: "manipulation",
+//             WebkitTapHighlightColor: "transparent",
+//           }}
+//         >
+//           <Image src={sendIcon} alt="Send" className="send-icon" />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+// export default ChatPage;
 
 
 
@@ -719,621 +1970,743 @@
 
 
 
+// import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+// import { useRouter } from "next/router";
+// import Image from "next/image";
+// import TextareaAutosize from "react-textarea-autosize";
+// import "../GroupsList.css";
+// import EmojiPickerButton from "@/components/EmojiPicker";
+// import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
+// import keyboardIcon from "@/assets/wonderland/chat/KeyboardIcon.svg";
+// import sendIcon from "@/assets/wonderland/chat/sendicon.png";
+// import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
+// import backIcon from "@/assets/wonderland/chat/BackIcon.png";
+// import useApi from "@/hooks/useApi";
+// import {
+//   CREATE_DIRECT_CHAT_ROOM,
+//   GET_CHAT_MESSAGES,
+//   GET_USER_BY_ID,
+//   MARK_READ_MESSAGE,
+// } from "@/utils/apiconstants";
+// import { getRoomDetails } from "@/utils/setGroupDetails";
+// import { useChatStore } from "@/hooks/ChatContext";
+// import socket from "@/socket";
+// import { sortRooms } from "@/hooks/ChatProvider";
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
-import Image from "next/image";
-import TextareaAutosize from "react-textarea-autosize";
-import "../GroupsList.css";
-import EmojiPickerButton from "@/components/EmojiPicker";
-import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
-import keyboardIcon from "@/assets/wonderland/chat/KeyboardIcon.svg";
-import sendIcon from "@/assets/wonderland/chat/sendicon.png";
-import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
-import backIcon from "@/assets/wonderland/chat/BackIcon.png";
-import useApi from "@/hooks/useApi";
-import {
-  CREATE_DIRECT_CHAT_ROOM,
-  GET_CHAT_MESSAGES,
-  GET_USER_BY_ID,
-  MARK_READ_MESSAGE,
-} from "@/utils/apiconstants";
-import { getRoomDetails } from "@/utils/setGroupDetails";
-import { useChatStore } from "@/hooks/ChatContext";
-import socket from "@/socket";
-import { sortRooms } from "@/hooks/ChatProvider";
+// const getAvatarColor = (name) => {
+//   const colors = [
+//     "#F44336",
+//     "#E91E63",
+//     "#9C27B0",
+//     "#673AB7",
+//     "#3F51B5",
+//     "#2196F3",
+//     "#009688",
+//     "#4CAF50",
+//     "#FF9800",
+//     "#795548",
+//   ];
+//   let hash = 0;
+//   for (let i = 0; i < name.length; i++) {
+//     hash = name.charCodeAt(i) + ((hash << 5) - hash);
+//   }
+//   const index = Math.abs(hash % colors.length);
+//   return colors[index];
+// };
 
-const getAvatarColor = (name) => {
-  const colors = [
-    "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5",
-    "#2196F3", "#009688", "#4CAF50", "#FF9800", "#795548",
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash % colors.length);
-  return colors[index];
-};
+// const ChatPage = () => {
+//   const router = useRouter();
+//   const { groupId } = router.query;
+//   const userId =
+//     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
-const ChatPage = () => {
-  const router = useRouter();
-  const { groupId } = router.query;
-  const userId = typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-  
-  const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } = useChatStore();
-  const { makeRequest: fetchUserRequest } = useApi();
-  const { makeRequest: fetchMessagesRequest } = useApi();
-  const { makeRequest: markReadRequest } = useApi();
-  const { makeRequest: createDirectChatRequest } = useApi();
-  
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
-  const [messages, setMessages] = useState([]);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [chatBg, setChatBg] = useState(null);
-  const [userData, setUserData] = useState({});
-  
-  // New state for textarea
-  const [inputValue, setInputValue] = useState("");
-  
-  const textareaRef = useRef(null);
-  const chatBodyRef = useRef(null);
-  const hasScrolledToUnreadRef = useRef(false);
+//   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
+//     useChatStore();
+//   const { makeRequest: fetchUserRequest } = useApi();
+//   const { makeRequest: fetchMessagesRequest } = useApi();
+//   const { makeRequest: markReadRequest } = useApi();
+//   const { makeRequest: createDirectChatRequest } = useApi();
 
-  // Mark read on mount if selected
-  useEffect(() => {
-    if (selectedGroup && userId) {
-      const gid = selectedGroup._id || selectedGroup.id;
-      markRoomRead(gid, userId);
-      fetchMessagesForRoom(gid);
-    }
-  }, [selectedGroup, userId]);
+//   const [selectedGroup, setSelectedGroup] = useState(null);
+//   const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
+//   const [messages, setMessages] = useState([]);
+//   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+//   const [chatBg, setChatBg] = useState(null);
+//   const [userData, setUserData] = useState({});
+//   const [inputValue, setInputValue] = useState("");
 
-  // Set selected from groupId
-  useEffect(() => {
-    if (!groupId || !chatRooms.length) return;
-    const selected = chatRooms.find(
-      (room) => String(room._id || room.id) === String(groupId)
-    );
-    if (selected) {
-      setSelectedGroup(selected);
-      hasScrolledToUnreadRef.current = false;
-    }
-  }, [groupId, chatRooms]);
+//   const textareaRef = useRef(null);
+//   const chatBodyRef = useRef(null);
+//   const hasScrolledToUnreadRef = useRef(false);
+//   const sendButtonRef = useRef(null);
 
-  // Local message listener
-  useEffect(() => {
-    if (!socket || !selectedGroup) return;
-    const gid = selectedGroup._id || selectedGroup.id;
-    
-    const onMessageNewLocal = (msg) => {
-      if (String(msg.groupId) !== String(gid)) return;
-      
-      setMessages((prev) => {
-        if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
-          return prev.map((m) =>
-            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
-          );
-        }
-        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
-          return prev;
-        return [...prev, { ...msg, id: msg._id }];
-      });
-      
-      setTimeout(() => markRoomRead(gid, userId), 50);
-    };
-    
-    socket.on("message:new", onMessageNewLocal);
-    return () => socket.off("message:new", onMessageNewLocal);
-  }, [selectedGroup, userId]);
+//   // 🔥 FIX 1: Render emoji preview inline
+//   const renderInputPreview = (text) => {
+//     // Convert [emoji:url] to actual emoji images for preview
+//     const parts = text.split(/(\[emoji:.*?\])/g);
+//     return parts.map((part, index) => {
+//       const match = part.match(/\[emoji:(.*?)\]/);
+//       if (match) {
+//         return (
+//           <img
+//             key={index}
+//             src={match[1]}
+//             alt="emoji"
+//             className="emoji-preview-inline"
+//             style={{
+//               width: "20px",
+//               height: "20px",
+//               verticalAlign: "middle",
+//               display: "inline",
+//               margin: "0 2px",
+//             }}
+//           />
+//         );
+//       }
+//       return <span key={index}>{part}</span>;
+//     });
+//   };
 
-  // Scroll to first unread or bottom on messages load
-  useLayoutEffect(() => {
-    if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
-    if (hasScrolledToUnreadRef.current) return;
+//   useEffect(() => {
+//     if (selectedGroup && userId) {
+//       const gid = selectedGroup._id || selectedGroup.id;
+//       markRoomRead(gid, userId);
+//       fetchMessagesForRoom(gid);
+//     }
+//   }, [selectedGroup, userId]);
 
-    const gid = selectedGroup._id || selectedGroup.id;
-    const unreadCount = unreadCounts[gid] || 0;
+//   useEffect(() => {
+//     if (!groupId || !chatRooms.length) return;
+//     const selected = chatRooms.find(
+//       (room) => String(room._id || room.id) === String(groupId),
+//     );
+//     if (selected) {
+//       setSelectedGroup(selected);
+//       hasScrolledToUnreadRef.current = false;
+//     }
+//   }, [groupId, chatRooms]);
 
-    setTimeout(() => {
-      if (!chatBodyRef.current) return;
+//   useEffect(() => {
+//     if (!socket || !selectedGroup) return;
+//     const gid = selectedGroup._id || selectedGroup.id;
 
-      if (unreadCount > 0) {
-        const roomObj = chatRooms.find((r) => String(r._id || r.id) === String(gid));
-        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-        const lastReadForMe = lastReadMap[userId] ? new Date(lastReadMap[userId]) : null;
+//     const onMessageNewLocal = (msg) => {
+//       if (String(msg.groupId) !== String(gid)) return;
 
-        let firstUnreadIndex = -1;
-        if (lastReadForMe) {
-          for (let i = 0; i < messages.length; i++) {
-            const msg = messages[i];
-            const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
-            if (String(msg.senderId) === String(userId)) continue;
-            if (msgTime && msgTime > lastReadForMe) {
-              firstUnreadIndex = i;
-              break;
-            }
-          }
-        }
+//       setMessages((prev) => {
+//         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
+//           return prev.map((m) =>
+//             m.tempId === msg.tempId ? { ...msg, id: msg._id } : m,
+//           );
+//         }
+//         if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+//           return prev;
+//         return [...prev, { ...msg, id: msg._id }];
+//       });
 
-        if (firstUnreadIndex !== -1) {
-          const messageElements = chatBodyRef.current.querySelectorAll(".chat-message");
-          const targetElement = messageElements[firstUnreadIndex];
-          
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: "auto", block: "start" });
-            targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
-            setTimeout(() => {
-              targetElement.style.backgroundColor = "";
-            }, 2000);
-          }
-        } else {
-          chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-        }
-      } else {
-        chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-      }
+//       setTimeout(() => markRoomRead(gid, userId), 50);
+//     };
 
-      hasScrolledToUnreadRef.current = true;
-    }, 100);
-  }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
+//     socket.on("message:new", onMessageNewLocal);
+//     return () => socket.off("message:new", onMessageNewLocal);
+//   }, [selectedGroup, userId]);
 
-  // Visual viewport handling for keyboard
-  useEffect(() => {
-    if (typeof window === "undefined" || typeof document === "undefined") return;
-    
-    const docEl = document.documentElement;
-    const setVvh = () => {
-      const vv = window.visualViewport;
-      if (vv && vv.height < window.innerHeight) {
-        docEl.style.setProperty("--vvh", `${vv.height}px`);
-        setTimeout(() => {
-          const input = document.querySelector(".chat-input-container");
-          if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
-        }, 100);
-      } else {
-        docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
-      }
-    };
-    
-    setVvh();
-    window.visualViewport?.addEventListener("resize", setVvh);
-    window.visualViewport?.addEventListener("scroll", setVvh);
-    
-    return () => {
-      window.visualViewport?.removeEventListener("resize", setVvh);
-      window.visualViewport?.removeEventListener("scroll", setVvh);
-    };
-  }, []);
+//   useLayoutEffect(() => {
+//     if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+//     if (hasScrolledToUnreadRef.current) return;
 
-  // 🔥 NEW: Insert Emoji Function
-  const insertEmoji = (emojiObject) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+//     const gid = selectedGroup._id || selectedGroup.id;
+//     const unreadCount = unreadCounts[gid] || 0;
 
-    const start = textarea.selectionStart || 0;
-    const end = textarea.selectionEnd || 0;
-    
-    // Use special marker for custom emojis with images
-    const emojiText = emojiObject.imageUrl 
-      ? `[emoji:${emojiObject.imageUrl}]` 
-      : (emojiObject.emoji || '😀');
-    
-    const newValue = inputValue.substring(0, start) + emojiText + inputValue.substring(end);
-    setInputValue(newValue);
-    
-    // Set cursor after emoji
-    setTimeout(() => {
-      const newPos = start + emojiText.length;
-      textarea.setSelectionRange(newPos, newPos);
-      textarea.focus();
-    }, 10);
-  };
+//     setTimeout(() => {
+//       if (!chatBodyRef.current) return;
 
-  const markRoomRead = async (groupId, userId) => {
-    if (!groupId || !userId) return;
-    try {
-      setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
-      if (socket && socket.connected) {
-        socket.emit("message:read", { groupId, userId });
-      }
-      const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
-        groupId,
-        userId,
-      });
-      if (!resp.error && (resp.unreadCounts || (resp.data && resp.data.unreadCounts))) {
-        setUnreadCountsContext((prev) => ({
-          ...prev,
-          ...(resp.unreadCounts || resp.data.unreadCounts),
-        }));
-      } else {
-        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
-      }
-    } catch (err) {
-      console.error("markRoomRead err", err);
-    }
-  };
+//       if (unreadCount > 0) {
+//         const roomObj = chatRooms.find(
+//           (r) => String(r._id || r.id) === String(gid),
+//         );
+//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+//         const lastReadForMe = lastReadMap[userId]
+//           ? new Date(lastReadMap[userId])
+//           : null;
 
-  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
-    if (!groupId) return;
-    try {
-      const resp = await fetchMessagesRequest(
-        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
-        "GET"
-      );
-      if (!resp.error && resp.data) {
-        setMessages(resp?.data || []);
-        const roomObj = chatRooms.find((r) => String(r._id || r.id) === String(groupId));
-        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-        const lastReadForMe = lastReadMap[userId] ? new Date(lastReadMap[userId]) : null;
-        
-        const unread = (resp.data || []).filter((m) => {
-          const created = m.createdAt ? new Date(m.createdAt) : m.sentAt ? new Date(m.sentAt) : null;
-          if (!created || String(m.senderId) === String(userId)) return false;
-          return lastReadForMe ? created > lastReadForMe : true;
-        }).length;
-        
-        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
-      }
-    } catch (err) {
-      console.error("Fetch messages failed", err);
-    }
-  };
+//         let firstUnreadIndex = -1;
+//         if (lastReadForMe) {
+//           for (let i = 0; i < messages.length; i++) {
+//             const msg = messages[i];
+//             const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
+//             if (String(msg.senderId) === String(userId)) continue;
+//             if (msgTime && msgTime > lastReadForMe) {
+//               firstUnreadIndex = i;
+//               break;
+//             }
+//           }
+//         }
 
-  // Fetch user details
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      if (!userId) return;
-      try {
-        const resp = await fetchUserRequest(`${GET_USER_BY_ID}/${userId}`, "GET");
-        if (resp?.data) {
-          setUserData(resp?.data || {});
-        }
-      } catch (err) {
-        console.log("Error fetching user:", err.message);
-      }
-    };
-    fetchUserDetails();
-  }, [userId]);
+//         if (firstUnreadIndex !== -1) {
+//           const messageElements =
+//             chatBodyRef.current.querySelectorAll(".chat-message");
+//           const targetElement = messageElements[firstUnreadIndex];
 
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("chatBgImage") : null;
-    if (saved) {
-      setChatBg(saved);
-    } else {
-      setChatBg(chatBgImage.src);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("chatBgImage", chatBgImage.src);
-      }
-    }
-  }, []);
+//           if (targetElement) {
+//             targetElement.scrollIntoView({ behavior: "auto", block: "start" });
+//             targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
+//             setTimeout(() => {
+//               targetElement.style.backgroundColor = "";
+//             }, 2000);
+//           }
+//         } else {
+//           chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//         }
+//       } else {
+//         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//       }
 
-  const handleBack = () => {
-    const basePath = "/chat";
-    if (userId) {
-      router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
-    } else {
-      router.push(basePath);
-    }
-  };
+//       hasScrolledToUnreadRef.current = true;
+//     }, 100);
+//   }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
 
-  // 🔥 NEW: Send Message with Textarea
-  const sendMessage = () => {
-    if (!inputValue.trim()) return;
-    if (!selectedGroup?.eventId || !userId) return;
+//   useEffect(() => {
+//     if (typeof window === "undefined" || typeof document === "undefined")
+//       return;
 
-    const groupId = selectedGroup._id;
-    const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    
-    // Convert emoji markers to HTML
-    let htmlContent = inputValue.replace(
-      /\[emoji:(.*?)\]/g,
-      '<img src="$1" class="emoji-inline" style="width:20px;height:20px;vertical-align:middle;display:inline-block;margin:0 2px;" />'
-    );
-    
-    // Convert line breaks to <br>
-    htmlContent = htmlContent.replace(/\n/g, '<br>');
+//     const docEl = document.documentElement;
+//     const setVvh = () => {
+//       const vv = window.visualViewport;
+//       if (vv && vv.height < window.innerHeight) {
+//         docEl.style.setProperty("--vvh", `${vv.height}px`);
+//         setTimeout(() => {
+//           const input = document.querySelector(".chat-input-container");
+//           if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
+//         }, 100);
+//       } else {
+//         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
+//       }
+//     };
 
-    const optimistic = {
-      id: tempId,
-      tempId,
-      _id: tempId,
-      eventId: selectedGroup.eventId,
-      groupId,
-      senderId: userId,
-      message: htmlContent,
-      html: htmlContent,
-      type: "text",
-      senderName: userData?.name,
-      senderPhone: localStorage.getItem("mobileNumber"),
-      createdAt: new Date().toISOString(),
-    };
+//     setVvh();
+//     window.visualViewport?.addEventListener("resize", setVvh);
+//     window.visualViewport?.addEventListener("scroll", setVvh);
 
-    setMessages((prev) => [...prev, optimistic]);
+//     return () => {
+//       window.visualViewport?.removeEventListener("resize", setVvh);
+//       window.visualViewport?.removeEventListener("scroll", setVvh);
+//     };
+//   }, []);
 
-    if (socket && socket.connected) {
-      socket.emit("message:send", {
-        eventId: selectedGroup.eventId,
-        groupId,
-        message: htmlContent,
-        html: htmlContent,
-        type: "text",
-        tempId,
-        senderName: userData?.name,
-        senderPhone: userData?.phone,
-      });
-    }
+//   // 🔥 FIX 2: Better emoji insertion for mobile
+//   const insertEmoji = (emojiObject) => {
+//     const textarea = textareaRef.current;
+//     if (!textarea) return;
 
-    setInputValue("");
-    
-    // Scroll to bottom after sending
-    setTimeout(() => {
-      if (chatBodyRef.current) {
-        chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-      }
-    }, 100);
+//     const start = textarea.selectionStart || inputValue.length;
+//     const end = textarea.selectionEnd || inputValue.length;
 
-    if (!showEmojiPicker) {
-      requestAnimationFrame(() => {
-        textareaRef.current?.focus({ preventScroll: true });
-      });
-    }
-  };
+//     // Use special marker for custom emojis with images
+//     const emojiText = emojiObject.imageUrl
+//       ? `[emoji:${emojiObject.imageUrl}]`
+//       : emojiObject.emoji || "😀";
 
-  // Handle Enter key
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+//     const newValue =
+//       inputValue.substring(0, start) + emojiText + inputValue.substring(end);
+//     setInputValue(newValue);
 
-  const handleClickUserName = async (senderId) => {
-    try {
-      const existingRoom = chatRooms.find((room) => {
-        if (room.roomType !== "direct") return false;
-        const memberIds = room.members.map((m) => m.userId);
-        return memberIds.includes(userId) && memberIds.includes(senderId);
-      });
-      
-      let newGroupId;
-      if (existingRoom) {
-        newGroupId = existingRoom._id || existingRoom.id;
-      } else {
-        const resp = await createDirectChatRequest(
-          `${CREATE_DIRECT_CHAT_ROOM}`,
-          "POST",
-          { members: [userId, senderId], eventId: selectedGroup?.eventId }
-        );
-        if (resp?.data) {
-          const newRoom = { ...resp.data, lastMessageAt: null };
-          setChatRooms((prev) => sortRooms([...prev, newRoom]));
-          newGroupId = resp.data._id || resp.data.id;
+//     // Set cursor after emoji
+//     setTimeout(() => {
+//       const newPos = start + emojiText.length;
+//       textarea.setSelectionRange(newPos, newPos);
+//       textarea.focus();
+//     }, 10);
+//   };
 
-          if (socket && socket.connected) {
-            socket.emit("joinRoom", { groupId: newGroupId });
-          }
-        }
-      }
-      
-      if (newGroupId) {
-        router.push(`/chat/room?groupId=${newGroupId}&id=${userId}`);
-      }
-    } catch (err) {
-      console.log("Error:", err);
-    }
-  };
+//   const markRoomRead = async (groupId, userId) => {
+//     if (!groupId || !userId) return;
+//     try {
+//       setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+//       if (socket && socket.connected) {
+//         socket.emit("message:read", { groupId, userId });
+//       }
+//       const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
+//         groupId,
+//         userId,
+//       });
+//       if (
+//         !resp.error &&
+//         (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
+//       ) {
+//         setUnreadCountsContext((prev) => ({
+//           ...prev,
+//           ...(resp.unreadCounts || resp.data.unreadCounts),
+//         }));
+//       } else {
+//         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+//       }
+//     } catch (err) {
+//       console.error("markRoomRead err", err);
+//     }
+//   };
 
-  const handleClickGroupName = () => {
-    if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
-      router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
-    }
-  };
+//   const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
+//     if (!groupId) return;
+//     try {
+//       const resp = await fetchMessagesRequest(
+//         `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+//         "GET",
+//       );
+//       if (!resp.error && resp.data) {
+//         setMessages(resp?.data || []);
+//         const roomObj = chatRooms.find(
+//           (r) => String(r._id || r.id) === String(groupId),
+//         );
+//         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+//         const lastReadForMe = lastReadMap[userId]
+//           ? new Date(lastReadMap[userId])
+//           : null;
 
-  useEffect(() => {
-    if (selectedGroup) {
-      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
-    }
-  }, [selectedGroup]);
+//         const unread = (resp.data || []).filter((m) => {
+//           const created = m.createdAt
+//             ? new Date(m.createdAt)
+//             : m.sentAt
+//               ? new Date(m.sentAt)
+//               : null;
+//           if (!created || String(m.senderId) === String(userId)) return false;
+//           return lastReadForMe ? created > lastReadForMe : true;
+//         }).length;
 
-  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
-    acc[member.userId] = member.profileImageUrl || "";
-    return acc;
-  }, {});
+//         setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+//       }
+//     } catch (err) {
+//       console.error("Fetch messages failed", err);
+//     }
+//   };
 
-  return (
-    <div
-      className="chat-layout"
-      style={{
-        backgroundImage: `url(${chatBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        paddingBottom: showEmojiPicker ? "260px" : "5px",
-      }}
-    >
-      {/* Header */}
-      <div className="chat-header-wrapper">
-        <div className="chat-header">
-          <div className="chat-user-info">
-            <Image
-              src={backIcon}
-              alt="Back"
-              className="back-arrow-img"
-              onClick={handleBack}
-            />
-            {roomDisplayDetails?.avatar ? (
-              <img
-                src={roomDisplayDetails.avatar}
-                alt={roomDisplayDetails.name}
-                className="chat-group-img"
-              />
-            ) : (
-              <div className="placeholder-avatar">
-                {roomDisplayDetails?.avatarText}
-              </div>
-            )}
-            <span className="chat-group-name" onClick={handleClickGroupName}>
-              {roomDisplayDetails?.name}
-            </span>
-          </div>
-        </div>
-      </div>
+//   useEffect(() => {
+//     const fetchUserDetails = async () => {
+//       if (!userId) return;
+//       try {
+//         const resp = await fetchUserRequest(
+//           `${GET_USER_BY_ID}/${userId}`,
+//           "GET",
+//         );
+//         if (resp?.data) {
+//           setUserData(resp?.data || {});
+//         }
+//       } catch (err) {
+//         console.log("Error fetching user:", err.message);
+//       }
+//     };
+//     fetchUserDetails();
+//   }, [userId]);
 
-      {/* Messages */}
-      <div className="chat-messages" ref={chatBodyRef}>
-        {messages.map((msg, index) => {
-          const isMe = msg.senderId === userId;
-          const senderName = msg.senderName;
-          const previousMsg = messages[index - 1];
-          const isConsecutive = previousMsg && previousMsg.senderId === msg.senderId;
-          
-          let consecutiveIndex = 0;
-          if (isConsecutive && !isMe) {
-            for (let i = index - 1; i >= 0; i--) {
-              if (messages[i].senderId === msg.senderId) {
-                consecutiveIndex++;
-              } else {
-                break;
-              }
-            }
-          }
-          
-          return msg?.type !== "info" ? (
-            <div
-              key={msg._id}
-              className={`chat-message ${isMe ? "sender" : "receiver"} ${
-                isConsecutive ? "consecutive" : ""
-              }`}
-            >
-              {!isMe && !isConsecutive && (
-                membersProfileMap?.[msg.senderId] ? (
-                  <img
-                    src={membersProfileMap?.[msg.senderId]}
-                    alt={senderName || "avatar"}
-                    className="chat-avatar-receiver"
-                    style={{ objectFit: "cover" }}
-                  />
-                ) : (
-                  <div
-                    className="chat-avatar-receiver"
-                    style={{
-                      backgroundColor: getAvatarColor(senderName || msg.senderPhone),
-                    }}
-                  >
-                    {senderName
-                      ? senderName.charAt(0).toUpperCase()
-                      : msg.senderPhone?.charAt(3)}
-                  </div>
-                )
-              )}
-              
-              <div
-                className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
-                  isConsecutive ? "consecutive" : ""
-                } ${
-                  isConsecutive && !isMe
-                    ? consecutiveIndex % 2 === 0
-                      ? "consecutive-even"
-                      : "consecutive-odd"
-                    : ""
-                }`}
-              >
-                {!isMe && !isConsecutive && (
-                  <div
-                    className="chat-sender"
-                    onClick={() => handleClickUserName(msg.senderId)}
-                  >
-                    {senderName || `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
-                  </div>
-                )}
-                <div
-                  className="chat-text"
-                  dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ margin: "12px 0" }}
-              key={msg._id}
-            >
-              <p className="info-chat-message-box">{msg?.message}</p>
-            </div>
-          );
-        })}
-      </div>
+//   useEffect(() => {
+//     const saved =
+//       typeof window !== "undefined"
+//         ? localStorage.getItem("chatBgImage")
+//         : null;
+//     if (saved) {
+//       setChatBg(saved);
+//     } else {
+//       setChatBg(chatBgImage.src);
+//       if (typeof window !== "undefined") {
+//         localStorage.setItem("chatBgImage", chatBgImage.src);
+//       }
+//     }
+//   }, []);
 
-      {/* 🔥 NEW: Input Container with TextareaAutosize */}
-      <div className="chat-input-container">
-        <EmojiPickerButton
-          onEmojiSelect={insertEmoji}
-          isPickerOpen={showEmojiPicker}
-          setIsPickerOpen={setShowEmojiPicker}
-          simple={true}
-          emojiIcon={emojiIcon}
-          keyboardIcon={keyboardIcon}
-        />
+//   const handleBack = () => {
+//     const basePath = "/chat";
+//     if (userId) {
+//       router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
+//     } else {
+//       router.push(basePath);
+//     }
+//   };
 
-        <TextareaAutosize
-          ref={textareaRef}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Type message here..."
-          minRows={1}
-          maxRows={5}
-          className="chat-input"
-          style={{
-            flex: 1,
-            border: "none",
-            outline: "none",
-            resize: "none",
-            fontSize: "clamp(15px, calc((18 / 393) * 100vw), 20px)",
-            fontFamily: "Sora, sans-serif",
-            color: "#3D3D3D",
-            lineHeight: "clamp(20px, calc((24.87 / 393) * 100vw), 30px)",
-            letterSpacing: "clamp(0.3px, calc((0.52 / 393) * 100vw), 0.7px)",
-            fontWeight: 400,
-            padding: "clamp(10.96px, calc((13.47 / 393) * 100vw), 16.45px)",
-            background: "transparent",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
-        />
+//   const sendMessage = () => {
+//     if (!inputValue.trim()) return;
+//     if (!selectedGroup?.eventId || !userId) return;
 
-        <button
-          onClick={sendMessage}
-          onMouseDown={(e) => e.preventDefault()}
-          className="chat-send-btn"
-          disabled={!inputValue.trim()}
-          style={{
-            opacity: inputValue.trim() ? 1 : 0.5,
-            cursor: inputValue.trim() ? "pointer" : "not-allowed",
-          }}
-        >
-          <Image src={sendIcon} alt="Send" className="send-icon" />
-        </button>
-      </div>
-    </div>
-  );
-};
+//     const groupId = selectedGroup._id;
+//     const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-export default ChatPage;
+//     // Convert emoji markers to HTML
+//     let htmlContent = inputValue.replace(
+//       /\[emoji:(.*?)\]/g,
+//       '<img src="$1" class="emoji-inline" style="width:20px;height:20px;vertical-align:middle;display:inline-block;margin:0 2px;" />',
+//     );
 
+//     // Convert line breaks to <br>
+//     htmlContent = htmlContent.replace(/\n/g, "<br>");
 
+//     const optimistic = {
+//       id: tempId,
+//       tempId,
+//       _id: tempId,
+//       eventId: selectedGroup.eventId,
+//       groupId,
+//       senderId: userId,
+//       message: htmlContent,
+//       html: htmlContent,
+//       type: "text",
+//       senderName: userData?.name,
+//       senderPhone: localStorage.getItem("mobileNumber"),
+//       createdAt: new Date().toISOString(),
+//     };
 
+//     setMessages((prev) => [...prev, optimistic]);
 
+//     if (socket && socket.connected) {
+//       socket.emit("message:send", {
+//         eventId: selectedGroup.eventId,
+//         groupId,
+//         message: htmlContent,
+//         html: htmlContent,
+//         type: "text",
+//         tempId,
+//         senderName: userData?.name,
+//         senderPhone: userData?.phone,
+//       });
+//     }
 
+//     setInputValue("");
 
+//     setTimeout(() => {
+//       if (chatBodyRef.current) {
+//         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+//       }
+//     }, 100);
 
+//     if (!showEmojiPicker) {
+//       requestAnimationFrame(() => {
+//         textareaRef.current?.focus({ preventScroll: true });
+//       });
+//     }
+//   };
 
+//   // 🔥 FIX 3: Prevent accidental send on mobile scroll
+//   const handleSendClick = (e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     sendMessage();
+//   };
 
+//   // 🔥 FIX 4: Handle mobile touch properly
+//   const handleSendTouch = (e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     sendMessage();
+//   };
 
+//   const handleKeyDown = (e) => {
+//     if (e.key === "Enter" && !e.shiftKey) {
+//       e.preventDefault();
+//       sendMessage();
+//     }
+//   };
 
+//   // 🔥 FIX 5: Mobile copy/paste support
+//   const handlePaste = async (e) => {
+//     e.preventDefault();
 
+//     try {
+//       let pastedText = "";
+
+//       // Try clipboard API first (modern browsers)
+//       if (navigator.clipboard && navigator.clipboard.readText) {
+//         pastedText = await navigator.clipboard.readText();
+//       } else if (e.clipboardData) {
+//         // Fallback to clipboardData
+//         pastedText = e.clipboardData.getData("text/plain");
+//       }
+
+//       if (!pastedText) return;
+
+//       const textarea = textareaRef.current;
+//       if (!textarea) return;
+
+//       const start = textarea.selectionStart || 0;
+//       const end = textarea.selectionEnd || 0;
+
+//       const newValue =
+//         inputValue.substring(0, start) + pastedText + inputValue.substring(end);
+//       setInputValue(newValue);
+
+//       // Set cursor after pasted text
+//       setTimeout(() => {
+//         const newPos = start + pastedText.length;
+//         textarea.setSelectionRange(newPos, newPos);
+//       }, 10);
+//     } catch (err) {
+//       console.error("Paste error:", err);
+//     }
+//   };
+
+//   const handleClickUserName = async (senderId) => {
+//     try {
+//       const existingRoom = chatRooms.find((room) => {
+//         if (room.roomType !== "direct") return false;
+//         const memberIds = room.members.map((m) => m.userId);
+//         return memberIds.includes(userId) && memberIds.includes(senderId);
+//       });
+
+//       let newGroupId;
+//       if (existingRoom) {
+//         newGroupId = existingRoom._id || existingRoom.id;
+//       } else {
+//         const resp = await createDirectChatRequest(
+//           `${CREATE_DIRECT_CHAT_ROOM}`,
+//           "POST",
+//           { members: [userId, senderId], eventId: selectedGroup?.eventId },
+//         );
+//         if (resp?.data) {
+//           const newRoom = { ...resp.data, lastMessageAt: null };
+//           setChatRooms((prev) => sortRooms([...prev, newRoom]));
+//           newGroupId = resp.data._id || resp.data.id;
+
+//           if (socket && socket.connected) {
+//             socket.emit("joinRoom", { groupId: newGroupId });
+//           }
+//         }
+//       }
+
+//       if (newGroupId) {
+//         router.push(`/chat/room?groupId=${newGroupId}&id=${userId}`);
+//       }
+//     } catch (err) {
+//       console.log("Error:", err);
+//     }
+//   };
+
+//   const handleClickGroupName = () => {
+//     if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
+//       router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (selectedGroup) {
+//       setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+//     }
+//   }, [selectedGroup]);
+
+//   const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+//     acc[member.userId] = member.profileImageUrl || "";
+//     return acc;
+//   }, {});
+
+//   return (
+//     <div
+//       className="chat-layout"
+//       style={{
+//         backgroundImage: `url(${chatBg})`,
+//         backgroundSize: "cover",
+//         backgroundPosition: "center",
+//         backgroundRepeat: "no-repeat",
+//         paddingBottom: showEmojiPicker ? "260px" : "5px",
+//       }}
+//     >
+//       <div className="chat-header-wrapper">
+//         <div className="chat-header">
+//           <div className="chat-user-info">
+//             <Image
+//               src={backIcon}
+//               alt="Back"
+//               className="back-arrow-img"
+//               onClick={handleBack}
+//             />
+//             {roomDisplayDetails?.avatar ? (
+//               <img
+//                 src={roomDisplayDetails.avatar}
+//                 alt={roomDisplayDetails.name}
+//                 className="chat-group-img"
+//               />
+//             ) : (
+//               <div className="placeholder-avatar">
+//                 {roomDisplayDetails?.avatarText}
+//               </div>
+//             )}
+//             <span className="chat-group-name" onClick={handleClickGroupName}>
+//               {roomDisplayDetails?.name}
+//             </span>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="chat-messages" ref={chatBodyRef}>
+//         {messages.map((msg, index) => {
+//           const isMe = msg.senderId === userId;
+//           const senderName = msg.senderName;
+//           const previousMsg = messages[index - 1];
+//           const isConsecutive =
+//             previousMsg && previousMsg.senderId === msg.senderId;
+
+//           let consecutiveIndex = 0;
+//           if (isConsecutive && !isMe) {
+//             for (let i = index - 1; i >= 0; i--) {
+//               if (messages[i].senderId === msg.senderId) {
+//                 consecutiveIndex++;
+//               } else {
+//                 break;
+//               }
+//             }
+//           }
+
+//           return msg?.type !== "info" ? (
+//             <div
+//               key={msg._id}
+//               className={`chat-message ${isMe ? "sender" : "receiver"} ${
+//                 isConsecutive ? "consecutive" : ""
+//               }`}
+//             >
+//               {!isMe &&
+//                 !isConsecutive &&
+//                 (membersProfileMap?.[msg.senderId] ? (
+//                   <img
+//                     src={membersProfileMap?.[msg.senderId]}
+//                     alt={senderName || "avatar"}
+//                     className="chat-avatar-receiver"
+//                     style={{ objectFit: "cover" }}
+//                   />
+//                 ) : (
+//                   <div
+//                     className="chat-avatar-receiver"
+//                     style={{
+//                       backgroundColor: getAvatarColor(
+//                         senderName || msg.senderPhone,
+//                       ),
+//                     }}
+//                   >
+//                     {senderName
+//                       ? senderName.charAt(0).toUpperCase()
+//                       : msg.senderPhone?.charAt(3)}
+//                   </div>
+//                 ))}
+
+//               <div
+//                 className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
+//                   isConsecutive ? "consecutive" : ""
+//                 } ${
+//                   isConsecutive && !isMe
+//                     ? consecutiveIndex % 2 === 0
+//                       ? "consecutive-even"
+//                       : "consecutive-odd"
+//                     : ""
+//                 }`}
+//               >
+//                 {!isMe && !isConsecutive && (
+//                   <div
+//                     className="chat-sender"
+//                     onClick={() => handleClickUserName(msg.senderId)}
+//                   >
+//                     {senderName ||
+//                       `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
+//                   </div>
+//                 )}
+//                 <div
+//                   className="chat-text"
+//                   dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
+//                 />
+//               </div>
+//             </div>
+//           ) : (
+//             <div
+//               className="d-flex justify-content-center align-items-center"
+//               style={{ margin: "12px 0" }}
+//               key={msg._id}
+//             >
+//               <p className="info-chat-message-box">{msg?.message}</p>
+//             </div>
+//           );
+//         })}
+//       </div>
+
+//       {/* 🔥 FIXED: Input Container with Mobile Support */}
+//       <div className="chat-input-container">
+//         <EmojiPickerButton
+//           onEmojiSelect={insertEmoji}
+//           isPickerOpen={showEmojiPicker}
+//           setIsPickerOpen={setShowEmojiPicker}
+//           simple={true}
+//           emojiIcon={emojiIcon}
+//           keyboardIcon={keyboardIcon}
+//         />
+//         {inputValue.includes("[emoji:") && (
+//           <div
+//             style={{
+//               padding: "4px 8px",
+//               background: "#f5f5f5",
+//               borderRadius: "8px",
+//               fontSize: "12px",
+//               marginBottom: "4px",
+//             }}
+//           >
+//             Preview:{" "}
+//             {inputValue.split(/(\[emoji:.*?\])/g).map((part, i) => {
+//               const match = part.match(/\[emoji:(.*?)\]/);
+//               if (match) {
+//                 return (
+//                   <img
+//                     key={i}
+//                     src={match[1]}
+//                     style={{ width: "16px", height: "16px" }}
+//                   />
+//                 );
+//               }
+//               return <span key={i}>{part}</span>;
+//             })}
+//           </div>
+//         )}
+
+//         <TextareaAutosize
+//           ref={textareaRef}
+//           value={inputValue}
+//           onChange={(e) => setInputValue(e.target.value)}
+//           onKeyDown={handleKeyDown}
+//           onPaste={handlePaste}
+//           placeholder="Type message here..."
+//           minRows={1}
+//           maxRows={5}
+//           className="chat-input"
+//           style={{
+//             flex: 1,
+//             border: "none",
+//             outline: "none",
+//             resize: "none",
+//             fontSize: "16px", // iOS fix - prevents zoom
+//             fontFamily: "Sora, sans-serif",
+//             color: "#3D3D3D",
+//             lineHeight: "24px",
+//             letterSpacing: "0.3px",
+//             fontWeight: 400,
+//             padding: "12px",
+//             background: "transparent",
+//             scrollbarWidth: "none",
+//             msOverflowStyle: "none",
+//             touchAction: "manipulation", // Mobile fix
+//           }}
+//         />
+
+//         <button
+//           ref={sendButtonRef}
+//           onClick={handleSendClick}
+//           onTouchEnd={handleSendTouch}
+//           className="chat-send-btn"
+//           disabled={!inputValue.trim()}
+//           style={{
+//             opacity: inputValue.trim() ? 1 : 0.5,
+//             cursor: inputValue.trim() ? "pointer" : "not-allowed",
+//             touchAction: "manipulation", // Mobile fix
+//             WebkitTapHighlightColor: "transparent", // Remove tap highlight
+//           }}
+//         >
+//           <Image src={sendIcon} alt="Send" className="send-icon" />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ChatPage;
 
 // import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 // import { useRouter } from "next/router";
@@ -1909,3 +3282,740 @@ export default ChatPage;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// OLD CODE WORKING
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import "../GroupsList.css";
+import EmojiPickerButton from "@/components/EmojiPicker";
+import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
+import keyboardIcon from "@/assets/wonderland/chat/KeyboardIcon.svg";
+import sendIcon from "@/assets/wonderland/chat/sendicon.png";
+import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
+import backIcon from "@/assets/wonderland/chat/BackIcon.png";
+import useApi from "@/hooks/useApi";
+import {
+  CREATE_DIRECT_CHAT_ROOM,
+  GET_CHAT_MESSAGES,
+  GET_USER_BY_ID,
+  MARK_READ_MESSAGE,
+} from "@/utils/apiconstants";
+import { getRoomDetails } from "@/utils/setGroupDetails";
+import { useChatStore } from "@/hooks/ChatContext";
+import socket from "@/socket";
+import { sortRooms } from "@/hooks/ChatProvider";
+
+const getAvatarColor = (name) => {
+  const colors = [
+    "#F44336",
+    "#E91E63",
+    "#9C27B0",
+    "#673AB7",
+    "#3F51B5",
+    "#2196F3",
+    "#009688",
+    "#4CAF50",
+    "#FF9800",
+    "#795548",
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
+
+const ChatPage = () => {
+  const router = useRouter();
+  const { groupId } = router.query;
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
+    useChatStore();
+  const { makeRequest: fetchUserRequest } = useApi();
+  const { makeRequest: fetchMessagesRequest } = useApi();
+  const { makeRequest: markReadRequest } = useApi();
+  const { makeRequest: createDirectChatRequest } = useApi();
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
+  const [messages, setMessages] = useState([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [chatBg, setChatBg] = useState(null);
+  const [userData, setUserData] = useState({});
+  const textareaRef = useRef(null);
+  const chatBodyRef = useRef(null);
+  const hasScrolledToUnreadRef = useRef(false);
+  const lastRangeRef = useRef(null);
+
+  // Mark read on mount if selected
+  useEffect(() => {
+    if (selectedGroup && userId) {
+      const gid = selectedGroup._id || selectedGroup.id;
+      markRoomRead(gid, userId);
+      fetchMessagesForRoom(gid)
+    }
+  }, [selectedGroup, userId]);
+
+  // Set selected from groupId
+  useEffect(() => {
+    if (!groupId || !chatRooms.length) return;
+    const selected = chatRooms.find(
+      (room) => String(room._id || room.id) === String(groupId)
+    );
+    if (selected) setSelectedGroup(selected);
+  }, [groupId, chatRooms]);
+
+  // Local message listener
+  useEffect(() => {
+    if (!socket || !selectedGroup) return;
+    const gid = selectedGroup._id || selectedGroup.id;
+    const onMessageNewLocal = (msg) => {
+      if (String(msg.groupId) !== String(gid)) return;
+      setMessages((prev) => {
+        if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
+          return prev.map((m) =>
+            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+          );
+        }
+        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+          return prev;
+        return [...prev, { ...msg, id: msg._id }];
+      });
+      setTimeout(() => markRoomRead(gid, userId), 50);
+    };
+    socket.on("message:new", onMessageNewLocal);
+    return () => socket.off("message:new", onMessageNewLocal);
+  }, [selectedGroup, userId]);
+
+  // Scroll to first unread or bottom on messages load
+  useLayoutEffect(() => {
+    if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+
+    // Only scroll once when messages first load
+    if (hasScrolledToUnreadRef.current) return;
+
+    const gid = selectedGroup._id || selectedGroup.id;
+    const unreadCount = unreadCounts[gid] || 0;
+
+    setTimeout(() => {
+      if (!chatBodyRef.current) return;
+
+      if (unreadCount > 0) {
+        const roomObj = chatRooms.find(
+          (r) => String(r._id || r.id) === String(gid)
+        );
+        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+        const lastReadForMe = lastReadMap[userId]
+          ? new Date(lastReadMap[userId])
+          : null;
+
+        // Find first unread message index
+        let firstUnreadIndex = -1;
+        if (lastReadForMe) {
+          for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
+            const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
+
+            // Skip own messages
+            if (String(msg.senderId) === String(userId)) continue;
+
+            // Find first message after lastReadAt
+            if (msgTime && msgTime > lastReadForMe) {
+              firstUnreadIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (firstUnreadIndex !== -1) {
+          // Scroll to first unread message
+          const messageElements =
+            chatBodyRef.current.querySelectorAll(".chat-message");
+          const targetElement = messageElements[firstUnreadIndex];
+
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: "auto",
+              block: "start",
+            });
+
+            // Add a visual indicator
+            targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
+            setTimeout(() => {
+              targetElement.style.backgroundColor = "";
+            }, 2000);
+          }
+        } else {
+          chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+        }
+      } else {
+        chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+      }
+
+      hasScrolledToUnreadRef.current = true;
+    }, 100);
+  }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
+
+  // Visual viewport handling for keyboard
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined")
+      return;
+    const docEl = document.documentElement;
+    const setVvh = () => {
+      const vv = window.visualViewport;
+      if (vv && vv.height < window.innerHeight) {
+        docEl.style.setProperty("--vvh", `${vv.height}px`);
+        setTimeout(() => {
+          const input = document.querySelector(".chat-input-container");
+          if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
+        }, 100);
+        document.body.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.width = "100vw";
+        const chatLayout = document.querySelector(".chat-layout");
+        if (chatLayout) {
+          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, {
+            passive: false,
+          });
+          chatLayout.addEventListener("wheel", allowChatMessagesScroll, {
+            passive: false,
+          });
+        }
+      } else {
+        docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
+        document.body.style.overflow = "";
+        document.body.style.position = "";
+        document.body.style.width = "";
+        const chatLayout = document.querySelector(".chat-layout");
+        if (chatLayout) {
+          chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
+          chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
+        }
+      }
+    };
+    function allowChatMessagesScroll(e) {
+      const chatMessages = document.querySelector(".chat-messages");
+      if (!chatMessages) return e.preventDefault();
+      if (chatMessages.contains(e.target)) {
+        return;
+      }
+      e.preventDefault();
+    }
+    setVvh();
+    window.visualViewport?.addEventListener("resize", setVvh);
+    window.visualViewport?.addEventListener("scroll", setVvh);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", setVvh);
+      window.visualViewport?.removeEventListener("scroll", setVvh);
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      const chatLayout = document.querySelector(".chat-layout");
+      if (chatLayout) {
+        chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
+        chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
+      }
+    };
+  }, []);
+
+  // Cursor memory for emoji insertion
+  const saveCursor = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      lastRangeRef.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const insertEmoji = (emojiObject) => {
+    const emojiUrl = emojiObject?.imageUrl;
+    if (!textareaRef.current) return;
+    textareaRef.current.setAttribute("inputmode", "none");
+    textareaRef.current.focus({ preventScroll: true });
+    setTimeout(() => {
+      textareaRef.current.removeAttribute("inputmode");
+    }, 50);
+    let sel = window.getSelection();
+    let range;
+    if (
+      lastRangeRef.current &&
+      textareaRef.current.contains(lastRangeRef.current.startContainer)
+    ) {
+      range = lastRangeRef.current;
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(textareaRef.current);
+      range.collapse(false);
+    }
+    sel.removeAllRanges();
+    sel.addRange(range);
+    const img = document.createElement("img");
+    img.src = emojiUrl;
+    img.className = "emoji-inline";
+    img.style.width = "24px";
+    img.style.height = "24px";
+    img.style.verticalAlign = "middle";
+    img.style.display = "inline-block";
+    img.style.margin = "0 2px";
+    range.insertNode(img);
+    const newRange = document.createRange();
+    newRange.setStartAfter(img);
+    newRange.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+    lastRangeRef.current = newRange;
+    resizeTextarea();
+  };
+
+  const markRoomRead = async (groupId, userId) => {
+    if (!groupId || !userId) return;
+    try {
+      setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+      if (socket && socket.connected) {
+        socket.emit("message:read", { groupId: groupId, userId: userId });
+      }
+      const resp = await markReadRequest(`${MARK_READ_MESSAGE}`, "POST", {
+        groupId: groupId,
+        userId: userId,
+      });
+      if (
+        !resp.error &&
+        (resp.unreadCounts || (resp.data && resp.data.unreadCounts))
+      ) {
+        setUnreadCountsContext((prev) => ({
+          ...prev,
+          ...(resp.unreadCounts || resp.data.unreadCounts),
+        }));
+      } else {
+        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: 0 }));
+      }
+    } catch (err) {
+      console.error("markRoomRead err", err);
+    }
+  };
+
+  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
+    if (!groupId) return;
+    try {
+      const resp = await fetchMessagesRequest(
+        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+        "GET"
+      );
+      if (!resp.error && resp.data) {
+        setMessages(resp?.data || []);
+        const roomObj = chatRooms.find(
+          (r) => String(r._id || r.id) === String(groupId)
+        );
+        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+        const lastReadForMe = lastReadMap[userId]
+          ? new Date(lastReadMap[userId])
+          : null;
+        const unread = (resp.data || []).filter((m) => {
+          const created = m.createdAt
+            ? new Date(m.createdAt)
+            : m.sentAt
+            ? new Date(m.sentAt)
+            : null;
+          if (!created || String(m.senderId) === String(userId)) return false;
+          return lastReadForMe ? created > lastReadForMe : true;
+        }).length;
+        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+      } else {
+        console.warn("Failed fetch messages", resp);
+      }
+    } catch (err) {
+      console.error("Fetch messages failed", err);
+    }
+  };
+
+  // Fetch user details
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!userId) return;
+      try {
+        const resp = await fetchUserRequest(
+          `${GET_USER_BY_ID}/${userId}`,
+          "GET"
+        );
+        if (resp?.data) {
+          setUserData(resp?.data || {});
+        }
+      } catch (err) {
+        console.log("Error fetching user:", err.message);
+      }
+    };
+    fetchUserDetails();
+  }, [userId]);
+
+  useEffect(() => {
+    const saved =
+      typeof window !== "undefined"
+        ? localStorage.getItem("chatBgImage")
+        : null;
+    if (saved) {
+      setChatBg(saved);
+    } else {
+      setChatBg(chatBgImage.src);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("chatBgImage", chatBgImage.src);
+      }
+    }
+  }, []);
+
+  const handleBack = () => {
+    const basePath = "/chat";
+    if (userId) {
+      router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
+    } else {
+      router.push(basePath);
+    }
+  };
+
+  const handleImageUpload = async () => {};
+
+  const sendMessage = async () => {
+    if (!textareaRef.current) return;
+    const messageHTML = textareaRef.current.innerHTML.trim();
+    const messageText = textareaRef.current.textContent.trim();
+    if (
+      !messageText &&
+      (!messageHTML ||
+        messageHTML === "<br>" ||
+        messageHTML === "<div><br></div>")
+    ) {
+      return;
+    }
+    if (!selectedGroup?.eventId || !userId) return;
+    const groupId = selectedGroup?._id;
+    const tempId = `temp_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
+    const optimistic = {
+      id: tempId,
+      tempId,
+      _id: tempId,
+      eventId: selectedGroup.eventId,
+      groupId,
+      senderId: userId,
+      message: messageHTML,
+      html: messageHTML,
+      type: "text",
+      senderName: userData?.name,
+      senderPhone: localStorage.getItem("mobileNumber"),
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimistic]);
+    // tempIdToClientMap.current.set(tempId, true);
+    if (socket && socket.connected) {
+      socket.emit("message:send", {
+        eventId: selectedGroup.eventId,
+        groupId,
+        message: messageHTML,
+        html: messageHTML,
+        type: "text",
+        tempId,
+        senderName: userData?.name,
+        senderPhone: userData?.phone,
+      });
+    }
+    textareaRef.current.innerHTML = "";
+    textareaRef.current.style.height = "auto";
+    if (!showEmojiPicker) {
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus({ preventScroll: true });
+      });
+    }
+  };
+
+  const resizeTextarea = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    const newHeight = Math.min(el.scrollHeight, 120);
+    el.style.height = newHeight + "px";
+  };
+
+  const handleClickUserName = async (senderId) => {
+    try {
+      const existingRoom = chatRooms.find((room) => {
+        if (room.roomType !== "direct") return false;
+        const memberIds = room.members.map((m) => m.userId);
+        return memberIds.includes(userId) && memberIds.includes(senderId);
+      });
+      let newGroupId;
+      if (existingRoom) {
+        newGroupId = existingRoom._id || existingRoom.id;
+      } else {
+        const resp = await createDirectChatRequest(
+          `${CREATE_DIRECT_CHAT_ROOM}`,
+          "POST",
+          {
+            members: [userId, senderId],
+            eventId: selectedGroup?.eventId,
+          }
+        );
+        if (resp?.data) {
+          const newRoom = {
+            ...resp.data,
+            lastMessageAt: null,
+          };
+          setChatRooms((prev) => sortRooms([...prev, newRoom]));
+          newGroupId = resp.data._id || resp.data.id;
+
+          if (socket && socket.connected) {
+            socket.emit("joinRoom", { groupId: newGroupId });
+            console.log(`Sender emitted joinRoom for ${newGroupId}`);
+          }
+        }
+      }
+      if (newGroupId) {
+        router.push(`/chat/room?groupId=${newGroupId}&id=${userId}`);
+      }
+    } catch (err) {
+      console.log("Error:", err);
+    }
+  };
+
+  const handleClickGroupName = () => {
+    if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
+      router.push(`/wonderland/invite?eventid=${selectedGroup?.eventId}`);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedGroup) {
+      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+    }
+  }, [selectedGroup]);
+
+  const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
+    acc[member.userId] = member.profileImageUrl || "";
+    return acc;
+  }, {});
+
+  return (
+    <div
+      className="chat-layout"
+      style={{
+        backgroundImage: `url(${chatBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        paddingBottom: showEmojiPicker ? "260px" : "5px",
+      }}
+    >
+      {" "}
+      <div className="chat-header-wrapper">
+        <div className="chat-header">
+          <div className="chat-user-info">
+            <Image
+              src={backIcon}
+              alt="Back"
+              className="back-arrow-img"
+              onClick={handleBack}
+            />
+            {roomDisplayDetails?.avatar ? (
+              <img
+                src={roomDisplayDetails.avatar}
+                alt={roomDisplayDetails.name}
+                className="chat-group-img"
+              />
+            ) : (
+              <div className="placeholder-avatar">
+                {roomDisplayDetails?.avatarText}
+              </div>
+            )}
+            <span className="chat-group-name" onClick={handleClickGroupName}>
+              {roomDisplayDetails?.name}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="chat-messages" ref={chatBodyRef}>
+        {messages.map((msg, index) => {
+          const isMe = msg.senderId === userId;
+          const senderName = msg.senderName;
+          const previousMsg = messages[index - 1];
+          const isConsecutive =
+            previousMsg && previousMsg.senderId === msg.senderId;
+          let consecutiveIndex = 0;
+          if (isConsecutive && !isMe) {
+            for (let i = index - 1; i >= 0; i--) {
+              if (messages[i].senderId === msg.senderId) {
+                consecutiveIndex++;
+              } else {
+                break;
+              }
+            }
+          }
+          return msg?.type !== "info" ? (
+            <div
+              key={msg._id}
+              className={`chat-message ${isMe ? "sender" : "receiver"} ${
+                isConsecutive ? "consecutive" : ""
+              }`}
+            >
+              {!isMe &&
+                !isConsecutive &&
+                (membersProfileMap?.[msg.senderId] ? (
+                  <img
+                    src={membersProfileMap?.[msg.senderId]}
+                    alt={senderName || "avatar"}
+                    className="chat-avatar-receiver"
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <div
+                    className="chat-avatar-receiver"
+                    style={{
+                      backgroundColor: getAvatarColor(
+                        senderName || msg.senderPhone
+                      ),
+                    }}
+                  >
+                    {senderName
+                      ? senderName.charAt(0).toUpperCase()
+                      : msg.senderPhone?.charAt(3)}
+                  </div>
+                ))}
+              <div
+                className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
+                  isConsecutive ? "consecutive" : ""
+                } ${
+                  isConsecutive && !isMe
+                    ? consecutiveIndex % 2 === 0
+                      ? "consecutive-even"
+                      : "consecutive-odd"
+                    : ""
+                }`}
+              >
+                {!isMe && !isConsecutive && (
+                  <div
+                    className="chat-sender"
+                    onClick={() => handleClickUserName(msg.senderId)}
+                  >
+                    {senderName
+                      ? senderName
+                      : `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
+                  </div>
+                )}
+                <div
+                  className="chat-text"
+                  dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ margin: "12px 0" }}
+              key={msg._id}
+            >
+              <p className="info-chat-message-box">{msg?.message}</p>
+            </div>
+          );
+        })}
+      </div>
+      <div className="chat-input-container">
+        <EmojiPickerButton
+          onEmojiSelect={insertEmoji}
+          isPickerOpen={showEmojiPicker}
+          setIsPickerOpen={setShowEmojiPicker}
+          simple={true}
+          emojiIcon={emojiIcon}
+          keyboardIcon={keyboardIcon}
+          textareaRef={textareaRef}
+        />
+        <div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+          />
+        </div>
+        <div
+          ref={textareaRef}
+          contentEditable
+          inputMode="text"
+          suppressContentEditableWarning={true}
+          onFocus={() => {
+            if(showEmojiPicker) {
+              setShowEmojiPicker(false);
+            }
+            const el = textareaRef.current;
+            if (!el) return;
+            el.addEventListener("keyup", saveCursor);
+            el.addEventListener("mouseup", saveCursor);
+            el.addEventListener("focus", saveCursor);
+          }}
+          onInput={(e) => {
+            resizeTextarea();
+          }}
+          className="chat-input"
+          data-placeholder="Type message here..."
+        />
+        <button
+          onClick={sendMessage}
+          onMouseDown={(e) => !showEmojiPicker && e.preventDefault()}
+          className="chat-send-btn"
+          type="button"
+        >
+          <Image src={sendIcon} alt="Send" className="send-icon" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ChatPage;
