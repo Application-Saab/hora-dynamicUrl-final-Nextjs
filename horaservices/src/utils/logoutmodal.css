@@ -41,11 +41,7 @@
   border-radius: clamp(44px, 14vw, 58.18px);
   opacity: 1;
 
-  padding-top: clamp(8px, 2.8vw, 10.91px);
-  padding-right: clamp(5px, 2vw, 7.27px);
-  padding-bottom: clamp(8px, 2.8vw, 10.91px);
-  padding-left: clamp(5px, 2vw, 7.27px);
-
+  margin-bottom: 15px;
   align-items: center;
   justify-content: center;
 }
