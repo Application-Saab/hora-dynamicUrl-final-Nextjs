@@ -5,7 +5,6 @@ import Image from "next/image";
 import emojiicon from "@/assets/Emoji.png";
 import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
 import "./emoji.css";
-import { Key } from "lucide-react";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -15,72 +14,91 @@ export default function EmojiPickerButton({
   onEmojiSelect,
   isPickerOpen,
   setIsPickerOpen,
-  simple = false, // New prop to control behavior
+  simple = false,
   emojiIcon = emojiicon,
   keyboardIcon = ThankYouKeyboard,
+  ignoreNextFocusRef
 }) {
-  const pickerVisible = isPickerOpen ?? false;
-  const togglePicker = setIsPickerOpen ?? (() => {});
   const [forceOpen, setForceOpen] = useState(false);
-  const [showKeyboardIcon, setShowKeyboardIcon] = useState(false);
-
+  const [keyboardHeight, setKeyboardHeight] = useState(260);
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false);
 
+
   useEffect(() => {
-    const handleFocus = (e) => {
-      if (e.target.tagName === "TEXTAREA" || e.target.isContentEditable) {
-        lastFocusedRef.current = e.target;
+    if (!window.visualViewport) return;
+
+    const handleResize = () => {
+      const height = window.innerHeight - window.visualViewport.height;
+
+      // ignore tiny changes
+      if (height > 100) {
+        setKeyboardHeight(height);
+        localStorage.setItem("keyboardHeight", height);
       }
     };
-    document.addEventListener("focusin", handleFocus);
-    return () => document.removeEventListener("focusin", handleFocus);
+
+    // restore cached value
+    const cached = localStorage.getItem("keyboardHeight");
+    if (cached) {
+      setKeyboardHeight(parseInt(cached));
+    }
+
+    window.visualViewport.addEventListener("resize", handleResize);
+
+    return () =>
+      window.visualViewport.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
-    if (!simple) {
-      document.body.classList.toggle("emoji-open", pickerVisible);
-    }
-  }, [pickerVisible, simple]);
-
-  useEffect(() => {
-    if (!simple) return;
-
     const handleFocus = (e) => {
-      if (
-        (e.target.tagName === "TEXTAREA" || e.target.isContentEditable) &&
-        pickerVisible
-      ) {
-        togglePicker(false);
+      const isInput =
+        e.target.tagName === "TEXTAREA" || e.target.isContentEditable;
+
+      if (isInput) {
+        lastFocusedRef.current = e.target;
+
+        // if focus came from emoji insert DO NOTHING
+        if (ignoreNextFocusRef.current) {
+          ignoreNextFocusRef.current = false;
+          return;
+        }
+
+        // real user tap close picker
+        setIsPickerOpen(false);
+
+        const elements = document.querySelectorAll(".chat-layout");
+        elements.forEach((el) => {
+          el.style.paddingBottom = "5px";
+        });
       }
     };
+
     document.addEventListener("focusin", handleFocus);
     return () => document.removeEventListener("focusin", handleFocus);
-  }, [pickerVisible, simple]);
+  }, [isPickerOpen, simple]);
+
+  useEffect(() => {
+    if (!simple) {
+      document.body.classList.toggle("emoji-open", isPickerOpen);
+    }
+  }, [isPickerOpen, simple]);
 
   const handleButtonClick = (e) => {
     e.preventDefault();
-
     /* ================= SIMPLE MODE ================= */
     if (simple) {
       setForceOpen(false);
-
-      // ⌨️ Keyboard icon clicked
-      if (pickerVisible) {
-        togglePicker(false);
-
-        // ⚠️ IMPORTANT: delay focus so picker actually closes
+      // Keyboard icon clicked
+      if (isPickerOpen) {
+        setIsPickerOpen(false);
         setTimeout(() => {
           if (lastFocusedRef.current) {
             lastFocusedRef.current.focus();
           }
         }, 150);
-
         return;
       }
-
-      // 😀 Emoji icon clicked
-      togglePicker(true);
 
       const active = document.activeElement;
       if (
@@ -89,12 +107,15 @@ export default function EmojiPickerButton({
       ) {
         active.blur();
       }
+      setTimeout(() => {
+        setIsPickerOpen(true);
+      }, 150);
       return;
     }
 
     // Complex mode for Thankyou-note
-    if (pickerVisible) {
-      togglePicker(false);
+    if (isPickerOpen && !simple) {
+      setIsPickerOpen(false);
 
       if (lastFocusedRef.current) {
         setTimeout(() => {
@@ -119,10 +140,26 @@ export default function EmojiPickerButton({
     }
 
     blockKeyboard.current = true;
-    togglePicker(true);
+    setIsPickerOpen(true);
   };
 
+  useEffect(() => {
+    if (!isPickerOpen) return;
+
+    const elements = document.querySelectorAll(".chat-layout");
+    elements.forEach((el) => {
+      el.style.paddingBottom = `${keyboardHeight}px`;
+    });
+
+    return () => {
+      elements.forEach((el) => {
+        el.style.paddingBottom = "5px";
+      });
+    };
+  }, [isPickerOpen, keyboardHeight]);
+
   const handleEmojiClick = (emojiObj, event) => {
+    ignoreNextFocusRef.current = true;
     onEmojiSelect?.(emojiObj);
 
     // In simple mode, reopen picker immediately after selection
@@ -136,7 +173,7 @@ export default function EmojiPickerButton({
     if (simple) return; // Skip complex logic in simple mode
 
     const block = (e) => {
-      if (pickerVisible && blockKeyboard.current) {
+      if (isPickerOpen && blockKeyboard.current) {
         // Prevent focus events that might trigger keyboard, but don't blur
         e.stopPropagation();
         e.preventDefault();
@@ -145,36 +182,35 @@ export default function EmojiPickerButton({
     window.addEventListener("focus", block, true);
 
     return () => window.removeEventListener("focus", block, true);
-  }, [pickerVisible, simple]);
-
+  }, [isPickerOpen, simple]);
   useEffect(() => {
-    if (simple || !pickerVisible) return;
+    if (simple || !isPickerOpen) return;
 
     window.history.pushState({ picker: true }, "");
 
     const back = (e) => {
-      if (pickerVisible) {
+      if (isPickerOpen) {
         e.preventDefault();
-        togglePicker(false);
+        setIsPickerOpen(false);
         window.history.pushState({}, "");
       }
     };
     window.addEventListener("popstate", back);
 
     return () => window.removeEventListener("popstate", back);
-  }, [pickerVisible, simple]);
+  }, [isPickerOpen, simple]);
 
   useEffect(() => {
     const handler = (e) => {
       if (
-        pickerVisible &&
+        isPickerOpen &&
         !forceOpen &&
         !e.target.closest(".emoji-picker-container") &&
         !e.target.closest(".emoji-btn")
       ) {
         // Only close on outside click if not in simple mode
         if (!simple) {
-          togglePicker(false);
+          setIsPickerOpen(false);
           setForceOpen(false);
           blockKeyboard.current = false;
         }
@@ -184,11 +220,10 @@ export default function EmojiPickerButton({
 
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
-  }, [pickerVisible, simple, forceOpen]);
+  }, [isPickerOpen, simple, forceOpen]);
 
   return (
     <>
-      {/* BUTTON */}
       <div
         className="emoji-btn"
         onClick={(e) => {
@@ -199,12 +234,12 @@ export default function EmojiPickerButton({
         <Image
           src={
             simple
-              ? pickerVisible
+              ? isPickerOpen
                 ? keyboardIcon
-                : emojiIcon // ✅ SIMPLE MODE FIX
-              : pickerVisible
-              ? keyboardIcon
-              : emojiIcon
+                : emojiIcon
+              : isPickerOpen
+                ? keyboardIcon
+                : emojiIcon
           }
           alt="emoji"
           width={30}
@@ -214,19 +249,18 @@ export default function EmojiPickerButton({
             transition: simple ? "none" : "transform 0.2s",
             transform: simple
               ? "none"
-              : pickerVisible
-              ? "scale(0.9)"
-              : "scale(1)",
+              : isPickerOpen
+                ? "scale(0.9)"
+                : "scale(1)",
           }}
         />
       </div>
 
       {/* PICKER */}
-      {pickerVisible && (
+      {isPickerOpen && (
         <div className="emoji-picker-container open">
           <div
             onClick={(e) => {
-              // Prevent emoji picker from closing when clicking inside in simple mode
               if (simple) {
                 e.stopPropagation();
               }
@@ -238,7 +272,7 @@ export default function EmojiPickerButton({
                 handleEmojiClick(emojiObject, event)
               }
               width="100%"
-              height={260}
+              height={keyboardHeight}
               searchDisabled
               previewConfig={{ showPreview: false }}
               lazyLoadEmojis
