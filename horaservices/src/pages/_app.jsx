@@ -137,15 +137,30 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Head>
-        <title>Hora Services</title>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/new_logo_light.png" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
+     <Head>
+  <title>HORA – Event & Balloon Decoration Services</title>
+
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "HORA",
+        alternateName: "HORA Services",
+        url: "https://horaservices.com/",
+      }),
+    }}
+  />
+
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/new_logo_light.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
+    rel="stylesheet"
+  />
+</Head>
+
 
       <Provider store={store}>
         <UserDetailsProvider>

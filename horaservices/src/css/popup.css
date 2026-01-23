@@ -1,6 +1,6 @@
 @media (max-width: 800px) {
   .popup-content {
-    padding: 5px !important;
+    padding: 10px !important;
   }
   .popup-body {
     padding-bottom: 20px !important;
@@ -8,8 +8,7 @@
   }
 }
 
-@media (max-width: 480px) {
-}
+
 
 @media (max-width: 400px) {
   .add-more-button{
@@ -54,6 +53,10 @@
   padding: 10px;
 }
 
+.logout-popup-header {
+  display: flex;
+  justify-content: flex-end;
+}
 
 .close-icon {
   cursor: pointer;

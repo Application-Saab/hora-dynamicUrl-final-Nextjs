@@ -6,7 +6,7 @@ import Image from "next/image";
 import "./header.css";
 import { usePathname, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import loginImg from '../../assets/profile_picture.png'
 import logo from '../../assets/new_logo_light.png';
 import MobileDrawer from "./MobileDrawer";
@@ -83,7 +83,7 @@ const toggleDrawer = () => {
    ------------------------ */
   return (
     <>
-      <header className={isInnerPage ? "inner-header" : "home-header"}>
+          <header className="home-header">
         <div className="pageWidth header-wrapper">
           {/* LOGO */}
           <Link href="/">

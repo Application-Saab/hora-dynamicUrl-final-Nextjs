@@ -12,9 +12,7 @@ import {
 } from "../utils/apiconstants";
 import "./login.css";
 import { useTimer } from "../utils/useTimer";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
 import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
@@ -30,8 +28,7 @@ const OtpLogin = ({ setIsModalOpen }) => {
   const { time, resetTimer ,isTimeUp} = useTimer(30);
   const inputsRef = useRef([]);
 
-  const router = useRouter();
-  const pathname = usePathname();
+
 
   /* ---------------- MOBILE INPUT ---------------- */
 const handleMobileNumberChange = (e) => {
@@ -200,6 +197,7 @@ if (finalOtp.length !== 4) {
       localStorage.setItem("mobileNumber", mobileNumber);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("userID", res.data.data._id);
+  sendWelcomeMessage(mobileNumber);
 
       window.dispatchEvent(new Event("loginStateChange"));
 
