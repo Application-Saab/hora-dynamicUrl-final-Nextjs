@@ -17,7 +17,8 @@ export default function EmojiPickerButton({
   simple = false,
   emojiIcon = emojiicon,
   keyboardIcon = ThankYouKeyboard,
-  ignoreNextFocusRef
+  ignoreNextFocusRef,
+  textareaRef
 }) {
   const [forceOpen, setForceOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(260);
@@ -96,6 +97,7 @@ export default function EmojiPickerButton({
           if (lastFocusedRef.current) {
             lastFocusedRef.current.focus();
           }
+          textareaRef.current.focus();
         }, 150);
         return;
       }

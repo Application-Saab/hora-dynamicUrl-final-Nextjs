@@ -10,11 +10,11 @@ import {
   BASE_URL,
   CREATE_NEW_POST,
 } from "@/utils/apiconstants";
-import EmojiPickerButton from "@/components/EmojiPicker";
 import NoteSkeleton from "@/components/wonderland/NoteSkeleton";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { uploadImage } from "@/utils/handleMediaUpload";
 import useApi from "@/hooks/useApi";
+import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 
 export default function NoteDetails() {
   const router = useRouter();
@@ -253,7 +253,7 @@ const handleDownload = async () => {
               className="emoji-button"
               style={{ position: "absolute", right: 0, top: 0 }}
             >
-              <EmojiPickerButton
+              <EmojiPickerButtonNotes
                 onEmojiSelect={insertEmoji}
                 isPickerOpen={showEmojiPicker}
                 setIsPickerOpen={setShowEmojiPicker}
