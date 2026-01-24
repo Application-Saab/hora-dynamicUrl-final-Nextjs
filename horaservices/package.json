@@ -39,6 +39,7 @@
     "react-share": "^5.1.0",
     "react-slick": "^0.30.2",
     "react-swipeable": "^7.0.2",
+    "react-textarea-autosize": "^8.5.9",
     "react-time-picker": "^7.0.0",
     "react-use": "^17.6.0",
     "redux": "^5.0.1",

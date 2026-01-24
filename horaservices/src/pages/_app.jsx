@@ -1,5 +1,5 @@
 // pages/_app.tsx
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -15,7 +15,6 @@ import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
-import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 
 function MyApp({ Component, pageProps }) {
@@ -137,15 +136,30 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Head>
-        <title>Hora Services</title>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/new_logo_light.png" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
+     <Head>
+  <title>HORA – Event & Balloon Decoration Services</title>
+
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "HORA",
+        alternateName: "HORA Services",
+        url: "https://horaservices.com/",
+      }),
+    }}
+  />
+
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/new_logo_light.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
+    rel="stylesheet"
+  />
+</Head>
+
 
       <Provider store={store}>
         <UserDetailsProvider>
