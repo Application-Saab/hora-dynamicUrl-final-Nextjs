@@ -190,6 +190,7 @@
     -webkit-overflow-scrolling: touch;
     top: 0;
   left: 0;
+  /* padding-bottom: env(keyboard-inset-height, 0px) */
 }
 :root {
   --sat: env(safe-area-inset-top);
@@ -329,28 +330,35 @@
   margin: 0 2px;
 }
 
-
-/* TEXTAREA */
 .chat-input {
   flex: 1;
-  border: none;
   outline: none;
-
-  padding: clamp(10.96px, calc((13.47 / 393) * 100vw), 16.45px);
-
-  font-family: "Sora", sans-serif;
-  color: #3D3D3D;
-
-  font-size: clamp(15px, calc((18 / 393) * 100vw), 20px);
-  line-height: clamp(20px, calc((24.87 / 393) * 100vw), 30px);
-  letter-spacing: clamp(0.3px, calc((0.52 / 393) * 100vw), 0.7px);
-  font-weight: 400;
-  resize: none;
+  padding: 12px 8px;
+  font-size: 16px;
+  line-height: 1.4;
+  min-height: 20px;
+  max-height: 120px;
   overflow-y: auto;
   background: transparent;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default !important;
+  caret-color: #000 !important;
+  cursor: text;
+
+  -webkit-user-modify: read-write-plaintext-only;
+  -webkit-appearance: none;
+  appearance: none;
+
+  min-height: 24px;
+  line-height: 1.4;
+
+  transform: translateZ(0);
+  will-change: contents;
 }
+
 .chat-input::-webkit-scrollbar {
   display: none;
 }
@@ -368,8 +376,6 @@
   color: #999;
   pointer-events: none;
 }
-
-
 
 /* SEND BUTTON */
 .chat-send-btn {
@@ -396,13 +402,7 @@
   object-fit: contain;
 }
 
-
-
 /* ----------------------------------------------------------------------------------------------------------------- */
-
-
-
-
 /* Messages list */
 .chat-messages {
   flex: 1;

@@ -62,13 +62,14 @@ const ChatPage = () => {
   const chatBodyRef = useRef(null);
   const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
+  const ignoreNextFocusRef = useRef(false);
 
   // Mark read on mount if selected
   useEffect(() => {
     if (selectedGroup && userId) {
       const gid = selectedGroup._id || selectedGroup.id;
       markRoomRead(gid, userId);
-      fetchMessagesForRoom(gid)
+      fetchMessagesForRoom(gid);
     }
   }, [selectedGroup, userId]);
 
@@ -76,7 +77,7 @@ const ChatPage = () => {
   useEffect(() => {
     if (!groupId || !chatRooms.length) return;
     const selected = chatRooms.find(
-      (room) => String(room._id || room.id) === String(groupId)
+      (room) => String(room._id || room.id) === String(groupId),
     );
     if (selected) setSelectedGroup(selected);
   }, [groupId, chatRooms]);
@@ -90,7 +91,7 @@ const ChatPage = () => {
       setMessages((prev) => {
         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
           return prev.map((m) =>
-            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m
+            m.tempId === msg.tempId ? { ...msg, id: msg._id } : m,
           );
         }
         if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
@@ -118,7 +119,7 @@ const ChatPage = () => {
 
       if (unreadCount > 0) {
         const roomObj = chatRooms.find(
-          (r) => String(r._id || r.id) === String(gid)
+          (r) => String(r._id || r.id) === String(gid),
         );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
         const lastReadForMe = lastReadMap[userId]
@@ -245,6 +246,8 @@ const ChatPage = () => {
   const insertEmoji = (emojiObject) => {
     const emojiUrl = emojiObject?.imageUrl;
     if (!textareaRef.current) return;
+    ignoreNextFocusRef.current = true;
+
     textareaRef.current.setAttribute("inputmode", "none");
     textareaRef.current.focus({ preventScroll: true });
     setTimeout(() => {
@@ -314,12 +317,12 @@ const ChatPage = () => {
     try {
       const resp = await fetchMessagesRequest(
         `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
-        "GET"
+        "GET",
       );
       if (!resp.error && resp.data) {
         setMessages(resp?.data || []);
         const roomObj = chatRooms.find(
-          (r) => String(r._id || r.id) === String(groupId)
+          (r) => String(r._id || r.id) === String(groupId),
         );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
         const lastReadForMe = lastReadMap[userId]
@@ -329,8 +332,8 @@ const ChatPage = () => {
           const created = m.createdAt
             ? new Date(m.createdAt)
             : m.sentAt
-            ? new Date(m.sentAt)
-            : null;
+              ? new Date(m.sentAt)
+              : null;
           if (!created || String(m.senderId) === String(userId)) return false;
           return lastReadForMe ? created > lastReadForMe : true;
         }).length;
@@ -350,7 +353,7 @@ const ChatPage = () => {
       try {
         const resp = await fetchUserRequest(
           `${GET_USER_BY_ID}/${userId}`,
-          "GET"
+          "GET",
         );
         if (resp?.data) {
           setUserData(resp?.data || {});
@@ -420,7 +423,6 @@ const ChatPage = () => {
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
-    tempIdToClientMap.current.set(tempId, true);
     if (socket && socket.connected) {
       socket.emit("message:send", {
         eventId: selectedGroup.eventId,
@@ -467,7 +469,7 @@ const ChatPage = () => {
           {
             members: [userId, senderId],
             eventId: selectedGroup?.eventId,
-          }
+          },
         );
         if (resp?.data) {
           const newRoom = {
@@ -508,6 +510,16 @@ const ChatPage = () => {
     return acc;
   }, {});
 
+  const focusInputIOS = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    el.blur();
+    setTimeout(() => {
+      el.focus();
+    }, 0);
+  };
+
   return (
     <div
       className="chat-layout"
@@ -516,7 +528,6 @@ const ChatPage = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        paddingBottom: showEmojiPicker ? "260px" : "5px",
       }}
     >
       {" "}
@@ -584,7 +595,7 @@ const ChatPage = () => {
                     className="chat-avatar-receiver"
                     style={{
                       backgroundColor: getAvatarColor(
-                        senderName || msg.senderPhone
+                        senderName || msg.senderPhone,
                       ),
                     }}
                   >
@@ -639,6 +650,8 @@ const ChatPage = () => {
           simple={true}
           emojiIcon={emojiIcon}
           keyboardIcon={keyboardIcon}
+          textareaRef={textareaRef}
+          ignoreNextFocusRef={ignoreNextFocusRef}
         />
         <div>
           <input
@@ -651,9 +664,14 @@ const ChatPage = () => {
         <div
           ref={textareaRef}
           contentEditable
+          role="textbox"
+          aria-multiline="true"
           inputMode="text"
           suppressContentEditableWarning={true}
           onFocus={() => {
+            if (showEmojiPicker) {
+              setShowEmojiPicker(false);
+            }
             const el = textareaRef.current;
             if (!el) return;
             el.addEventListener("keyup", saveCursor);
@@ -663,13 +681,18 @@ const ChatPage = () => {
           onInput={(e) => {
             resizeTextarea();
           }}
+          onClick={() => {
+            setShowEmojiPicker(false);
+            focusInputIOS();
+          }}
           className="chat-input"
           data-placeholder="Type message here..."
         />
         <button
           onClick={sendMessage}
-          onMouseDown={(e) => e.preventDefault()}
+          onMouseDown={(e) => !showEmojiPicker && e.preventDefault()}
           className="chat-send-btn"
+          type="button"
         >
           <Image src={sendIcon} alt="Send" className="send-icon" />
         </button>
