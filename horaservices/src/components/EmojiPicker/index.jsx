@@ -160,7 +160,7 @@ export default function EmojiPickerButton({
     };
   }, [isPickerOpen, keyboardHeight]);
 
-  const handleEmojiClick = (emojiObj, event) => {
+  const handleEmojiClick = (emojiObj) => {
     ignoreNextFocusRef.current = true;
     onEmojiSelect?.(emojiObj);
 
@@ -229,20 +229,11 @@ export default function EmojiPickerButton({
       <div
         className="emoji-btn"
         onClick={(e) => {
-          e.preventDefault();
           handleButtonClick(e);
         }}
       >
         <Image
-          src={
-            simple
-              ? isPickerOpen
-                ? keyboardIcon
-                : emojiIcon
-              : isPickerOpen
-                ? keyboardIcon
-                : emojiIcon
-          }
+          src={isPickerOpen ? keyboardIcon : emojiIcon}
           alt="emoji"
           width={30}
           height={30}
@@ -270,8 +261,8 @@ export default function EmojiPickerButton({
             style={{ width: "100%", height: "100%" }}
           >
             <EmojiPicker
-              onEmojiClick={(emojiObject, event) =>
-                handleEmojiClick(emojiObject, event)
+              onEmojiClick={(emojiObject) =>
+                handleEmojiClick(emojiObject)
               }
               width="100%"
               height={keyboardHeight}
