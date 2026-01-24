@@ -8,6 +8,7 @@ import hostandGuest from "@/assets/hostandGuest.webp";
 import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
+import LoginModal from "@/components/wonderland/common/login/LoginModal";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
@@ -118,14 +119,13 @@ const WonderlandMainPage = () => {
         </div>
       </div>
 
-      {showHostLoginModal && (
-        <OtpLogin
-          setIsModalOpen={() => {
-            setShowHostLoginModal(false);
-            router.replace(`/wonderland/invite`);
-          }}
-        />
-      )}
+      <LoginModal 
+        isOpen={showHostLoginModal}
+        onClose={() => {
+          setShowHostLoginModal(false);
+          router.replace('/wonderland/invite')
+        }}
+      />
     </>
   );
 };

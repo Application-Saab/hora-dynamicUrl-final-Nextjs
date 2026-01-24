@@ -16,6 +16,7 @@ import { useChatStore } from "@/hooks/ChatContext";
 import CustomModal from "../wonderland/common/CustomModal";
 import OtpLogin from "../OtpLoginPopup";
 import "./bottomNav.css";
+import LoginModal from "../wonderland/common/login/LoginModal";
 
 export default function BottomNav() {
   const router = useRouter();
@@ -206,13 +207,10 @@ export default function BottomNav() {
         />
       </div>
 
-      {showLoginModal && (
-        <OtpLogin
-          setIsModalOpen={() => {
-            setShowLoginModal(false);
-          }}
-        />
-      )}
+      <LoginModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </>
   );
 }
