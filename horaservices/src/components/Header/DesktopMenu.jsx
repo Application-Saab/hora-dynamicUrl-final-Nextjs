@@ -73,7 +73,7 @@ import Image from "next/image";
 import arrowImg from "../../assets/dropdownarrow.png";
 
 import { CATEGORIES_CONFIG } from "@/utils/categories";
-import { openWhatsApp } from "@/utils/whatsapp";
+import { openWhatsApp } from "@/utils/WhatsAppRedirection";
 
 const DesktopMenu = () => {
   return (
