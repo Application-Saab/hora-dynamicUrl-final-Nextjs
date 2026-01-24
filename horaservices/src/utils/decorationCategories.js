@@ -18,8 +18,17 @@ export const decCat = [
     imgAlt:
       "Flutter into a world of whimsy with our exclusive Whimsical Flutter-themed Welcome Baby Decorations.",
   },
-    {
+   {
     id: "3",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
+    name: "NationPride",
+    subCategory: "NationPride",
+    catValue: "Nation-Pride-decoration",
+  imgAlt: "Nation Pride patriotic theme decoration"
+  },
+    {
+    id: "4",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/primumdecoration.webp	",
     name: "Stage Decoration",
@@ -28,7 +37,7 @@ export const decCat = [
     imgAlt: "Birthday party decoration ideas for adults",
   },
   {
-    id: "4",
+    id: "5",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Babyshower.webp",
     name: "Baby Shower",
@@ -38,7 +47,7 @@ export const decCat = [
       "Celebrate the transformation into motherhood with Our Gilded Baby Shower Decorations.",
   },
     {
-    id: "5",
+    id: "6",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/welcomeBabydecoration.webp",
     name: "Welcome Baby",
@@ -47,7 +56,7 @@ export const decCat = [
     imgAlt: "A Pastel Theme Oh Baby Decor for your Baby Shower Celebrations!",
   },
  {
-    id: "6",
+    id: "7",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/namingcermonydecoration.webp",
     name: "Naming Ceremony",
@@ -57,7 +66,7 @@ export const decCat = [
       "Add extra happiness quotient to your wedding night with our exclusive décor package",
   },
   {
-    id: "7",
+    id: "8",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Anniversary.webp",
     name: "Anniversary",
@@ -67,7 +76,7 @@ export const decCat = [
       "Immerse yourself in a world of romance with our mesmerizing anniversary decorations.",
   },
   {
-    id: "8",
+    id: "9",
     image:
       "https://horaservices.com/api/uploads/compressed_webp/Firstnight.webp",
     name: "First Night",
@@ -80,7 +89,7 @@ export const decCat = [
 
 
   {
-    id: "9",
+    id: "10",
     image: "https://horaservices.com/api/uploads/Balloon-B-new.webp",
     name: "Ballon Bouquets",
     subCategory: "BallonBouquets",
@@ -88,7 +97,7 @@ export const decCat = [
     imgAlt: "Balloon Bouquet",
   },
   {
-    id: "10",
+    id: "11",
     Image: "",
     name: "Haldi Mehandi",
     subCategory: "Haldi-Mehandi",
@@ -96,7 +105,7 @@ export const decCat = [
     imgAlt: "Haldi Event",
   },
   {
-    id: "11",
+    id: "12",
     image: "/decorationwedding.png",
     name: "Wedding",
     subCategory: "Wedding",
@@ -105,7 +114,7 @@ export const decCat = [
   },
 
   {
-    id: "12",
+    id: "13",
     Image: "",
     name: "Bachelorette",
     subCategory: "bachelorette",
@@ -113,7 +122,7 @@ export const decCat = [
     imgAlt: "Bachelorette",
   },
   {
-    id: "13",
+    id: "14",
     Image: "",
     name: "proposal decorations",
     subCategory: "Proposal-Decoration",
@@ -121,7 +130,7 @@ export const decCat = [
     imgAlt: "proposal decorations",
   },
   {
-    id: "14",
+    id: "15",
     Image: "",
     name: "Naming Ceremony Decoration",
     subCategory: "NamingCeremony",
@@ -129,7 +138,7 @@ export const decCat = [
     imgAlt: "Naming Ceremony Decoration",
   },
   {
-    id: "15",
+    id: "16",
     Image: "",
     name: "House warming Decoration",
     subCategory: "HouseWarming",
@@ -137,7 +146,7 @@ export const decCat = [
     imgAlt: "House Warming Decoration",
   },
   {
-    id: "16",
+    id: "17",
     Image: "",
     name: "Car Decoration",
     subCategory: "CarDecoration",
