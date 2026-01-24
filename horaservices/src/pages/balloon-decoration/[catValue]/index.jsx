@@ -47,6 +47,7 @@ import { useDecorationEvents } from "@/utils/decorationEvents";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
+import NationPride from "@/assets/categories/NationPride.jpeg";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -127,8 +128,9 @@ const DecorationCatPage = ({ locality }) => {
       return "PremiumDecoration";
     } else if (catValue === "bachelorette-decoration") {
       return "bachelorette";
-    }else if (catValue === "naming-ceremony-decoration") {
-      return "NamingCeremony";
+      }else if (catValue === "naming-ceremony-decoration") {
+        return "NamingCeremony";
+
     } else {
       const parts = catValue.split("-"); 
       return parts
@@ -350,6 +352,7 @@ const DecorationCatPage = ({ locality }) => {
     "Wedding": WeddingBanner,
     "bachelorette-decoration": BacheloretteBanner,
     "naming-ceremony-decoration":NamingCeremonyBanner,
+    "Nation-Pride-decoration": NationPride,
   };
 
   function trimText(text) {
@@ -413,6 +416,11 @@ const DecorationCatPage = ({ locality }) => {
       baseTitle = city
         ? `NamingCeremony Decoration in ${city} with Latest Designs, Starting at ₹3000`
         :"NamingCeremony Decoration with Latest Designs, Starting at ₹3000";
+    }
+    else if (catValue === "Nation-Pride-decoration") {
+      baseTitle = city
+        ? `Nation Pride Decoration in ${city} with Latest Designs, Starting at ₹3000`
+        :"Nation Pride Decoration with Latest Designs, Starting at ₹3000";
     }
      else {
       baseTitle = city
