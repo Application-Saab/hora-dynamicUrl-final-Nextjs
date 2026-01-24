@@ -1,0 +1,286 @@
+/* =========================
+   GLOBAL HEADER (ONE STYLE)
+========================= */
+
+.sec-header,
+.inner-header,
+.inner-page-header {
+  background: #f1f5f7 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+          padding: 0px 16px !important;
+}
+
+.header-wrapper,
+.headerContainerinner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.pageWidth {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.header-logo,
+.headerContainerinner img {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+/* =========================
+   DESKTOP MENU
+========================= */
+
+.desktop-menu {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.desktop-menu li {
+  position: relative;
+}
+
+
+.desktop-menu li a,
+.categories-trigger {
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333 !important;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.desktop-menu li a:hover,
+.categories-trigger:hover {
+  color: #96528d;
+}
+
+/* =========================
+   CATEGORIES DROPDOWN
+========================= */
+.categories-item {
+  position: relative;
+}
+
+.categories-trigger {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+
+.categories-dropdown {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  background: #fff;
+  min-width: 180px;          /* ⬅ smaller width */
+  border-radius: 8px;
+  padding: 6px 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: all 0.18s ease;
+  z-index: 100;
+}
+
+/* Hover open */
+.categories-item:hover .categories-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.caret-img {
+  transition: transform 0.25s ease;
+}
+
+/* dropdown open hone par arrow rotate */
+.categories-item:hover .caret-img {
+  transform: rotate(180deg);
+}
+/* Dropdown items */
+.categories-dropdown li {
+  padding: 8px 14px;         /* ⬅ compact padding */
+  font-size: 14px;           /* ⬅ smaller text */
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.categories-dropdown li a {
+  color: #222;
+  text-decoration: none;
+  display: block;
+}
+
+/* Hover effect */
+.categories-dropdown li:hover {
+  background: #f4f4f4;
+}
+
+/* Caret icon size */
+.caret-icon {
+  font-size: 12px;
+}
+.categories-dropdown li {
+  list-style: none;   /* 🔥 EXTRA SAFETY */
+}
+
+/* =========================
+   AUTH (LOGIN / LOGOUT)
+========================= */
+
+.auth-btn,
+.linkiconLogout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333 !important;
+  cursor: pointer;
+}
+
+/* =========================
+   MOBILE HEADER
+========================= */
+
+.mobileViewHeader,
+.mobile-header {
+  display: none;
+}
+
+/* hamburger */
+.menu-icon,
+.mobileMenuIcon {
+  height:18px;
+  color: #96528d;
+  cursor: pointer;
+}
+
+/* =========================
+   MOBILE DRAWER
+========================= */
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 65%;
+  height: 100vh;
+  background: #fff;
+  z-index: 9999;
+  box-shadow: -6px 0 14px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer-header {
+  background: #96528d;
+  color: #fff;
+  padding: 22px 18px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* drawer links */
+.mobile-drawer a,
+.mobile-drawer button {
+     border-bottom: 1px solid rgb(239, 239, 239);
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 10px 0px;
+    display: block;
+    cursor: pointer;
+    padding: 0px 0px 6px;
+    background: transparent;
+}
+.mobile-drawer button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  line-height: 1.4;
+}
+
+.mobile-drawer a:hover,
+.mobile-drawer button:hover {
+  background: #f6f6f6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+
+.whats-btn {
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333 !important;
+  cursor: pointer;
+  background:none;
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only,
+  .mobileViewHeader {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-wrapper,
+  .headerContainerinner {
+    padding: 5px 0px;
+  }
+
+  .header-logo {
+    width: 50px;
+  }
+}
