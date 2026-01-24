@@ -83,7 +83,7 @@ const toggleDrawer = () => {
    ------------------------ */
   return (
     <>
-          <header className="home-header">
+          <header className="sec-header">
         <div className="pageWidth header-wrapper">
           {/* LOGO */}
           <Link href="/">

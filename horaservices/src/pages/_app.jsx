@@ -1,5 +1,5 @@
 // pages/_app.tsx
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -15,7 +15,6 @@ import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
-import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 
 function MyApp({ Component, pageProps }) {
