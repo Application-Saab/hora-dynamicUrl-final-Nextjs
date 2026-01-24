@@ -49,6 +49,7 @@ export const GET_PRESIGNED_POST_URL = "/api/customer/event/get-presigned-url";
 export const GET_GUEST_DETTAILS = "/api/customer/event/event-guest";
 export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/all";
 export const GET_USER_BY_ID = "/api/user/user-details";
+export const GET_USER_BY_PHONE = "/api/user/user-details-by-phone";
 export const UPDATE_USER_BY_ID = "/api/user/user-details";
 export const UPDATE_USER_AVATAR_BY_ID = "/api/user/user-avatar";
 // Chat Routes
