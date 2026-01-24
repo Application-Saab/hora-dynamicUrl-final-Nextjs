@@ -21,9 +21,14 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pathname = usePathname();
   const [currentUrl, setCurrentUrl] = useState("");
-  const [loggedinUserId, setLoggedinUserId] = useState(
-    typeof window !== "undefined" && localStorage.getItem("userID") || ""
-  );
+ const [loggedinUserId, setLoggedinUserId] = useState("");
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    setLoggedinUserId(localStorage.getItem("userID") || "");
+  }
+}, []);
+
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
     const blockContextMenu = (e) => e.preventDefault();
