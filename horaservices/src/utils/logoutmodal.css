@@ -1,0 +1,102 @@
+/* LogoutModal.css */
+.logout-overlay  {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.logout-card {
+  position: relative; 
+   width: clamp(300px, 84vw, 360px);
+  height: clamp(350px, 97vw, 420px);
+  
+  border-radius: clamp(18px, 4vw, 22px);
+  padding: clamp(20px, 5vw, 26px) clamp(16px, 4vw, 20px);
+  overflow: hidden;
+}
+.logout-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* background-size: cover */
+  z-index: 0;
+}
+.logout-content {
+  position: relative;
+  z-index: 2;
+  padding: 32px 22px;
+  text-align: center;
+}
+
+
+.logout-icon {
+  width: clamp(60px, 20vw, 80px);
+  height: clamp(60px, 20vw, 80px);
+
+  border-radius: clamp(44px, 14vw, 58.18px);
+  opacity: 1;
+
+  margin-bottom: 15px;
+  align-items: center;
+  justify-content: center;
+}
+.logout-success-img{
+  width: clamp(120px, 35vw, 140px);
+  height: clamp(120px, 35vw, 140px);
+   align-items: center;
+  justify-content: center;
+  padding:15px
+
+}
+/* Logout success icon */
+.logout-success-icon {
+  font-size: 32px;
+  color: green;
+  margin-bottom: 16px;
+}
+
+.logout-back-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+}
+.logout-primary-btn {
+    width: clamp(190px, 54vw, 240px);
+  height: clamp(38px, 11vw, 48px);
+
+  margin: 10px auto 0;
+  display: block;
+  background: #97538c;
+  color: #fff;
+  border: none;
+   font-weight: 700;
+  cursor: pointer;
+  border-radius: clamp(14px, 4vw, 16px);
+  font-size: clamp(16px, 4.5vw, 18px);
+}
+
+.login-primary-btn:disabled {
+  opacity: 0.5;
+}
+
+.logout-btn.cancel {
+  background-color: #ccc;
+  color: #333;
+  margin-top: 10px;
+}
+.logout-success-title {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: clamp(20px, 6vw, 24px);
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  color: #2A2626;
+}
