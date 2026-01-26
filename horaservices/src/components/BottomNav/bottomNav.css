@@ -116,6 +116,9 @@ body {
   border: 2px solid rgba(19, 11, 11, 0.86) !important;
   padding-top: 23.54px !important;
 }
+.chat-instruction-backdrop{
+ height: calc(100dvh - 60px) !important;
+}
 .chat-instruction-popup-heading {
   font-family: "Inter", sans-serif;
   font-weight: 600;

@@ -271,7 +271,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("userID", data?._id);
 
-        sendWelcomeMessage(phone);
+        // sendWelcomeMessage(phone);
 
         setIsOtpSent(false);
         setOtp(["", "", "", ""]);

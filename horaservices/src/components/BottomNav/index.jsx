@@ -121,6 +121,7 @@ export default function BottomNav() {
         disableBackdropClick
         disableBgScroll
         modalClass="chat-instruction-popup"
+        backdropClass="chat-instruction-backdrop"
         body={
           <div>
             <div className="chat-instruction-popup-image-ctn">
