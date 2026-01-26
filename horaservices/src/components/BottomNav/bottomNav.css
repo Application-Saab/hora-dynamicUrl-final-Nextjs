@@ -116,6 +116,9 @@ body {
   border: 2px solid rgba(19, 11, 11, 0.86) !important;
   padding-top: 23.54px !important;
 }
+.chat-instruction-backdrop{
+ height: calc(100dvh - 60px) !important;
+}
 .chat-instruction-popup-heading {
   font-family: "Inter", sans-serif;
   font-weight: 600;
@@ -139,21 +142,6 @@ body {
 .chat-instruction-popup-btn {
   margin-top: 24.75px;
   margin-bottom: 24.92px;
-  width: 70%;
-  height: 40px;
-  padding-block: 12.38px;
-  background: rgba(15, 114, 63, 1);
-  border-radius: 6.19px;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: 14.85px;
-  line-height: 100%;
-  letter-spacing: 0%;
-  color: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 @keyframes fadeIn {

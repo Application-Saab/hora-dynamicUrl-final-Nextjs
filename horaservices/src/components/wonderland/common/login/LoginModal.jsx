@@ -1,28 +1,36 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
-import "./LoginModal.css";
 import CustomButton from "../CustomButton";
 import { useTimer } from "@/utils/useTimer";
 import useApi from "@/hooks/useApi";
 import axios from "axios";
 import {
+  GET_USER_BY_PHONE,
   OTP_GENERATE_END_POINT,
   OTP_VERIFY_ENDPOINT,
 } from "@/utils/apiconstants";
 import CustomModal from "../CustomModal";
+import "./LoginModal.css";
 
 const LoginModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [userData, setUserData] = useState({});
+  const [lastCheckedPhone, setLastCheckedPhone] = useState("");
+
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otpError, setOtpError] = useState("");
   const [error, setError] = useState({ name: "", phone: "" });
 
-  const { time, resetTimer } = useTimer(30);
+  const { time, resetTimer, isTimeUp } = useTimer(30);
   const { loading: sendOtpLoading, makeRequest } = useApi();
   const { loading: verifyOtpLoading, makeRequest: makeVerifyRequest } =
     useApi();
+  const { makeRequest: fetchUserData } = useApi();
+
+  const inputsRef = useRef([]);
 
   // Close modal on outside click
   useEffect(() => {
@@ -49,6 +57,25 @@ const LoginModal = ({ isOpen, onClose }) => {
       }));
     }
   };
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (phone.length === 10 && !isOtpSent && phone !== lastCheckedPhone) {
+        setLastCheckedPhone(phone);
+        try {
+          let resp = await fetchUserData(
+            `${GET_USER_BY_PHONE}/${phone}`,
+            "GET",
+          );
+          setUserData(resp?.data);
+          setName(resp?.data?.name || "");
+        } catch (err) {
+          console.error("Error fetching user details:", err);
+        }
+      }
+    };
+    fetchUserDetails();
+  }, [phone]);
 
   // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
@@ -119,6 +146,9 @@ const LoginModal = ({ isOpen, onClose }) => {
         setIsOtpSent(true);
         resetTimer();
         setError({ name: "", phone: "" });
+        setOtp(["", "", "", ""]);
+        setOtpError("");
+        setTimeout(() => inputsRef.current[0]?.focus(), 300);
       } else {
         setError({ ...newError, phone: "Failed to send OTP. Try again." });
       }
@@ -127,16 +157,110 @@ const LoginModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Verify OTP
-  const verifyOtp = async () => {
-    if (!otp) {
-      setOtpError("Please enter the OTP");
+  // OTP input handlers
+  const handleOtpChange = (e, index) => {
+    const value = e.target.value;
+
+    // Handle auto-fill (full 4-digit paste or SMS read)
+    if (value.length === 4) {
+      const splitOtp = value.replace(/\D/g, "").split("").slice(0, 4);
+      setOtp(splitOtp);
+      inputsRef.current[3]?.focus();
       return;
     }
+
+    if (!/^\d?$/.test(value)) return;
+
+    setOtp((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+
+    setOtpError("");
+
+    if (value && index < 3) {
+      inputsRef.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+
+      setOtp((prev) => {
+        const next = [...prev];
+        if (next[index]) {
+          next[index] = "";
+        } else if (index > 0) {
+          next[index - 1] = "";
+          setTimeout(() => inputsRef.current[index - 1]?.focus(), 0);
+        }
+        return next;
+      });
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 4);
+    if (pasted.length === 0) return;
+
+    const newOtp = pasted.split("").concat(Array(4 - pasted.length).fill(""));
+    setOtp(newOtp);
+
+    setTimeout(() => {
+      inputsRef.current[Math.min(pasted.length - 1, 3)]?.focus();
+    }, 0);
+  };
+
+  // Auto-read SMS OTP (Web OTP API)
+  useEffect(() => {
+    if (!isOtpSent) return;
+    if (!("OTPCredential" in window)) return;
+
+    const controller = new AbortController();
+
+    navigator.credentials
+      .get({
+        otp: { transport: ["sms"] },
+        signal: controller.signal,
+      })
+      .then((cred) => {
+        if (cred?.code) {
+          const digits = cred.code.replace(/\D/g, "").slice(0, 4).split("");
+          setOtp(digits);
+          setTimeout(() => inputsRef.current[3]?.focus(), 0);
+        }
+      })
+      .catch(() => {});
+
+    return () => controller.abort();
+  }, [isOtpSent]);
+
+  // Focus first OTP box when OTP screen shows
+  useEffect(() => {
+    if (isOtpSent) {
+      setTimeout(() => inputsRef.current[0]?.focus(), 500);
+    }
+  }, [isOtpSent]);
+
+  // Verify OTP
+  const verifyOtp = async () => {
+    const finalOtp = otp.join("");
+
+    if (finalOtp.length !== 4) {
+      setOtpError("Please enter valid OTP");
+      return;
+    }
+
     try {
       const response = await makeVerifyRequest(OTP_VERIFY_ENDPOINT, "POST", {
         phone,
-        otp,
+        otp: finalOtp,
         role: "customer",
       });
 
@@ -147,26 +271,27 @@ const LoginModal = ({ isOpen, onClose }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("userID", data?._id);
 
-        sendWelcomeMessage(phone);
+        // sendWelcomeMessage(phone);
 
         setIsOtpSent(false);
-        setOtp("");
-        setPhone("");
-        setName("");
+        setOtp(["", "", "", ""]);
         setOtpError("");
         window.dispatchEvent(new Event("loginStateChange"));
         onClose();
       } else {
         setOtpError("Invalid OTP. Please try again.");
-        setOtp("");
+        setOtp(["", "", "", ""]);
+        setTimeout(() => inputsRef.current[0]?.focus(), 200);
       }
     } catch (err) {
       setOtpError("Error verifying OTP. Please try again.");
+      setOtp(["", "", "", ""]);
+      setTimeout(() => inputsRef.current[0]?.focus(), 200);
     }
   };
 
   const resendOtp = async () => {
-    setOtp("");
+    setOtp(["", "", "", ""]);
     setOtpError("");
     await sendOtp();
   };
@@ -174,7 +299,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const handleClick = () => {
     if (!isOtpSent) {
       sendOtp();
-    } else if (isOtpSent) {
+    } else {
       verifyOtp();
     }
   };
@@ -203,30 +328,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <div>
                   <input
                     type="text"
-                    placeholder="Enter Your Name"
-                    name="name"
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      setError((prev) => ({
-                        ...prev,
-                        name:
-                          e.target.value.length > 0 ? "" : "Name is required!",
-                      }));
-                    }}
-                    className="login-input-field w-100"
-                  />
-                  {error.name && (
-                    <p className="login-modal-err-msg text-danger">
-                      * {error.name}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <input
-                    type="text"
                     placeholder="Enter Number"
-                    name="phone"
                     value={phone}
                     onChange={handleChangePhone}
                     className="login-input-field w-100"
@@ -237,43 +339,77 @@ const LoginModal = ({ isOpen, onClose }) => {
                     </p>
                   )}
                 </div>
-              </>
-            ) : (
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter OTP"
-                  name="otp"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="login-input-field w-100"
-                />
-                {/* Otp Error */}
-                {otpError && (
-                  <p className="login-modal-err-msg text-danger m-1">
-                    * {otpError}
-                  </p>
-                )}
-
-                {/* Timer & Resend Logic */}
-                {!otpError && (
-                  <div className="d-flex justify-content-center align-items-center mt-2">
-                    {time > 0 ? (
-                      <p className="login-modal-timer-txt">
-                        Resend OTP in {time} sec
-                      </p>
-                    ) : (
-                      <p
-                        className="mt-3"
-                        style={{ color: "#572381", cursor: "pointer" }}
-                        onClick={resendOtp}
-                      >
-                        Resend OTP
+                {phone?.length === 10 && !userData?.name && (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Enter Your Name"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        setError((prev) => ({
+                          ...prev,
+                          name: e.target.value.trim()
+                            ? ""
+                            : "Name is required!",
+                        }));
+                      }}
+                      className="login-input-field w-100"
+                    />
+                    {error.name && (
+                      <p className="login-modal-err-msg text-danger">
+                        * {error.name}
                       </p>
                     )}
                   </div>
                 )}
-              </div>
+              </>
+            ) : (
+              <>
+                <p className="verify-text">
+                  OTP sent to <span>(+91) {phone}</span>
+                </p>
+
+                <div
+                  className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
+                >
+                  {[0, 1, 2, 3].map((i) => (
+                    <input
+                      key={i}
+                      ref={(el) => (inputsRef.current[i] = el)}
+                      className="otp-box"
+                      value={otp[i]}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      autoComplete={i === 0 ? "one-time-code" : "off"}
+                      onChange={(e) => handleOtpChange(e, i)}
+                      onKeyDown={(e) => handleKeyDown(e, i)}
+                      onPaste={handleOtpPaste}
+                    />
+                  ))}
+                </div>
+
+                {/* Timer & Resend */}
+                <div
+                  className={`otp-bottom-row ${otpError ? "space-between" : "center-align"}`}
+                >
+                  {otpError && (
+                    <span className="otp-error-text">{otpError}</span>
+                  )}
+
+                  {isTimeUp ? (
+                    <span className="resend-link" onClick={resendOtp}>
+                      Resend Code
+                    </span>
+                  ) : (
+                    <span className="login-timer">
+                      Resend Code in {time} Seconds
+                    </span>
+                  )}
+                </div>
+              </>
             )}
           </div>
 
@@ -282,7 +418,11 @@ const LoginModal = ({ isOpen, onClose }) => {
               title={!isOtpSent ? "Get OTP" : "Verify"}
               buttonClass="login-modal-btn"
               onClick={handleClick}
-              disabled={sendOtpLoading || verifyOtpLoading}
+              disabled={
+                sendOtpLoading ||
+                verifyOtpLoading ||
+                (isOtpSent && otp.join("").length !== 4)
+              }
               loading={sendOtpLoading || verifyOtpLoading}
             />
           </div>

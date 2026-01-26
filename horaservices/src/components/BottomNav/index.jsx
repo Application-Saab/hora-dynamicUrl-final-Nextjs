@@ -14,8 +14,9 @@ import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 import { useChatStore } from "@/hooks/ChatContext";
 import CustomModal from "../wonderland/common/CustomModal";
-import OtpLogin from "../OtpLoginPopup";
 import "./bottomNav.css";
+import LoginModal from "../wonderland/common/login/LoginModal";
+import CustomButton from "../wonderland/common/CustomButton";
 
 export default function BottomNav() {
   const router = useRouter();
@@ -120,6 +121,7 @@ export default function BottomNav() {
         disableBackdropClick
         disableBgScroll
         modalClass="chat-instruction-popup"
+        backdropClass="chat-instruction-backdrop"
         body={
           <div>
             <div className="chat-instruction-popup-image-ctn">
@@ -143,26 +145,24 @@ export default function BottomNav() {
 
             <div className="d-flex justify-content-center">
               {!noChatsPopup && (
-                <button
-                  className="chat-instruction-popup-btn"
+                <CustomButton
+                  title={"Login"}
                   onClick={() => {
                     setShowPopup(false);
                     setShowLoginModal(true);
                   }}
-                >
-                  Login
-                </button>
+                  buttonClass={"chat-instruction-popup-btn"}
+                />
               )}
               {noChatsPopup && (
-                <button
-                  className="chat-instruction-popup-btn"
+                <CustomButton
+                  title={"Go to Invites"}
                   onClick={() => {
                     setShowPopup(false);
                     router.push("/wonderland");
                   }}
-                >
-                  Go to Invites
-                </button>
+                  buttonClass={"chat-instruction-popup-btn"}
+                />
               )}
             </div>
           </div>
@@ -206,13 +206,10 @@ export default function BottomNav() {
         />
       </div>
 
-      {showLoginModal && (
-        <OtpLogin
-          setIsModalOpen={() => {
-            setShowLoginModal(false);
-          }}
-        />
-      )}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </>
   );
 }

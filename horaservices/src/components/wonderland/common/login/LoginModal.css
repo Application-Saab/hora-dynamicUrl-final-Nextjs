@@ -2,7 +2,7 @@
 
 /* Full viewport backdrop */
 .login-modal-backdrop {
-  background-color: #ffffff;
+  height: calc(100dvh - 60px) !important;
 }
 
 /* Modal Content Box */
