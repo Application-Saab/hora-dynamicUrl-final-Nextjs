@@ -64,6 +64,13 @@ const ChatPage = () => {
   const lastRangeRef = useRef(null);
   const ignoreNextFocusRef = useRef(false);
 
+  const scrollToBottom = () => {
+    if (!chatBodyRef.current) return;
+    setTimeout(() => {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }, 150);
+  };
+
   // Mark read on mount if selected
   useEffect(() => {
     if (selectedGroup && userId) {
@@ -99,6 +106,7 @@ const ChatPage = () => {
         return [...prev, { ...msg, id: msg._id }];
       });
       setTimeout(() => markRoomRead(gid, userId), 50);
+      scrollToBottom();
     };
     socket.on("message:new", onMessageNewLocal);
     return () => socket.off("message:new", onMessageNewLocal);
@@ -186,6 +194,7 @@ const ChatPage = () => {
           const input = document.querySelector(".chat-input-container");
           if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
         }, 100);
+        setTimeout(scrollToBottom, 150);
         document.body.style.overflow = "hidden";
         document.body.style.position = "fixed";
         document.body.style.width = "100vw";
@@ -437,6 +446,7 @@ const ChatPage = () => {
     }
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
+    scrollToBottom();
     if (!showEmojiPicker) {
       requestAnimationFrame(() => {
         textareaRef.current?.focus({ preventScroll: true });
