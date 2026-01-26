@@ -28,7 +28,11 @@ const LoginModal = ({ isOpen, onClose }) => {
   const { loading: sendOtpLoading, makeRequest } = useApi();
   const { loading: verifyOtpLoading, makeRequest: makeVerifyRequest } =
     useApi();
-  const { makeRequest: fetchUserData } = useApi();
+  const {
+    makeRequest: fetchUserData,
+    isFetched,
+    loading: fetchUserDataLoading,
+  } = useApi();
 
   const inputsRef = useRef([]);
 
@@ -315,6 +319,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       modalClass="login-modal-content"
       bodyClass="login-modal-body"
       disableBackdropClick={true}
+      verticalCenter={false}
       body={
         <>
           <p className="login-modal-heading">Join The Celebration!</p>
@@ -339,30 +344,33 @@ const LoginModal = ({ isOpen, onClose }) => {
                     </p>
                   )}
                 </div>
-                {phone?.length === 10 && !userData?.name && (
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Enter Your Name"
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        setError((prev) => ({
-                          ...prev,
-                          name: e.target.value.trim()
-                            ? ""
-                            : "Name is required!",
-                        }));
-                      }}
-                      className="login-input-field w-100"
-                    />
-                    {error.name && (
-                      <p className="login-modal-err-msg text-danger">
-                        * {error.name}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {phone?.length === 10 &&
+                  !userData?.name &&
+                  !fetchUserDataLoading &&
+                  isFetched && (
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Enter Your Name"
+                        value={name}
+                        onChange={(e) => {
+                          setName(e.target.value);
+                          setError((prev) => ({
+                            ...prev,
+                            name: e.target.value.trim()
+                              ? ""
+                              : "Name is required!",
+                          }));
+                        }}
+                        className="login-input-field w-100"
+                      />
+                      {error.name && (
+                        <p className="login-modal-err-msg text-danger">
+                          * {error.name}
+                        </p>
+                      )}
+                    </div>
+                  )}
               </>
             ) : (
               <>
