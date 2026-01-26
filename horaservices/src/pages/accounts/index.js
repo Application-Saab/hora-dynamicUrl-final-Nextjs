@@ -12,6 +12,8 @@ import LogoutIcon from "@/assets/logout_icon.svg";
 import myordericon from "@/assets/Myordersicon.png";
 import OtpLogin from "@/components/OtpLoginPopup";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
+import LoginModal from "@/components/wonderland/common/login/LoginModal";
+import LogoutModal from "@/utils/LogoutModal";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,7 +41,7 @@ const AccountPage = () => {
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    window.location.href = "/wonderland";
+    window.location.href = "/accounts";
   };
 
   const handleLogin = () => {
@@ -231,18 +233,11 @@ const AccountPage = () => {
         </div>
       </div>
 
-      {showOtpLogin && (
-        <OtpLogin
-          setIsModalOpen={() => setShowOtpLogin(false)}
-          onSuccess={(user) => {
-            // localStorage.setItem("userID", user.id);
-            // localStorage.setItem("token", user.token);
-            setIsLoggedIn(true);
-            setShowOtpLogin(false);
-            // window.dispatchEvent(new Event("loginSuccess"));
-          }}
-        />
-      )}
+      <LoginModal
+        isOpen={showOtpLogin}
+        onClose={() => setShowOtpLogin(false)}
+      />
+
       {showEditName && (
         <div className="modal-overlay-edit-form">
           <div className="modal-content-edit-form">
@@ -288,30 +283,11 @@ const AccountPage = () => {
         </div>
       )}
 
-      {showLogoutConfirm && (
-        <div className="modal-overlay-edit-form">
-          <div className="modal-content-edit-form">
-            <span className="edit-modal-heading">Confirm Logout</span>
-            <p style={{ margin: "10px 0" }}>Are you sure you want to logout?</p>
-            <div className="edit-form-btn-ctn">
-              <button
-                type="button"
-                className="cancel-edit-btn"
-                onClick={() => setShowLogoutConfirm(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="submit-edit-btn"
-                onClick={handleLogout}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LogoutModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onLogoutConfirm={handleLogout}
+      />
     </>
   );
 };
