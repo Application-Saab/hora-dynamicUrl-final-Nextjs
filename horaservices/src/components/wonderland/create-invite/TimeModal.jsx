@@ -8,6 +8,7 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
   const [hour, setHour] = useState(1);
   const [minute, setMinute] = useState(0);
   const [period, setPeriod] = useState("AM");
+const isTouching = useRef(false);
 
   useEffect(() => {
     if (!show) return;
@@ -40,39 +41,67 @@ const InfiniteWheel = ({ range, value, setValue }) => {
         (range.length + index) * ITEM_HEIGHT;
     }
   }, [show]); // ❗ value dependency hata di
+const onTouchStart = () => {
+  isTouching.current = true;
+  clearTimeout(scrollTimeout.current);
+};
 
-  const handleScroll = () => {
+const onTouchEnd = () => {
+  isTouching.current = false;
+
+  if (!ref.current) return;
+
+  const el = ref.current;
+  const index = Math.round(el.scrollTop / ITEM_HEIGHT);
+  const actualIndex =
+    ((index % range.length) + range.length) % range.length;
+
+  // ❌ smooth on mobile
+  el.scrollTop = index * ITEM_HEIGHT;
+
+  setValue(range[actualIndex]);
+};
+
+const handleScroll = () => {
   if (!ref.current) return;
 
   const el = ref.current;
   const scrollTop = el.scrollTop;
   const totalHeight = ITEM_HEIGHT * range.length;
 
-  // infinite illusion
-  if (scrollTop <= totalHeight * 0.5) {
+  // infinite illusion ONLY at edges
+  if (scrollTop < totalHeight * 0.25) {
     el.scrollTop = scrollTop + totalHeight;
-  } else if (scrollTop >= totalHeight * 2.5) {
-    el.scrollTop = scrollTop - totalHeight;
+    return;
   }
 
-  // debounce snap
+  if (scrollTop > totalHeight * 2.75) {
+    el.scrollTop = scrollTop - totalHeight;
+    return;
+  }
+
+  // desktop snap only
+  if (isTouching.current) return;
+
   clearTimeout(scrollTimeout.current);
 
   scrollTimeout.current = setTimeout(() => {
-    if (!ref.current) return; // 👈 MOST IMPORTANT LINE
+    if (!ref.current) return;
 
-    const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+    const index = Math.round(el.scrollTop / ITEM_HEIGHT);
     const actualIndex =
       ((index % range.length) + range.length) % range.length;
 
-    ref.current.scrollTo({
+    el.scrollTo({
       top: index * ITEM_HEIGHT,
       behavior: "smooth",
     });
 
     setValue(range[actualIndex]);
-  }, 150);
+  }, 180);
 };
+
+
 
 
   const handleClick = (i) => {
@@ -85,7 +114,9 @@ const InfiniteWheel = ({ range, value, setValue }) => {
   };
 
   return (
-    <div className="wheel" ref={ref} onScroll={handleScroll}>
+    <div className="wheel" ref={ref}  onScroll={handleScroll}
+  onTouchStart={onTouchStart}
+  onTouchEnd={onTouchEnd}>
       <div className="wheel-item buffer" />
 
       {data.map((num, i) => (
