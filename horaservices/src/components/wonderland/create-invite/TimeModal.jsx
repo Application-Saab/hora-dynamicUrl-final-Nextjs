@@ -8,6 +8,7 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
   const [hour, setHour] = useState(1);
   const [minute, setMinute] = useState(0);
   const [period, setPeriod] = useState("AM");
+const isTouching = useRef(false);
 
   useEffect(() => {
     if (!show) return;
@@ -28,102 +29,119 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
     onClose();
   };
 
-  const InfiniteWheel = ({ range, value, setValue }) => {
-    const ref = useRef(null);
-    const data = [...range, ...range, ...range];
+const InfiniteWheel = ({ range, value, setValue }) => {
+  const ref = useRef(null);
+  const data = [...range, ...range, ...range];
+  const scrollTimeout = useRef(null);
 
-    useEffect(() => {
-      if (show && ref.current) {
-        const index = range.indexOf(value);
-        ref.current.scrollTop =
-          (range.length + index) * ITEM_HEIGHT;
-      }
-   }, [show, value]);
+  useEffect(() => {
+    if (show && ref.current) {
+      const index = range.indexOf(value);
+      ref.current.scrollTop =
+        (range.length + index) * ITEM_HEIGHT;
+    }
+  }, [show]); // ❗ value dependency hata di
+const onTouchStart = () => {
+  isTouching.current = true;
+  clearTimeout(scrollTimeout.current);
+};
 
+const onTouchEnd = () => {
+  isTouching.current = false;
 
-    const updateValue = () => {
-      const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
-      const actualIndex = ((index % range.length) + range.length) % range.length;
-      setValue(range[actualIndex]);
-    };
-
-    const loopScroll = () => {
-      const scrollTop = ref.current.scrollTop;
-      const maxIndex = ITEM_HEIGHT * range.length * 2;
-      const minIndex = ITEM_HEIGHT * range.length * 0.5;
-
-      if (scrollTop > maxIndex) {
-        ref.current.scrollTop = scrollTop - ITEM_HEIGHT * range.length;
-      }
-      if (scrollTop < minIndex) {
-        ref.current.scrollTop = scrollTop + ITEM_HEIGHT * range.length;
-      }
-    };
-const snapToNearest = () => {
   if (!ref.current) return;
 
-  const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+  const el = ref.current;
+  const index = Math.round(el.scrollTop / ITEM_HEIGHT);
   const actualIndex =
     ((index % range.length) + range.length) % range.length;
 
-  ref.current.scrollTo({
-    top: index * ITEM_HEIGHT,
-    behavior: "smooth",
-  });
+  // ❌ smooth on mobile
+  el.scrollTop = index * ITEM_HEIGHT;
 
   setValue(range[actualIndex]);
 };
-const scrollTimeout = useRef(null);
 
 const handleScroll = () => {
-  loopScroll();
+  if (!ref.current) return;
 
-  if (scrollTimeout.current) {
-    clearTimeout(scrollTimeout.current);
+  const el = ref.current;
+  const scrollTop = el.scrollTop;
+  const totalHeight = ITEM_HEIGHT * range.length;
+
+  // infinite illusion ONLY at edges
+  if (scrollTop < totalHeight * 0.25) {
+    el.scrollTop = scrollTop + totalHeight;
+    return;
   }
 
+  if (scrollTop > totalHeight * 2.75) {
+    el.scrollTop = scrollTop - totalHeight;
+    return;
+  }
+
+  // desktop snap only
+  if (isTouching.current) return;
+
+  clearTimeout(scrollTimeout.current);
+
   scrollTimeout.current = setTimeout(() => {
-    snapToNearest();
-  }, 120); // 👈 finger chhodne ke baad
+    if (!ref.current) return;
+
+    const index = Math.round(el.scrollTop / ITEM_HEIGHT);
+    const actualIndex =
+      ((index % range.length) + range.length) % range.length;
+
+    el.scrollTo({
+      top: index * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+
+    setValue(range[actualIndex]);
+  }, 180);
 };
 
 
-    const handleClick = (i) => {
-      const baseIndex = range.length + i;
-      ref.current.scrollTo({
-        top: baseIndex * ITEM_HEIGHT,
-        behavior: "smooth",
-      });
-      setValue(range[i]);
-    };
 
-return (
-  <div className="wheel" ref={ref} onScroll={handleScroll}>
-    <div className="wheel-item buffer"></div>
-    
 
-    {data.map((num, i) => (
-      <div
-        key={i}
-        className={`wheel-item ${num === value ? "wheel-item-active" : ""}`}
-        onClick={() => handleClick(i % range.length)}
-      >
-        {String(num).padStart(2, "0")}
-      </div>
-    ))}
-
-    <div className="wheel-item buffer"></div>
- 
-  </div>
-);
-
+  const handleClick = (i) => {
+    const baseIndex = range.length + i;
+    ref.current.scrollTo({
+      top: baseIndex * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+    setValue(range[i]);
   };
+
+  return (
+    <div className="wheel" ref={ref}  onScroll={handleScroll}
+  onTouchStart={onTouchStart}
+  onTouchEnd={onTouchEnd}>
+      <div className="wheel-item buffer" />
+
+      {data.map((num, i) => (
+        <div
+          key={i}
+          className={`wheel-item ${
+            num === value ? "wheel-item-active" : ""
+          }`}
+          onClick={() => handleClick(i % range.length)}
+        >
+          {String(num).padStart(2, "0")}
+        </div>
+      ))}
+
+      <div className="wheel-item buffer" />
+    </div>
+  );
+};
+
 
  const AmPmWheel = () => {
   const ref = useRef(null);
   const range = ["AM", "PM"];
 
-  // जब modal open हो या जब period change हो → सही position पर scroll करा दो
+  
   useEffect(() => {
     if (show && ref.current) {
       const index = range.indexOf(period);

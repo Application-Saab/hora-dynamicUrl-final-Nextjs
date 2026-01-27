@@ -288,12 +288,14 @@ const loading = templateLoading || !imageLoaded;
 
         setFormData((prev) => ({
           ...prev,
-          name: data.hostName || "",
-          eventType: data.eventType || "",
+        name: applyCase(data.hostName || "", templateMeta?.nameCase),
+  eventType: applyCase(data.eventType || "", templateMeta?.eventTypeCase),
+  address: applyCase(data.location || "", templateMeta?.addressCase),
           date: formattedDate,
           time: formattedTime,
-          address: data.location || "",
+       
         }));
+        
         setCharCounts({
           eventType: data.eventType?.length || 0,
           name: data.hostName?.length || 0,
