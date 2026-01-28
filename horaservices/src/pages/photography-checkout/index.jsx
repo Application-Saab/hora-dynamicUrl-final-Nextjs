@@ -83,7 +83,10 @@ const Checkout = () => {
       setSendInclusion(formattedInclusions);
     setProductPrice(product.price || product.price);
 
-      setProductData(parsedProduct);
+      setProductData({
+      ...parsedProduct,
+      advance_amount: Number(parsedProduct.advance_amount || 0), // ✅ IMPORTANT
+    });
 
       // Product ID se local image set karo
       if (parsedProduct._id && productsData[parsedProduct._id]) {
@@ -280,10 +283,16 @@ const Checkout = () => {
       console.log('Error  Data:', error.message);
     }
   };
-  const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
-      const qty = itemQuantities[item.title] || 0;
-      return acc + Math.round((item.price * qty) * 0.35);
-        }, 0)
+ const productAdvanceAmount = Number(productData?.advance_amount || 0);
+
+const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
+  const qty = itemQuantities[item.title] || 0;
+  return acc + Math.round(item.price * qty * 0.35); // agar addon ka rule same hai
+}, 0);
+
+const advanceAmount = productAdvanceAmount + addonAdvanceAmount;
+const balanceAmount = totalAmount - advanceAmount;
+
 
 
   const onContinueClick = async () => {
@@ -298,9 +307,7 @@ const Checkout = () => {
      
     
 
-const advanceAmount = ( Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
 
-      const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
 
       const requestData = {
@@ -442,8 +449,6 @@ const contactUsRedirection = (productName) => {
   }, [product, isEventPushed])
 
   if (!isClient) return null;
-
-const advanceAmount = ( Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
 
 
 

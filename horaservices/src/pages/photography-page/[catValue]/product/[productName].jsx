@@ -337,30 +337,40 @@ const ProductDetails = () => {
     };
   };
 
+const getFinalAdvanceAmount = () => {
+  const productAdvance = Number(work?.advance_amount || 0);
+  return productAdvance; // future me addonAdvance add kar sakte ho
+};
 
-  const sendToCheckoutPage = (product) => {
-    const totalPrice = calculateTotalPrice(product.price);
+const sendToCheckoutPage = (product) => {
+  const totalPrice = calculateTotalPrice(product.price);
+  const advanceAmount = getFinalAdvanceAmount();
+  const balanceAmount = totalPrice - advanceAmount;
 
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: product.name,
-    });
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "book_now_click",
+    product_name: product.name,
+  });
 
-    router.push({
-      pathname: '/photography-checkout',
-      query: {
-        from: window.location.pathname,
-        product: JSON.stringify(product),
-        ProductPrice: product.discountedPrice || product.price,
-        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-        itemQuantities: JSON.stringify(itemQuantities),
-        totalAmount: totalPrice,
-        duration: work?.duration,
-      }
-    });
-  };
+  router.push({
+    pathname: '/photography-checkout',
+    query: {
+      from: window.location.pathname,
+      product: JSON.stringify(product),
+      ProductPrice: product.discountedPrice || product.price,
+      selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+      itemQuantities: JSON.stringify(itemQuantities),
+      totalAmount: totalPrice,
 
+      // ✅ NEW (IMPORTANT)
+      advanceAmount: advanceAmount,
+      balanceAmount: balanceAmount,
+
+      duration: work?.duration,
+    }
+  });
+};
 
 
 
@@ -383,6 +393,7 @@ const ProductDetails = () => {
           discount,
           discountedPrice,
           discountDifference,
+            advance_amount: Number(data.advance_amount || 0),
         });
       } catch (err) {
         setWork(null);
