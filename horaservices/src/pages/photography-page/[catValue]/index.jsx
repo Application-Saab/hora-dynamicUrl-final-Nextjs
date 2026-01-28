@@ -6,6 +6,17 @@ import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
 import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
 import CardSkeleton from "@/components/CardSkeleton";
+import Engagement from "@/assets/photographyCategories/photography9.webp";
+import Wedding from "@/assets/photographyCategories/photography10.webp";
+import Anniversary from "@/assets/photographyCategories/photography5.webp";
+import Birthday from "@/assets/photographyCategories/photography3.webp";
+import HouseWarming from "@/assets/photographyCategories/photography6.webp";
+import NamingCeremony from "@/assets/photographyCategories/photography4.webp";
+import BabyShower from "@/assets/photographyCategories/photography8.webp";
+import Bachelorette from "@/assets/photographyCategories/photography7.webp";
+import Maternity from "@/assets/photographyCategories/photography11.webp";
+import NewBorn from "@/assets/photographyCategories/photography12.webp"; 
+
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -30,7 +41,18 @@ const getDiscountedPrice = (price = 0) => {
 };
 
 
-
+  const categoryBannerMap = {
+    "Engagement-Photography": Engagement,
+    "Wedding-Photography": Wedding,
+    "Anniversary-Photography": Anniversary,
+    "Birthday-Photography": Birthday,
+    "House-Warming-Photography": HouseWarming,
+    "Naming-Ceremony-Photography": NamingCeremony,
+    "Baby-Shower-Photography": BabyShower,
+    "Bachelorette-Photography": Bachelorette,
+    "Maternity-Photography": Maternity,
+    "New-Born-Baby-Photography": NewBorn,
+  };
 
 const categoryToGallery = {
   "Engagement-Photography": {
@@ -159,6 +181,18 @@ export default function CatValuePage() {
       query: { id: work._id },
     });
   };
+ const normalizeCatValue = (val) => {
+    if (!val) return "";
+
+    // Check if exact match (case-sensitive) exists in the map
+    const exactMatch = Object.keys(categoryBannerMap).find(
+      (key) => key.toLowerCase() === val.toLowerCase()
+    );
+
+    return exactMatch || val.toLowerCase().replace(/ /g, "-");
+  };
+ const normalizedCat = normalizeCatValue(catValue);
+  const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
 
 
   return (
@@ -174,8 +208,17 @@ export default function CatValuePage() {
         <p className="error-text">{error}</p>
       ) : (
         <>
-          <p className="PhotoHeading">{catValue}</p>
-
+          {/* <p className="PhotoHeading">{catValue}</p> */}
+  <section className="decorationBanner">
+                <Image
+                  src={bannerToShow}
+                  alt="Decoration Banner"
+                  width={1200}
+                  height={400}
+                  className="decorationBanner-image"
+                  priority
+                />
+              </section>
           {products.length > 0 ? (
             <ProductGrid
               data={products}

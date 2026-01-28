@@ -6,7 +6,17 @@
   max-width: 800px;
   margin: auto;
 }
+.decorationBanner{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
+.decorationBanner-image {
+  width: 100%;
+  height: auto;
+  
+}
 .work-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
