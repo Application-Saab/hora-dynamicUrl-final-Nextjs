@@ -41,7 +41,7 @@ const PhotoGallery = () => {
   };
 
   return (
-    <div className="photo-container p-3">
+    <div className="photo-container font-inter" style={{paddingInline : '7px'}}>
   
 
       {/* {isLoggedIn ? (
