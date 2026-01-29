@@ -2,10 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import "./CreateInviteModal.css";
 
 const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
+<<<<<<< HEAD
   const modalRef = useRef(null);
   const [hour, setHour] = useState(6);
   const [minute, setMinute] = useState(30);
   const [period, setPeriod] = useState("PM");
+=======
+  const [hour, setHour] = useState(1);
+  const [minute, setMinute] = useState(0);
+  const [period, setPeriod] = useState("AM");
+const isTouching = useRef(false);
+>>>>>>> 115cbc6a2c9e0756f52c835f416c3b3ed21eb5de
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -38,9 +45,161 @@ const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {
     onClose();
   };
 
+<<<<<<< HEAD
   const Wheel = ({ range, value, setValue }) => (
     <div className="wheel">
       {range.map((num) => (
+=======
+const InfiniteWheel = ({ range, value, setValue }) => {
+  const ref = useRef(null);
+  const data = [...range, ...range, ...range];
+  const scrollTimeout = useRef(null);
+
+  useEffect(() => {
+    if (show && ref.current) {
+      const index = range.indexOf(value);
+      ref.current.scrollTop =
+        (range.length + index) * ITEM_HEIGHT;
+    }
+  }, [show]); // ❗ value dependency hata di
+const onTouchStart = () => {
+  isTouching.current = true;
+  clearTimeout(scrollTimeout.current);
+};
+
+const onTouchEnd = () => {
+  isTouching.current = false;
+
+  if (!ref.current) return;
+
+  const el = ref.current;
+  const index = Math.round(el.scrollTop / ITEM_HEIGHT);
+  const actualIndex =
+    ((index % range.length) + range.length) % range.length;
+
+  // ❌ smooth on mobile
+  el.scrollTop = index * ITEM_HEIGHT;
+
+  setValue(range[actualIndex]);
+};
+
+const handleScroll = () => {
+  if (!ref.current) return;
+
+  const el = ref.current;
+  const scrollTop = el.scrollTop;
+  const totalHeight = ITEM_HEIGHT * range.length;
+
+  // infinite illusion ONLY at edges
+  if (scrollTop < totalHeight * 0.25) {
+    el.scrollTop = scrollTop + totalHeight;
+    return;
+  }
+
+  if (scrollTop > totalHeight * 2.75) {
+    el.scrollTop = scrollTop - totalHeight;
+    return;
+  }
+
+  // desktop snap only
+  if (isTouching.current) return;
+
+  clearTimeout(scrollTimeout.current);
+
+  scrollTimeout.current = setTimeout(() => {
+    if (!ref.current) return;
+
+    const index = Math.round(el.scrollTop / ITEM_HEIGHT);
+    const actualIndex =
+      ((index % range.length) + range.length) % range.length;
+
+    el.scrollTo({
+      top: index * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+
+    setValue(range[actualIndex]);
+  }, 180);
+};
+
+
+
+
+  const handleClick = (i) => {
+    const baseIndex = range.length + i;
+    ref.current.scrollTo({
+      top: baseIndex * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+    setValue(range[i]);
+  };
+
+  return (
+    <div className="wheel" ref={ref}  onScroll={handleScroll}
+  onTouchStart={onTouchStart}
+  onTouchEnd={onTouchEnd}>
+      <div className="wheel-item buffer" />
+
+      {data.map((num, i) => (
+        <div
+          key={i}
+          className={`wheel-item ${
+            num === value ? "wheel-item-active" : ""
+          }`}
+          onClick={() => handleClick(i % range.length)}
+        >
+          {String(num).padStart(2, "0")}
+        </div>
+      ))}
+
+      <div className="wheel-item buffer" />
+    </div>
+  );
+};
+
+
+ const AmPmWheel = () => {
+  const ref = useRef(null);
+  const range = ["AM", "PM"];
+
+  
+  useEffect(() => {
+    if (show && ref.current) {
+      const index = range.indexOf(period);
+      ref.current.scrollTop = index * ITEM_HEIGHT;
+    }
+  }, [show, period]);
+
+  // Scroll par active item detect karo
+  const handleScroll = () => {
+    if (!ref.current) return;
+
+    const index = Math.round(ref.current.scrollTop / ITEM_HEIGHT);
+
+    // Ensure AM/PM ke beech hi rahe
+    const safeIndex = Math.max(0, Math.min(index, range.length - 1));
+
+    setPeriod(range[safeIndex]);
+  };
+
+  // Click par smooth scroll + center highlight
+  const handleClick = (i) => {
+    if (!ref.current) return;
+
+    ref.current.scrollTo({
+      top: i * ITEM_HEIGHT,
+      behavior: "smooth",
+    });
+
+    setPeriod(range[i]);
+  };
+
+  return (
+    <div className="wheel" ref={ref} onScroll={handleScroll}>
+      <div className="wheel-item buffer"></div>
+
+      {range.map((p, i) => (
+>>>>>>> 115cbc6a2c9e0756f52c835f416c3b3ed21eb5de
         <div
           key={num}
           className={`wheel-item ${num === value ? "wheel-item-active" : ""}`}
