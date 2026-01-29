@@ -2784,3 +2784,6 @@ nav.nav-li li {
   position: relative;
   margin-bottom: 10px;
 }
+.font-inter{
+ font-family: 'Inter', 'Poppins';
+}
