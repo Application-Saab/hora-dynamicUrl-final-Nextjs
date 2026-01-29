@@ -1,6 +1,6 @@
 // ThumbnailGallery.js
 "use client";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Slider from "react-slick";
 import Image from 'next/image';
 
@@ -9,6 +9,13 @@ import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is
 import LazyImage from '../../components/LazyImage';            // Ensure path is correct
 import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
 import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
+import CategoryTabs from "@/components/CategoryTabs";
+import myphotos from '../../assets/myphotos.png'
+import allPhotos from '../../assets/allPhotos.png'
+import CommonPopup from "@/components/CommonPop";
+import imagePicker from '../../assets/imagePicker.png'
+import userIcon from '../../assets/userIcon.png'
+
 
 // If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
 // import "slick-carousel/slick/slick.css"; 
@@ -21,6 +28,122 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [showModel, setShowModel] = useState(false);
+   const fileInputRef = useRef(null);
+  const [preview, setPreview] = useState(null);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [customFolders, setCustomFolders] = useState([]);
+  const [phoneNo, setPhoneNo] = useState('');
+
+
+
+  const handlePopImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+ const [previewFile, setPreviewFile] = useState(null);
+
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setPreviewFile(file); // store the actual file
+  const imageUrl = URL.createObjectURL(file);
+  setPreview(imageUrl);
+
+  console.log("Selected file:", file);
+};
+
+
+const handleCategorySelect = (item) => {
+  if (item.value === "My Photos" || item.value === "Create Album") {
+    setShowModel(true);
+    return;
+  }
+
+  const subFolderImages = allThumbnails.filter(thumb => thumb.subFolder === item.value);
+  setAllThumbnails(subFolderImages);
+};
+
+
+const handleCreateFolder = async (file) => {
+  if (!folderName || !file) return;
+
+  try {
+    const formData = new FormData();
+    formData.append("folderName", folderName);
+    formData.append("customerId", customerId);
+    formData.append("phoneNo", phoneNo);
+
+    let uploadFile = file;
+
+    // If user typed a subfolder name, modify the file name
+    if (newFolderName.trim()) {
+      const fileExtension = file.name.split('.').pop();
+      const baseName = file.name.replace(/\.[^/.]+$/, ""); // remove extension
+      const newFileName = `${newFolderName}_${baseName}.${fileExtension}`;
+
+      // Create a new File object with new name
+      uploadFile = new File([file], newFileName, { type: file.type });
+    }
+
+    formData.append("files", uploadFile);
+
+    const response = await fetch("https://horaservices.com:3000/api/photo/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Upload failed: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("Uploaded files:", data.files);
+
+    // Refetch thumbnails
+    const refreshed = await fetch(
+      `https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`
+    );
+    const refreshedData = await refreshed.json();
+
+    // Map thumbnails, detect subfolder from filename
+    const fetchedThumbnails = (refreshedData.thumbnails || []).map((thumb, index) => {
+      const match = thumb.url.match(/\/([a-zA-Z0-9_-]+)_/); // naive: subfolder_ prefix
+      const subFolderFromName = match ? match[1] : null;
+      return {
+        ...thumb,
+        stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}`,
+        subFolder: subFolderFromName
+      };
+    });
+
+    setAllThumbnails(fetchedThumbnails);
+    setShowModel(false);
+    setPreview(null);
+    setNewFolderName("");
+
+    // Add to category tabs
+    if (newFolderName.trim()) {
+      setCustomFolders((prev) => {
+        if (!prev.find(f => f.value === newFolderName)) {
+          return [...prev, { label: newFolderName, value: newFolderName, image: myphotos }];
+        }
+        return prev;
+      });
+    }
+
+  } catch (err) {
+    console.error("Error uploading folder/image:", err);
+    alert("Upload failed: " + err.message);
+  }
+};
+
+const mainGalleryThumbnails = useMemo(() => {
+  return allThumbnails.filter(thumb => !thumb.subFolder);
+}, [allThumbnails]);
+
 
   // iOS Mobile Detection
   useEffect(() => {
@@ -79,6 +202,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         const data = await response.json();
         const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
         setAllThumbnails(fetchedThumbnails); setCurrentPage(1);
+        setPhoneNo(data.thumbnails?.[0]?.phoneNo || "")
       } catch (fetchError) {
         console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
       } finally { setLoading(false); }
@@ -139,6 +263,12 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     lazyLoad: 'ondemand',
     adaptiveHeight: true,
   }), [allThumbnails.length]);
+   const themeFilters = [
+    {label:"All ",value:"ALL",image:allPhotos},
+    {label:"My Photos ",value:"My Photos",image: myphotos},
+    {label:"Create Album",value:"Create Album",image: myphotos}
+   
+  ];
 
   if (loading) {
     return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
@@ -152,6 +282,20 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   return (
     <div className="thumbnail-gallery">
+      <div className="category-tabs-outer">
+                  <CategoryTabs
+  data={[
+    { label: "All ", value: "ALL", image: allPhotos },
+    ...customFolders,
+    { label: "My Photos ", value: "My Photos", image: myphotos },
+    { label: "Create Album", value: "Create Album", image: myphotos }
+  ]}
+  onSelect={handleCategorySelect}
+  variant="grid"
+  catValue="kids-birthday-decoration"
+/>
+                </div>
+
       <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
          <div className="gallery-header">
             <div className="gallery-header-content">
@@ -183,9 +327,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         </div>
     
 
-      {currentThumbnailsOnPage.length > 0 ? (
+      {mainGalleryThumbnails.length > 0 ? (
         <div className="masonryGrid">
-          {currentThumbnailsOnPage.map((thumbnail, indexOnPage) => (
+          {mainGalleryThumbnails.map((thumbnail, indexOnPage) => (
             <LazyImage
               key={thumbnail.stableKey}
               src={thumbnail.url}
