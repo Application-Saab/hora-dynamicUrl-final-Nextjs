@@ -2,8 +2,8 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
 import "./productGrid.css";
-import { useEffect } from "react";
-const ProductGrid = ({ data = [], onCardClick }) => {
+
+const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
   return (
     <div className="decContainer">
       {data.length > 0 &&
@@ -16,7 +16,7 @@ const ProductGrid = ({ data = [], onCardClick }) => {
             <div className="imageWrapper">
               <Image
                 src={`https://horaservices.com/api/uploads/compressed_webp/${item.featured_image?.split(".")[0]}.webp`}
-                alt={`balloon decoration ${item.name} ${item.price}`}
+                alt={`balloon decoration ${item.name}`}
                 className="decImage"
                 width={300}
                 height={300}
@@ -29,9 +29,13 @@ const ProductGrid = ({ data = [], onCardClick }) => {
               </div>
             </div>
             <div className="cardContent">
-              <p className="productname">
-                {item.name.length > 15 ? `${item.name.slice(0, 15)}...` : item.name}
-              </p>
+                    <p className="productname">
+            {categoryType === "photography"
+              ? item.name
+              : item.name.length > 15
+              ? `${item.name.slice(0, 15)}...`
+              : item.name}
+             </p>
               <div className="priceRatingRow">
                 <div className="priceBlock">
                   <p className="PRice">₹{item.price}</p>
@@ -46,8 +50,5 @@ const ProductGrid = ({ data = [], onCardClick }) => {
     </div>
   );
 };
-
-
-
 
 export default ProductGrid;
