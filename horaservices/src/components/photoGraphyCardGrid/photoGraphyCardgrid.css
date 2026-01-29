@@ -1,0 +1,97 @@
+.cardgrid {
+  overflow: hidden;
+  position: relative;
+  border: none;
+  transition: transform 0.3s ease;
+}
+
+.cardgrid:hover {
+  transform: scale(1.03);
+}
+
+.imageWrappergrid {
+ border-radius: 15px;
+  position: relative;
+  width: 100%;
+  height: 230px;
+   overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+.imageOverlaygrid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #A4601400 89%,
+    #A46014 100%
+  );
+  border-radius: 15px;
+  pointer-events: none;
+}
+
+.imagegrid {
+  object-fit: cover;
+  border-radius: 15px;
+  filter: blur(0.2px);
+}
+
+.titleWrappergrid {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.titlegrid {
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  margin: 0;
+  padding: 0px 10px;
+}
+.photograpghy-image{
+  object-fit: cover;
+}
+
+.footergrid {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.viewMoregrid {
+  background: none;
+  border: none;
+  color: #97538C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-style: normal; 
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px; 
+  text-decoration-offset: 0px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+
+.viewMoregrid:hover {
+  text-decoration: none;
+}

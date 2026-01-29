@@ -1,7 +1,6 @@
 .photodetails-container {
   font-family: Inter, sans-serif;
   background: #fff;
-  /* border-radius: 12px; */
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   margin: 0px auto !important;
@@ -24,14 +23,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px;
+  padding: 0px 8px;
   font-size: 18px;
   font-weight: 600;
   color: #000;
 }
 
 .photodetails-discounted {
-  color: #000;
+  color: rgb(157, 74, 147);
 }
 
 .photodetails-original {
@@ -43,7 +42,7 @@
 .photodetails-offer {
   margin-left: 2px;
   background-color: #ffc107;
-  color: #5a3e00;
+  color: white;
   font-weight: bold;
   padding: 4px 8px;
   border-radius: 6px;
@@ -51,48 +50,9 @@
 }
 
 .photodetails-inclusions {
-  padding: 0 16px 16px 16px;
+  padding: 10px;
 }
 
-.photodetails-inclusions h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  margin-top: 0;
-  color: #934893;
-}
-
-.inclusionstyle {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.inclusion-line {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 14px;
-  line-height: 1.4;
-  color: #333;
-}
-
-.inclusion-icon {
-    display: flex
-;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    /* background-color: #dadada; */
-    color: green;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 2px;
-    border: 1px solid green;
-}
 .Duration{
    margin-top: 12px;
   font-family: 'Inter', sans-serif;
@@ -116,7 +76,7 @@
 .book-now-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 1px; /* optional */
+  margin-top: 1px; 
   margin-bottom: 10px;
 }
 
@@ -139,10 +99,10 @@
   padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 12px;
-  max-height: 440px; /* slightly taller if needed */
+  max-height: 440px; 
   overflow-y: auto;
   background-color: #fff;
-  max-width: 95%; /* Increased width */
+  max-width: 95%; 
   margin: auto;
 }
 
@@ -153,17 +113,17 @@
 
 .extra-action-card-container {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr)); /* Yeh waise hi hai */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 30px;
-  max-width: 600px; /* ya jitna chahiye us hisaab se */
+  max-width: 600px; 
   margin: auto;
 }
 
 
 .extra-action-card {
   position: relative;
-  left: -10px; /* thoda left shift kar sakte ho */
-  width: calc(100% + 20px); /* width 100% se thoda bada */
+  left: -10px; 
+  width: calc(100% + 20px); 
   background-color: #f9f9f9;
   border-radius: 8px;
   padding: 1rem;
@@ -255,7 +215,6 @@ font-size: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     text-align: center;
-     margin: 20px 0px;
 }
 .whyHoraHeading {
   font-size: 22px !important;
@@ -264,19 +223,19 @@ font-size: 20px;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   margin-bottom: 20px;
-  margin-top: 30px; /* yahan 10px se 30px kar diya */
+  margin-top: 30px;
 }
 
 
 .whyHoraSecInner {
   display: flex;
-  justify-content: space-between; /* spread them evenly */
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: nowrap; /* force 1 row */
+  flex-wrap: nowrap; 
 }
 
 .whyHoraSecBox {
-  width: 30%; /* ensures 3 boxes fit in 100% width */
+  width: 30%; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -374,15 +333,15 @@ ul.decoration-addons {
   border-radius: 8px;
   background: #fff;
   overflow: hidden;
-  min-height: 250px; /* 👈 force equal height */
+  min-height: 250px; 
 }
 
 .modalcard img {
    width: 100%;
-  height: 160px;         /* 👈 Natural height */
-  object-fit: contain;      /* 👈 Image pura dikhega */
+  height: 160px;        
+  object-fit: contain;    
   background-color: #fff;
-  padding: 5px;               /* 👈 Optional: gap from top/bottom */
+  padding: 5px;            
   border-radius: 8px 8px 0 0;
   image-rendering: -webkit-optimize-contrast;
 }
@@ -393,7 +352,7 @@ ul.decoration-addons {
   padding: 8px 10px 0 10px;
   margin: 0;
   text-align: left;
-  min-height: 38px; /* 👈 to align even if title is short */
+  min-height: 38px; 
   font-weight: 600;
 }
 
@@ -434,7 +393,7 @@ ul.decoration-addons {
 .addon-prices {
   display: flex;
   flex-direction: column;
-  margin: 0 0 20px 0;
+  margin:0px ;
 }
 
 .addon-prices label {
@@ -485,14 +444,6 @@ ul.decoration-addons {
   margin: 0;
 }
 
-/* .select-heading-sec{
-    margin-top: 16px;
-    text-align: center;
-    background-color: #FFFAF0;
-    margin-bottom: 0px !important;
-        height: 50px;
-
-  } */
 
 .book-now-button {
   background-color: #800080;
@@ -525,20 +476,77 @@ ul.decoration-addons {
   bottom: 0;
   width: 100%;
   height: 100%;
-  /* background: rgba(255, 255, 255, 0.75); light white background */
   backdrop-filter: blur(4px);
   z-index: -1;
 }
 .confirm-button {
-  background-color: rgb(157, 74, 147); /* Purple button background */
+  background-color: rgb(157, 74, 147); 
   color: white;
   font-size: 16px;
   font-weight: 600;
-  padding: 16px 40px; /* Bigger size */
+  padding: 16px 40px; 
   border: none;
-  border-radius: 10px; /* More rounded */
+  border-radius: 10px; 
   pointer-events: auto;
   transition: background-color 0.3s ease;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  min-width: 200px;
+}
+
+
+.decorke-celebrate-banner {
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.decorke-banner-img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.decorke-why-section {
+    background-color: #F7E7C7;
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0px 0px 0px;
+}
+
+
+.media-section {
+  text-align: center;
+  background: white;
+      margin: 20px 0px 20px 0px;
+}
+
+.media-heading {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #97538C;
+  margin-bottom: 20px;
+
+}
+
+.media-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fdeef9;
+  border-radius: 8px;
+}
+
+.media-logos-img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+.tab-section-details-productpage{
+    margin: 0 0 10px 0 !important;
+    padding: 10px !important;
+    background-color: #fff;
 }

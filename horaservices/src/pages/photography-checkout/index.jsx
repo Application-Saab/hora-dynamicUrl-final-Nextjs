@@ -30,10 +30,9 @@ const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
    const scriptTag = JSON.stringify(schemaOrg);
-  let { product, totalAmount, orderType, } = router.query;// Accessing subCategory and itemName safely
-  console.log(product)
+  let { product, totalAmount, orderType,duration } = router.query;
+
   const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];// 
-console.log(selectedAddOnProduct)
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -60,7 +59,7 @@ console.log(selectedAddOnProduct)
   const [sendInclusion, setSendInclusion] = useState(false);
   const [productPrice, setProductPrice] = useState(null);
   const [productImage, setProductImage] = useState(null);
-  const [productDuration, setProductDuration] = useState(null);
+  // const [productDuration, setProductDuration] = useState(null);
   const [productData, setProductData] = useState(null);
 
   if (product) {
@@ -82,13 +81,16 @@ console.log(selectedAddOnProduct)
     
       const formattedInclusions = parseInclusions(parsedProduct.inclusion[0]);
       setSendInclusion(formattedInclusions);
-      setProductPrice(product.price);
-      setProductData(parsedProduct);
+    setProductPrice(product.price || product.price);
+
+      setProductData({
+      ...parsedProduct,
+      advance_amount: Number(parsedProduct.advance_amount || 0), // ✅ IMPORTANT
+    });
 
       // Product ID se local image set karo
       if (parsedProduct._id && productsData[parsedProduct._id]) {
         setProductImage(productsData[parsedProduct._id].images[0]);
-        setProductDuration(productsData[parsedProduct._id].durationMaxslot);
       }
     }
   }, [router.isReady, router.query.product]);
@@ -281,10 +283,16 @@ console.log(selectedAddOnProduct)
       console.log('Error  Data:', error.message);
     }
   };
-  const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
-      const qty = itemQuantities[item.title] || 0;
-      return acc + Math.round((item.price * qty) * 0.35);
-        }, 0)
+ const productAdvanceAmount = Number(productData?.advance_amount || 0);
+
+const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
+  const qty = itemQuantities[item.title] || 0;
+  return acc + Math.round(item.price * qty * 0.35); // agar addon ka rule same hai
+}, 0);
+
+const advanceAmount = productAdvanceAmount + addonAdvanceAmount;
+const balanceAmount = totalAmount - advanceAmount;
+
 
 
   const onContinueClick = async () => {
@@ -299,9 +307,7 @@ console.log(selectedAddOnProduct)
      
     
 
-const advanceAmount = (advanceAmountData[productData?.name] || Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
 
-      const balanceAmount = totalAmount - advanceAmount;
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
 
       const requestData = {
@@ -395,14 +401,21 @@ console.log("advanceAmount",advanceAmount);
 
 
 
+const contactUsRedirection = (productName) => {
+  // productName example: "Candid Anniversary Photography Package"
 
-  const contactUsRedirection = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "photography_checkout_contact_us_click",
-    });
-    window.open("https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20Photography%20services")
-  };
+  const msg = `Hi, I want to book ${productName} & need more info`;
+
+  // ✅ GTM push
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "photography_checkout_contact_us_click",
+    product_name: productName,
+  });
+
+  // ✅ Open WhatsApp
+  window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(msg)}`);
+};
 
 
 
@@ -436,26 +449,7 @@ console.log("advanceAmount",advanceAmount);
   }, [product, isEventPushed])
 
   if (!isClient) return null;
-const advanceAmountData = {
-  // Initmate
-  "Traditional Photography": 1260,
-  "Candid Photography": 1660,
-  "Pro Photography": 2660,
-  "VideoGraphy": 2450,
-  // Mega
-  "Mega Traditional Photography": 3200,
-  "Mega Candid Photography": 4700,
-  "Mega Pro Photography": 7200,
-  "Mega VideoGraphy": 7200,
-  // Grand
-  "Haldi & Mehandi": 6000,
-  "Pre-wedding shoot and videography": 9600,
-  "Wedding Affair": 10000,
-  "Grand Wedding Affair": 26000,
-};
-const advanceAmount = (advanceAmountData[productData?.name] || Math.round(totalAmount * 0.35)) + addonAdvanceAmount;
 
-console.log(advanceAmount);
 
 
   return (
@@ -514,8 +508,7 @@ console.log(advanceAmount);
 
             <h4 className="form-title" style={{ color: '#8b3dff', fontWeight: 700 }}>Booking Details</h4>
   <div className="photographer-note">
-       Photographer will be available for {productDuration} after arrival.
-  {/* Need more info ? chat on WhatsApp now! */}
+     Duration: {duration ? `${duration} ` : "Not selected"}
 </div>
             <div className="form-row">
               <div className="form-half large-input">
@@ -552,7 +545,16 @@ console.log(advanceAmount);
                 The selected date and time must be at least 24 hours from now.
               </p>
             )}
-
+<div className="amountBox">
+  <div className="amountRow">
+    <span className="labels">TOTAL AMOUNT :</span>
+    <span className="value">₹ {totalAmount}</span>
+  </div>
+  <div className="amountRow">
+    <span className="labels">ADVANCE AMOUNT :</span>
+    <span className="value">₹ {advanceAmount}</span>
+  </div>
+</div>
             <div className="form-group input-with-icon">
               <label className="form-label">Share comments</label>
               <Image src={CommentIcon} className="input-icon" alt="comment" />
@@ -632,16 +634,22 @@ console.log(advanceAmount);
           <div className='d-flex flex-column flex-lg-row'>
 
             <div >
-              {/* <label>Product Name :</label> */}
+             
               <p className='productTitle'>{productData?.name || "N/A"}</p>
             </div>
-            {/* <div className='prod-detailsp'>
-              {productImage && (
-                <div className='detail-item'>
-                  <Image src={productImage} alt={product.name} className="detailimage" />
-                </div>
-              )}
-            </div> */}
+           <div className='prod-detailsp'>
+              <Image
+                          className="checkoutRightImg"
+                          src={
+                            product?.featured_image
+                              ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]}.webp`
+                              : "/default-image.webp"
+                          }
+                          alt="image"
+                          width={300}
+                          height={300}
+                        />
+            </div> 
 
             <div className='prod-details'>
          
@@ -699,7 +707,8 @@ console.log(advanceAmount);
               Need more info?
             </p>
 
-            <button className="button-cta whatsapp-cta" onClick={contactUsRedirection}>
+
+            <button className="button-cta whatsapp-cta" onClick={() => contactUsRedirection(productData?.name)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle icon-cta"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" className="whatsapp-iconimg"></path></svg>Whatsapp</button>
 
           </div>

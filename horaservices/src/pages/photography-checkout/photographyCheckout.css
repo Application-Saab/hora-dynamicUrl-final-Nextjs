@@ -70,7 +70,7 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 5px;
   overflow: visible;
   position: relative;
   z-index: 2;
@@ -636,18 +636,17 @@ font-family: 'Inter', sans-serif;
     left: 24%;
 }
 .photographer-note {
-    color: red;
-    border: 1px solid red;
-    padding: 4px 0px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 500;
-    text-align: left;
-    /* white-space: nowrap; */
-    overflow: hidden;
-    margin-bottom: 20px;
-    text-align: center;
-    /* background-color: antiquewhite; */
+   text-align: center;
+    align-items: center;
+    color: #091B44;
+    font-size: 12px;
+    font-weight: 550;
+    gap: 8px;
+    margin: 20px 0px 25px 0px;
+    background-color: #FFE2BE;
+    border: 1px #882697 solid;
+    border-radius: 10px;
+    padding: 2px;
 }
 
 .floating-image {
@@ -676,4 +675,27 @@ font-family: 'Inter', sans-serif;
     transition: transform 0.3s ease;
     width: 40% !important;
     font-size: 12px;
+}
+
+
+
+.amountBox {
+  display: inline-block;
+}
+
+.amountRow {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  gap:30px
+}
+
+.labels,
+.value {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;          /* Bold */
+  font-size: 14.61px;        /* exact size */
+  line-height: 100%;         /* 1:1 spacing */
+  letter-spacing: 0;         /* no extra spacing */
+  color: rgb(157, 74, 147);  /* purple */
 }
