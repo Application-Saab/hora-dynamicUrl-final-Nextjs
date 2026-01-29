@@ -336,11 +336,25 @@ const ProductDetails = () => {
       discountDifference: Math.round(discountDifference),
     };
   };
+const getAddonTotalPrice = () => {
+  let addonTotal = 0;
+
+  selectedAddOnProduct.forEach((item) => {
+    const qty = itemQuantities[item.title] || 0;
+    addonTotal += Number(item.price) * qty;
+  });
+
+  return addonTotal;
+};
 
 const getFinalAdvanceAmount = () => {
-  const productAdvance = Number(work?.advance_amount || 0);
-  return productAdvance; // future me addonAdvance add kar sakte ho
+  const productAdvance = Number(work?.advance_amount || 0); // Y
+  const addonTotal = getAddonTotalPrice(); // Z
+  const addonAdvance = addonTotal * 0.35;
+
+  return Math.round(productAdvance + addonAdvance);
 };
+
 
 const sendToCheckoutPage = (product) => {
   const totalPrice = calculateTotalPrice(product.price);
