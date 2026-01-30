@@ -33,6 +33,7 @@ const InfiniteWheel = ({ range, value, setValue }) => {
   const ref = useRef(null);
   const data = [...range, ...range, ...range];
   const scrollTimeout = useRef(null);
+  const isTouching = useRef(false);
 
   useEffect(() => {
     if (show && ref.current) {
@@ -40,69 +41,67 @@ const InfiniteWheel = ({ range, value, setValue }) => {
       ref.current.scrollTop =
         (range.length + index) * ITEM_HEIGHT;
     }
-  }, [show]); // ❗ value dependency hata di
-const onTouchStart = () => {
-  isTouching.current = true;
-  clearTimeout(scrollTimeout.current);
-};
+  }, [show]); // ❗ value dependency nahi deni
 
-const onTouchEnd = () => {
-  isTouching.current = false;
+  const onTouchStart = () => {
+    isTouching.current = true;
+    clearTimeout(scrollTimeout.current);
+  };
 
-  if (!ref.current) return;
-
-  const el = ref.current;
-  const index = Math.round(el.scrollTop / ITEM_HEIGHT);
-  const actualIndex =
-    ((index % range.length) + range.length) % range.length;
-
-  // ❌ smooth on mobile
-  el.scrollTop = index * ITEM_HEIGHT;
-
-  setValue(range[actualIndex]);
-};
-
-const handleScroll = () => {
-  if (!ref.current) return;
-
-  const el = ref.current;
-  const scrollTop = el.scrollTop;
-  const totalHeight = ITEM_HEIGHT * range.length;
-
-  // infinite illusion ONLY at edges
-  if (scrollTop < totalHeight * 0.25) {
-    el.scrollTop = scrollTop + totalHeight;
-    return;
-  }
-
-  if (scrollTop > totalHeight * 2.75) {
-    el.scrollTop = scrollTop - totalHeight;
-    return;
-  }
-
-  // desktop snap only
-  if (isTouching.current) return;
-
-  clearTimeout(scrollTimeout.current);
-
-  scrollTimeout.current = setTimeout(() => {
+  const onTouchEnd = () => {
+    isTouching.current = false;
     if (!ref.current) return;
 
+    const el = ref.current;
     const index = Math.round(el.scrollTop / ITEM_HEIGHT);
     const actualIndex =
       ((index % range.length) + range.length) % range.length;
 
-    el.scrollTo({
-      top: index * ITEM_HEIGHT,
-      behavior: "smooth",
-    });
+    // ❌ mobile pe smooth snap nahi
+    el.scrollTop = index * ITEM_HEIGHT;
 
+    // ✅ value sirf yahin set hogi
     setValue(range[actualIndex]);
-  }, 180);
-};
+  };
 
+  const handleScroll = () => {
+    if (!ref.current) return;
 
+    const el = ref.current;
+    const scrollTop = el.scrollTop;
+    const totalHeight = ITEM_HEIGHT * range.length;
 
+    // ✅ infinite illusion
+    if (scrollTop < totalHeight * 0.25) {
+      el.scrollTop = scrollTop + totalHeight;
+      return;
+    }
+
+    if (scrollTop > totalHeight * 2.75) {
+      el.scrollTop = scrollTop - totalHeight;
+      return;
+    }
+
+    // ❌ mobile pe snap disable
+    if (isTouching.current) return;
+
+    // ✅ desktop snap only
+    clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(() => {
+      if (!ref.current) return;
+
+      const index = Math.round(el.scrollTop / ITEM_HEIGHT);
+      const actualIndex =
+        ((index % range.length) + range.length) % range.length;
+
+      el.scrollTo({
+        top: index * ITEM_HEIGHT,
+        behavior: "smooth",
+      });
+
+      setValue(range[actualIndex]);
+    }, 150);
+  };
 
   const handleClick = (i) => {
     const baseIndex = range.length + i;
@@ -114,9 +113,13 @@ const handleScroll = () => {
   };
 
   return (
-    <div className="wheel" ref={ref}  onScroll={handleScroll}
-  onTouchStart={onTouchStart}
-  onTouchEnd={onTouchEnd}>
+    <div
+      className="wheel"
+      ref={ref}
+      onScroll={handleScroll}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       <div className="wheel-item buffer" />
 
       {data.map((num, i) => (
@@ -135,6 +138,7 @@ const handleScroll = () => {
     </div>
   );
 };
+
 
 
  const AmPmWheel = () => {
