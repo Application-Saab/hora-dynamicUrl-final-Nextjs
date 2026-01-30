@@ -75,7 +75,7 @@ const GridhandleClick = (cat) => {
       <div className="category-tabs">
       {data
            .filter((cat) => cat.image)
-        .slice(0, 8)
+        .slice(0, 9)
         .map((cat) => (
           <button
             key={cat.id}
