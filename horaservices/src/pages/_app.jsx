@@ -144,17 +144,17 @@ function MyApp({ Component, pageProps }) {
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, [router.asPath]);
 
-  // useLayoutEffect(() => {
-  //   // reset any scroll lock
-  //   document.body.style.position = "";
-  //   document.body.style.top = "";
-  //   document.body.style.overflow = "";
+  useLayoutEffect(() => {
+    // reset any scroll lock
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.overflow = "";
 
-  //   // force scroll to top
-  //   window.scrollTo(0, 0);
+    // force scroll to top
+    window.scrollTo(0, 0);
 
-  //   console.log("scrolling app");
-  // }, [pathname]);
+    console.log("scrolling app");
+  }, [pathname]);
 
   return (
     <>

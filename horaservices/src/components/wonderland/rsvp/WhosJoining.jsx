@@ -117,9 +117,6 @@ const WhosJoining = ({
         socket.emit("submit:rsvp", { userId: loggedinUserId });
         socket.emit("joinRoom", { groupId: response.data.groupId });
       }
-      // window.dispatchEvent(
-      //   new CustomEvent("refetch:unread", { detail: { eventId } }),
-      // );
     } catch (err) {
       alert("Something went wrong. Please try again.");
     }

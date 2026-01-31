@@ -21,7 +21,6 @@
 .login-modal-heading {
   font-family: "Roboto", sans-serif;
   font-weight: 700;
-  /* font-size: 34.59px; */
   font-size: clamp(
     24px,
     calc(24px + (34.59 - 24) * ((100vw - 320px) / (480 - 320))),
@@ -30,7 +29,6 @@
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
-  /* margin-bottom: 10.92px; */
   margin-bottom: clamp(
     8px,
     calc(8px + (10.92 - 8) * ((100vw - 320px) / (480 - 320))),
@@ -40,7 +38,6 @@
 .login-modal-subheading {
   font-family: "Roboto", sans-serif;
   font-weight: 500;
-  /* font-size: 16.38px; */
   font-size: clamp(
     14px,
     calc(14px + (16.38 - 14) * ((100vw - 320px) / (480 - 320))),
@@ -49,7 +46,6 @@
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
-  /* margin-bottom: 37.31px; */
   margin-bottom: clamp(
     24px,
     calc(24px + (37.31 - 24) * ((100vw - 320px) / (480 - 320))),
@@ -63,7 +59,6 @@
 .login-input-field {
   background-color: #ffffff;
   border: none;
-  /* color: #00000099; */
   padding: 10px 18px;
   border-radius: 9px;
   border: 0.91px solid #00000066;
