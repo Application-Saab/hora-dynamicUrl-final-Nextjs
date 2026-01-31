@@ -9,7 +9,8 @@ import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
-
+import inviteVideo from '@/assets/inviteVideo.mp4';
+import createInviteImg from '@/assets/create-invite.png';
 const WonderlandMainPage = () => {
   const router = useRouter();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
@@ -61,21 +62,28 @@ const WonderlandMainPage = () => {
   return (
     <>
       <div className="logedin-container">
-        <div className="invite-banner">
-          <Image
-            src={wonderlandBanner}
-            alt="Invite Banner"
-            className="banner-image-top"
-          />
+         <div className="polaroid tilt-right video-card">
+  <video
+    className="video-thumb"
+    src={inviteVideo}
+    autoPlay
+    muted
+    loop
+    playsInline
+    preload="auto"
+  />
+</div>
 
-          <button
-            type="button"
-            className="create-invite-btn-landing"
-            onClick={createInviteClick}
-          >
-            <span>CREATE INVITE</span>
-          </button>
-        </div>
+<div
+  className="create-invite-img-wrapper"
+  onClick={createInviteClick}
+>
+  <Image
+    src={createInviteImg}
+    alt="Create Invite"
+    className="create-invite-img"
+  />
+</div>
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}

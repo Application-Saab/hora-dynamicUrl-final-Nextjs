@@ -26,49 +26,66 @@
   margin: 5px 0px 5px 0px;
   max-width: 600px;
 }
-
-.create-invite-btn-landing {
-    position: absolute;
-    bottom: 25px;
-    left: 5%;
-    background: #97538c;
-     font-family: "Roboto", sans-serif;
-    color: white;
-    border: none;
-    padding: 6px 16px 6px;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.2px;
-    border-radius: 8px;
-    cursor: pointer;
-    overflow: hidden;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+.video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.create-invite-glow-btn {
+  position: relative;
+  padding: 14px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #7b5cff, #ff4ecd);
+  box-shadow:
+    0 0 15px rgba(123, 92, 255, 0.8),
+    0 0 30px rgba(255, 78, 205, 0.6);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
 }
 
-.create-invite-btn-landing::before {
-  content: '';
+/* Glow animation */
+.create-invite-glow-btn::before {
+  content: "";
   position: absolute;
-  top: -35px;
-  left: -150%;
-  width: 20%;
-  height: 300%;
-  background: #ffffff4d; /* subtle white shimmer */
-  transform: rotate(30deg);
-  animation: shimmer 1.5s infinite;
-  animation-delay: 0.07s;
+  inset: -2px;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+  animation: glowMove 2.5s linear infinite;
 }
 
-@keyframes shimmer {
+@keyframes glowMove {
   0% {
-    left: -150%;
-  }
-  50% {
-    left: 100%;
+    transform: translateX(-100%);
   }
   100% {
-    left: 150%;
+    transform: translateX(100%);
   }
 }
+
+.create-invite-img-wrapper {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.create-invite-img {
+   width: clamp(160px, 49vw, 194px);
+  height: clamp(54px, 17vw, 66px);
+}
+
+.create-invite-img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px rgba(255, 105, 180, 0.6);
+}
+
 
 .event-list-wrapper {
       padding: 10px 15px;
