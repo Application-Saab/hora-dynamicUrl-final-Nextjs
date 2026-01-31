@@ -23,6 +23,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otpError, setOtpError] = useState("");
   const [error, setError] = useState({ name: "", phone: "" });
+  const [showNameField, setShowNameField] = useState(false);
 
   const { time, resetTimer, isTimeUp } = useTimer(30);
   const { loading: sendOtpLoading, makeRequest } = useApi();
@@ -80,6 +81,17 @@ const LoginModal = ({ isOpen, onClose }) => {
     };
     fetchUserDetails();
   }, [phone]);
+
+  useEffect(() => {
+    if (phone.length < 10) {
+      setShowNameField(false);
+    }
+    if (phone.length === 10) {
+      setTimeout(() => {
+        setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
+      }, 150);
+    }
+  }, [phone, userData, fetchUserDataLoading, isFetched]);
 
   // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
@@ -344,40 +356,33 @@ const LoginModal = ({ isOpen, onClose }) => {
                     </p>
                   )}
                 </div>
-                {phone?.length === 10 &&
-                  !userData?.name &&
-                  !fetchUserDataLoading &&
-                  isFetched && (
-                    <div>
-                      <input
-                        type="text"
-                        placeholder="Enter Your Name"
-                        value={name}
-                        onChange={(e) => {
-                          setName(e.target.value);
-                          setError((prev) => ({
-                            ...prev,
-                            name: e.target.value.trim()
-                              ? ""
-                              : "Name is required!",
-                          }));
-                        }}
-                        className="login-input-field w-100"
-                      />
-                      {error.name && (
-                        <p className="login-modal-err-msg text-danger">
-                          * {error.name}
-                        </p>
-                      )}
-                    </div>
-                  )}
+                {showNameField && (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Enter Your Name"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        setError((prev) => ({
+                          ...prev,
+                          name: e.target.value.trim()
+                            ? ""
+                            : "Name is required!",
+                        }));
+                      }}
+                      className="login-input-field w-100"
+                    />
+                    {error.name && (
+                      <p className="login-modal-err-msg text-danger">
+                        * {error.name}
+                      </p>
+                    )}
+                  </div>
+                )}
               </>
             ) : (
               <>
-                <p className="verify-text">
-                  OTP sent to <span>(+91) {phone}</span>
-                </p>
-
                 <div
                   className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
                 >

@@ -61,9 +61,9 @@ const Header = () => {
    ------------------------ */
   useEffect(() => setIsMounted(true), []);
 
-  useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  // useLayoutEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

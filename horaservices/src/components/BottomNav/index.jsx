@@ -128,6 +128,7 @@ export default function BottomNav() {
         showHeader={false}
         disableBackdropClick
         disableBgScroll
+        verticalCenter={false}
         modalClass="chat-instruction-popup"
         backdropClass="chat-instruction-backdrop"
         body={

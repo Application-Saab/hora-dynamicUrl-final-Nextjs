@@ -125,9 +125,10 @@ const ChatProviderMain = ({ children }) => {
 
       const onRsvpRefetch = (data) => {
         const { eventId } = data;
+        console.log('%c [ eventId ]-128', 'font-size:13px; background:pink; color:#bf2c9f;', eventId)
         if (eventId) {
           window.dispatchEvent(
-            new CustomEvent("rsvp:refetch", { detail: { eventId } })
+            new CustomEvent("rsvp:refetched", { detail: { eventId } })
           );
         }
       };

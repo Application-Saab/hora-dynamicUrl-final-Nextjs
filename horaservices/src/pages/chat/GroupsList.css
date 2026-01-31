@@ -190,6 +190,8 @@
     -webkit-overflow-scrolling: touch;
     top: 0;
   left: 0;
+  padding-bottom: 5px;
+   transition: padding-bottom 0.12s linear;
   /* padding-bottom: env(keyboard-inset-height, 0px) */
 }
 :root {
@@ -299,6 +301,7 @@
   max-width: 480px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   z-index: 999;
+  touch-action: auto; /* 🔥 Parent mein full touch allow kar */
 }
 
 
@@ -357,6 +360,10 @@
 
   transform: translateZ(0);
   will-change: contents;
+
+  -webkit-overflow-scrolling: touch; /* 🔥 iOS pe smooth touch scrolling enable */
+  touch-action: pan-y; /* 🔥 Mobile pe vertical (up/down) scrolling allow kar, horizontal block */
+  overscroll-behavior-y: contain; /* 🔥 Over-scroll se page bounce avoid */
 }
 
 .chat-input::-webkit-scrollbar {
@@ -420,6 +427,23 @@
 
   padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
   background: transparent;
+opacity: 0;                          /* 🔥 Start hidden */
+  visibility: hidden;                  /* Extra safety – no layout shift visible */
+  transition: opacity 0.1s ease-out; 
+  scroll-behavior: auto !important;   /* Very fast fade-in */
+  overflow: hidden;
+}
+.chat-messages.loaded { /* New class add karo */
+  opacity: 1;
+}
+.chat-messages.ready {
+  opacity: 1;
+  visibility: visible;
+  overflow-y: auto;                    /* Scroll enable hone ke baad */
+}
+.chat-messages:not(.ready) {
+  overflow: hidden !important; /* Scroll itself disable jab tak ready nahi */
+  pointer-events: none;
 }
 
 .chat-message {
@@ -545,6 +569,7 @@
   touch-action: auto;
   -webkit-user-drag: auto;
   line-height: 16px;
+  margin-bottom: 7px;
 }
 
 .chat-time {
@@ -601,9 +626,9 @@
 
 .chat-message.receiver .chat-time {
   position: absolute;
-  bottom: 0px;
+  bottom: 2px;
   right: 8px;
-  font-size: 8px;
+  font-size: 9px;
   color: black;
 }
 
@@ -633,6 +658,16 @@
   font-size: 10px;
   font-weight: 400;
 }
+.chat-input,
+.chat-message,
+.chat-messages,
+.chat-bubble,
+.chat-text {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
 
 :root {
   --sat: env(safe-area-inset-top);
