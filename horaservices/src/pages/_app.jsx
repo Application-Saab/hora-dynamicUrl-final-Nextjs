@@ -16,6 +16,7 @@ import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
+import { trackDailyUniqueVisit } from "@/utils/analytics";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -49,6 +50,12 @@ function MyApp({ Component, pageProps }) {
       document.removeEventListener("keydown", blockKeys);
       document.removeEventListener("dragstart", blockDrag);
     };
+  }, []);
+
+   useEffect(() => {
+    if (typeof window !== "undefined") {
+      trackDailyUniqueVisit();
+    }
   }, []);
   
   const requestPermission = async () => {
