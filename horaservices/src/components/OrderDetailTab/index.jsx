@@ -969,7 +969,9 @@ const OrderDetailTab = ({
                               style={{ height: 13, width: 13, marginRight: 10 }}
                             />
                           </div>
-                          <div>{item || "NA"}</div>
+                        <div>
+                              {item.title || "NA"} =  ₹{item.price || "NA"} x 1 = ₹{item.price || "NA"}
+                            </div>
                         </div>
                       ))}
                     </ul>
