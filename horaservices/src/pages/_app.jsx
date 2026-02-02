@@ -177,10 +177,11 @@ function MyApp({ Component, pageProps }) {
                       style={{ display: "none", visibility: "hidden" }}
                     ></iframe>
                   </noscript>
-
+                  {pathname !== "/photo-gallery" && (
                   <div className="whatsapp-container">
                     <WhatsAppIcon router={router} />
                   </div>
+                  )}
                 </PageLayout>
               </ChatProviderMain>
             </ChatProvider>

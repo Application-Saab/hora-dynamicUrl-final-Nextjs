@@ -8,10 +8,12 @@ const CommonPopup = ({
   isOpen,
   onClose,
   title = "Create New Folder",
-  children,       // 👈 andar ka dynamic content
+  children,     
   buttonText = "Create",
   onSubmit,
   showButton = true,
+  buttonContent,
+  disabled = false,
 }) => {
   if (!isOpen) return null;
 
@@ -42,8 +44,16 @@ const CommonPopup = ({
         {/* Footer */}
         {showButton && (
             <div className="pop-btn-container">
-            <button className="popup-btn" onClick={onSubmit}>
-            {buttonText}
+            <button
+              className="popup-btn"
+              onClick={onSubmit}
+              disabled={disabled}
+              style={{
+                opacity: disabled ? 0.75 : 1,
+                cursor: disabled ? "not-allowed" : "pointer",
+              }}
+            >
+              {buttonContent || buttonText}
             </button>
             </div>
           

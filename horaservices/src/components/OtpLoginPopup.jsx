@@ -14,7 +14,7 @@ import Image from "next/image";
 import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
-const OtpLogin = ({ setIsModalOpen }) => {
+const OtpLogin = ({ setIsModalOpen, backIconHidden = false }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
 
@@ -278,6 +278,7 @@ const OtpLogin = ({ setIsModalOpen }) => {
         {!isUserLoggedIn ? (
           <>
             {/* HEADER */}
+            {!backIconHidden &&
             <Image
               src={ArrowImg}
               alt="Back"
@@ -294,6 +295,8 @@ const OtpLogin = ({ setIsModalOpen }) => {
                 }
               }}
             />
+            }
+            
             <div className="login-content">
               <div className="login-header">
                 <h1 className="login-title">
