@@ -9,58 +9,64 @@ export default function PhotoGraphyCard({
   city = "",
   locality = "",
   photoCat = [],
-  hasCityPageParam = false,
 }) {
   const router = useRouter();
 
- 
-const handleViewMore = () => {
+  const handleViewMore = () => {
+    const categoryItem = photoCat?.find(
+      (cat) => cat.subCategory === subCategory || cat.name === subCategory
+    );
 
-  const categoryItem = photoCat?.find(
-    (cat) => cat.subCategory === subCategory || cat.name === subCategory
-  );
+    const finalSubCategory = categoryItem?.subCategory || subCategory;
+    if (!finalSubCategory) return;
 
-  const finalSubCategory = categoryItem?.subCategory || subCategory;
-  if (!finalSubCategory) return;
+    const citySlug = city?.toLowerCase();
+    const localitySlug = locality?.toLowerCase();
 
+    let path = `/photography-page/${finalSubCategory}`;
 
-  let path = `/photography-page/${finalSubCategory}`;
+    if (citySlug && localitySlug) {
+      path = `/${citySlug}/${localitySlug}${path}`;
+    } else if (citySlug) {
+      path = `/${citySlug}${path}`;
+    }
 
-  if (city && locality) {
-    path = `/${city.toLowerCase()}/${locality.toLowerCase()}${path}`;
-  } else if (city) {
-    path = `/${city.toLowerCase()}${path}`;
-  }
+    const isCityPage = Boolean(citySlug);
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: hasCityPageParam
-      ? "title_and_viewmore_photography_citypage_clicked"
-      : "title_and_viewmore_photography_page_clicked",
-    categoryName: categoryItem?.name || subCategory,
-    subCategory: finalSubCategory,
-    catValue: categoryItem?.catValue || "",
-    imgAlt: categoryItem?.imgAlt || "",
-    city: city || "default",
-    locality: locality || "default",
-  });
-  router.push(path);
-};
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: isCityPage
+        ? "title_and_viewmore_photography_citypage_clicked"
+        : "title_and_viewmore_photography_page_clicked",
+      categoryName: categoryItem?.name || subCategory,
+      subCategory: finalSubCategory,
+      catValue: categoryItem?.catValue ?? "",
+      imgAlt: categoryItem?.imgAlt ?? "",
+      city: citySlug || "default",
+      locality: localitySlug || "default",
+    });
+
+    router.push(path);
+  };
 
   return (
-    <div className="cardgrid"onClick={handleViewMore}>
-      <div className="imageWrappergrid ">
-        <Image src={src} alt={title} fill className="photograpghy-image" priority />
-        <div className="imageOverlaygrid"></div>
-        <div className="titleWrappergrid ">
-          <h3 className="titlegrid ">{title}</h3>
+    <div className="cardgrid" onClick={handleViewMore}>
+      <div className="imageWrappergrid">
+        <Image
+          src={src}
+          alt={title}
+          fill
+          className="photograpghy-image"
+          priority
+        />
+        <div className="imageOverlaygrid" />
+        <div className="titleWrappergrid">
+          <h3 className="titlegrid">{title}</h3>
         </div>
       </div>
+
       <div className="footergrid">
-        <button className="viewMoregrid "   onClick={(e) => {
-            e.stopPropagation(); 
-            handleViewMore();
-          }}>
+        <button className="viewMoregrid" type="button">
           View more
         </button>
       </div>

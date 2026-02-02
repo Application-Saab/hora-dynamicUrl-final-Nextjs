@@ -170,25 +170,16 @@ const ProductDetails = () => {
   const schemaOrg = getPhotographyOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
   const router = useRouter();
-  const params = useParams();
   const { query } = useRouter();
   const productId = query.id;
-  let { city } = router.query;
-  let { locality } = router.query;
+  const { city, locality, catValue } = router.query;
   const { product } = router.query;
-  const [catValue, setCatValue] = useState("");
   const [work, setWork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
-  const [totalAmount, setTotalAmount] = useState();
-  const [isArrowDown, setIsArrowDown] = useState(true);
-  const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
-  const cityName = params?.city;
-  const parsedProduct = product ? JSON.parse(product) : null;
-  const tagId = parsedProduct?.tag?.[0];
   const addonRef = useRef(null);
   const customizationRef = useRef(null);
   const [similarProducts, setSimilarProducts] = useState([]);
@@ -200,11 +191,7 @@ const ProductDetails = () => {
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
-  useEffect(() => {
-    if (params?.catValue) {
-      setCatValue(params.catValue);
-    }
-  }, [params]);
+
   const calculateTotalPrice = (productPrice) => {
     let totalPrice = Number(work?.price || productPrice);
 
@@ -247,19 +234,10 @@ const ProductDetails = () => {
       ...itemQuantities,
       [item.title]: (itemQuantities[item.title] || 0) + 1,
     });
-    updateTotalAmount();
+    
   };
 
-  const updateTotalAmount = () => {
-    if (!work) return;
-    let newTotalAmount = Number(work.discountedPrice || work.price) || 0;
 
-    // let newTotalAmount = Number(work.price) || 0;
-    selectedAddOnProduct.forEach(item => {
-      newTotalAmount += item.price * (itemQuantities[item.title] || 0);
-    });
-    setTotalAmount(newTotalAmount);
-  };
 
   const handleRemoveFromCart = (item) => {
     const updatedSelectedAddOnProduct = [...selectedAddOnProduct];
@@ -283,7 +261,7 @@ const ProductDetails = () => {
 
     setSelectedAddOnProduct(updatedSelectedAddOnProduct);
     setItemQuantities(updatedQuantities);
-    updateTotalAmount();
+    
   };
 
 
@@ -389,36 +367,7 @@ const sendToCheckoutPage = (product) => {
 
 
 
-  useEffect(() => {
-    if (!productId) return;
-
-    const fetchProductDetails = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
-        const data = res.data?.data;
-
-        if (!data) throw new Error("No product found");
-
-        // 💰 Calculate discount
-        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
-
-        setWork({
-          ...data,
-          discount,
-          discountedPrice,
-          discountDifference,
-            advance_amount: Number(data.advance_amount || 0),
-        });
-      } catch (err) {
-        setWork(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProductDetails();
-  }, [productId]);
-
+ 
 
   const getMappedCatValue = (slug) => {
     const map = {
@@ -435,42 +384,59 @@ const sendToCheckoutPage = (product) => {
     };
     return map[slug] || slug;
   };
-  useEffect(() => {
-    if (!productId) return;
+ useEffect(() => {
+  if (!productId) return;
 
-    const fetchProductAndSimilar = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/photography/details/${productId}`);
-        const data = res.data?.data;
+  const fetchProductAndSimilar = async () => {
+    try {
+      setLoading(true);
 
-        if (!data) throw new Error("No product found");
-        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(Number(data.price));
-        setWork({
-          ...data,
-          discount,
-          discountedPrice,
-          discountDifference,
-        });
+      // ✅ SINGLE API CALL
+      const res = await axios.get(
+        `${BASE_URL}/api/photography/details/${productId}`
+      );
 
-        const tagId = data?.tag?.[0]?._id;
-        if (!tagId) {
-          return;
-        }
+      const data = res.data?.data;
+      if (!data) throw new Error("No product found");
 
-        const similarRes = await axios.get(`${BASE_URL}/api/photography/searchByTag/${tagId}`);
-        const allProducts = similarRes.data?.data || [];
-        const filteredProducts = allProducts.filter((p) => p._id !== productId);
+      const { discount, discountedPrice, discountDifference } =
+        getDiscountedPrice(Number(data.price));
+
+      const formattedProduct = {
+        ...data,
+        discount,
+        discountedPrice,
+        discountDifference,
+        advance_amount: Number(data.advance_amount || 0),
+      };
+
+      setWork(formattedProduct);
+
+      // ✅ Fetch similar products
+      const tagId = data?.tag?.[0]?._id;
+      if (tagId) {
+        const similarRes = await axios.get(
+          `${BASE_URL}/api/photography/searchByTag/${tagId}`
+        );
+
+        const filteredProducts =
+          (similarRes.data?.data || []).filter(
+            (p) => p._id !== productId
+          );
 
         setSimilarProducts(filteredProducts);
-    
-      } catch (error) {
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error(error);
+      setWork(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProductAndSimilar();
-  }, [productId]);
+  fetchProductAndSimilar();
+}, [productId]);
+
 
 
 

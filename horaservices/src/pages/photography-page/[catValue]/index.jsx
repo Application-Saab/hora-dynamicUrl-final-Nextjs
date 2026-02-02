@@ -23,9 +23,9 @@ import {
   GET_PHOTOGRAPHY_BY_NAME,
 } from "@/utils/apiconstants.js";
 import ProductGrid from "@/components/productGrid";
-import Head from "next/head";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoCategory } from "@/utils/photoGraphyHead";
+import SkeletonGrid from "@/components/SkeletonGrid";
 
 
 
@@ -199,16 +199,13 @@ export default function CatValuePage() {
     <div className="featured-photo-works">
          <SeoCategory city={city} catValue={catValue} scriptTag={scriptTag} />
       {loading ? (
-        <div className="skeleton-wrapper">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <CardSkeleton key={index} />
-          ))}
-        </div>
+       
+         <SkeletonGrid count={6} />
       ) : error ? (
         <p className="error-text">{error}</p>
       ) : (
         <>
-          {/* <p className="PhotoHeading">{catValue}</p> */}
+  
   <section className="decorationBanner">
                 <Image
                   src={bannerToShow}

@@ -2,17 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
+
 import Head from "next/head";
 import axios from 'axios';
-import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
-import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
+import { BASE_URL, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
+import { PAYMENT, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import { Form, Dropdown } from 'react-bootstrap';
 import '../../css/decoration.css';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import InfoIcon from '../../assets/info.png'
 import Loader from '../../components/Loader'
 import { pincodes } from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
@@ -49,11 +47,9 @@ const Checkout = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [combinedDateTime, setCombinedDateTime] = useState(null);
   const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
   const phoneNumber = localStorage.getItem("mobileNumber");
-  const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sendInclusion, setSendInclusion] = useState(false);
@@ -113,17 +109,8 @@ const Checkout = () => {
     }
   }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-  //   1: "Decoration",
-  //       2: "Chef",
-  //       3: "Waiter",
-  //       4: "Bar Tender",
-  //       5: "Cleaner",
-  //       6: "Food Delivery",
-  //       7: "Live Catering",
-  //       8: "Photography",
+ 
+  
   const handleComment = (e) => {
     const commentText = e.target.value;
     setComment(commentText);
@@ -245,9 +232,6 @@ const Checkout = () => {
     }
   };
 
-  function getRandomNumber(min, max) {
-    return Math.random() * (max - min) + min;
-  }
 
   const saveAddress = async () => {
     try {
@@ -419,17 +403,17 @@ const contactUsRedirection = (productName) => {
 
 
 
-  useEffect(() => {
-    setIsClient(true);
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 800);
-    };
+  // useEffect(() => {
+  //   setIsClient(true);
+  //   const handleResize = () => {
+  //     setIsMobile(window.innerWidth < 800);
+  //   };
 
-    handleResize(); // Check initial size
-    window.addEventListener('resize', handleResize);
+  //   handleResize(); // Check initial size
+  //   window.addEventListener('resize', handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
 
   useEffect(() => {
@@ -448,9 +432,7 @@ const contactUsRedirection = (productName) => {
     }
   }, [product, isEventPushed])
 
-  if (!isClient) return null;
-
-
+ 
 
   return (
     <div className="App">

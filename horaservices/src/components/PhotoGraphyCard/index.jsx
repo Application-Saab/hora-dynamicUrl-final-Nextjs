@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import "./photoGraphycard.css";
 
-export default function PhotoGraphyCard({ 
+export default function PhotoGraphyCard({
   src,
   title,
   subCategory,
@@ -20,7 +20,6 @@ const handleViewMore = () => {
 
   const finalSubCategory = categoryItem?.subCategory || subCategory;
   if (!finalSubCategory) return;
-
 
   let path = `/photography-page/${finalSubCategory}`;
 
@@ -45,7 +44,7 @@ const handleViewMore = () => {
   router.push(path);
 };
   return (
-    <div className="photo-card" onClick={handleViewMore} style={{ cursor: "pointer" }}>
+  <div className="photo-card"onClick={handleViewMore} style={{ cursor: "pointer" }}>
       <div className="photo-imageWrapper">
         <Image src={src} alt={title} fill className="photo-image" priority />
         <div className="photo-imageOverlay"></div>
@@ -54,11 +53,7 @@ const handleViewMore = () => {
         </div>
       </div>
       <div className="photo-footer">
-        <button className="photo-viewMore"    
-         onClick={(e) => {
-            e.stopPropagation(); 
-            handleViewMore();
-          }}>
+        <button className="photo-viewMore" type="button">
           View more
         </button>
       </div>
