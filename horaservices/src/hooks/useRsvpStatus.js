@@ -9,7 +9,8 @@ const { useLayoutEffect, useState } = require("react");
 const useRsvpStatus = (eventId, skipCheck, refetch) => {
   const [rsvpSubmitted, setRsvpSubmitted] = useState(true);
   const userId = localStorage.getItem("userID");
-  const [guestDetails, setGuestDetails] = useState({});
+  const [guestDetails, setGuestDetails] = useState(false);
+  console.log('%c [ guestDetails ]-13', 'font-size:13px; background:pink; color:#bf2c9f;', guestDetails)
   const { makeRequest: fetchGuestData } = useApi();
   const { makeRequest: createGuestRequest } = useApi();
 

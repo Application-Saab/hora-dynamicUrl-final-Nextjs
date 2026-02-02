@@ -23,14 +23,15 @@ const InvitesPage = () => {
   const [fullPageLoader, setFullPageLoader] = useState(true);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || ""
+    localStorage.getItem("userID") || "",
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
+  const [showHostActionSection, setShowHostActionSection] = useState(false);
   const { rsvpSubmitted } = useRsvpStatus(
     queryEventId,
     skipRsvpCheck,
-    rsvpRefetch
+    rsvpRefetch,
   );
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
   const {
@@ -76,7 +77,7 @@ const InvitesPage = () => {
         try {
           let resp = await fetchUserData(
             `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET"
+            "GET",
           );
           setUserData(resp?.data);
         } catch (err) {
@@ -121,6 +122,16 @@ const InvitesPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (eventDetails && eventDetails.userId === loggedinUserId) {
+        setShowHostActionSection(true);
+      } else {
+        setShowHostActionSection(false);
+      }
+    }, 1000);
+  }, [eventDetails, loggedinUserId]);
+
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   return (
@@ -144,7 +155,7 @@ const InvitesPage = () => {
             )}
           </div>
 
-          {(eventDetails?.eventDate ||
+          {((eventDetails && eventDetails?.eventDate) ||
             eventData?.location ||
             eventData?.googleMapLink ||
             eventData?.eventTime) && (
@@ -153,7 +164,7 @@ const InvitesPage = () => {
             </div>
           )}
 
-          {eventDetails && eventDetails?.userId === loggedinUserId && (
+          {showHostActionSection && (
             <div className="invite-action-container">
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}
@@ -161,7 +172,7 @@ const InvitesPage = () => {
               />
             </div>
           )}
-          <div className="whos-joining-container">
+          <div className="whos-joining-container" style={{marginTop: !showHostActionSection ? '10px' : '0px'}}>
             <WhosJoining
               isHost={eventDetails?.userId === loggedinUserId}
               userData={userData}
