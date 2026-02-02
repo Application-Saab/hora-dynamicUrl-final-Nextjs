@@ -17,18 +17,24 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
-import './globals.css';
+import "./home.css";
 import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../assets/decoration_icon.webp';
 import PhotographyIcon from '../assets/photography_icon.webp';
 import FoodIcon from '../assets/food_icon.png';
- import decorationbanner from '../assets/decoration-home-banner.jpg'
-import './homepage.css'
+
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
-
+import Homevideo from '@/assets/Home/HomeVideo.mp4';
+import Photographybanner from '@/assets/Home/Photographybanner.jpg'
+import decorationbanner from '@/assets/Home/decorationbanner.jpg'
+import chefforparty from "@/assets/Home/chefforparty.jpg"
+import partyfood from "@/assets/Home/partyfood.jpg"
+import photo1 from "@/assets/Home/photo1.png"
+import photo2 from "@/assets/Home/photo2.png"
+import photo3 from "@/assets/Home/photo3.png"
 export default function Home() {
 const router = useRouter();
 const pathname = usePathname();
@@ -241,382 +247,241 @@ const settings = {
   }
 
 
-const foodData = [
-  {
-    id: 1,
-    image: "https://horaservices.com/api/uploads/homepage_food1.webp",
-    title: "Bulk Food Delivery",
-    imgAlt: "Bulk food delivery service",
-    link:"/party-food-delivery-live-catering-buffet/party-food-delivery"
-  },
-  {
-    id: 2,
-    image: "https://horaservices.com/api/uploads/homepage_food2.webp",
-    title: "Chef For Party",
-    imgAlt: "Chef cooking for a party",
-    link:"/book-chef-cook-for-party"
-  },
-  {
-    id: 3,
-    image: "https://horaservices.com/api/uploads/homepage_food3.webp",
-    title: "Live Catering",
-    imgAlt: "Live catering service at an event",
-    link:"/party-food-delivery-live-catering-buffet/party-live-buffet-catering"
-  },
-];
+// const foodData = [
+//   {
+//     id: 1,
+//     image: "https://horaservices.com/api/uploads/homepage_food1.webp",
+//     title: "Bulk Food Delivery",
+//     imgAlt: "Bulk food delivery service",
+//     link:"/party-food-delivery-live-catering-buffet/party-food-delivery"
+//   },
+//   {
+//     id: 2,
+//     image: "https://horaservices.com/api/uploads/homepage_food2.webp",
+//     title: "Chef For Party",
+//     imgAlt: "Chef cooking for a party",
+//     link:"/book-chef-cook-for-party"
+//   },
+//   {
+//     id: 3,
+//     image: "https://horaservices.com/api/uploads/homepage_food3.webp",
+//     title: "Live Catering",
+//     imgAlt: "Live catering service at an event",
+//     link:"/party-food-delivery-live-catering-buffet/party-live-buffet-catering"
+//   },
+// ];
 
 
-const whereAreYouData = [
-  {
-    id: 1,
-    title: 'Decoration',
-    link: '/balloon-decoration',
-    imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu1.webp",
-    imgAlt: 'Event decoration service',
-    points: [
-      '✨Choose from 1000+ unique designs for any Event - Birthdays, Anniversaries, Baby showers, Weddings, and more!',
-      '✨Get your venue decorated in just 2 hours, indoors or outdoors.',
-      '✨Best prices, timely service, and support',
-      '✨ 4.8 ⭐ Rating...', 
-    ],
-  },
-  {
-    id: 2,
-    title: 'Chef For Party',
-    link: '/book-chef-cook-for-party',
-    imageUrl:  "https://horaservices.com/api/uploads/homepage_whatareu2.webp",
-    imgAlt: 'Chef services for party events',
-    points: [
-        " ✨ HORA brings professional chefs to your kitchen",
-      '✨ They use your ingredients and utensils 🍳',
-      '✨ Experience 400 restaurant-style dishes. 🍲',
-      '✨ Affordable & customizable. 💰',
-      '✨ Full hygiene control. 🧼',
-      '✨ 4.8 ⭐ Rating...', 
-    ],
-  },
-  {
-    id: 3,
-    title: 'Food Delivery',
-    link: '/party-food-delivery-live-catering-buffet/party-food-delivery',
-    imageUrl:  "https://horaservices.com/api/uploads/homepage_whatareu3.webp",
-    imgAlt: 'Food delivery services for events',
-    points: [
-      '✨🎉 Enjoy food delivery with',
-      '✨ Best prices , Timely service',
-      '✨ Delicious taste',
-      '✨ Good packing' ,
-      '✨ Guaranteed support',
-      '✨ 4.8 ⭐ Rating...', 
-    ],
-  },
-  {
-    id: 4,
-    title: 'Live Catering',
-    link: '/party-food-delivery-live-catering-buffet/party-live-buffet-catering',
-    imageUrl:  "https://horaservices.com/api/uploads/homepage_whatareu4.webp",
-    imgAlt: 'Live Catering services',
-    points: [
-      '🎉 Enjoy the full buffet/ Catering setup with hot and fresh food cooked by professional chefs starting @300 per plate ',
-      '✨ Best prices , Timely service',
-      '✨ Delicious taste',
-      '✨ Good packing' ,
-      '✨ Guaranteed support',
-      '✨ 4.8 ⭐ Rating...', 
-    ],
-  },
-  {
-    id: 5,
-    title: 'Entertainment',
-    link: '/',
-    imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu5.webp",
-    imgAlt: 'Event food delivery services',
-    points: [
-      '✨ Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services:',
-      '🎨 Tattoo Artist' , 
-      '🎩 Magician',
-      '🎉 Party Host' , 
-      '🐻 Mascot ',
-      '🌿 Mehandi',
-      '💅 Nail Art ..and so much more!'
-    ],
-  },
-];
-
-
-
-const CustomerReview = [
-  {
-    id: 1,
-    name: "hemant singh",
-    image: "https://play-lh.googleusercontent.com/a-/ALV-UjU_D6MAIAmJm4BrWTwjmEUcdUPXGbQOutY3YUmEfozjR0EDCDlbfQ=s32-rw",
-    imgAlt: 'hemant singh review',
-    rating: 5,
-    review: "HORA have experienced and trained staff.  they effortlessly executed my event with grace. The food was not only delicious but also elegantly presented, leaving my guests raving about the taste and variety.",
-  },
-  {
-    id: 2,
-    name: "SANDIP RAI",
-    image: "https://play-lh.googleusercontent.com/a/ACg8ocJ3rwU_SQsSWbLiTYa9DsB3xjuM1Qa2oUzyowa6bka5AsXukg=s32-rw-mo",
-    imgAlt: 'SANDIP RAI review',
-    rating: 5,
-    review: "The decoration was so good and magical.I booked this decoration for my lil ones bday and I was very happy the way the canopy was set up and decorated by Sandeep from Hora. Greate Job!!"
-  },
-  {
-    id: 3,
-    name: "Ashu Tiwari",
-    image: "https://play-lh.googleusercontent.com/a-/ALV-UjWDqzjOJ19p-lbksp72dtFtEozrxlyX3-grQi0fSoiFSm8RrR9H=s32-rw",
-    imgAlt: 'Ashu Tiwari review',
-    rating: 5,
-    review: "Food was too good . I mean all dishes were good and quantity was good .every guest appreciated the taste and love it so much.Will definitely recommend to anyone looking for food services"
-  },
-  {
-    id: 4,
-    name: "Vijeta Sunda",
-    image: "https://play-lh.googleusercontent.com/a-/ALV-UjVFRB3pRXxtJgvV6QWB7tLW9JFDG-QiY8oHr22n_pQIQJaN_WD87w=s32-rw",
-    imgAlt: 'Vijeta Sunda review',
-    rating: 4,
-    review: "What a delightful experience we had..I'm so grateful for sending me the best Chef Vipin Kumar Arya who was so so experienced and skilled and dedicated...we had a party of 25people and he made it so easy for me and all"
-  },
-  {
-    id: 5,
-    name: "Sneha",
-    image: "https://play-lh.googleusercontent.com/a-/ALV-UjWYlq3OV6In6sCw_X91EexqX7q9FdazSyOJ-ROxRw63-BEbUnuB_A=s32-rw",
-    imgAlt: 'Jerome Bell review repeated',
-    rating: 4,
-    review: "The decorations were festive and vibrant, creating the perfect atmosphere for our celebration. Their professionalism and creativity were top-notch.. Very Good and amazing suppport"
-  },
-];
-
-const openSliderLink = () => {
-  window.location.href = "/balloon-decoration";
-}
+// const whereAreYouData = [
+//   {
+//     id: 1,
+//     title: 'Decoration',
+//     link: '/balloon-decoration',
+//     imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu1.webp",
+//     imgAlt: 'Event decoration service',
+//     points: [
+//       '✨Choose from 1000+ unique designs for any Event - Birthdays, Anniversaries, Baby showers, Weddings, and more!',
+//       '✨Get your venue decorated in just 2 hours, indoors or outdoors.',
+//       '✨Best prices, timely service, and support',
+//       '✨ 4.8 ⭐ Rating...', 
+//     ],
+//   },
+//   {
+//     id: 2,
+//     title: 'Chef For Party',
+//     link: '/book-chef-cook-for-party',
+//     imageUrl:  "https://horaservices.com/api/uploads/homepage_whatareu2.webp",
+//     imgAlt: 'Chef services for party events',
+//     points: [
+//         " ✨ HORA brings professional chefs to your kitchen",
+//       '✨ They use your ingredients and utensils 🍳',
+//       '✨ Experience 400 restaurant-style dishes. 🍲',
+//       '✨ Affordable & customizable. 💰',
+//       '✨ Full hygiene control. 🧼',
+//       '✨ 4.8 ⭐ Rating...', 
+//     ],
+//   },
+//   {
+//     id: 3,
+//     title: 'Food Delivery',
+//     link: '/party-food-delivery-live-catering-buffet/party-food-delivery',
+//     imageUrl:  "https://horaservices.com/api/uploads/homepage_whatareu3.webp",
+//     imgAlt: 'Food delivery services for events',
+//     points: [
+//       '✨🎉 Enjoy food delivery with',
+//       '✨ Best prices , Timely service',
+//       '✨ Delicious taste',
+//       '✨ Good packing' ,
+//       '✨ Guaranteed support',
+//       '✨ 4.8 ⭐ Rating...', 
+//     ],
+//   },
+//   {
+//     id: 4,
+//     title: 'Live Catering',
+//     link: '/party-food-delivery-live-catering-buffet/party-live-buffet-catering',
+//     imageUrl:  "https://horaservices.com/api/uploads/homepage_whatareu4.webp",
+//     imgAlt: 'Live Catering services',
+//     points: [
+//       '🎉 Enjoy the full buffet/ Catering setup with hot and fresh food cooked by professional chefs starting @300 per plate ',
+//       '✨ Best prices , Timely service',
+//       '✨ Delicious taste',
+//       '✨ Good packing' ,
+//       '✨ Guaranteed support',
+//       '✨ 4.8 ⭐ Rating...', 
+//     ],
+//   },
+//   {
+//     id: 5,
+//     title: 'Entertainment',
+//     link: '/',
+//     imageUrl: "https://horaservices.com/api/uploads/homepage_whatareu5.webp",
+//     imgAlt: 'Event food delivery services',
+//     points: [
+//       '✨ Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services:',
+//       '🎨 Tattoo Artist' , 
+//       '🎩 Magician',
+//       '🎉 Party Host' , 
+//       '🐻 Mascot ',
+//       '🌿 Mehandi',
+//       '💅 Nail Art ..and so much more!'
+//     ],
+//   },
+// ];
 
 
 
-return (
-<>
-  <div className="page-width">
-  <head>
-    <title>HORA : One-Stop Party Planning: Customise, Create, Book</title>
-    <meta name="description" content="🍽️ Food (Live Catering | Bulk Food Delivery | Chef for Party) 🎨 Decoration (Balloon Decoration | Flower Decoration) | 📸 Photography 🎉 Entertainment. Discover the ultimate solution for party planning with Hora’s one-stop platform. Customise your party packages, create your ideal celebration, and book everything you need all in one place. We make planning effortless and enjoyable! 🎈✨" />
-    <meta name="keywords" content="Personal chef, private chef to cook in home in India, home chef, book a cook near you, chef at home, Private cook in Mumbai, Book a cook for home near you, Hire Chef in Bangalore, Private Chef in Delhi, Catering service, balloon, decoration, celebration, party, birthday, anniversary, decorator, candle light dinner,  surprises, couples, bouquets , online caterers, catering services, best caterers, birthday party catering, birthday caterers, party catering, home catering, corporate catering, caterers for small parties, wedding caterers" />
+// const CustomerReview = [
+//   {
+//     id: 1,
+//     name: "hemant singh",
+//     image: "https://play-lh.googleusercontent.com/a-/ALV-UjU_D6MAIAmJm4BrWTwjmEUcdUPXGbQOutY3YUmEfozjR0EDCDlbfQ=s32-rw",
+//     imgAlt: 'hemant singh review',
+//     rating: 5,
+//     review: "HORA have experienced and trained staff.  they effortlessly executed my event with grace. The food was not only delicious but also elegantly presented, leaving my guests raving about the taste and variety.",
+//   },
+//   {
+//     id: 2,
+//     name: "SANDIP RAI",
+//     image: "https://play-lh.googleusercontent.com/a/ACg8ocJ3rwU_SQsSWbLiTYa9DsB3xjuM1Qa2oUzyowa6bka5AsXukg=s32-rw-mo",
+//     imgAlt: 'SANDIP RAI review',
+//     rating: 5,
+//     review: "The decoration was so good and magical.I booked this decoration for my lil ones bday and I was very happy the way the canopy was set up and decorated by Sandeep from Hora. Greate Job!!"
+//   },
+//   {
+//     id: 3,
+//     name: "Ashu Tiwari",
+//     image: "https://play-lh.googleusercontent.com/a-/ALV-UjWDqzjOJ19p-lbksp72dtFtEozrxlyX3-grQi0fSoiFSm8RrR9H=s32-rw",
+//     imgAlt: 'Ashu Tiwari review',
+//     rating: 5,
+//     review: "Food was too good . I mean all dishes were good and quantity was good .every guest appreciated the taste and love it so much.Will definitely recommend to anyone looking for food services"
+//   },
+//   {
+//     id: 4,
+//     name: "Vijeta Sunda",
+//     image: "https://play-lh.googleusercontent.com/a-/ALV-UjVFRB3pRXxtJgvV6QWB7tLW9JFDG-QiY8oHr22n_pQIQJaN_WD87w=s32-rw",
+//     imgAlt: 'Vijeta Sunda review',
+//     rating: 4,
+//     review: "What a delightful experience we had..I'm so grateful for sending me the best Chef Vipin Kumar Arya who was so so experienced and skilled and dedicated...we had a party of 25people and he made it so easy for me and all"
+//   },
+//   {
+//     id: 5,
+//     name: "Sneha",
+//     image: "https://play-lh.googleusercontent.com/a-/ALV-UjWYlq3OV6In6sCw_X91EexqX7q9FdazSyOJ-ROxRw63-BEbUnuB_A=s32-rw",
+//     imgAlt: 'Jerome Bell review repeated',
+//     rating: 4,
+//     review: "The decorations were festive and vibrant, creating the perfect atmosphere for our celebration. Their professionalism and creativity were top-notch.. Very Good and amazing suppport"
+//   },
+// ];
 
-    <meta property="og:title" content="HORA : One-Stop Party Planning: Customise, Create, Book" />
-    <meta property="og:description" content="🍽️ Food (Live Catering | Bulk Food Delivery | Chef for Party) 🎨 Decoration (Balloon Decoration | Flower Decoration) | 📸 Photography 🎉 Entertainment. Discover the ultimate solution for party planning with Hora’s one-stop platform. Customise your party packages, create your ideal celebration, and book everything you need all in one place. We make planning effortless and enjoyable! 🎈✨" />
-    
-    <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
-    <meta property="og:image:alt" content="Elegant balloon decoration setup by Hora Decorations" />
-    <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
-    <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706459457063.png" />
-    <meta property="og:image:alt" content="Beautiful floral arrangement for events by Hora Decorations" />
-
-    <meta property="og:image" content="  https://horaservices.com/api/uploads/homepage_whatareu4.webp" />
-    <meta property="og:image:alt" content="Beautiful food for events by Hora Caterers" />
-
-    <meta property="og:image" content="https://horaservices.com/api/uploads/homepage_whatareu2.webp" />
-    <meta property="og:image:alt" content="best food and chef for parties by Hora Kitchen" />
-    <script type="application/ld+json">{scriptTag}</script>
-    <meta name="robots" content="index, follow" />
-    <meta name="author" content="Hora Services" />
-    <meta property="og:url" content="https://horaservices.com" />
-    <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-    <meta property="og:type" content="website" />
-</head>
-
-<noscript>
-              <iframe
-                src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
-                height="0"
-                width="0"
-                style={{ display: 'none', visibility: 'hidden' }}
-              ></iframe>
-            </noscript>
+// const openSliderLink = () => {
+//   window.location.href = "/balloon-decoration";
+// }
 
 
-    <div className="party-services homeslider">
-     <h1 className="party-title">All party services on one platform</h1>
-<div className="home-slider-inner">
-<div className="slide-container" onClick={() => openSliderLink()}>
-          <Image src={decorationbanner} alt="Decoration services, Balloon decoration , decoration for birthday party"
-           width={1200} 
-           height={400} 
-           className="responsive-image"
-           />
-        </div>
 
+
+  return (
+    <div className="home-wrapper">
+
+      {/* TOP BANNER */}
+      <div className="top-banner">
+      <video
+        src={Homevideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="top-banner-video"
+      />
     </div>
 
-    </div>
-    <div className="food-container sec-container">
-    <h1 className="food-title">
-    <span>Food</span>
-    <span><Image src={FoodIcon} alt="Food Icon" className="food-icon" /></span>
-    </h1>
-    <div className="food-cards desktop">
-    {foodData.map(item => (
-      <div key={item.id} className="food-card">
-         <a href={item.link} className="food-card-link"
-          onClick={() => {
-        const eventName = item.title.replace(/\s+/g, "") + "Click";
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: eventName,
-    itemTitle: item.title,
-    itemLink: item.link,
-  });
-  localStorage(window.dataLayer, "lkdjfldsf");
-  handleTitleClick(item.title);
-}}>
-          <Image src={item.image} alt={item.title} className="food-image"  width={200} height={100}/>
-          <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
-        </a>
+      {/* HEADING */}
+      <div className="section-heading">
+        <h2>✨ What are you into?</h2>
+        <p>Choose what you need. We'll handle the rest</p>
       </div>
-    ))}
-    </div>
 
-    <div className="food-cards mobile">
-  {foodData.slice(0, 1).map(item => (
-    <div key={item.id} className="food-card left-side">
-      <a
-href={item.link}
-className="food-card-link"
-onClick={() => {
-  const eventName = item.title.replace(/\s+/g, "") + "Click";
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: eventName,
-    itemTitle: item.title,
-    itemLink: item.link,
-  });
-  localStorage(window.dataLayer, "lkdjfldsf");
-handleTitleClick(item.title);
-}}
->
-        <Image src={item.image} alt={item.title} className="food-image" width={200} height={100}/>
-        <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
-      </a>
-    </div>
-  ))}
-  
-  <div className="food-card  right-side">
-    {foodData.slice(1, 3).map(item => (
-      <div key={item.id} className="food-card right-card">
-        <a href={item.link} className="food-card-link">
-          <Image src={item.image} alt={item.title} className="food-image" width={200} height={100}/>
-          <p className="food-card-title"  onClick={() => handleTitleClick(item.title)}>{item.title}</p>
-        </a>
-      </div>
-    ))}
+{/* CARD 1 - LEFT IMAGE */}
+<div className="feature-card left-img">
+  <Image src={decorationbanner} alt="Decoration" className="card-bg-img" />
+  <div className="card-content">
+    <h3>DECORATION</h3>
+    <button>Explore Designs</button>
   </div>
 </div>
 
-    </div>
-    <div className="dec-photo-con sec-container">
-    <div className="service">
-    <div className="service-header">
-      <h2 className='services-h2'>
-        Photography
-        <Image src={PhotographyIcon} alt="Photography Icon" className="service-icon" />
-      </h2>
-    </div>
-    <div 
-  className="service-image-container"
-  onClick={() => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: 'photography_button_click',  // Custom event name
-      photography_button_id: 'photography_button',  // Custom parameter name with another value
-    });
-    window.location.href = `/photography-page`; // Redirect to the photography page
-  }}
-  style={{ cursor: 'pointer' }}  // Optional: Change the cursor to pointer to indicate it’s clickable
->
-  <Image 
-    src="https://horaservices.com/api/uploads/homepage_photography.webp" 
-    alt="Photography" 
-    className="service-image" 
-    width={200} 
-    height={100} 
-  />
-  <button 
-    className="book-now2" 
-    id="home-phtography-sec-sec"
-
-  >
-    Book Now
-  </button>
+{/* CARD 2 - RIGHT IMAGE */}
+<div className="feature-card right-img">
+  <Image src={Photographybanner} alt="Photography" className="card-bg-img" />
+  <div className="card-content">
+    <h3>PHOTOGRAPHY</h3>
+    <button>Explore Packages</button>
+  </div>
 </div>
 
+{/* CARD 3 - LEFT IMAGE */}
+<div className="feature-card left-img">
+  <Image src={partyfood} alt="Party Food" className="card-bg-img" />
+  <div className="card-content">
+    <h3>PARTY FOOD</h3>
+    <button>Explore Packages</button>
   </div>
- 
-   </div>
+</div>
 
+{/* CARD 4 - RIGHT IMAGE */}
+<div className="feature-card right-img">
+  <Image src={chefforparty} alt="Chef" className="card-bg-img" />
+  <div className="card-content">
+    <h3>CHEF FOR PARTY</h3>
+    <button>Explore Dishes</button>
+  </div>
+</div>
 
-    <div className="entertainment-container where-are-you-sec sec-container">
-    <h1 className="entertainment-header-whatAre">
-    What are you <span className="pink-text">into?</span> 
-    </h1>
+<div className="why-hora">
+  <h2 className="why-title">✨ Why Choose HORA?</h2>
 
-    <h3 className='services-h3'>We offer a variety of services , differing in the total value of needed.</h3>
-    <div className="categoriesCard-container">
-    {whereAreYouData.map(category => (
-      <div key={category.id} className="categoriesCard-card">
-        <a href={category.link} rel="noopener noreferrer">
-          <div className="categoriesCard-image-wrapper">
-            <Image src={category.imageUrl} alt={category.title} className="categoriesCard-image"  width={200} height={100}/>
-          </div>
-        </a>
-        <div className="what-are-sec">
-        <p className="categoriesCard-title">{category.title}</p>
-        <ul className="categoriesCard-points">
-          {category.points.map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-        <a href={category.link} className="categoriesCard-explore-more" >
-          Explore More
-        </a>
-        </div>
-       
-      </div>
-    ))}
-    </div>
+  <div className="why-cards">
+    <div className="why-card">
+      <Image src={photo1} alt="One Stop Solution" />
+      <p>One-Stop Solution</p>
     </div>
 
-   
-    <div className="customer-review-container sec-container">
-        <h2 className='customer-review-h2'>Customer Review</h2>
-        <Slider {...settings}  >
-          {CustomerReview.map(({ id, name, image, rating, review }) => (
-            <div key={id} className="review-card">
-              <div className="review-header">
-                <Image src={image} alt={name} className="review-image" width={100} height={100}/>
-                <div>
-                  <h3 className="review-name">{name}</h3>
-                  <div className="review-rating">{"⭐".repeat(rating)}</div>
-                </div>
-              </div>
-              <p className="review-text">{review}</p>
-            </div>
-          ))}
-        </Slider>
-      </div>
+    <div className="why-card">
+      <Image src={photo2} alt="Affordable Package" />
+      <p>Affordable Package</p>
+    </div>
+
+    <div className="why-card">
+      <Image src={photo3} alt="Trusted Professional" />
+      <p>Trusted Professional</p>
+    </div>
+  </div>
+</div>
 
 
     </div>
-    <div>
-      <Link href="https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20the%20services" target="_blank">
-        <Image className='whatappicon home' src={whatsppicon} alt="WhatsApp Icon"
-        onClick={() => {
-            dataLayer.push({
-              'event': 'homepage_whatsapp_click',
-              'page_url': '/homepage',
-              'page_title': 'This is home page WhatsApp click'
-            });
-          }} />
-      </Link>
-    </div> 
-</>
-);
+  );
+
+
 }
