@@ -416,8 +416,6 @@ const ChatPage = () => {
     }
   };
 
-  const handleImageUpload = async () => {};
-
   const sendMessage = async () => {
     if (!textareaRef.current) return;
     const messageHTML = textareaRef.current.innerHTML.trim();
@@ -792,14 +790,6 @@ const ChatPage = () => {
           textareaRef={textareaRef}
           ignoreNextFocusRef={ignoreNextFocusRef}
         />
-        <div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-        </div>
         <div
           ref={textareaRef}
           contentEditable

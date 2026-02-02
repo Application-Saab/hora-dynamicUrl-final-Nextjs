@@ -112,7 +112,6 @@ const WhosJoining = ({
         onRsvpUpdate?.();
       }
       if (socket && socket.connected) {
-        console.log("emitting rsvp:updated event");
         socket.emit("rsvp:updated", { eventId });
         socket.emit("submit:rsvp", { userId: loggedinUserId });
         socket.emit("joinRoom", { groupId: response.data.groupId });
