@@ -1,6 +1,6 @@
 
 .customization {
-  font-size: 11px;
+ font-size: clamp(10px, 3.05vw, 12px);
   color: #343a40;
   margin-bottom: 4px;
   text-align: center;

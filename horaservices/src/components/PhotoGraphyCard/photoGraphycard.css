@@ -45,11 +45,11 @@
   font-family: "Inter", sans-serif;
   font-weight: 700;
   font-style: normal;
-  font-size: 12px;
+  font-size: clamp(10px, 3.05vw, 14px);
+
   line-height: 100%;
   letter-spacing: 0;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
   margin: 0;
 }
 
@@ -87,9 +87,7 @@
   .photo-imageWrapper {
     height: 340px;
   }
-  .photo-title {
-    font-size: 18px;
-  }
+
   .photo-viewMore {
     font-size: 19px;
   }
@@ -103,9 +101,6 @@
   .photo-imageWrapper {
     height: 270px;
   }
-  .photo-title {
-    font-size: 16px;
-  }
   .photo-viewMore {
     font-size: 16px;
   }
@@ -116,9 +111,7 @@
   .photo-imageWrapper {
     height: 180px;
   }
-  .photo-title {
-    font-size: 14px;
-  }
+
   .photo-viewMore {
     font-size: 13px;
   }

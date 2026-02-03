@@ -94,7 +94,7 @@ export default function PhotographyPackageGridSlider({
           <div className="spinner" />
         </div>
       ) : (
-        <div className="premium-scroll-wrapper">
+        <div className="premium-scroll">
           {products.length > 0 ? (
             products.map((item, i) => (
               <div

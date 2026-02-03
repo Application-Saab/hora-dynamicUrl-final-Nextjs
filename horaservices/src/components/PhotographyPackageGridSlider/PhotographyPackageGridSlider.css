@@ -17,7 +17,7 @@
   color: #97538C;
 }
 
-.premium-scroll-wrapper {
+.premium-scroll {
   display: flex;
   gap: 8px;
   overflow-x: auto;
@@ -64,7 +64,7 @@
 }
 
 .premium-content {
-  padding: 0.5rem 0.5rem;
+  padding: 0.5rem 0.2rem;
 }
 
 .premium-title {
