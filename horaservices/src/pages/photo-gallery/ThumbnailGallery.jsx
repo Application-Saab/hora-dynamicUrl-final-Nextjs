@@ -51,7 +51,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [initialPopupFolders, setInitialPopupFolders] = useState([]);
   const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
   const [pendingAssignImageId, setPendingAssignImageId] = useState(null);
-
+  const [localPhoneNumber, setLocalPhoneNumber] = useState("");
+  const [localUserId, setLocalUserId] = useState("");
 
 
   useEffect(() => {
@@ -64,7 +65,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       setIsLoginOpen(true);
     }
 
-    setAuthChecked(true); // ✅ auth check complete
+    setAuthChecked(true);
+  }, []);
+
+  useEffect(() => {
+    const mobileNumber = localStorage.getItem("mobileNumber");
+    const userId = localStorage.getItem("userID")
+    setLocalPhoneNumber(mobileNumber)
+    setLocalUserId(userId)
   }, []);
 
 
@@ -576,8 +584,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               const files = Array.from(e.target.files);
               if (!files.length) return;
 
-              console.log("Selected images:", files);
-
               try {
                 const formData = new FormData();
 
@@ -587,8 +593,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                 // extra fields (agar chahiye)
                 formData.append("folderName", folderName);
-                formData.append("customerId", customerId);
-                formData.append("phoneNo", phoneNo);
+                formData.append("customerId", localUserId);
+                formData.append("phoneNo", localPhoneNumber);
 
 
                 const res = await fetch(
@@ -605,7 +611,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 }
 
                 const data = await res.json();
-                console.log("Upload success:", data);
 
                 if (data?.images?.length) {
                   const newThumbnails = data.images.map((img, index) => ({
@@ -613,7 +618,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                     type: "image",
                     originalUrl: img.imageUrl,
                     thumbnailImageUrl: img.thumbnailUrl,
-                    folderIds: [], // 👈 newly uploaded → not in any subfolder
+                    folderIds: [],
                     stableKey: `new-upload-${img.imageId}-${Date.now()}-${index}`,
                   }));
 
@@ -778,18 +783,19 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                                 </div>
 
 
-
-                                <div
-                                  className="action-item flex"
-                                  onClick={() => {
-                                    const current = allThumbnails[selectedIndex];
-                                    downloadFile(current.originalUrl);
-                                    setShowActionMenu(false);
-                                  }}
-                                >
-                                  <Image src={downloadVector} width={16} height={16} />
-                                  <span>Download</span>
-                                </div>
+                                {currentImage?.type !== "video" && (
+                                  <div
+                                    className="action-item flex"
+                                    onClick={() => {
+                                      const current = allThumbnails[selectedIndex];
+                                      downloadFile(current.originalUrl);
+                                      setShowActionMenu(false);
+                                    }}
+                                  >
+                                    <Image src={downloadVector} width={16} height={16} />
+                                    <span>Download</span>
+                                  </div>
+                                )}
 
                                 <div
                                   onClick={handleShareicon}

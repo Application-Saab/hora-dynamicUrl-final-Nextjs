@@ -59,8 +59,6 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
     setPreviewFile(file); // store the actual file
     const imageUrl = URL.createObjectURL(file);
     setPreview(imageUrl);
-
-    console.log("Selected file:", file);
   };
 
 
@@ -123,17 +121,13 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
               : img
           )
         );
-
         setPendingAssignImageId(null);
       }
-
 
       setShowCreateFolderPopup(false);
       setPreview(null);
       setPreviewFile(null);
       setNewFolderName("");
-
-      console.log("Subfolder created:", data);
     } catch (err) {
       console.error("Error creating subfolder:", err);
       alert(err.message);
