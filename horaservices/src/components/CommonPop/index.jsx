@@ -14,6 +14,7 @@ const CommonPopup = ({
   showButton = true,
   buttonContent,
   disabled = false,
+  headerSize = 'md'
 }) => {
   if (!isOpen) return null;
 
@@ -32,7 +33,9 @@ const CommonPopup = ({
     onClick={onClose}
   />
 
-  <h2>{title}</h2>
+<h2 className={headerSize === "sm" ? "popup-title-sm" : "popup-title-md"}>
+  {title}
+</h2>
 </div>
 
 
@@ -48,10 +51,12 @@ const CommonPopup = ({
               className="popup-btn"
               onClick={onSubmit}
               disabled={disabled}
-              style={{
-                opacity: disabled ? 0.75 : 1,
-                cursor: disabled ? "not-allowed" : "pointer",
-              }}
+             style={{
+  backgroundColor: disabled ? '#918D91' : '',
+  opacity: disabled ? 0.75 : 1,
+  cursor: disabled ? "not-allowed" : "pointer",
+}}
+
             >
               {buttonContent || buttonText}
             </button>

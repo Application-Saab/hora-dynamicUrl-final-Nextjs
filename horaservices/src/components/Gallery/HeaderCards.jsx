@@ -12,9 +12,10 @@ import selfieCapture from '../../assets/selfieCapture.png'
 
 import CommonPopup from "../../components/CommonPop";
 
-const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, phoneNo, subFolders, onSelectSubFolder, onSubFolderCreated, onNewFolderActivate }) => {
+const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, phoneNo, subFolders, onSelectSubFolder, onSubFolderCreated, onNewFolderActivate, showCreateFolderPopup, setShowCreateFolderPopup, pendingAssignImageId,
+  setPendingAssignImageId,
+  setAllThumbnails, }) => {
   const [showCameraPopup, setShowCameraPopup] = useState(false);
-  const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [preview, setPreview] = useState(null);
@@ -103,6 +104,29 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
       onNewFolderActivate(newSubFolder._id);
 
 
+      if (pendingAssignImageId) {
+        await fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            subFolderId: newSubFolder._id,
+            addImageIds: [pendingAssignImageId],
+            removeImageIds: [],
+          }),
+        });
+
+        // 4️⃣ UI update
+        setAllThumbnails(prev =>
+          prev.map(img =>
+            img._id === pendingAssignImageId
+              ? { ...img, folderIds: [...(img.folderIds || []), newSubFolder._id] }
+              : img
+          )
+        );
+
+        setPendingAssignImageId(null);
+      }
+
 
       setShowCreateFolderPopup(false);
       setPreview(null);
@@ -144,7 +168,7 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
 
   /* ================= SEARCH STREAM ================= */
   const startSearchStream = async (formData) => {
-    const response = await fetch("https://horaservices.com:3000/search", {
+    const response = await fetch("http://localhost:8000/search", {
       method: "POST",
       body: formData,
     });
@@ -204,7 +228,7 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
           className={`card-item ${activeTab === "all" ? "active" : ""}`}
           onClick={() => {
             setActiveTab("all");
-            onSelectSubFolder(null); // ✅ VERY IMPORTANT
+            onSelectSubFolder(null);
           }}
         >
 
@@ -287,6 +311,7 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
         title="Align Your Face & Capture"
         buttonText="Capture"
         onSubmit={handleCapture}
+        headerSize="sm"
         buttonContent={
           <div className="capture-btn">
             <img
@@ -303,11 +328,11 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
         <div className="captureContainer">
           <div className="bgContainer">
             <video ref={videoRef} autoPlay playsInline className="camera-video" />
-             <img
-      src={selfieCapture.src}   // apni PNG yaha lagao
-      alt="face guide"
-      className="face-overlay"
-    />
+            <img
+              src={selfieCapture.src}   // apni PNG yaha lagao
+              alt="face guide"
+              className="face-overlay"
+            />
           </div>
         </div>
 
@@ -325,7 +350,7 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
           if (newFolderName.trim() === "") return; // empty name check
           handleCreateFolder(previewFile);
         }}
-
+        headerSize="md"
       >
 
         <div>

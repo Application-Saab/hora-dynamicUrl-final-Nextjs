@@ -13,10 +13,13 @@ import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGa
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import OtpLogin from "@/components/OtpLoginPopup";
 import ArrowImg from '../../assets/arrow.svg'
-import download from '../../assets/download.svg'
-import deleteIcon from '../../assets/deleteIcon.svg'
 import nextIcon from '../../assets/nextIcon.svg'
-import shareIcon2 from '../../assets/shareIcon.svg'
+import multiGroup from '../../assets/multiGroup.svg'
+import plusVector from '../../assets/plusVector.svg'
+import downloadVector from '../../assets/downloadVector.svg'
+import shareVector from '../../assets/shareVector.svg'
+import deleteVector from '../../assets/deleteVector.svg'
+import CommonPopup from "@/components/CommonPop";
 
 
 // If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
@@ -41,6 +44,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [authChecked, setAuthChecked] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [showActionMenu, setShowActionMenu] = useState(false);
+  const [number, setNumber] = useState("");
+  const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
+  const [folderSelection, setFolderSelection] = useState([]);
+  const [initialPopupFolders, setInitialPopupFolders] = useState([]);
+  const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
+  const [pendingAssignImageId, setPendingAssignImageId] = useState(null);
+
 
 
   useEffect(() => {
@@ -93,26 +104,31 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     );
   };
 
-useEffect(() => {
-  if (selectedIndex !== null) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-  }
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
 
-  return () => {
-    document.body.style.overflow = "";
-  };
-}, [selectedIndex]);
-const popupImages = useMemo(() => {
-  if (!activeSubFolderId) return allThumbnails;
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedIndex]);
+  const popupImages = useMemo(() => {
+    if (!activeSubFolderId) return allThumbnails;
 
-  return allThumbnails.filter(img =>
-    img.folderIds?.includes(activeSubFolderId)
-  );
-}, [allThumbnails, activeSubFolderId]);
+    return allThumbnails.filter(img =>
+      img.folderIds?.includes(activeSubFolderId)
+    );
+  }, [allThumbnails, activeSubFolderId]);
 
 
+  const currentImage = selectedIndex !== null
+    ? popupImages[selectedIndex]
+    : null;
+
+  const alreadyAssignedFolders = currentImage?.folderIds || [];
 
   const visibleThumbnails = useMemo(() => {
     // All tab
@@ -282,8 +298,8 @@ const popupImages = useMemo(() => {
   // }, [currentPage, ITEMS_PER_PAGE, allThumbnails.length, isIOSMobile]);
 
   const handleImageClick = useCallback((indexInDisplayedList) => {
-  setSelectedIndex(indexInDisplayedList);
-}, []);
+    setSelectedIndex(indexInDisplayedList);
+  }, []);
 
 
   const closePopup = useCallback(() => {
@@ -316,6 +332,7 @@ const popupImages = useMemo(() => {
 
     afterChange: (current) => {
       setSelectedIndex(current);
+      setShowActionMenu(false);
     },
   }), [allThumbnails.length]);
 
@@ -392,6 +409,11 @@ const popupImages = useMemo(() => {
     setInitialSubfolderImages(selectedImages);
     setIsEditing(false);
   };
+  useEffect(() => {
+    if (selectedIndex !== null && popupImages[selectedIndex]) {
+      setNumber(popupImages[selectedIndex].orderByName || 'N/A');
+    }
+  }, [selectedIndex, popupImages]);
 
 
 
@@ -471,6 +493,14 @@ const popupImages = useMemo(() => {
             }}
             onSubFolderCreated={handleSubFolderCreated}
             onNewFolderActivate={activateNewSubFolderEditMode}
+
+            showCreateFolderPopup={showCreateFolderPopup}
+            setShowCreateFolderPopup={setShowCreateFolderPopup}
+
+            pendingAssignImageId={pendingAssignImageId}
+            setPendingAssignImageId={setPendingAssignImageId}
+            setAllThumbnails={setAllThumbnails}
+
           />
 
           <div style={{ paddingInline: "7px", display: "flex", gap: "10px" }}>
@@ -631,7 +661,7 @@ const popupImages = useMemo(() => {
                               display: "grid",
                             }}
                             onClick={() => {
-                                handleImageClick(indexOnPage);
+                              handleImageClick(indexOnPage);
                             }}
                           >
                             <div className="image-wrapper" style={{ position: 'relative' }}>
@@ -715,14 +745,107 @@ const popupImages = useMemo(() => {
                       </div>
                       <div>
                         {typeof handleShareicon === 'function' && (
-                          <Image
-                            src={shareIcon2}
-                            alt="Share"
-                            className="gallery-share-icon"
-                            onClick={handleShareicon}
-                            width={22}
-                            height={22}
-                          />
+                          <div style={{ position: "relative" }}>
+                            <Image
+                              src={multiGroup}
+                              alt="More"
+                              width={22}
+                              height={22}
+                              style={{ cursor: "pointer" }}
+                              onClick={() => setShowActionMenu(prev => !prev)}
+                            />
+
+                            {showActionMenu && (
+                              <div className="action-menu">
+                                <div className="action-item">
+                                  <strong>Shared by:</strong>
+                                  <p>{number}</p>
+                                </div>
+
+                                <div
+                                  className="action-item flex"
+                                  onClick={() => {
+                                    if (!currentImage) return;
+
+                                    setFolderSelection(currentImage.folderIds || []);
+                                    setInitialPopupFolders(currentImage.folderIds || []);
+                                    setShowAddToFolderPopup(true);
+                                    setShowActionMenu(false);
+                                  }}
+                                >
+                                  <Image src={plusVector} width={16} height={16} />
+                                  <span>Add to Folder</span>
+                                </div>
+
+
+
+                                <div
+                                  className="action-item flex"
+                                  onClick={() => {
+                                    const current = allThumbnails[selectedIndex];
+                                    downloadFile(current.originalUrl);
+                                    setShowActionMenu(false);
+                                  }}
+                                >
+                                  <Image src={downloadVector} width={16} height={16} />
+                                  <span>Download</span>
+                                </div>
+
+                                <div
+                                  onClick={handleShareicon}
+                                  className="action-item flex gallery-share-icon">
+                                  <Image
+                                    src={shareVector} width={16} height={16} />
+                                  <span>Share</span>
+                                </div>
+
+                                <div
+                                  className="action-item flex"
+                                  onClick={async () => {
+                                    const currentImage = allThumbnails[selectedIndex];
+                                    if (!currentImage?._id) return;
+
+                                    // Confirm deletion (optional)
+                                    if (!window.confirm("Are you sure you want to delete this image?")) return;
+
+                                    try {
+                                      // Call your API to delete the image
+                                      const res = await fetch(`http://localhost:4000/delete-image/${currentImage._id}`, {
+                                        method: "DELETE",
+                                      });
+
+                                      if (!res.ok) {
+                                        const err = await res.text();
+                                        throw new Error(err);
+                                      }
+
+                                      // Remove the image locally
+                                      setAllThumbnails(prev => {
+                                        const newList = prev.filter(img => img._id !== currentImage._id);
+                                        // Adjust selectedIndex
+                                        if (newList.length === 0) {
+                                          setSelectedIndex(null); // no more images → close popup
+                                        } else if (selectedIndex >= newList.length) {
+                                          setSelectedIndex(newList.length - 1); // deleted last image → move to previous
+                                        } else {
+                                          setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
+                                        }
+                                        return newList;
+                                      });
+
+                                    } catch (err) {
+                                      console.error("Delete failed:", err);
+                                      alert("Failed to delete image");
+                                    }
+                                  }}
+                                >
+                                  <Image src={deleteVector} width={16} height={16} />
+                                  <span>Delete</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
                         )}
                       </div>
                     </div>
@@ -748,7 +871,7 @@ const popupImages = useMemo(() => {
                                 />
                               ) : (
                                 <img
-                                  src={thumb.thumbnailImageUrl || thumb.originalUrl} 
+                                  src={thumb.thumbnailImageUrl || thumb.originalUrl}
                                   alt={`Enlarged ${idx + 1}`}
                                   className="popupImage"
                                 />
@@ -759,88 +882,11 @@ const popupImages = useMemo(() => {
                         })}
                       </Slider>
                     </div>
-                    <div className="popup-footer">
-                      <div
-                        onClick={() => {
-                          const current = allThumbnails[selectedIndex];
-                          if (!current?.originalUrl) return;
-
-                          downloadFile(
-                            current.originalUrl,
-                            `hora_file_${selectedIndex + 1}`
-                          );
-                        }}
-                      >
-                        <Image src={download} alt="Download" width={20} height={20} />
-                      </div>
-
-                      <div>
-                        <button className="popup-addbtn">+ Add to</button>
-                      </div>
-                      <div>
-                        <Image
-                          src={deleteIcon}
-                          alt="Back"
-                          width={20}
-                          height={20}
-                          className=""
-                          onClick={async () => {
-                            const currentImage = allThumbnails[selectedIndex];
-                            if (!currentImage?._id) return;
-
-                            // Confirm deletion (optional)
-                            if (!window.confirm("Are you sure you want to delete this image?")) return;
-
-                            try {
-                              // Call your API to delete the image
-                              const res = await fetch(`http://localhost:4000/delete-image/${currentImage._id}`, {
-                                method: "DELETE",
-                              });
-
-                              if (!res.ok) {
-                                const err = await res.text();
-                                throw new Error(err);
-                              }
-
-                              // Remove the image locally
-                              setAllThumbnails(prev => {
-                                const newList = prev.filter(img => img._id !== currentImage._id);
-                                // Adjust selectedIndex
-                                if (newList.length === 0) {
-                                  setSelectedIndex(null); // no more images → close popup
-                                } else if (selectedIndex >= newList.length) {
-                                  setSelectedIndex(newList.length - 1); // deleted last image → move to previous
-                                } else {
-                                  setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
-                                }
-                                return newList;
-                              });
-
-                            } catch (err) {
-                              console.error("Delete failed:", err);
-                              alert("Failed to delete image");
-                            }
-                          }}
-
-                        />
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
               <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
                 <div className="gallery-header-content">
-                  {showInternalTitle && (
-                    <div className="gallery-title-container">
-                      {/* <h1 className="gallery-title">Your Photos</h1> */}
-                      {/* <Image
-          src={shareIcon}
-          alt="Info"
-          style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
-          onClick={handleShareicon}
-        /> */}
-                    </div>
-                  )}
 
                   {totalPages > 0 && (
                     <div className="gallery-pagination-container">
@@ -859,6 +905,93 @@ const popupImages = useMemo(() => {
         </div>
       )
       }
+      <CommonPopup
+        isOpen={showAddToFolderPopup}
+        onClose={() => {
+          setShowAddToFolderPopup(false);
+        }}
+
+        title="Add to Folder"
+        buttonContent={subFolders.length === 0 ? "Create Folder" : "Add Now"}
+        disabled={subFolders.length === 0 ? false : JSON.stringify(folderSelection) === JSON.stringify(initialPopupFolders)}
+        onSubmit={() => {
+          if (subFolders.length === 0) {
+            setPendingAssignImageId(currentImage?._id);
+
+            setShowAddToFolderPopup(false);
+            setShowCreateFolderPopup(true);
+            return;
+          }
+
+          // Normal "Add Now" flow
+          if (!currentImage?._id) return;
+
+          const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
+          const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
+
+          fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              subFolderId: folderSelection,
+              addImageIds: toAdd.length ? [currentImage._id] : [],
+              removeImageIds: toRemove.length ? [currentImage._id] : [],
+            }),
+          }).then(() => {
+            setAllThumbnails(prev =>
+              prev.map(img =>
+                img._id === currentImage._id
+                  ? { ...img, folderIds: folderSelection }
+                  : img
+              )
+            );
+            setShowAddToFolderPopup(false);
+            setIsEditing(false);
+          });
+        }}
+      >
+        <div className="add-folder-list">
+          {subFolders.length > 0 ? (
+            subFolders.map(sf => {
+              const isAlreadyAdded = alreadyAssignedFolders.includes(sf._id);
+              return (
+                <label key={sf._id} className="folder-checkbox-row">
+                  <div className="folder-info">
+                    <div className="folder-dp">
+                      {sf.folderDp ? (
+                        <img src={sf.folderDp.thumbnailUrl} alt={sf.folderName} />
+                      ) : (
+                        <span>{sf.folderName.charAt(0)}</span>
+                      )}
+                    </div>
+                    <span className="folder-name">{sf.folderName}</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="popup-checkbox"
+                    checked={folderSelection.includes(sf._id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFolderSelection(prev => [...prev, sf._id]);
+                      } else {
+                        setFolderSelection(prev =>
+                          prev.filter(id => id !== sf._id)
+                        );
+                      }
+                    }}
+                  />
+                </label>
+              );
+            })
+          ) : (
+            <div className="emptyFolder-container">
+              <div className="no-subfolder-text">No subfolder found</div>
+              <div className="sub-text-empty">You don’t have any folder yet.</div>
+            </div>
+          )}
+        </div>
+      </CommonPopup>
+
 
 
     </div>
