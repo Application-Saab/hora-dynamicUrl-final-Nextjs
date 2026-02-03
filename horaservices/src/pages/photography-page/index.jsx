@@ -140,7 +140,7 @@ const brandItems = [
     key={index}
     href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
       pose.folder
-    )}&customerId=64137625549b58e3dc39a685`}
+    )}&customerId=${pose.customerId}`}
     className="pose-card"
     target="_blank"
     rel="noopener noreferrer"
