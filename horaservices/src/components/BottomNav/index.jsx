@@ -56,6 +56,14 @@ export default function BottomNav() {
   }, [currentPath]);
 
   useEffect(() => {
+    if (router.isReady && !isChat) {
+      setShowLoginModal(false);
+      setShowPopup(false);
+      setNoChatsPopup(false);
+    }
+  }, [isChat, router.isReady]);
+
+  useEffect(() => {
     if (!router.isReady || !authChecked) return;
 
     setShowPopup(false);
@@ -120,6 +128,7 @@ export default function BottomNav() {
         showHeader={false}
         disableBackdropClick
         disableBgScroll
+        verticalCenter={false}
         modalClass="chat-instruction-popup"
         backdropClass="chat-instruction-backdrop"
         body={
