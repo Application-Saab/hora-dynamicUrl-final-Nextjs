@@ -35,10 +35,20 @@ function reorderByHeight(items) {
   return result;
 }
 
-// Measure heights + reorder
+// Pin-aware processing
 export async function processImagesWithHeight(list) {
-  const enriched = await Promise?.all(
-    list?.map(async (item) => ({
+  if (!Array.isArray(list)) return [];
+
+  // Separate pinned & unpinned
+  const pinned = list.filter(
+    (item) => item.isPin && Number.isInteger(item.pinPosition)
+  );
+
+  const unpinned = list.filter((item) => !item.isPin);
+
+  // Measure height ONLY for unpinned
+  const enrichedUnpinned = await Promise.all(
+    unpinned.map(async (item) => ({
       ...item,
       height: await measureImageHeight(
         item?.postWebpUrl || item?.postUrl || item?.localPreview
@@ -46,5 +56,18 @@ export async function processImagesWithHeight(list) {
     }))
   );
 
-  return reorderByHeight(enriched);
+  // Apply existing height-based reorder
+  const reorderedUnpinned = reorderByHeight(enrichedUnpinned);
+
+  // Inject pinned back at fixed positions
+  const finalResult = [...reorderedUnpinned];
+
+  pinned
+    .sort((a, b) => a.pinPosition - b.pinPosition)
+    .forEach((item) => {
+      const index = item.pinPosition - 1;
+      finalResult.splice(index, 0, item);
+    });
+
+  return finalResult;
 }
