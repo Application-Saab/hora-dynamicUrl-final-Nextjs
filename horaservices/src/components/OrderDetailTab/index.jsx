@@ -1016,7 +1016,7 @@ const OrderDetailTab = ({
 
                 <div className="myOrder-amountList">
                   <div className="myOrder-labelStyle">Final Amount :</div>
-                  <div>₹ {orderDetail?.payable_amount || 0}</div>
+                  <div>₹ {orderDetail?.total_amount || 0}</div>
                 </div>
 
                 <div className="myOrder-amountList">
