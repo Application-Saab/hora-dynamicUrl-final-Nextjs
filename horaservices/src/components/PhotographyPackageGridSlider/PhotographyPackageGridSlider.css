@@ -30,7 +30,6 @@
 .premium-card {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.14);
   flex-shrink: 0;
   scroll-snap-align: start;
   text-decoration: none;

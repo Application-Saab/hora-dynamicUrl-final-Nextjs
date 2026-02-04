@@ -20,7 +20,7 @@ import NewBorn from "@/assets/photographyCategories/photography12.webp";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
-  GET_PHOTOGRAPHY_BY_NAME,
+  GET_PHOTOGRAPHY_BY_TAG,
 } from "@/utils/apiconstants.js";
 import ProductGrid from "@/components/productGrid";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
@@ -138,7 +138,7 @@ export default function CatValuePage() {
     if (!categoryId) return;
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}${categoryId}`);
+      const res = await axios.get(`${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${categoryId}`);
       const data = res.data?.data || [];
 
       const productsWithDiscount = data.map((item) => {

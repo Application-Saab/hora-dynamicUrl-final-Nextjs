@@ -3,7 +3,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import "./PhotographyPackageGridSlider.css";
-import { BASE_URL, GET_PHOTOGRAPHY_BY_NAME } from "@/utils/apiconstants.js";
+import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
 
 export default function PhotographyPackageGridSlider({
   title,
@@ -32,7 +32,7 @@ export default function PhotographyPackageGridSlider({
       setLoading(true);
       try {
         const res = await axios.get(
-          `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}${tagId}`
+          `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${tagId}`
         );
 
         const data =
