@@ -45,9 +45,7 @@
   font-family: "Inter", sans-serif;
   font-weight: 700;
   font-style: normal;
-  font-size: clamp(10px, 3.05vw, 14px);
-
-  line-height: 100%;
+  font-size: clamp(10.5px, 3.09vw, 14px);
   letter-spacing: 0;
   text-align: center;
   margin: 0;
