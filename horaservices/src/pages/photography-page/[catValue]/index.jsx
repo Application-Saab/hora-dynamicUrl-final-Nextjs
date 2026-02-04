@@ -1,344 +1,258 @@
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import {faqData} from "@/utils/photographyFAQData";
-import buynowImage from "../../../assets/experts.png";
-import buynowImage1 from "../../../assets/secured.png";
-import buynowImage2 from "../../../assets/service.png";
-import Tabs from "../../../components/Tabs";
-import "../../../css/decoration.css";
-import logo from "../../../assets/new_logo_light.png";
 import { useRouter } from "next/router";
-import { GetItemInclusion } from "@/utils/getItemInclusion";
-import { getDiscountedPrice } from "@/utils/getDiscountedPrice";
+import { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import Image from "next/image";
+import "./catvaluephoto.css";
+import PhotoBanner from "@/assets/PhotoBanner.jpg"
+import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
+import CardSkeleton from "@/components/CardSkeleton";
+import Engagement from "@/assets/photographyCategories/photography9.webp";
+import Wedding from "@/assets/photographyCategories/photography10.webp";
+import Anniversary from "@/assets/photographyCategories/photography5.webp";
+import Birthday from "@/assets/photographyCategories/photography3.webp";
+import HouseWarming from "@/assets/photographyCategories/photography6.webp";
+import NamingCeremony from "@/assets/photographyCategories/photography4.webp";
+import BabyShower from "@/assets/photographyCategories/photography8.webp";
+import Bachelorette from "@/assets/photographyCategories/photography7.webp";
+import Maternity from "@/assets/photographyCategories/photography11.webp";
+import NewBorn from "@/assets/photographyCategories/photography12.webp"; 
 
-const PhotographyFAQSection = ({faqData}) => {
-  const [openIndex, setOpenIndex] = useState(null);
+import {
+  BASE_URL,
+  GET_DECORATION_CAT_ID,
+  GET_PHOTOGRAPHY_BY_TAG,
+} from "@/utils/apiconstants.js";
+import ProductGrid from "@/components/productGrid";
+import { getPhotographyOrganizationSchema } from "@/utils/schema";
+import { SeoCategory } from "@/utils/photoGraphyHead";
+import SkeletonGrid from "@/components/SkeletonGrid";
 
-  const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
+
+
+const getDiscountedPrice = (price = 0) => {
+  const discountedPrice = price / 0.78; 
+  const discountDifference = discountedPrice - price; 
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); 
+  return {
+    discount: Number(discount),            
+    discountedPrice: Math.round(discountedPrice), 
+    discountDifference: Math.round(discountDifference), 
   };
-
-  return (
-    <div className="faqSection">
-      {faqData.map((item, index) => (
-        <div key={index} className="faqItem">
-          <div
-            onClick={() => handleToggle(index)}
-            style={{ cursor: "pointer" }}
-          >
-            <h3>{item.question}</h3>
-            <span>{openIndex === index ? "-" : "+"}</span>
-          </div>
-          {openIndex === index && (
-            <div>
-              <p>{item.answer}</p>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
 };
 
 
-const PhotographDetail = () => {
-  const router = useRouter();
-  const [productData, setProductData] = useState();
-  const tabs = [
-    {
-      id: "faq",
-      title: "FAQ",
-      content: <PhotographyFAQSection faqData={faqData} />,
-    },
-    {
-      id: "whyHora",
-      title: "Why Hora",
-      content: (
-        <div className="whyHoraSec">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-            className="whyHoraSecInner"
-          >
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                Experts Photographers
-              </p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage1}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                Secured Transactions
-              </p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image
-                src={buynowImage2}
-                alt="buy-now"
-                style={{ height: "auto" }}
-              />
-              <p
-                style={{ color: "gray", fontSize: "12px" }}
-                className="whyHoraSubheading"
-              >
-                100% Service Guaranteed
-              </p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "cancellationPolicy",
-      title: "Cancellation Policy",
-      content: (
-        <div className="canceltionPolicy">
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className=" text-left m-1"
-          >
-            Cancellation and order change policy
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            1. If the order is beyong 48 Hours: You are eligible for a 100%
-            refund of the advance payment
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            2. If the order is cancelled more than 24 hours before the scheduled
-            delivery: You will not receive refund of the advance payment.
-          </p>
-          <p
-            style={{ fontSize: "13px", color: "rgb(157, 74, 147)" }}
-            className="m-1"
-          >
-            3. If the order is cancelled within 24 hours: The full advance
-            amount will be non-refundable, and 100% of the payment for
-            photographer has to be paid by customer.
-          </p>
-        </div>
-      ),
-    },
-  ];
-
-  const handleCheckout = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      product_name: productData?.name,
-    });
-    router.push({
-      pathname: '/photography-checkout',
-      query: {
-        from: window.location.pathname,
-        product: JSON.stringify(productData),
-        totalAmount: productData.price,
-      }
-    });
+  const categoryBannerMap = {
+    "Engagement-Photography": Engagement,
+    "Wedding-Photography": Wedding,
+    "Anniversary-Photography": Anniversary,
+    "Birthday-Photography": Birthday,
+    "House-Warming-Photography": HouseWarming,
+    "Naming-Ceremony-Photography": NamingCeremony,
+    "Baby-Shower-Photography": BabyShower,
+    "Bachelorette-Photography": Bachelorette,
+    "Maternity-Photography": Maternity,
+    "New-Born-Baby-Photography": NewBorn,
   };
 
-  useEffect(() => {
-    if (router.isReady) {
-      const { product } = router.query;
-      const data=JSON.parse(product);
-      setProductData(data);
-    }
-  }, [router.isReady, router.query]);
-
-
-  return (
-    <div className="container my-4 decDetails">
-      <div className="row">
-        {/* Left Side: Image */}
-        <div className="col-md-6 decDetailsLeft ">
-          <div
-            style={{
-              width: "80%",
-              boxShadow: "0 1px 8px rgba(0,0,0,.1)",
-              padding: "10px",
-              margin: "0 auto",
-              position: "relative",
-            }}
-            className="decDetailsImage"
-          >
-            <div>
-              <Image
-                src="https://geeksui.codescandy.com/geeks/assets/images/placeholder/placeholder-4by3.svg"
-                 className="img-fluid"
-                alt={`photography`}
-                // style={{ width: "100%", height: "auto" }}
-                width={500}
-                height={500}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 3,
-                  right: 3,
-                  borderRadius: "50%",
-                  padding: 10,
-                }}
-              >
-                <span
-                  style={{
-                    color: "rgba(157, 74, 147, 0.6)",
-                    fontWeight: "600",
-                  }}
-                >
-                  <Image
-                    src={logo}
-                    style={{ width: "70px", height: "80px" }}
-                    className="hora-watermark-image"
-                  />
-                </span>
-              </div>
-            </div>
-          </div>
-         
-        </div>
-
-        {/* Right Side: Info */}
-        <div
-          style={{ paddingLeft: "20px", paddingRight: "50px" }}
-          className="col-md-6 decDetailsRight mt-4 mt-lg-0"
-        >
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-              padding: "10px",
-              marginBottom: "12px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "13px",
-                color: "#222",
-                margin: "5px 0 5px 0",
-                fontWeight: "500",
-              }}
-            >
-              <a style={{ color: "#9252AA", textDecoration: "none" }} href="/">
-                Home
-              </a>
-              {" > "}
-               <a style={{ color: "#9252AA", textDecoration: "none" }} href="/photography-page">
-                photography-page
-              </a>
-              {" > "}
-             
-
-              <span>{productData?.name.toLowerCase().replace(' ','-')}</span>
-            </h2>
-            <h1
-              style={{
-                fontSize: "16px",
-                color: "#222",
-                fontSize: "21px",
-                fontWeight: "#222",
-              }}
-            >
-              {productData?.name}
-            </h1>
-            <div className="pro-details-price">
-              <p
-                style={{
-                  fontSize: "18px",
-                  color: "#9252AA",
-                  fontWeight: "600",
-                }}
-              >
-                {productData?.price}
-              </p>
-              <p
-                style={{
-                  color: "#444",
-                  fontWeight: "700",
-                  fontSize: 18,
-                  textAlign: "left",
-                  margin: "10px 0px 7px",
-                  textDecoration: "line-through",
-                }}
-              >
-                 ₹ {Math.floor(getDiscountedPrice(productData?.price).discountedPrice)}
-              </p>
-              <div className="decorationdiscount-details">{Math.floor(getDiscountedPrice(productData?.price)?.discountDifference || 0)} {"off"}</div>
-            </div>
-
-            <button
-              style={styles.Buttonstyle}
-              id="continueButton"
-              className="dec-continueButton"
-              onClick={() => handleCheckout()}
-            >
-              Continue
-            </button>
-          </div>
-          <div
-            style={{
-              boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-              padding: "10px",
-              marginBottom: "12px",
-              backgroundColor: "#fff",
-            }}
-          >
-            {GetItemInclusion(productData?.inclusion)}
-            
-          </div>
-          <div
-            className="tab-section-details-productpage"
-            style={{
-              boxShadow: "0 1px 8px rgba(0,0,0,.18)",
-              padding: "10px",
-              marginBottom: "12px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <Tabs tabs={tabs} defaultTab="faq" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const styles = {
-  Buttonstyle: {
-    border: "2px solid rgb(157, 74, 147)",
-    backgroundColor: "rgb(157, 74, 147)",
-    color: "#fff",
-    fontSize: "16px",
-    padding: "10px",
-    borderRadius: "5px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    margin: "23px auto 14px",
-    width: "93%",
+const categoryToGallery = {
+  "Engagement-Photography": {
+    folderName: "engagement weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "Wedding-Photography": {
+    folderName: "Wedding",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "Anniversary-Photography": {
+    folderName: "anniversary poses web link",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "Birthday-Photography": {
+    folderName: "birthday poses",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "House-Warming-Photography": {
+    folderName: "House warming weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "Naming-Ceremony-Photography": {
+    folderName: "naming ceremony weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "Baby-Shower-Photography": {
+    folderName: "baby shower weblink",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "Bachelorette-Photography": {
+    folderName: "bacherrolerate",
+    customerId: "64137625549b58e3dc39a685",
+  },
+  "Maternity-Photography": {
+    folderName: "maternity poses",
+    customerId: "6683e5d43e33c54c0ebde8f2",
+  },
+  "New-Born-Baby-Photography": {
+    folderName: "new born ",
+    customerId: "64137625549b58e3dc39a685",
   },
 };
 
-export default PhotographDetail;
+export default function CatValuePage() {
+  const router = useRouter();
+  const { catValue } = router.query;
+
+  const [catId, setCatId] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [galleryData, setGalleryData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const schemaOrg = getPhotographyOrganizationSchema();
+  const scriptTag = JSON.stringify(schemaOrg);
+  let { city } = router.query;
+  let { locality } = router.query;
+  const getSubCatId = useCallback(async (subCategory) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(subCategory)}`
+      );
+      const categoryId = response.data?.data?._id;
+      if (categoryId) {
+        setCatId(categoryId);
+      } else {
+        setError("No category found");
+      }
+    } catch (err) {
+      setError("Failed to fetch category");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (catValue) {
+      getSubCatId(catValue);
+      const gallery = categoryToGallery[catValue] || null;
+      setGalleryData(gallery);
+    }
+  }, [catValue, getSubCatId]);
+
+  const fetchProducts = useCallback(async (categoryId) => {
+    if (!categoryId) return;
+    setLoading(true);
+    try {
+      const res = await axios.get(`${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${categoryId}`);
+      const data = res.data?.data || [];
+
+      const productsWithDiscount = data.map((item) => {
+        const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price || 0);
+        return { ...item, discount, discountedPrice, discountDifference };
+      });
+
+      setProducts(productsWithDiscount);
+    } catch (err) {
+      setProducts([]);
+      setError("Failed to fetch products");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (catId) fetchProducts(catId);
+  }, [catId, fetchProducts]);
+
+  const slugify = (text) =>
+    text.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  const handleViewMore = (work) => {
+    const slug = slugify(work.name);
+    const categorySlug = slugify(catValue || "photography");
+    const city = router.query.city;
+    const locality = router.query.locality;
+
+    let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+
+    if (city && locality) {
+      basePath = `/${city.toLowerCase()}/${locality.toLowerCase()}${basePath}`;
+    } else if (city) {
+      basePath = `/${city.toLowerCase()}${basePath}`;
+    }
+
+    router.push({
+      pathname: basePath,
+      query: { id: work._id },
+    });
+  };
+ const normalizeCatValue = (val) => {
+    if (!val) return "";
+
+    // Check if exact match (case-sensitive) exists in the map
+    const exactMatch = Object.keys(categoryBannerMap).find(
+      (key) => key.toLowerCase() === val.toLowerCase()
+    );
+
+    return exactMatch || val.toLowerCase().replace(/ /g, "-");
+  };
+ const normalizedCat = normalizeCatValue(catValue);
+  const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
+
+
+  return (
+    <div className="featured-photo-works">
+         <SeoCategory city={city} catValue={catValue} scriptTag={scriptTag} />
+      {loading ? (
+       
+         <SkeletonGrid count={6} />
+      ) : error ? (
+        <p className="error-text">{error}</p>
+      ) : (
+        <>
+  
+  <section className="decorationBanner">
+                <Image
+                  src={bannerToShow}
+                  alt="Decoration Banner"
+                  width={1200}
+                  height={400}
+                  className="decorationBanner-image"
+                  priority
+                />
+              </section>
+          {products.length > 0 ? (
+            <ProductGrid
+              data={products}
+              onCardClick={handleViewMore}
+              categoryType="photography"
+            />
+          ) : (
+            <div className="skeleton-wrapper">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <CardSkeleton key={index} />
+              ))}
+            </div>
+          )}
+
+          {/* Suggested Banner */}
+          <div className="suggested-poses">
+            <div className="suggested-poses-section">
+              <Image
+                src={PhotoBanner}
+                alt="Camera Holding"
+                className="suggested-image"
+              />
+            </div>
+          </div>
+
+          {/* Gallery Section */}
+          {galleryData && galleryData.folderName && galleryData.customerId && (
+            <div className="photo-gallery-wrapper" style={{padding:"10px"}}>
+              <ThumbnailGallery
+                folderName={galleryData.folderName}
+                customerId={galleryData.customerId}
+                disablePopup={true}
+              />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}

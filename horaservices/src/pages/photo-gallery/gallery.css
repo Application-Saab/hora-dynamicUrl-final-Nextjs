@@ -2,7 +2,7 @@
 
 /* This is the class passed as wrapperClassName to LazyImage. It's the masonry grid item. */
 .masonry-item { /* Renamed from .lazy-image-container-wrapper for clarity in component use */
-  margin-bottom: 10px; /* Or your preferred gap */
+  margin-bottom: 7px; /* Or your preferred gap */
   break-inside: avoid;
   border-radius: 4px;  /* Consistent rounding */
   overflow: hidden;    /* Important for child elements like absolutely positioned spinners or rounded images */

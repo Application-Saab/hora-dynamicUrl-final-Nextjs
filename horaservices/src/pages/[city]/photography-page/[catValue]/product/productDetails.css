@@ -51,7 +51,7 @@
 }
 
 .photodetails-inclusions {
-  padding: 0 16px 16px 16px;
+  padding: 0 16px 0px 16px;
 }
 
 .photodetails-inclusions h3 {
@@ -255,7 +255,7 @@ font-size: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     text-align: center;
-     margin: 20px 0px;
+     /* margin: 20px 0px; */
 }
 .whyHoraHeading {
   font-size: 22px !important;
@@ -540,5 +540,4 @@ ul.decoration-addons {
   pointer-events: auto;
   transition: background-color 0.3s ease;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  min-width: 200px;
 }

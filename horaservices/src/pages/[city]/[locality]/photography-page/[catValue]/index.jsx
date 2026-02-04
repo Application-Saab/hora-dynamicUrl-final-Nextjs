@@ -3,11 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";
 import "@/app/homepage.css";
-import {faqData} from "@/utils/photographyFAQData";
-import PhotographyDescription from "@/components/PhotographyDescription";
-import PhotographySEOKeywords from "@/components/PhotographySEOKeywords";
-import FAQSection from "@/components/FAQSection";
-import LocalitiesSection from "@/components/LocalitiesSection";
+import CatValuePage from "@/pages/photography-page/[catValue]";
 
 const PhotographyCityPage = () => {
   const router = useRouter();
@@ -36,17 +32,8 @@ const PhotographyCityPage = () => {
 
   return (
     <div >
-      <Index />
-        <LocalitiesSection
-        title={`${city} localities`}
-        localities={cityLocalitiesList}
-        handleClick={localityHandleClick}
-      />
-         <div className="tab-section-details-productpage">
-        <FAQSection faqData={faqData} />
-      </div>
-      <PhotographyDescription city={city} />
-      <PhotographySEOKeywords city={city} />
+      <CatValuePage />
+     
     </div>
   );
 };

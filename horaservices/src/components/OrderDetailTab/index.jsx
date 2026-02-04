@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import daal_image from "../../assets/daal-image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
-import { BASE_URL, ORDER_CANCEL, GET_PHOTOGRAPHY_BY_NAME } from "../../utils/apiconstants";
+import { BASE_URL, ORDER_CANCEL, GET_PHOTOGRAPHY_BY_TAG } from "../../utils/apiconstants";
 // import { useNavigate } from "react-router-dom";
 import OrderDetailsAppliances from "../OrderDetailsAppliances";
 import { useRouter } from "next/navigation";
@@ -166,7 +166,7 @@ const OrderDetailTab = ({
       }
 
       for (const itemId of items) {
-        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_NAME}`;
+        const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}`;
 
         try {
           const response = await axios.get(url);
