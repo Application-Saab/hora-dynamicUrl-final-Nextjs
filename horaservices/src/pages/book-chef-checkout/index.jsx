@@ -419,7 +419,7 @@ const contactUsRedirection = () => {
 
     return (
         <div className="App">
-            {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />} 
+            {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} fromCheckout />} 
             {loading && <Loader />}
             {isClient && window.innerWidth > 800 ?
                 <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>

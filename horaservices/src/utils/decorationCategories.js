@@ -19,13 +19,14 @@ export const decCat = [
       "Flutter into a world of whimsy with our exclusive Whimsical Flutter-themed Welcome Baby Decorations.",
   },
    {
-    id: "3",
+    id: "5",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
-    name: "NationPride",
-    subCategory: "NationPride",
-    catValue: "Nation-Pride-decoration",
-  imgAlt: "Nation Pride patriotic theme decoration"
+      "https://horaservices.com/api/uploads/compressed_webp/Babyshower.webp",
+    name: "Baby Shower",
+    subCategory: "BabyShower",
+    catValue: "baby-shower-decoration",
+    imgAlt:
+      "Celebrate the transformation into motherhood with Our Gilded Baby Shower Decorations.",
   },
     {
     id: "4",
@@ -36,16 +37,7 @@ export const decCat = [
     catValue: "premium-decoration",
     imgAlt: "Birthday party decoration ideas for adults",
   },
-  {
-    id: "5",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/Babyshower.webp",
-    name: "Baby Shower",
-    subCategory: "BabyShower",
-    catValue: "baby-shower-decoration",
-    imgAlt:
-      "Celebrate the transformation into motherhood with Our Gilded Baby Shower Decorations.",
-  },
+ 
     {
     id: "6",
     image:
@@ -86,7 +78,15 @@ export const decCat = [
       "Add extra happiness quotient to your wedding night with our exclusive décor package",
   },
   
-
+ {
+    id: "3",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
+    name: "NationPride",
+    subCategory: "NationPride",
+    catValue: "Nation-Pride-decoration",
+  imgAlt: "Nation Pride patriotic theme decoration"
+  },
 
   {
     id: "10",

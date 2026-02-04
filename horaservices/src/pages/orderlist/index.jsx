@@ -331,7 +331,7 @@ const Orderlist = () => {
             </button>
 
             {isModalOpen &&
-              <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+              <OtpLoginPopup setIsModalOpen={setIsModalOpen}fromCheckout />
             }
           </div>
         ) :

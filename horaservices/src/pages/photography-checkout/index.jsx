@@ -494,7 +494,7 @@ console.log(advanceAmount);
         <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
         <script type="application/ld+json">{scriptTag}</script>
       </Head>
-      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
+      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} fromCheckout/>}
       {loading && <Loader />}
 
       <div className="booking-form-card" >
