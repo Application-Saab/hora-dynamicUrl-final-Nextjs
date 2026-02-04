@@ -4,7 +4,7 @@ const PhotographyDescription = ({ city }) => {
   const paragraphs = getPhotographyCityParagraphs(city);
 
   return (
-    <div className="description-city m-4">
+    <div className="description-city m-2">
       <div className="page-width">
         <h1
           style={{
