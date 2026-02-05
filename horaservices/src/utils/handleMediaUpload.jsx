@@ -125,7 +125,7 @@ export async function convertToWebP(file) {
           resolve(webpFile);
         },
         "image/webp",
-        1 // quality (0–1)
+        1
       );
     };
   });
@@ -140,7 +140,7 @@ export async function uploadImage(
 ) {
   // STEP 1: compression
   const thumb = await imageCompression(file, {
-    maxSizeMB: 0.15,
+    maxSizeMB: 0.25,
     maxWidthOrHeight: 400,
   });
 

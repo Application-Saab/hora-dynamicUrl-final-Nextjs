@@ -34,8 +34,8 @@ export default function NoteDetails() {
   const lastRangeRef = useRef(null); // ✔ cursor memory
 
   const { makeRequest: createPost } = useApi();
-const userId =
-  typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
   // ----------- Load Note ------------
   useEffect(() => {
@@ -47,7 +47,6 @@ const userId =
 
   // ----------- Load User Name ------------
   useEffect(() => {
-   
     if (!userId) return;
 
     const fetchUser = async () => {
@@ -79,25 +78,24 @@ const userId =
     el.addEventListener("mouseup", saveCursor);
     el.addEventListener("focus", saveCursor);
   };
-useEffect(() => {
-  if (note && titleRef.current) {
-    titleRef.current.innerHTML = note.title || "";
-  }
-}, [note]);
+  useEffect(() => {
+    if (note && titleRef.current) {
+      titleRef.current.innerHTML = note.title || "";
+    }
+  }, [note]);
 
   // ----------- INSERT EMOJI (FIXED) -----------
 
   const insertEmoji = (emojiObject) => {
     const emojiUrl = emojiObject?.imageUrl;
 
-    const ref =
-      activeField === "title" ? titleRef.current : contentRef.current;
+    const ref = activeField === "title" ? titleRef.current : contentRef.current;
 
     // Focus without triggering keyboard by temporarily setting inputmode
-    ref.setAttribute('inputmode', 'none');
+    ref.setAttribute("inputmode", "none");
     ref.focus({ preventScroll: true });
     setTimeout(() => {
-      ref.removeAttribute('inputmode');
+      ref.removeAttribute("inputmode");
     }, 50);
 
     let sel = window.getSelection();
@@ -135,70 +133,65 @@ useEffect(() => {
   };
 
   // ----------- Download/Submit ------------
-const uploadInBackground = async (blob, eventid) => {
-  try {
+  const uploadInBackground = async (blob, eventid) => {
+    try {
+      if (!userId) return;
+
+      const file = new File([blob], "note.png", { type: blob.type });
+
+      const response = await uploadImage(
+        file,
+        userId,
+        eventid,
+        "thankyou-note",
+        (percent) => console.log(`Upload progress: ${percent}%`),
+      );
+
+      if (response?.success) {
+        const postPayload = {
+          postById: userId,
+          postByName: userName || "Guest",
+          postType: "thankYouNote",
+          postUrl: response.originalUrl,
+          postKey: response.originalKey,
+          postWebpUrl: response.thumbnailUrl,
+          postWebpKey: response.thumbnailKey,
+        };
+
+        await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
+      }
+    } catch (err) {}
+  };
+
+  const handleDownload = async () => {
+    if (!noteRef.current) return;
+
+    setUploading(true);
+    setShowBorders(false);
+
+    const { eventid } = router.query;
+    if (!eventid) return;
     if (!userId) return;
 
-    const file = new File([blob], "note.png", { type: blob.type });
+    const blob = await captureElementAsImage(noteRef.current, [
+      ".emoji-button",
+    ]);
+    if (!blob) return;
 
-    const response = await uploadImage(
-      file,
-      userId,
-      eventid,
-      "thankyou-note",
-      (percent) => console.log(`Upload progress: ${percent}%`)
-    );
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
 
-    if (response?.success) {
-      const postPayload = {
-        postById: userId,
-        postByName: userName || "Guest",
-        postType: "thankYouNote",
-        postUrl: response.originalUrl,
-        postKey: response.originalKey,
-        postWebpUrl: response.thumbnailUrl,
-        postWebpKey: response.thumbnailKey,
-      };
+    localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
 
-      await createPost(
-        `${CREATE_NEW_POST}/${eventid}`,
-        "POST",
-        postPayload
-      );
-    }
-  } catch (err) {}
-};
+    router.push(`/wonderland/invite?eventid=${eventid}`);
 
-const handleDownload = async () => {
-  if (!noteRef.current) return;
+    uploadInBackground(blob, eventid);
 
-  setUploading(true);
-  setShowBorders(false);
-
-  const { eventid } = router.query;
-  if (!eventid) return;
-  if (!userId) return;
-
-  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
-  if (!blob) return;
-
-  const base64 = await new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
-
-  localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
-
-  router.push(`/wonderland/invite?eventid=${eventid}`);
-
-  uploadInBackground(blob, eventid);
-
-  setUploading(false);
-};
-
-
-
+    setUploading(false);
+  };
 
   if (!note) return <NoteSkeleton />;
 
@@ -219,20 +212,23 @@ const handleDownload = async () => {
         >
           <div className="icon-sec">
             {note.icon && (
-              <Image src={note.icon} alt="" className="createNote-icon" />
+              <Image
+                src={note.icon}
+                alt=""
+                className="createNote-icon"
+                style={{ height: note.height, width: note.width }}
+              />
             )}
           </div>
 
           {/* -------- Title -------- */}
-   <div
-  ref={titleRef}
-  contentEditable
-  suppressContentEditableWarning={true}
-  onFocus={() => onFocus("title", titleRef)}
-  className={`textArea-title ${showBorders ? "always-border" : ""}`}
-></div>
-
-
+          <div
+            ref={titleRef}
+            contentEditable
+            suppressContentEditableWarning={true}
+            onFocus={() => onFocus("title", titleRef)}
+            className={`textArea-title ${showBorders ? "always-border" : ""}`}
+          ></div>
 
           {/* -------- Content -------- */}
           <div

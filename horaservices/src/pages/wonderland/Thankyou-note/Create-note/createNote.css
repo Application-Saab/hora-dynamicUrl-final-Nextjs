@@ -40,7 +40,7 @@ body {
 
 .createNote-container {
   width: 88%;
-  padding: 8px 14px 0 14px;
+  padding: 8px 5px 0 5px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -68,10 +68,16 @@ body {
 }
 .createNote-container .textArea-Content {
     font-family: "Recursive", sans-serif;
-    font-size: clamp(20px, 6vw, 30px);
+    /* font-size: clamp(20px, 6vw, 30px); */
+    /* font-size: clamp(18px, 6vw, 24px); */
+    font-size: clamp(
+  18px,
+  calc(18px + (24 - 18) * ((100vw - 320px) / (1440 - 320))),
+  24px
+);
     overflow-y: auto;
     width: 99%;
-    min-height: 35vh;
+    min-height: 15vh;
 }
 .emojisec {
     position: relative;
@@ -86,13 +92,13 @@ body {
     align-items: center;
     width: 100%;
     margin: 0 0 7px 0;
-}s
+}
 
 
-.createNote-icon {
+/* .createNote-icon {
   width: 25px;
   height: 25px;
-}
+} */
 .textArea-Content::placeholder {
   color: white;
    opacity: 1;
@@ -127,7 +133,7 @@ body {
     overflow: hidden;
     margin-bottom: 10px;
     align-items: center;
-    padding: 13px;
+    padding: 13px 5px 13px 5px;
 }
 .textArea-Author{
   background: transparent;
