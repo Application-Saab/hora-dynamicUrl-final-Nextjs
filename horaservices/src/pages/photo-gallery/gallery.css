@@ -286,7 +286,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   align-items: center;
   gap: 6px;
   margin-top: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .edit-plus {
@@ -305,7 +305,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   padding: 10px 25px;
   font-family: 'Montserrat', 'Inter';
   margin-top: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .add-new-btn{
@@ -316,7 +316,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   border: none;
   padding: 5px 18px;
   margin-top: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 .popup-addbtn{
   padding: 9px 12px;

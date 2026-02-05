@@ -6,7 +6,6 @@ import Image from 'next/image';
 
 import './gallery.css'; // Ensure this path is correct
 import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is correct
-import LazyImage from '../../components/LazyImage';            // Ensure path is correct
 import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
 import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
 import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGalleryItem";
@@ -34,7 +33,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [currentPage, setCurrentPage] = useState(1);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
   const [isSearching, setIsSearching] = useState(false)
-  const [phoneNo, setPhoneNo] = useState('')
   const [subFolders, setSubFolders] = useState([]);
   const [activeSubFolderId, setActiveSubFolderId] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -57,12 +55,17 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [activeTab, setActiveTab] = useState("all");
   const isMyPhotosTab = subFolders.find(sf => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
+  const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
+  const myPhotosFolder = subFolders.find(sf => sf.type === "my_photos");
+  const isMyPhotosTabActive = activeTab === (myPhotosFolder?._id || "my-photos");
+  const isSearchActive = isMyPhotosTabActive && isSearching;
+
 
   useEffect(() => {
-    if (isSearchMode) {
+    if (matchedKeys?.length > 0 || myPhotosFolder?.length > 0) {
       setIsEditing(false);
     }
-  }, [isSearchMode]);
+  }, [matchedKeys.length > 0]);
 
 
 
@@ -151,29 +154,31 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   const visibleThumbnails = useMemo(() => {
 
-    if (isSearchMode) {
-      return allThumbnails.filter(
-        img =>
-          matchedKeys.includes(img.thumbnailKey)
-      );
+    if (!isActualMyPhotos) {
+      //  EDIT MODE: sari images dikhao
+      if (isEditing) {
+        return allThumbnails;
+      }
     }
 
-    if (!activeSubFolderId) return allThumbnails;
-    if (isEditing) return allThumbnails;
+    // when searching
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+      return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+    }
 
-    return allThumbnails.filter(
-      img => img.folderIds?.includes(activeSubFolderId)
-    );
+    // My Photos tab normal flow
+    if (isMyPhotosTabActive && myPhotosFolder) {
+      return allThumbnails.filter(img => img.folderIds?.includes(myPhotosFolder._id));
+    }
 
-  }, [
-    allThumbnails,
-    activeSubFolderId,
-    isEditing,
-    matchedKeys,
-    isSearching,
-    activeTab
-  ]);
+    // Subfolder flow
+    if (activeSubFolderId) {
+      return allThumbnails.filter(img => img.folderIds?.includes(activeSubFolderId));
+    }
 
+    // Default All tab
+    return allThumbnails;
+  }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, myPhotosFolder, activeSubFolderId, isEditing]);
 
 
   const downloadFile = async (url) => {
@@ -210,12 +215,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         .filter(img => img.folderIds?.includes(activeSubFolderId))
         .map(img => img._id);
 
-      if (ids.length === 0) {
-        setIsEditing(true);
+      if (activeTab !== "my-photos") {
+        if (ids.length === 0) {
+          setIsEditing(true);
+        }
       }
 
-      setSelectedImages(ids);          // current checked
-      setInitialSubfolderImages(ids);  // original state
+      setSelectedImages(ids);
+      setInitialSubfolderImages(ids);
     }
   }, [activeSubFolderId, allThumbnails]);
 
@@ -283,7 +290,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           .filter(thumb => !thumb.url?.includes("subfolder_"))
           .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
         setAllThumbnails(fetchedThumbnails); setCurrentPage(1);
-        setPhoneNo(data.thumbnails?.[0]?.phoneNo || "")
       } catch (fetchError) {
         console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
       } finally { setLoading(false); }
@@ -296,8 +302,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   };
   const activateNewSubFolderEditMode = (folderId) => {
     setActiveSubFolderId(folderId);
-    setIsEditing(true);
-    setSelectedImages([]);          // empty selection
+    if (activeTab !== "my-photos") {
+      setIsEditing(true);
+    }
+    setSelectedImages([]);
     setInitialSubfolderImages([]);
   };
 
@@ -375,14 +383,12 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     setMatchedKeys(keys);
     setIsSearching(true);
 
-    console.log("matched keys", keys);
   };
 
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
 
-    // compare current vs initial
     if (selectedImages.length !== initialSubfolderImages.length) return true;
 
     const setA = new Set(selectedImages);
@@ -468,9 +474,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     if (pos === 5) return "small-right-bottom";
   }
 
-  if (loading) {
-    return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
-  }
+  // if (loading) {
+  //   return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
+  // }
   if (error) {
     return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
   }
@@ -524,8 +530,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           onSelectSubFolder={(id) => {
             setActiveSubFolderId(id);
             setSelectedImages([]);
-            setIsEditing(false)
-            setActiveTab(id ?? "all");
+            if (activeTab !== "my-photos") {
+              setIsEditing(false)
+              setActiveTab(id ?? "all");
+            }
           }}
           onSubFolderCreated={handleSubFolderCreated}
           onNewFolderActivate={activateNewSubFolderEditMode}
@@ -540,9 +548,11 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           setActiveTab={setActiveTab}
           isSearching={isSearching}
 
+          setIsActualMyPhotos={setIsActualMyPhotos}
+
         />
 
-        <div style={{ paddingInline: "7px", display: "flex", gap: "10px" }}>
+        <div style={{ paddingInline: "7px" }}>
 
           <div>
             {activeTab !== "my-photos" &&
@@ -550,7 +560,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                   <button
                     className="edit-image-btn"
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setSelectedImages(initialSubfolderImages);
+                      setIsEditing(true);
+                    }}
                   >
                     <span className="edit-plus">+</span>
                     <span>Edit</span>
@@ -671,99 +684,92 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               console.error("Upload failed:", err);
               alert("Image upload failed");
             } finally {
-              // same file dobara select ho sake
               e.target.value = "";
             }
           }}
         />
 
-
-
-
-
-        {/* Show Searching text */}
         <div style={{ paddingInline: '7px' }}>
           {visibleThumbnails.length > 0 ? (
             <div style={{ position: "relative", marginTop: "auto" }}>
               <div style={{ margin: "10px auto" }}>
-                <div className="event-image-grid">
-                  {visibleThumbnails.map((thumbnail, indexOnPage) => {
-                    const type = getBlockType(indexOnPage);
-                    const isVideo = thumbnail.type === "video" || (thumbnail.url?.match(/\.(mp4|mov|avi|mkv)$/i));
-                    return (
-                      <div
-                        key={thumbnail.stableKey || indexOnPage}
-                        className={`grid-item ${type}`}
-                        style={{
-                          cursor: "pointer",
-                          position: "relative",
-                          backgroundColor: "transparent",
-                          display: "grid",
-                        }}
-                        onClick={() => {
-                          handleImageClick(indexOnPage);
-                        }}
-                      >
-                        <div className="image-wrapper" style={{ position: 'relative' }}>
-                          {isEditing && !isSearchMode && activeSubFolderId && (
-                            <input
-                              type="checkbox"
-                              className="image-checkbox"
-                              checked={selectedImages.includes(thumbnail._id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedImages(prev => [...prev, thumbnail._id]);
-                                } else {
-                                  setSelectedImages(prev =>
-                                    prev.filter(id => id !== thumbnail._id)
-                                  );
-                                }
-                              }}
-                              onClick={(e) => e.stopPropagation()} // prevent popup
+                {matchedKeys.length === 0 && isSearching && isActualMyPhotos ? (
+                  <div className="thumbnail-gallery-status">Searching...</div>
+                ) : (
+                  <div className="event-image-grid">
+                    {visibleThumbnails.map((thumbnail, indexOnPage) => {
+                      const type = getBlockType(indexOnPage);
+
+                      return (
+                        <div
+                          key={thumbnail.stableKey || indexOnPage}
+                          className={`grid-item ${type}`}
+                          style={{
+                            cursor: "pointer",
+                            position: "relative",
+                            backgroundColor: "transparent",
+                            display: "grid",
+                          }}
+                          onClick={() => handleImageClick(indexOnPage)}
+                        >
+                          <div className="image-wrapper" style={{ position: 'relative' }}>
+                            {isEditing && !isSearchMode && activeSubFolderId && !isActualMyPhotos && (
+                              <input
+                                type="checkbox"
+                                className="image-checkbox"
+                                checked={selectedImages.includes(thumbnail._id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedImages(prev => [...prev, thumbnail._id]);
+                                  } else {
+                                    setSelectedImages(prev =>
+                                      prev.filter(id => id !== thumbnail._id)
+                                    );
+                                  }
+                                }}
+                                onClick={(e) => e.stopPropagation()} // prevent popup click
+                              />
+                            )}
+
+                            <EventwallGalleryItem
+                              isVideo={thumbnail.type === "video"}
+                              indexOnPage={indexOnPage}
+                              id={thumbnail._id}
+
+                              // IMAGE
+                              imageUrl={
+                                thumbnail.type === "image"
+                                  ? (thumbnail.thumbnailImageUrl || thumbnail.originalUrl)
+                                  : null
+                              }
+
+                              // VIDEO
+                              previewSrc={
+                                thumbnail.type === "video"
+                                  ? thumbnail.videoClipUrl
+                                  : null
+                              }
+
+                              fullVideoSrc={
+                                thumbnail.type === "video"
+                                  ? thumbnail.originalUrl
+                                  : null
+                              }
                             />
-                          )}
-
-                          <EventwallGalleryItem
-                            isVideo={thumbnail.type === "video"}
-                            indexOnPage={indexOnPage}
-                            id={thumbnail._id}
-
-                            // IMAGE
-                            imageUrl={
-                              thumbnail.type === "image"
-                                ? (thumbnail.thumbnailImageUrl || thumbnail.originalUrl)
-                                : null
-                            }
-
-                            // VIDEO
-                            previewSrc={
-                              thumbnail.type === "video"
-                                ? thumbnail.videoClipUrl
-                                : null
-                            }
-
-                            fullVideoSrc={
-                              thumbnail.type === "video"
-                                ? thumbnail.originalUrl
-                                : null
-                            }
-                          />
-
+                          </div>
                         </div>
-                      </div>
-
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           ) : (
-            // Show message if on iOS and current page is empty (shouldn't happen with correct totalPages logic)
-            // Or if allThumbnails is genuinely empty after loading.
-            isIOSMobile && totalPages > 0 && <div className="thumbnail-gallery-status">No photos on this page.</div>
+            isIOSMobile && totalPages > 0 && (
+              <div className="thumbnail-gallery-status">No photos on this page.</div>
+            )
           )}
 
-          {/* Popup/Modal remains the same, using allThumbnails and original selectedIndex */}
           {selectedIndex !== null && popupImages[selectedIndex] && (
             <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true" aria-labelledby="popup-title">
               <div className="popupContent" onClick={(e) => e.stopPropagation()}>
@@ -926,9 +932,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               </div>
             </div>
           )}
+
           <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
             <div className="gallery-header-content">
-
               {totalPages > 0 && (
                 <div className="gallery-pagination-container">
                   <PaginationControls
@@ -942,6 +948,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             </div>
           </div>
         </div>
+
       </div>
 
       <CommonPopup
@@ -991,37 +998,38 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       >
         <div className="add-folder-list">
           {subFolders.length > 0 ? (
-            subFolders.map(sf => {
-              const isAlreadyAdded = alreadyAssignedFolders.includes(sf._id);
-              return (
-                <label key={sf._id} className="folder-checkbox-row">
-                  <div className="folder-info">
-                    <div className="folder-dp">
-                      {sf.folderDp ? (
-                        <img src={sf.folderDp.thumbnailUrl} alt={sf.folderName} />
-                      ) : (
-                        <span>{sf.folderName.charAt(0)}</span>
-                      )}
+            subFolders.filter(sf => sf.type !== "my_photos")
+              .map(sf => {
+                const isAlreadyAdded = alreadyAssignedFolders.includes(sf._id);
+                return (
+                  <label key={sf._id} className="folder-checkbox-row">
+                    <div className="folder-info">
+                      <div className="folder-dp">
+                        {sf.folderDp ? (
+                          <img src={sf.folderDp.thumbnailUrl} alt={sf.folderName} />
+                        ) : (
+                          <span>{sf.folderName.charAt(0)}</span>
+                        )}
+                      </div>
+                      <span className="folder-name">{sf.folderName}</span>
                     </div>
-                    <span className="folder-name">{sf.folderName}</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="popup-checkbox"
-                    checked={folderSelection.includes(sf._id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setFolderSelection(prev => [...prev, sf._id]);
-                      } else {
-                        setFolderSelection(prev =>
-                          prev.filter(id => id !== sf._id)
-                        );
-                      }
-                    }}
-                  />
-                </label>
-              );
-            })
+                    <input
+                      type="checkbox"
+                      className="popup-checkbox"
+                      checked={folderSelection.includes(sf._id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFolderSelection(prev => [...prev, sf._id]);
+                        } else {
+                          setFolderSelection(prev =>
+                            prev.filter(id => id !== sf._id)
+                          );
+                        }
+                      }}
+                    />
+                  </label>
+                );
+              })
           ) : (
             <div className="emptyFolder-container">
               <div className="no-subfolder-text">No subfolder found</div>

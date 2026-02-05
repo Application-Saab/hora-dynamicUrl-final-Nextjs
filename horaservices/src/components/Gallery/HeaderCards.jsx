@@ -28,6 +28,7 @@ const HeaderCards = ({
   setAllThumbnails,
   activeTab,
   setActiveTab,
+  setIsActualMyPhotos
 }) => {
   /* ================= STATE ================= */
   const [showCameraPopup, setShowCameraPopup] = useState(false);
@@ -265,7 +266,7 @@ const HeaderCards = ({
             setIsSearching(false);
           }}
         >
-          <div className="circle-img">
+          <div className="circle-img-folder circle-img-both">
             <div className="circle-img-inner">
               <img src={allPhotos.src} alt="All" />
             </div>
@@ -280,11 +281,12 @@ const HeaderCards = ({
               activeTab === myPhotosFolder._id ? "active" : ""
             }`}
             onClick={() => {
-              setActiveTab(myPhotosFolder._id);
+              setIsActualMyPhotos(true)
+              setActiveTab("my-photos");
               onSelectSubFolder(myPhotosFolder._id);
             }}
           >
-            <div className="circle-img">
+            <div className="circle-img-folder circle-img-both">
               <div className="circle-img-inner">
                 <img
                   src={
@@ -299,9 +301,13 @@ const HeaderCards = ({
         ) : (
           <div
             className="card-item"
-            onClick={() => setShowCameraPopup(true)}
+            onClick={() => {
+              setIsActualMyPhotos(true)
+              setShowCameraPopup(true)
+            }
+          }
           >
-            <div className="circle-img">
+            <div className="circle-img-folder circle-img-both">
               <div className="circle-img-inner">
                 <img src={myPhoto.src} alt="My Photos" />
               </div>
@@ -318,9 +324,10 @@ const HeaderCards = ({
             onClick={() => {
               setActiveTab(sf._id);
               onSelectSubFolder(sf._id);
+              setIsActualMyPhotos(false)
             }}
           >
-            <div className="circle-img">
+            <div className="circle-img-folder circle-img-both">
               <div className="circle-img-inner">
                 <img
                   src={sf.folderDp.thumbnailUrl}
@@ -335,9 +342,13 @@ const HeaderCards = ({
         {/* CREATE ALBUM */}
         <div
           className="card-item"
-          onClick={() => setShowCreateFolderPopup(true)}
+          onClick={() => {
+          setShowCreateFolderPopup(true)
+            setIsActualMyPhotos(false)
+          }
+        }
         >
-          <div className="circle-img add">
+          <div className="circle-img add circle-img-both">
             <span>+</span>
           </div>
           <p>Create Album</p>

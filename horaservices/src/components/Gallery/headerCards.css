@@ -20,10 +20,12 @@
   color: #97538C;
 }
 
-.circle-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+.circle-img-folder {
+  width: 90px;
+  height: 90px;
+}
+.circle-img-both {
+border-radius: 50%;
   overflow: visible;        
   border: 1px solid transparent;  
   display: flex;
@@ -31,16 +33,20 @@
   justify-content: center;
   background: #fff;
 }
+.circle-img {
+  width: 85px;
+  height: 85px;
+}
 
 .circle-img-inner {
-  width: calc(100% - 3px);   
-  height: calc(100% - 3px);
+  width: calc(100% - 7px);   
+  height: calc(100% - 7px);
   border-radius: 50%;
   overflow: hidden;
 }
 
 
-.card-item.active .circle-img {
+.card-item.active .circle-img-folder {
   border: 1px solid #97538C;
 }
 
@@ -56,7 +62,7 @@
   border:none;
 }
 
-.circle-img.add span {
+.circle-img-both.add span {
   font-size: 30px;
   color: #97538C;
   font-weight: bold;
