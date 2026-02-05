@@ -1,33 +1,68 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import "./headerCards.css";
 
 import myPhoto from "../../assets/myPhoto.png";
 import allPhotos from "../../assets/allPhotos.png";
 import captureIcon from "../../assets/captureIcon.png";
-import userIcon from '../../assets/userIcon.png'
-import imagePicker from '../../assets/imagePicker.png'
-import Image from "next/image";
-import selfieCapture from '../../assets/selfieCapture.png'
+import userIcon from "../../assets/userIcon.png";
+import imagePicker from "../../assets/imagePicker.png";
+import selfieCapture from "../../assets/selfieCapture.png";
 
+import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
 
-const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, phoneNo, subFolders, onSelectSubFolder, onSubFolderCreated, onNewFolderActivate, showCreateFolderPopup, setShowCreateFolderPopup, pendingAssignImageId,
+const HeaderCards = ({
+  folderName,
+  customerId,
+  setIsSearching,
+  onSearchResults,
+  subFolders,
+  onSelectSubFolder,
+  onSubFolderCreated,
+  onNewFolderActivate,
+  showCreateFolderPopup,
+  setShowCreateFolderPopup,
+  pendingAssignImageId,
   setPendingAssignImageId,
-  setAllThumbnails, }) => {
+  setAllThumbnails,
+  activeTab,
+  setActiveTab,
+}) => {
+  /* ================= STATE ================= */
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
   const [preview, setPreview] = useState(null);
-  const fileInputRef = useRef(null);
+  const [previewFile, setPreviewFile] = useState(null);
   const [albums, setAlbums] = useState([]);
+  const [localMyPhotos, setLocalMyPhotos] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+
+  const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
 
+  const localUserId = localStorage.getItem("userID");
 
-  const myPhotosFolder = subFolders.find(sf => sf.type === "my_photos");
+  /* ================= DERIVED ================= */
+  const myPhotosFolder = useMemo(
+    () =>
+      localMyPhotos ||
+      subFolders.find(
+        sf => sf.type === "my_photos" && sf.userId === localUserId
+      ),
+    [localMyPhotos, subFolders, localUserId]
+  );
 
+  const isCreateDisabled =
+    !newFolderName.trim() || !previewFile || isLoading;
+
+  const isCaptureDisabled =
+    !cameraReady || isCreating || isLoading;
+
+  /* ================= ALBUM LIST ================= */
   useEffect(() => {
     const mapped = subFolders
       .filter(sf => sf.type === "others")
@@ -37,87 +72,169 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
         folderDp: {
           thumbnailUrl: sf.folderDp?.thumbnailUrl || userIcon.src,
         },
-        isSubFolder: true,
       }));
-
     setAlbums(mapped);
   }, [subFolders]);
 
-
-
-  const handlePopImageClick = () => {
-    fileInputRef.current.click();
-  };
-
-  const [previewFile, setPreviewFile] = useState(null);
-  const isCreateDisabled = !newFolderName.trim() || !previewFile;
-
-  const handleFileChange = (e) => {
+  /* ================= FILE PICK ================= */
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (!file) return;
-
-    setPreviewFile(file); // store the actual file
-    const imageUrl = URL.createObjectURL(file);
-    setPreview(imageUrl);
+    setPreviewFile(file);
+    setPreview(URL.createObjectURL(file));
   };
 
+  /* ================= CAMERA START / STOP ================= */
+  useEffect(() => {
+    if (!showCameraPopup) return;
 
-  const handleCreateFolder = async (file) => {
-    if (!folderName || !file || newFolderName.trim() === "") return;
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setCameraReady(true);
+        }
+      })
+      .catch(console.error);
 
+    return () => {
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      setCameraReady(false);
+    };
+  }, [showCameraPopup]);
+
+  /* ================= ENSURE MY PHOTOS ================= */
+  const ensureMyPhotosFolder = async file => {
+    if (myPhotosFolder) return myPhotosFolder;
+
+    setIsLoading(true);
     try {
-      setIsLoading(true); // 🔹 START loading
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folderName", folderName);
-      formData.append("subFolderName", newFolderName);
-      formData.append("type", "others");
-      formData.append("userId", localStorage.getItem("userID"));
-      formData.append("customerId", customerId);
+      const fd = new FormData();
+      fd.append("folderName", folderName);
+      fd.append("subFolderName", "My Photos");
+      fd.append("type", "my_photos");
+      fd.append("userId", localUserId);
+      fd.append("customerId", customerId);
+      fd.append("file", file);
 
       const res = await fetch("http://localhost:4000/create-subfolder", {
         method: "POST",
-        body: formData,
+        body: fd,
       });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Subfolder creation failed: ${errorText}`);
+      const data = await res.json();
+      const created = data.subFolder;
+
+      onSubFolderCreated(created);
+      setLocalMyPhotos(created);
+      setActiveTab(created._id);
+      onNewFolderActivate(created._id);
+
+      return created;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /* ================= SEARCH STREAM ================= */
+  const startSearchStream = async formData => {
+    const response = await fetch("http://localhost:8000/search", {
+      method: "POST",
+      body: formData,
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    const matches = [];
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split("\n\n");
+      buffer = events.pop();
+
+      events.forEach(event => {
+        if (!event.startsWith("data:")) return;
+        const payload = JSON.parse(event.replace("data:", ""));
+        if (payload.type === "match") {
+          matches.push(payload);
+          onSearchResults([...matches]);
+        }
+      });
+    }
+  };
+
+  /* ================= CAPTURE ================= */
+  const handleCapture = async () => {
+    if (!cameraReady) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    canvas.getContext("2d").drawImage(videoRef.current, 0, 0);
+
+    canvas.toBlob(async blob => {
+      if (!blob) return;
+
+      try {
+        setIsCreating(true);
+        setIsSearching(true);
+
+        const myFolder = await ensureMyPhotosFolder(blob);
+
+        setShowCameraPopup(false);
+        streamRef.current?.getTracks().forEach(t => t.stop());
+
+        const fd = new FormData();
+        fd.append("sample_image", blob, "capture.png");
+        fd.append("folder_name", folderName);
+        fd.append("customer_id", customerId);
+        fd.append("subFolderId", myFolder._id);
+
+        await startSearchStream(fd);
+      } finally {
+        setIsSearching(false);
+        setIsCreating(false);
       }
+    }, "image/png");
+  };
+
+  /* ================= CREATE ALBUM ================= */
+  const handleCreateFolder = async () => {
+    if (isCreateDisabled) return;
+
+    setIsLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", previewFile);
+      fd.append("folderName", folderName);
+      fd.append("subFolderName", newFolderName);
+      fd.append("type", "others");
+      fd.append("userId", localUserId);
+      fd.append("customerId", customerId);
+
+      const res = await fetch("http://localhost:4000/create-subfolder", {
+        method: "POST",
+        body: fd,
+      });
 
       const data = await res.json();
+      const newFolder = data.subFolder;
 
-      const newSubFolder = {
-        _id: data.subFolder._id,
-        folderName: data.subFolder.folderName,
-        type: data.subFolder.type,
-        folderDp: data.subFolder.folderDp,
-        userId: data.subFolder.userId,
-      };
-
-      onSubFolderCreated(newSubFolder);
-
-      setActiveTab(newSubFolder._id);
-      onNewFolderActivate(newSubFolder._id);
-
+      onSubFolderCreated(newFolder);
+      setActiveTab(newFolder._id);
+      onNewFolderActivate(newFolder._id);
 
       if (pendingAssignImageId) {
-        await fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            subFolderId: newSubFolder._id,
-            addImageIds: [pendingAssignImageId],
-            removeImageIds: [],
-          }),
-        });
-
-        // 4️⃣ UI update
         setAllThumbnails(prev =>
           prev.map(img =>
             img._id === pendingAssignImageId
-              ? { ...img, folderIds: [...(img.folderIds || []), newSubFolder._id] }
+              ? { ...img, folderIds: [...(img.folderIds || []), newFolder._id] }
               : img
           )
         );
@@ -128,142 +245,73 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
       setPreview(null);
       setPreviewFile(null);
       setNewFolderName("");
-    } catch (err) {
-      console.error("Error creating subfolder:", err);
-      alert(err.message);
     } finally {
-      setIsLoading(false); // 🔹 STOP loading
+      setIsLoading(false);
     }
   };
 
-
-
-
-  /* ================= CAMERA START / STOP ================= */
-  useEffect(() => {
-    if (showCameraPopup) {
-      navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: "user" } })
-        .then((stream) => {
-          streamRef.current = stream;
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        })
-        .catch(console.error);
-    }
-
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
-      }
-    };
-  }, [showCameraPopup]);
-
-  /* ================= SEARCH STREAM ================= */
-  const startSearchStream = async (formData) => {
-    const response = await fetch("http://localhost:8000/search", {
-      method: "POST",
-      body: formData,
-    });
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let buffer = "";
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const events = buffer.split("\n\n");
-      buffer = events.pop();
-
-      events.forEach((event) => {
-        if (!event.startsWith("data:")) return;
-        const payload = JSON.parse(event.replace("data:", "").trim());
-
-        if (payload.type === "match") {
-          onSearchResults(payload);
-        }
-      });
-    }
-  };
-
-  /* ================= CAPTURE HANDLER ================= */
-  const handleCapture = async () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(videoRef.current, 0, 0);
-
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-
-      const formData = new FormData();
-      formData.append("sample_image", blob, "capture.png");
-      formData.append("folder_name", folderName);
-      formData.append("customer_id", customerId);
-
-      setIsSearching(true);
-      await startSearchStream(formData);
-      setIsSearching(false);
-      setShowCameraPopup(false);
-    }, "image/png");
-  };
-
+  /* ================= UI ================= */
   return (
     <>
-      {/* ================= HEADER CARDS ================= */}
+      {/* HEADER CARDS */}
       <div className="gallery-headerCard">
 
+        {/* ALL */}
         <div
           className={`card-item ${activeTab === "all" ? "active" : ""}`}
           onClick={() => {
             setActiveTab("all");
             onSelectSubFolder(null);
+            setIsSearching(false);
           }}
         >
-
           <div className="circle-img">
-            <img src={allPhotos.src} alt="All" />
+            <div className="circle-img-inner">
+              <img src={allPhotos.src} alt="All" />
+            </div>
           </div>
           <p>All</p>
         </div>
 
+        {/* MY PHOTOS */}
         {myPhotosFolder ? (
           <div
-            className={`card-item ${activeTab === "backend-my" ? "active" : ""}`}
-            onClick={() => setActiveTab("backend-my")}
+            className={`card-item ${
+              activeTab === myPhotosFolder._id ? "active" : ""
+            }`}
+            onClick={() => {
+              setActiveTab(myPhotosFolder._id);
+              onSelectSubFolder(myPhotosFolder._id);
+            }}
           >
             <div className="circle-img">
-              <img
-                src={myPhotosFolder.folderDp.thumbnailUrl || myPhoto.src}
-                alt="My Photos"
-              />
+              <div className="circle-img-inner">
+                <img
+                  src={
+                    myPhotosFolder.folderDp?.thumbnailUrl || myPhoto.src
+                  }
+                  alt="My Photos"
+                />
+              </div>
             </div>
             <p>{myPhotosFolder.folderName}</p>
           </div>
-        ) :
-          (
-            <div
-              className={`card-item ${activeTab === "my" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("my");
-                setShowCameraPopup(true);
-              }}
-            >
-              <div className="circle-img">
+        ) : (
+          <div
+            className="card-item"
+            onClick={() => setShowCameraPopup(true)}
+          >
+            <div className="circle-img">
+              <div className="circle-img-inner">
                 <img src={myPhoto.src} alt="My Photos" />
               </div>
-              <p>My Photos</p>
             </div>
-          )
-        }
+            <p>My Photos</p>
+          </div>
+        )}
 
-        {/*  OTHER SUBFOLDERS (created albums) */}
-        {albums.map((sf) => (
+        {/* ALBUMS */}
+        {albums.map(sf => (
           <div
             key={sf._id}
             className={`card-item ${activeTab === sf._id ? "active" : ""}`}
@@ -273,12 +321,16 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
             }}
           >
             <div className="circle-img">
-              <img src={sf.folderDp.thumbnailUrl || userIcon.src} alt={sf.name} />
+              <div className="circle-img-inner">
+                <img
+                  src={sf.folderDp.thumbnailUrl}
+                  alt={sf.name}
+                />
+              </div>
             </div>
             <p>{sf.name}</p>
           </div>
         ))}
-
 
         {/* CREATE ALBUM */}
         <div
@@ -290,118 +342,88 @@ const HeaderCards = ({ folderName, customerId, setIsSearching, onSearchResults, 
           </div>
           <p>Create Album</p>
         </div>
-
       </div>
 
-
-      {/* ================= CAMERA POPUP ================= */}
+      {/* CAMERA POPUP */}
       <CommonPopup
         isOpen={showCameraPopup}
-        onClose={() => {
-          setShowCameraPopup(false);
-          streamRef.current?.getTracks().forEach(t => t.stop());
-        }}
-
+        onClose={() => setShowCameraPopup(false)}
         title="Align Your Face & Capture"
-        buttonText="Capture"
         onSubmit={handleCapture}
         headerSize="sm"
+        disabled={isCaptureDisabled}
         buttonContent={
           <div className="capture-btn">
-            <img
-              src={captureIcon.src}
-              alt="capture"
-              height={15}
-              width={15}
-              className="capture-icon"
-            />
+            <img src={captureIcon.src} className="capture-icon" />
             <span>Capture</span>
           </div>
         }
       >
         <div className="captureContainer">
           <div className="bgContainer">
-            <video ref={videoRef} autoPlay playsInline className="camera-video" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="camera-video"
+            />
             <img
-              src={selfieCapture.src}   // apni PNG yaha lagao
-              alt="face guide"
+              src={selfieCapture.src}
               className="face-overlay"
             />
           </div>
         </div>
-
       </CommonPopup>
 
-
-      {/* ================= CREATE FOLDER POPUP ================= */}
+      {/* CREATE FOLDER POPUP */}
       <CommonPopup
         isOpen={showCreateFolderPopup}
-        onClose={() => { setShowCreateFolderPopup(false); setNewFolderName(""); setPreview(null); }}
+        onClose={() => setShowCreateFolderPopup(false)}
         title="Create New Folder"
+        onSubmit={handleCreateFolder}
+        disabled={isCreateDisabled}
         buttonContent={isLoading ? "Creating" : "Create"}
-        disabled={isCreateDisabled || isLoading}
-        onSubmit={() => {
-          if (newFolderName.trim() === "") return; // empty name check
-          handleCreateFolder(previewFile);
-        }}
-        headerSize="md"
       >
-
-        <div>
-          {/* IMAGE PICKER */}
-          <div className="picker-container">
-            <div
-              className="image-picker"
-              onClick={handlePopImageClick}
-            >
-              {/* PREVIEW IMAGE */}
-              {preview ? (
-                <div
-                  className="preview-bg"
-                  style={{
-                    backgroundImage: `url(${preview})`,
-                  }}
-                />
-              ) : (
-                <Image
-                  src={userIcon}
-                  alt="User"
-                  width={60}
-                  height={60}
-                  className="user-icon-img"
-                />
-              )}
-
-              {/* upload icon */}
-              <div className="upload-icon">
-                <Image src={imagePicker} alt="Upload" width={24} height={24} />
-              </div>
+        <div className="picker-container">
+          <div
+            className="image-picker"
+            onClick={() => fileInputRef.current.click()}
+          >
+            {preview ? (
+              <div
+                className="preview-bg"
+                style={{ backgroundImage: `url(${preview})` }}
+              />
+            ) : (
+              <Image
+                src={userIcon}
+                width={60}
+                height={60}
+                className="user-icon-img"
+                alt="user"
+              />
+            )}
+            <div className="upload-icon">
+              <Image src={imagePicker} width={24} height={24} />
             </div>
-
-
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              hidden
-            />
           </div>
+          <input
+            type="file"
+            hidden
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
+        </div>
 
-
-          {/* INPUT */}
-          <div className="input-container">
-            <input
-              type="text"
-              placeholder="Type Folder Name"
-              className="folderName-input"
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              maxLength={14}
-            />
-            <p className="sub-text">{newFolderName.length}/14 Characters</p>
-
-          </div>
+        <div className="input-container">
+          <input
+            className="folderName-input"
+            value={newFolderName}
+            onChange={e => setNewFolderName(e.target.value)}
+            maxLength={14}
+            placeholder="Type Folder Name"
+          />
+          <p className="sub-text">{newFolderName.length}/14 Characters</p>
         </div>
       </CommonPopup>
     </>
