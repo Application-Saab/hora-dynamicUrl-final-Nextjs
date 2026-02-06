@@ -1,5 +1,3 @@
-// src/utils/analytics.js
-
 export function getVisitorId() {
   let id = localStorage.getItem("VISITOR_ID");
   if (!id) {
@@ -11,39 +9,30 @@ export function getVisitorId() {
 
 export function getDeviceInfo() {
   const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /android|iphone|ipad|ipod/.test(ua);
 
-  if (/android/.test(ua)) return { device: "mobile", os: "android" };
-  if (/iphone|ipad|ipod/.test(ua)) return { device: "mobile", os: "ios" };
+  let os = "unknown";
+  if (/android/.test(ua)) os = "android";
+  else if (/iphone|ipad|ipod/.test(ua)) os = "ios";
+  else if (/windows/.test(ua)) os = "windows";
+  else if (/mac/.test(ua)) os = "mac";
 
-  return { device: "desktop", os: "desktop" };
+  return {
+    device: isMobile ? "mobile" : "desktop",
+    os,
+  };
 }
 
-export function trackDailyUniqueVisit() {
-  console.log('visiti')
-  const today = new Date().toISOString().slice(0, 10);
-  const visitorId = getVisitorId();
-  const { os } = getDeviceInfo();
+export function getBrowserInfo() {
+  const ua = navigator.userAgent;
 
-  const raw = localStorage.getItem("DAILY_UNIQUE_VISITORS");
-  let data = raw ? JSON.parse(raw) : {};
+  let browser = "unknown";
 
-  // 🔒 normalize day object
-  if (typeof data[today] !== "object" || data[today] === null) {
-    data[today] = {};
-  }
+  if (/firefox/i.test(ua)) browser = "Firefox";
+  else if (/edg/i.test(ua)) browser = "Edge";
+  else if (/chrome/i.test(ua) && !/edg/i.test(ua)) browser = "Chrome";
+  else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = "Safari";
+  else if (/opr|opera/i.test(ua)) browser = "Opera";
 
-  // 🔒 normalize OS buckets
-  if (!data[today].android) data[today].android = {};
-  if (!data[today].ios) data[today].ios = {};
-  if (!data[today].desktop) data[today].desktop = {};
-
-  // 🔒 count unique visitor
-  if (!data[today][os][visitorId]) {
-    data[today][os][visitorId] = true;
-  }
-
-  localStorage.setItem(
-    "DAILY_UNIQUE_VISITORS",
-    JSON.stringify(data)
-  );
+  return browser;
 }
