@@ -1,44 +1,64 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import "./DecorGrid.css";
-import { useDecorationEvents } from "@/utils/decorationEvents";
 
-const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat ,locality}) => {
+const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [] }) => {
   const router = useRouter();
-  const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat ,locality);
+  const pathname = usePathname();
 
-
+  // Normalize string for matching
   const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
 
- const handleClick = (card) => {
-  const matched = decCat.find(
-    (cat) => normalize(cat.catValue) === normalize(card.catValue)
-  );
+  // Build route using city, locality, categorySlug, and card catValue
+  const buildCardPath = (card) => {
+    if (!card?.catValue) return "/";
 
-  if (!matched) {
-    console.warn("No matching category in decCat for:", card.title);
-    return;
-  }
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
-  const eventData = {
-    title: card.title,
-    categoryName: matched.name || "N/A",
-    subCategory: matched.subCategory || "N/A",
-    catValue: matched.catValue || "N/A",
-    imgAlt: matched.imgAlt || "N/A",
+    let path = "";
+    if (city) path += `/${city.toLowerCase()}`;
+    if (locality) path += `/${locality.toLowerCase()}`;
+
+    path += `/${categorySlug}/${card.catValue.replace(/\s+/g, "-")}`;
+
+    return path;
   };
 
-  handleItemClick(eventData);      // ✅ Push GTM event
-  openCatItems(matched);           // ✅ Correct dynamic routing
-};
+  const handleClick = (card) => {
+    const matched = decCat.find(
+      (cat) => normalize(cat.catValue) === normalize(card.catValue)
+    );
 
+    if (!matched) {
+      console.warn("No matching category in decCat for:", card.title);
+      return;
+    }
+
+    // 🔹 GTM / dataLayer event
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "decoration_item_clicked",
+      event_category: "DecorGrid",
+      title: card.title,
+      categoryName: matched.name || "N/A",
+      subCategory: matched.subCategory || "N/A",
+      catValue: matched.catValue || "N/A",
+      imgAlt: matched.imgAlt || "N/A",
+      city: city || "default",
+      locality: locality || "default",
+    });
+
+    // ✅ Navigate
+    router.push(buildCardPath(card));
+  };
 
   return (
     <div className="decor-grid-wrapper">
       <div className="decor-card-grid">
-      <h4 className="decorke-wedding-heading">Your Dream Wedding Starts Here</h4>
+        <h4 className="decorke-wedding-heading">Your Dream Wedding Starts Here</h4>
 
         {/* 🔶 Large Card */}
         <div className="decor-large-card">
@@ -79,7 +99,6 @@ const DecorGrid = ({ largeCard, smallCards, city, hasCityPageParam, decCat ,loca
                     className="decor-small-img"
                   />
                 </div>
-
               </div>
               <h4 className="decor-small-label">{card.title}</h4>
             </div>
