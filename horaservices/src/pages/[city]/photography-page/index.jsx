@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";
 import "@/app/homepage.css";
 import {faqData} from "@/utils/photographyFAQData";
-
-import PhotographyLocalities from "./components/PhotographyLocalities";
-import PhotographyDescription from "./components/PhotographyDescription";
-import PhotographySEOKeywords from "./components/PhotographySEOKeywords";
-import PhotographyFAQ from "./components/PhotographyFAQ";
+import PhotographyDescription from "@/components/PhotographyDescription";
+import PhotographySEOKeywords from "@/components/PhotographySEOKeywords";
+import FAQSection from "@/components/FAQSection";
+import LocalitiesSection from "@/components/LocalitiesSection";
 
 const PhotographyCityPage = () => {
   const router = useRouter();
@@ -20,7 +19,14 @@ const PhotographyCityPage = () => {
 
   const normalizedCity = city ? city.toLowerCase() : "";
   const [cityLocalitiesList, setCityLocalitiesList] = useState([]);
-
+  const localityHandleClick = (localityName) => {
+    const formattedLocalityName = localityName
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+    router.push({
+      pathname: `/${city.toLowerCase()}/${formattedLocalityName}/photography-page`,
+    });
+  };
   useEffect(() => {
     if (normalizedCity) {
       const localities = cityData[normalizedCity]?.cityLocalitiesList || [];
@@ -29,10 +35,16 @@ const PhotographyCityPage = () => {
   }, [normalizedCity]);
 
   return (
-    <div className="page-width">
+    <div >
       <Index />
-      <PhotographyLocalities city={city} localities={cityLocalitiesList} />
-      <PhotographyFAQ faqData={faqData}/>
+        <LocalitiesSection
+        title={`${city} localities`}
+        localities={cityLocalitiesList}
+        handleClick={localityHandleClick}
+      />
+         <div className="tab-section-details-productpage">
+        <FAQSection faqData={faqData} />
+      </div>
       <PhotographyDescription city={city} />
       <PhotographySEOKeywords city={city} />
     </div>

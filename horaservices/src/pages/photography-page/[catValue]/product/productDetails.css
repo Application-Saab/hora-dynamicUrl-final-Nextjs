@@ -1,0 +1,553 @@
+.photodetails-container {
+  font-family: Inter, sans-serif;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin: 0px auto !important;
+  max-width: 420px;
+  
+}
+
+.photodetails-image-section {
+  position: relative;
+}
+
+.photodetails-image-section img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.photodetails-price-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0px 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.photodetails-discounted {
+  color: rgb(157, 74, 147);
+}
+
+.photodetails-original {
+  color: black;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.photodetails-offer {
+  margin-left: 2px;
+  background-color: #ffc107;
+  color: white;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.photodetails-inclusions {
+  padding: 10px;
+}
+
+.Duration{
+   margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000000;
+}
+.work-duration {
+  margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #000000;
+}
+
+
+.book-now-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1px; 
+  margin-bottom: 10px;
+}
+
+.book-now-btn {
+  background-color: #97538c;
+  color: white;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  width: 200px;
+  text-align: center;
+}
+
+
+/* ============================================================================================================= */
+.extra-action-section {
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  max-height: 440px; 
+  overflow-y: auto;
+  background-color: #fff;
+  max-width: 95%; 
+  margin: auto;
+}
+
+.extra-action-middle-box {
+  display: flex;
+  justify-content: center;
+}
+
+.extra-action-card-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  max-width: 600px; 
+  margin: auto;
+}
+
+
+.extra-action-card {
+  position: relative;
+  left: -10px; 
+  width: calc(100% + 20px); 
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+
+
+.extra-action-heading {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #7e22ce;
+  margin-bottom: 1rem;
+}
+
+
+
+
+
+.extra-action-card:hover {
+  transform: translateY(-4px);
+}
+
+.extra-action-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.extra-action-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.extra-action-description {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 8px;
+  min-height: 48px;
+}
+
+.extra-action-price-box {
+  margin-top: 0.5rem;
+}
+
+.extra-action-price {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  color: #111;
+}
+.qunatity-title{
+font-size: 20px;
+}
+.extra-action-quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.extra-action-qty-btn,
+.extra-action-add-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #7e22ce;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.extra-action-qty-btn:hover,
+.extra-action-add-btn:hover {
+  background-color: #5b16a6;
+}
+/* ============================================================================================================ */
+
+
+.whyHoraSec {
+    background-color: #FDF8EE;
+    padding: 8px 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+.whyHoraHeading {
+  font-size: 22px !important;
+  font-weight: bold;
+  color: #97538c;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
+
+.whyHoraSecInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap; 
+}
+
+.whyHoraSecBox {
+  width: 30%; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.whyHoraSecBox img {
+  width: 40px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.whyHoraSubheading {
+  color: gray;
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  line-height: 1.4;
+}
+/* =========================================================================================================== */
+.faqSection {
+    max-width: 300px;
+    margin: 0 auto;
+margin-top: 0 !important;
+}
+
+.faqItem:hover {
+  background-color: #faf0ff;
+  transition: background-color 0.3s ease;
+}
+
+.faqItem div {
+  user-select: none;
+}
+/* ================================================================================================================ */
+
+ li.addon-sec , p.addon-sec , .addon-sec{
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 0px 17px;
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFAF0;
+   
+}
+.addon-prices li{
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-direction: column;
+}
+ul.decoration-addons {
+  margin: 10px 0 17px !important;
+  padding: 13px !important;
+  background-color: #fff;
+}
+.addon-prices.mobile {
+  margin: 0;
+  padding: 0;
+}
+.addon-prices.mobile label {
+  padding: 0;
+  margin: 0 0 9px 0;
+  font-size: 14px;
+}
+.addon-prices.mobile li {
+  padding: 0;
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  list-style: none;
+  display: flex;
+    justify-content: space-between;
+}
+
+.modalcard-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background-color: #FFFAF0;
+  margin: auto;
+}
+.modal-middle-box {
+    flex: 1 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #FFFAF0;
+}
+.modalcard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  min-height: 250px; 
+}
+
+.modalcard img {
+   width: 100%;
+  height: 160px;        
+  object-fit: contain;    
+  background-color: #fff;
+  padding: 5px;            
+  border-radius: 8px 8px 0 0;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.modalcard h3 {
+  font-size: 14px;
+  color: #222;
+  padding: 8px 10px 0 10px;
+  margin: 0;
+  text-align: left;
+  min-height: 38px; 
+  font-weight: 600;
+}
+
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px 10px 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+}
+
+.quantitycontrols {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: center;
+}
+
+.addbutton,
+.quantitybutton {
+  background-color: rgb(157, 74, 147) !important;
+  color: #fff;
+  border: none;
+  padding: 3px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.addon-prices {
+  display: flex;
+  flex-direction: column;
+  margin:0px ;
+}
+
+.addon-prices label {
+
+      font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-top: 0;
+    color:  rgb(146, 82, 170) !important;
+}
+
+.add-on-prices p {
+  margin: 0;
+}
+.prod-detailsp {
+  display: flex;
+  flex-direction: column;
+}
+.price-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px;
+}
+.price {
+  font-size: 16px;
+  color: black;
+}
+.modal-top-box11 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFFAF0;
+  height: 50px;
+  margin-bottom: 0;
+}
+
+.select-heading-sec {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  vertical-align: middle;
+  color: rgb(157, 74, 147);
+  margin: 0;
+}
+
+
+.book-now-button {
+  background-color: #800080;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-button-wrapper {
+  position: fixed;
+  bottom: 1px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  z-index: 1000;
+  pointer-events: none;
+   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-button-wrapper::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(4px);
+  z-index: -1;
+}
+.confirm-button {
+    background-color: rgb(157, 74, 147);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 10px;
+    pointer-events: auto;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    min-width: 120px;
+}
+
+
+.decorke-celebrate-banner {
+  width: 100%;
+  margin: 5px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.decorke-banner-img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.decorke-why-section {
+    background-color: #F7E7C7;
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0px 0px 0px;
+}
+
+
+.media-section {
+  text-align: center;
+  background: white;
+      margin: 20px 0px 20px 0px;
+}
+
+.media-heading {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #97538C;
+  margin-bottom: 20px;
+
+}
+
+.media-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fdeef9;
+  border-radius: 8px;
+}
+
+.media-logos-img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+.tab-section-details-productpage{
+    margin: 0 0 10px 0 !important;
+    padding: 10px !important;
+    background-color: #fff;
+}

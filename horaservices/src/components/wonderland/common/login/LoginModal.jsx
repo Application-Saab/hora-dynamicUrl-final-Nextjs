@@ -23,12 +23,17 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otpError, setOtpError] = useState("");
   const [error, setError] = useState({ name: "", phone: "" });
+  const [showNameField, setShowNameField] = useState(false);
 
   const { time, resetTimer, isTimeUp } = useTimer(30);
   const { loading: sendOtpLoading, makeRequest } = useApi();
   const { loading: verifyOtpLoading, makeRequest: makeVerifyRequest } =
     useApi();
-  const { makeRequest: fetchUserData } = useApi();
+  const {
+    makeRequest: fetchUserData,
+    isFetched,
+    loading: fetchUserDataLoading,
+  } = useApi();
 
   const inputsRef = useRef([]);
 
@@ -76,6 +81,17 @@ const LoginModal = ({ isOpen, onClose }) => {
     };
     fetchUserDetails();
   }, [phone]);
+
+  useEffect(() => {
+    if (phone.length < 10) {
+      setShowNameField(false);
+    }
+    if (phone.length === 10) {
+      setTimeout(() => {
+        setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
+      }, 150);
+    }
+  }, [phone, userData, fetchUserDataLoading, isFetched]);
 
   // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
@@ -315,6 +331,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       modalClass="login-modal-content"
       bodyClass="login-modal-body"
       disableBackdropClick={true}
+      verticalCenter={false}
       body={
         <>
           <p className="login-modal-heading">Join The Celebration!</p>
@@ -339,7 +356,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                     </p>
                   )}
                 </div>
-                {phone?.length === 10 && !userData?.name && (
+                {showNameField && (
                   <div>
                     <input
                       type="text"
@@ -366,10 +383,6 @@ const LoginModal = ({ isOpen, onClose }) => {
               </>
             ) : (
               <>
-                <p className="verify-text">
-                  OTP sent to <span>(+91) {phone}</span>
-                </p>
-
                 <div
                   className={`otp-box-wrapper ${otpError ? "otp-error" : ""}`}
                 >

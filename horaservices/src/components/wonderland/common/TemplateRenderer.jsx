@@ -16,7 +16,6 @@ const TemplateRenderer = ({
   baseFontSize,
   isLandingPage = true,
   templatewrapperclass,
-  enableHeightOverride = false,
   isHost,
 }) => {
   const textRef = useRef(null);
@@ -28,6 +27,11 @@ const TemplateRenderer = ({
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const { refetchChatRooms } = useChatStore();
+  const videoRef = useRef(null);
+  const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
+  const isVideoFile = (url = "") => {
+    return /\.(mp4|webm|ogg|mov)$/i.test(url);
+  };
   const getResponsiveFontStyles = () => {
     const size = getScreenSize(width);
 
@@ -59,7 +63,8 @@ const TemplateRenderer = ({
     setBaseStyles(getResponsiveFontStyles());
   }, [width, baseFontSize]);
 
-  const [imageUrl, setImageUrl] = useState(DefaultTemplate.src);
+  // const [imageUrl, setImageUrl] = useState(DefaultTemplate.src);
+  const [mediaUrl, setMediaUrl] = useState(DefaultTemplate.src);
 
   useEffect(() => {
     const localKey = `template_${eventDetails?._id || eventDetails?.eventId}`;
@@ -67,13 +72,14 @@ const TemplateRenderer = ({
     const fetchImage = async () => {
       const savedImage = await getTemplate(localKey); // Fetch from IndexedDB
       if (savedImage) {
-        setImageUrl(savedImage);
+        setMediaUrl(savedImage);
       } else {
-        setImageUrl(
-          orderDetails?.externalTemplateImageUrl ||
+        setMediaUrl(
+          orderDetails?.externalTemplateVideoUrl ||
+            orderDetails?.externalTemplateImageUrl ||
             orderDetails?.Image ||
             orderDetails?.hostImage ||
-            DefaultTemplate.src
+            DefaultTemplate.src,
         );
       }
     };
@@ -124,7 +130,7 @@ const TemplateRenderer = ({
           method: "PUT",
           headers: { Authorization: token || "" },
           body: form,
-        }
+        },
       );
       refetchChatRooms();
     } catch (err) {
@@ -136,13 +142,53 @@ const TemplateRenderer = ({
     setTimeout(() => {
       if (
         !eventDetails?.externalTemplateImageUrl &&
-        imageUrl === DefaultTemplate.src &&
-        isHost && imageLoaded
+        mediaUrl === DefaultTemplate.src &&
+        isHost &&
+        imageLoaded
       ) {
         handleDownload();
       }
     }, 2500);
-  }, [eventDetails, imageUrl, isHost, imageLoaded]);
+  }, [eventDetails, mediaUrl, isHost, imageLoaded]);
+
+  useEffect(() => {
+    if (!isVideoFile(mediaUrl)) return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+
+    const observer = new IntersectionObserver(
+      async ([entry]) => {
+        if (entry.intersectionRatio >= 0.5) {
+          try {
+            await video.play();
+
+            if (!hasPlayedOnce) {
+              setTimeout(() => {
+                video.muted = false;
+                setHasPlayedOnce(true);
+              }, 400);
+            }
+          } catch (err) {
+            // autoplay failed silently
+          }
+        } else {
+          video.pause();
+        }
+      },
+      {
+        threshold: [0.5],
+      },
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [mediaUrl, hasPlayedOnce]);
 
   return (
     <div
@@ -174,43 +220,63 @@ const TemplateRenderer = ({
               />
             )}
 
-            <img
-              src={imageUrl}
-              alt="Invitation Template"
-              className="default-invite-image"
-              style={{
-                width: "100%",
-                height: "auto",
-                borderRadius: "12px",
-                objectFit: "cover",
-                visibility: imageLoaded ? "visible" : "hidden",
-              }}
-              onLoad={handleImageLoad}
-            />
-
-            {imageUrl === DefaultTemplate.src && eventDetails?.hostName && (
+            {isVideoFile(mediaUrl) ? (
               <div
-                ref={textRef}
-                className="default-template-text"
+                className="video-wrapper"
                 style={{
-                  position: "absolute",
-                  top: baseStyles.top,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  fontSize: baseStyles.fontSize,
-                  lineHeight: baseStyles.lineHeight,
-                  fontWeight: 700,
-                  color: "#fff",
+                  height: "420px",
                   width: "100%",
-                  textAlign: "center",
-                  paddingInline: "20px",
-                  pointerEvents: "auto",
-                  // fontFamily: "Archivo Black",
                 }}
               >
-                {eventDetails?.hostName}
+                <video
+                  ref={videoRef}
+                  src={mediaUrl}
+                  loop
+                  preload="metadata"
+                  className="default-invite-video"
+                  onLoadedData={() => setImageLoaded(true)}
+                />
               </div>
+            ) : (
+              <img
+                src={mediaUrl}
+                alt="Invitation Template"
+                className="default-invite-image"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "12px",
+                  objectFit: "cover",
+                  visibility: imageLoaded ? "visible" : "hidden",
+                }}
+                onLoad={handleImageLoad}
+              />
             )}
+
+            {!isVideoFile(mediaUrl) &&
+              mediaUrl === DefaultTemplate.src &&
+              eventDetails?.hostName && (
+                <div
+                  ref={textRef}
+                  className="default-template-text"
+                  style={{
+                    position: "absolute",
+                    top: baseStyles.top,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    fontSize: baseStyles.fontSize,
+                    lineHeight: baseStyles.lineHeight,
+                    fontWeight: 700,
+                    color: "#fff",
+                    width: "100%",
+                    textAlign: "center",
+                    paddingInline: "20px",
+                    pointerEvents: "auto",
+                  }}
+                >
+                  {eventDetails?.hostName}
+                </div>
+              )}
           </div>
         </>
       ) : (

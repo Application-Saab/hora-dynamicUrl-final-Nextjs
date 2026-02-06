@@ -48,7 +48,7 @@ const OrderDetail = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
+        `${BASE_URL}/api/order/order_details_photography/${orderId}`
       );
       const responseData = await response.json();
       setOrderDetail(responseData.data);

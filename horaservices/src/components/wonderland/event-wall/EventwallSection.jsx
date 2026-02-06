@@ -16,7 +16,10 @@ import {
 import "../../common/EventLazyImage.css";
 import EventwallGalleryItem from "./EventwallGalleryItem";
 import { processImagesWithHeight } from "@/utils/eventWallHelpers";
-
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../../../pages/photo-gallery/gallery.css";
 const EventwallSection = ({
   userData,
   rsvpSubmitted,
@@ -30,10 +33,56 @@ const EventwallSection = ({
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
   const imagesRef = useRef([]);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
+  const [imageNumber, setImageNumber] = useState(0);
 
   useEffect(() => {
     imagesRef.current = allImages;
   }, [allImages]);
+
+  const pauseAllVideos = () => {
+    const videos = document.querySelectorAll('.popupContent video');
+    videos.forEach((video) => {
+      video.pause();
+      video.currentTime = 0;
+    });
+  };
+
+  const playActiveVideo = () => {
+    const activeVideo = document.querySelector('.slick-current video');
+    if (!activeVideo) return;
+
+    activeVideo.currentTime = 0;
+
+    const playWhenReady = () => {
+      activeVideo.play().catch(console.error);
+    };
+
+    if (activeVideo.readyState >= 2) {
+      playWhenReady();
+    } else {
+      activeVideo.addEventListener('loadeddata', playWhenReady, { once: true });
+    }
+  };
+
+  const sliderSettings = {
+    dots: false,
+    infinite: allImages.length > 1,
+    speed: 300,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+
+    beforeChange: (_, next) => {
+      pauseAllVideos();
+      setImageNumber(next + 1);
+    },
+
+    afterChange: () => {
+      playActiveVideo();
+    },
+  };
 
   const MAX_PARALLEL_UPLOADS = 5;
   let activeUploads = 0;
@@ -44,7 +93,7 @@ const EventwallSection = ({
       if (!eventid) return;
 
       const draftBase64 = localStorage.getItem(
-        `thankyou-note-draft-${eventid}`
+        `thankyou-note-draft-${eventid}`,
       );
       let draftItem = null;
 
@@ -111,14 +160,14 @@ const EventwallSection = ({
   const updateProgress = (id, percent) => {
     setAllImages((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, progress: percent } : item
-      )
+        item.id === id ? { ...item, progress: percent } : item,
+      ),
     );
   };
 
   const updateStatus = (id, status) => {
     setAllImages((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status } : item))
+      prev.map((item) => (item.id === id ? { ...item, status } : item)),
     );
   };
 
@@ -128,7 +177,7 @@ const EventwallSection = ({
     if (!Array.isArray(current) || current.length === 0) return;
 
     const updatedList = current.map((item) =>
-      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item
+      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item,
     );
 
     // UI updates immediately
@@ -184,7 +233,7 @@ const EventwallSection = ({
           userId,
           eventid,
           "self-upload",
-          (percent) => updateProgress(id, percent)
+          (percent) => updateProgress(id, percent),
         );
       } else {
         uploadResult = await uploadImage(
@@ -192,7 +241,7 @@ const EventwallSection = ({
           userId,
           eventid,
           "self-upload",
-          (percent) => updateProgress(id, percent)
+          (percent) => updateProgress(id, percent),
         );
       }
 
@@ -204,7 +253,7 @@ const EventwallSection = ({
       await updateUploadedUrls(
         id,
         uploadResult.originalUrl,
-        uploadResult.thumbnailUrl
+        uploadResult.thumbnailUrl,
       );
 
       await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", {
@@ -275,6 +324,22 @@ const EventwallSection = ({
     },
   ];
 
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      setImageNumber(selectedIndex + 1);
+      // Slight delay to ensure slider is mounted and classes are applied
+      setTimeout(() => {
+        playActiveVideo();
+      }, 0);
+    }
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (selectedIndex === null) {
+      pauseAllVideos();
+    }
+  }, [selectedIndex]);
+
   return (
     <>
       <div className="event-wall-action-ctn">
@@ -286,8 +351,8 @@ const EventwallSection = ({
               isHost
                 ? onClick()
                 : rsvpSubmitted
-                ? onClick()
-                : setPushRsvpClick(true);
+                  ? onClick()
+                  : setPushRsvpClick(true);
             }}
           >
             <img
@@ -340,6 +405,7 @@ const EventwallSection = ({
                         display: "grid",
                       }}
                       className={`grid-item ${type}`}
+                      onClick={() => setSelectedIndex(indexOnPage)}
                     >
                       <EventwallGalleryItem
                         isVideo={isVideo}
@@ -350,6 +416,81 @@ const EventwallSection = ({
                   );
                 })}
               </div>
+              {selectedIndex !== null && allImages[selectedIndex] && (
+                <div
+                  className="popupOverlay"
+                  onClick={() => setSelectedIndex(null)}
+                  role="dialog"
+                  aria-modal="true"
+                  style={{zIndex: 9999}}
+                >
+                  <div
+                    className="popupContent"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Header */}
+                    <div className="popupHeader">
+                      <span className="image-index">
+                        {`${imageNumber} / ${allImages.length}`}
+                      </span>
+
+                      <button
+                        className="closeButton"
+                        onClick={() => setSelectedIndex(null)}
+                        aria-label="Close"
+                      >
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"></path></svg>
+                      </button>
+                    </div>
+
+                    {/* Slider */}
+                    <Slider
+                      {...sliderSettings}
+                      initialSlide={selectedIndex}
+                      key={`eventwall-slider-${selectedIndex}`}
+                    >
+                      {allImages.map((item, idx) => {
+                        const isLoading = !item.postWebpUrl && item.status !== "done";
+                        const mediaUrl = isLoading ? item.localPreview : item.postWebpUrl;
+                        const isVideo = item.isVideo || isVideoFile(mediaUrl);
+
+                        return (
+                          <div
+                            key={item._id || idx}
+                            className="slick-slide-item"
+                          >
+                            {isVideo ? (
+                              <video
+                                src={isLoading ? item.localPreview : item.postUrl}
+                                controls
+                                playsInline
+                                muted={false}
+                                preload="auto"
+                                style={{
+                                  maxHeight: "80vh",
+                                  width: "100%",
+                                  objectFit: "contain",
+                                  background: "#000",
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src={mediaUrl}
+                                alt={`Media ${idx + 1}`}
+                                style={{
+                                  maxHeight: "80vh",
+                                  width: "100%",
+                                  objectFit: "contain",
+                                }}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </Slider>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

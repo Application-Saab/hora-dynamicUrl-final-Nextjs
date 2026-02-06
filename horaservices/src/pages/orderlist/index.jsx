@@ -331,7 +331,7 @@ const Orderlist = () => {
             </button>
 
             {isModalOpen &&
-              <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
+              <OtpLoginPopup setIsModalOpen={setIsModalOpen}fromCheckout />
             }
           </div>
         ) :
@@ -386,7 +386,7 @@ const Orderlist = () => {
                           Total Amount
                           <p className="amount" style={{ textAlign: "start", margin: 0 }}>
                             {" "}
-                            ₹{order?.payable_amount}
+                            ₹{order?.total_amount}
                           </p>
                         </strong>
                       </div>

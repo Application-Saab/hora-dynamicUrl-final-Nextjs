@@ -11,7 +11,7 @@ import CustomButton from "../common/CustomButton";
 import { RSVP_STATUS } from "@/utils/constants";
 import RsvpNameModal from "./RsvpNameModal";
 import { useChatStore } from "@/hooks/ChatContext";
-// import socket from "@/socket";
+import socket from "@/socket";
 
 const colors = [
   "#FD8D0A",
@@ -47,6 +47,14 @@ const WhosJoining = ({
   const [highlightRsvpClick, setHighlightRsvpClick] = useState(false);
   const { refetchChatRooms } = useChatStore();
 
+  useEffect(() => {
+    if (!eventId || !socket || !socket.connected) return;
+    socket.emit("joinEvent", eventId);
+
+    return () => {
+      socket.emit("leaveEvent", eventId);
+    };
+  }, [eventId]);
   useLayoutEffect(() => {
     const fetchGuestsDetails = async () => {
       if (eventId && loggedinUserId) {
@@ -67,7 +75,7 @@ const WhosJoining = ({
       data?.data?.filter(
         (guest) =>
           guest?.rsvpStatus === RSVP_STATUS.WILL_COME ||
-          guest?.rsvpStatus === RSVP_STATUS.WILL_TRY
+          guest?.rsvpStatus === RSVP_STATUS.WILL_TRY,
       ) || [];
 
     setRsvpSubmittedGuests(submittedGuests);
@@ -97,11 +105,16 @@ const WhosJoining = ({
       } else {
         localStorage.setItem(
           `rsvp_submitted_${eventId}_${loggedinUserId}`,
-          "true"
+          "true",
         );
         setRefetchRsvpList((prev) => prev + 1);
         refetchChatRooms();
         onRsvpUpdate?.();
+      }
+      if (socket && socket.connected) {
+        socket.emit("rsvp:updated", { eventId });
+        socket.emit("submit:rsvp", { userId: loggedinUserId });
+        socket.emit("joinRoom", { groupId: response.data.groupId });
       }
     } catch (err) {
       alert("Something went wrong. Please try again.");
@@ -115,10 +128,10 @@ const WhosJoining = ({
       }
     };
 
-    window.addEventListener("rsvp:refetch", handleRsvpRefetch);
+    window.addEventListener("rsvp:refetched", handleRsvpRefetch);
 
     return () => {
-      window.removeEventListener("rsvp:refetch", handleRsvpRefetch);
+      window.removeEventListener("rsvp:refetched", handleRsvpRefetch);
     };
   }, [eventId]);
 
@@ -206,8 +219,8 @@ const WhosJoining = ({
                   isHost
                     ? setShowListModal(true)
                     : rsvpSubmitted
-                    ? setShowListModal(true)
-                    : setPushRsvpClick(true);
+                      ? setShowListModal(true)
+                      : setPushRsvpClick(true);
                 }}
               >
                 Full guest list
