@@ -19,6 +19,7 @@ import downloadVector from '../../assets/downloadVector.svg'
 import shareVector from '../../assets/shareVector.svg'
 import deleteVector from '../../assets/deleteVector.svg'
 import CommonPopup from "@/components/CommonPop";
+import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 
 
 // If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
@@ -59,6 +60,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const myPhotosFolder = subFolders.find(sf => sf.type === "my_photos");
   const isMyPhotosTabActive = activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
+  const [isStreamSearching, setIsStremSearching] = useState(false);
 
 
   useEffect(() => {
@@ -206,9 +208,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     }
   };
 
-
-
-
   useEffect(() => {
     if (activeSubFolderId) {
       const ids = allThumbnails
@@ -281,7 +280,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       }
       setLoading(true); setError(null);
       try {
-        const response = await fetch(`https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
+        const response = await fetch(`http://localhost:9000/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
         setSubFolders(data.folder?.subFolders || []);
@@ -378,7 +377,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   const handleSearchResults = (matches) => {
     if (!Array.isArray(matches)) return;
-
     const keys = matches.map(m => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
@@ -411,7 +409,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       id => !selectedImages.includes(id)
     );
 
-    await fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
+    await fetch("http://localhost:9000/api/internal/assign-to-subfolder", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -454,7 +452,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     if (str.length < 4) return "N/A";
 
     const last4 = str.slice(-4);
-    return `91+ xxxxxx${last4}`;
+    return `91+ XXXXXX${last4}`;
   };
 
   useEffect(() => {
@@ -474,9 +472,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     if (pos === 5) return "small-right-bottom";
   }
 
-  // if (loading) {
-  //   return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
-  // }
   if (error) {
     return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
   }
@@ -521,38 +516,42 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
         </div>
 
-        <HeaderCards
-          folderName={folderName}
-          customerId={customerId}
-          setIsSearching={setIsSearching}
-          onSearchResults={handleSearchResults}
-          subFolders={subFolders}
-          onSelectSubFolder={(id) => {
-            setActiveSubFolderId(id);
-            setSelectedImages([]);
-            if (activeTab !== "my-photos") {
-              setIsEditing(false)
-              setActiveTab(id ?? "all");
-            }
-          }}
-          onSubFolderCreated={handleSubFolderCreated}
-          onNewFolderActivate={activateNewSubFolderEditMode}
 
-          showCreateFolderPopup={showCreateFolderPopup}
-          setShowCreateFolderPopup={setShowCreateFolderPopup}
+        {loading ?
+          <HeaderCardsFlashLoader />
+          :
+          <HeaderCards
+            folderName={folderName}
+            customerId={customerId}
+            setIsSearching={setIsSearching}
+            onSearchResults={handleSearchResults}
+            subFolders={subFolders}
+            onSelectSubFolder={(id) => {
+              setActiveSubFolderId(id);
+              setSelectedImages([]);
+              if (activeTab !== "my-photos") {
+                setIsEditing(false)
+                setActiveTab(id ?? "all");
+              }
+            }}
+            onSubFolderCreated={handleSubFolderCreated}
+            onNewFolderActivate={activateNewSubFolderEditMode}
 
-          pendingAssignImageId={pendingAssignImageId}
-          setPendingAssignImageId={setPendingAssignImageId}
-          setAllThumbnails={setAllThumbnails}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isSearching={isSearching}
+            showCreateFolderPopup={showCreateFolderPopup}
+            setShowCreateFolderPopup={setShowCreateFolderPopup}
 
-          setIsActualMyPhotos={setIsActualMyPhotos}
+            pendingAssignImageId={pendingAssignImageId}
+            setPendingAssignImageId={setPendingAssignImageId}
+            setAllThumbnails={setAllThumbnails}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isSearching={isSearching}
 
-        />
-
-        <div style={{ paddingInline: "7px" }}>
+            setIsActualMyPhotos={setIsActualMyPhotos}
+            setIsStremSearching={setIsStremSearching}
+          />
+        }
+        <div>
 
           <div>
             {activeTab !== "my-photos" &&
@@ -589,38 +588,15 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
 
 
-          {activeTab === "all" && (
+          {!loading && activeTab === "all" && !isActualMyPhotos && (
             <button
               className="add-new-btn"
               onClick={() => addMoreImagesRef.current?.click()}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
             >
-              <span
-                style={{
-                  fontSize: "32px",
-                  fontWeight: "500",
-                  lineHeight: "1",
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: '4px',
-                }}
-              >
-                +
-              </span>
-
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                Add New Images
-              </span>
+              <span className="add-icon">+</span>
+              <span>Add New Images</span>
             </button>
+
           )}
         </div>
         {/* Hidden file input – Add More Images */}
@@ -689,86 +665,126 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           }}
         />
 
-        <div style={{ paddingInline: '7px' }}>
-          {visibleThumbnails.length > 0 ? (
-            <div style={{ position: "relative", marginTop: "auto" }}>
-              <div style={{ margin: "10px auto" }}>
-                {matchedKeys.length === 0 && isSearching && isActualMyPhotos ? (
-                  <div className="thumbnail-gallery-status">Searching...</div>
-                ) : (
-                  <div className="event-image-grid">
-                    {visibleThumbnails.map((thumbnail, indexOnPage) => {
-                      const type = getBlockType(indexOnPage);
+        <div>
+      {/* ================= LOADING SKELETON ================= */}
+{loading && (
+  <div className="gallery-image-grid">
+    {[...Array(6)].map((_, index) => {
+      const type = getBlockType(index);
+      return (
+        <div key={index} className={`grid-item ${type}`}>
+          <div className="event-masonry-item">
+            <div className="event-lazy-image-spinner-container placeholder-glow">
+              <div className="placeholder w-100 h-100"></div>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
 
-                      return (
-                        <div
-                          key={thumbnail.stableKey || indexOnPage}
-                          className={`grid-item ${type}`}
-                          style={{
-                            cursor: "pointer",
-                            position: "relative",
-                            backgroundColor: "transparent",
-                            display: "grid",
-                          }}
-                          onClick={() => handleImageClick(indexOnPage)}
-                        >
-                          <div className="image-wrapper" style={{ position: 'relative' }}>
-                            {isEditing && !isSearchMode && activeSubFolderId && !isActualMyPhotos && (
-                              <input
-                                type="checkbox"
-                                className="image-checkbox"
-                                checked={selectedImages.includes(thumbnail._id)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setSelectedImages(prev => [...prev, thumbnail._id]);
-                                  } else {
-                                    setSelectedImages(prev =>
-                                      prev.filter(id => id !== thumbnail._id)
-                                    );
-                                  }
-                                }}
-                                onClick={(e) => e.stopPropagation()} // prevent popup click
-                              />
-                            )}
-
-                            <EventwallGalleryItem
-                              isVideo={thumbnail.type === "video"}
-                              indexOnPage={indexOnPage}
-                              id={thumbnail._id}
-
-                              // IMAGE
-                              imageUrl={
-                                thumbnail.type === "image"
-                                  ? (thumbnail.thumbnailImageUrl || thumbnail.originalUrl)
-                                  : null
-                              }
-
-                              // VIDEO
-                              previewSrc={
-                                thumbnail.type === "video"
-                                  ? thumbnail.videoClipUrl
-                                  : null
-                              }
-
-                              fullVideoSrc={
-                                thumbnail.type === "video"
-                                  ? thumbnail.originalUrl
-                                  : null
-                              }
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+{/* ================= SEARCHING STATE ================= */}
+{!loading && isStreamSearching && isActualMyPhotos && matchedKeys.length === 0 && (
+  <>
+    <div className="thumbnail-gallery-status">Searching Photos.... </div>
+    <div className="gallery-image-grid">
+      {[...Array(6)].map((_, index) => {
+        const type = getBlockType(index);
+        return (
+          <div key={index} className={`grid-item ${type}`}>
+            <div className="event-masonry-item">
+              <div className="event-lazy-image-spinner-container placeholder-glow">
+                <div className="placeholder w-100 h-100"></div>
               </div>
             </div>
-          ) : (
-            isIOSMobile && totalPages > 0 && (
-              <div className="thumbnail-gallery-status">No photos on this page.</div>
-            )
-          )}
+          </div>
+        );
+      })}
+    </div>
+  </>
+)}
+
+{/* ================= NO SEARCH RESULT ================= */}
+{!loading &&
+  !isStreamSearching &&
+  isActualMyPhotos &&
+  visibleThumbnails.length === 0 && (
+    <div className="thumbnail-gallery-status">No images found</div>
+)}
+
+{/* ================= MAIN IMAGE GRID ================= */}
+{!loading && visibleThumbnails.length > 0 && (
+  <div className="event-image-grid">
+    {visibleThumbnails.map((thumbnail, indexOnPage) => {
+      const type = getBlockType(indexOnPage);
+
+      return (
+        <div
+          key={thumbnail.stableKey || indexOnPage}
+          className={`grid-item ${type}`}
+          style={{
+            cursor: "pointer",
+            position: "relative",
+            backgroundColor: "transparent",
+            display: "grid",
+          }}
+          onClick={() => handleImageClick(indexOnPage)}
+        >
+          <div className="image-wrapper" style={{ position: "relative" }}>
+            {isEditing &&
+              !isSearchMode &&
+              activeSubFolderId &&
+              !isActualMyPhotos && (
+                <input
+                  type="checkbox"
+                  className="image-checkbox"
+                  checked={selectedImages.includes(thumbnail._id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedImages((prev) => [...prev, thumbnail._id]);
+                    } else {
+                      setSelectedImages((prev) =>
+                        prev.filter((id) => id !== thumbnail._id)
+                      );
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+
+            <EventwallGalleryItem
+              isVideo={thumbnail.type === "video"}
+              indexOnPage={indexOnPage}
+              id={thumbnail._id}
+              imageUrl={
+                thumbnail.type === "image"
+                  ? thumbnail.thumbnailImageUrl || thumbnail.originalUrl
+                  : null
+              }
+              previewSrc={
+                thumbnail.type === "video" ? thumbnail.videoClipUrl : null
+              }
+              fullVideoSrc={
+                thumbnail.type === "video" ? thumbnail.originalUrl : null
+              }
+            />
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
+
+{/* ================= IOS EMPTY PAGE CASE ================= */}
+{!loading &&
+  !isStreamSearching &&
+  isIOSMobile &&
+  totalPages > 0 &&
+  visibleThumbnails.length === 0 && (
+    <div className="thumbnail-gallery-status">No photos on this page.</div>
+)}
+
 
           {selectedIndex !== null && popupImages[selectedIndex] && (
             <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true" aria-labelledby="popup-title">
@@ -956,7 +972,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         onClose={() => {
           setShowAddToFolderPopup(false);
         }}
-
+        popupHeight="420"
         title="Add to Folder"
         buttonContent={subFolders.length === 0 ? "Create Folder" : "Add Now"}
         disabled={subFolders.length === 0 ? false : JSON.stringify(folderSelection) === JSON.stringify(initialPopupFolders)}
@@ -975,7 +991,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
           const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
 
-          fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
+          fetch("http://localhost:9000/api/internal/assign-to-subfolder", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -996,7 +1012,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           });
         }}
       >
-        <div className="add-folder-list">
+        <div
+          className="add-folder-list" style={{ maxHeight: "300px", overflowY: "auto" }}>
           {subFolders.length > 0 ? (
             subFolders.filter(sf => sf.type !== "my_photos")
               .map(sf => {
@@ -1040,7 +1057,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       </CommonPopup>
 
       {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} />}
-
 
     </div>
   );

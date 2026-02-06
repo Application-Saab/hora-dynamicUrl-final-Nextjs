@@ -192,7 +192,7 @@ const ProductDetails = () => {
     const fetchFromBackup = async () => {
       try {
         const res = await axios.get(
-          'https://horaservices.com:3000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
+          'http://localhost:9000/api/photography/searchByTag/66c96b4e22ed47b72117e09a'
         );
         const allWorks = res.data.data;
         const matched = allWorks.find((item) => item._id === productId);

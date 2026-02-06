@@ -28,7 +28,8 @@ const HeaderCards = ({
   setAllThumbnails,
   activeTab,
   setActiveTab,
-  setIsActualMyPhotos
+  setIsActualMyPhotos,
+  setIsStremSearching
 }) => {
   /* ================= STATE ================= */
   const [showCameraPopup, setShowCameraPopup] = useState(false);
@@ -40,6 +41,8 @@ const HeaderCards = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -141,7 +144,9 @@ const HeaderCards = ({
 
   /* ================= SEARCH STREAM ================= */
   const startSearchStream = async formData => {
-    const response = await fetch("http://localhost:8000/search", {
+    setIsStremSearching(true);
+    try{
+  const response = await fetch("http://localhost:8000/search", {
       method: "POST",
       body: formData,
     });
@@ -166,44 +171,70 @@ const HeaderCards = ({
           matches.push(payload);
           onSearchResults([...matches]);
         }
+        if (payload.type === "complete") {
+          setIsStremSearching(false);
+          return;
+        }
       });
+    }
+    }
+    catch(error){
+    console.error("Search stream error:", error);
+    setIsStremSearching(false);
     }
   };
 
   /* ================= CAPTURE ================= */
-  const handleCapture = async () => {
-    if (!cameraReady) return;
+ const handleCapture = async () => {
+  if (!cameraReady || !videoRef.current) return;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    canvas.getContext("2d").drawImage(videoRef.current, 0, 0);
+  const video = videoRef.current;
 
-    canvas.toBlob(async blob => {
-      if (!blob) return;
+  const size = Math.min(video.videoWidth, video.videoHeight);
+  const sx = (video.videoWidth - size) / 2;
+  const sy = (video.videoHeight - size) / 2;
 
-      try {
-        setIsCreating(true);
-        setIsSearching(true);
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
 
-        const myFolder = await ensureMyPhotosFolder(blob);
+  const ctx = canvas.getContext("2d");
 
-        setShowCameraPopup(false);
-        streamRef.current?.getTracks().forEach(t => t.stop());
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
 
-        const fd = new FormData();
-        fd.append("sample_image", blob, "capture.png");
-        fd.append("folder_name", folderName);
-        fd.append("customer_id", customerId);
-        fd.append("subFolderId", myFolder._id);
+  ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
 
-        await startSearchStream(fd);
-      } finally {
-        setIsSearching(false);
-        setIsCreating(false);
-      }
-    }, "image/png");
-  };
+  const imageDataUrl = canvas.toDataURL("image/png");
+  setCapturedImage(imageDataUrl);
+
+  streamRef.current?.getTracks().forEach(track => track.stop());
+  setCameraReady(false);
+
+  canvas.toBlob(async (blob) => {
+    if (!blob) return;
+
+    try {
+      setIsCreating(true);
+      setIsSearching(true);
+      const myFolder = await ensureMyPhotosFolder(blob);
+      setShowCameraPopup(false);
+      const fd = new FormData();
+      fd.append("sample_image", blob, "capture.png");
+      fd.append("folder_name", folderName);
+      fd.append("customer_id", customerId);
+      fd.append("subFolderId", myFolder._id);
+
+      await startSearchStream(fd);
+    } finally {
+      setIsSearching(false);
+      setIsCreating(false);
+    }
+  }, "image/png");
+};
+
 
   /* ================= CREATE ALBUM ================= */
   const handleCreateFolder = async () => {
@@ -277,9 +308,8 @@ const HeaderCards = ({
         {/* MY PHOTOS */}
         {myPhotosFolder ? (
           <div
-            className={`card-item ${
-              activeTab === myPhotosFolder._id ? "active" : ""
-            }`}
+            className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""
+              }`}
             onClick={() => {
               setIsActualMyPhotos(true)
               setActiveTab("my-photos");
@@ -305,7 +335,7 @@ const HeaderCards = ({
               setIsActualMyPhotos(true)
               setShowCameraPopup(true)
             }
-          }
+            }
           >
             <div className="circle-img-folder circle-img-both">
               <div className="circle-img-inner">
@@ -343,10 +373,10 @@ const HeaderCards = ({
         <div
           className="card-item"
           onClick={() => {
-          setShowCreateFolderPopup(true)
+            setShowCreateFolderPopup(true)
             setIsActualMyPhotos(false)
           }
-        }
+          }
         >
           <div className="circle-img add circle-img-both">
             <span>+</span>
@@ -359,9 +389,9 @@ const HeaderCards = ({
       <CommonPopup
         isOpen={showCameraPopup}
         onClose={() => setShowCameraPopup(false)}
-        title="Align Your Face & Capture"
+        title="Align Your Face & Capture!"
+        popupHeight="404"
         onSubmit={handleCapture}
-        headerSize="sm"
         disabled={isCaptureDisabled}
         buttonContent={
           <div className="capture-btn">
@@ -372,18 +402,28 @@ const HeaderCards = ({
       >
         <div className="captureContainer">
           <div className="bgContainer">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="camera-video"
-            />
+            {capturedImage ? (
+              <img
+                src={capturedImage}
+                className="camera-video captured-circle"
+                alt="Captured"
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="camera-video"
+              />
+            )}
+
             <img
               src={selfieCapture.src}
               className="face-overlay"
             />
           </div>
         </div>
+
       </CommonPopup>
 
       {/* CREATE FOLDER POPUP */}

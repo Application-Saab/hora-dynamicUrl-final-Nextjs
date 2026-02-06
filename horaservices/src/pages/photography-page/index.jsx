@@ -166,7 +166,7 @@ const scriptTag = JSON.stringify(schemaOrg);
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://horaservices.com:3000/api/photography/searchByTag/${tagId}`
+        `http://localhost:9000/api/photography/searchByTag/${tagId}`
       );
       const productData = response.data.data.map(item => {
         const { discount, discountedPrice, discountDifference } = getDiscountedPrice(item.price);

@@ -8,35 +8,37 @@ const CommonPopup = ({
   isOpen,
   onClose,
   title = "Create New Folder",
-  children,     
+  children,
   buttonText = "Create",
   onSubmit,
   showButton = true,
   buttonContent,
   disabled = false,
-  headerSize = 'md'
+  popupHeight = 356,
 }) => {
   if (!isOpen) return null;
 
   return (
     <div className="popup-overlay">
-      <div className="popup-container">
-        
-        {/* Header */}
-      <div className="popup-header">
-  <Image
-    src={backarrow}
-    alt="Back"
-    width={24}
-    height={24}
-    className="login-back-icon"
-    onClick={onClose}
-  />
+      <div className="popup-container"
+        style={{ height: `${popupHeight}px` }}
+      >
 
-<h2 className={headerSize === "sm" ? "popup-title-sm" : "popup-title-md"}>
-  {title}
-</h2>
-</div>
+        {/* Header */}
+        <div className="popup-header">
+          <Image
+            src={backarrow}
+            alt="Back"
+            width={24}
+            height={24}
+            className="popup-back-icon"
+            onClick={onClose}
+          />
+
+          <h2 className="popup-title">
+            {title}
+          </h2>
+        </div>
 
 
         {/* Dynamic Content */}
@@ -46,22 +48,22 @@ const CommonPopup = ({
 
         {/* Footer */}
         {showButton && (
-            <div className="pop-btn-container">
+          <div className="pop-btn-container">
             <button
               className="popup-btn"
               onClick={onSubmit}
               disabled={disabled}
-             style={{
-  backgroundColor: disabled ? '#918D91' : '',
-  opacity: disabled ? 0.75 : 1,
-  cursor: disabled ? "not-allowed" : "pointer",
-}}
+              style={{
+                backgroundColor: disabled ? '#918D91' : '',
+                opacity: disabled ? 0.75 : 1,
+                cursor: disabled ? "not-allowed" : "pointer",
+              }}
 
             >
               {buttonContent || buttonText}
             </button>
-            </div>
-          
+          </div>
+
         )}
       </div>
     </div>
