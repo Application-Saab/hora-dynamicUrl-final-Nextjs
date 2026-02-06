@@ -344,6 +344,7 @@ const EventwallSection = ({
     <>
       <div className="event-wall-action-ctn">
         {actionButtons.map(({ label, icon, onClick }, index) => (
+          index !== 1 &&
           <button
             key={index}
             className={`event-wall-action-btn event-wall-action-btn-${index}`}

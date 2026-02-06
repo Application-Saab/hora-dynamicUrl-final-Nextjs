@@ -1,9 +1,13 @@
-import ImportantIcon from "@/assets/ThankyouNote-icon/importanticon.png";
-import ThankyounotePin from "@/assets/ThankyouNote-icon/ThankyounotePin.png";
-import FoodInfo from "@/assets/ThankyouNote-icon/Foodinfo.png";
+// import ImportantIcon from "@/assets/ThankyouNote-icon/importanticon.png";
+// import ThankyounotePin from "@/assets/ThankyouNote-icon/ThankyounotePin.png";
+// import FoodInfo from "@/assets/ThankyouNote-icon/Foodinfo.png";
 import host from "@/assets/wonderland/HostNoteImage.svg";
+import guestIcon from "@/assets/wonderland/guestIcon.svg";
+import ImportantIcon from "@/assets/wonderland/ImportantIcon.svg";
+import FoodInfo from "@/assets/wonderland/FoodInfo.svg";
+import ThankyounotePin from "@/assets/wonderland/ThankyouNotePin.svg";
 // import host from "@/assets/ThankyouNote-icon/host.png";
-import guestIcon from "@/assets/ThankyouNote-icon/guestIcon.png";
+// import guestIcon from "@/assets/ThankyouNote-icon/guestIcon.png";
 
 export const notesData = [
   {

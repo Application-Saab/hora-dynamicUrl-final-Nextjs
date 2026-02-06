@@ -19,6 +19,11 @@ import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
+  console.log(
+    "%c [ NoteId ]-22",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    NoteId,
+  );
 
   const [note, setNote] = useState(null);
   const [userName, setUserName] = useState("");
@@ -228,19 +233,25 @@ export default function NoteDetails() {
             suppressContentEditableWarning={true}
             onFocus={() => onFocus("title", titleRef)}
             className={`textArea-title ${showBorders ? "always-border" : ""}`}
+            style={{minHeight:NoteId == 6 ? "15vh" : "auto", display: NoteId == 6 ? "block" : "", flexDirection: NoteId == 6 ? "column" : "",  alignItems: NoteId == 6 ? "center" : ""}}
           ></div>
 
           {/* -------- Content -------- */}
-          <div
-            ref={contentRef}
-            contentEditable
-            suppressContentEditableWarning
-            onFocus={() => onFocus("content", contentRef)}
-            className={`textArea-Content ${showBorders ? "always-border" : ""}`}
-            data-placeholder="Write your note..."
-          />
+          {NoteId != 6 && (
+            <div
+              ref={contentRef}
+              contentEditable
+              suppressContentEditableWarning
+              onFocus={() => onFocus("content", contentRef)}
+              className={`textArea-Content ${showBorders ? "always-border" : ""}`}
+              data-placeholder="Write your note..."
+            />
+          )}
 
-          <div className="emojisec">
+          <div
+            className="emojisec"
+            style={{ marginTop: NoteId == 6 ? "20px" : "" }}
+          >
             <div className="textArea-Author">
               {userName ? `- ${userName}` : "- Loading..."}
             </div>
