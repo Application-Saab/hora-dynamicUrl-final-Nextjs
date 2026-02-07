@@ -31,11 +31,6 @@ const WhosJoining = ({
   setPushRsvpClick,
   pushRsvpClick,
 }) => {
-  console.log(
-    "%c [ isHost ]-28",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    isHost,
-  );
   const router = useRouter();
   const { eventid: eventId } = router.query;
   const { data, makeRequest } = useApi();
@@ -52,12 +47,6 @@ const WhosJoining = ({
   const [highlightRsvpClick, setHighlightRsvpClick] = useState(false);
   const { refetchChatRooms } = useChatStore();
   const [showGuestRsvpForm, setShowGuestRsvpForm] = useState(false);
-  console.log(
-    "%c [ showGuestRsvpForm ]-55",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    showGuestRsvpForm,
-  );
-
   useEffect(() => {
     if (!eventId || !socket || !socket.connected) return;
     socket.emit("joinEvent", eventId);

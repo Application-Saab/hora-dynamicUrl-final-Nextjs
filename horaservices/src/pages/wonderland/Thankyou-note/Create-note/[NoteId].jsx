@@ -19,12 +19,6 @@ import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
-  console.log(
-    "%c [ NoteId ]-22",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    NoteId,
-  );
-
   const [note, setNote] = useState(null);
   const [userName, setUserName] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
