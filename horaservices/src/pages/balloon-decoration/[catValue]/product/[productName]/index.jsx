@@ -451,12 +451,27 @@ function DecorationCatDetails({ city, locality }) {
 
 
   // 6️⃣ Category Navigation Click (Same as before)
-  const openCatItems = (item) => {
-    const path = hasCityPageParam
-      ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
-      : `/balloon-decoration/${item.catValue}`;
-    router.push(path);
-  };
+const openCatItems = (item) => {
+  const catSlug = item.catSlug || getCatSlugFromValue(item.catValue);
+
+  let path = "";
+
+  if (city && locality) {
+    path = `/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration/${catSlug}`;
+  } else if (city) {
+    path = `/${city.toLowerCase()}/balloon-decoration/${catSlug}`;
+  } else {
+    path = `/balloon-decoration/${catSlug}`;
+  }
+
+  // ✅ theme query preserve
+  if (item.value) {
+    path += `?theme=${encodeURIComponent(item.value)}`;
+  }
+
+  router.push(path);
+};
+
 
   const handleCustomise = (type, cityName) => {
     const messages = {
@@ -1030,7 +1045,8 @@ function DecorationCatDetails({ city, locality }) {
               city={city}
               hasCityPageParam={hasCityPageParam}
               locality={locality}
-              catValue={getMappedCatValue(router.query.catValue)}  // ✅ Use your map function here
+             catValue={router.query.catValue}   // 🔑 SLUG ONLY
+
 
             />
             </div>
@@ -1042,7 +1058,7 @@ function DecorationCatDetails({ city, locality }) {
                     name: item.label,
                     image: item.image,
                     value: item.value,
-                    catValue: "KidsBirthday",
+                    catValue: "kids-birthday-decoration",
                   }))}
                   onSelect={(item) => openCatItems(item, themeFilter)}
                   city={city}
@@ -1064,7 +1080,8 @@ function DecorationCatDetails({ city, locality }) {
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-                catValue={getMappedCatValue(router.query.catValue)}
+              catValue={router.query.catValue}   // 🔑 SLUG ONLY
+
               />
             )}
 
@@ -1075,7 +1092,8 @@ function DecorationCatDetails({ city, locality }) {
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-                catValue={getMappedCatValue(router.query.catValue)}
+               catValue={router.query.catValue}   // 🔑 SLUG ONLY
+
               />
             )}
 
