@@ -1,32 +1,61 @@
 "use client";
 
 import Image from "next/image";
-import { useDecorationEvents } from "@/utils/decorationEvents";
+import { useRouter, usePathname } from "next/navigation";
 import smallcardBackground from "@/assets/small-cardBackground.png";
-import "./SmallCardGrid.css"
-const SmallCardGrid = ({ city, hasCityPageParam, decCat, categories ,locality}) => {
-  const { handleItemClick, openCatItems } = useDecorationEvents(city, hasCityPageParam, decCat,locality);
+import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
+import "./SmallCardGrid.css";
+
+const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Normalize string for matching
+  const normalize = (str) => str?.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+
+  // Build route using city, locality, categorySlug, and card catValue
+  const buildCardPath = (item) => {
+    if (!item?.catValue) return "/";
+
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+
+    let path = "";
+    if (city) path += `/${city.toLowerCase()}`;
+    if (locality) path += `/${locality.toLowerCase()}`;
+
+    path += `/${categorySlug}/${item.catValue.replace(/\s+/g, "-")}`;
+
+    return path;
+  };
 
   const handleClick = (item) => {
-    const matchedCat = decCat.find(
-      (cat) => cat.name.toLowerCase() === item.name.toLowerCase()
-    );
+const matchedCat = decCat.find(
+  (cat) => normalize(cat.catValue) === normalize(item.catValue)
+);
 
-    const eventPayload = {
+
+  if (!matchedCat) {
+  console.warn("No matching category in decCat for:", item.catValue);
+  return;
+}
+
+
+    // 🔹 GTM / dataLayer event
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "decoration_item_clicked",
+      event_category: "SmallCardGrid",
       title: item.name,
-      categoryName: item.name,
-      subCategory: matchedCat?.subCategory || "N/A",
-      catValue: matchedCat?.catValue || "N/A",
-      imgAlt: matchedCat?.imgAlt || "N/A",
-    };
+      categoryName: matchedCat.name || "N/A",
+      subCategory: matchedCat.subCategory || "N/A",
+      catValue: matchedCat.catValue || "N/A",
+      imgAlt: matchedCat.imgAlt || "N/A",
+      city: city || "default",
+      locality: locality || "default",
+    });
 
-    handleItemClick(eventPayload);
-
-    if (matchedCat) {
-      openCatItems(matchedCat);
-    } else {
-      console.warn("❌ No matching category in decCat for:", item.name);
-    }
+    // ✅ Navigate
+    router.push(buildCardPath(item));
   };
 
   return (

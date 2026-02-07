@@ -19,7 +19,6 @@ import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 export default function NoteDetails() {
   const router = useRouter();
   const { NoteId } = router.query;
-
   const [note, setNote] = useState(null);
   const [userName, setUserName] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -34,8 +33,8 @@ export default function NoteDetails() {
   const lastRangeRef = useRef(null); // ✔ cursor memory
 
   const { makeRequest: createPost } = useApi();
-const userId =
-  typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
 
   // ----------- Load Note ------------
   useEffect(() => {
@@ -47,7 +46,6 @@ const userId =
 
   // ----------- Load User Name ------------
   useEffect(() => {
-   
     if (!userId) return;
 
     const fetchUser = async () => {
@@ -79,25 +77,24 @@ const userId =
     el.addEventListener("mouseup", saveCursor);
     el.addEventListener("focus", saveCursor);
   };
-useEffect(() => {
-  if (note && titleRef.current) {
-    titleRef.current.innerHTML = note.title || "";
-  }
-}, [note]);
+  useEffect(() => {
+    if (note && titleRef.current) {
+      titleRef.current.innerHTML = note.title || "";
+    }
+  }, [note]);
 
   // ----------- INSERT EMOJI (FIXED) -----------
 
   const insertEmoji = (emojiObject) => {
     const emojiUrl = emojiObject?.imageUrl;
 
-    const ref =
-      activeField === "title" ? titleRef.current : contentRef.current;
+    const ref = activeField === "title" ? titleRef.current : contentRef.current;
 
     // Focus without triggering keyboard by temporarily setting inputmode
-    ref.setAttribute('inputmode', 'none');
+    ref.setAttribute("inputmode", "none");
     ref.focus({ preventScroll: true });
     setTimeout(() => {
-      ref.removeAttribute('inputmode');
+      ref.removeAttribute("inputmode");
     }, 50);
 
     let sel = window.getSelection();
@@ -135,70 +132,66 @@ useEffect(() => {
   };
 
   // ----------- Download/Submit ------------
-const uploadInBackground = async (blob, eventid) => {
-  try {
+  const uploadInBackground = async (blob, eventid) => {
+    try {
+      if (!userId) return;
+
+      const file = new File([blob], "note.png", { type: blob.type });
+
+      const response = await uploadImage(
+        file,
+        userId,
+        eventid,
+        "thankyou-note",
+        () => {},
+        true,
+      );
+
+      if (response?.success) {
+        const postPayload = {
+          postById: userId,
+          postByName: userName || "Guest",
+          postType: "thankYouNote",
+          postUrl: response.originalUrl,
+          postKey: response.originalKey,
+          postWebpUrl: response.thumbnailUrl,
+          postWebpKey: response.thumbnailKey,
+        };
+
+        await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
+      }
+    } catch (err) {}
+  };
+
+  const handleDownload = async () => {
+    if (!noteRef.current) return;
+
+    setUploading(true);
+    setShowBorders(false);
+
+    const { eventid } = router.query;
+    if (!eventid) return;
     if (!userId) return;
 
-    const file = new File([blob], "note.png", { type: blob.type });
+    const blob = await captureElementAsImage(noteRef.current, [
+      ".emoji-button",
+    ]);
+    if (!blob) return;
 
-    const response = await uploadImage(
-      file,
-      userId,
-      eventid,
-      "thankyou-note",
-      (percent) => console.log(`Upload progress: ${percent}%`)
-    );
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
 
-    if (response?.success) {
-      const postPayload = {
-        postById: userId,
-        postByName: userName || "Guest",
-        postType: "thankYouNote",
-        postUrl: response.originalUrl,
-        postKey: response.originalKey,
-        postWebpUrl: response.thumbnailUrl,
-        postWebpKey: response.thumbnailKey,
-      };
+    localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
 
-      await createPost(
-        `${CREATE_NEW_POST}/${eventid}`,
-        "POST",
-        postPayload
-      );
-    }
-  } catch (err) {}
-};
+    router.push(`/wonderland/invite?eventid=${eventid}`);
 
-const handleDownload = async () => {
-  if (!noteRef.current) return;
+    uploadInBackground(blob, eventid);
 
-  setUploading(true);
-  setShowBorders(false);
-
-  const { eventid } = router.query;
-  if (!eventid) return;
-  if (!userId) return;
-
-  const blob = await captureElementAsImage(noteRef.current, [".emoji-button"]);
-  if (!blob) return;
-
-  const base64 = await new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
-
-  localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
-
-  router.push(`/wonderland/invite?eventid=${eventid}`);
-
-  uploadInBackground(blob, eventid);
-
-  setUploading(false);
-};
-
-
-
+    setUploading(false);
+  };
 
   if (!note) return <NoteSkeleton />;
 
@@ -215,43 +208,71 @@ const handleDownload = async () => {
         <div
           ref={noteRef}
           className="createNote-container"
-          style={{ background: note.color }}
+          style={{ background: note.color, justifyContent: NoteId == 6 ? "center" : "flex-start" }}
         >
           <div className="icon-sec">
             {note.icon && (
-              <Image src={note.icon} alt="" className="createNote-icon" />
+              <Image
+                src={note.icon}
+                alt=""
+                className="createNote-icon"
+                style={{ height: note.height, width: note.width }}
+              />
             )}
           </div>
 
           {/* -------- Title -------- */}
-   <div
-  ref={titleRef}
-  contentEditable
-  suppressContentEditableWarning={true}
-  onFocus={() => onFocus("title", titleRef)}
-  className={`textArea-title ${showBorders ? "always-border" : ""}`}
-></div>
-
-
+          {NoteId != 6 && <div
+            ref={titleRef}
+            contentEditable
+            suppressContentEditableWarning={true}
+            onFocus={() => onFocus("title", titleRef)}
+            className={`textArea-title ${showBorders ? "always-border" : ""}`}
+            style={{
+              minHeight: NoteId == 6 ? "15vh" : "auto",
+              display: NoteId == 6 ? "flex" : "",
+              flexDirection: NoteId == 6 ? "column" : "",
+              alignItems: NoteId == 6 ? "center" : "",
+              justifyContent: NoteId == 6 ? "center" : "",
+            }}
+          ></div>}
+            {NoteId == 6 && <div
+              ref={titleRef}
+              contentEditable
+              suppressContentEditableWarning={true}
+              onFocus={() => onFocus("title", titleRef)}
+              className={`textArea-Content hashtagText ${showBorders ? "always-border" : ""}`}
+              style={{
+                display: NoteId == 6 ? "flex" : "",
+                flexDirection: NoteId == 6 ? "column" : "",
+                alignItems: NoteId == 6 ? "center" : "",
+                justifyContent: NoteId == 6 ? "center" : "",
+              }}
+            ></div>}
 
           {/* -------- Content -------- */}
-          <div
-            ref={contentRef}
-            contentEditable
-            suppressContentEditableWarning
-            onFocus={() => onFocus("content", contentRef)}
-            className={`textArea-Content ${showBorders ? "always-border" : ""}`}
-            data-placeholder="Write your note..."
-          />
+          {NoteId != 6 && (
+            <div
+              ref={contentRef}
+              contentEditable
+              suppressContentEditableWarning
+              onFocus={() => onFocus("content", contentRef)}
+              className={`textArea-Content ${showBorders ? "always-border" : ""}`}
+              data-placeholder="Write your note..."
+            />
+          )}
 
-          <div className="emojisec">
+          <div
+            className="emojisec-notes"
+            style={{ marginTop: NoteId == 6 ? "20px" : "" }}
+          >
             <div className="textArea-Author">
               {userName ? `- ${userName}` : "- Loading..."}
             </div>
 
             <div
               className="emoji-button"
-              style={{ position: "absolute", right: 0, top: 0 }}
+              style={{ position: "absolute", right: 5, top: 0 }}
             >
               <EmojiPickerButtonNotes
                 onEmojiSelect={insertEmoji}

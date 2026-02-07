@@ -2,10 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import emojiicon from "@/assets/Emoji.png";
-import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
+import emojiicon from "@/assets/wonderland/EmojiIconPicker.svg";
+import ThankYouKeyboard from "@/assets/wonderland/KeyboardIconPicker.svg";
 import "./emoji.css";
-import { Key } from "lucide-react";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 

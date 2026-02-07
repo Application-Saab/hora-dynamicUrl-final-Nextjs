@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter,usePathname } from "next/navigation";
 import "@/components/DecorSlider/DecorSlider.css";
-import { useDecorationEvents } from "@/utils/decorationEvents";
 
 const getDiscountedDifference = (price) => {
-  const numericPrice = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
+  const numericPrice =
+    parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
+
   if (numericPrice <= 0) return 0;
+
   const discount = numericPrice < 3000 ? 20 : numericPrice <= 5000 ? 27 : 35;
   const discountedPrice = Math.floor(numericPrice * (1 - discount / 100));
   return Math.floor(numericPrice - discountedPrice);
@@ -20,59 +22,59 @@ const UniversalDecorSlider = ({
   showDiscount = false,
   imageSize = { width: 120, height: 120 },
   city = "",
-  hasCityPageParam = false,
-  decCat = [],
   locality = "",
-  catValue =""
+  catValue = "", // ✅ MUST be slug like "baby-shower-decoration"
 }) => {
   const router = useRouter();
-  const { handleSliderViewMore, handleItemClick } = useDecorationEvents(
-    city,
-    hasCityPageParam,
-    decCat,
-    locality
-  );
+const pathname = usePathname();
 
-  const handleCardClick = (item) => {
-  console.log("Item Clicked =>", item);
+const handleCardClick = (item) => {
+  if (!item || !catValue) return;
 
+  const rawSlug = item.slug || item.product_slug || item.name || item.title;
+  if (!rawSlug) return;
 
-  const productName = encodeURIComponent(
-    (item.name || item.title || "").replace(/\s+/g, "-").toLowerCase()
-  );
+  const productSlug = rawSlug
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 
-  if (!catValue || !productName) {
-    console.warn("Missing catValue or productName", { catValue, productName });
-    return;
-  }
+  const pathname = window.location.pathname;
+  const parts = pathname.split("/").filter(Boolean);
 
-  let path = "";
-  if (city && locality) {
-    path = `/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration/${catValue}/product/${productName}`;
-  } else if (city) {
-    path = `/${city.toLowerCase()}/balloon-decoration/${catValue}/product/${productName}`;
-  } else {
-    path = `/balloon-decoration/${catValue}/product/${productName}`;
-  }
+  // Dynamic balloon segment
+  const balloonSegment = parts.find((seg) =>
+    seg.toLowerCase().startsWith("balloon-decoration")
+  ) || "balloon-decoration";
 
-  console.log("Navigating to =>", path);
-  handleItemClick(item);
-  router.push(path);
+  const balloonIndex = parts.indexOf(balloonSegment);
+
+  const city = balloonIndex > 0 ? parts[0] : "";
+  const locality = balloonIndex > 1 ? parts[1] : "";
+
+  const finalPath = city && locality
+    ? `/${city}/${locality}/${balloonSegment}/${catValue}/product/${productSlug}`
+    : city
+    ? `/${city}/${balloonSegment}/${catValue}/product/${productSlug}`
+    : `/${balloonSegment}/${catValue}/product/${productSlug}`;
+
+  router.push(finalPath);
 };
 
 
+
   return (
-    <section  style={{
-    padding: '10px',
-     background: "#fbe6d3",
-    // borderRadius: '12px',
-    // boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-  }}>
+    <section style={{ padding: "10px", background: "#fbe6d3" }}>
       <div className="premium-slide-decor-header">
-      {title && <h2>{title}</h2>}
+        {title && <h2>{title}</h2>}
         {viewAllLink && (
-          <span onClick={() => handleSliderViewMore(viewAllLink, title)}>
-            <span style={{ cursor: "pointer", color: "#0070f3" }}>View All</span>
+          <span
+            onClick={() => router.push(viewAllLink)}
+            style={{ cursor: "pointer", color: "#0070f3" }}
+          >
+            View All
           </span>
         )}
       </div>
@@ -85,8 +87,8 @@ const UniversalDecorSlider = ({
                 ? parseInt(item.price.replace(/[^\d]/g, "")) || 0
                 : item.price || 0;
 
-            const discountDifference = getDiscountedDifference(item.price);
-            const originalPrice = price + discountDifference;
+            const discountDiff = getDiscountedDifference(item.price);
+            const originalPrice = price + discountDiff;
 
             const imageUrl =
               item.Image ||
@@ -113,28 +115,37 @@ const UniversalDecorSlider = ({
                     height={imageSize.height}
                     className="premium-img"
                   />
-                  {showDiscount && discountDifference > 0 && (
-                    <div className="premium-discount">₹{discountDifference} off</div>
+
+                  {showDiscount && discountDiff > 0 && (
+                    <div className="premium-discount">
+                      ₹{discountDiff} off
+                    </div>
                   )}
                 </div>
 
                 <div className="premium-content">
                   <p className="premium-title">
-                    {titleText.length > 20 ? `${titleText.slice(0, 20)}...` : titleText}
+                    {titleText.length > 20
+                      ? `${titleText.slice(0, 20)}...`
+                      : titleText}
                   </p>
                 </div>
 
                 <div className="premium-price-wrapper">
                   <span className="premium-price">₹{price}</span>
                   {showDiscount && (
-                    <span className="premium-original">₹{originalPrice}</span>
+                    <span className="premium-original">
+                      ₹{originalPrice}
+                    </span>
                   )}
                 </div>
               </div>
             );
           })
         ) : (
-          <p style={{ padding: "10px", color: "#888" }}>No items found</p>
+          <p style={{ padding: "10px", color: "#888" }}>
+            No items found
+          </p>
         )}
       </div>
     </section>

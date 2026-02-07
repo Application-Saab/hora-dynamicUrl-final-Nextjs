@@ -942,18 +942,6 @@ const OrderDetailTab = ({
 
         return (
           <div className="myOrder-decDetailsRight">
-            {/* ================= PRODUCT IMAGE ================= */}
-            {photography?.featured_image && (
-              <div className="mb-3">
-                <Image
-                  src={`https://horaservices.com/api/uploads/compressed_webp/${photography.featured_image}`}
-                  alt={photography?.name || "Photography"}
-                  width={320}
-                  height={220}
-                  style={{ width: "100%", height: "auto", borderRadius: 8 }}
-                />
-              </div>
-            )}
 
             {/* ================= PRODUCT NAME ================= */}
             <h1 className="mb-2">
