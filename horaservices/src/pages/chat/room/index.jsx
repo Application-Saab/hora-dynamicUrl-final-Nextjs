@@ -515,7 +515,6 @@ const ChatPage = () => {
 
           if (socket && socket.connected) {
             socket.emit("joinRoom", { groupId: newGroupId });
-            console.log(`Sender emitted joinRoom for ${newGroupId}`);
           }
         }
       }
@@ -541,10 +540,9 @@ const ChatPage = () => {
 
   const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
     acc[member.userId] =
-      { name: member.name, avatar: member.profileImageUrl } || {};
+    { name: member.name, avatar: member.profileImageUrl } || {};
     return acc;
   }, {});
-
   function renderInfoMessage(msg, usersMap) {
     const currentName =
       usersMap[msg.actorId]?.name || msg.actorSnapshot?.name || "Someone";
@@ -685,11 +683,6 @@ const ChatPage = () => {
 
       <div className="chat-messages" ref={chatBodyRef}>
         {messages.map((msg, index) => {
-          console.log(
-            "%c [ messages ]-1520",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            messages,
-          );
           const isMe = msg.senderId === userId;
           const senderName = msg.senderName;
           const previousMsg = messages[index - 1];
@@ -714,7 +707,7 @@ const ChatPage = () => {
             >
               {!isMe &&
                 !isConsecutive &&
-                (membersProfileMap?.[msg.senderId] ? (
+                (membersProfileMap?.[msg.senderId]?.avatar ? (
                   <img
                     src={membersProfileMap?.[msg.senderId]?.avatar}
                     alt={senderName || "avatar"}
