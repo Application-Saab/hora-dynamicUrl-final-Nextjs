@@ -149,7 +149,8 @@ export default function NoteDetails() {
         userId,
         eventid,
         "thankyou-note",
-        (percent) => console.log(`Upload progress: ${percent}%`),
+        () => {},
+        true,
       );
 
       if (response?.success) {
@@ -213,7 +214,7 @@ export default function NoteDetails() {
         <div
           ref={noteRef}
           className="createNote-container"
-          style={{ background: note.color }}
+          style={{ background: note.color, justifyContent: NoteId == 6 ? "center" : "flex-start" }}
         >
           <div className="icon-sec">
             {note.icon && (
@@ -227,14 +228,33 @@ export default function NoteDetails() {
           </div>
 
           {/* -------- Title -------- */}
-          <div
+          {NoteId != 6 && <div
             ref={titleRef}
             contentEditable
             suppressContentEditableWarning={true}
             onFocus={() => onFocus("title", titleRef)}
             className={`textArea-title ${showBorders ? "always-border" : ""}`}
-            style={{minHeight:NoteId == 6 ? "15vh" : "auto", display: NoteId == 6 ? "block" : "", flexDirection: NoteId == 6 ? "column" : "",  alignItems: NoteId == 6 ? "center" : ""}}
-          ></div>
+            style={{
+              minHeight: NoteId == 6 ? "15vh" : "auto",
+              display: NoteId == 6 ? "flex" : "",
+              flexDirection: NoteId == 6 ? "column" : "",
+              alignItems: NoteId == 6 ? "center" : "",
+              justifyContent: NoteId == 6 ? "center" : "",
+            }}
+          ></div>}
+            {NoteId == 6 && <div
+              ref={titleRef}
+              contentEditable
+              suppressContentEditableWarning={true}
+              onFocus={() => onFocus("title", titleRef)}
+              className={`textArea-Content hashtagText ${showBorders ? "always-border" : ""}`}
+              style={{
+                display: NoteId == 6 ? "flex" : "",
+                flexDirection: NoteId == 6 ? "column" : "",
+                alignItems: NoteId == 6 ? "center" : "",
+                justifyContent: NoteId == 6 ? "center" : "",
+              }}
+            ></div>}
 
           {/* -------- Content -------- */}
           {NoteId != 6 && (
@@ -249,7 +269,7 @@ export default function NoteDetails() {
           )}
 
           <div
-            className="emojisec"
+            className="emojisec-notes"
             style={{ marginTop: NoteId == 6 ? "20px" : "" }}
           >
             <div className="textArea-Author">
@@ -258,7 +278,7 @@ export default function NoteDetails() {
 
             <div
               className="emoji-button"
-              style={{ position: "absolute", right: 0, top: 0 }}
+              style={{ position: "absolute", right: 5, top: 0 }}
             >
               <EmojiPickerButtonNotes
                 onEmojiSelect={insertEmoji}

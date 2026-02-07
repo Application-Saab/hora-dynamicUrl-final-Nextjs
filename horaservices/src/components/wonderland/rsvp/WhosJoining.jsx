@@ -31,6 +31,11 @@ const WhosJoining = ({
   setPushRsvpClick,
   pushRsvpClick,
 }) => {
+  console.log(
+    "%c [ isHost ]-28",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    isHost,
+  );
   const router = useRouter();
   const { eventid: eventId } = router.query;
   const { data, makeRequest } = useApi();
@@ -46,6 +51,12 @@ const WhosJoining = ({
   const [userName, setUserName] = useState("");
   const [highlightRsvpClick, setHighlightRsvpClick] = useState(false);
   const { refetchChatRooms } = useChatStore();
+  const [showGuestRsvpForm, setShowGuestRsvpForm] = useState(false);
+  console.log(
+    "%c [ showGuestRsvpForm ]-55",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    showGuestRsvpForm,
+  );
 
   useEffect(() => {
     if (!eventId || !socket || !socket.connected) return;
@@ -153,11 +164,21 @@ const WhosJoining = ({
       return () => clearTimeout(timer);
     }
   }, [highlightRsvpClick]);
+  
+  useEffect(() => {
+    setTimeout(() => {
+      if (!isHost && !rsvpSubmitted) {
+        setShowGuestRsvpForm(true);
+      } else {
+        setShowGuestRsvpForm(false);
+      }
+    }, 1500);
+  }, [isHost, rsvpSubmitted]);
 
   return (
     <>
       <div className="whos-joining-wrapper">
-        {!isHost && !rsvpSubmitted && (
+        {showGuestRsvpForm && (
           <div
             className={`guest-rsvp-box d-flex justify-content-center flex-column w-100 ${
               highlightRsvpClick ? "highlight-rsvp" : ""
