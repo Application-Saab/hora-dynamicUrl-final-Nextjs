@@ -24,9 +24,15 @@ import "slick-carousel/slick/slick-theme.css";
 import DecorationIcon from '../assets/decoration_icon.webp';
 import PhotographyIcon from '../assets/photography_icon.webp';
 import FoodIcon from '../assets/food_icon.png';
-
+import sparkle from "@/assets/Home/sparkle.png"
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
+import Decoration from "@/assets/Home/Decoration.svg";
+import PhotoGraphy from "@/assets/Home/Photography.svg";
+import ChefForParty from "@/assets/Home/ChefForParty.svg";
+import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.svg";
+import Entertainment from "@/assets/Home/Entertainment.svg";
+import LiveCatering from "@/assets/Home/LiveCatering.svg";
 import Homevideo from '@/assets/Home/HomeVideo.mp4';
 import Photographybanner from '@/assets/Home/Photographybanner.jpg'
 import decorationbanner from '@/assets/Home/decorationbanner.jpg'
@@ -35,6 +41,8 @@ import partyfood from "@/assets/Home/partyfood.jpg"
 import photo1 from "@/assets/Home/photo1.png"
 import photo2 from "@/assets/Home/photo2.png"
 import photo3 from "@/assets/Home/photo3.png"
+import ReviewSlider from "@/components/ReviewSection";
+import { balloonreviews } from "@/utils/balloonReviews";
 export default function Home() {
 const router = useRouter();
 const pathname = usePathname();
@@ -399,11 +407,42 @@ const settings = {
 // }
 
 
+const handleContactClick = () => {
+  window.open(
+    "https://wa.me/917338584828?text=Hi%2C%20I%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20decoration%20services.",
+    "_blank"
+  );
+};
 
 
   return (
     <div className="home-wrapper">
+ <head>
+    <title>HORA : One-Stop Party Planning: Customise, Create, Book</title>
+    <meta name="description" content="🍽️ Food (Live Catering | Bulk Food Delivery | Chef for Party) 🎨 Decoration (Balloon Decoration | Flower Decoration) | 📸 Photography 🎉 Entertainment. Discover the ultimate solution for party planning with Hora’s one-stop platform. Customise your party packages, create your ideal celebration, and book everything you need all in one place. We make planning effortless and enjoyable! 🎈✨" />
+    <meta name="keywords" content="Personal chef, private chef to cook in home in India, home chef, book a cook near you, chef at home, Private cook in Mumbai, Book a cook for home near you, Hire Chef in Bangalore, Private Chef in Delhi, Catering service, balloon, decoration, celebration, party, birthday, anniversary, decorator, candle light dinner,  surprises, couples, bouquets , online caterers, catering services, best caterers, birthday party catering, birthday caterers, party catering, home catering, corporate catering, caterers for small parties, wedding caterers" />
 
+    <meta property="og:title" content="HORA : One-Stop Party Planning: Customise, Create, Book" />
+    <meta property="og:description" content="🍽️ Food (Live Catering | Bulk Food Delivery | Chef for Party) 🎨 Decoration (Balloon Decoration | Flower Decoration) | 📸 Photography 🎉 Entertainment. Discover the ultimate solution for party planning with Hora’s one-stop platform. Customise your party packages, create your ideal celebration, and book everything you need all in one place. We make planning effortless and enjoyable! 🎈✨" />
+    
+    <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1711520474508.png" />
+    <meta property="og:image:alt" content="Elegant balloon decoration setup by Hora Decorations" />
+
+    <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706459457063.png" />
+    <meta property="og:image:alt" content="Beautiful floral arrangement for events by Hora Decorations" />
+
+    <meta property="og:image" content="  https://horaservices.com/api/uploads/homepage_whatareu4.webp" />
+    <meta property="og:image:alt" content="Beautiful food for events by Hora Caterers" />
+
+    <meta property="og:image" content="https://horaservices.com/api/uploads/homepage_whatareu2.webp" />
+    <meta property="og:image:alt" content="best food and chef for parties by Hora Kitchen" />
+    <script type="application/ld+json">{scriptTag}</script>
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Hora Services" />
+    <meta property="og:url" content="https://horaservices.com" />
+    <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+    <meta property="og:type" content="website" />
+</head>
       {/* TOP BANNER */}
       <div className="top-banner">
       <video
@@ -418,43 +457,114 @@ const settings = {
 
       {/* HEADING */}
       <div className="section-heading">
-        <h2>✨ What are you into?</h2>
+      <h2 class="heading">
+  <Image
+    src={sparkle}
+    alt="icon"
+    class="heading-icon"
+  />
+  What are you into?
+</h2>
+
         <p>Choose what you need. We'll handle the rest</p>
       </div>
 
 {/* CARD 1 - LEFT IMAGE */}
-<div className="feature-card left-img">
+
+<div
+  className="feature-card left-img"
+  onClick={() => router.push("/balloon-decoration")}
+  role="button"
+  tabIndex={0}
+>
   <Image src={decorationbanner} alt="Decoration" className="card-bg-img" />
   <div className="card-content">
     <h3>DECORATION</h3>
-    <button>Explore Designs</button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push("/balloon-decoration");
+      }}
+    >
+      Explore Designs
+    </button>
   </div>
 </div>
 
 {/* CARD 2 - RIGHT IMAGE */}
-<div className="feature-card right-img">
+
+<div
+  className="feature-card right-img"
+  role="button"
+  tabIndex={0}
+  onClick={() => router.push("/photography-page")}
+  onKeyDown={(e) => e.key === "Enter" && router.push("/photography-page")}
+>
   <Image src={Photographybanner} alt="Photography" className="card-bg-img" />
   <div className="card-content">
     <h3>PHOTOGRAPHY</h3>
-    <button>Explore Packages</button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push("/photography-page");
+      }}
+    >
+      Explore Packages
+    </button>
   </div>
 </div>
-
 {/* CARD 3 - LEFT IMAGE */}
-<div className="feature-card left-img">
+
+<div
+  className="feature-card left-img"
+  role="button"
+  tabIndex={0}
+  onClick={() =>
+    router.push("/party-food-delivery-live-catering-buffet/party-food-delivery")
+  }
+  onKeyDown={(e) =>
+    e.key === "Enter" &&
+    router.push(
+      "/party-food-delivery-live-catering-buffet/party-food-delivery"
+    )
+  }
+>
   <Image src={partyfood} alt="Party Food" className="card-bg-img" />
   <div className="card-content">
     <h3>PARTY FOOD</h3>
-    <button>Explore Packages</button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(
+          "/party-food-delivery-live-catering-buffet/party-food-delivery"
+        );
+      }}
+    >
+      Explore Packages
+    </button>
   </div>
 </div>
-
 {/* CARD 4 - RIGHT IMAGE */}
-<div className="feature-card right-img">
+<div
+  className="feature-card right-img"
+  role="button"
+  tabIndex={0}
+  onClick={() => router.push("/book-chef-cook-for-party")}
+  onKeyDown={(e) =>
+    e.key === "Enter" && router.push("/book-chef-cook-for-party")
+  }
+>
   <Image src={chefforparty} alt="Chef" className="card-bg-img" />
   <div className="card-content">
     <h3>CHEF FOR PARTY</h3>
-    <button>Explore Dishes</button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push("/book-chef-cook-for-party");
+      }}
+    >
+      Explore Dishes
+    </button>
   </div>
 </div>
 
@@ -478,8 +588,145 @@ const settings = {
     </div>
   </div>
 </div>
+<div className="btn-wrapper">
+  <button className="contact-btn" onClick={handleContactClick} >
+    Contact Us
+  </button>
+</div>
+<ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
+ <div className="services-container">
+      {/* Card 1 */}
+      <div className="service-card">
+        <Image src={Decoration} alt="Decoration" className="service-card-image" />
+        <h3>Decoration</h3>
+        <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+          1000+ unique designs – Birthdays, Anniversaries, Baby showers,
+          Weddings, and more!
+        </p>
+        <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+          Get your venue decorated in just 2 hours, indoors or outdoors.
+        </p>
+         <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         Best prices, timely service, and support
+        </p>
+        <button className="package-btn" onClick={() => router.push("/balloon-decoration")}>Explore Designs</button>
+      </div>
 
+      {/* Card 2 */}
+      <div className="service-card">
+        <Image src={PhotoGraphy} alt="Photography" className="service-card-image" />
+        <h3>Photography</h3>
+       <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         100+ Professional Photographers – Best prices, timely service,
+          expert support.
+        </p>
+       <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+        Life time photo storage
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         Best prices, timely service, and support
+        </p>
+        <button className="package-btn"     onClick={() => router.push("/photography-page")}>Explore Packages</button>
+      </div>
 
+      {/* Card 3 */}
+      <div className="service-card">
+        <Image src={ChefForParty} alt="Chef for Party" className="service-card-image" />
+        <h3>Chef for Party</h3>
+         <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+        HORA brings professional chefs to your kitchen
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         They use your ingredients and utensils
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         Experience 400 restaurant-style dishes.
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         Affordable & customizable.
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+       Full hygiene control.
+        </p>
+        <button className="package-btn">Explore Dishes</button>
+      </div>
+
+      {/* Card 4 */}
+      <div className="service-card">
+        <Image src={BulkFoodDelivery} alt="Bulk Food Delivery" className="service-card-image"  />
+        <h3>Bulk Food Delivery</h3>
+         <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+Enjoy food delivery with Hora </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+      Best prices , Timely service
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+      Delicious taste
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         Good Packing
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+      Guaranteed support
+        </p>
+        <button className="package-btn"     onClick={() => router.push("/party-food-delivery-live-catering-buffet/party-food-delivery")}>Explore Packages</button>
+      </div>
+          {/* Card 5 */}
+      <div className="service-card">
+        <Image src={Entertainment} alt="Bulk Food Delivery" className="service-card-image" />
+        <h3>Entertainment</h3>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+     Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services
+        </p>
+        <p>
+          🎨 Tattoo Artist , 🎩 Magician, 🎉 Party Host
+        </p>
+        <p>
+          🐻 Mascot , 🌿 Mehandi , 💅 Nail Art ..and so much more!
+        </p>
+        <button className="package-btn"   onClick={() => router.push("/balloon-decoration")}>Explore Packages</button>
+      </div>
+          {/* Card 6 */}
+          <div className="service-card">
+        <Image src={LiveCatering} alt="Bulk Food Delivery" className="service-card-image" />
+        <h3>Live Catering</h3>
+         <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+       Best prices , Timely service
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+        Delicious taste
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+        Good packing
+        </p>
+          <p class="points">
+           <Image src={sparkle} alt="icon" class="points-icon" />
+         Guaranteed support
+        </p>
+        
+        <button className="package-btn"     onClick={() => router.push("/party-food-delivery-live-catering-buffet/party-live-buffet-catering")}>Explore Packages</button>
+      </div>
+    </div>
     </div>
   );
 
