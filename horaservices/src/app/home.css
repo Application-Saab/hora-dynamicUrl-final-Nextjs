@@ -205,7 +205,9 @@ button.contact-btn {
   grid-template-columns: repeat(2, minmax(140px, 1fr));
   gap: clamp(6px, 2vw, 10px);
   padding: clamp(6px, 3vw, 10px);
-  box-sizing: border-box;
+  box-sizing: border-box; 
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 
@@ -220,6 +222,7 @@ border: 1.28px solid #0000001F;
   gap: clamp(5px, 2vw, 7.25px);
 box-shadow: 0px 5.11px 14.05px 0px #D7D7D740;
   background-color: #fff;
+ 
 }
 
 .service-card-image {
@@ -258,24 +261,27 @@ font-size: clamp(9px, 3.4vw, 10px);
   object-fit: contain;
  margin-top: 1px;  
 }
+.package-wrapper {
+  margin-top: auto;        
+  display: flex;
+  justify-content: center; 
+  width: 100%;
+}
 .package-btn {
+  margin-top: auto;      /* 👈 keeps all buttons aligned */
   width: clamp(110px, 35vw, 134.88px);
   height: clamp(20px, 6vw, 24.65px);
   border-radius: clamp(4px, 2vw, 5.8px);
 
-  padding: clamp(6px, 2.5vw, 8.56px);
   font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: clamp(9px, 3vw, 10.27px);
 
   background-color: #97538C;
-  color: #fff !important;
+  color: #fff;
   border: none;
 
   display: flex;
   align-items: center;
   justify-content: center;
-   margin: 0 auto;
 }
-
-

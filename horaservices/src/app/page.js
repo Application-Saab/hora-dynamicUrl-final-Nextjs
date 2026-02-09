@@ -612,7 +612,9 @@ const handleContactClick = () => {
            <Image src={sparkle} alt="icon" class="points-icon" />
          Best prices, timely service, and support
         </p>
+         <div className="package-wrapper">
         <button className="package-btn" onClick={() => router.push("/balloon-decoration")}>Explore Designs</button>
+      </div>
       </div>
 
       {/* Card 2 */}
@@ -632,7 +634,9 @@ const handleContactClick = () => {
            <Image src={sparkle} alt="icon" class="points-icon" />
          Best prices, timely service, and support
         </p>
+         <div className="package-wrapper">
         <button className="package-btn"     onClick={() => router.push("/photography-page")}>Explore Packages</button>
+      </div>
       </div>
 
       {/* Card 3 */}
@@ -659,7 +663,9 @@ const handleContactClick = () => {
            <Image src={sparkle} alt="icon" class="points-icon" />
        Full hygiene control.
         </p>
+         <div className="package-wrapper">
         <button className="package-btn">Explore Dishes</button>
+        </div>
       </div>
 
       {/* Card 4 */}
@@ -685,7 +691,9 @@ Enjoy food delivery with Hora </p>
            <Image src={sparkle} alt="icon" class="points-icon" />
       Guaranteed support
         </p>
+        <div className="package-wrapper">
         <button className="package-btn"     onClick={() => router.push("/party-food-delivery-live-catering-buffet/party-food-delivery")}>Explore Packages</button>
+     </div>
       </div>
           {/* Card 5 */}
       <div className="service-card">
@@ -701,7 +709,9 @@ Enjoy food delivery with Hora </p>
         <p>
           🐻 Mascot , 🌿 Mehandi , 💅 Nail Art ..and so much more!
         </p>
-        <button className="package-btn"   onClick={() => router.push("/balloon-decoration")}>Explore Packages</button>
+        <div className="package-wrapper">
+        <button className="package-btn"   onClick={() => router.push("/balloon-decoration")}> Explore  More..</button>
+      </div>
       </div>
           {/* Card 6 */}
           <div className="service-card">
@@ -723,8 +733,9 @@ Enjoy food delivery with Hora </p>
            <Image src={sparkle} alt="icon" class="points-icon" />
          Guaranteed support
         </p>
-        
+        <div className="package-wrapper">
         <button className="package-btn"     onClick={() => router.push("/party-food-delivery-live-catering-buffet/party-live-buffet-catering")}>Explore Packages</button>
+     </div>
       </div>
     </div>
     </div>
