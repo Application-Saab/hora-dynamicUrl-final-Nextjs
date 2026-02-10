@@ -94,12 +94,15 @@ padding: clamp(14.61px, calc(14.61px + 4.58 * (100vw - 319px)/162), 22.04px);
 
 }
 
+
 /* RIGHT IMAGE → TEXT LEFT */
 .right-img .card-content {
   align-items: flex-start;
   text-align: left;
 }
-
+.right-img .card-content button {
+  margin-left: clamp(12px, 4vw, 20px);
+}
 /* TEXT */
 .card-content h3 {
  font-family: 'Inter', sans-serif;
@@ -107,16 +110,14 @@ font-weight: 700;
 font-style: normal;
 text-transform: uppercase;
 font-size: clamp(20px, 4.2vw, 28px);
-
+margin-bottom: 15px;
 }
 
 /* BUTTON */
 .card-content button {
  width: clamp(112.47px, calc(112.47px + 35.23 * (100vw - 319px) / 162), 169.53px);
-
-height: clamp(19.38px, 6.07vw, 29.24px);
-
-  font-size: clamp(12px, 3.2vw, 15px);
+ height: clamp(19.38px, 6.07vw, 29.24px);
+  font-size: clamp(9px, 2.6vw, 11px);
   border-radius: 6px;
   border: none;
   background: #97538C;
