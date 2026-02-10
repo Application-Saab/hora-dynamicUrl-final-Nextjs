@@ -123,7 +123,7 @@ const HeaderCards = ({
       fd.append("customerId", customerId);
       fd.append("file", file);
 
-      const res = await fetch("http://localhost:4000/create-subfolder", {
+      const res = await fetch("http://13.60.32.239:3000/create-subfolder", {
         method: "POST",
         body: fd,
       });
@@ -146,7 +146,7 @@ const HeaderCards = ({
   const startSearchStream = async formData => {
     setIsStremSearching(true);
     try{
-  const response = await fetch("http://localhost:8000/search", {
+  const response = await fetch("http://16.170.15.255:8000/search", {
       method: "POST",
       body: formData,
     });
@@ -250,7 +250,7 @@ const HeaderCards = ({
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
 
-      const res = await fetch("http://localhost:4000/create-subfolder", {
+      const res = await fetch("http://13.60.32.239:3000/create-subfolder", {
         method: "POST",
         body: fd,
       });

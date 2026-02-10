@@ -625,7 +625,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
 
               const res = await fetch(
-                "http://localhost:4000/upload-multiple",
+                "http://13.60.32.239:3000/upload-multiple",
                 {
                   method: "POST",
                   body: formData,
@@ -873,7 +873,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                                 try {
                                   // Call your API to delete the image
-                                  const res = await fetch(`http://localhost:4000/delete-image/${currentImage._id}`, {
+                                  const res = await fetch(`http://13.60.32.239:3000/delete-image/${currentImage._id}`, {
                                     method: "DELETE",
                                   });
 
