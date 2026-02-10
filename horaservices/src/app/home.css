@@ -141,7 +141,7 @@ height: clamp(19.38px, 6.07vw, 29.24px);
 .why-cards {
   display: flex;
   justify-content: space-between;
-  gap: 5px
+  gap: 8px
 }
 
 .why-card {
@@ -192,7 +192,7 @@ button.contact-btn {
   letter-spacing: 0%;
   text-align: center;
   cursor: pointer;
-
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
