@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
-import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
+import PhotoGallery from "@/pages/photo-gallery/PhotoGallery";
 import CardSkeleton from "@/components/CardSkeleton";
 import Engagement from "@/assets/photographyCategories/photography9.webp";
 import Wedding from "@/assets/photographyCategories/photography10.webp";
@@ -71,11 +71,11 @@ const categoryToGallery = {
     folderName: "birthday poses",
     customerId: "6683e5d43e33c54c0ebde8f2",
   },
-  "House-Warming-Photography": {
+  "House-warming-Photography": { 
     folderName: "House warming weblink",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Naming-Ceremony-Photography": {
+  "Naming-ceremony-Photography": {
     folderName: "naming ceremony weblink",
     customerId: "64137625549b58e3dc39a685",
   },
@@ -244,10 +244,10 @@ export default function CatValuePage() {
           {/* Gallery Section */}
           {galleryData && galleryData.folderName && galleryData.customerId && (
             <div className="photo-gallery-wrapper" style={{padding:"10px"}}>
-              <ThumbnailGallery
+              <PhotoGallery
                 folderName={galleryData.folderName}
                 customerId={galleryData.customerId}
-                disablePopup={true}
+                inlarge={false}
               />
             </div>
           )}
