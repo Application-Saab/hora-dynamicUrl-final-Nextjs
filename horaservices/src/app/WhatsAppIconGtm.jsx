@@ -12,6 +12,19 @@ const queryCity = router?.query?.city;
 const cityName = queryCity
   ? queryCity.charAt(0).toUpperCase() + queryCity.slice(1).toLowerCase()
   : null;
+const getCityFromCheckout = () => {
+  if (typeof window === "undefined") return "";
+
+  const params = new URLSearchParams(window.location.search);
+  const fromPath = params.get("from"); // "/bengaluru/balloon-decoration/..."
+
+  if (!fromPath) return "";
+
+  const parts = fromPath.split("/").filter(Boolean);
+
+  // first segment is city
+  return parts[0] || "";
+};
 
   const handleWhatsAppClick = () => {
     const phoneNumber = '7338584828';
@@ -144,28 +157,62 @@ case '/[city]/balloon-decoration/[catValue]/product/[productName]':
   );
   break;
 
+      // case '/checkout':
+      //   eventName = 'decoration_checkoutpage_whatsapp_click';
+      //   productNameEvent = 'decoration_checkoutpage_whatsapp_click';
+
+      //   const checkoutMessagesByCategory = {
+      //     "kids-birthday-decoration": "Hi, can you help me book a kids birthday decor design.",
+      //     "birthday-decoration": "Hi, can you help me book a birthday decor design.",
+      //     "anniversary-decoration": "Hi, can you help me book an anniversary decor design.",
+      //     "baby-shower-decoration": "Hi, can you help me book a baby shower decor design.",
+      //     "welcome-baby-decoration": "Hi, can you help me book a baby welcome decor design.",
+      //     "first-night-decoration": "Hi, can you help me book a first night decor design.",
+      //     "premium-decoration": "Hi, can you help me book a premium decor design.",
+      //     "haldi-mehendi-decoration": "Hi, can you help me book a haldi & mehendi decor design.",
+      //     "wedding-decoration": "Hi, can you help me book a wedding decor design.",
+      //     "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design."
+      //   };
+
+      //   const checkoutMsg = checkoutMessagesByCategory[catValue]
+      //     || "Hi, I saw your website and want to know more about the services.";
+
+      //   window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(checkoutMsg)}`);
+      //   break;
+
       case '/checkout':
-        eventName = 'decoration_checkoutpage_whatsapp_click';
-        productNameEvent = 'decoration_checkoutpage_whatsapp_click';
+  eventName = 'decoration_checkoutpage_whatsapp_click';
+  productNameEvent = 'decoration_checkoutpage_whatsapp_click';
 
-        const checkoutMessagesByCategory = {
-          "kids-birthday-decoration": "Hi, can you help me book a kids birthday decor design.",
-          "birthday-decoration": "Hi, can you help me book a birthday decor design.",
-          "anniversary-decoration": "Hi, can you help me book an anniversary decor design.",
-          "baby-shower-decoration": "Hi, can you help me book a baby shower decor design.",
-          "welcome-baby-decoration": "Hi, can you help me book a baby welcome decor design.",
-          "first-night-decoration": "Hi, can you help me book a first night decor design.",
-          "premium-decoration": "Hi, can you help me book a premium decor design.",
-          "haldi-mehendi-decoration": "Hi, can you help me book a haldi & mehendi decor design.",
-          "wedding-decoration": "Hi, can you help me book a wedding decor design.",
-          "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design."
-        };
+  const checkoutMessagesByCategory = {
+    "kids-birthday-decoration": "Hi, can you help me book a kids birthday decor design",
+    "birthday-decoration": "Hi, can you help me book a birthday decor design",
+    "anniversary-decoration": "Hi, can you help me book an anniversary decor design",
+    "baby-shower-decoration": "Hi, can you help me book a baby shower decor design",
+    "welcome-baby-decoration": "Hi, can you help me book a baby welcome decor design",
+    "first-night-decoration": "Hi, can you help me book a first night decor design",
+    "premium-decoration": "Hi, can you help me book a premium decor design",
+    "haldi-mehendi-decoration": "Hi, can you help me book a haldi & mehendi decor design",
+    "wedding-decoration": "Hi, can you help me book a wedding decor design",
+    "bachelorette-decoration": "Hi, can you help me book a bachelorette decor design"
+  };
 
-        const checkoutMsg = checkoutMessagesByCategory[catValue]
-          || "Hi, I saw your website and want to know more about the services.";
+  let checkoutMsg =
+    checkoutMessagesByCategory[catValue] ||
+    "Hi, I saw your website and want to know more about the services";
 
-        window.open(`https://wa.me/+917338584828/?text=${encodeURIComponent(checkoutMsg)}`);
-        break;
+  const city = getCityFromCheckout();
+
+  if (city) {
+    const formattedCity =
+      city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+    checkoutMsg += ` for ${formattedCity}`;
+  }
+
+  window.open(
+    `https://wa.me/+917338584828/?text=${encodeURIComponent(checkoutMsg)}`
+  );
+  break;
 
       case '/[city]/[locality]/balloon-decoration':
         eventName = 'decoration_localitypage_whatsappclick';
