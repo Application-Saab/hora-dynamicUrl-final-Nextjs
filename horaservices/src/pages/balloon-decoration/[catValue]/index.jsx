@@ -382,24 +382,6 @@ const DecorationCatPage = ({ locality }) => {
     return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
   };
 
-// const handleViewDetails = (item) => {
-//   console.log("Clicked item:", item, "catValue:", catValue);
-
-//   if (!item?.slug && !item?.product_slug && !item?.name) {
-//     console.warn("Missing slug or catValue", { item, catValue });
-//     return;
-//   }
-
-//   const productSlug = item.slug || item.product_slug || item.name?.toLowerCase().replace(/\s+/g, "-");
-
-//   const pathSegments = window.location.pathname.split("/").filter(Boolean);
-//   const balloonSegment = pathSegments.find(seg => seg.toLowerCase().startsWith("balloon-decoration")) || "balloon-decoration";
-
-//   const finalPath = `/${balloonSegment}/${catValue}/product/${productSlug}`;
-
-//   // GTM event push...
-//   router.push(finalPath);
-// };
 
 const handleViewDetails = (item) => {
   if (!item?.slug && !item?.product_slug && !item?.name) {
