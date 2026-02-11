@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
-import PhotoGallery from "@/pages/photo-gallery/PhotoGallery";
+import ImageGallery from "@/pages/poses-gallery/ImageGallery";
 import CardSkeleton from "@/components/CardSkeleton";
 import Engagement from "@/assets/photographyCategories/photography9.webp";
 import Wedding from "@/assets/photographyCategories/photography10.webp";
@@ -244,7 +244,7 @@ export default function CatValuePage() {
           {/* Gallery Section */}
           {galleryData && galleryData.folderName && galleryData.customerId && (
             <div className="photo-gallery-wrapper" style={{padding:"10px"}}>
-              <PhotoGallery
+              <ImageGallery
                 folderName={galleryData.folderName}
                 customerId={galleryData.customerId}
                 inlarge={false}
