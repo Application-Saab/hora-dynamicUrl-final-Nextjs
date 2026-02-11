@@ -396,6 +396,7 @@ const EventwallSection = ({
                   const isVideo =
                     thumbnail.postUrl?.match(/\.(mp4|mov|avi|mkv)$/i) ||
                     thumbnail.isVideo;
+                    const isLoading = !thumbnail?.postWebpUrl && thumbnail.status !== "done";
 
                   return (
                     <div
@@ -411,8 +412,14 @@ const EventwallSection = ({
                     >
                       <EventwallGalleryItem
                         isVideo={isVideo}
-                        thumbnail={thumbnail}
                         indexOnPage={indexOnPage}
+                        fullVideoSrc={thumbnail?.postUrl}
+                        progress={thumbnail?.progress}
+                        postType={thumbnail?.postType}
+                        id={thumbnail?._id}
+                        previewSrc={isLoading ? thumbnail.localPreview : thumbnail.postWebpUrl}
+                        imageUrl={isLoading ? thumbnail.localPreview : thumbnail.postWebpUrl}
+                        isEventWall={true}
                       />
                     </div>
                   );
