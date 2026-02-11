@@ -14,7 +14,7 @@ import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is cor
 // import "slick-carousel/slick/slick.css"; 
 // import "slick-carousel/slick/slick-theme.css";
 
-const PhotoGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon , inlarge=true}) => {
+const ImageGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon , inlarge=true}) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -261,4 +261,4 @@ const PhotoGallery = ({ folderName, customerId, showInternalTitle = true, handle
   );
 };
 
-export default PhotoGallery;
+export default ImageGallery;
