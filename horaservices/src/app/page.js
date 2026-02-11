@@ -23,7 +23,7 @@ import ChefForParty from "@/assets/Home/ChefForParty.svg";
 import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.svg";
 import Entertainment from "@/assets/Home/Entertainment.svg";
 import LiveCatering from "@/assets/Home/LiveCatering.svg";
-import Homevideo from '@/assets/Home/HomeVideo.mp4';
+import Homevideo from '../../public/assets/HomeVideo.mp4';
 import Photographybanner from '@/assets/Home/Photographybanner.jpg'
 import decorationbanner from '@/assets/Home/decorationbanner.jpg'
 import chefforparty from "@/assets/Home/chefforparty.jpg"
@@ -36,74 +36,6 @@ import { balloonreviews } from "@/utils/balloonReviews";
 export default function Home() {
 const router = useRouter();
 const pathname = usePathname();
-// useEffect(() => {
-//   const blockContextMenu = (e) => e.preventDefault();
-//   const blockKeys = (e) => {
-//     const key = e.key.toLowerCase();
-//     if (
-//       e.ctrlKey && (key === 'u' || key === 's') || // Ctrl+U, Ctrl+S
-//       (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'c')) || // Ctrl+Shift+I, C
-//       key === 'f12'
-//     ) {
-//       e.preventDefault();
-//       e.stopPropagation();
-//     }
-//   };
-//   const blockDrag = (e) => e.preventDefault();
-
-//   document.addEventListener("contextmenu", blockContextMenu);
-//   document.addEventListener("keydown", blockKeys);
-//   document.addEventListener("dragstart", blockDrag);
-
-//   return () => {
-//     document.removeEventListener("contextmenu", blockContextMenu);
-//     document.removeEventListener("keydown", blockKeys);
-//     document.removeEventListener("dragstart", blockDrag);
-//   };
-// }, []);
-
-//  useEffect(() => {
-//     const blockContextMenu = (e) => e.preventDefault();
-//     const blockKeys = (e) => {
-//       const key = e.key;
-//       const combo = `${e.ctrlKey ? "Ctrl+" : ""}${e.shiftKey ? "Shift+" : ""}${key}`;
-
-//       const blockedCombos = ["F12", "Ctrl+Shift+I", "Ctrl+U", "Ctrl+Shift+C", "Ctrl+S"];
-//       if (blockedCombos.includes(key) || blockedCombos.includes(combo)) {
-//         e.preventDefault();
-//       }
-//     };
-
-//     document.addEventListener("contextmenu", blockContextMenu);
-//     document.addEventListener("keydown", blockKeys);
-
-//     return () => {
-//       document.removeEventListener("contextmenu", blockContextMenu);
-//       document.removeEventListener("keydown", blockKeys);
-//     };
-//   }, []);
-
-  // ✅ Disable image dragging & text selection
-  // useEffect(() => {
-  //   const style = document.createElement('style');
-  //   style.innerHTML = `
-  //     * {
-  //       -webkit-user-select: none !important;
-  //       -moz-user-select: none !important;
-  //       -ms-user-select: none !important;
-  //       user-select: none !important;
-  //       -webkit-touch-callout: none !important;
-  //     }
-  //     img {
-  //       pointer-events: none !important;
-  //       -webkit-user-drag: none !important;
-  //     }
-  //   `;
-  //   document.head.appendChild(style);
-  //   return () => {
-  //     document.head.removeChild(style);
-  //   };
-  // }, []);
 
 useEffect(() => {
   // Google Tag Manager script for GTM
@@ -130,12 +62,8 @@ useEffect(() => {
 
     console.log("scrolling page");
   }, [pathname]);
-const photographyUrl = () =>{
-  window.open(
-    'https://api.whatsapp.com/send?phone=917338584828&text=I%20wanted%20to%20know%20about%2C%20photography',
-    '_blank'
-  );
-}
+
+
 const schemaOrg = getHomeOrganizationSchema();
 const scriptTag = JSON.stringify(schemaOrg);
 
@@ -199,40 +127,33 @@ if (transactionId) {
   checkPaymentStatus(transactionId);
 }
 }, [router]);
-const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+
+// const settings = {
+//     infinite: true,
+//     speed: 500,
+//     slidesToShow: 3,
+//     slidesToScroll: 1,
+//     autoplay: true,
+//     autoplaySpeed: 2000,
+//     responsive: [
+//       {
+//         breakpoint: 1024,
+//         settings: {
+//           slidesToShow: 2,
+//           slidesToScroll: 1,
+//         },
+//       },
+//       {
+//         breakpoint: 768,
+//         settings: {
+//           slidesToShow: 1,
+//           slidesToScroll: 1,
+//         },
+//       },
+//     ],
+//   };
 
  
-
-  const handleTitleClick = (title) => {
-    // Trigger GTM event when the user clicks on the title
-    sendGTMEvent('event', 'titleClicked', { value: title });
-  }
-
-
-
 
 const handleContactClick = () => {
   window.open(
