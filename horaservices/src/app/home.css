@@ -81,7 +81,7 @@ margin: clamp(10px, 3vw, 18px) auto;
 .card-content {
   position: absolute;
   inset: 0;
-padding: clamp(14.61px, calc(14.61px + 4.58 * (100vw - 319px)/162), 22.04px);
+  padding: clamp(8px, 2.5vw, 12px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -93,7 +93,9 @@ padding: clamp(14.61px, calc(14.61px + 4.58 * (100vw - 319px)/162), 22.04px);
   text-align: right;
 
 }
-
+.left-img .card-content button {
+  margin-right: clamp(6px, 3vw, 9px);
+}
 
 /* RIGHT IMAGE → TEXT LEFT */
 .right-img .card-content {
@@ -101,7 +103,7 @@ padding: clamp(14.61px, calc(14.61px + 4.58 * (100vw - 319px)/162), 22.04px);
   text-align: left;
 }
 .right-img .card-content button {
-  margin-left: clamp(12px, 4vw, 20px);
+  margin-left: clamp(16px, 8vw, 24px);
 }
 /* TEXT */
 .card-content h3 {
@@ -109,13 +111,13 @@ padding: clamp(14.61px, calc(14.61px + 4.58 * (100vw - 319px)/162), 22.04px);
 font-weight: 700;
 font-style: normal;
 text-transform: uppercase;
-font-size: clamp(20px, 4.2vw, 28px);
+font-size: clamp(18px, 5.6vw, 24px);
 margin-bottom: 15px;
 }
 
 /* BUTTON */
 .card-content button {
- width: clamp(112.47px, calc(112.47px + 35.23 * (100vw - 319px) / 162), 169.53px);
+width: clamp(100px, calc(100px + 40 * (100vw - 320px) / 160), 140px);
  height: clamp(19.38px, 6.07vw, 29.24px);
   font-size: clamp(9px, 2.6vw, 11px);
   border-radius: 6px;
