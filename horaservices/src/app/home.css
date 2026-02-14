@@ -62,7 +62,6 @@ font-size: clamp(11.36px, calc(11.36px + 3.56 * (100vw - 319px)/162), 17.12px);
 .feature-card {
   position: relative;
 
-
     width: clamp(313px, 98vw, 470px);
 height: clamp(109px, 34.1vw, 164px);
 margin: clamp(10px, 3vw, 18px) auto;
@@ -227,7 +226,8 @@ button.contact-btn {
   border-radius: clamp(9px, 2.95vw, 14px);
   border: clamp(1px, 0.32vw, 1.5px) solid #0000001F;
 
-  padding: clamp(4px, 1.3vw, 7px);
+  padding: clamp(2px, 0.8vw, 5px);
+  padding-bottom: clamp(6px, 1.5vw, 10px);
   gap: clamp(4px, 1.3vw, 7px);
 
   margin: 0 auto;
@@ -243,8 +243,9 @@ button.contact-btn {
 }
 
 .service-card-image {
-  width: clamp(140px, 42vw, 162.88px);
-  height: clamp(110px, 33vw, 128px);
+ width: clamp(150px, 45vw, 220px);
+
+  height: clamp(110px, 33vw, 150px);
   border-radius: clamp(9px, 2.95vw, 14px);
   object-fit: cover;
 }
@@ -255,6 +256,8 @@ button.contact-btn {
   font-size: clamp(11px, 3.5vw, 13.69px);
   line-height: 100%;
   margin: 0;
+  margin-top: clamp(5px, 1.5vw, 10px);
+
 }
 
 .service-card p {

@@ -21,7 +21,7 @@ const ReviewSlider = ({ reviews = [], title = "Customer Reviews" }) => {
         autoplay={{ delay: 4000 }}
         loop={true}
         spaceBetween={6}
-         slidesPerView={1.7} 
+         slidesPerView={1.85} 
   centeredSlides={true}
         
       >
