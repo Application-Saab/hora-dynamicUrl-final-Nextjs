@@ -317,8 +317,15 @@ const handleContactClick = () => {
 </div>
 
 <div className="why-hora">
-  <h2 className="why-title">✨ Why Choose HORA?</h2>
-
+    <h2 class="why-title">
+  <Image
+    src={sparkle}
+    alt="icon"
+    class="heading-icon"
+  />
+ Why Choose HORA?
+</h2>
+  
   <div className="why-cards">
     <div className="why-card">
       <Image src={photo1} alt="One Stop Solution" />
