@@ -180,14 +180,14 @@ height: clamp(45px, 14vw, 65px);
 }
 .btn-wrapper {
   display: flex;
-  justify-content: center;   /* center me lane ke liye */
+  justify-content: center;   
   align-items: center;
   margin-bottom: 10px;
 }
 button.contact-btn {
-  width: clamp(87.8px, 27.48vw, 132px); /* 108px at 393px design */
-  height: clamp(21.9px, 6.90vw, 34px);  /* 27px at 393px design */
-  padding: clamp(8.15px, 2.57vw, 13.47px); /* 10px at 393px design */
+  width: clamp(87.8px, 27.48vw, 132px); 
+  height: clamp(21.9px, 6.90vw, 34px);  
+  padding: clamp(8.15px, 2.57vw, 13.47px); 
   
   background-color: #97538C;
   border: none;
@@ -196,8 +196,8 @@ button.contact-btn {
   
   font-family: 'Inter', sans-serif;
   font-weight: 500;
-  font-style: normal; /* Medium handled by font-weight */
-  font-size: clamp(9.17px, 2.88vw, 14.37px); /* 11.61px at 393px design */
+  font-style: normal; 
+  font-size: clamp(9.17px, 2.88vw, 14.37px); 
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
@@ -221,19 +221,6 @@ button.contact-btn {
 }
 
 
-/* .service-card {
-    width: clamp(160px, 45vw, 200px);
-  border-radius: clamp(9px, 3vw, 11.6px);
-border: 1.28px solid #0000001F;
-  margin: 0 auto;
-  padding: clamp(6px, 2.5vw, 8.56px);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(5px, 2vw, 7.25px);
-box-shadow: 0px 5.11px 14.05px 0px #D7D7D740;
-  background-color: #fff;
- 
-} */
 .service-card {
   width: clamp(150px, 45.8vw, 220px);
 
@@ -258,7 +245,7 @@ box-shadow: 0px 5.11px 14.05px 0px #D7D7D740;
 .service-card-image {
   width: clamp(140px, 42vw, 162.88px);
   height: clamp(110px, 33vw, 128px);
-  border-radius: clamp(10px, 4vw, 14.73px);
+  border-radius: clamp(9px, 2.95vw, 14px);
   object-fit: cover;
 }
 
@@ -298,7 +285,7 @@ box-shadow: 0px 5.11px 14.05px 0px #D7D7D740;
   width: 100%;
 }
 .package-btn {
-  margin-top: auto;      /* 👈 keeps all buttons aligned */
+  margin-top: auto;     
   width: clamp(110px, 35vw, 134.88px);
 height: clamp(20px, 6.28vw, 30px);
   border-radius: clamp(4px, 2vw, 5.8px);
