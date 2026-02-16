@@ -588,7 +588,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
 
 
-          {!loading && activeTab === "all" && !isActualMyPhotos && (
+          {!loading && activeTab === "all" && (
             <button
               className="add-new-btn"
               onClick={() => addMoreImagesRef.current?.click()}
@@ -601,69 +601,115 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         </div>
         {/* Hidden file input – Add More Images */}
         <input
-          type="file"
-          id="addMoreImagesInput"
-          ref={addMoreImagesRef}
-          multiple
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={async (e) => {
-            const files = Array.from(e.target.files);
-            if (!files.length) return;
+  type="file"
+  id="addMoreImagesInput"
+  ref={addMoreImagesRef}
+  multiple
+  accept="image/*,video/*"
+  style={{ display: "none" }}
+  onChange={async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-            try {
-              const formData = new FormData();
+    const timestamp = Date.now();
 
-              files.forEach((file) => {
-                formData.append("images", file);
-              });
+    // ================= TEMP PREVIEW CREATE =================
+    const tempThumbnails = files.map((file, index) => {
+      const objectUrl = URL.createObjectURL(file);
 
-              // extra fields (agar chahiye)
-              formData.append("folderName", folderName);
-              formData.append("customerId", localUserId);
-              formData.append("phoneNo", localPhoneNumber);
+      return {
+        _id: `temp-${timestamp}-${index}`,
+        type: file.type.startsWith("video") ? "video" : "image",
+        originalUrl: objectUrl,
+        thumbnailImageUrl: file.type.startsWith("image")
+          ? objectUrl
+          : null,
+        videoClipUrl: file.type.startsWith("video")
+          ? objectUrl
+          : null,
+        folderIds: [],
+        isTemp: true,
+        uploading: true,
+        stableKey: `temp-${timestamp}-${index}`,
+      };
+    });
 
+    // temp IDs store kar lo (replacement ke liye)
+    const tempIds = tempThumbnails.map(t => t._id);
 
-              const res = await fetch(
-                "http://13.60.32.239:3000/upload-multiple",
-                {
-                  method: "POST",
-                  body: formData,
-                }
-              );
+    // UI me instantly show karo
+    setAllThumbnails(prev => [...tempThumbnails, ...prev]);
 
-              if (!res.ok) {
-                const err = await res.text();
-                throw new Error(err);
-              }
+    try {
+      const formData = new FormData();
 
-              const data = await res.json();
+      files.forEach((file) => {
+        formData.append("images", file);
+      });
 
-              if (data?.images?.length) {
-                const newThumbnails = data.images.map((img, index) => ({
-                  _id: img.imageId,
-                  type: "image",
-                  originalUrl: img.imageUrl,
-                  thumbnailImageUrl: img.thumbnailUrl,
-                  folderIds: [],
-                  stableKey: `new-upload-${img.imageId}-${Date.now()}-${index}`,
-                }));
+      formData.append("folderName", folderName);
+      formData.append("customerId", localUserId);
+      formData.append("phoneNo", localPhoneNumber);
 
-                setAllThumbnails(prev => [...newThumbnails, ...prev]);
-              }
+      const res = await fetch(
+        "http://13.60.32.239:3000/upload-multiple",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-              setIsEditing(false);
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
+      }
 
+      const data = await res.json();
 
+      if (data?.images?.length) {
+        const newThumbnails = data.images.map((img, index) => ({
+          _id: img.imageId,
+          type: img.type || "image",
+          originalUrl: img.imageUrl || img.videoUrl,
+          thumbnailImageUrl: img.thumbnailUrl || null,
+          videoClipUrl: img.clipUrl || null,
+          folderIds: [],
+          stableKey: `new-upload-${img.imageId}-${Date.now()}-${index}`,
+        }));
 
-            } catch (err) {
-              console.error("Upload failed:", err);
-              alert("Image upload failed");
-            } finally {
-              e.target.value = "";
-            }
-          }}
-        />
+        // ================= REPLACE TEMP WITH REAL =================
+        setAllThumbnails(prev => {
+          const withoutCurrentTemps = prev.filter(
+            item => !tempIds.includes(item._id)
+          );
+
+          return [...newThumbnails, ...withoutCurrentTemps];
+        });
+
+        // ================= CLEANUP OBJECT URL =================
+        tempThumbnails.forEach(item => {
+          if (item.originalUrl?.startsWith("blob:")) {
+            URL.revokeObjectURL(item.originalUrl);
+          }
+        });
+      }
+
+      setIsEditing(false);
+
+    } catch (err) {
+      console.error("Upload failed:", err);
+      alert("Image upload failed");
+
+      // error aaye toh temp remove kar do
+      setAllThumbnails(prev =>
+        prev.filter(item => !tempIds.includes(item._id))
+      );
+    } finally {
+      e.target.value = "";
+    }
+  }}
+/>
+
 
         <div>
       {/* ================= LOADING SKELETON ================= */}
