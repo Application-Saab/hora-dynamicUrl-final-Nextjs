@@ -799,7 +799,7 @@ const OrderDetailTab = ({
                             </div>
 
                             <div>
-                              {item.name || "NA"} =  ₹{item.price || "NA"} x 1 = ₹{item.price || "NA"}
+                              {item.addOnId.title || "NA"} =  ₹{item.addOnId.price || "NA"} x {item.quantity || 1} = ₹{item.totalPrice || "NA"}
                             </div>
                           </div>
                         ))}
@@ -980,7 +980,7 @@ const OrderDetailTab = ({
                     style={{ marginRight: 8 }}
                   />
                   <div>
-                    {item?.title || "NA"} – ₹{item?.price || 0}
+                  {item.addOnId.title || "NA"} =  ₹{item.addOnId.price || "NA"} x {item.quantity || 1} = ₹{item.totalPrice || "NA"}
                   </div>
                 </div>
               ))
