@@ -21,6 +21,7 @@ import InfoIcon from '../../../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../../../css/chefOrder.css';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 
 const FoodDeliveryCreateOrder = (currentStep) => {

@@ -33,9 +33,46 @@ import photo2 from "@/assets/Home/photo2.svg"
 import photo3 from "@/assets/Home/photo3.svg"
 import ReviewSlider from "@/components/ReviewSection";
 import { balloonreviews } from "@/utils/balloonReviews";
+import { openWhatsApp } from "@/utils/WhatsAppRedirection";
+
 export default function Home() {
 const router = useRouter();
+
 const pathname = usePathname();
+
+// break URL into parts
+const segments = pathname?.split("/")?.filter(Boolean) || [];
+
+const city = segments[0] || null;
+const locality = segments[1] || null;
+const formatName = (value) =>
+  value
+    ?.split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+const goTo = (path) => {
+  if (city && locality) {
+    router.push(`/${city}/${locality}${path}`);
+  } else if (city) {
+    router.push(`/${city}${path}`);
+  } else {
+    router.push(path);
+  }
+};
+const handleEntertainmentWhatsApp = () => {
+  let locationText = "";
+
+  if (city && locality) {
+    locationText = ` in ${formatName(locality)}, ${formatName(city)}`;
+  } else if (city) {
+    locationText = ` in ${formatName(city)}`;
+  }
+
+  const message = `Hi, I’m interested in your Entertainment services${locationText}. Please share details.`;
+
+  openWhatsApp(undefined, message);
+};
 
 useEffect(() => {
   // Google Tag Manager script for GTM
@@ -205,7 +242,7 @@ const handleContactClick = () => {
 
       {/* HEADING */}
       <div className="section-heading">
-      <h2 class="heading">
+      <h2 className="heading">
   <Image
     src={sparkle}
     alt="icon"
@@ -221,7 +258,7 @@ const handleContactClick = () => {
 
 <div
   className="feature-card left-img"
-  onClick={() => router.push("/balloon-decoration")}
+  onClick={() => goTo("/balloon-decoration")}
   role="button"
   tabIndex={0}
 >
@@ -231,7 +268,7 @@ const handleContactClick = () => {
     <button
       onClick={(e) => {
         e.stopPropagation();
-        router.push("/balloon-decoration");
+        goTo("/balloon-decoration");
       }}
     >
       Explore Designs
@@ -245,8 +282,7 @@ const handleContactClick = () => {
   className="feature-card right-img"
   role="button"
   tabIndex={0}
-  onClick={() => router.push("/photography-page")}
-  onKeyDown={(e) => e.key === "Enter" && router.push("/photography-page")}
+  onClick={() => goTo("/photography-page")}
 >
   <Image src={Photographybanner} alt="Photography" className="card-bg-img" />
   <div className="card-content">
@@ -254,7 +290,7 @@ const handleContactClick = () => {
     <button
       onClick={(e) => {
         e.stopPropagation();
-        router.push("/photography-page");
+       goTo("/photography-page")
       }}
     >
       Explore Packages
@@ -268,13 +304,7 @@ const handleContactClick = () => {
   role="button"
   tabIndex={0}
   onClick={() =>
-    router.push("/party-food-delivery-live-catering-buffet/party-food-delivery")
-  }
-  onKeyDown={(e) =>
-    e.key === "Enter" &&
-    router.push(
-      "/party-food-delivery-live-catering-buffet/party-food-delivery"
-    )
+    goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")
   }
 >
   <Image src={partyfood} alt="Party Food" className="card-bg-img" />
@@ -282,10 +312,8 @@ const handleContactClick = () => {
     <h3>PARTY FOOD</h3>
     <button
       onClick={(e) => {
+       goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")
         e.stopPropagation();
-        router.push(
-          "/party-food-delivery-live-catering-buffet/party-food-delivery"
-        );
       }}
     >
       Explore Packages
@@ -297,10 +325,8 @@ const handleContactClick = () => {
   className="feature-card right-img"
   role="button"
   tabIndex={0}
-  onClick={() => router.push("/book-chef-cook-for-party")}
-  onKeyDown={(e) =>
-    e.key === "Enter" && router.push("/book-chef-cook-for-party")
-  }
+  onClick={() => goTo("/book-chef-cook-for-party")}
+ 
 >
   <Image src={chefforparty} alt="Chef" className="card-bg-img" />
   <div className="card-content">
@@ -308,7 +334,7 @@ const handleContactClick = () => {
     <button
       onClick={(e) => {
         e.stopPropagation();
-        router.push("/book-chef-cook-for-party");
+        goTo("/book-chef-cook-for-party");
       }}
     >
       Explore Dishes
@@ -354,21 +380,21 @@ const handleContactClick = () => {
       <div className="service-card">
         <Image src={Decoration} alt="Decoration" className="service-card-image" />
         <h3>Decoration</h3>
-        <p class="points">
+        <p className="points">
            <Image src={sparkle} alt="icon" class="points-icon" />
           1000+ unique designs – Birthdays, Anniversaries, Baby showers,
           Weddings, and more!
         </p>
-        <p class="points">
+        <p className="points">
            <Image src={sparkle} alt="icon" class="points-icon" />
           Get your venue decorated in just 2 hours, indoors or outdoors.
         </p>
-         <p class="points">
+         <p className="points">
            <Image src={sparkle} alt="icon" class="points-icon" />
          Best prices, timely service, and support
         </p>
          <div className="package-wrapper">
-        <button className="package-btn" onClick={() => router.push("/balloon-decoration")}>Explore Designs</button>
+        <button className="package-btn" onClick={() => goTo("/balloon-decoration")}>Explore Designs</button>
       </div>
       </div>
 
@@ -376,21 +402,21 @@ const handleContactClick = () => {
       <div className="service-card">
         <Image src={PhotoGraphy} alt="Photography" className="service-card-image" />
         <h3>Photography</h3>
-       <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+       <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
          100+ Professional Photographers – Best prices, timely service,
           expert support.
         </p>
-       <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+       <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
         Life time photo storage
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
          Best prices, timely service, and support
         </p>
          <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => router.push("/photography-page")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/photography-page")}>Explore Packages</button>
       </div>
       </div>
 
@@ -398,28 +424,28 @@ const handleContactClick = () => {
       <div className="service-card">
         <Image src={ChefForParty} alt="Chef for Party" className="service-card-image" />
         <h3>Chef for Party</h3>
-         <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+         <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
         HORA brings professional chefs to your kitchen
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
          They use your ingredients and utensils
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
          Experience 400 restaurant-style dishes.
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
          Affordable & customizable.
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
        Full hygiene control.
         </p>
          <div className="package-wrapper">
-        <button className="package-btn">Explore Dishes</button>
+        <button className="package-btn" onClick={() => goTo("/book-chef-cook-for-party")}>Explore Dishes</button>
         </div>
       </div>
 
@@ -447,15 +473,15 @@ Enjoy food delivery with Hora </p>
       Guaranteed support
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => router.push("/party-food-delivery-live-catering-buffet/party-food-delivery")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")}>Explore Packages</button>
      </div>
       </div>
           {/* Card 5 */}
       <div className="service-card">
         <Image src={Entertainment} alt="Bulk Food Delivery" className="service-card-image" />
         <h3>Entertainment</h3>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
      Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services
         </p>
         <p>
@@ -465,31 +491,37 @@ Enjoy food delivery with Hora </p>
           🐻 Mascot , 🌿 Mehandi , 💅 Nail Art ..and so much more!
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"   onClick={() => router.push("/balloon-decoration")}> Explore  More..</button>
+        <button
+  className="package-btn"
+ onClick={handleEntertainmentWhatsApp}
+>
+  Explore More..
+</button>
+
       </div>
       </div>
           {/* Card 6 */}
           <div className="service-card">
         <Image src={LiveCatering} alt="Bulk Food Delivery" className="service-card-image" />
         <h3>Live Catering</h3>
-         <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+         <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
        Best prices , Timely service
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
         Delicious taste
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
         Good packing
         </p>
-          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+          <p className="points">
+           <Image src={sparkle} alt="icon" className="points-icon" />
          Guaranteed support
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => router.push("/party-food-delivery-live-catering-buffet/party-live-buffet-catering")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet/party-live-buffet-catering")}>Explore Packages</button>
      </div>
       </div>
     </div>
