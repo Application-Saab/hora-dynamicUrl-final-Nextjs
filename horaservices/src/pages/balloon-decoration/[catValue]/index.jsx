@@ -380,22 +380,34 @@ const DecorationCatPage = ({ locality }) => {
     return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
   };
 
-const handleViewDetails = (item) => {
-  console.log("Clicked item:", item, "catValue:", catValue);
 
-  if (!item?.slug && !item?.product_slug && !item?.name) {
-    console.warn("Missing slug or catValue", { item, catValue });
-    return;
-  }
+const handleViewDetails = (item) => {
+  if (!item?.slug && !item?.product_slug && !item?.name) return;
 
   const productSlug = item.slug || item.product_slug || item.name?.toLowerCase().replace(/\s+/g, "-");
 
   const pathSegments = window.location.pathname.split("/").filter(Boolean);
-  const balloonSegment = pathSegments.find(seg => seg.toLowerCase().startsWith("balloon-decoration")) || "balloon-decoration";
 
-  const finalPath = `/${balloonSegment}/${catValue}/product/${productSlug}`;
+  let city = "";
+  let locality = "";
+  let balloonSegment = "balloon-decoration";
 
-  // GTM event push...
+  // Extract city/locality/balloon segment
+  if (pathSegments.length >= 3) {
+    city = pathSegments[0];
+    locality = pathSegments[1];
+    balloonSegment = pathSegments[2];
+  } else if (pathSegments.length === 2) {
+    city = pathSegments[0];
+    balloonSegment = pathSegments[1];
+  }
+
+  // Check if catValue is already present at the end
+  const lastSegment = pathSegments[pathSegments.length - 1];
+  const finalCatValue = lastSegment === catValue ? "" : catValue;
+
+  const finalPath = `/${city}${locality ? `/${locality}` : ""}/${balloonSegment}${finalCatValue ? `/${finalCatValue}` : ""}/product/${productSlug}`;
+
   router.push(finalPath);
 };
 
