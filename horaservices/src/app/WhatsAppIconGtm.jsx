@@ -292,8 +292,6 @@ let message = defaultMessage;
   productNameEvent = 'city_balloon_decoration_instagram_whatsapp_click';
   message = `${instagramMessage} ${formattedCity}.`;
   break;
-
-        break;
       case '/[city]/balloon-decoration-instagram/[catValue]':
         eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
         productNameEvent = 'city_balloon_decoration_youtube_product_list_whatsapp_click';
