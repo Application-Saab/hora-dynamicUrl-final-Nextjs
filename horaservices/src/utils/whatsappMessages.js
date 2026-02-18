@@ -185,3 +185,17 @@ export const chefForPartyMessage =
 export const defaultMessage =
   "Hi, I saw your website and would like more information about your services.";
 
+export const chefOrderDetailsMessage =
+  "Hi, I need help regarding my Chef for Party order details.";
+
+export const chefCheckoutMessage =
+  "Hi, I need assistance with completing my Chef for Party booking.";
+
+export const chefCityPageMessage =
+  "Hi, I saw your Chef for Party services page and would like more details.";
+
+export const foodSelectDateMessage =
+  "Hi, I need help selecting the date for party food delivery or live catering.";
+
+export const photographyMainMessage =
+  "Hi, I saw your website and want to know more about the photography services.";
