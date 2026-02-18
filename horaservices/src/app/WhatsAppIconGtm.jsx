@@ -287,10 +287,12 @@ let message = defaultMessage;
         productNameEvent = 'youtube_product_detail_decorwhatsapp_click';
         message = instagramProductPageMessage;
         break;
-      case '/[city]/balloon-decoration-instagram':
-        eventName = 'city_balloon_decoration_youtube_whatsapp_click';
-        productNameEvent = 'city_balloon_decoration_youtube_whatsapp_click';
-        message = instagramMessage;
+    case '/[city]/balloon-decoration-instagram':
+  eventName = 'city_balloon_decoration_instagram_whatsapp_click';
+  productNameEvent = 'city_balloon_decoration_instagram_whatsapp_click';
+  message = `${instagramMessage} ${formattedCity}.`;
+  break;
+
         break;
       case '/[city]/balloon-decoration-instagram/[catValue]':
         eventName = 'city_balloon_decoration_youtube_product_list_whatsapp_click';

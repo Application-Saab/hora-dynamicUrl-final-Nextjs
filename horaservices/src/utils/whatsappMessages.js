@@ -147,7 +147,7 @@ export const googleCityProductMessage =
   "Hi, I saw your decoration on Google and want to book it.";
 
 export const instagramMessage =
-  "Hi, Found your decoration on Instagram. Need details..";
+  "Hi, Found your decoration on Instagram. Need details for";
 
  export const instagramCategoryPageMessage =
  "Hi, Found your decoration on Instagram. Need details."
