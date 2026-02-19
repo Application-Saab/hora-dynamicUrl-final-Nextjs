@@ -105,11 +105,11 @@ gap: clamp(3px, 1vw, 5px);
   flex-wrap: nowrap;            /* ❌ wrap hata diya */
   white-space: nowrap;          /* line break prevent */
   overflow: hidden;
-  margin-bottom:clamp(4px, 1.2vw, 6px);
-;
+  margin-bottom:clamp(4px, 3.2vw, 6px);
+justify-content: flex-start;
 }
 
-/* Final Price */
+
 .finalPrice {
 font-family: 'Rubik', sans-serif;
 font-weight: 600;
