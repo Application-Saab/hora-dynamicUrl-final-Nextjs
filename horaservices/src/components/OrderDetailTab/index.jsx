@@ -17,6 +17,8 @@ import inviteGuest from '../../assets/inviteGuest.png';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
 
+import ReviewSections from "../ReviewSections";
+
 // order.type is 2 for chef
 // order.type is 1 for decoration
 // order.type is 3 for waiter
@@ -748,7 +750,9 @@ const OrderDetailTab = ({
           </div>
         </div>
       ) : orderType === 1 ? (
+         
         <div className="decoration-container orderdetails">
+          <ReviewSections />
           {decorationArray?.map((product, index) => {
             return (
               <div className="myOrder-decDetails">
