@@ -138,7 +138,7 @@ const brandItems = [
  {poseGridData.map((pose, index) => (
   <a
     key={index}
-    href={`http://localhost:3000/photo-gallery?folderName=${encodeURIComponent(
+    href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
       pose.folder
     )}&customerId=${pose.customerId}`}
     className="pose-card"
