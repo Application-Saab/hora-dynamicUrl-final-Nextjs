@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
-import ImageGallery from '../poses-gallery/ImageGallery'; // Import the ThumbnailGallery component
+import ThumbnailGallery from './ThumbnailGallery'; // Import the ThumbnailGallery component
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import shareIcon from '../../assets/share-photo-icon.png'
@@ -41,7 +41,7 @@ const PhotoGallery = () => {
   };
 
   return (
-    <div className="photo-container p-3">
+    <div className="photo-container">
   
 
       {/* {isLoggedIn ? (
@@ -53,7 +53,7 @@ const PhotoGallery = () => {
       ) : (
         isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
       )} */}
-                <ImageGallery folderName={folderName} customerId={customerId} handleShareicon={handleShareicon} />
+                <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={handleShareicon} />
 
     </div>
   );

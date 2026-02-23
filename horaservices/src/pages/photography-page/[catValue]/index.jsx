@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
-import ImageGallery from "@/pages/poses-gallery/ImageGallery";
+import ImageGallery from "@/pages/photo-gallery/ImageGallery";
 import CardSkeleton from "@/components/CardSkeleton";
 import Engagement from "@/assets/photographyCategories/photography9.webp";
 import Wedding from "@/assets/photographyCategories/photography10.webp";
