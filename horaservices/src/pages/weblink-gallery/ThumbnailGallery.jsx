@@ -652,7 +652,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       formData.append("phoneNo", localPhoneNumber);
 
       const res = await fetch(
-        "http://13.60.32.239:3000/upload-multiple",
+        "https://mediaprocess.horaservices.com/upload-multiple",
         {
           method: "POST",
           body: formData,
@@ -919,7 +919,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                                 try {
                                   // Call your API to delete the image
-                                  const res = await fetch(`http://13.60.32.239:3000/delete-image/${currentImage._id}`, {
+                                  const res = await fetch(`https://mediaprocess.horaservices.com/delete-image/${currentImage._id}`, {
                                     method: "DELETE",
                                   });
 
