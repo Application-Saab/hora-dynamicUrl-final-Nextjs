@@ -669,7 +669,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       if (data?.images?.length) {
         const newThumbnails = data.images.map((img, index) => ({
           _id: img.imageId,
-          type: img.type || "image",
+          type: img.videoUrl ? "video" : "image",  
           originalUrl: img.imageUrl || img.videoUrl,
           thumbnailImageUrl: img.thumbnailUrl || null,
           videoClipUrl: img.clipUrl || null,
