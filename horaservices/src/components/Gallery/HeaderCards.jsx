@@ -29,7 +29,7 @@ const HeaderCards = ({
   activeTab,
   setActiveTab,
   setIsActualMyPhotos,
-  setIsStremSearching
+  setIsStremSearching,
 }) => {
   /* ================= STATE ================= */
   const [showCameraPopup, setShowCameraPopup] = useState(false);

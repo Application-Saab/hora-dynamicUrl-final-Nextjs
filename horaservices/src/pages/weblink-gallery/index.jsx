@@ -21,7 +21,7 @@ const PhotoGallery = () => {
   
 
   const handleShareicon = async () => {
-    const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)
+    const shareUrl = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName)
       .replace(/%20/g, "%2520")}&customerId=${customerId}`;
 
     if (navigator.share) {
