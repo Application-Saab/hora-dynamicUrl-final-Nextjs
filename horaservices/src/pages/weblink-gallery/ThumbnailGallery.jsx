@@ -71,6 +71,24 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }, [matchedKeys.length > 0]);
 
 
+  const handleImageShare = async (imageUrl) => {
+    if (!imageUrl) return;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Photo",
+          text: "Check out this photo!",
+          url: imageUrl,
+        });
+      } catch (error) {
+        console.error("Error sharing image:", error);
+      }
+    } else {
+      await navigator.clipboard.writeText(imageUrl);
+      alert("Image link copied!");
+    }
+  };
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn");
@@ -165,7 +183,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     }
 
     // when searching
-    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
       return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
     }
 
@@ -376,14 +394,21 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     },
   }), [allThumbnails.length]);
 
-  const handleSearchResults = (matches) => {
+  // const handleSearchResults = (matches) => {
+  //   if (!Array.isArray(matches)) return;
+  //   const keys = matches.map(m => m?.file);
+  //   setMatchedKeys(keys);
+  //   setIsSearching(true);
+  //   setIsSearchComplete(false);
+
+  // };
+  
+ const handleSearchResults = (matches) => {
     if (!Array.isArray(matches)) return;
     const keys = matches.map(m => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
-
   };
-
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
@@ -619,235 +644,235 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         </div>
         {/* Hidden file input – Add More Images */}
         <input
-  type="file"
-  id="addMoreImagesInput"
-  ref={addMoreImagesRef}
-  multiple
-  accept="image/*,video/*"
-  style={{ display: "none" }}
-  onChange={async (e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+          type="file"
+          id="addMoreImagesInput"
+          ref={addMoreImagesRef}
+          multiple
+          accept="image/*,video/*"
+          style={{ display: "none" }}
+          onChange={async (e) => {
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
 
-    const timestamp = Date.now();
+            const timestamp = Date.now();
 
-    // ================= TEMP PREVIEW CREATE =================
-    const tempThumbnails = files.map((file, index) => {
-      const objectUrl = URL.createObjectURL(file);
+            // ================= TEMP PREVIEW CREATE =================
+            const tempThumbnails = files.map((file, index) => {
+              const objectUrl = URL.createObjectURL(file);
 
-      return {
-        _id: `temp-${timestamp}-${index}`,
-        type: file.type.startsWith("video") ? "video" : "image",
-        originalUrl: objectUrl,
-        thumbnailImageUrl: file.type.startsWith("image")
-          ? objectUrl
-          : null,
-        videoClipUrl: file.type.startsWith("video")
-          ? objectUrl
-          : null,
-        folderIds: [],
-        isTemp: true,
-        uploading: true,
-        stableKey: `temp-${timestamp}-${index}`,
-      };
-    });
+              return {
+                _id: `temp-${timestamp}-${index}`,
+                type: file.type.startsWith("video") ? "video" : "image",
+                originalUrl: objectUrl,
+                thumbnailImageUrl: file.type.startsWith("image")
+                  ? objectUrl
+                  : null,
+                videoClipUrl: file.type.startsWith("video")
+                  ? objectUrl
+                  : null,
+                folderIds: [],
+                isTemp: true,
+                uploading: true,
+                stableKey: `temp-${timestamp}-${index}`,
+              };
+            });
 
-    // temp IDs store kar lo (replacement ke liye)
-    const tempIds = tempThumbnails.map(t => t._id);
+            // temp IDs store kar lo (replacement ke liye)
+            const tempIds = tempThumbnails.map(t => t._id);
 
-    // UI me instantly show karo
-    setAllThumbnails(prev => [...tempThumbnails, ...prev]);
+            // UI me instantly show karo
+            setAllThumbnails(prev => [...tempThumbnails, ...prev]);
 
-    try {
-      const formData = new FormData();
+            try {
+              const formData = new FormData();
 
-      files.forEach((file) => {
-        formData.append("images", file);
-      });
+              files.forEach((file) => {
+                formData.append("images", file);
+              });
 
-      formData.append("folderName", folderName);
-      formData.append("customerId", localUserId);
-      formData.append("phoneNo", localPhoneNumber);
+              formData.append("folderName", folderName);
+              formData.append("customerId", localUserId);
+              formData.append("phoneNo", localPhoneNumber);
 
-      const res = await fetch(
-        "https://mediaprocess.horaservices.com/upload-multiple",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+              const res = await fetch(
+                "https://mediaprocess.horaservices.com/upload-multiple",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
 
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err);
-      }
+              if (!res.ok) {
+                const err = await res.text();
+                throw new Error(err);
+              }
 
-      const data = await res.json();
+              const data = await res.json();
 
-      if (data?.images?.length) {
-        const newThumbnails = data.images.map((img, index) => ({
-          _id: img.imageId,
-          type: img.videoUrl ? "video" : "image",  
-          originalUrl: img.imageUrl || img.videoUrl,
-          thumbnailImageUrl: img.thumbnailUrl || null,
-          videoClipUrl: img.clipUrl || null,
-          folderIds: [],
-          stableKey: `new-upload-${img.imageId}-${Date.now()}-${index}`,
-        }));
+              if (data?.images?.length) {
+                const newThumbnails = data.images.map((img, index) => ({
+                  _id: img.imageId,
+                  type: img.videoUrl ? "video" : "image",
+                  originalUrl: img.imageUrl || img.videoUrl,
+                  thumbnailImageUrl: img.thumbnailUrl || null,
+                  videoClipUrl: img.clipUrl || null,
+                  folderIds: [],
+                  stableKey: `new-upload-${img.imageId}-${Date.now()}-${index}`,
+                }));
 
-        // ================= REPLACE TEMP WITH REAL =================
-        setAllThumbnails(prev => {
-          const withoutCurrentTemps = prev.filter(
-            item => !tempIds.includes(item._id)
-          );
+                // ================= REPLACE TEMP WITH REAL =================
+                setAllThumbnails(prev => {
+                  const withoutCurrentTemps = prev.filter(
+                    item => !tempIds.includes(item._id)
+                  );
 
-          return [...newThumbnails, ...withoutCurrentTemps];
-        });
+                  return [...newThumbnails, ...withoutCurrentTemps];
+                });
 
-        // ================= CLEANUP OBJECT URL =================
-        tempThumbnails.forEach(item => {
-          if (item.originalUrl?.startsWith("blob:")) {
-            URL.revokeObjectURL(item.originalUrl);
-          }
-        });
-      }
+                // ================= CLEANUP OBJECT URL =================
+                tempThumbnails.forEach(item => {
+                  if (item.originalUrl?.startsWith("blob:")) {
+                    URL.revokeObjectURL(item.originalUrl);
+                  }
+                });
+              }
 
-      setIsEditing(false);
+              setIsEditing(false);
 
-    } catch (err) {
-      console.error("Upload failed:", err);
-      alert("Image upload failed");
+            } catch (err) {
+              console.error("Upload failed:", err);
+              alert("Image upload failed");
 
-      // error aaye toh temp remove kar do
-      setAllThumbnails(prev =>
-        prev.filter(item => !tempIds.includes(item._id))
-      );
-    } finally {
-      e.target.value = "";
-    }
-  }}
-/>
+              // error aaye toh temp remove kar do
+              setAllThumbnails(prev =>
+                prev.filter(item => !tempIds.includes(item._id))
+              );
+            } finally {
+              e.target.value = "";
+            }
+          }}
+        />
 
 
         <div>
-      {/* ================= LOADING SKELETON ================= */}
-{loading && (
-  <div className="gallery-image-grid">
-    {[...Array(6)].map((_, index) => {
-      const type = getBlockType(index);
-      return (
-        <div key={index} className={`grid-item ${type}`}>
-          <div className="event-masonry-item">
-            <div className="event-lazy-image-spinner-container placeholder-glow">
-              <div className="placeholder w-100 h-100"></div>
+          {/* ================= LOADING SKELETON ================= */}
+          {loading && (
+            <div className="gallery-image-grid">
+              {[...Array(6)].map((_, index) => {
+                const type = getBlockType(index);
+                return (
+                  <div key={index} className={`grid-item ${type}`}>
+                    <div className="event-masonry-item">
+                      <div className="event-lazy-image-spinner-container placeholder-glow">
+                        <div className="placeholder w-100 h-100"></div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        </div>
-      );
-    })}
-  </div>
-)}
+          )}
 
-{/* ================= SEARCHING STATE ================= */}
-{!loading && isStreamSearching && isActualMyPhotos && matchedKeys.length === 0 && (
-  <>
-    <div className="thumbnail-gallery-status">Searching Photos.... </div>
-    <div className="gallery-image-grid">
-      {[...Array(6)].map((_, index) => {
-        const type = getBlockType(index);
-        return (
-          <div key={index} className={`grid-item ${type}`}>
-            <div className="event-masonry-item">
-              <div className="event-lazy-image-spinner-container placeholder-glow">
-                <div className="placeholder w-100 h-100"></div>
+          {/* ================= SEARCHING STATE ================= */}
+          {!loading && isStreamSearching && isActualMyPhotos && matchedKeys.length === 0 && (
+            <>
+              <div className="thumbnail-gallery-status">Searching Photos.... </div>
+              <div className="gallery-image-grid">
+                {[...Array(6)].map((_, index) => {
+                  const type = getBlockType(index);
+                  return (
+                    <div key={index} className={`grid-item ${type}`}>
+                      <div className="event-masonry-item">
+                        <div className="event-lazy-image-spinner-container placeholder-glow">
+                          <div className="placeholder w-100 h-100"></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+            </>
+          )}
+
+          {/* ================= NO SEARCH RESULT ================= */}
+          {!loading &&
+          !isStreamSearching &&
+           isActualMyPhotos &&
+           visibleThumbnails.length === 0 && (
+              <div className="thumbnail-gallery-status">No images found</div>
+            )}
+
+          {/* ================= MAIN IMAGE GRID ================= */}
+          {!loading && visibleThumbnails.length > 0 && (
+            <div className="event-image-grid">
+              {visibleThumbnails.map((thumbnail, indexOnPage) => {
+                const type = getBlockType(indexOnPage);
+
+                return (
+                  <div
+                    key={thumbnail.stableKey || indexOnPage}
+                    className={`grid-item ${type}`}
+                    style={{
+                      cursor: "pointer",
+                      position: "relative",
+                      backgroundColor: "transparent",
+                      display: "grid",
+                    }}
+                    onClick={() => handleImageClick(indexOnPage)}
+                  >
+                    <div className="image-wrapper" style={{ position: "relative" }}>
+                      {isEditing &&
+                        !isSearchMode &&
+                        activeSubFolderId &&
+                        !isActualMyPhotos && (
+                          <input
+                            type="checkbox"
+                            className="image-checkbox"
+                            checked={selectedImages.includes(thumbnail._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedImages((prev) => [...prev, thumbnail._id]);
+                              } else {
+                                setSelectedImages((prev) =>
+                                  prev.filter((id) => id !== thumbnail._id)
+                                );
+                              }
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        )}
+
+                      <EventwallGalleryItem
+                        isVideo={thumbnail.type === "video"}
+                        indexOnPage={indexOnPage}
+                        id={thumbnail._id}
+                        imageUrl={
+                          thumbnail.type === "image"
+                            ? thumbnail.thumbnailImageUrl || thumbnail.originalUrl
+                            : null
+                        }
+                        previewSrc={
+                          thumbnail.type === "video" ? thumbnail.videoClipUrl : null
+                        }
+                        fullVideoSrc={
+                          thumbnail.type === "video" ? thumbnail.originalUrl : null
+                        }
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        );
-      })}
-    </div>
-  </>
-)}
+          )}
 
-{/* ================= NO SEARCH RESULT ================= */}
-{!loading &&
-  !isStreamSearching &&
-  isActualMyPhotos &&
-  visibleThumbnails.length === 0 && (
-    <div className="thumbnail-gallery-status">No images found</div>
-)}
-
-{/* ================= MAIN IMAGE GRID ================= */}
-{!loading && visibleThumbnails.length > 0 && (
-  <div className="event-image-grid">
-    {visibleThumbnails.map((thumbnail, indexOnPage) => {
-      const type = getBlockType(indexOnPage);
-
-      return (
-        <div
-          key={thumbnail.stableKey || indexOnPage}
-          className={`grid-item ${type}`}
-          style={{
-            cursor: "pointer",
-            position: "relative",
-            backgroundColor: "transparent",
-            display: "grid",
-          }}
-          onClick={() => handleImageClick(indexOnPage)}
-        >
-          <div className="image-wrapper" style={{ position: "relative" }}>
-            {isEditing &&
-              !isSearchMode &&
-              activeSubFolderId &&
-              !isActualMyPhotos && (
-                <input
-                  type="checkbox"
-                  className="image-checkbox"
-                  checked={selectedImages.includes(thumbnail._id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedImages((prev) => [...prev, thumbnail._id]);
-                    } else {
-                      setSelectedImages((prev) =>
-                        prev.filter((id) => id !== thumbnail._id)
-                      );
-                    }
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              )}
-
-            <EventwallGalleryItem
-              isVideo={thumbnail.type === "video"}
-              indexOnPage={indexOnPage}
-              id={thumbnail._id}
-              imageUrl={
-                thumbnail.type === "image"
-                  ? thumbnail.thumbnailImageUrl || thumbnail.originalUrl
-                  : null
-              }
-              previewSrc={
-                thumbnail.type === "video" ? thumbnail.videoClipUrl : null
-              }
-              fullVideoSrc={
-                thumbnail.type === "video" ? thumbnail.originalUrl : null
-              }
-            />
-          </div>
-        </div>
-      );
-    })}
-  </div>
-)}
-
-{/* ================= IOS EMPTY PAGE CASE ================= */}
-{!loading &&
-  !isStreamSearching &&
-  isIOSMobile &&
-  totalPages > 0 &&
-  visibleThumbnails.length === 0 && (
-    <div className="thumbnail-gallery-status">No photos on this page.</div>
-)}
+          {/* ================= IOS EMPTY PAGE CASE ================= */}
+          {!loading &&
+            !isStreamSearching &&
+            isIOSMobile &&
+            totalPages > 0 &&
+            visibleThumbnails.length === 0 && (
+              <div className="thumbnail-gallery-status">No photos on this page.</div>
+            )}
 
 
           {selectedIndex !== null && popupImages[selectedIndex] && (
@@ -870,7 +895,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                     </div>
                   </div>
                   <div>
-                    {typeof handleShareicon === 'function' && (
+                    {typeof handleImageShare === 'function' && (
                       <div style={{ position: "relative" }}>
                         <Image
                           src={multiGroup}
@@ -919,8 +944,13 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                             )}
 
                             <div
-                              onClick={handleShareicon}
-                              className="action-item flex gallery-share-icon">
+                              onClick={() => {
+                                const current = allThumbnails[selectedIndex];
+                                if (!current) return;
+
+                                handleImageShare(current?.originalUrl);
+                                setShowActionMenu(false);
+                              }} className="action-item flex gallery-share-icon">
                               <Image
                                 src={shareVector} width={16} height={16} />
                               <span>Share</span>
