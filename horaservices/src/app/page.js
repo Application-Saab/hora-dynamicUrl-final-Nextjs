@@ -267,7 +267,6 @@ const handleContactClick = () => {
     <h3>DECORATION</h3>
     <button
       onClick={(e) => {
-        e.stopPropagation();
         goTo("/balloon-decoration");
       }}
     >
@@ -289,7 +288,7 @@ const handleContactClick = () => {
     <h3>PHOTOGRAPHY</h3>
     <button
       onClick={(e) => {
-        e.stopPropagation();
+     
        goTo("/photography-page")
       }}
     >
@@ -313,7 +312,7 @@ const handleContactClick = () => {
     <button
       onClick={(e) => {
        goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")
-        e.stopPropagation();
+      
       }}
     >
       Explore Packages
@@ -333,7 +332,6 @@ const handleContactClick = () => {
     <h3>CHEF FOR PARTY</h3>
     <button
       onClick={(e) => {
-        e.stopPropagation();
         goTo("/book-chef-cook-for-party");
       }}
     >
