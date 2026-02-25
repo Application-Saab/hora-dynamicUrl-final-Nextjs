@@ -6,12 +6,14 @@ import giftIcon from "@/assets/review/gift_box.svg";      // gift icon
 import angryImg from "@/assets/review/angry.png";
 import neutralImg from "@/assets/review/neutral.png";
 import loveImg from "@/assets/review/love.png";
+import smallBg from "@/assets/review/small-bg.svg"
+import finalImage from "@/assets/review/final_image.svg"
 import "./coupon.css";
 const CouponPopup = ({ selectedRating }) => {
-  
+
   return (
-<div className="coupon-wrapper">
-  <div className="coupon-card">
+    <div className="coupon-wrapper">
+      <div className="coupon-card">
         {/* TOP SECTION */}
         <div className="coupon-top">
           <Image
@@ -28,8 +30,8 @@ const CouponPopup = ({ selectedRating }) => {
         </div>
 
         {/* RATING ROW */}
-  
-      <div className="rating-row">
+
+        <div className="rating-row">
           <div className={`rate-pill ${selectedRating === 1 ? "active" : ""}`}>
             <Image src={angryImg} alt="low" className="rate-img" />
             <span>1 - 6</span>
@@ -47,6 +49,7 @@ const CouponPopup = ({ selectedRating }) => {
         </div>
 
         {/* COUPON SECTION */}
+        {/* 1-6 */}
         <div className="coupon-bottom">
           <Image
             src={couponBg}
@@ -60,7 +63,7 @@ const CouponPopup = ({ selectedRating }) => {
             <Image
               src={giftIcon}
               alt="gift"
-             className="gift-icon"
+              className="gift-icon"
             />
 
             <h3>
@@ -84,6 +87,38 @@ const CouponPopup = ({ selectedRating }) => {
           </div>
         </div>
 
+{/* 7-8 */}
+        <div className="smallimageCard">
+          <Image src={smallBg} alt="background" className="smallcardimage" />
+          <div className="smalloverlayText">
+            Ooh, we have still not reached the mark!!
+          </div>
+        </div>
+
+{/* 9-10 */}
+<div className="cardimageCard">
+  <div className="imagecard">
+    <Image src={finalImage} alt="background" />
+  </div>
+
+  <div className="cardoverlayContent">
+    <div className="cardgiftIcon">
+  <Image src={giftIcon}  className="gift-icon" alt="gift" />
+</div>
+
+    <h2>Unlock Discount Coupon for your Next Order!</h2>
+
+    <p>
+      Just share a screenshot of your review with us or
+      Collaborate with us on Instagram.
+    </p>
+
+    <div class="buttonGroup">
+      <button class="instaBtn">📸 Review on Instagram</button>
+      <button class="googleBtn">🟢 Review on Google</button>
+    </div>
+  </div>
+</div>
       </div>
     </div>
   );

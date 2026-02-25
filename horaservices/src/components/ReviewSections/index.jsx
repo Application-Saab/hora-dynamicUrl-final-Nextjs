@@ -95,12 +95,16 @@ const ReviewSections = ({ onSubmitSuccess, setSelectedRating }) => {
       )}
 
    
+
 <button
   className="submit-btn"
   disabled={!selected}
   onClick={() => {
-    setShowPopup(true);
-    onSubmitSuccess();   // 👈 ye important hai
+    // 👇 only show popup if mid or high rating
+    if (selected !== "low") {
+      setShowPopup(true);
+    }
+    onSubmitSuccess();   // 👈 always call callback
   }}
 >
   Submit
