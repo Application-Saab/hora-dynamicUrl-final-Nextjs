@@ -7,7 +7,7 @@ import Image from "next/image";
 const ReviewSections = ({ onSubmitSuccess, setSelectedRating }) => {
     const [showPopup, setShowPopup] = useState(false);
   const [selected, setSelected] = useState(null);
-
+const [message, setMessage] = useState("");
   const handleSelect = (value) => {
     setSelected(value);
     setSelectedRating(value); 
@@ -87,24 +87,28 @@ const ReviewSections = ({ onSubmitSuccess, setSelectedRating }) => {
       </div>
 
       {/* Message Box (Open on any selection) */}
-      {selected && (
-        <textarea
-          placeholder="Describe your experience"
-          className="message-box"
-        />
-      )}
+    
 
    
-
+{selected && (
+  <textarea
+    placeholder="Describe your experience"
+    className="message-box"
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+  />
+)}
 <button
   className="submit-btn"
-  disabled={!selected}
+  disabled={!selected || message.trim() === ""}
   onClick={() => {
-    // 👇 only show popup if mid or high rating
+    if (message.trim() === "") return;   // extra safety
+
     if (selected !== "low") {
       setShowPopup(true);
     }
-    onSubmitSuccess();   // 👈 always call callback
+
+    onSubmitSuccess();
   }}
 >
   Submit
