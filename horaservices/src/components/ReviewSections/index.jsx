@@ -4,12 +4,13 @@ import angryImg from "@/assets/review/angry.png";
 import neutralImg from "@/assets/review/neutral.png";
 import loveImg from "@/assets/review/love.png";
 import Image from "next/image";
-const ReviewSections = () => {
+const ReviewSections = ({ onSubmitSuccess, setSelectedRating }) => {
     const [showPopup, setShowPopup] = useState(false);
   const [selected, setSelected] = useState(null);
 
   const handleSelect = (value) => {
     setSelected(value);
+    setSelectedRating(value); 
   };
 
   return (
@@ -93,10 +94,14 @@ const ReviewSections = () => {
         />
       )}
 
-     <button
+   
+<button
   className="submit-btn"
   disabled={!selected}
-  onClick={() => setShowPopup(true)}
+  onClick={() => {
+    setShowPopup(true);
+    onSubmitSuccess();   // 👈 ye important hai
+  }}
 >
   Submit
 </button>

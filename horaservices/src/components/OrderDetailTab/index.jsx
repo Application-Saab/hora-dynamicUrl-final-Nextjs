@@ -18,6 +18,7 @@ import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
 
 import ReviewSections from "../ReviewSections";
+import CouponPopup from "../CouponPopup";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -42,7 +43,8 @@ const OrderDetailTab = ({
   const [photographyImage, setPhotographyImage] = useState();
   const [popupMessage, setPopupMessage] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-
+ const [reviewSubmitted, setReviewSubmitted] = useState(false);
+ const [selectedRating, setSelectedRating] = useState(null);
   console.log(orderDetail, "orderdetaillive");
   const comments = orderDetail.decoration_comments
     ? orderDetail.decoration_comments.split('\n').map(comment => comment.trim()).filter(Boolean)
@@ -752,7 +754,15 @@ const OrderDetailTab = ({
       ) : orderType === 1 ? (
          
         <div className="decoration-container orderdetails">
-          <ReviewSections />
+    
+  {!reviewSubmitted ? (
+ <ReviewSections
+  onSubmitSuccess={() => setReviewSubmitted(true)}
+  setSelectedRating={setSelectedRating}
+/>
+  ) : (
+  <CouponPopup selectedRating={selectedRating} />
+  )}
           {decorationArray?.map((product, index) => {
             return (
               <div className="myOrder-decDetails">
