@@ -30,7 +30,18 @@ const Checkout = () => {
    const scriptTag = JSON.stringify(schemaOrg);
   let { product, totalAmount, orderType,duration } = router.query;
 
-  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];// 
+ const rawAddOns = router.query.selectedAddOnProduct
+  ? JSON.parse(router.query.selectedAddOnProduct)
+  : [];
+
+const selectedAddOnProduct = rawAddOns.map(item => ({
+  addOnId: item._id,
+  quantity: item.quantity || 1,
+  priceAtPurchase: item.price,
+  totalPrice: item.price * (item.quantity || 1),
+  name: item.title // sirf UI ke liye
+}));
+
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -270,8 +281,8 @@ const Checkout = () => {
  const productAdvanceAmount = Number(productData?.advance_amount || 0);
 
 const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
-  const qty = itemQuantities[item.title] || 0;
-  return acc + Math.round(item.price * qty * 0.35); // agar addon ka rule same hai
+  const qty = item.quantity|| 0;
+  return acc + Math.round(item.priceAtPurchase * qty * 0.35); // agar addon ka rule same hai
 }, 0);
 
 const advanceAmount = productAdvanceAmount + addonAdvanceAmount;
@@ -289,7 +300,6 @@ const balanceAmount = totalAmount - advanceAmount;
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
      
-    
 
 
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
@@ -647,8 +657,10 @@ const contactUsRedirection = (productName) => {
     <ul className="addon-list">
       {selectedAddOnProduct.map((item, index) => (
         <li key={index} className="addon-item">
-          <span className="addon-title">{index + 1}. {item.title}</span>
-          <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
+          <span className="addon-title">{index + 1}. {item.name}</span>
+           <span className="addon-price">
+                             ₹{item.priceAtPurchase} x {item.quantity} = ₹ {item.totalPrice}
+                             </span>
         </li>
       ))}
     </ul>
