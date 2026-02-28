@@ -2,9 +2,9 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Home from "@/app/page";
 import cityData from "@/utils/cityData";
 import LocalitiesSection from "@/components/LocalitiesSection";
+import HomeContent from "@/components/HomeContent";
 
 export default function CityPage() {
   const params = useParams();
@@ -30,7 +30,7 @@ export default function CityPage() {
   return (
     <>
       {/* Same main home UI */}
-      <Home />
+      <HomeContent />
 
       {/* Localities for this city */}
       <LocalitiesSection

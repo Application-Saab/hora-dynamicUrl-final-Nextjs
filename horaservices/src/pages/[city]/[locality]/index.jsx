@@ -652,11 +652,11 @@
 //   );
 // }
 import { useRouter } from "next/router";
-import Home from "@/app/page";
+
+import HomeContent from "@/components/HomeContent";
 
 export default function LocalityPage() {
   const router = useRouter();
-  const { city, locality } = router.query;
 
-  return <Home />;
+  return <HomeContent />;
 }
