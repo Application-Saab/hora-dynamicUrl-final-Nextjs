@@ -233,8 +233,8 @@ function DecorationCatDetails({ city, locality }) {
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
-  console.log("Slider Data =>", similar);
-  // 1️⃣ Set CatValue if coming from params (optional case)
+
+
   useEffect(() => {
     if (params?.catValue) {
       setCatValue(params.catValue);
