@@ -316,7 +316,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   font-weight: 700;
   border-radius: 49.26px;
   border: none;
-  padding: 7px 18px;
+  padding: 8px 12px;
   margin-top: 10px;
   margin-bottom: 15px;
   display: flex;
@@ -325,7 +325,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 }
 
 .add-new-btn .add-icon {
-  font-size: clamp(22px, 5vw, 24px);
+  font-size: clamp(28px, 5vw, 24px);
   font-weight: 500;
   line-height: 1;
   display: flex;

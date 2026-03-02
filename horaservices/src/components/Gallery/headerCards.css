@@ -173,36 +173,11 @@ border-radius: 50%;
   bottom: 6px;
   right: 6px;
 }
-
-.image-picker{
-  height: 130px;
-  width: 130px;
-background-color: #D9D9D9;
-border-radius: 50%;
-}
 .picker-container{
   text-align: center;
    display: flex;
    justify-content: center;
    align-items: center;
-}
-.folderName-input {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 12.55px;
-  border: 1.25px solid #4A4A4A99;
-  color: #4A4A4A;
-  background-color: #fff;
-  margin-top: 12px;
-}
-
-.sub-text {
-  font-size: 10.4px;
-  color: #7C7C7C;
-  margin-top: 4px;
-  margin-right: 4px;
-  width: 100%;           /* ✅ IMPORTANT */
-  text-align: right;    /* ✅ RIGHT END */
 }
 
 .input-container {
@@ -281,16 +256,11 @@ border-radius: 50%;
   color: #7C7C7C;
   margin-top: 4px;
   margin-right: 4px;
-  width: 100%;           /* ✅ IMPORTANT */
-  text-align: right;    /* ✅ RIGHT END */
+  width: 100%;          
+  text-align: right;    
 }
 
-.input-container {
-  width: 250px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;  
-}
+
 .image-picker {
   height: 130px;
   width: 130px;
