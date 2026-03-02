@@ -803,7 +803,7 @@ const OrderDetailTab = ({
                               {(() => {
                                 const rawTitle =
                                   item?.addOnId?.title ||
-                                  item?.name ||
+                                  item?.name || item?.title
                                   "N/A";
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
