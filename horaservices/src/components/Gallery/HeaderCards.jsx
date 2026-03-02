@@ -2,11 +2,11 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import "./headerCards.css";
 
-import myPhoto from "../../assets/myPhoto.png";
-import allPhotos from "../../assets/allPhotos.png";
-import captureIcon from "../../assets/captureIcon.png";
-import userIcon from "../../assets/userIcon.png";
-import imagePicker from "../../assets/imagePicker.png";
+import myPhoto from "../../assets/myPhoto.svg";
+import allPhotos from "../../assets/allPhotos.svg";
+import captureIcon from "../../assets/captureIcon.svg";
+import userIcon from "../../assets/userIcon.svg";
+import imagePicker from "../../assets/imagePicker.svg";
 import selfieCapture from "../../assets/selfieCapture.png";
 
 import Image from "next/image";
@@ -277,7 +277,11 @@ const HeaderCards = ({
       setPreview(null);
       setPreviewFile(null);
       setNewFolderName("");
-    } finally {
+    } catch(error){
+      console.error("create folder error :", error);
+      alert("create folder error :",error)
+    }
+     finally {
       setIsLoading(false);
     }
   };
