@@ -58,11 +58,8 @@ const Checkout = () => {
   : [];
 
 const selectedAddOnProduct = rawAddOns.map(item => ({
-  addOnId: item._id,
-  quantity: item.quantity || 1,
-  priceAtPurchase: item.price,
+  ...item,
   totalPrice: item.price * (item.quantity || 1),
-  name: item.title // sirf UI ke liye
 }));
 
 
@@ -681,9 +678,9 @@ const contactUsRedirect = (category, cityName) => {
                       <ul className="addon-list">
                         {selectedAddOnProduct.map((item, index) => (
                           <li key={index} className="addon-item">
-                            <span className="addon-title">{index + 1}. {item.name} </span>
+                            <span className="addon-title">{index + 1}. {item.title} </span>
                              <span className="addon-price">
-                             ₹{item.priceAtPurchase} x {item.quantity} = ₹ {item.totalPrice}
+                             ₹{item.price} x {item.quantity} = ₹ {item.totalPrice}
                              </span>
                           </li>
                         ))}
