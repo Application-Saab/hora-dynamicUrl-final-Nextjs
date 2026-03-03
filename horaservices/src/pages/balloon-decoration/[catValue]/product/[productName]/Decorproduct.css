@@ -287,3 +287,30 @@ ul.decoration-addons {
 .custom-banner-section button:hover {
   background: #fff;
 }
+
+.share-btn {
+  width: clamp(28px, 8.5vw, 33px);
+  height: clamp(28px, 8.5vw, 33px);
+  border-radius: clamp(6px, 1.8vw, 7px);
+  border: 1px solid #34c759;
+  padding: clamp(4px, 1.2vw, 5px);
+  background: #ecfdf3;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.price-share-row {
+  display: flex;
+  justify-content: space-between;  /* 👈 main important */
+  align-items: center;
+}
+/* Icon */
+.share-icon-img {
+  width: clamp(14px, 4vw, 18px);
+  height: clamp(14px, 4vw, 18px);
+  object-fit: contain;
+}

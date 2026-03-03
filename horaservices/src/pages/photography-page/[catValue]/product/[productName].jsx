@@ -6,6 +6,7 @@ import photographyAddOns from "@/utils/photographyAddOns.json";
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { useParams } from "next/navigation";
+import ShareIcon from "@/assets/shareIcon.svg";
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
 import SUPPORT from "@/assets/support.png";
@@ -470,8 +471,26 @@ const sendToCheckoutPage = (product) => {
 
   getAddons();
 }, [addonIds]);
+const handleShare = async () => {
+  if (!work?._id || typeof window === "undefined") return;
 
+  const cleanPath = router.asPath.split("?")[0];
+  const shareUrl = `${window.location.origin}${cleanPath}?id=${work._id}`;
 
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: work?.name || "Product",
+        url: shareUrl,
+      });
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+      alert("Link copied!");
+    }
+  } catch (err) {
+    console.log("Share cancelled");
+  }
+};
   if (loading) {
     return <SkeletonLoader />
   }
@@ -561,6 +580,7 @@ const sendToCheckoutPage = (product) => {
           {work.name}
         </h1>
 
+<div className="price-share-row">
         <div className="photodetails-price-section">
           <span className="photodetails-discounted">
             ₹{work.price}
@@ -568,7 +588,14 @@ const sendToCheckoutPage = (product) => {
           <span className="photodetails-original">₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}</span>
           <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
         </div>
-
+        <div className="share-btn" onClick={handleShare}>
+                        <Image
+                          src={ShareIcon}
+                          alt="share"
+                          className="share-icon-img"
+                        />
+                      </div>
+</div>
         <div className='addon-prices' ref={customizationRef}>
 
 

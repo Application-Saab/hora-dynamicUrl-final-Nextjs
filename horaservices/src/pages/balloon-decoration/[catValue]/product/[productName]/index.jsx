@@ -40,7 +40,7 @@ import { ballonReview } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
 import customiseIcon from "@/assets/customisationicon.png"
 import AdditionalServices from "@/components/AdditionalServices";
-
+import ShareIcon from "@/assets/shareIcon.svg";
 import BannerImage from "../../../../../assets/customised.webp";
 import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
@@ -225,7 +225,7 @@ function DecorationCatDetails({ city, locality }) {
   const router = useRouter();
   const params = useParams();
   const customizationRef = useRef(null);
-   const similarRef = useRef(null);
+  const similarRef = useRef(null);
   const addonRef = useRef(null);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
@@ -455,26 +455,26 @@ function DecorationCatDetails({ city, locality }) {
 
 
   // 6️⃣ Category Navigation Click (Same as before)
-const openCatItems = (item) => {
-  const catSlug = item.catSlug || getCatSlugFromValue(item.catValue);
+  const openCatItems = (item) => {
+    const catSlug = item.catSlug || getCatSlugFromValue(item.catValue);
 
-  let path = "";
+    let path = "";
 
-  if (city && locality) {
-    path = `/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration/${catSlug}`;
-  } else if (city) {
-    path = `/${city.toLowerCase()}/balloon-decoration/${catSlug}`;
-  } else {
-    path = `/balloon-decoration/${catSlug}`;
-  }
+    if (city && locality) {
+      path = `/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration/${catSlug}`;
+    } else if (city) {
+      path = `/${city.toLowerCase()}/balloon-decoration/${catSlug}`;
+    } else {
+      path = `/balloon-decoration/${catSlug}`;
+    }
 
-  // ✅ theme query preserve
-  if (item.value) {
-    path += `?theme=${encodeURIComponent(item.value)}`;
-  }
+    // ✅ theme query preserve
+    if (item.value) {
+      path += `?theme=${encodeURIComponent(item.value)}`;
+    }
 
-  router.push(path);
-};
+    router.push(path);
+  };
 
 
   const handleCustomise = (type, cityName) => {
@@ -572,7 +572,7 @@ const openCatItems = (item) => {
     } else {
       updatedSelectedAddOnProduct.push({ ...item, quantity: 1 });
     }
-    
+
     setSelectedAddOnProduct(updatedSelectedAddOnProduct);
     setItemQuantities({
       ...itemQuantities,
@@ -681,7 +681,19 @@ const openCatItems = (item) => {
         .join(""); // Join parts together without spaces
     }
   }
+  const handleShare = () => {
+    const cleanUrl = window.location.origin + window.location.pathname;
 
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        url: cleanUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(cleanUrl);
+      alert("Link copied!");
+    }
+  };
   useEffect(() => {
     addSpaces(subCategory);
   }, [subCategory]);
@@ -702,7 +714,7 @@ const openCatItems = (item) => {
       statement.split("-").filter((item) => item.trim() !== "")
     );
     const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle" style={ {fontFamily: "Inter, sans-serif"}}>
+      <li key={index} className="inclusionstyle" style={{ fontFamily: "Inter, sans-serif" }}>
         <Image
           src={checkImage}
           alt="Info"
@@ -720,7 +732,7 @@ const openCatItems = (item) => {
             marginBottom: "10px",
             fontFamily: "Inter, sans-serif",
             fontWeight: "600",
-           
+
           }}
         >
           Inclusions
@@ -731,33 +743,33 @@ const openCatItems = (item) => {
   };
 
   useEffect(() => {
-  if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
+    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
 
-  const getAddons = async () => {
-    try {
-      const query = new URLSearchParams();
-      addonIds.forEach(id => {
-        if (id) query.append("ids", id);
-      });
+    const getAddons = async () => {
+      try {
+        const query = new URLSearchParams();
+        addonIds.forEach(id => {
+          if (id) query.append("ids", id);
+        });
 
-      if ([...query].length === 0) return; // no valid IDs
+        if ([...query].length === 0) return; // no valid IDs
 
-      const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
-      const response = await fetch(url);
-      const data = await response.json();
+        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
+        const response = await fetch(url);
+        const data = await response.json();
 
-      if (!response.ok || data.error) {
-        throw new Error(data.message || "Failed to fetch addons");
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch addons");
+        }
+
+        setAddonData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching addons:", error);
       }
+    };
 
-      setAddonData(data.data || []);
-    } catch (error) {
-      console.error("Error fetching addons:", error);
-    }
-  };
-
-  getAddons();
-}, [addonIds]);
+    getAddons();
+  }, [addonIds]);
 
 
   if (loading) {
@@ -886,14 +898,14 @@ const openCatItems = (item) => {
                   }}
                 >
                   <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none" ,fontSize: "13px"}}
+                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
                     href="/"
                   >
                     Home
                   </a>
                   {" > "}
                   <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none",fontSize: "13px" }}
+                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
                     href={`/balloon-decoration/${catValue}`}
                   >
                     {catValue}
@@ -902,27 +914,27 @@ const openCatItems = (item) => {
                 </h2>
 
                 <button
-                   onClick={() => {
-    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
-  }}
-               style={{
-  fontFamily: "Inter, sans-serif",
-  fontSize: "14px",
-  fontWeight: 700, // numeric value
-  color: "rgb(157, 74, 147)",
-  background: "none",
-  border: "none",
-  textDecoration: "underline",
-  textDecorationStyle: "solid",
-  textAlign: "center",
-  lineHeight: "100%",
-  cursor: "pointer",
-}}
+                  onClick={() => {
+                    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "14px",
+                    fontWeight: 700, // numeric value
+                    color: "rgb(157, 74, 147)",
+                    background: "none",
+                    border: "none",
+                    textDecoration: "underline",
+                    textDecorationStyle: "solid",
+                    textAlign: "center",
+                    lineHeight: "100%",
+                    cursor: "pointer",
+                  }}
 
                 >
                   View Similar
                 </button>
-           
+
 
               </div>
 
@@ -936,13 +948,15 @@ const openCatItems = (item) => {
               >
                 {product.name}
               </h1>
-
+<div className="price-share-row">
               <div className="pro-details-price">
                 <p
                   style={{
                     fontSize: "18px",
                     color: "#9252AA",
                     fontWeight: "600",
+                    justifyContent: "space-between",
+                    display: "flex",
                   }}
                 >
                   {" "}
@@ -963,8 +977,16 @@ const openCatItems = (item) => {
                 <div className="decorationdiscount-details">
                   ₹ {Math.floor(discountInfo?.discountDifference || 0)} {"off"}
                 </div>
-              </div>
 
+              </div>
+              <div className="share-btn" onClick={handleShare}>
+                <Image
+                  src={ShareIcon}
+                  alt="share"
+                  className="share-icon-img"
+                />
+              </div>
+              </div>
               <div className='addon-prices' ref={customizationRef}>
 
                 <div className="photodetails-inclusions">
@@ -1069,18 +1091,18 @@ const openCatItems = (item) => {
               </div>
             </div>
             <div ref={similarRef}>
-            <UniversalDecorSlider
-              title="Similar Decorations"
-              data={similar}   // ✅ Fetched data pass karo
-              showDiscount={true}
-              imageSize={{ width: 120, height: 120 }}
-              city={city}
-              hasCityPageParam={hasCityPageParam}
-              locality={locality}
-             catValue={router.query.catValue}   // 🔑 SLUG ONLY
+              <UniversalDecorSlider
+                title="Similar Decorations"
+                data={similar}   // ✅ Fetched data pass karo
+                showDiscount={true}
+                imageSize={{ width: 120, height: 120 }}
+                city={city}
+                hasCityPageParam={hasCityPageParam}
+                locality={locality}
+                catValue={router.query.catValue}   // 🔑 SLUG ONLY
 
 
-            />
+              />
             </div>
             {catValue?.toLowerCase() === "kidsbirthday" && (
               <div className="category-tabs-outer">
@@ -1112,7 +1134,7 @@ const openCatItems = (item) => {
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-              catValue={router.query.catValue}   // 🔑 SLUG ONLY
+                catValue={router.query.catValue}   // 🔑 SLUG ONLY
 
               />
             )}
@@ -1124,7 +1146,7 @@ const openCatItems = (item) => {
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-               catValue={router.query.catValue}   // 🔑 SLUG ONLY
+                catValue={router.query.catValue}   // 🔑 SLUG ONLY
 
               />
             )}
