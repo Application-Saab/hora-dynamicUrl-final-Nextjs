@@ -15,6 +15,7 @@ import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
 import { setState } from "../../../actions/action";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
@@ -52,6 +53,7 @@ import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+    const pathname = usePathname();
   const [city, setCity] = useState("");
   const [catValue, setCatValue] = useState("");
   useEffect(() => {
@@ -384,33 +386,35 @@ const DecorationCatPage = ({ locality }) => {
 const handleViewDetails = (item) => {
   if (!item?.slug && !item?.product_slug && !item?.name) return;
 
-  const productSlug = item.slug || item.product_slug || item.name?.toLowerCase().replace(/\s+/g, "-");
+  const productSlug =
+    item.slug ||
+    item.product_slug ||
+    item.name.toLowerCase().replace(/\s+/g, "-");
 
-  const pathSegments = window.location.pathname.split("/").filter(Boolean);
+  // 🔥 category slug nikaalo properly
+  const categorySlug = getCategorySlugFromPath(
+    pathname,
+    city,
+    locality
+  );
 
-  let city = "";
-  let locality = "";
-  let balloonSegment = "balloon-decoration";
-
-  // Extract city/locality/balloon segment
-  if (pathSegments.length >= 3) {
-    city = pathSegments[0];
-    locality = pathSegments[1];
-    balloonSegment = pathSegments[2];
-  } else if (pathSegments.length === 2) {
-    city = pathSegments[0];
-    balloonSegment = pathSegments[1];
+  if (!categorySlug || !catValue) {
+    console.warn("Missing categorySlug or catValue", {
+      categorySlug,
+      catValue,
+    });
+    return;
   }
 
-  // Check if catValue is already present at the end
-  const lastSegment = pathSegments[pathSegments.length - 1];
-  const finalCatValue = lastSegment === catValue ? "" : catValue;
+  // 🔥 same pattern as DecorSlider
+  let base = "";
+  if (city) base += `/${city.toLowerCase()}`;
+  if (locality) base += `/${locality.toLowerCase()}`;
 
-  const finalPath = `/${city}${locality ? `/${locality}` : ""}/${balloonSegment}${finalCatValue ? `/${finalCatValue}` : ""}/product/${productSlug}`;
+  const finalPath = `${base}/${categorySlug}/${catValue}/product/${productSlug}`;
 
   router.push(finalPath);
 };
-
 
 
 

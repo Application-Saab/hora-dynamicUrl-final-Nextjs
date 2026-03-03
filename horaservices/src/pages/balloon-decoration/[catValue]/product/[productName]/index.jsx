@@ -15,6 +15,7 @@ import {
   BASE_URL,
   GET_DECORATION_BY_NAME,
   GET_DECORATION_CAT_ID,
+  GET_ADDON_BY_ID,
 } from "@/utils/apiconstants";
 import axios from "axios";
 import FAQSection from "@/components/FAQSection";
@@ -218,6 +219,8 @@ function DecorationCatDetails({ city, locality }) {
   const searchParams = useSearchParams();
   const [similarByPrice, setSimilarByPrice] = useState([]);
   const [similarByName, setSimilarByName] = useState([]);
+  const [addonData, setAddonData] = useState([]);
+  const [addonIds, setAddonIds] = useState([]);
 
   const router = useRouter();
   const params = useParams();
@@ -233,8 +236,8 @@ function DecorationCatDetails({ city, locality }) {
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
-  console.log("Slider Data =>", similar);
-  // 1️⃣ Set CatValue if coming from params (optional case)
+
+
   useEffect(() => {
     if (params?.catValue) {
       setCatValue(params.catValue);
@@ -345,6 +348,7 @@ function DecorationCatDetails({ city, locality }) {
         const discountDetails = getDiscountedPrice(fetchedProduct.price);
         setDiscountInfo(discountDetails);
       }
+      setAddonIds(fetchedProduct?.addons)
 
       setLoading(false);
     } catch (error) {
@@ -568,7 +572,7 @@ const openCatItems = (item) => {
     } else {
       updatedSelectedAddOnProduct.push({ ...item, quantity: 1 });
     }
-
+    
     setSelectedAddOnProduct(updatedSelectedAddOnProduct);
     setItemQuantities({
       ...itemQuantities,
@@ -726,6 +730,34 @@ const openCatItems = (item) => {
     );
   };
 
+  useEffect(() => {
+  if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
+
+  const getAddons = async () => {
+    try {
+      const query = new URLSearchParams();
+      addonIds.forEach(id => {
+        if (id) query.append("ids", id);
+      });
+
+      if ([...query].length === 0) return; // no valid IDs
+
+      const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.message || "Failed to fetch addons");
+      }
+
+      setAddonData(data.data || []);
+    } catch (error) {
+      console.error("Error fetching addons:", error);
+    }
+  };
+
+  getAddons();
+}, [addonIds]);
 
 
   if (loading) {
@@ -1012,7 +1044,7 @@ const openCatItems = (item) => {
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
-              addOnProducts={addOnProductsData.addOnProducts}
+              addOnProducts={addonData}
               itemQuantities={itemQuantities}
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}
