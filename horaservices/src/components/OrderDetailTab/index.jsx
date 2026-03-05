@@ -802,7 +802,6 @@ const OrderDetailTab = ({
                             <div>
                               {(() => {
                                 const rawTitle =
-                                  item?.addOnId?.title ||
                                   item?.name || item?.title
                                   "N/A";
 
@@ -820,7 +819,6 @@ const OrderDetailTab = ({
                                   extractedQuantity || Number(item?.quantity) || 1;
 
                                 const price = Number(
-                                  item?.addOnId?.price ||
                                   item?.price ||
                                   0
                                 );
@@ -1016,7 +1014,7 @@ const OrderDetailTab = ({
                           style={{ marginRight: 8 }}
                         />
                         <div>
-                          {item?.addOnId?.title || item?.title || "NA"} =  ₹{item?.addOnId?.price || item?.price || "NA"} x {item?.quantity || 1} = ₹{item?.totalPrice || item?.price || "NA"}
+                          {tem?.title || "NA"} =  ₹{item?.price || "NA"} x {item?.quantity || 1} = ₹{item?.totalPrice || item?.price || "NA"}
                         </div>
                       </div>
                     ))
