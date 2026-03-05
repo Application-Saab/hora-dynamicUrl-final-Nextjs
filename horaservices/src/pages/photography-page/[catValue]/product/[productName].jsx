@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import photographyAddOns from "@/utils/photographyAddOns.json";
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { useParams } from "next/navigation";
@@ -617,7 +616,7 @@ const sendToCheckoutPage = (product) => {
                   <div key={index} className="modalcard">
                     <img
 
-                      src={`https://horaservices.com/api/uploads/compressed_webp/${item.image}`}
+                      src={item.image}
                       alt={item.title}
                       className="model-image"
                     />
