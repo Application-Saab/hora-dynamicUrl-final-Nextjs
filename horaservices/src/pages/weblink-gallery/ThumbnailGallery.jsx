@@ -619,7 +619,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               onClick={() => addMoreImagesRef.current?.click()}
             >
               <span className="add-icon">+</span>
-              <span>Add New Images</span>
+              <span>Add New Photos</span>
             </button>
 
           )}

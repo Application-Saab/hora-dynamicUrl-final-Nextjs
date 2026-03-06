@@ -437,7 +437,11 @@ const HeaderCards = ({
         title="Create New Folder"
         onSubmit={handleCreateFolder}
         disabled={isCreateDisabled}
-        buttonContent={isLoading ? "Creating" : "Create"}
+        buttonContent={
+          <div className="create-btn">
+            <span>{isLoading ? "Creating" : "Create"}</span>
+          </div>
+        }
       >
         <div className="picker-container">
           <div
