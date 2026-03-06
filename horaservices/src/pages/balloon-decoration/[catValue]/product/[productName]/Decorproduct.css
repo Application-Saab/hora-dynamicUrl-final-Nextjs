@@ -67,7 +67,7 @@
   display:flex;
    justify-content: flex-start;
   align-items: center;
-  gap: 8px;
+   gap: clamp(8px, 2.5vw, 12px);
 }
 
 /* main price */
@@ -111,7 +111,7 @@ padding: 10px 10px 0px;
   font-size: clamp(18px, 5.3vw, 21px);
   border-bottom: 1px solid #e7eff9;
   margin-bottom: clamp(8px, 2.5vw, 10px);
-  padding-bottom: 4px;
+  padding-bottom: 3px;
 }
 
 /* list container */
@@ -129,7 +129,7 @@ padding: 10px 10px 0px;
   line-height: clamp(22px, 6vw, 27.32px);
   display: flex;
   align-items: flex-start;
-  gap: clamp(3px, 1vw, 4px);
+ gap: clamp(4px, 1.5vw, 6px); 
 }
 
 /* icon */
@@ -138,6 +138,7 @@ padding: 10px 10px 0px;
   width: clamp(16px, 5vw, 20px);
   height: clamp(16px, 5vw, 20px);
   flex-shrink: 0;
+  margin-top: 4px; 
 }
 .addon-prices li {
   list-style: none;
