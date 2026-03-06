@@ -713,33 +713,50 @@ function DecorationCatDetails({ city, locality }) {
     const inclusionItems = statements.flatMap((statement) =>
       statement.split("-").filter((item) => item.trim() !== "")
     );
-    const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle" style={{ fontFamily: "Inter, sans-serif" }}>
-        <Image
-          src={checkImage}
-          alt="Info"
-          style={{ height: 13, width: 13, marginRight: 10 }}
-        />
-        {item.trim()}
-      </li>
-    ));
-    return (
-      <div>
-        <div
-          style={{
-            fontSize: "21px",
-            borderBottom: "1px solid #e7eff9",
-            marginBottom: "10px",
-            fontFamily: "Inter, sans-serif",
-            fontWeight: "600",
+    // const inclusionList = inclusionItems.map((item, index) => (
+    //   <li key={index} className="inclusionstyle" style={{ fontFamily: "Inter, sans-serif" }}>
+    //     <Image
+    //       src={checkImage}
+    //       alt="Info"
+        
+    //     />
+    //     {item.trim()}
+    //   </li>
+    // ));
+    // return (
+    //   <div>
+    //     <div
+    //       style={{
+    //         fontSize: "21px",
+    //         borderBottom: "1px solid #e7eff9",
+    //         marginBottom: "10px",
+    //         fontFamily: "Inter, sans-serif",
+    //         fontWeight: "600",
 
-          }}
-        >
-          Inclusions
-        </div>
-        <ul>{inclusionList}</ul>
-      </div>
-    );
+    //       }}
+    //     >
+    //       Inclusions
+    //     </div>
+    //     <ul>{inclusionList}</ul>
+    //   </div>
+    // );
+  const inclusionList = inclusionItems.map((item, index) => (
+  <li key={index} className="inclusionstyle">
+    <Image src={checkImage} alt="Info" />
+    {item.trim()}
+  </li>
+));
+    return (
+  <div className="inclusion-section">
+    <div className="inclusion-heading">
+      Inclusions
+    </div>
+
+    <ul className="inclusion-list">
+      {inclusionList}
+    </ul>
+  </div>
+);
   };
 
   useEffect(() => {
@@ -884,31 +901,23 @@ function DecorationCatDetails({ city, locality }) {
           >
             <div
               style={{
-                padding: "10px",
+                padding: "10px 10px 0px 10px",
               }}
             >
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2
-                  style={{
-                    fontSize: "13px",
-                    color: "#222",
-                    margin: "8px 0 8px 0",
-                    fontWeight: "500",
-                  }}
-                >
-                  <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
-                    href="/"
-                  >
+              <div className="breadcrumb-row">
+                <h2 className="breadcrumb-text">
+                  <a className="breadcrumb-link" href="/">
                     Home
                   </a>
+
                   {" > "}
                   <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
+                    className="breadcrumb-link"
                     href={`/balloon-decoration/${catValue}`}
                   >
-                    {catValue}
+
+                    {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                   </a>
                   {" > "}
                 </h2>
@@ -917,75 +926,37 @@ function DecorationCatDetails({ city, locality }) {
                   onClick={() => {
                     similarRef?.current?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  style={{
-                    fontFamily: "Inter, sans-serif",
-                    fontSize: "14px",
-                    fontWeight: 700, // numeric value
-                    color: "rgb(157, 74, 147)",
-                    background: "none",
-                    border: "none",
-                    textDecoration: "underline",
-                    textDecorationStyle: "solid",
-                    textAlign: "center",
-                    lineHeight: "100%",
-                    cursor: "pointer",
-                  }}
-
+                  className="view-similar-btn"
                 >
                   View Similar
                 </button>
-
-
               </div>
 
-              <h1
-                style={{
-                  fontSize: "18px",
-                  color: "#000000",
-                  fontWeight: "#600",
-                  fontFamily: "Inter, sans-serif"
-                }}
-              >
+              <h1 className="product-title">
                 {product.name}
               </h1>
-<div className="price-share-row">
-              <div className="pro-details-price">
-                <p
-                  style={{
-                    fontSize: "18px",
-                    color: "#9252AA",
-                    fontWeight: "600",
-                    justifyContent: "space-between",
-                    display: "flex",
-                  }}
-                >
-                  {" "}
-                  ₹ {product.price}
-                </p>
-                <p
-                  style={{
-                    color: "#444",
-                    fontWeight: "700",
-                    fontSize: 18,
-                    textAlign: "left",
-                    margin: "7px 0px 7px",
-                    textDecoration: "line-through",
-                  }}
-                >
-                  ₹ {Math.floor(discountInfo?.discountedPrice)}
-                </p>
-                <div className="decorationdiscount-details">
-                  ₹ {Math.floor(discountInfo?.discountDifference || 0)} {"off"}
-                </div>
+              <div className="price-share-row">
 
-              </div>
-              <div className="share-btn" onClick={handleShare}>
-                <Image
-                  src={ShareIcon}
-                  alt="share"
-                  className="share-icon-img"
-                />
-              </div>
+                <div className="pro-details-price">
+                  <p className="product-price">
+                    ₹ {product.price}
+                  </p>
+
+                  <p className="product-old-price">
+                    ₹ {Math.floor(discountInfo?.discountedPrice)}
+                  </p>
+
+                  <div className="product-discount">
+                    ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
+                  </div>
+                </div>
+                <div className="share-btn" onClick={handleShare}>
+                  <Image
+                    src={ShareIcon}
+                    alt="share"
+                    className="share-icon-img"
+                  />
+                </div>
               </div>
               <div className='addon-prices' ref={customizationRef}>
 
@@ -1011,14 +982,10 @@ function DecorationCatDetails({ city, locality }) {
                 </div>
               </div>
 
-
             </div>
-
-
-
             <div
               style={{
-                padding: "10px",
+                padding: "0px 10px;",
               }}
             >
               {getItemInclusion(product.inclusion)}
@@ -1031,18 +998,7 @@ function DecorationCatDetails({ city, locality }) {
                 />
 
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {/* <button
-  className="customise-btn gap-1"
-  onClick={() => handleCustomise(catValue, cityName)} 
->
-  CUSTOMISATION 
-  <Image
-    src={customiseIcon}
-    alt="Customisation Icon"
-    width={14}  
-    height={14}
-  />
-</button> */}
+              
                   <button
                     className="customise-btn d-flex align-items-center gap-1"
                     onClick={() => handleCustomise(catValue, cityName)}
@@ -1172,11 +1128,7 @@ function DecorationCatDetails({ city, locality }) {
 
             <VideoTestimonial videoSrc={VideoClint} />
 
-            {/* <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" /> */}
-
-
-
-
+            <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
 
             <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 

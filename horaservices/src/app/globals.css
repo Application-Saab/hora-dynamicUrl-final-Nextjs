@@ -1358,17 +1358,8 @@ button.view-details.order-details {
     box-sizing: border-box;
   }
 
-  .decDetailsRight h1 {
-    font-size: 97% !important;
-  }
+  
 
-  .decDetailsImage {
-    width: 94% !important;
-    box-sizing: border-box;
-    text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 5px !important;
-    padding: 5px !important;
-  }
 
   .whyHoraSecInner {
     flex-direction: row !important;
@@ -2425,13 +2416,6 @@ button.view-details.order-details {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 5px;
-  text-align: start;
-}
-
-.product-price {
-  font-size: 14px;
-  color: grey;
-  margin-bottom: 10px;
   text-align: start;
 }
 
