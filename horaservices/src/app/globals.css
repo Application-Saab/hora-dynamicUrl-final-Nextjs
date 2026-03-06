@@ -255,12 +255,7 @@ li {
   line-height: 32px;
 }
 
-li.inclusionstyle {
-  list-style: none;
-  padding-left: 2px;
-  padding-top: 4px;
-  margin-left: 1px;
-}
+
 
 .tabButton {
   border: none;
@@ -1379,9 +1374,6 @@ button.view-details.order-details {
     max-width: 60% !important;
   }
 
-  li.inclusionstyle {
-    font-size: 77%;
-  }
 
   .whyHoraHeading {
     font-size: 100% !important;

@@ -102,6 +102,9 @@
   width:fit-content;
 }
 /* Heading */
+.inclusion-section{
+padding: 10px 10px 0px;
+}
 .inclusion-heading{
   font-family: Inter, sans-serif;
   font-weight: 600;
