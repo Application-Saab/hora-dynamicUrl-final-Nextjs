@@ -289,11 +289,6 @@ border-radius: 50%;
   object-fit: contain;
   z-index: 1;
 }
-.capture-btn{
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 .face-overlay {
   position: absolute;
   top: 50%;
@@ -310,4 +305,8 @@ border-radius: 50%;
   border-radius: 50%;
   object-fit: cover;
   overflow: hidden;
+}
+
+.create-btn{
+  padding: 0px 14px;
 }
