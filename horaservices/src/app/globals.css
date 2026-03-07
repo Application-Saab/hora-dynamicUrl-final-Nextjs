@@ -1214,17 +1214,7 @@ button.view-details.order-details {
     padding: 1px 6px !important;
   }
 
-  .decDetailsLeft {
-    width: 50%;
-    text-align: center;
-    position: -webkit-sticky;
-    /* Safari */
-    position: relative;
-    top: 10px;
-    max-height: calc(100vh - 20px);
-    /* Adjust this value as needed */
-    overflow-y: auto;
-  }
+  
 
   .dish-item-inner {
     width: 32%;

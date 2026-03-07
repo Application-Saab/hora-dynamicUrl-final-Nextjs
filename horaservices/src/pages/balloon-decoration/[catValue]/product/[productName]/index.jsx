@@ -33,15 +33,12 @@ import CategoryTabs from "../../../../../components/CategoryTabs/index.jsx";
 import { decCat } from "@/utils/decorationCategories";
 import "../../../../../components/CategoryTabs/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
-import Candle from "../../../../../assets/candle.png";
-import HappyBithday from "../../../../../assets/HappyBirthDay.png"
-import Ballons from "../../../../../assets/Ballons.png"
-import { ballonReview } from "@/utils/ReviewsData";
+import { allReviewsData } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
 import customiseIcon from "@/assets/customisationicon.png"
 import AdditionalServices from "@/components/AdditionalServices";
 import ShareIcon from "@/assets/shareIcon.svg";
-import BannerImage from "../../../../../assets/customised.webp";
+import BannerImage from "../../../../../assets/customised.jpg";
 import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
@@ -51,7 +48,7 @@ import UniversalDecorSlider from "@/components/UniversalDecorSlider";
 import ReviewSlider from "@/components/ReviewSection";
 import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
-
+import pencil from "@/assets/pencil.svg";
 const SkeletonLoader = () => {
   return (
     <div
@@ -69,10 +66,7 @@ const SkeletonLoader = () => {
         }}
         className="decDetails"
       >
-        <div
-          style={{ width: "50%", textAlign: "center" }}
-          className="decDetailsLeft"
-        >
+       
           <div
             style={{
               width: "80%",
@@ -82,7 +76,7 @@ const SkeletonLoader = () => {
               position: "relative",
             }}
           />
-        </div>
+       
         <div
           style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
           className="decDetailsRight"
@@ -231,7 +225,7 @@ function DecorationCatDetails({ city, locality }) {
   const hasCityPageParam = city ? true : false;
   const cityName = params?.city;
   const brandItems = [
-    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
@@ -718,7 +712,7 @@ function DecorationCatDetails({ city, locality }) {
     //     <Image
     //       src={checkImage}
     //       alt="Info"
-        
+
     //     />
     //     {item.trim()}
     //   </li>
@@ -740,23 +734,23 @@ function DecorationCatDetails({ city, locality }) {
     //     <ul>{inclusionList}</ul>
     //   </div>
     // );
-  const inclusionList = inclusionItems.map((item, index) => (
-  <li key={index} className="inclusionstyle">
-    <Image src={checkImage} alt="Info" />
-    {item.trim()}
-  </li>
-));
+    const inclusionList = inclusionItems.map((item, index) => (
+      <li key={index} className="inclusionstyle">
+        <Image src={checkImage} alt="Info" />
+        {item.trim()}
+      </li>
+    ));
     return (
-  <div className="inclusion-section">
-    <div className="inclusion-heading">
-      Inclusions
-    </div>
+      <div className="inclusion-section">
+        <div className="inclusion-heading">
+          Inclusions
+        </div>
 
-    <ul className="inclusion-list">
-      {inclusionList}
-    </ul>
-  </div>
-);
+        <ul className="inclusion-list">
+          {inclusionList}
+        </ul>
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -850,10 +844,7 @@ function DecorationCatDetails({ city, locality }) {
           <div
             className="decDetailsLeft"
           >
-            <div
-
-              className="decDetailsImage"
-            >
+          
               <div>
                 <Image
                   src={
@@ -885,13 +876,13 @@ function DecorationCatDetails({ city, locality }) {
                   >
                     <Image
                       src={logo}
-                      style={{ width: "70px", height: "80px" }}
+                      alt="Hora Services"
                       className="hora-watermark-image"
                     />
                   </span>
                 </div>
               </div>
-            </div>
+            
 
 
 
@@ -901,10 +892,10 @@ function DecorationCatDetails({ city, locality }) {
           >
             <div
               style={{
-                padding: "10px 10px 0px 10px",
+                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0"
               }}
-            >
 
+            >
               <div className="breadcrumb-row">
                 <h2 className="breadcrumb-text">
                   <a className="breadcrumb-link" href="/">
@@ -958,14 +949,24 @@ function DecorationCatDetails({ city, locality }) {
                   />
                 </div>
               </div>
-              <div className='addon-prices' ref={customizationRef}>
+              <div className='addon-container' ref={customizationRef}>
 
                 <div className="photodetails-inclusions">
                   {selectedAddOnProduct.length > 0 && (
                     <>
-                      <label>Customisations</label>
-                      <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
-                        < svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg" style={{ color: "rgb(146, 82, 170)", verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
+
+                      <h1 className="photodetalis-heading">
+                        Add-ons
+                      </h1>
+                      <span
+                        onClick={showAddOnmodal}
+                        style={{ marginLeft: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center" }}
+                      >
+                        <Image
+                          src={pencil} // replace with your image path
+                          alt="Addons"
+                          className="addon-icon"
+                        />
                       </span>
                       {selectedAddOnProduct.map((item, index) => (
                         <li key={index}>
@@ -998,7 +999,7 @@ function DecorationCatDetails({ city, locality }) {
                 />
 
                 <div className="absolute inset-0 flex items-center justify-center">
-              
+
                   <button
                     className="customise-btn d-flex align-items-center gap-1"
                     onClick={() => handleCustomise(catValue, cityName)}
@@ -1127,8 +1128,6 @@ function DecorationCatDetails({ city, locality }) {
 
 
             <VideoTestimonial videoSrc={VideoClint} />
-
-            <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" />
 
             <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
