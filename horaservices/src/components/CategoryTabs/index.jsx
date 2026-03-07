@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -11,14 +10,13 @@ const CategoryTabs = ({
   city = "",
   locality = "",
   variant = "grid",
-  catValue, // sub-category slug
+  catValue,
   heading,
   hasBg = false,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Build path with city + locality
   const formatPath = (path) => {
     let base = "";
     if (city) base += `/${city.toLowerCase()}`;
@@ -26,35 +24,33 @@ const CategoryTabs = ({
     return `${base}${path}`;
   };
 
+  // GRID CLICK
   const GridhandleClick = (cat) => {
-  if (!cat || !catValue) return;
+    if (!cat || !catValue) return;
 
-  const ROOT_CATEGORY = "balloon-decoration";
+    const ROOT_CATEGORY = "balloon-decoration";
 
-  // 🔹 GTM / dataLayer (same as before)
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "theme_circle_clicked",
-    themeName: cat.name,
-    themeValue: cat.value,
-    catValue,
-    city: city || "default",
-    locality: locality || "default",
-  });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "theme_circle_clicked",
+      themeName: cat.name,
+      themeValue: cat.value,
+      catValue,
+      city: city || "default",
+      locality: locality || "default",
+    });
 
-  // 🔹 FIXED NAVIGATION
-  const path = formatPath(
-    `/${ROOT_CATEGORY}/${catValue}?theme=${encodeURIComponent(cat.value)}`
-  );
+    const path = formatPath(
+      `/${ROOT_CATEGORY}/${catValue}?theme=${encodeURIComponent(cat.value)}`
+    );
 
-  router.push(path);
-};
+    router.push(path);
+  };
 
-
+  // NORMAL CLICK
   const handleClick = (cat) => {
     if (!cat) return;
 
-    // 🔹 GTM / dataLayer
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "circle_tabs_clicked",
@@ -66,15 +62,13 @@ const CategoryTabs = ({
       locality: locality || "default",
     });
 
-    // 🔹 Navigate
     const baseRoute = getCategorySlugFromPath(pathname, city, locality);
-    const path = formatPath(
-      `/${baseRoute}/${cat.catValue || catValue}`
-    );
+    const path = formatPath(`/${baseRoute}/${cat.catValue || catValue}`);
+
     router.push(path);
   };
 
-  return variant === "grid" ? (
+  return (
     <div className={`category-tabs-outer ${hasBg ? "has-bg" : ""}`}>
       {heading && <h3 className="category-tabs-heading">{heading}</h3>}
 
@@ -85,7 +79,11 @@ const CategoryTabs = ({
             <button
               key={cat.id}
               className="category-tabs-card"
-              onClick={() => GridhandleClick(cat)}
+              onClick={() =>
+                variant === "grid"
+                  ? GridhandleClick(cat)
+                  : handleClick(cat)
+              }
             >
               <Image
                 className="category-tabs-circle"
@@ -98,26 +96,6 @@ const CategoryTabs = ({
             </button>
           ))}
       </div>
-    </div>
-  ) : (
-    <div className="category-tabs">
-      {data
-        .filter((cat) => cat.image)
-        .slice(0, 9)
-        .map((cat) => (
-          <button
-            key={cat.id}
-            className="category-tabs__button"
-            onClick={() => handleClick(cat)}
-          >
-            <div
-              className="category-tabs__circle"
-              style={{ backgroundImage: `url(${cat.image})` }}
-            >
-              <span className="category-tabs__circle-label">{cat.name}</span>
-            </div>
-          </button>
-        ))}
     </div>
   );
 };
