@@ -49,6 +49,7 @@ const HeaderCards = ({
   const streamRef = useRef(null);
 
   const localUserId = localStorage.getItem("userID");
+  const localPhoneNumber =localStorage.getItem("mobileNumber")
 
   /* ================= DERIVED ================= */
   const myPhotosFolder = useMemo(
@@ -122,8 +123,9 @@ const HeaderCards = ({
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
       fd.append("file", file);
+      fd.append("phoneNo", localPhoneNumber)
 
-      const res = await fetch("https://mediaprocess.horaservices.com/create-subfolder", {
+      const res = await fetch("https://mediaprocessv2.horaservices.com/create-subfolder", {
         method: "POST",
         body: fd,
       });
@@ -249,8 +251,9 @@ const HeaderCards = ({
       fd.append("type", "others");
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
+      fd.append("phoneNo", localPhoneNumber)
 
-      const res = await fetch("https://mediaprocess.horaservices.com/create-subfolder", {
+      const res = await fetch("https://mediaprocessv2.horaservices.com/create-subfolder", {
         method: "POST",
         body: fd,
       });

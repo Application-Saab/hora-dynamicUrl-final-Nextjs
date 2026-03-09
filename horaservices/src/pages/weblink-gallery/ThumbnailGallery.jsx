@@ -301,10 +301,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         const response = await fetch(`https://horaservices.com:3000/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
+
+        const mainFolder = data.folders.find(
+          (folder) => folder.folderName === folderName
+        );
         setSubFolders(data.folder?.subFolders || []);
+        // setSubFolders(mainFolder?.subFolders || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
-          .filter(thumb => !thumb.url?.includes("subfolder_"))
           .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
         setAllThumbnails(fetchedThumbnails); setCurrentPage(1);
       } catch (fetchError) {
@@ -401,8 +405,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   //   setIsSearchComplete(false);
 
   // };
-  
- const handleSearchResults = (matches) => {
+
+  const handleSearchResults = (matches) => {
     if (!Array.isArray(matches)) return;
     const keys = matches.map(m => m?.file);
     setMatchedKeys(keys);
@@ -677,7 +681,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               formData.append("phoneNo", localPhoneNumber);
 
               const res = await fetch(
-                "https://mediaprocess.horaservices.com/upload-multiple",
+                "https://mediaprocessv2.horaservices.com/upload-multiple",
                 {
                   method: "POST",
                   body: formData,
@@ -778,9 +782,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
           {/* ================= NO SEARCH RESULT ================= */}
           {!loading &&
-          !isStreamSearching &&
-           isActualMyPhotos &&
-           visibleThumbnails.length === 0 && (
+            !isStreamSearching &&
+            isActualMyPhotos &&
+            visibleThumbnails.length === 0 && (
               <div className="thumbnail-gallery-status">No images found</div>
             )}
 
@@ -949,7 +953,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                                 try {
                                   // Call your API to delete the image
-                                  const res = await fetch(`https://mediaprocess.horaservices.com/delete-image/${currentImage._id}`, {
+                                  const res = await fetch(`https://mediaprocessv2.horaservices.com/delete-image/${currentImage._id}`, {
                                     method: "DELETE",
                                   });
 
