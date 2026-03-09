@@ -23,7 +23,6 @@ const AddonModal = ({
         style={{
           maxHeight: "400px",
           overflowY: "scroll",
-              padding: "0px 10px 10px 10px",
           backgroundColor: "#FFF3DB",
           margin: "auto",
         }}

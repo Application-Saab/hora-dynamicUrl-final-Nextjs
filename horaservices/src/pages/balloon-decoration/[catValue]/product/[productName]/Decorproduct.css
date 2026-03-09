@@ -404,8 +404,12 @@ color: #212529;
 }
 
 .media-heading {
-  font-size: 24px;
-  font-weight: bold;
+ font-family: "Inter", sans-serif;
+font-weight: 700;
+font-size: clamp(15px, calc(9px + 2.2vw), 20px);
+line-height: 1;
+letter-spacing: 0;
+text-align: center;
   color: #97538C;
   margin-bottom: 20px;
 }

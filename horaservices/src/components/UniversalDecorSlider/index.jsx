@@ -66,7 +66,7 @@ const handleCardClick = (item) => {
 
 
   return (
-    <section style={{ padding: "10px", background: "#fbe6d3" }}>
+    <section style={{ padding: "10px", background: "#F4D7C6" }}>
       <div className="premium-slide-decor-header">
         {title && <h2>{title}</h2>}
         {viewAllLink && (

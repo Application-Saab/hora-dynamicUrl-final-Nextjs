@@ -1061,7 +1061,7 @@ function DecorationCatDetails({ city, locality }) {
 
               />
             </div>
-            {catValue?.toLowerCase() === "kidsbirthday" && (
+            {catValue?.toLowerCase() === "kids-birthday-decoration" && (
               <div className="category-tabs-outer">
                 <CategoryTabs
                   data={themeFilters.map((item) => ({
