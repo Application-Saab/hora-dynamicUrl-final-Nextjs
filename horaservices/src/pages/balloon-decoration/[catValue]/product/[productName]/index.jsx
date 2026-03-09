@@ -49,6 +49,7 @@ import ReviewSlider from "@/components/ReviewSection";
 import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
 import pencil from "@/assets/pencil.svg";
+import AddOnsList from "@/components/AddOnsList";
 const SkeletonLoader = () => {
   return (
     <div
@@ -66,17 +67,17 @@ const SkeletonLoader = () => {
         }}
         className="decDetails"
       >
-       
-          <div
-            style={{
-              width: "80%",
-              height: "300px",
-              backgroundColor: "#f0f0f0",
-              margin: "0 auto",
-              position: "relative",
-            }}
-          />
-       
+
+        <div
+          style={{
+            width: "80%",
+            height: "300px",
+            backgroundColor: "#f0f0f0",
+            margin: "0 auto",
+            position: "relative",
+          }}
+        />
+
         <div
           style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
           className="decDetailsRight"
@@ -707,34 +708,7 @@ function DecorationCatDetails({ city, locality }) {
     const inclusionItems = statements.flatMap((statement) =>
       statement.split("-").filter((item) => item.trim() !== "")
     );
-    // const inclusionList = inclusionItems.map((item, index) => (
-    //   <li key={index} className="inclusionstyle" style={{ fontFamily: "Inter, sans-serif" }}>
-    //     <Image
-    //       src={checkImage}
-    //       alt="Info"
-
-    //     />
-    //     {item.trim()}
-    //   </li>
-    // ));
-    // return (
-    //   <div>
-    //     <div
-    //       style={{
-    //         fontSize: "21px",
-    //         borderBottom: "1px solid #e7eff9",
-    //         marginBottom: "10px",
-    //         fontFamily: "Inter, sans-serif",
-    //         fontWeight: "600",
-
-    //       }}
-    //     >
-    //       Inclusions
-    //     </div>
-    //     <ul>{inclusionList}</ul>
-    //   </div>
-    // );
-    const inclusionList = inclusionItems.map((item, index) => (
+  const inclusionList = inclusionItems.map((item, index) => (
       <li key={index} className="inclusionstyle">
         <Image src={checkImage} alt="Info" />
         {item.trim()}
@@ -844,45 +818,45 @@ function DecorationCatDetails({ city, locality }) {
           <div
             className="decDetailsLeft"
           >
-          
-              <div>
-                <Image
-                  src={
-                    product?.featured_image
-                      ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                      }.webp`
-                      : "/default-image.webp" // fallback image
-                  }
-                  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
-                  style={{ width: "100%", height: "auto" }}
-                  width={300}
-                  height={300}
-                />
 
-                <div
+            <div>
+              <Image
+                src={
+                  product?.featured_image
+                    ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                    }.webp`
+                    : "/default-image.webp" // fallback image
+                }
+                alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+                style={{ width: "100%", height: "auto" }}
+                width={300}
+                height={300}
+              />
+
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 3,
+                  right: 3,
+                  borderRadius: "50%",
+                  padding: 10,
+                }}
+              >
+                <span
                   style={{
-                    position: "absolute",
-                    bottom: 3,
-                    right: 3,
-                    borderRadius: "50%",
-                    padding: 10,
+                    color: "rgba(157, 74, 147, 0.6)",
+                    fontWeight: "600",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "rgba(157, 74, 147, 0.6)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    <Image
-                      src={logo}
-                      alt="Hora Services"
-                      className="hora-watermark-image"
-                    />
-                  </span>
-                </div>
+                  <Image
+                    src={logo}
+                    alt="Hora Services"
+                    className="hora-watermark-image"
+                  />
+                </span>
               </div>
-            
+            </div>
+
 
 
 
@@ -951,7 +925,7 @@ function DecorationCatDetails({ city, locality }) {
               </div>
               <div className='addon-container' ref={customizationRef}>
 
-                <div className="photodetails-inclusions">
+                {/* <div className="photodetails-inclusions">
                   {selectedAddOnProduct.length > 0 && (
                     <>
 
@@ -980,7 +954,13 @@ function DecorationCatDetails({ city, locality }) {
 
                     </>
                   )}
-                </div>
+                </div> */}
+                        <AddOnsList
+  selectedAddOnProduct={selectedAddOnProduct}
+  itemQuantities={itemQuantities}
+  showAddOnmodal={showAddOnmodal}
+  pencil={pencil}
+/>
               </div>
 
             </div>

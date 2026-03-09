@@ -108,18 +108,6 @@
   justify-content: center;
 }
 
-/* .addbutton,
-.quantitybutton {
-  background-color: rgb(157, 74, 147) !important;
-  color: #fff;
-  border: none;
-  padding: 3px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-
-  cursor: pointer;
-} */
 .addbutton,
 .quantitybutton {
   background-color: rgb(157, 74, 147) !important;
@@ -140,4 +128,17 @@
 
 .add-on-prices p {
   margin: 0;
+}
+.addon-container li {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  flex-direction: column;
+}
+
+ul.decoration-addons {
+  margin: 10px 0 17px !important;
+  padding: 13px !important;
+  background-color: #fff;
 }
