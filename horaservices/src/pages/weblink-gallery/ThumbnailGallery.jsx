@@ -303,9 +303,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
 
-        const mainFolder = data.folders.find(
-          (folder) => folder.folderName === folderName
-        );
+        // const mainFolder = data.folders.find(
+        //   (folder) => folder.folderName === folderName
+        // );
         setSubFolders(data.folder?.subFolders || []);
         // setSubFolders(mainFolder?.subFolders || []);
         const fetchedThumbnails = (data.thumbnails || [])
