@@ -17,6 +17,7 @@ import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
+import VisitorTracker from "@/utils/VisitorTracker";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -53,32 +54,32 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
 
-  useEffect(() => {
-    const visitorId = getVisitorId();
-    console.log('visitor id' , visitorId);
-    const { device, os } = getDeviceInfo();
-    const browser = getBrowserInfo();
-    console.log(JSON.stringify({
-        visitorId,
-        device,
-        os,
-        browser, 
-        page: window.location.pathname, // 👈 include page path
-      }))
+  // useEffect(() => {
+  //   const visitorId = getVisitorId();
+  //   console.log('visitor id' , visitorId);
+  //   const { device, os } = getDeviceInfo();
+  //   const browser = getBrowserInfo();
+  //   console.log(JSON.stringify({
+  //       visitorId,
+  //       device,
+  //       os,
+  //       browser, 
+  //       page: window.location.pathname, // 👈 include page path
+  //     }))
 
-    // Track daily visit with page info
-    fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        visitorId,
-        device,
-        os,
-        browser, 
-        page: window.location.pathname, // 👈 include page path
-      }),
-    });
-  }, []);
+  //   // Track daily visit with page info
+  //   fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({
+  //       visitorId,
+  //       device,
+  //       os,
+  //       browser, 
+  //       page: window.location.pathname, // 👈 include page path
+  //     }),
+  //   });
+  // }, []);
   
   const requestPermission = async () => {
     try {
@@ -209,6 +210,9 @@ function MyApp({ Component, pageProps }) {
 
                   <div className="whatsapp-container">
                     <WhatsAppIcon router={router} />
+                  </div>
+                  <div>
+                    <VisitorTracker/>
                   </div>
                 </PageLayout>
               </ChatProviderMain>
