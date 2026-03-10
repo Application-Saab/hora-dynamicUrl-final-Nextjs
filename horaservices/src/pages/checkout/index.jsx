@@ -53,17 +53,9 @@ const Checkout = () => {
   let { subCategory, product } = router.query;
   const urlParams = new URLSearchParams(window.location.search);
   const category = urlParams.get("catValue");
-  const rawAddOns = router.query.selectedAddOnProduct
-  ? JSON.parse(router.query.selectedAddOnProduct)
-  : [];
-
-const selectedAddOnProduct = rawAddOns.map(item => ({
-  addOnId: item._id,
-  quantity: item.quantity || 1,
-  priceAtPurchase: item.price,
-  totalPrice: item.price * (item.quantity || 1),
-  name: item.title // sirf UI ke liye
-}));
+  const selectedAddOnProduct = router.query.selectedAddOnProduct
+    ? JSON.parse(router.query.selectedAddOnProduct)
+    : [];
 
 
   const itemQuantities = router.query.itemQuantities
@@ -681,10 +673,8 @@ const contactUsRedirect = (category, cityName) => {
                       <ul className="addon-list">
                         {selectedAddOnProduct.map((item, index) => (
                           <li key={index} className="addon-item">
-                            <span className="addon-title">{index + 1}. {item.name} </span>
-                             <span className="addon-price">
-                             ₹{item.priceAtPurchase} x {item.quantity} = ₹ {item.totalPrice}
-                             </span>
+                            <span className="addon-title">{index + 1}. {item.title}</span>
+                            <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
                           </li>
                         ))}
                       </ul>

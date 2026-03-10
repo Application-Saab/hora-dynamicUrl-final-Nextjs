@@ -61,4 +61,3 @@ export const CREATE_DIRECT_CHAT_ROOM = "/api/customer/event/chat/create-direct-r
 export const SUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/subscribe";
 export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
-export const GET_ADDON_BY_ID = "/api/addon/get"
