@@ -281,8 +281,9 @@ const HeaderCards = ({
       setPreviewFile(null);
       setNewFolderName("");
     } catch(error){
-      console.error("create folder error :", error);
-      alert("create folder error :",error)
+      console.error("create folder error :", error?.message);
+      // alert("create folder error :",error?.message)
+      alert("create folder error: " + error?.message)
     }
      finally {
       setIsLoading(false);
