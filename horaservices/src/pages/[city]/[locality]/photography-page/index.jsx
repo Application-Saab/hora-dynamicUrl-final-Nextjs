@@ -1,10 +1,7 @@
 import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
 import "@/app/homepage.css";
-import PhotographyDescription from "../../photography-page/components/PhotographyDescription";
-import PhotographySEOKeywords from "../../photography-page/components/PhotographySEOKeywords";
-import PhotographyFAQ from "../../photography-page/components/PhotographyFAQ";
-import { faqData } from "@/utils/photographyFAQData";
+
 
 
 const PhotographyCityPage = () => {
@@ -17,11 +14,10 @@ const PhotographyCityPage = () => {
 
 
   return (
-    <div className="page-width">
+    <div >
+  
       <Index />
-      <PhotographyFAQ faqData={faqData} />
-      <PhotographyDescription city={locality} />
-      <PhotographySEOKeywords city={locality} />
+    
     </div>
   );
 };

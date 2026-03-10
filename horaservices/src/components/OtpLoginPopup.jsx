@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import {
   BASE_URL,
   OTP_GENERATE_END_POINT,
@@ -14,7 +15,8 @@ import Image from "next/image";
 import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
-const OtpLogin = ({ setIsModalOpen }) => {
+
+const OtpLogin = ({ setIsModalOpen, fromCheckout = false }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
 
@@ -25,7 +27,7 @@ const OtpLogin = ({ setIsModalOpen }) => {
 
   const { time, resetTimer, isTimeUp } = useTimer(30);
   const inputsRef = useRef([]);
-
+  const router = useRouter();
   /* ---------------- MOBILE INPUT ---------------- */
   const handleMobileNumberChange = (e) => {
     const value = e.target.value;
@@ -264,7 +266,7 @@ const OtpLogin = ({ setIsModalOpen }) => {
           }, 0);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => controller.abort();
   }, [isOtpSent]);
@@ -284,15 +286,20 @@ const OtpLogin = ({ setIsModalOpen }) => {
               width={24}
               height={24}
               className="login-back-icon"
-              onClick={() => {
-                if (isOtpSent) {
-                  setIsOtpSent(false);
-                  setOtp(["", "", "", ""]);
-                  setOtpError("");
-                } else {
-                  setIsModalOpen(false);
-                }
-              }}
+             onClick={() => {
+  if (isOtpSent) {
+    setIsOtpSent(false);
+    setOtp(["", "", "", ""]);
+    setOtpError("");
+    return;
+  }
+
+  setIsModalOpen(false);
+  if (fromCheckout) {
+    router.back();
+  }
+}}
+
             />
             <div className="login-content">
               <div className="login-header">
@@ -329,8 +336,6 @@ const OtpLogin = ({ setIsModalOpen }) => {
                 </>
               )}
 
-              {/* OTP SCREEN */}
-              {/* OTP SCREEN */}
               {isOtpSent && (
                 <>
                   <p className="verify-text">
@@ -358,9 +363,8 @@ const OtpLogin = ({ setIsModalOpen }) => {
                     ))}
                   </div>
                   <div
-                    className={`otp-bottom-row ${
-                      otpError ? "space-between" : "center-align"
-                    }`}
+                    className={`otp-bottom-row ${otpError ? "space-between" : "center-align"
+                      }`}
                   >
                     {otpError && (
                       <span className="otp-error-text">{otpError}</span>

@@ -314,6 +314,9 @@ margin-right: 0;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
+     touch-action: pan-y;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .wheel::-webkit-scrollbar {

@@ -24,23 +24,42 @@ function MyApp({ Component, pageProps }) {
   const pathname = usePathname();
   const [currentUrl, setCurrentUrl] = useState("");
   const [loggedinUserId, setLoggedinUserId] = useState(
-    typeof window !== "undefined" && localStorage.getItem("userID") || ""
+    (typeof window !== "undefined" && localStorage.getItem("userID")) || "",
   );
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
-    const blockContextMenu = (e) => e.preventDefault();
+    const blockContextMenu = (e) => {
+      const target = e.target;
+
+      // Allow copy menu in these areas
+      if (
+        target.closest(
+          ".chat-text, .chat-message, .chat-messages, a, input, textarea, [contenteditable='true']",
+        )
+      ) {
+        return;
+      }
+      e.preventDefault();
+    };
+
     const blockKeys = (e) => {
       const key = e.key?.toLowerCase();
+
+      // Only devtools block
       if (
-        (e.ctrlKey && ["u", "s"].includes(key)) ||
-        (e.ctrlKey && e.shiftKey && ["i", "c"].includes(key)) ||
-        key === "f12"
+        key === "f12" ||
+        (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(key))
       ) {
         e.preventDefault();
         e.stopPropagation();
       }
     };
-    const blockDrag = (e) => e.preventDefault();
+
+    const blockDrag = (e) => {
+      if (e.target.tagName === "IMG") {
+        e.preventDefault();
+      }
+    };
 
     document.addEventListener("contextmenu", blockContextMenu);
     document.addEventListener("keydown", blockKeys);
@@ -85,7 +104,7 @@ function MyApp({ Component, pageProps }) {
     try {
       if ("Notification" in window && "serviceWorker" in navigator) {
         const swRegistration = await navigator.serviceWorker.register(
-          "/firebase-messaging-sw.js"
+          "/firebase-messaging-sw.js",
         );
 
         const permission = await Notification.requestPermission();
@@ -100,7 +119,10 @@ function MyApp({ Component, pageProps }) {
             await fetch(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId: loggedinUserId, fcmToken: currentToken }),
+              body: JSON.stringify({
+                userId: loggedinUserId,
+                fcmToken: currentToken,
+              }),
             });
           }
         }
@@ -166,30 +188,29 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-     <Head>
-  <title>HORA – Event & Balloon Decoration Services</title>
+      <Head>
+        <title>HORA – Event & Balloon Decoration Services</title>
 
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: "HORA",
-        alternateName: "HORA Services",
-        url: "https://horaservices.com/",
-      }),
-    }}
-  />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "HORA",
+              alternateName: "HORA Services",
+              url: "https://horaservices.com/",
+            }),
+          }}
+        />
 
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="icon" href="/new_logo_light.png" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
-    rel="stylesheet"
-  />
-</Head>
-
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/new_logo_light.png" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Just+Another+Hand&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
 
       <Provider store={store}>
         <UserDetailsProvider>

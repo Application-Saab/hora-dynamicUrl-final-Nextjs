@@ -481,7 +481,7 @@ const contactUsRedirect = (category, cityName) => {
   return (
     <div className="App">
 
-      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />}
+      {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} fromCheckout />}
       {loading && <Loader />}
 
       <div className="booking-form-card" >

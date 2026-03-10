@@ -127,7 +127,7 @@ const ChatProviderMain = ({ children }) => {
         const { eventId } = data;
         if (eventId) {
           window.dispatchEvent(
-            new CustomEvent("rsvp:refetch", { detail: { eventId } })
+            new CustomEvent("rsvp:refetched", { detail: { eventId } })
           );
         }
       };

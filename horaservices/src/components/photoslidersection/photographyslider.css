@@ -1,0 +1,115 @@
+.premium-slide-decor {
+  background: #fbe6d3;
+  padding: 10px 0px 10px 10px;
+
+}
+
+.premium-slide-decor-header {
+  display: flex;
+  justify-content: space-between;
+  padding:10px
+}
+
+.premium-slide-decor-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #97538C;
+}
+
+.premium-slide-decor-header a {
+  font-weight: 600;
+  color: #97538C;
+  text-decoration: underline;
+}
+
+.premium-scroll-wrapper {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+   scrollbar-width: none;     
+  -ms-overflow-style: none; 
+}
+
+   .photo-premium-card {
+  background: #fff;
+  border-radius: clamp(10px, 2.5vw, 12px);
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: clamp(120px, 38vw, 150px);
+}
+
+.photo-premium-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: clamp(120px, 38vw, 150px);
+}
+
+.photo-premium-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: clamp(10px, 2.5vw, 12px) clamp(10px, 2.5vw, 12px) 0 0;
+}
+
+.photo-premium-discount {
+  position: absolute;
+  top: clamp(2px, 1vw, 6px);
+  right: clamp(2px, 1vw, 6px);
+
+  background: #ffa600;
+  color: #fff;
+  font-weight: 600;
+  font-size: clamp(10px, 2.8vw, 12px);
+  padding: clamp(3px, 1vw, 6px) clamp(6px, 2vw, 10px);
+  border-radius: clamp(6px, 2vw, 8px);
+}
+
+.photo-premium-content {
+  padding: clamp(6px, 2vw, 10px) clamp(6px, 2vw, 10px) clamp(6px, 2vw, 10px);
+  min-height: clamp(32px, 10vw, 40px); /* 🔑 same title area */
+}
+
+.photo-premium-title {
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 600;
+  color: #97538C;
+
+  line-height: 1.2;
+  margin-bottom:0px;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  height: clamp(26px, 7vw, 32px); 
+}
+
+.photo-premium-price-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+gap: clamp(8px, 6vw, 12px);
+
+  padding-bottom: clamp(6px, 2vw, 10px);
+}
+
+.photo-premium-price {
+  font-size: clamp(14px, 4vw, 16px);
+  font-weight: 700;
+  color: #97538C;
+}
+
+.photo-premium-original {
+   font-size: clamp(14px, 4vw, 16px);
+  color: #000;
+  text-decoration: line-through;
+}

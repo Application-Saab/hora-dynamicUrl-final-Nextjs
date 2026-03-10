@@ -63,6 +63,7 @@ const ChatPage = () => {
   const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
   const ignoreNextFocusRef = useRef(false);
+  const initialScrollDoneRef = useRef(false); // 🔥 NEW
 
   const scrollToBottom = () => {
     if (!chatBodyRef.current) return;
@@ -89,6 +90,15 @@ const ChatPage = () => {
     if (selected) setSelectedGroup(selected);
   }, [groupId, chatRooms]);
 
+  // Reset on room change
+  useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.classList.remove("ready");
+    }
+    hasScrolledToUnreadRef.current = false;
+    initialScrollDoneRef.current = false;
+  }, [groupId]);
+
   // Local message listener
   useEffect(() => {
     if (!socket || !selectedGroup) return;
@@ -112,73 +122,69 @@ const ChatPage = () => {
     return () => socket.off("message:new", onMessageNewLocal);
   }, [selectedGroup, userId]);
 
-  // Scroll to first unread or bottom on messages load
+  // First scroll BEFORE paint (synchronous)
   useLayoutEffect(() => {
     if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+    if (initialScrollDoneRef.current) return;
 
-    // Only scroll once when messages first load
-    if (hasScrolledToUnreadRef.current) return;
-
+    const container = chatBodyRef.current;
     const gid = selectedGroup._id || selectedGroup.id;
     const unreadCount = unreadCounts[gid] || 0;
 
-    setTimeout(() => {
-      if (!chatBodyRef.current) return;
+    // FORCE scroll IMMEDIATELY (before ANY paint)
+    if (unreadCount > 0) {
+      const roomObj = chatRooms.find(
+        (r) => String(r._id || r.id) === String(gid),
+      );
+      const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
+      const lastReadForMe = lastReadMap[userId]
+        ? new Date(lastReadMap[userId])
+        : null;
 
-      if (unreadCount > 0) {
-        const roomObj = chatRooms.find(
-          (r) => String(r._id || r.id) === String(gid),
-        );
-        const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
-        const lastReadForMe = lastReadMap[userId]
-          ? new Date(lastReadMap[userId])
-          : null;
-
-        // Find first unread message index
-        let firstUnreadIndex = -1;
-        if (lastReadForMe) {
-          for (let i = 0; i < messages.length; i++) {
-            const msg = messages[i];
-            const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
-
-            // Skip own messages
-            if (String(msg.senderId) === String(userId)) continue;
-
-            // Find first message after lastReadAt
-            if (msgTime && msgTime > lastReadForMe) {
-              firstUnreadIndex = i;
-              break;
-            }
+      let firstUnreadIndex = -1;
+      if (lastReadForMe) {
+        for (let i = 0; i < messages.length; i++) {
+          const msg = messages[i];
+          const msgTime = msg.createdAt ? new Date(msg.createdAt) : null;
+          if (String(msg.senderId) === String(userId)) continue;
+          if (msgTime && msgTime > lastReadForMe) {
+            firstUnreadIndex = i;
+            break;
           }
         }
-
-        if (firstUnreadIndex !== -1) {
-          // Scroll to first unread message
-          const messageElements =
-            chatBodyRef.current.querySelectorAll(".chat-message");
-          const targetElement = messageElements[firstUnreadIndex];
-
-          if (targetElement) {
-            targetElement.scrollIntoView({
-              behavior: "auto",
-              block: "start",
-            });
-
-            // Add a visual indicator
-            targetElement.style.backgroundColor = "rgba(255, 235, 59, 0.3)";
-            setTimeout(() => {
-              targetElement.style.backgroundColor = "";
-            }, 2000);
-          }
-        } else {
-          chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-        }
-      } else {
-        chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
       }
 
-      hasScrolledToUnreadRef.current = true;
-    }, 100);
+      if (firstUnreadIndex !== -1) {
+        // Scroll to element using direct scrollTop calculation
+        const messageElements = container.querySelectorAll(".chat-message");
+        const targetElement = messageElements[firstUnreadIndex];
+        if (targetElement) {
+          // Calculate exact scroll position
+          const containerTop = container.getBoundingClientRect().top;
+          const targetTop = targetElement.getBoundingClientRect().top;
+          const scrollOffset = targetTop - containerTop;
+
+          // Set scroll INSTANTLY
+          container.scrollTop = container.scrollTop + scrollOffset;
+
+          // Blink effect
+          setTimeout(() => {
+            targetElement.style.backgroundColor = "";
+          }, 2000);
+        }
+      } else {
+        container.scrollTop = container.scrollHeight;
+      }
+    } else {
+      // No unread - bottom
+      container.scrollTop = container.scrollHeight;
+    }
+
+    initialScrollDoneRef.current = true;
+    hasScrolledToUnreadRef.current = true;
+
+    // Show container AFTER scroll set
+    container.classList.add("ready");
   }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
 
   // Visual viewport handling for keyboard
@@ -219,17 +225,24 @@ const ChatPage = () => {
         }
       }
     };
+
     function allowChatMessagesScroll(e) {
       const chatMessages = document.querySelector(".chat-messages");
-      if (!chatMessages) return e.preventDefault();
-      if (chatMessages.contains(e.target)) {
+      const chatInput = document.querySelector(".chat-input");
+
+      if (!chatMessages && !chatInput) return e.preventDefault();
+
+      if (chatMessages.contains(e.target) || chatInput.contains(e.target)) {
         return;
       }
+
       e.preventDefault();
     }
+
     setVvh();
     window.visualViewport?.addEventListener("resize", setVvh);
     window.visualViewport?.addEventListener("scroll", setVvh);
+
     return () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", setVvh);
@@ -262,6 +275,7 @@ const ChatPage = () => {
     setTimeout(() => {
       textareaRef.current.removeAttribute("inputmode");
     }, 50);
+
     let sel = window.getSelection();
     let range;
     if (
@@ -274,8 +288,10 @@ const ChatPage = () => {
       range.selectNodeContents(textareaRef.current);
       range.collapse(false);
     }
+
     sel.removeAllRanges();
     sel.addRange(range);
+
     const img = document.createElement("img");
     img.src = emojiUrl;
     img.className = "emoji-inline";
@@ -284,7 +300,9 @@ const ChatPage = () => {
     img.style.verticalAlign = "middle";
     img.style.display = "inline-block";
     img.style.margin = "0 2px";
+
     range.insertNode(img);
+
     const newRange = document.createRange();
     newRange.setStartAfter(img);
     newRange.collapse(true);
@@ -398,8 +416,6 @@ const ChatPage = () => {
     }
   };
 
-  const handleImageUpload = async () => {};
-
   const sendMessage = async () => {
     if (!textareaRef.current) return;
     const messageHTML = textareaRef.current.innerHTML.trim();
@@ -432,6 +448,7 @@ const ChatPage = () => {
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
+
     if (socket && socket.connected) {
       socket.emit("message:send", {
         eventId: selectedGroup.eventId,
@@ -444,9 +461,11 @@ const ChatPage = () => {
         senderPhone: userData?.phone,
       });
     }
+
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
     scrollToBottom();
+
     if (!showEmojiPicker) {
       requestAnimationFrame(() => {
         textareaRef.current?.focus({ preventScroll: true });
@@ -457,9 +476,14 @@ const ChatPage = () => {
   const resizeTextarea = () => {
     const el = textareaRef.current;
     if (!el) return;
+
     el.style.height = "auto";
     const newHeight = Math.min(el.scrollHeight, 120);
-    el.style.height = newHeight + "px";
+    el.style.height = `${newHeight}px`;
+
+    if (newHeight >= 120) {
+      el.scrollTop = el.scrollHeight;
+    }
   };
 
   const handleClickUserName = async (senderId) => {
@@ -516,19 +540,111 @@ const ChatPage = () => {
   }, [selectedGroup]);
 
   const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
-    acc[member.userId] = member.profileImageUrl || "";
+    acc[member.userId] =
+      { name: member.name, avatar: member.profileImageUrl } || {};
     return acc;
   }, {});
 
-  const focusInputIOS = () => {
-    const el = textareaRef.current;
-    if (!el) return;
+  function renderInfoMessage(msg, usersMap) {
+    const currentName =
+      usersMap[msg.actorId]?.name || msg.actorSnapshot?.name || "Someone";
 
-    el.blur();
-    setTimeout(() => {
-      el.focus();
-    }, 0);
+    switch (msg.infoType) {
+      case "user_joined":
+        return `${currentName} joined the group`;
+      default:
+        return "";
+    }
+  }
+
+  useEffect(() => {
+    let pressTimer = null;
+
+    const onTouchStart = (e) => {
+      const link = e.target.closest("a.chat-link");
+      if (!link) return;
+
+      pressTimer = setTimeout(() => {
+        const url = link.dataset.url;
+        if (url) {
+          navigator.clipboard.writeText(url);
+        }
+      }, 500);
+    };
+
+    const clearPress = () => {
+      if (pressTimer) {
+        clearTimeout(pressTimer);
+        pressTimer = null;
+      }
+    };
+
+    document.addEventListener("touchstart", onTouchStart);
+    document.addEventListener("touchend", clearPress);
+    document.addEventListener("touchmove", clearPress);
+    document.addEventListener("touchcancel", clearPress);
+
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchend", clearPress);
+      document.removeEventListener("touchmove", clearPress);
+      document.removeEventListener("touchcancel", clearPress);
+    };
+  }, []);
+
+  const linkifyHtml = (html) => {
+    if (!html) return html;
+
+    const container = document.createElement("div");
+    container.innerHTML = html;
+
+    const urlRegex = /((https?:\/\/)|(www\.))[^\s]+/gi;
+
+    const walkNodes = (node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        if (!urlRegex.test(node.nodeValue)) return;
+
+        const span = document.createElement("span");
+        span.innerHTML = node.nodeValue.replace(urlRegex, (url) => {
+          const href = url.startsWith("http") ? url : `https://${url}`;
+
+          return `<a 
+  href="${href}" 
+  data-url="${href}"
+  class="chat-link"
+  target="_blank"
+  rel="noopener noreferrer"
+>${url}</a>`;
+        });
+
+        node.replaceWith(...span.childNodes);
+        return;
+      }
+
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === "IMG" || node.tagName === "A") return;
+
+        [...node.childNodes].forEach(walkNodes);
+      }
+    };
+
+    [...container.childNodes].forEach(walkNodes);
+
+    return container.innerHTML;
   };
+  function formatTime(isoString) {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+
+    hours = hours % 12 || 12;
+    const min = minutes.toString().padStart(2, "0");
+
+    return `${hours.toString().padStart(2, "0")}:${min} ${ampm}`;
+  }
 
   return (
     <div
@@ -540,7 +656,6 @@ const ChatPage = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {" "}
       <div className="chat-header-wrapper">
         <div className="chat-header">
           <div className="chat-user-info">
@@ -567,8 +682,14 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
+
       <div className="chat-messages" ref={chatBodyRef}>
         {messages.map((msg, index) => {
+          console.log(
+            "%c [ messages ]-1520",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            messages,
+          );
           const isMe = msg.senderId === userId;
           const senderName = msg.senderName;
           const previousMsg = messages[index - 1];
@@ -595,7 +716,7 @@ const ChatPage = () => {
                 !isConsecutive &&
                 (membersProfileMap?.[msg.senderId] ? (
                   <img
-                    src={membersProfileMap?.[msg.senderId]}
+                    src={membersProfileMap?.[msg.senderId]?.avatar}
                     alt={senderName || "avatar"}
                     className="chat-avatar-receiver"
                     style={{ objectFit: "cover" }}
@@ -637,8 +758,11 @@ const ChatPage = () => {
                 )}
                 <div
                   className="chat-text"
-                  dangerouslySetInnerHTML={{ __html: msg.html || msg.message }}
+                  dangerouslySetInnerHTML={{
+                    __html: linkifyHtml(msg.html || msg.message),
+                  }}
                 />
+                <div className="chat-time">{formatTime(msg.createdAt)}</div>
               </div>
             </div>
           ) : (
@@ -647,11 +771,14 @@ const ChatPage = () => {
               style={{ margin: "12px 0" }}
               key={msg._id}
             >
-              <p className="info-chat-message-box">{msg?.message}</p>
+              <p className="info-chat-message-box">
+                {renderInfoMessage(msg, membersProfileMap)}
+              </p>
             </div>
           );
         })}
       </div>
+
       <div className="chat-input-container">
         <EmojiPickerButton
           onEmojiSelect={insertEmoji}
@@ -663,19 +790,9 @@ const ChatPage = () => {
           textareaRef={textareaRef}
           ignoreNextFocusRef={ignoreNextFocusRef}
         />
-        <div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-        </div>
         <div
           ref={textareaRef}
           contentEditable
-          role="textbox"
-          aria-multiline="true"
           inputMode="text"
           suppressContentEditableWarning={true}
           onFocus={() => {
@@ -690,10 +807,12 @@ const ChatPage = () => {
           }}
           onInput={(e) => {
             resizeTextarea();
+            if (textareaRef.current.scrollHeight > 120) {
+              textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+            }
           }}
           onClick={() => {
             setShowEmojiPicker(false);
-            focusInputIOS();
           }}
           className="chat-input"
           data-placeholder="Type message here..."

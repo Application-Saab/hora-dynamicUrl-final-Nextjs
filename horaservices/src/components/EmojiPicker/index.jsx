@@ -18,13 +18,23 @@ export default function EmojiPickerButton({
   emojiIcon = emojiicon,
   keyboardIcon = ThankYouKeyboard,
   ignoreNextFocusRef,
-  textareaRef
+  textareaRef,
 }) {
   const [forceOpen, setForceOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(260);
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false);
+  const keyboardLockedRef = useRef(false);
 
+  const freezeKeyboardHeight = () => {
+    if (!window.visualViewport) return;
+
+    const height = window.innerHeight - window.visualViewport.height;
+    if (height > 100) {
+      keyboardLockedRef.current = true; // 🔒 LOCK
+      setKeyboardHeight(height);
+    }
+  };
 
   useEffect(() => {
     if (!window.visualViewport) return;
@@ -150,7 +160,7 @@ export default function EmojiPickerButton({
 
     const elements = document.querySelectorAll(".chat-layout");
     elements.forEach((el) => {
-      el.style.paddingBottom = `${keyboardHeight}px`;
+      el.style.paddingBottom = `${keyboardHeight + 5}px`;
     });
 
     return () => {
@@ -224,6 +234,12 @@ export default function EmojiPickerButton({
     return () => document.removeEventListener("click", handler);
   }, [isPickerOpen, simple, forceOpen]);
 
+  useEffect(() => {
+    if (!isPickerOpen) {
+      keyboardLockedRef.current = false;
+    }
+  }, [isPickerOpen]);
+
   return (
     <>
       <div
@@ -261,9 +277,7 @@ export default function EmojiPickerButton({
             style={{ width: "100%", height: "100%" }}
           >
             <EmojiPicker
-              onEmojiClick={(emojiObject) =>
-                handleEmojiClick(emojiObject)
-              }
+              onEmojiClick={(emojiObject) => handleEmojiClick(emojiObject)}
               width="100%"
               height={keyboardHeight}
               searchDisabled
