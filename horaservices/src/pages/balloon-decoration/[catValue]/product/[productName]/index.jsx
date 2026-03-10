@@ -1065,7 +1065,7 @@ function DecorationCatDetails({ city, locality }) {
 
             {similarByPrice.length > 0 && (
               <UniversalDecorSlider
-                title="You May Also Like"
+                title="You May Also Like This"
                 data={similarByPrice}
                 showDiscount={true}
                 city={city}
