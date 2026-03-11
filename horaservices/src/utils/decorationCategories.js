@@ -89,14 +89,6 @@ export const decCat = [
   },
 
   {
-    id: "10",
-    image: "https://horaservices.com/api/uploads/Balloon-B-new.webp",
-    name: "Ballon Bouquets",
-    subCategory: "BallonBouquets",
-    catValue: "balloon-bouquets-decoration",
-    imgAlt: "Balloon Bouquet",
-  },
-  {
     id: "11",
     Image: "",
     name: "Haldi Mehandi",
@@ -106,7 +98,7 @@ export const decCat = [
   },
   {
     id: "12",
-    image: "/decorationwedding.png",
+    image: "",
     name: "Wedding",
     subCategory: "Wedding",
     catValue: "Wedding", // ✅ must match

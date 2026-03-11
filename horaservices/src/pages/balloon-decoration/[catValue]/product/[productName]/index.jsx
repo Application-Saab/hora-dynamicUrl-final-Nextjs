@@ -15,6 +15,7 @@ import {
   BASE_URL,
   GET_DECORATION_BY_NAME,
   GET_DECORATION_CAT_ID,
+  GET_ADDON_BY_ID,
 } from "@/utils/apiconstants";
 import axios from "axios";
 import FAQSection from "@/components/FAQSection";
@@ -211,8 +212,14 @@ function DecorationCatDetails({ city, locality }) {
   const [extraProduct, setExtraProduct] = useState([]);
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
   const searchParams = useSearchParams();
-  const [similarByPrice, setSimilarByPrice] = useState([]);
-  const [similarByName, setSimilarByName] = useState([]);
+  // const [similarByPrice, setSimilarByPrice] = useState([]);
+  // const [similarByName, setSimilarByName] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+const [similarByTheme, setSimilarByTheme] = useState([]);
+const [levelUp1000, setLevelUp1000] = useState([]);
+const [levelUp2000, setLevelUp2000] = useState([]);
+  const [addonData, setAddonData] = useState([]);
+  const [addonIds, setAddonIds] = useState([]);
 
   const router = useRouter();
   const params = useParams();
@@ -238,71 +245,7 @@ function DecorationCatDetails({ city, locality }) {
 
   // 2️⃣ Get URL params when router is ready
 
-  const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
-    if (!price || !productsArray.length) return;
-
-    const min = Math.floor(price / 1000) * 1000;
-    const max = Math.ceil(price / 1000) * 1000 + 1000;
-
-    const filtered = productsArray.filter(item => {
-      const itemPrice = Number(item.price);
-      return (
-        itemPrice >= min &&
-        itemPrice <= max &&
-        item._id !== excludeId
-      );
-    });
-
-    console.log(`Filtered by Rounded Range ${min} - ${max}:`, filtered);
-    setSimilarByPrice(filtered);
-  };
-
-
-  const filterSimilarByName = (product, productsArray = [], excludeId) => {
-    if (!product?.name || !productsArray.length) return;
-
-    const mainWords = product.name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Remove special chars
-      .split(/\s+/)
-      .filter(Boolean);
-
-    const filtered = productsArray
-      .filter(item => item._id !== excludeId)
-      .map(item => {
-        const itemName = (item.name || "")
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, '');
-
-        const itemWords = itemName.split(/\s+/).filter(Boolean);
-
-        // Count how many words match
-        const matchCount = mainWords.filter(word => itemWords.includes(word)).length;
-
-        // Is it a strong match? (both words exist)
-        const isStrongMatch = mainWords.every(word => itemWords.includes(word));
-
-        // Optional: Order match
-        const isExactPhrase = itemName.includes(mainWords.join(' '));
-
-        return {
-          ...item,
-          matchCount,
-          isStrongMatch,
-          isExactPhrase
-        };
-      })
-      // Sort by exact phrase > strong match > matchCount
-      .sort((a, b) => {
-        if (b.isExactPhrase !== a.isExactPhrase) return b.isExactPhrase - a.isExactPhrase;
-        if (b.isStrongMatch !== a.isStrongMatch) return b.isStrongMatch - a.isStrongMatch;
-        return b.matchCount - a.matchCount;
-      });
-
-    console.log("Filtered by Name =>", filtered);
-    setSimilarByName(filtered);
-  };
-
+ 
 
 
 
@@ -340,6 +283,7 @@ function DecorationCatDetails({ city, locality }) {
         const discountDetails = getDiscountedPrice(fetchedProduct.price);
         setDiscountInfo(discountDetails);
       }
+      setAddonIds(fetchedProduct?.addons)
 
       setLoading(false);
     } catch (error) {
@@ -394,17 +338,189 @@ function DecorationCatDetails({ city, locality }) {
   }, [passCategoryId]);
 
 
-  const getCategoryProducts = async (categoryId) => {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
-      );
-      setSimilar(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching category products:", error.message);
-    }
-  };
+const getCategoryProducts = async (categoryId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
+    );
 
+    setAllProducts(response.data.data || []);
+
+  } catch (error) {
+    console.error("Error fetching category products:", error.message);
+  }
+};
+
+useEffect(() => {
+  if (passCategoryId) {
+    getCategoryProducts(passCategoryId);
+  }
+}, [passCategoryId]);
+
+useEffect(() => {
+
+  if (product && allProducts.length > 0) {
+    filterSimilarProducts(product, allProducts);
+  }
+
+}, [product, allProducts]);
+
+
+// const filterSimilarProducts = (product, productsArray = []) => {
+
+//   if (!product || !productsArray.length) return;
+
+//   const name = product.name.toLowerCase();
+
+//   // ⭐ themeFilters se keyword detect
+//   const matchedTheme = themeFilters.find(t =>
+//     t.value !== "all" &&
+//     name.includes(t.value.toLowerCase())
+//   );
+
+//   // ⭐ Agar keyword mil gaya (Unicorn / Cocomelon etc)
+//   if (matchedTheme) {
+
+//     const keyword = matchedTheme.value.toLowerCase();
+
+//     const filtered = productsArray.filter(item =>
+//       item._id !== product._id &&
+//       item.name.toLowerCase().includes(keyword)
+//     );
+
+//     if (filtered.length > 0) {
+//       setSimilarByTheme(filtered);
+//       return;
+//     }
+//   }
+
+//   // ⭐ Agar keyword nahi mila → price logic
+//   const price = Number(product.price);
+//   const min = price - 500;
+//   const max = price + 500;
+
+//   const filtered = productsArray.filter(item => {
+
+//     const itemPrice = Number(item.price);
+
+//     return (
+//       item._id !== product._id &&
+//       itemPrice >= min &&
+//       itemPrice <= max
+//     );
+
+//   });
+
+//   setSimilarByTheme(filtered);
+
+// };
+const filterSimilarProducts = (product, productsArray = []) => {
+
+  if (!product || !productsArray.length) return;
+
+  const name = product.name.toLowerCase();
+
+  // ⭐ theme detect
+  const matchedTheme = themeFilters.find(t => {
+
+    if (t.value === "all") return false;
+
+    const keywords = t.value.toLowerCase().split("-");
+
+    return keywords.some(word => name.includes(word));
+  });
+
+  // ⭐ Same Theme Products
+  if (matchedTheme) {
+
+    const keywords = matchedTheme.value.toLowerCase().split("-");
+
+    const filtered = productsArray.filter(item => {
+
+      const itemName = item.name.toLowerCase();
+
+      return (
+        item._id !== product._id &&
+        keywords.some(word => itemName.includes(word))
+      );
+
+    });
+
+    if (filtered.length > 0) {
+      setSimilarByTheme(filtered);
+      return;
+    }
+  }
+
+  // ⭐ Price Logic
+  const price = Number(product.price);
+
+  const min = price - 500;
+  const max = price + 500;
+
+  const filtered = productsArray.filter(item => {
+
+    const itemPrice = Number(item.price);
+
+    return (
+      item._id !== product._id &&
+      itemPrice >= min &&
+      itemPrice <= max
+    );
+
+  });
+
+  setSimilarByTheme(filtered);
+};
+useEffect(() => {
+
+  if (product?.price && allProducts.length > 0) {
+
+    filterLevelUpProducts(product.price, allProducts, product._id);
+
+  }
+
+}, [product, allProducts]);
+const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
+
+  if (!price || !productsArray.length) return;
+
+  const basePrice = Number(price);
+
+  const level1Min = basePrice + 1000;
+  const level1Max = basePrice + 2000;
+
+  const level2Min = basePrice + 2000;
+  const level2Max = basePrice + 3500;
+
+  const level1 = productsArray.filter(item => {
+
+    const itemPrice = Number(item?.price);
+
+    return (
+      item._id !== excludeId &&
+      itemPrice >= level1Min &&
+      itemPrice <= level1Max
+    );
+
+  });
+
+  const level2 = productsArray.filter(item => {
+
+    const itemPrice = Number(item?.price);
+
+    return (
+      item._id !== excludeId &&
+      itemPrice >= level2Min &&
+      itemPrice <= level2Max
+    );
+
+  });
+
+  setLevelUp1000(level1);
+  setLevelUp2000(level2);
+
+};
   const getMappedCatValue = (slug) => {
     const map = {
       "birthday-decoration": "Birthday",
@@ -723,7 +839,36 @@ function DecorationCatDetails({ city, locality }) {
     );
   };
 
+  useEffect(() => {
+    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
 
+    const getAddons = async () => {
+      try {
+        const query = new URLSearchParams();
+        addonIds.forEach(id => {
+          if (id) query.append("ids", id);
+        });
+
+        if ([...query].length === 0) return; // no valid IDs
+
+        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch addons");
+        }
+
+        setAddonData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching addons:", error);
+      }
+    };
+
+    getAddons();
+  }, [addonIds]);
+
+ const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
   if (loading) {
     return <SkeletonLoader />; // Show skeleton loader while loading
   }
@@ -892,36 +1037,7 @@ function DecorationCatDetails({ city, locality }) {
               </div>
               <div className='addon-container' ref={customizationRef}>
 
-                {/* <div className="photodetails-inclusions">
-                  {selectedAddOnProduct.length > 0 && (
-                    <>
-
-                      <h1 className="photodetalis-heading">
-                        Add-ons
-                      </h1>
-                      <span
-                        onClick={showAddOnmodal}
-                        style={{ marginLeft: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center" }}
-                      >
-                        <Image
-                          src={pencil} // replace with your image path
-                          alt="Addons"
-                          className="addon-icon"
-                        />
-                      </span>
-                      {selectedAddOnProduct.map((item, index) => (
-                        <li key={index}>
-                          <div className="itemline">
-                            {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-
-                          </div>
-
-                        </li>
-                      ))}
-
-                    </>
-                  )}
-                </div> */}
+              
                         <AddOnsList
   selectedAddOnProduct={selectedAddOnProduct}
   itemQuantities={itemQuantities}
@@ -970,7 +1086,7 @@ function DecorationCatDetails({ city, locality }) {
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
-              addOnProducts={addOnProductsData.addOnProducts}
+              addOnProducts={addonData}
               itemQuantities={itemQuantities}
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}
@@ -997,18 +1113,19 @@ function DecorationCatDetails({ city, locality }) {
             <div ref={similarRef}>
               <UniversalDecorSlider
                 title="Similar Decorations"
-                data={similar}   // ✅ Fetched data pass karo
+                data={similarByTheme}  
                 showDiscount={true}
                 imageSize={{ width: 120, height: 120 }}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-                catValue={router.query.catValue}   // 🔑 SLUG ONLY
-
-
+                catValue={router.query.catValue} 
               />
             </div>
-            {catValue?.toLowerCase() === "kids-birthday-decoration" && (
+          
+
+{kidsCategories.includes(catValue?.toLowerCase()) && (
+              
               <div className="category-tabs-outer">
                 <CategoryTabs
                   data={themeFilters.map((item) => ({
@@ -1030,10 +1147,10 @@ function DecorationCatDetails({ city, locality }) {
               </div>
             )}
 
-            {similarByPrice.length > 0 && (
+            {levelUp1000.length > 0 && (
               <UniversalDecorSlider
                 title="You May Also Like This"
-                data={similarByPrice}
+                data={levelUp1000}
                 showDiscount={true}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
@@ -1043,9 +1160,9 @@ function DecorationCatDetails({ city, locality }) {
               />
             )}
 
-            {similarByName.length > 0 && (
+            {levelUp2000.length > 0 && (
               <UniversalDecorSlider
-                data={similarByName}
+                data={levelUp2000}
                 showDiscount={true}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
