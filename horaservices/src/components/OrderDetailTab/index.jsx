@@ -16,7 +16,7 @@ import checkIcon from '../../assets/checkIcon.png';
 import inviteGuest from '../../assets/inviteGuest.png';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
-
+ 
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -800,10 +800,10 @@ const OrderDetailTab = ({
                             </div>
 
                             <div>
+                              {/* {item.name || "NA"} =  ₹{item.price || "NA"} x 1 = ₹{item.price || "NA"} */}
                               {(() => {
                                 const rawTitle =
-                                  item?.addOnId?.title ||
-                                  item?.name || item?.title
+                                  item?.name ||
                                   "N/A";
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
@@ -820,7 +820,6 @@ const OrderDetailTab = ({
                                   extractedQuantity || Number(item?.quantity) || 1;
 
                                 const price = Number(
-                                  item?.addOnId?.price ||
                                   item?.price ||
                                   0
                                 );
@@ -1016,7 +1015,7 @@ const OrderDetailTab = ({
                           style={{ marginRight: 8 }}
                         />
                         <div>
-                          {item?.addOnId?.title || item?.title || "NA"} =  ₹{item?.addOnId?.price || item?.price || "NA"} x {item?.quantity || 1} = ₹{item?.totalPrice || item?.price || "NA"}
+                          {item?.title || "NA"} – ₹{item?.price || 0}
                         </div>
                       </div>
                     ))

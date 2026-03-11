@@ -27,7 +27,7 @@ import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
 import Photographyslider from '@/components/photoslidersection';
 import { SeoWork } from '@/utils/photoGraphyHead';
-import { GET_ADDON_BY_ID } from '../../../../utils/apiconstants'
+
 import pencil from "@/assets/pencil.svg";
 import AddonModal from '@/components/AddonModal';
 import AddOnsList from '@/components/AddOnsList';
@@ -190,8 +190,7 @@ const ProductDetails = () => {
   const customizationRef = useRef(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const similarRef = useRef(null);
-  const [addonData, setAddonData] = useState([]);
-  const [addonIds, setAddonIds] = useState([]);
+  
 
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
@@ -440,34 +439,7 @@ const ProductDetails = () => {
   }, [productId]);
 
 
-  useEffect(() => {
-    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
 
-    const getAddons = async () => {
-      try {
-        const query = new URLSearchParams();
-        addonIds.forEach(id => {
-          if (id) query.append("ids", id);
-        });
-
-        if ([...query].length === 0) return; // no valid IDs
-
-        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-          throw new Error(data.message || "Failed to fetch addons");
-        }
-
-        setAddonData(data.data || []);
-      } catch (error) {
-        console.error("Error fetching addons:", error);
-      }
-    };
-
-    getAddons();
-  }, [addonIds]);
   const handleShare = async () => {
     if (!work?._id || typeof window === "undefined") return;
 

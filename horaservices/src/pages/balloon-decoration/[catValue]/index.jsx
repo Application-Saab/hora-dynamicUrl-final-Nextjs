@@ -384,10 +384,7 @@ const DecorationCatPage = ({ locality }) => {
 
 
 const handleViewDetails = (item) => {
-  if (!item?.slug && !item?.product_slug && !item?.name) {
-    console.warn("Missing slug", item);
-    return;
-  }
+  if (!item?.slug && !item?.product_slug && !item?.name) return;
 
   const productSlug =
     item.slug ||
