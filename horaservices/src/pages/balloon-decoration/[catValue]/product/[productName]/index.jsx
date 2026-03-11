@@ -32,15 +32,12 @@ import CategoryTabs from "../../../../../components/CategoryTabs/index.jsx";
 import { decCat } from "@/utils/decorationCategories";
 import "../../../../../components/CategoryTabs/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
-import Candle from "../../../../../assets/candle.png";
-import HappyBithday from "../../../../../assets/HappyBirthDay.png"
-import Ballons from "../../../../../assets/Ballons.png"
-import { ballonReview } from "@/utils/ReviewsData";
+import { allReviewsData } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
 import customiseIcon from "@/assets/customisationicon.png"
 import AdditionalServices from "@/components/AdditionalServices";
-
-import BannerImage from "../../../../../assets/customised.webp";
+import ShareIcon from "@/assets/shareIcon.svg";
+import BannerImage from "../../../../../assets/customised.jpg";
 import HappyCustomerIMG from "../../../../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
@@ -50,7 +47,8 @@ import UniversalDecorSlider from "@/components/UniversalDecorSlider";
 import ReviewSlider from "@/components/ReviewSection";
 import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
-
+import pencil from "@/assets/pencil.svg";
+import AddOnsList from "@/components/AddOnsList";
 const SkeletonLoader = () => {
   return (
     <div
@@ -68,20 +66,17 @@ const SkeletonLoader = () => {
         }}
         className="decDetails"
       >
+
         <div
-          style={{ width: "50%", textAlign: "center" }}
-          className="decDetailsLeft"
-        >
-          <div
-            style={{
-              width: "80%",
-              height: "300px",
-              backgroundColor: "#f0f0f0",
-              margin: "0 auto",
-              position: "relative",
-            }}
-          />
-        </div>
+          style={{
+            width: "80%",
+            height: "300px",
+            backgroundColor: "#f0f0f0",
+            margin: "0 auto",
+            position: "relative",
+          }}
+        />
+
         <div
           style={{ width: "50%", paddingLeft: "20px", paddingRight: "50px" }}
           className="decDetailsRight"
@@ -222,13 +217,13 @@ function DecorationCatDetails({ city, locality }) {
   const router = useRouter();
   const params = useParams();
   const customizationRef = useRef(null);
-   const similarRef = useRef(null);
+  const similarRef = useRef(null);
   const addonRef = useRef(null);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
   const cityName = params?.city;
   const brandItems = [
-    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
+    { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
@@ -451,26 +446,26 @@ function DecorationCatDetails({ city, locality }) {
 
 
   // 6️⃣ Category Navigation Click (Same as before)
-const openCatItems = (item) => {
-  const catSlug = item.catSlug || getCatSlugFromValue(item.catValue);
+  const openCatItems = (item) => {
+    const catSlug = item.catSlug || getCatSlugFromValue(item.catValue);
 
-  let path = "";
+    let path = "";
 
-  if (city && locality) {
-    path = `/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration/${catSlug}`;
-  } else if (city) {
-    path = `/${city.toLowerCase()}/balloon-decoration/${catSlug}`;
-  } else {
-    path = `/balloon-decoration/${catSlug}`;
-  }
+    if (city && locality) {
+      path = `/${city.toLowerCase()}/${locality.toLowerCase()}/balloon-decoration/${catSlug}`;
+    } else if (city) {
+      path = `/${city.toLowerCase()}/balloon-decoration/${catSlug}`;
+    } else {
+      path = `/balloon-decoration/${catSlug}`;
+    }
 
-  // ✅ theme query preserve
-  if (item.value) {
-    path += `?theme=${encodeURIComponent(item.value)}`;
-  }
+    // ✅ theme query preserve
+    if (item.value) {
+      path += `?theme=${encodeURIComponent(item.value)}`;
+    }
 
-  router.push(path);
-};
+    router.push(path);
+  };
 
 
   const handleCustomise = (type, cityName) => {
@@ -568,7 +563,7 @@ const openCatItems = (item) => {
     } else {
       updatedSelectedAddOnProduct.push({ ...item, quantity: 1 });
     }
-    
+
     setSelectedAddOnProduct(updatedSelectedAddOnProduct);
     setItemQuantities({
       ...itemQuantities,
@@ -677,7 +672,19 @@ const openCatItems = (item) => {
         .join(""); // Join parts together without spaces
     }
   }
+  const handleShare = () => {
+    const cleanUrl = window.location.origin + window.location.pathname;
 
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        url: cleanUrl,
+      });
+    } else {
+      navigator.clipboard.writeText(cleanUrl);
+      alert("Link copied!");
+    }
+  };
   useEffect(() => {
     addSpaces(subCategory);
   }, [subCategory]);
@@ -697,31 +704,21 @@ const openCatItems = (item) => {
     const inclusionItems = statements.flatMap((statement) =>
       statement.split("-").filter((item) => item.trim() !== "")
     );
-    const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle" style={ {fontFamily: "Inter, sans-serif"}}>
-        <Image
-          src={checkImage}
-          alt="Info"
-          style={{ height: 13, width: 13, marginRight: 10 }}
-        />
+  const inclusionList = inclusionItems.map((item, index) => (
+      <li key={index} className="inclusionstyle">
+        <Image src={checkImage} alt="Info" />
         {item.trim()}
       </li>
     ));
     return (
-      <div>
-        <div
-          style={{
-            fontSize: "21px",
-            borderBottom: "1px solid #e7eff9",
-            marginBottom: "10px",
-            fontFamily: "Inter, sans-serif",
-            fontWeight: "600",
-           
-          }}
-        >
+      <div className="inclusion-section">
+        <div className="inclusion-heading">
           Inclusions
         </div>
-        <ul>{inclusionList}</ul>
+
+        <ul className="inclusion-list">
+          {inclusionList}
+        </ul>
       </div>
     );
   };
@@ -788,48 +785,45 @@ const openCatItems = (item) => {
           <div
             className="decDetailsLeft"
           >
-            <div
 
-              className="decDetailsImage"
-            >
-              <div>
-                <Image
-                  src={
-                    product?.featured_image
-                      ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                      }.webp`
-                      : "/default-image.webp" // fallback image
-                  }
-                  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
-                  style={{ width: "100%", height: "auto" }}
-                  width={300}
-                  height={300}
-                />
+            <div>
+              <Image
+                src={
+                  product?.featured_image
+                    ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
+                    }.webp`
+                    : "/default-image.webp" // fallback image
+                }
+                alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+                style={{ width: "100%", height: "auto" }}
+                width={300}
+                height={300}
+              />
 
-                <div
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 3,
+                  right: 3,
+                  borderRadius: "50%",
+                  padding: 10,
+                }}
+              >
+                <span
                   style={{
-                    position: "absolute",
-                    bottom: 3,
-                    right: 3,
-                    borderRadius: "50%",
-                    padding: 10,
+                    color: "rgba(157, 74, 147, 0.6)",
+                    fontWeight: "600",
                   }}
                 >
-                  <span
-                    style={{
-                      color: "rgba(157, 74, 147, 0.6)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    <Image
-                      src={logo}
-                      style={{ width: "70px", height: "80px" }}
-                      className="hora-watermark-image"
-                    />
-                  </span>
-                </div>
+                  <Image
+                    src={logo}
+                    alt="Hora Services"
+                    className="hora-watermark-image"
+                  />
+                </span>
               </div>
             </div>
+
 
 
 
@@ -839,131 +833,77 @@ const openCatItems = (item) => {
           >
             <div
               style={{
-                padding: "10px",
+                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0"
               }}
-            >
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2
-                  style={{
-                    fontSize: "13px",
-                    color: "#222",
-                    margin: "8px 0 8px 0",
-                    fontWeight: "500",
-                  }}
-                >
-                  <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none" ,fontSize: "13px"}}
-                    href="/"
-                  >
+            >
+              <div className="breadcrumb-row">
+                <h2 className="breadcrumb-text">
+                  <a className="breadcrumb-link" href="/">
                     Home
                   </a>
+
                   {" > "}
                   <a
-                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none",fontSize: "13px" }}
+                    className="breadcrumb-link"
                     href={`/balloon-decoration/${catValue}`}
                   >
-                    {catValue}
+
+                    {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                   </a>
                   {" > "}
                 </h2>
 
                 <button
-                   onClick={() => {
-    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
-  }}
-               style={{
-  fontFamily: "Inter, sans-serif",
-  fontSize: "14px",
-  fontWeight: 700, // numeric value
-  color: "rgb(157, 74, 147)",
-  background: "none",
-  border: "none",
-  textDecoration: "underline",
-  textDecorationStyle: "solid",
-  textAlign: "center",
-  lineHeight: "100%",
-  cursor: "pointer",
-}}
-
+                  onClick={() => {
+                    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="view-similar-btn"
                 >
                   View Similar
                 </button>
-           
-
               </div>
 
-              <h1
-                style={{
-                  fontSize: "18px",
-                  color: "#000000",
-                  fontWeight: "#600",
-                  fontFamily: "Inter, sans-serif"
-                }}
-              >
+              <h1 className="product-title">
                 {product.name}
               </h1>
+              <div className="price-share-row">
 
-              <div className="pro-details-price">
-                <p
-                  style={{
-                    fontSize: "18px",
-                    color: "#9252AA",
-                    fontWeight: "600",
-                  }}
-                >
-                  {" "}
-                  ₹ {product.price}
-                </p>
-                <p
-                  style={{
-                    color: "#444",
-                    fontWeight: "700",
-                    fontSize: 18,
-                    textAlign: "left",
-                    margin: "7px 0px 7px",
-                    textDecoration: "line-through",
-                  }}
-                >
-                  ₹ {Math.floor(discountInfo?.discountedPrice)}
-                </p>
-                <div className="decorationdiscount-details">
-                  ₹ {Math.floor(discountInfo?.discountDifference || 0)} {"off"}
+                <div className="pro-details-price">
+                  <p className="product-price">
+                    ₹ {product.price}
+                  </p>
+
+                  <p className="product-old-price">
+                    ₹ {Math.floor(discountInfo?.discountedPrice)}
+                  </p>
+
+                  <div className="product-discount">
+                    ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
+                  </div>
+                </div>
+                <div className="share-btn" onClick={handleShare}>
+                  <Image
+                    src={ShareIcon}
+                    alt="share"
+                    className="share-icon-img"
+                  />
                 </div>
               </div>
+              <div className='addon-container' ref={customizationRef}>
 
-              <div className='addon-prices' ref={customizationRef}>
-
-                <div className="photodetails-inclusions">
-                  {selectedAddOnProduct.length > 0 && (
-                    <>
-                      <label>Customisations</label>
-                      <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
-                        < svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg" style={{ color: "rgb(146, 82, 170)", verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
-                      </span>
-                      {selectedAddOnProduct.map((item, index) => (
-                        <li key={index}>
-                          <div className="itemline">
-                            {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-
-                          </div>
-
-                        </li>
-                      ))}
-
-                    </>
-                  )}
-                </div>
+                        <AddOnsList
+  selectedAddOnProduct={selectedAddOnProduct}
+  itemQuantities={itemQuantities}
+  showAddOnmodal={showAddOnmodal}
+  pencil={pencil}
+/>
               </div>
-
 
             </div>
-
-
-
             <div
               style={{
-                padding: "10px",
+                padding: "0px 10px;",
               }}
             >
               {getItemInclusion(product.inclusion)}
@@ -976,18 +916,7 @@ const openCatItems = (item) => {
                 />
 
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {/* <button
-  className="customise-btn gap-1"
-  onClick={() => handleCustomise(catValue, cityName)} 
->
-  CUSTOMISATION 
-  <Image
-    src={customiseIcon}
-    alt="Customisation Icon"
-    width={14}  
-    height={14}
-  />
-</button> */}
+
                   <button
                     className="customise-btn d-flex align-items-center gap-1"
                     onClick={() => handleCustomise(catValue, cityName)}
@@ -1036,20 +965,20 @@ const openCatItems = (item) => {
               </div>
             </div>
             <div ref={similarRef}>
-            <UniversalDecorSlider
-              title="Similar Decorations"
-              data={similar}   // ✅ Fetched data pass karo
-              showDiscount={true}
-              imageSize={{ width: 120, height: 120 }}
-              city={city}
-              hasCityPageParam={hasCityPageParam}
-              locality={locality}
-             catValue={router.query.catValue}   // 🔑 SLUG ONLY
+              <UniversalDecorSlider
+                title="Similar Decorations"
+                data={similar}   // ✅ Fetched data pass karo
+                showDiscount={true}
+                imageSize={{ width: 120, height: 120 }}
+                city={city}
+                hasCityPageParam={hasCityPageParam}
+                locality={locality}
+                catValue={router.query.catValue}   // 🔑 SLUG ONLY
 
 
-            />
+              />
             </div>
-            {catValue?.toLowerCase() === "kidsbirthday" && (
+            {catValue?.toLowerCase() === "kids-birthday-decoration" && (
               <div className="category-tabs-outer">
                 <CategoryTabs
                   data={themeFilters.map((item) => ({
@@ -1073,13 +1002,13 @@ const openCatItems = (item) => {
 
             {similarByPrice.length > 0 && (
               <UniversalDecorSlider
-                title="You May Also Like"
+                title="You May Also Like This"
                 data={similarByPrice}
                 showDiscount={true}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-              catValue={router.query.catValue}   // 🔑 SLUG ONLY
+                catValue={router.query.catValue}   // 🔑 SLUG ONLY
 
               />
             )}
@@ -1091,7 +1020,7 @@ const openCatItems = (item) => {
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-               catValue={router.query.catValue}   // 🔑 SLUG ONLY
+                catValue={router.query.catValue}   // 🔑 SLUG ONLY
 
               />
             )}
@@ -1116,12 +1045,6 @@ const openCatItems = (item) => {
 
 
             <VideoTestimonial videoSrc={VideoClint} />
-
-            {/* <ReviewSlider reviews={ballonReview} title="Balloon Decoration Reviews" /> */}
-
-
-
-
 
             <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 
