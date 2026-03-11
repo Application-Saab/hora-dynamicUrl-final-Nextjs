@@ -62,7 +62,7 @@ const HeaderCards = ({
   );
 
   const isCreateDisabled =
-    !newFolderName.trim() || !previewFile || isLoading;
+    !newFolderName.trim() || isLoading;
 
   const isCaptureDisabled =
     !cameraReady || isCreating || isLoading;

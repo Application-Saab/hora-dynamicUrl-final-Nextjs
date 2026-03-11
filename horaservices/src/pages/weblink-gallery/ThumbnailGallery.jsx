@@ -62,6 +62,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const isMyPhotosTabActive = activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
   const [isStreamSearching, setIsStremSearching] = useState(false);
+  const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
 
 
   useEffect(() => {
@@ -487,6 +488,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   useEffect(() => {
     if (selectedIndex !== null && popupImages[selectedIndex]) {
+      setRawPhoneNumber(popupImages[selectedIndex]?.orderByName)
       setNumber(formatPhoneNumber(popupImages[selectedIndex]?.orderByName));
     }
   }, [selectedIndex, popupImages]);
@@ -959,50 +961,51 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                                 src={shareVector} width={16} height={16} />
                               <span>Share</span>
                             </div>
+                            {String(rawPhoneNumber) === String(localPhoneNumber) &&
+                              <div
+                                className="action-item flex"
+                                onClick={async () => {
+                                  const currentImage = allThumbnails[selectedIndex];
+                                  if (!currentImage?._id) return;
 
-                            <div
-                              className="action-item flex"
-                              onClick={async () => {
-                                const currentImage = allThumbnails[selectedIndex];
-                                if (!currentImage?._id) return;
+                                  // Confirm deletion (optional)
+                                  if (!window.confirm("Are you sure you want to delete this image?")) return;
 
-                                // Confirm deletion (optional)
-                                if (!window.confirm("Are you sure you want to delete this image?")) return;
+                                  try {
+                                    // Call your API to delete the image
+                                    const res = await fetch(`https://mediaprocessv2.horaservices.com/delete-image/${currentImage._id}`, {
+                                      method: "DELETE",
+                                    });
 
-                                try {
-                                  // Call your API to delete the image
-                                  const res = await fetch(`https://mediaprocessv2.horaservices.com/delete-image/${currentImage._id}`, {
-                                    method: "DELETE",
-                                  });
-
-                                  if (!res.ok) {
-                                    const err = await res.text();
-                                    throw new Error(err);
-                                  }
-
-                                  // Remove the image locally
-                                  setAllThumbnails(prev => {
-                                    const newList = prev.filter(img => img._id !== currentImage._id);
-                                    // Adjust selectedIndex
-                                    if (newList.length === 0) {
-                                      setSelectedIndex(null); // no more images → close popup
-                                    } else if (selectedIndex >= newList.length) {
-                                      setSelectedIndex(newList.length - 1); // deleted last image → move to previous
-                                    } else {
-                                      setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
+                                    if (!res.ok) {
+                                      const err = await res.text();
+                                      throw new Error(err);
                                     }
-                                    return newList;
-                                  });
 
-                                } catch (err) {
-                                  console.error("Delete failed:", err);
-                                  alert("Failed to delete image");
-                                }
-                              }}
-                            >
-                              <Image src={deleteVector} width={16} height={16} />
-                              <span>Delete</span>
-                            </div>
+                                    // Remove the image locally
+                                    setAllThumbnails(prev => {
+                                      const newList = prev.filter(img => img._id !== currentImage._id);
+                                      // Adjust selectedIndex
+                                      if (newList.length === 0) {
+                                        setSelectedIndex(null); // no more images → close popup
+                                      } else if (selectedIndex >= newList.length) {
+                                        setSelectedIndex(newList.length - 1); // deleted last image → move to previous
+                                      } else {
+                                        setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
+                                      }
+                                      return newList;
+                                    });
+
+                                  } catch (err) {
+                                    console.error("Delete failed:", err);
+                                    alert("Failed to delete image");
+                                  }
+                                }}
+                              >
+                                <Image src={deleteVector} width={16} height={16} />
+                                <span>Delete</span>
+                              </div>
+                            }
                           </div>
                         )}
                       </div>
