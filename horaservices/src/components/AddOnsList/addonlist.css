@@ -4,15 +4,16 @@ padding: 0 clamp(8px, 2.5vw, 10px) 0;
 .photodetails-inclusions{
 margin: 10px 0px;
 }
-
-.inclusion-heading{
-  font-family: Inter, sans-serif;
-  font-weight: 600;
-  font-size: clamp(18px, 5.3vw, 21px);
-  margin-bottom: clamp(8px, 2.5vw, 10px);
-  padding-bottom: 3px;
+.photodetalis-heading{
+    display: inline-flex;
+font-family: Inter, sans-serif;
+font-weight: 600;
+font-size: clamp(16px, 4.8vw, 22px);
+line-height: 100%;
+letter-spacing: 0%;
+color: #97538C !important;
+margin-bottom: 12px;
 }
-
 .addon-icon {
   width: clamp(16px, 4.2vw, 20px);
   height: clamp(16px, 4.2vw, 20px);

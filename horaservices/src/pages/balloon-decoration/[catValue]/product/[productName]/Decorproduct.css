@@ -267,16 +267,7 @@ text-align: center;
 }
 
 
-.itemline{
-  font-family: Poppins, sans-serif;
-font-weight: 500;
-  font-size: clamp(
-    12px,
-    calc(12px + ((100vw - 320px) / 160) * 4),
-    16px
-  );
-color: #212529;
-}
+
 
 .customisation-box {
   border: 1px solid #97538C;

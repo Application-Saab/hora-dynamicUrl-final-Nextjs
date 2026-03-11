@@ -892,36 +892,6 @@ function DecorationCatDetails({ city, locality }) {
               </div>
               <div className='addon-container' ref={customizationRef}>
 
-                {/* <div className="photodetails-inclusions">
-                  {selectedAddOnProduct.length > 0 && (
-                    <>
-
-                      <h1 className="photodetalis-heading">
-                        Add-ons
-                      </h1>
-                      <span
-                        onClick={showAddOnmodal}
-                        style={{ marginLeft: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center" }}
-                      >
-                        <Image
-                          src={pencil} // replace with your image path
-                          alt="Addons"
-                          className="addon-icon"
-                        />
-                      </span>
-                      {selectedAddOnProduct.map((item, index) => (
-                        <li key={index}>
-                          <div className="itemline">
-                            {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-
-                          </div>
-
-                        </li>
-                      ))}
-
-                    </>
-                  )}
-                </div> */}
                         <AddOnsList
   selectedAddOnProduct={selectedAddOnProduct}
   itemQuantities={itemQuantities}

@@ -398,7 +398,7 @@ const ProductDetails = () => {
 
         const data = res.data?.data;
         if (!data) throw new Error("No product found");
-        setAddonIds(data?.addons)
+       
 
         const { discount, discountedPrice, discountDifference } =
           getDiscountedPrice(Number(data.price));
@@ -625,7 +625,7 @@ const ProductDetails = () => {
     <AddonModal 
     isopen={isModalOpen}
     setIsOpen={setIsModalOpen}
-    addOnProducts={addonData}
+    addOnProducts={photographyAddOns.addOnProducts}
     itemQuantities={itemQuantities}
     onAdd={handleAddToCartAndScrollBack}
     onRemove={handleRemoveFromCart}
