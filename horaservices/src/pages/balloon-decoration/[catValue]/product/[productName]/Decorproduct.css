@@ -441,9 +441,3 @@ flex-shrink: 0;
   object-fit: contain;
 }
 
-/* 393px ke baad (393 – 480+) */
-@media (min-width: 440px){
-  .price-share-row{
-gap: clamp(50px, calc(-135.96px + 68vw), 210px);
-  }
-}
