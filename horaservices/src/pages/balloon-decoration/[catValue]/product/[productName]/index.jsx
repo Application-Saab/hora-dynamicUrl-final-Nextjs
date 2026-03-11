@@ -218,8 +218,7 @@ function DecorationCatDetails({ city, locality }) {
 const [similarByTheme, setSimilarByTheme] = useState([]);
 const [levelUp1000, setLevelUp1000] = useState([]);
 const [levelUp2000, setLevelUp2000] = useState([]);
-  const [addonData, setAddonData] = useState([]);
-  const [addonIds, setAddonIds] = useState([]);
+
 
   const router = useRouter();
   const params = useParams();
@@ -283,7 +282,7 @@ const [levelUp2000, setLevelUp2000] = useState([]);
         const discountDetails = getDiscountedPrice(fetchedProduct.price);
         setDiscountInfo(discountDetails);
       }
-      setAddonIds(fetchedProduct?.addons)
+      
 
       setLoading(false);
     } catch (error) {
@@ -839,34 +838,7 @@ const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
     );
   };
 
-  useEffect(() => {
-    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
 
-    const getAddons = async () => {
-      try {
-        const query = new URLSearchParams();
-        addonIds.forEach(id => {
-          if (id) query.append("ids", id);
-        });
-
-        if ([...query].length === 0) return; // no valid IDs
-
-        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-          throw new Error(data.message || "Failed to fetch addons");
-        }
-
-        setAddonData(data.data || []);
-      } catch (error) {
-        console.error("Error fetching addons:", error);
-      }
-    };
-
-    getAddons();
-  }, [addonIds]);
 
  const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
   if (loading) {
@@ -1086,7 +1058,7 @@ const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
-              addOnProducts={addonData}
+              addOnProducts={addOnProductsData.addOnProducts}
               itemQuantities={itemQuantities}
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}
