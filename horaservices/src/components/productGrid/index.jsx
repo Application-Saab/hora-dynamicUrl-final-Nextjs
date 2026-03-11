@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
 import "./productGrid.css";
-
+import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
   return (
     <div className="decContainer">
@@ -13,21 +13,34 @@ const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
             className="imageContainer"
             onClick={() => onCardClick?.(item)}
           >
+           
             <div className="imageWrapper">
-              <Image
-                src={`https://horaservices.com/api/uploads/compressed_webp/${item.featured_image?.split(".")[0]}.webp`}
-                alt={`balloon decoration ${item.name}`}
-                className="decImage"
-                width={300}
-                height={300}
-              />
-              <div className="watermark">
-                <Image src={logo} alt="logo" width={40} height={40} />
-              </div>
-              <div className="discountLabel">
-                ₹ {item.discountDifference.toFixed(0)} off
-              </div>
-            </div>
+
+  {/* ✅ Design Type Badge */}
+  {item.designType &&
+    Object.keys(item.designType).map(
+      (key) =>
+        item.designType[key] && (
+          <div key={key} className="designTypeBadge">
+            On {key}
+          </div>
+        )
+    )}
+
+  <Image
+      src={`${COMPRESSED_WEBP_IMG_URL}${item.featured_image?.split(".")[0]}.webp`}
+    alt={`balloon decoration ${item.name}`}
+    className="decImage"
+    width={300}
+    height={300}
+  />
+
+  <div className="watermark">
+    <Image src={logo} alt="logo" width={28} height={28} />
+  </div>
+
+</div>
+
             <div className="cardContent">
                     <p className="productname">
             {categoryType === "photography"
@@ -37,10 +50,19 @@ const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
               : item.name}
              </p>
               <div className="priceRatingRow">
-                <div className="priceBlock">
+                {/* <div className="priceBlock">
                   <p className="PRice">₹{item.price}</p>
                   <p className="discountedPrice">₹{Math.floor(item.discountedPrice)}</p>
-                </div>
+                </div> */}
+                <div className="priceBlock">
+  <p className="finalPrice">₹{item.price}</p>
+  <p className="oldPrice">₹{Math.floor(item.discountedPrice)}</p>
+
+  <div className="discountBottom">
+    ₹ {item.discountDifference?.toFixed(0)} off
+  </div>
+</div>
+
                 <p className="customization">Customization Available</p>
                 <p className="viewMore">View More</p>
               </div>
