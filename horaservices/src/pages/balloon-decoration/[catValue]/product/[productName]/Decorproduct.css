@@ -427,9 +427,12 @@ flex-shrink: 0;
   transition: all 0.25s ease;
 }
 .price-share-row {
-  display: flex;
-gap: clamp(40px, calc(-135.96px + 63vw), 180px);
-  align-items: center;
+
+        justify-content: space-between;
+    display: flex;
+    align-items: center;
+    padding-right: 25px;
+    white-space: nowrap;
 }
 /* Icon */
 .share-icon-img {
