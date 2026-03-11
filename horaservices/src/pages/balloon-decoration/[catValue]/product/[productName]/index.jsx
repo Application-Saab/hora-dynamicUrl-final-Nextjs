@@ -1009,7 +1009,6 @@ const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
               </div>
               <div className='addon-container' ref={customizationRef}>
 
-              
                         <AddOnsList
   selectedAddOnProduct={selectedAddOnProduct}
   itemQuantities={itemQuantities}
