@@ -1,3 +1,4 @@
+// utils/eventWallHelpers.js
 // Measure height of thumbnail/local image
 function measureImageHeight(url) {
   return new Promise((resolve) => {
@@ -70,4 +71,41 @@ export async function processImagesWithHeight(list) {
     });
 
   return finalResult;
+}
+
+
+
+// utils/opfsHelper.js
+const OPFS_ROOT_DIR = 'eventwall-temp-uploads';
+
+export async function saveFileToOPFS(file, eventId, uniqueId) {
+  try {
+    const root = await navigator.storage.getDirectory();
+    const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: true });
+    const fileHandle = await dir.getFileHandle(`${eventId}__${uniqueId}`, { create: true });
+
+    const writable = await fileHandle.createWritable();
+    await writable.write(file);
+    await writable.close();
+
+    return true;
+  } catch (err) {
+    console.error('OPFS save failed:', err);
+    return false;
+  }
+}
+
+export async function getFileFromOPFS(eventId, uniqueId) {
+  const root = await navigator.storage.getDirectory();
+  const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: false });
+  const fileHandle = await dir.getFileHandle(`${eventId}__${uniqueId}`, { create: false });
+  return await fileHandle.getFile();
+}
+
+export async function deleteFromOPFS(eventId, uniqueId) {
+  try {
+    const root = await navigator.storage.getDirectory();
+    const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: false });
+    await dir.removeEntry(`${eventId}__${uniqueId}`);
+  } catch {}
 }

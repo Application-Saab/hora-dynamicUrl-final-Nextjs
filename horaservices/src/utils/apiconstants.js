@@ -1,4 +1,5 @@
-export const BASE_URL = "https://horaservices.com:3000";
+export const BASE_URL = "https://swmhkvn8-5000.inc1.devtunnels.ms";
+export const MEDIA_PROCESSING_URL = "http://localhost:4000";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
