@@ -70,7 +70,7 @@
 
 .product-section-image {
   width: 100%;
-
+ height:clamp(120px, calc(120px + (165 - 120) * ((100vw - 320px) / 160)), 250px);
   border-radius: 12px 12px 0 0;
   object-fit: cover;
   display: block;
@@ -96,14 +96,26 @@
   position: absolute;
   top: 0px;
   right: 0px;
+
   background-color: #f59e0b;
   color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 8px;
-  z-index: 2;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(9px, calc(9px + (11 - 9) * ((100vw - 320px) / 160)), 11px);
+  line-height: 1;
+  text-align: center;
+
+  padding: clamp(3px, 1vw, 5px) clamp(6px, 2vw, 10px);
+
+  border-radius: clamp(6px, 2vw, 10px);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(52px, calc(52px + (72 - 52) * ((100vw - 320px) / 160)), 72px); 
+  height: clamp(22px, calc(22px + (32 - 22) * ((100vw - 320px) / 160)), 32px);
+  white-space: nowrap;
 }
 
 /* === Card Details === */
@@ -111,16 +123,19 @@
   padding: 10px;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .product-section-details h3 {
-  font-size: 12px;
-  font-weight: 600;
+ font-family: "Rubik", sans-serif;
+font-weight: 600;
+
+font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / 160)), 18px);
+
   color: #97538C;
-  margin: 0 0 6px 0;
+  margin: 0 0 12px 0;
   text-align: left;
   line-height: 1.3;
-  white-space: nowrap;
   overflow: hidden;
  
 }
@@ -129,75 +144,30 @@
   display: flex;
   flex-direction: row;
   gap: 10px;
+  margin-top: auto; 
 }
 
 .product-section-price-current {
-  font-size: 15px;
   color: #97538C;
-  font-weight: 700;
-  margin-bottom: 0;
-  text-align: left;
+  font-family: "Rubik", sans-serif;
+font-weight: 600;
+
+font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / 160)), 18px);
+margin: 0px;
+line-height: 100%;
+letter-spacing: 0;
 }
 
 .product-section-price-original {
-  font-size: 14px;
   color: #444;
-  font-weight: 700;
+ font-family: "Rubik", sans-serif;
+font-weight: 600;
+margin: 0px;
+font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / 160)), 18px);
   text-decoration: line-through;
-  text-align: left;
-  margin-bottom: 0;
+line-height: 100%;
+letter-spacing: 0;
 }
 
 
 /* Mobile (up to 375px) — 1 card per row */
-@media (max-width: 375px) {
-  .product-section-grid {
-  grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .product-section-details h3 {
-    font-size: 12px;
-  }
-
-  .product-section-price-current {
-    font-size: 14px;
-  }
-
-  .product-section-price-original {
-    font-size: 12px;
-  }
-
-  .product-section-image {
-    min-height: 160px;
-    max-height: 160px;
-  }
-}
-
-/* Small Tablets (376px - 480px) — 2 cards per row */
-@media (min-width: 376px) and (max-width: 480px) {
-  .product-section-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-
-  .product-section-image {
-    min-height: 180px;
-    max-height: 200px;
-  }
-}
-
-/* Tablets (481px - 768px) — 2 cards per row */
-@media (min-width: 481px) and (max-width: 768px) {
-  .product-section-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .product-section-image {
-    min-height: 200px;
-    max-height: 220px;
-  }
-}
-
-/* Desktop (769px and above) — Default Grid */
