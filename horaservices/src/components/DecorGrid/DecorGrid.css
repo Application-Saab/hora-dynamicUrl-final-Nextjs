@@ -11,35 +11,40 @@
   color: #97538C;
   margin-bottom: 2rem;
 }
+
 .decorke-wedding-heading {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
-  font-style: normal;
-  font-size: 18px;
+  font-size: clamp(18px, calc(18px + (22 - 18) * ((100vw - 320px) / (480 - 320))), 22px);
   line-height: 100%;
-  letter-spacing: 0;
+  letter-spacing: 0%;
   text-align: center;
+  margin: clamp(14px, calc(14px + (20 - 14) * ((100vw - 320px) / 160)), 20px) 0;
   color: #97538C;
 }
 
-/* === Grid Layout === */
-/*.decor-card-grid {
-   display: flex;
-  /* flex-direction: column; 
-  gap: 1.5rem;
-} */
 
-
- /* === Large Card Default (Desktop) === */
+/* === Large Card Default (Desktop) === */
 .decor-large-card {
   display: flex;
   background-color: #fff4d3;
-  border: 1px solid #f1d7aa;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  max-width: 380px;
-  margin: 0 auto; /* ✅ this centers it horizontally */
+  border: 1px solid #f1d7aa !important;
+  width: clamp(300px, calc(300px + (400 - 300) * ((100vw - 320px) / 160)), 400px);
+
+  height: clamp(135px, calc(135px + (185 - 135) * ((100vw - 320px) / 160)), 185px);
+
+  top: clamp(8px, calc(8px + (12 - 8) * ((100vw - 320px) / 160)), 12px);
+
+  left: clamp(9px, calc(9px + (15 - 9) * ((100vw - 320px) / 160)), 15px);
+
+  border-radius: clamp(14px, calc(14px + (20 - 14) * ((100vw - 320px) / 160)), 20px);
+
+  border: 1px solid;
+
+  opacity: 1;
+  transform: rotate(0deg);
+  margin: 0 auto;
+ 
 }
 
 
@@ -50,15 +55,19 @@
 
 /* Image */
 .decor-large-img {
-  width: 150px;
-  height: auto;
-  object-fit: cover;
-  border-radius: 16px 0 0 16px; /* Round only left corners on desktop */
+  width: clamp(150px, calc(150px + (200 - 150) * ((100vw - 320px) / 160)), 200px);
+
+  height: clamp(135px, calc(135px + (180 - 135) * ((100vw - 320px) / 160)), 180px);
+
+  border-radius: clamp(14px, calc(14px + (20 - 14) * ((100vw - 320px) / 160)), 20px);
+
+  opacity: 1;
+  transform: rotate(0deg);
 }
 
 /* Content Area */
 .decor-large-content {
-  padding: 1rem;
+  padding: clamp(20px, calc(20px + (28 - 20) * ((100vw - 320px) / 160)), 28px) clamp(12px, calc(12px + (20 - 12) * ((100vw - 320px) / 160)), 20px);
   display: flex;
   flex-direction: column;
   /* justify-content: center; */
@@ -66,28 +75,46 @@
 }
 
 .decor-large-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
   color: #4B4A4A;
-  margin: 0;
+  font-size: clamp(26px, calc(26px + (34 - 26) * ((100vw - 320px) / 160)), 34px);
+
+  line-height: 100%;
+  letter-spacing: 0%;
 }
 
 .decor-large-subtitle {
-  font-size: 1rem;
+  font-family: "Outfit", sans-serif;
   font-weight: 500;
+
+  font-size: clamp(18px, calc(18px + (22 - 18) * ((100vw - 320px) / 160)), 22px);
+
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-transform: uppercase;
   color: #707070ED;
-     margin: 0px 0px 1px 0px;
+  margin:
+    clamp(4px, calc(4px + (6 - 4) * ((100vw - 320px) / 160)), 6px) 0 clamp(16px, calc(16px + (24 - 16) * ((100vw - 320px) / 160)), 24px) 0;
 }
 
 .decor-view-btn {
   color: #97538c;
-  font-weight: bold;
-  background: none;
-  border: none;
-  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+
+  font-size: clamp(14px, calc(14px + (18 - 14) * ((100vw - 320px) / 160)), 18px);
+
+  line-height: 100%;
+  letter-spacing: 0%;
+
   text-decoration: underline;
-  font-size: 0.95rem;
+  text-decoration-style: solid;
   text-align: left;
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .decor-view-btn:hover {
@@ -98,19 +125,20 @@
 
 .decor-small-cards-container {
   display: flex;
-  gap: 1rem;
+
+  gap: clamp(12px, calc(12px + (20 - 12) * ((100vw - 320px) / 160)), 20px);
+
   justify-content: center;
   flex-wrap: nowrap;
-  margin-top: 10px;
-   
+
+  margin-top: clamp(8px, calc(8px + (12 - 8) * ((100vw - 320px) / 160)), 12px);
+
 }
 
 .decor-small-card-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 180px;
-    border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .decor-small-card {
@@ -123,23 +151,33 @@
 
 }
 
-.decor-small-img-box img, 
+.decor-small-img-box img,
 .decor-small-img {
-    display: block;
-    object-fit: cover;
-    /* background-color: #fff4d3; */
-    border: 1px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    border-radius: 20px;
+  width: clamp(145px, calc(145px + (195 - 145) * ((100vw - 320px) / 160)), 195px);
+
+  height: clamp(110px, calc(110px + (150 - 110) * ((100vw - 320px) / 160)), 150px);
+
+  border-radius: clamp(16px, calc(16px + (24 - 16) * ((100vw - 320px) / 160)), 24px);
+
+  border: 2px solid #FFF7E5;
+
+  box-shadow: 0px 4px 4px 0px #EDD4A7;
+
+  opacity: 1;
+  transform: rotate(0deg);
 }
 
 .decor-small-label {
   margin: 10px;
-  font-size:15px;
-  font-weight: 700;
-  color: #333;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: #394452;
+  font-size: clamp(16px, calc(16px + (20 - 16) * ((100vw - 320px) / 160)), 20px);
+  line-height: 100%;
+  letter-spacing: 0%;
   text-align: center;
-   pointer-events: none; 
-   text-decoration: underline;
-}
 
+  text-decoration: underline;
+  text-decoration-skip-ink: auto;
+
+}
