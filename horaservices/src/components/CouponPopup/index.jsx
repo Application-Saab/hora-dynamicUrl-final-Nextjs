@@ -12,7 +12,7 @@ import instagramIcon from "@/assets/review/instagram.svg";
 import googleIcon from "@/assets/review/google.svg";
 
 import "./coupon.css";
-const CouponPopup = ({ selectedRating }) => {
+const CouponPopup = ({ selectedRating ,couponCode}) => {
 
   return (
     <div className="coupon-wrapper">
@@ -76,7 +76,7 @@ const CouponPopup = ({ selectedRating }) => {
 
               <div className="coupon-code-box">
                 <p>Coupon Code</p>
-                <h2>HLLM5263</h2>
+                <h2>{couponCode}</h2>
               </div>
 
               <div className="tc-text">

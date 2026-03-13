@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./review.css";
+import "./rating.css";
 import angryImg from "@/assets/review/angry.png";
 import neutralImg from "@/assets/review/neutral.png";
 import loveImg from "@/assets/review/love.png";
 import Image from "next/image";
-const ReviewSections = ({ onSubmitSuccess, setSelectedRating }) => {
+const Ratingsection  = ({orderId, onSubmitSuccess, setSelectedRating ,setCouponCode}) => {
     const [showPopup, setShowPopup] = useState(false);
   const [selected, setSelected] = useState(null);
 const [message, setMessage] = useState("");
@@ -12,7 +12,48 @@ const [message, setMessage] = useState("");
     setSelected(value);
     setSelectedRating(value); 
   };
+const handleSubmit = async () => {
+  if (!selected || message.trim() === "") return;
 
+  let ratingValue = [];
+
+  if (selected === "low") ratingValue = ["1-6"];
+  if (selected === "mid") ratingValue = ["7-8"];
+  if (selected === "high") ratingValue = ["9-10"];
+
+  try {
+    const res = await fetch(
+      "https://horaservices.com:3000/api/order/add-rating-reviews",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          rating: ratingValue,
+          reviews: message,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.error) {
+
+      if (selected === "low") {
+        setCouponCode(data?.data?.couponCode || "HLLM5263");
+      }
+
+      setShowPopup(true); // ⭐ har rating par popup
+
+      onSubmitSuccess();
+    }
+
+  } catch (error) {
+    console.error("Submit Error:", error);
+  }
+};
   return (
     <div className="review-card">
       <h2>Rate Your Experience</h2>
@@ -101,15 +142,7 @@ const [message, setMessage] = useState("");
 <button
   className="submit-btn"
   disabled={!selected || message.trim() === ""}
-  onClick={() => {
-    if (message.trim() === "") return;   // extra safety
-
-    if (selected !== "low") {
-      setShowPopup(true);
-    }
-
-    onSubmitSuccess();
-  }}
+  onClick={handleSubmit}
 >
   Submit
 </button>
@@ -157,4 +190,4 @@ const [message, setMessage] = useState("");
   );
 };
 
-export default ReviewSections;
+export default Ratingsection;
