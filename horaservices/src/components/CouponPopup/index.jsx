@@ -13,7 +13,19 @@ import googleIcon from "@/assets/review/google.svg";
 
 import "./coupon.css";
 const CouponPopup = ({ selectedRating ,couponCode}) => {
+const handleInstagramReview = () => {
+  window.open(
+    "https://www.instagram.com/horaservices/",
+    "_blank"
+  );
+};
 
+const handleGoogleReview = () => {
+  window.open(
+    "https://g.page/r/CaXMITOTBZzAEAE/review",
+    "_blank"
+  );
+};
   return (
     <div className="coupon-wrapper">
       <div className="coupon-card">
@@ -120,16 +132,17 @@ const CouponPopup = ({ selectedRating ,couponCode}) => {
               </p>
 
               <div className="buttonGroup">
-                <button className="instaBtn">
+                <button className="instaBtn" onClick={handleInstagramReview}>
                   <Image
                     src={instagramIcon}
                     alt="Instagram"
                     className="btnIcon"
+
                   />
                   Review on Instagram
                 </button>
 
-                <button className="googleBtn">
+                <button className="googleBtn" onClick={handleGoogleReview}>
                   <Image
                     src={googleIcon}
                     alt="Google"
