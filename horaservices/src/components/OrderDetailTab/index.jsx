@@ -1147,11 +1147,27 @@ const OrderDetailTab = ({
       </div> */}
       {/* bottom buttons */}
       <div className="mx-3" style={{ padding: "8px" }}>
-        {orderStatus === 0 || orderStatus === 1 || orderStatus === 2 ? (
-          <div className="" onClick={handleCancelOrder}>
-            <button className="fw-semiBold myOrder-cancelOrderBtn">CANCLE ORDER</button>
-          </div>
-        ) : null}
+       {(orderStatus === 0 || orderStatus === 1 || orderStatus === 2) && (
+    <div className="order-btn-row">
+
+      {/* CONTACT SUPPORT */}
+      <button
+        className="contact-support-btn"
+        onClick={contactUsRedirection}
+      >
+        CONTACT SUPPORT
+      </button>
+
+      {/* CANCEL ORDER */}
+      <button
+        className="cancel-order-btn"
+        onClick={handleCancelOrder}
+      >
+        CANCEL ORDER
+      </button>
+
+    </div>
+  )}
         {orderStatus === 3 ? (
           <div className="" onClick={contactUsRedirection}>
             <button className="fw-semiBold myOrder-cancelOrderBtn">

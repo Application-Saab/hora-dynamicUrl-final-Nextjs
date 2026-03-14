@@ -54,15 +54,35 @@
 .myOrder-labelStyle {
   min-width: 130px;
 }
-.myOrder-cancelOrderBtn {
-  background-color: #97538C;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 9.67px;
-  cursor: pointer;
-  font-size: 13.54px;
-  margin-bottom: 15px;
+
+.order-btn-row{
+display:flex;
+gap:12px;
+margin-top:10px;
+}
+
+.contact-support-btn{
+flex:1;
+border:2px solid #97538C;
+background:#fff;
+color:#97538C;
+font-weight:600;
+border-radius:14px;
+padding:12px 10px;
+font-size:14px;
+cursor:pointer;
+}
+
+.cancel-order-btn{
+flex:1;
+background:#97538C;
+color:#fff;
+border:none;
+font-weight:600;
+border-radius:14px;
+padding:12px 10px;
+font-size:14px;
+cursor:pointer;
 }
 .myOrderDetails-heading {
   font-size: 16px;
