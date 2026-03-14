@@ -927,7 +927,7 @@ const OrderDetailTab = ({
                   </div>
 
                   <div>
-                    {cancellationPolicy.map((text, index) => (
+                    {infoList.map((text, index) => (
                       <div key={index} className="info-row">
                         <div className="info-icon">
                           <Image
