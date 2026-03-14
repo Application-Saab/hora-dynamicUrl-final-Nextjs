@@ -456,8 +456,12 @@ const Orderlist = () => {
                       ) : null)}
 
                     {(
-                      (order.type === 1 && orderStatus?.status !== "Expired") ||
-                      (order.type === 8 && orderStatus?.status !== "Expired")
+                     (order.type === 1 || order.type === 8) &&
+(
+  orderStatus?.status === "Booked" ||
+  orderStatus?.status === "Accepted" ||
+  orderStatus?.status === "In-progress"
+)
                     ) && (
                         <div className="Executor-rate-btn">
                           <>
@@ -497,17 +501,20 @@ const Orderlist = () => {
                       )}
 
 
-
-                    {order?.type === 2 && orderStatus?.status == "Completed" ? (
-                      <div>
-                        <button
-                          className="send-invite"
-                          onClick={() => handleRateUs(order)}
-                        >
-                          Rate Us
-                        </button>
-                      </div>
-                    ) : null}
+{(
+  orderStatus?.status === "Completed" ||
+  orderStatus?.status === "Cancelled" ||
+  orderStatus?.status === "Expired"
+) && (
+  <div>
+    <button
+      className="send-invite"
+      onClick={() => handleRateUs(order)}
+    >
+      Rate Us
+    </button>
+  </div>
+)}
                   </div>
                 </div>
               );

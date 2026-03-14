@@ -402,8 +402,8 @@ const OrderDetailTab = ({
               </div>
             </div>
 
-            {/* <div className="fw-semiBold myOrderDetails-heading ">
-              Points For Considerations
+            <div className="fw-semiBold myOrderDetails-heading ">
+              Points For Considerations :
             </div>
 
             <div>
@@ -419,7 +419,7 @@ const OrderDetailTab = ({
                   <div>{text}</div>
                 </div>
               ))}
-            </div> */}
+            </div>
 
             {/* Cancellation and Order Change Policy */}
             <div className="mt-2 mx-3 cancellation-policy border-0">
@@ -538,8 +538,8 @@ const OrderDetailTab = ({
               </div>
             </div>
 
-            {/* <div className="fw-semiBold myOrderDetails-heading ">
-              Points For Considerations
+            <div className="fw-semiBold myOrderDetails-heading ">
+              Points For Considerations :
             </div>
 
             <div>
@@ -555,7 +555,7 @@ const OrderDetailTab = ({
                   <div>{text}</div>
                 </div>
               ))}
-            </div> */}
+            </div> 
 
             {/* Cancellation and Order Change Policy */}
             <div className="mt-2 mx-3 cancellation-policy border-0">
@@ -697,8 +697,8 @@ const OrderDetailTab = ({
               </div>
             </div>
 
-            {/* <div className="fw-semiBold myOrderDetails-heading ">
-                    Points For Considerations
+          <div className="fw-semiBold myOrderDetails-heading ">
+                    Points For Considerations :
                   </div>
 
                   <div>
@@ -714,7 +714,7 @@ const OrderDetailTab = ({
                         <div>{text}</div>
                       </div>
                     ))}
-                  </div> */}
+                  </div> 
 
             {/* Cancellation and Order Change Policy */}
             <div className="mt-2 mx-3 cancellation-policy border-0">
@@ -923,11 +923,11 @@ const OrderDetailTab = ({
                   </div>
 
                   <div className="fw-semiBold myOrderDetails-heading ">
-                    Points For Considerations
+                    Points For Considerations :
                   </div>
 
                   <div>
-                    {cancellationPolicy.map((text, index) => (
+                    {infoList.map((text, index) => (
                       <div key={index} className="info-row">
                         <div className="info-icon">
                           <Image
@@ -939,7 +939,7 @@ const OrderDetailTab = ({
                         <div>{text}</div>
                       </div>
                     ))}
-                  </div>
+                  </div> 
 
                   {/* Cancellation and Order Change Policy */}
                   <div className="mt-2 mx-3 cancellation-policy border-0">
