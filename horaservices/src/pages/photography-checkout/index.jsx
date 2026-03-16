@@ -30,7 +30,8 @@ const Checkout = () => {
    const scriptTag = JSON.stringify(schemaOrg);
   let { product, totalAmount, orderType,duration } = router.query;
 
-  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];// 
+ const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
+
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -289,7 +290,6 @@ const balanceAmount = totalAmount - advanceAmount;
       const addressID = await saveAddress();
       const storedUserID = await localStorage.getItem('userID');
      
-    
 
 
       const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;

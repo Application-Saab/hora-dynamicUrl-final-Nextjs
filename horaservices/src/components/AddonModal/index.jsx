@@ -23,7 +23,6 @@ const AddonModal = ({
         style={{
           maxHeight: "400px",
           overflowY: "scroll",
-          padding: "10px",
           backgroundColor: "#FFF3DB",
           margin: "auto",
         }}
@@ -31,7 +30,7 @@ const AddonModal = ({
         <div
           className="modal-content11"
           onClick={(e) => e.stopPropagation()}
-          style={{ marginTop: "10px" }}
+          style={{ marginTop: "0px 10px" }}
         >
           <div className="modal-middle-box">
             <div className="modalcard-container">
@@ -41,7 +40,7 @@ const AddonModal = ({
                   <h3>{item.title}</h3>
                   {/* <p className="Addon-description">{item.description}</p> */}
 
-                  <div className="price-container">
+                  <div className="price-container-addon">
                     <span className="prices">
                       {typeof item.price === "number" ? `₹${item.price}` : "Included"}
                     </span>

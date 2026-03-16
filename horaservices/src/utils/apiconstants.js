@@ -1,6 +1,8 @@
 export const BASE_URL = "https://horaservices.com:3000";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
+export const COMPRESSED_WEBP_IMG_URL =
+  "https://horaservices.com/api/uploads/compressed_webp/";
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
 export const UPDATE_USER_DETAIL_ENDPOINT = "/api/users/user_update";
 export const UPDATE_ORDER_STATUS = "/api/order/update_order_status";
@@ -27,7 +29,7 @@ export const GET_DECORATION_BY_NAME = "/api/Decoration/searchByName/";
 export const GET_FOOD_DELIVERY_DETAILS =
   "/api/order/order_details_food_delivery";
 export const GET_PHOTOGRAPHY_BY_TAG = "/api/photography/searchByTag/"
-
+export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
 export const IMAGE_UPLOAD = "/api/image_upload";
 
 // Wonderland API Endpoints

@@ -15,6 +15,7 @@ import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
 import { setState } from "../../../actions/action";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
@@ -52,6 +53,7 @@ import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+    const pathname = usePathname();
   const [city, setCity] = useState("");
   const [catValue, setCatValue] = useState("");
   useEffect(() => {
@@ -380,25 +382,39 @@ const DecorationCatPage = ({ locality }) => {
     return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
   };
 
-const handleViewDetails = (item) => {
-  console.log("Clicked item:", item, "catValue:", catValue);
 
-  if (!item?.slug && !item?.product_slug && !item?.name) {
-    console.warn("Missing slug or catValue", { item, catValue });
+const handleViewDetails = (item) => {
+  if (!item?.slug && !item?.product_slug && !item?.name) return;
+
+  const productSlug =
+    item.slug ||
+    item.product_slug ||
+    item.name.toLowerCase().replace(/\s+/g, "-");
+
+  // 🔥 category slug nikaalo properly
+  const categorySlug = getCategorySlugFromPath(
+    pathname,
+    city,
+    locality
+  );
+
+  if (!categorySlug || !catValue) {
+    console.warn("Missing categorySlug or catValue", {
+      categorySlug,
+      catValue,
+    });
     return;
   }
 
-  const productSlug = item.slug || item.product_slug || item.name?.toLowerCase().replace(/\s+/g, "-");
+  // 🔥 same pattern as DecorSlider
+  let base = "";
+  if (city) base += `/${city.toLowerCase()}`;
+  if (locality) base += `/${locality.toLowerCase()}`;
 
-  const pathSegments = window.location.pathname.split("/").filter(Boolean);
-  const balloonSegment = pathSegments.find(seg => seg.toLowerCase().startsWith("balloon-decoration")) || "balloon-decoration";
+  const finalPath = `${base}/${categorySlug}/${catValue}/product/${productSlug}`;
 
-  const finalPath = `/${balloonSegment}/${catValue}/product/${productSlug}`;
-
-  // GTM event push...
   router.push(finalPath);
 };
-
 
 
 

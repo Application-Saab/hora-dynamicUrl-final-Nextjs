@@ -187,7 +187,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         <div className="masonryGrid">
           {currentThumbnailsOnPage.map((thumbnail, indexOnPage) => (
             <LazyImage
-              key={thumbnail.stableKey}
+              key={thumbnail._id}
               src={thumbnail.thumbnailImageUrl}
               alt={`Photo ${isIOSMobile ? ((currentPage - 1) * ITEMS_PER_PAGE + indexOnPage + 1) : (indexOnPage + 1)}`}
               wrapperClassName="masonry-item"

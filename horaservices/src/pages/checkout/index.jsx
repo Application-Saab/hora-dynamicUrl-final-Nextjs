@@ -56,6 +56,8 @@ const Checkout = () => {
   const selectedAddOnProduct = router.query.selectedAddOnProduct
     ? JSON.parse(router.query.selectedAddOnProduct)
     : [];
+
+
   const itemQuantities = router.query.itemQuantities
     ? JSON.parse(router.query.itemQuantities)
     : {};

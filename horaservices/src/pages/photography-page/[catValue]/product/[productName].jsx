@@ -6,6 +6,7 @@ import photographyAddOns from "@/utils/photographyAddOns.json";
 import { faqData } from '@/utils/photographyFAQData.js'
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { useParams } from "next/navigation";
+import ShareIcon from "@/assets/shareIcon.svg";
 import PROFESSIONALPHOTOGRAPHERS from "@/assets/professionalPhoto.png";
 import SECURESTORAGE from "@/assets/secureStorage.png";
 import SUPPORT from "@/assets/support.png";
@@ -16,6 +17,7 @@ import GoogleRatingIMG from "@/assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "@/assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import checkImage from "@/assets/tick.svg";
+import logo from "@/assets/new_logo_light.png";
 import "./productDetails.css";
 import {
   BASE_URL,
@@ -26,6 +28,9 @@ import AdditionalServices from '@/components/AdditionalServices';
 import Photographyslider from '@/components/photoslidersection';
 import { SeoWork } from '@/utils/photoGraphyHead';
 
+import pencil from "@/assets/pencil.svg";
+import AddonModal from '@/components/AddonModal';
+import AddOnsList from '@/components/AddOnsList';
 const SkeletonLoader = () => {
   return (
     <div
@@ -177,6 +182,7 @@ const ProductDetails = () => {
   const [work, setWork] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isArrowDown, setIsArrowDown] = useState(false);
   const [itemQuantities, setItemQuantities] = useState({});
   const [selectedAddOnProduct, setSelectedAddOnProduct] = useState([]);
   const hasCityPageParam = city ? true : false;
@@ -184,6 +190,7 @@ const ProductDetails = () => {
   const customizationRef = useRef(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const similarRef = useRef(null);
+  
 
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
@@ -234,7 +241,7 @@ const ProductDetails = () => {
       ...itemQuantities,
       [item.title]: (itemQuantities[item.title] || 0) + 1,
     });
-    
+
   };
 
 
@@ -261,48 +268,41 @@ const ProductDetails = () => {
 
     setSelectedAddOnProduct(updatedSelectedAddOnProduct);
     setItemQuantities(updatedQuantities);
-    
+
   };
 
 
 
-
-  const getItemInclusion = (inclusion) => {
+ const getItemInclusion = (inclusion) => {
     if (!Array.isArray(inclusion) || inclusion.length === 0) {
       return null;
     }
     const htmlString = inclusion[0];
-    const withoutTags = htmlString.replace(/<[^>]*>/g, "");
-    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " ");
+    const withoutTags = htmlString.replace(/<[^>]*>/g, ""); // Remove HTML tags
+    const withoutSpecialChars = withoutTags.replace(/&#[^;]*;/g, " "); // Replace &# sequences with space
     const statements = withoutSpecialChars.split("<div>");
     const inclusionItems = statements.flatMap((statement) =>
       statement.split("-").filter((item) => item.trim() !== "")
     );
-    const inclusionList = inclusionItems.map((item, index) => (
+  const inclusionList = inclusionItems.map((item, index) => (
       <li key={index} className="inclusionstyle">
-        <Image
-          src={checkImage}
-          alt="Info"
-          style={{ height: 13, width: 13, marginRight: 10 }}
-        />
+        <Image src={checkImage} alt="Info" />
         {item.trim()}
       </li>
     ));
     return (
-      <div>
-        <div
-          style={{
-            fontSize: "21px",
-            borderBottom: "1px solid #e7eff9",
-            marginBottom: "10px",
-          }}
-        >
+      <div className="inclusion-section">
+        <div className="inclusion-heading">
           Inclusions
         </div>
-        <ul>{inclusionList}</ul>
+
+        <ul className="inclusion-list">
+          {inclusionList}
+        </ul>
       </div>
     );
   };
+
 
   const getDiscountedPrice = (price = 0) => {
     const discountedPrice = price / 0.78;
@@ -314,60 +314,60 @@ const ProductDetails = () => {
       discountDifference: Math.round(discountDifference),
     };
   };
-const getAddonTotalPrice = () => {
-  let addonTotal = 0;
+  const getAddonTotalPrice = () => {
+    let addonTotal = 0;
 
-  selectedAddOnProduct.forEach((item) => {
-    const qty = itemQuantities[item.title] || 0;
-    addonTotal += Number(item.price) * qty;
-  });
+    selectedAddOnProduct.forEach((item) => {
+      const qty = itemQuantities[item.title] || 0;
+      addonTotal += Number(item.price) * qty;
+    });
 
-  return addonTotal;
-};
+    return addonTotal;
+  };
 
-const getFinalAdvanceAmount = () => {
-  const productAdvance = Number(work?.advance_amount || 0); // Y
-  const addonTotal = getAddonTotalPrice(); // Z
-  const addonAdvance = addonTotal * 0.35;
+  const getFinalAdvanceAmount = () => {
+    const productAdvance = Number(work?.advance_amount || 0); // Y
+    const addonTotal = getAddonTotalPrice(); // Z
+    const addonAdvance = addonTotal * 0.35;
 
-  return Math.round(productAdvance + addonAdvance);
-};
-
-
-const sendToCheckoutPage = (product) => {
-  const totalPrice = calculateTotalPrice(product.price);
-  const advanceAmount = getFinalAdvanceAmount();
-  const balanceAmount = totalPrice - advanceAmount;
-
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "book_now_click",
-    product_name: product.name,
-  });
-
-  router.push({
-    pathname: '/photography-checkout',
-    query: {
-      from: window.location.pathname,
-      product: JSON.stringify(product),
-      ProductPrice: product.discountedPrice || product.price,
-      selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
-      itemQuantities: JSON.stringify(itemQuantities),
-      totalAmount: totalPrice,
-
-      // ✅ NEW (IMPORTANT)
-      advanceAmount: advanceAmount,
-      balanceAmount: balanceAmount,
-
-      duration: work?.duration,
-    }
-  });
-};
+    return Math.round(productAdvance + addonAdvance);
+  };
 
 
+  const sendToCheckoutPage = (product) => {
+    const totalPrice = calculateTotalPrice(product.price);
+    const advanceAmount = getFinalAdvanceAmount();
+    const balanceAmount = totalPrice - advanceAmount;
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "book_now_click",
+      product_name: product.name,
+    });
+
+    router.push({
+      pathname: '/photography-checkout',
+      query: {
+        from: window.location.pathname,
+        product: JSON.stringify(product),
+        ProductPrice: product.discountedPrice || product.price,
+        selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
+        itemQuantities: JSON.stringify(itemQuantities),
+        totalAmount: totalPrice,
+
+        // ✅ NEW (IMPORTANT)
+        advanceAmount: advanceAmount,
+        balanceAmount: balanceAmount,
+
+        duration: work?.duration,
+      }
+    });
+  };
 
 
- 
+
+
+
 
   const getMappedCatValue = (slug) => {
     const map = {
@@ -384,62 +384,82 @@ const sendToCheckoutPage = (product) => {
     };
     return map[slug] || slug;
   };
- useEffect(() => {
-  if (!productId) return;
+  useEffect(() => {
+    if (!productId) return;
 
-  const fetchProductAndSimilar = async () => {
-    try {
-      setLoading(true);
+    const fetchProductAndSimilar = async () => {
+      try {
+        setLoading(true);
 
-      // ✅ SINGLE API CALL
-      const res = await axios.get(
-        `${BASE_URL}/api/photography/details/${productId}`
-      );
-
-      const data = res.data?.data;
-      if (!data) throw new Error("No product found");
-
-      const { discount, discountedPrice, discountDifference } =
-        getDiscountedPrice(Number(data.price));
-
-      const formattedProduct = {
-        ...data,
-        discount,
-        discountedPrice,
-        discountDifference,
-        advance_amount: Number(data.advance_amount || 0),
-      };
-
-      setWork(formattedProduct);
-
-      // ✅ Fetch similar products
-      const tagId = data?.tag?.[0]?._id;
-      if (tagId) {
-        const similarRes = await axios.get(
-          `${BASE_URL}/api/photography/searchByTag/${tagId}`
+        // ✅ SINGLE API CALL
+        const res = await axios.get(
+          `${BASE_URL}/api/photography/details/${productId}`
         );
 
-        const filteredProducts =
-          (similarRes.data?.data || []).filter(
-            (p) => p._id !== productId
+        const data = res.data?.data;
+        if (!data) throw new Error("No product found");
+       
+
+        const { discount, discountedPrice, discountDifference } =
+          getDiscountedPrice(Number(data.price));
+
+        const formattedProduct = {
+          ...data,
+          discount,
+          discountedPrice,
+          discountDifference,
+          advance_amount: Number(data.advance_amount || 0),
+        };
+
+        setWork(formattedProduct);
+
+        // ✅ Fetch similar products
+        const tagId = data?.tag?.[0]?._id;
+        if (tagId) {
+          const similarRes = await axios.get(
+            `${BASE_URL}/api/photography/searchByTag/${tagId}`
           );
 
-        setSimilarProducts(filteredProducts);
+          const filteredProducts =
+            (similarRes.data?.data || []).filter(
+              (p) => p._id !== productId
+            );
+
+          setSimilarProducts(filteredProducts);
+        }
+      } catch (error) {
+        console.error(error);
+        setWork(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      setWork(null);
-    } finally {
-      setLoading(false);
+    };
+
+    fetchProductAndSimilar();
+  }, [productId]);
+
+
+
+  const handleShare = async () => {
+    if (!work?._id || typeof window === "undefined") return;
+
+    const cleanPath = router.asPath.split("?")[0];
+    const shareUrl = `${window.location.origin}${cleanPath}?id=${work._id}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: work?.name || "Product",
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied!");
+      }
+    } catch (err) {
+      console.log("Share cancelled");
     }
   };
-
-  fetchProductAndSimilar();
-}, [productId]);
-
-
-
-
   if (loading) {
     return <SkeletonLoader />
   }
@@ -448,243 +468,236 @@ const sendToCheckoutPage = (product) => {
 
   return (
     <div>
-         <SeoWork city={city} work={work} scriptTag={scriptTag} />
-      <div className="photodetails-container">
+      <SeoWork city={city} work={work} scriptTag={scriptTag} />
 
-        <div className="photodetails-image-section">
-          <Image
-            src={
-              work.featured_image
-                ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
-                : "/default.jpg"
-            }
-            alt={`${work?.name || "Product"} image`}
-            className="photoImage"
-            width={400}
-            height={300}
-          />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "0px 10px" }}>
-          <h2
-            style={{
-              fontSize: "13px",
-              color: "#222",
-              margin: "8px 0 8px 0",
-              fontWeight: "500",
-
-            }}
+      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <div className="decDetails">
+          <div
+            className="decDetailsLeft"
           >
-            <a
-              style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
-              href="/photography-page"
-            >
-              Home
-            </a>
-            {" > "}
+            <div >
+              <Image
+                src={
+                  work.featured_image
+                    ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
+                    : "/default.jpg"
+                }
+                alt={`${work?.name || "Product"} image`}
+                style={{ width: "100%", height: "auto" }}
+                className="photoImage"
+                width={400}
+                height={300}
+              />
 
-            <a
-              style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
-              href={`/photography-page/${catValue}`}
-            >
-              {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-            </a>
-
-            {" > "}
-          </h2>
-
-          <button
-            onClick={() => {
-              similarRef?.current?.scrollIntoView({ behavior: "smooth" });
-            }}
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "14px",
-              fontWeight: 700,
-              color: "rgb(157, 74, 147)",
-              background: "none",
-              border: "none",
-              textDecoration: "underline",
-              textDecorationStyle: "solid",
-              textAlign: "center",
-              lineHeight: "100%",
-              cursor: "pointer",
-            }}
-
-          >
-            View Similar
-          </button>
-
-
-        </div>
-
-        <h1
-          style={{
-            fontSize: "18px",
-            color: "#222",
-            fontWeight: "#500",
-            padding: "10px",
-            marginBottom: "0",
-          }}
-        >
-          {work.name}
-        </h1>
-
-        <div className="photodetails-price-section">
-          <span className="photodetails-discounted">
-            ₹{work.price}
-          </span>
-          <span className="photodetails-original">₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}</span>
-          <span className="photodetails-offer">₹ {Math.floor(work.discountDifference)} off</span>
-        </div>
-
-        <div className='addon-prices' ref={customizationRef}>
-
-
-          {selectedAddOnProduct.length > 0 && (
-            <>
-              <div style={{ padding: "10px" }} >
-                <label>Customisations</label>
-                <span onClick={showAddOnmodal} style={{ marginLeft: "6px", cursor: "pointer" }}>
-                  < svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" height="1.2em" width="1.2em" xmlns="http://www.w3.org/2000/svg" style={{ color: "rgb(146, 82, 170)", verticalAlign: "0px" }}><path d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" ></path></svg>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 3,
+                  right: 3,
+                  borderRadius: "50%",
+                  padding: 10,
+                }}
+              >
+                <span
+                  style={{
+                    color: "rgba(157, 74, 147, 0.6)",
+                    fontWeight: "600",
+                  }}
+                >
+                  <Image
+                    src={logo}
+                    alt="Hora Services"
+                    className="hora-watermark-image"
+                  />
                 </span>
-                {selectedAddOnProduct.map((item, index) => (
-                  <li key={index}>
-                    <div className="itemline">
-                      {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-
-                    </div>
-
-                  </li>
-                ))}
-
               </div>
-            </>
-          )}
+            </div>
+          </div>
+          <div
+            className="decDetailsRight"
+          >
+            <div
+              style={{
+                padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0"
+              }}
+            >
+              <div className="breadcrumb-row">
+                <h2 className="breadcrumb-text">
+                  <a
+                    style={{ color: "rgb(157, 74, 147)", textDecoration: "none", fontSize: "13px" }}
+                    href="/photography-page"
+                  >
+                    Home
+                  </a>
+                  {" > "}
 
-        </div>
-        <div className="photodetails-inclusions">
+                  <a
+                    className="breadcrumb-link"
+                    href={`/photography-page/${catValue}`}
+                  >
+                    {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                  </a>
 
-          {getItemInclusion(work.inclusion)}
-          <p className="work-duration">
-            <b className="Duration">Duration:</b> {work?.event_duration || work?.duration || "Duration not available"}
-          </p>
-        </div>
+                  {" > "}
+                </h2>
 
-        <div className="modal-top-box11" ref={addonRef}>
-          <h2 className="select-heading-sec">Add Extra Features</h2>
-        </div>
-
-
-        <div className="modal-overlay11"  style={{ maxHeight: "400px", overflowY: "scroll", padding: "10px", backgroundColor: "#FFFAF0", margin: "auto" }}>
-          <div className="modal-content`11" onClick={(e) => e.stopPropagation()} style={{ marginTop: "10px" }}>
-
-
-            <div className="modal-middle-box 11">
-              <div className="modalcard-container">
-                {photographyAddOns?.addOnProducts.map((item, index) => (
-                  <div key={index} className="modalcard">
-                    <img
-
-                      src={item.image}
-                      alt={item.title}
-                      className="model-image"
-                    />
-                    <h3>{item.title}</h3>
+                <button
+                  onClick={() => {
+                    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="view-similar-btn"
+                >
+                  View Similar
+                </button>
+              </div>
 
 
-                    <div className="price-container">
-                      <span className="price">
-                        {typeof item.price === "number" ? `₹${item.price}` : "Included"}
+              <h1 className="product-title">
+                {work.name}
+              </h1>
+
+              <div className="price-share-row">
+                <div className="pro-details-price">
+                  <p className="product-price">
+                    ₹{work.price}
+                  </p>
+                  <p className="product-old-price">₹ {work.discountedPrice ? Math.floor(Number(work.discountedPrice).toFixed(2)) : Math.floor(Number(work.price).toFixed(2))}</p>
+                  <div className="product-discount">₹ {Math.floor(work.discountDifference)} off</div>
+                </div>
+                  <div className="share-btn" onClick={handleShare}>
+                  <Image
+                    src={ShareIcon}
+                    alt="share"
+                    className="share-icon-img"
+                  />
+                </div>
+                </div>
+              
+            
+              <div className='addon-container' ref={customizationRef}>
+
+
+                {/* <div className="photodetails-inclusions">
+                  {selectedAddOnProduct.length > 0 && (
+                    <>
+
+                      <h1 className="photodetalis-heading">
+                        Add-ons
+                      </h1>
+                      <span
+                        onClick={showAddOnmodal}
+                        style={{ marginLeft: "6px", cursor: "pointer", display: "inline-flex", alignItems: "center" }}
+                      >
+                        <Image
+                          src={pencil} // replace with your image path
+                          alt="Addons"
+                          className="addon-icon"
+                        />
                       </span>
-                      {typeof item.price === "number" && (
-                        itemQuantities[item.title] ? (
-                          <div className="quantitycontrols">
-                            <button onClick={() => handleRemoveFromCart(item)} className="quantitybutton">-</button>
-                            <span className="qunatity-title">{itemQuantities[item.title]}</span>
-                            <button onClick={() => handleAddToCart(item)} className="quantitybutton">+</button>
+                      {selectedAddOnProduct.map((item, index) => (
+                        <li key={index}>
+                          <div className="itemline">
+                            {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
+
                           </div>
-                        ) : (
 
-                          <button onClick={() => handleAddToCartAndScrollBack(item)} className="addbutton">Add</button>
+                        </li>
+                      ))}
 
-                        )
-                      )}
-                    </div>
-
-                  </div>
-                ))}
-
-
+                    </>
+                  )}
+                </div> */}
+                <AddOnsList
+  selectedAddOnProduct={selectedAddOnProduct}
+  itemQuantities={itemQuantities}
+  showAddOnmodal={showAddOnmodal}
+  pencil={pencil}
+/>
               </div>
             </div>
+            </div>
+          <div className="photodetails-inclusions">
+            {getItemInclusion(work.inclusion)}
+            <p className="work-duration">
+              <b className="Duration">Duration:</b> {work?.event_duration || work?.duration || "Duration not available"}
+            </p>
+          </div>
+    <AddonModal 
+    isopen={isModalOpen}
+    setIsOpen={setIsModalOpen}
+    addOnProducts={photographyAddOns.addOnProducts}
+    itemQuantities={itemQuantities}
+    onAdd={handleAddToCartAndScrollBack}
+    onRemove={handleRemoveFromCart}
+        />
+
+     
+          <div className="whyHoraSec">
+            <h2 className="whyHoraHeading">Why Hora Photography</h2>
+            <div className="whyHoraSecInner">
+              <div className="whyHoraSecBox">
+                <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
+                <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
+              </div>
+              <div className="whyHoraSecBox">
+                <Image src={SECURESTORAGE} alt="buy-now" />
+                <p className="whyHoraSubheading">SECURE STORAGE</p>
+              </div>
+              <div className="whyHoraSecBox">
+                <Image src={SUPPORT} alt="buy-now" />
+                <p className="whyHoraSubheading">27/7 SUPPORT</p>
+              </div>
+            </div>
+          </div>
+
+          <div ref={similarRef}>
+            <Photographyslider
+              title="Similar Photography"
+              data={similarProducts}
+              showDiscount={true}
+              imageSize={{ width: 120, height: 120 }}
+              city={city}
+              hasCityPageParam={hasCityPageParam}
+              locality={locality}
+              catValue={getMappedCatValue(router.query.catValue)}
+            />
+          </div>
+
+
+          <div className="decorke-celebrate-banner">
+            <Image
+              src={HowitWork}
+              alt="Customize Your Celebration"
+              className="decorke-banner-img"
+            />
+          </div>
+
+          <div className="media-section">
+            <h2 className="media-heading">Hora in Media</h2>
+            <div className="media-logos">
+              <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
+            </div>
+          </div>
+
+          <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+
+          <AdditionalServices />
+
+          <div className="tab-section-details-productpage">
+            <FAQSection faqData={faqData} />
+          </div>
+          </div>
+          <div className="confirm-button-wrapper">
+
+
+            <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black" }}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
+
+            <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
 
           </div>
-        </div>
-        <div className="whyHoraSec">
-          <h2 className="whyHoraHeading">Why Hora Photography</h2>
-          <div className="whyHoraSecInner">
-            <div className="whyHoraSecBox">
-              <Image src={PROFESSIONALPHOTOGRAPHERS} alt="buy-now" />
-              <p className="whyHoraSubheading">PROFESSIONAL PHOTOGRAPHERS</p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image src={SECURESTORAGE} alt="buy-now" />
-              <p className="whyHoraSubheading">SECURE STORAGE</p>
-            </div>
-            <div className="whyHoraSecBox">
-              <Image src={SUPPORT} alt="buy-now" />
-              <p className="whyHoraSubheading">27/7 SUPPORT</p>
-            </div>
-          </div>
-        </div>
-
-        <div ref={similarRef}>
-          <Photographyslider
-            title="Similar Photography"
-            data={similarProducts}
-            showDiscount={true}
-            imageSize={{ width: 120, height: 120 }}
-            city={city}
-            hasCityPageParam={hasCityPageParam}
-            locality={locality}
-            catValue={getMappedCatValue(router.query.catValue)}
-          />
-        </div>
-
-
-        <div className="decorke-celebrate-banner">
-          <Image
-            src={HowitWork}
-            alt="Customize Your Celebration"
-            className="decorke-banner-img"
-          />
-        </div>
-
-        <div className="media-section">
-          <h2 className="media-heading">Hora in Media</h2>
-          <div className="media-logos">
-            <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
-          </div>
-        </div>
-
-        <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
-
-        <AdditionalServices />
-
-        <div className="tab-section-details-productpage">
-          <FAQSection faqData={faqData} />
-        </div>
-        <div className="confirm-button-wrapper">
-
-
-          <p style={{ fontWeight: "bold", marginBottom: "0px", color: "black" }}>Total: ₹ {calculateTotalPrice(Number(work?.price))}</p>
-
-          <button className="confirm-button" onClick={() => sendToCheckoutPage(work)}>Continue</button>
-
         </div>
       </div>
-    </div>
-  );
+      );
 };
 
-export default ProductDetails;
+      export default ProductDetails;

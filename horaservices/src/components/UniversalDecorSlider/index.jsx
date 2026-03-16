@@ -20,7 +20,6 @@ const UniversalDecorSlider = ({
   viewAllLink = "",
   data = [],
   showDiscount = false,
-  imageSize = { width: 120, height: 120 },
   city = "",
   locality = "",
   catValue = "", // ✅ MUST be slug like "baby-shower-decoration"
@@ -66,7 +65,7 @@ const handleCardClick = (item) => {
 
 
   return (
-    <section style={{ padding: "10px", background: "#fbe6d3" }}>
+    <section style={{     padding: "10px 0px 10px 10px", background: "#F4D7C6" }}>
       <div className="premium-slide-decor-header">
         {title && <h2>{title}</h2>}
         {viewAllLink && (
@@ -108,13 +107,14 @@ const handleCardClick = (item) => {
                 style={{ cursor: "pointer" }}
               >
                 <div className="premium-img-wrapper">
-                  <Image
-                    src={imageUrl}
-                    alt={titleText}
-                    width={imageSize.width}
-                    height={imageSize.height}
-                    className="premium-img"
-                  />
+  <Image
+    src={imageUrl}
+    alt={titleText}
+    className="premium-img"
+    fill
+    sizes="(max-width:480px) 100vw"
+  />
+
 
                   {showDiscount && discountDiff > 0 && (
                     <div className="premium-discount">

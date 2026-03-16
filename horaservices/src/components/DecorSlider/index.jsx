@@ -21,7 +21,6 @@ const DecorSlider = ({
   data = [],
   catValue, // ✅ MAIN HERO
   showDiscount = false,
-  imageSize = { width: 120, height: 120 },
   city = "",
   locality = "",
 }) => {
@@ -76,9 +75,9 @@ const DecorSlider = ({
                 <Image
                   src={item.Image}
                   alt={item.title}
-                  width={imageSize.width}
-                  height={imageSize.height}
-                  className="premium-img"
+                  className="premium-img" 
+    fill
+    sizes="(max-width:480px) 100vw"
                 />
 
                 {showDiscount && (
