@@ -32,9 +32,12 @@ const OrderDetail = () => {
   orderType = parseInt(orderType);
 
   useEffect(() => {
-    if ([2, 8].includes(orderType)) {
-      fetchOrderDetailsMenu();
-    } else if (orderType === 1) {
+     if (orderType === 2) {
+    fetchChefOrderDetails(); 
+  } 
+  else if (orderType === 8) {
+    fetchPhotographyOrderDetails(); 
+  }  else if (orderType === 1) {
       fetchDecorationOrderDetails();
     } else if ([6, 7].includes(orderType)) {
       fetchFoodDeliveryOrderDetails();
@@ -44,7 +47,7 @@ const OrderDetail = () => {
   }, [orderType, orderId, apiOrderId]);
   
 
-  const fetchOrderDetailsMenu = async () => {
+  const fetchChefOrderDetails = async () => {
     try {
       setLoading(true);
       const response = await fetch(
