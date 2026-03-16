@@ -59,6 +59,9 @@
 display:flex;
 gap:12px;
 margin-top:10px;
+max-width: 480px;
+    margin: auto;
+
 }
 
 .contact-support-btn{

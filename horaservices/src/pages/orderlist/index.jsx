@@ -493,6 +493,9 @@ const Orderlist = () => {
                                 style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
                                 onClose={closePopup}
                                 popupMessage={popupMessage}
+                                 titleClass="popup-title-main"
+                                  buttonClass ="popup-button"
+                                  imageClass="popup-image"
                               />
                             )}
                           </>
@@ -509,7 +512,7 @@ const Orderlist = () => {
   <div>
     <button
       className="send-invite"
-      onClick={() => handleRateUs(order)}
+        onClick={() => handleViewDetail(order)}
     >
       Rate Us
     </button>
