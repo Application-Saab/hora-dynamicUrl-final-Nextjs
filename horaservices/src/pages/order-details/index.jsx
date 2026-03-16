@@ -32,7 +32,7 @@ const OrderDetail = () => {
   orderType = parseInt(orderType);
 
   useEffect(() => {
-     if ([2, 8].includes(orderType)) {
+    if ([2, 8].includes(orderType)) {
       fetchOrderDetailsMenu();
     } else if (orderType === 1) {
       fetchDecorationOrderDetails();
@@ -48,7 +48,8 @@ const OrderDetail = () => {
     try {
       setLoading(true);
       const response = await fetch(
-`${BASE_URL}/api/order/order_details_photography/${orderId}`      );
+      `${BASE_URL}/api/order/order_details_photography/${orderId}`      
+    );
       const responseData = await response.json();
       setOrderDetail(responseData.data);
       setLoading(false);
@@ -56,6 +57,7 @@ const OrderDetail = () => {
       console.log("error", error);
     }
   };
+  
   const fetchDecorationOrderDetails = async () => {
     try {
       setLoading(true);
