@@ -4,8 +4,7 @@ import {
   BASE_URL,
   GET_DECORATION_DETAILS,
   ORDER_DETAILS_ENDPOINT,
-  GET_FOOD_DELIVERY_DETAILS,
-  GET_PHOTOGRAPHY_ORDER_DETAILS
+  GET_FOOD_DELIVERY_DETAILS
 } from "../../utils/apiconstants";
 import { useRouter } from "next/router";
 
@@ -52,8 +51,8 @@ const OrderDetail = () => {
     try {
       setLoading(true);
       const response = await fetch(
-  BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
-      );
+      `${BASE_URL}/api/order/order_details_photography/${orderId}`      
+    );
       const responseData = await response.json();
       setOrderDetail(responseData.data);
       setLoading(false);
@@ -61,23 +60,7 @@ const OrderDetail = () => {
       console.log("error", error);
     }
   };
-const fetchPhotographyOrderDetails = async () => {
-  try {
-    setLoading(true);
-
-    const response = await fetch(
-      BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS+ "/" + orderId
-    );
-
-    const responseData = await response.json();
-    setOrderDetail(responseData.data);
-
-  } catch (error) {
-    console.log("error", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  
   const fetchDecorationOrderDetails = async () => {
     try {
       setLoading(true);
