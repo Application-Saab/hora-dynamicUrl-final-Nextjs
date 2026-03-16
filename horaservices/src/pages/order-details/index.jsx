@@ -34,7 +34,7 @@ const OrderDetail = () => {
 
   useEffect(() => {
      if (orderType === 2) {
-    fetchOrderDetailsMenu(); 
+    fetchChefOrderDetails(); 
   } 
   else if (orderType === 8) {
     fetchPhotographyOrderDetails(); 
@@ -48,7 +48,7 @@ const OrderDetail = () => {
   }, [orderType, orderId, apiOrderId]);
   
 
-  const fetchOrderDetailsMenu = async () => {
+  const fetchChefOrderDetails = async () => {
     try {
       setLoading(true);
       const response = await fetch(
