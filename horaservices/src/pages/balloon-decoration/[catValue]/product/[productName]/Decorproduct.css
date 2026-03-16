@@ -48,17 +48,11 @@
   font-weight: 700;
  font-size: clamp(11px, 3.3vw, 13px);
   color: #97538C;
-
-  width: clamp(80px, 24vw, 95px);
-  height: clamp(20px, 6vw, 24px);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   gap: clamp(4px, 1.8vw, 6.9px);
   padding: clamp(4px, 1.8vw, 6.9px);
-
   background: none;
   border-radius: 5px;
   border: 1px solid #97538C;
