@@ -12,7 +12,7 @@ import logo from '../../assets/new_logo_light.png';
 const axios = require("axios");
 import './orderDetails.css';
 import cancellation from '../../assets/cancellation.png';
-import checkIcon from '../../assets/checkIcon.png';
+import checkIcon from '../../assets/checkIcon.svg';
 import inviteGuest from '../../assets/inviteGuest.png';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
@@ -71,7 +71,7 @@ const OrderDetailTab = ({
           <Image
             src={checkIcon}
             alt="Info"
-            style={{ height: 13, width: 13, marginRight: '5px' }}
+            className="info-icon-img"
           />
         </div>
         <div>
@@ -282,7 +282,7 @@ const OrderDetailTab = ({
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                   className="info-icon-img"
                   />
                 </div>
                 <div>
@@ -337,7 +337,7 @@ const OrderDetailTab = ({
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                   className="info-icon-img"
                   />
                 </div>
 
@@ -470,7 +470,7 @@ const OrderDetailTab = ({
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                    className="info-icon-img"
                   />
                 </div>
                 <div>
@@ -608,7 +608,7 @@ const OrderDetailTab = ({
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                    className="info-icon-img"
                   />
                 </div>
                 <div>
@@ -795,7 +795,7 @@ const OrderDetailTab = ({
                               <Image
                                 src={checkIcon}
                                 alt="Info"
-                                style={{ height: 13, width: 13, marginRight: "5px" }}
+                               className="info-icon-img"
                               />
                             </div>
 
@@ -856,7 +856,7 @@ const OrderDetailTab = ({
                           <Image
                             src={checkIcon}
                             alt="Info"
-                            style={{ height: 13, width: 13, marginRight: '5px' }}
+                            className="info-icon-img"
                           />
                         </div>
 

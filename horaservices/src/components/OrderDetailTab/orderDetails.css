@@ -102,10 +102,13 @@ cursor:pointer;
 }
 .info-row {
   display: flex;
-  font-size: 13.17px;
   margin-bottom: 6px;
   gap: 4px;
   align-items: flex-start;
+  font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(11px, calc(13.17 * 100vw / 393), 15px);
+color: #000000;
 }
 
 .info-icon {
@@ -113,8 +116,8 @@ cursor:pointer;
 }
 
 .info-icon-img {
-  height: 13px;
-  width: 13px;
+width: clamp(15px, calc(18.81 * 100vw / 393), 23px);
+height: clamp(15px, calc(18.81 * 100vw / 393), 23px);
   margin-right: 5px;
   flex-shrink: 0;
 }
