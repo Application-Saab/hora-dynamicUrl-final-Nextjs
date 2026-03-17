@@ -38,8 +38,9 @@
   padding: 8px;
 }
 .myOrder-decDetailsRight h1 {
-  font-size: 97% !important;
-  font-weight: 600;
+ font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(15px, calc(18 * 100vw / 393), 21px);
   color: #312c2c;
   margin-bottom: 5px;
   margin-top: 8px;
@@ -136,3 +137,12 @@ cursor:pointer;
   border-bottom: 1px solid #3856FF;
   font-size: 13.72px;
 }
+.myOrder-cancelOrderBtn {
+  background-color: #97538C;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 9.67px;
+  cursor: pointer;
+  font-size: 13.54px;
+  margin-bottom: 15px;}

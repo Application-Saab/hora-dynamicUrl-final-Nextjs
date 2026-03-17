@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDERLIST_ENDPOINT } from "../../utils/apiconstants";
-import clock from "../../assets/clock.png";
-import date_time_icon from "../../assets/date-time-icon.png";
+import clock from "../../assets/clock.svg";
+import date_time_icon from "../../assets/date-time-icon.svg";
 import { WhatsappShareButton, WhatsappIcon } from "react-share";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -343,10 +343,10 @@ const Orderlist = () => {
                 <div key={order.order_id} className="order-card">
                   <div className="order-div header">
                     <div className="order-left-container">
-                      <div style={{ color: "#fafafa", fontWeight: "600" }}>
+                      <div className="order-Id">
                         Order Id: {getOrderId(order?.order_id)}
                       </div>
-                      <div className="order-type" style={{ color: "#fafafa" }}>
+                      <div className="order-type">
                         {getOrderType(order?.type)}
                       </div>
                     </div>
@@ -362,33 +362,33 @@ const Orderlist = () => {
                       <div className="date-time">
                         {/* <IoCalendarClear color="#9252AA" size={20}/>{" "} */}
                         <Image
-                          className="contact-us-img"
+                          className="time-img"
                           src={date_time_icon}
-                          height={18}
-                          width={18}
+                          width={14}
+                          height={14}
                         />{" "}
                         <span className="date-time-text">{formatDate(order.order_date)}</span>
                       </div>
                       <div className="date-time">
                         {/* <FiClock color="#9252AA" size={20}/>{" "} */}
                         <Image
-                          className="contact-us-img"
+                          className="time-img"
                           src={clock}
-                          height={18}
-                          width={18}
+                          width={14}
+                          height={14}
                         />{" "}
                         <span className="date-time-text">{order.order_time}</span>
                       </div>
                     </div>
                     <div className="right-details">
                       <div className="totalAmount">
-                        <strong>
+                        <div className="label">
                           Total Amount
                           <p className="amount" style={{ textAlign: "start", margin: 0 }}>
                             {" "}
-                            ₹{order?.total_amount}
+                            ₹ {order?.total_amount}
                           </p>
-                        </strong>
+                        </div>
                       </div>
                       <div className="BalanceAmount">
                         {/* <strong style={{ color: "#9252AA" }}>
@@ -408,13 +408,13 @@ const Orderlist = () => {
                         )}
 
                       </strong> */}
-                        <strong>
+                        <div className="label">
                           Balance Amount
                           <p className="amount" style={{ textAlign: "start", margin: 0 }}>
                             {" "}
-                            ₹{order?.balance_amount || 0}
+                            ₹ {order?.balance_amount || 0}
                           </p>
-                        </strong>
+                        </div>
                       </div>
                     </div>
                     <div className="order-otp">
@@ -428,7 +428,7 @@ const Orderlist = () => {
                   <div className="d-flex button-div">
                     <div>
                       <button
-                        className="view-details order-details"
+                        className="view-details-btn"
                         onClick={() => handleViewDetail(order)}
                       >
                         View Details
@@ -456,17 +456,17 @@ const Orderlist = () => {
                       ) : null)}
 
                     {(
-                     (order.type === 1 || order.type === 8) &&
-(
-  orderStatus?.status === "Booked" ||
-  orderStatus?.status === "Accepted" ||
-  orderStatus?.status === "In-progress"
-)
+                      (order.type === 1 || order.type === 8) &&
+                      (
+                        orderStatus?.status === "Booked" ||
+                        orderStatus?.status === "Accepted" ||
+                        orderStatus?.status === "In-progress"
+                      )
                     ) && (
                         <div className="Executor-rate-btn">
                           <>
                             <button
-                              className="view-details order-details"
+                              className="view-details-btn"
                               onClick={() => {
                                 if (isWithinFourHourWindow(order.order_time, order.order_date)) {
                                   openSupplierPopup(order);
@@ -493,9 +493,9 @@ const Orderlist = () => {
                                 style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
                                 onClose={closePopup}
                                 popupMessage={popupMessage}
-                                 titleClass="popup-title-main"
-                                  buttonClass ="popup-button"
-                                  imageClass="popup-image"
+                                titleClass="popup-title-main"
+                                buttonClass="popup-button"
+                                imageClass="popup-image"
                               />
                             )}
                           </>
@@ -504,20 +504,20 @@ const Orderlist = () => {
                       )}
 
 
-{(
-  orderStatus?.status === "Completed" ||
-  orderStatus?.status === "Cancelled" ||
-  orderStatus?.status === "Expired"
-) && (
-  <div>
-    <button
-      className="send-invite"
-        onClick={() => handleViewDetail(order)}
-    >
-      Rate Us
-    </button>
-  </div>
-)}
+                    {(
+                      orderStatus?.status === "Completed" ||
+                      orderStatus?.status === "Cancelled" ||
+                      orderStatus?.status === "Expired"
+                    ) && (
+                        <div>
+                          <button
+                            className="send-invite"
+                            onClick={() => handleViewDetail(order)}
+                          >
+                            Rate Us
+                          </button>
+                        </div>
+                      )}
                   </div>
                 </div>
               );
