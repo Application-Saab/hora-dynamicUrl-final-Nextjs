@@ -11,14 +11,16 @@ import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 const getDiscountedPrice = (price) => {
   const p = parseFloat(price.replace(/[^0-9.-]+/g, "")) || 0;
   const discount = p < 3000 ? 20 : p <= 5000 ? 27 : 35;
-  return Math.floor(p * (1 - discount / 100));
+  return Math.floor(p * (1 + discount / 100));
 };
 
 const getDiscountedDifference = (price) => {
   const p = parseFloat(price.replace(/[^0-9.-]+/g, "")) || 0;
   const discount = p < 3000 ? 20 : p <= 5000 ? 27 : 35;
-  const discountedPrice = Math.floor(p * (1 - discount / 100));
-  return Math.floor(p - discountedPrice);
+  const discountedPrice = Math.floor(p * (1 + discount / 100));
+
+  return discountedPrice - p;
+
 };
 
 const ProductSliderSection = ({
