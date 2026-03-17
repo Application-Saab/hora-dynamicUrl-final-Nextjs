@@ -9,18 +9,20 @@ import { decCat } from "@/utils/decorationCategories";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 
 const getDiscountedPrice = (price) => {
-  const p = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
+  const p = parseFloat(price.replace(/[^0-9.-]+/g, "")) || 0;
   const discount = p < 3000 ? 20 : p <= 5000 ? 27 : 35;
-
-  return Math.floor(p + (p * discount) / 100); // show higher crossed price
+  return Math.floor(p * (1 + discount / 100));
 };
 
 const getDiscountedDifference = (price) => {
-  const p = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
+  const p = parseFloat(price.replace(/[^0-9.-]+/g, "")) || 0;
   const discount = p < 3000 ? 20 : p <= 5000 ? 27 : 35;
+  const discountedPrice = Math.floor(p * (1 + discount / 100));
 
-  return Math.floor((p * discount) / 100); // only discount amount
+  return discountedPrice - p;
+
 };
+
 const ProductSliderSection = ({
   title,
   data = [],
@@ -51,8 +53,10 @@ const ProductSliderSection = ({
 
   // Handle product click
   const handleClick = (item) => {
-    if (!item?.slug || !catValue) 
-     return;
+    if (!item?.slug || !catValue) {
+      console.warn("Missing slug or catValue", { item, catValue });
+      return;
+    }
 
     // Build product path like DecorSlider
     const path = formatPath(`/${categorySlug}/${catValue}/product/${item.slug}`);
