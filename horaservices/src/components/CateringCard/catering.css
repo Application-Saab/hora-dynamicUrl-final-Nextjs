@@ -4,33 +4,6 @@ max-width: 480px;
 margin: auto;
 }
 
-/* veg toggle */
-
-.veg-toggle{
-display:flex;
-gap:12px;
-margin-bottom:16px;
-}
-
-.veg-btn{
-font-family: "Be Vietnam Pro", sans-serif;
-font-weight: 400;
-font-size: clamp(13px, calc(15.23 * 100vw / 393), 15.23px);
-line-height: 100%;
-letter-spacing: 0%;
-border: 1px solid #97538C;
-border-radius: clamp(8px, calc(10 * 100vw / 393), 10px);
-background:white;
-padding: clamp(4px, calc(5 * 100vw / 393), 5px)
-         clamp(14px, calc(17 * 100vw / 393), 17px);
-cursor:pointer;
-}
-
-.veg-btn.active{
-background:#2e7d32;
-color:white;
-}
-
 /* grid */
 
 .catering-grid{

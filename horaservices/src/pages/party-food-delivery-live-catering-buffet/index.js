@@ -13,6 +13,7 @@ import SocialMediaIMG from "@/assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import {balloonreviews} from "@/utils/balloonReviews";
 import ReviewSlider from "@/components/ReviewSection";
+import VegToggle from "@/components/VegNonVegToggle";
 const data = [
   {
     image: "/images/catering1.jpg",
@@ -55,11 +56,7 @@ const FoodDelivery = () => {
  <CateringBanner image={CateringBannerImage} />
  <CateringTabs />
       {/* Toggle Buttons */}
-      <div className="veg-toggle">
-        <button className="veg-btn active">Only Veg</button>
-        <button className="veg-btn">Non-Veg</button>
-      </div>
-
+  <VegToggle/>
       {/* Card Grid */}
       <div className="catering-grid">
         {data.map((item, index) => (

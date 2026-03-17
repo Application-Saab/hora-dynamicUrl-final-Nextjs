@@ -1,8 +1,8 @@
 .catering-tabs{
-display:flex;
-gap:12px;
-margin:14px 0;
-justify-content: center;
+display: flex;
+gap: clamp(10px, calc(12 * 100vw / 393), 15px);
+margin: clamp(11px, calc(14 * 100vw / 393), 17px) ;
+justify-content:space-between;
 }
 
 .tab-btn{
