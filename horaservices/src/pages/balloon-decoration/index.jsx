@@ -319,9 +319,9 @@ const openCatItems = (item) => {
       </div>
 
       <div className="CategoryGrid-outer">
-        <div className="page-width">
+       
           <CategoryGrid cardsData={cardsData} city={city} locality={locality} />
-        </div>
+   
       </div>
 
       {/* SEE MORE BUTTON */}
