@@ -3,9 +3,9 @@ import Image from "next/image";
 import topBg from "@/assets/review/top-bg.svg";      // top wali image
 import couponBg from "@/assets/review/coupon-bg.svg"; // bottom wali image
 import giftIcon from "@/assets/review/gift_box.svg";      // gift icon
-import angryImg from "@/assets/review/angry.png";
-import neutralImg from "@/assets/review/neutral.png";
-import loveImg from "@/assets/review/love.png";
+import angryImg from "@/assets/review/angry.svg";
+import neutralImg from "@/assets/review/neutral.svg";
+import loveImg from "@/assets/review/love.svg";
 import smallBg from "@/assets/review/small-bg.svg"
 import finalImage from "@/assets/review/final_image.svg"
 import instagramIcon from "@/assets/review/instagram.svg";

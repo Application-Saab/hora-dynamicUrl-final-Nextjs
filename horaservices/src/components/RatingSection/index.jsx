@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "./rating.css";
-import angryImg from "@/assets/review/angry.png";
-import neutralImg from "@/assets/review/neutral.png";
-import loveImg from "@/assets/review/love.png";
+import angryImg from "@/assets/review/angry.svg";
+import neutralImg from "@/assets/review/neutral.svg";
+import loveImg from "@/assets/review/love.svg";
 import Image from "next/image";
 const Ratingsection  = ({orderId, onSubmitSuccess, setSelectedRating ,setCouponCode}) => {
     const [showPopup, setShowPopup] = useState(false);
