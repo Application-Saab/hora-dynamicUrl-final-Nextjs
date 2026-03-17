@@ -19,11 +19,9 @@ const getDiscountedPrice = (price) => {
 const getDiscountedDifference = (price) => {
   const p = parseFloat(price.replace(/[^0-9.-]+/g, "")) || 0;
   const discount = p < 3000 ? 20 : p <= 5000 ? 27 : 35;
-  const discountedPrice = Math.floor(p * (1 - discount / 100));
+  const discountedPrice = Math.floor(p * (1 + discount / 100));
 
- const discountDifference = parseFloat(p) - discountedPrice; // Get the absolute difference
-console.log("discountedPrice",discountedPrice ,p ,discountDifference, Math.abs(parseFloat(p)))
- return discountDifference
+  return discountedPrice - p;
 
   // return Math.floor(p - discountedPrice);
 };
