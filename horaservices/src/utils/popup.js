@@ -62,7 +62,11 @@ const Popup = ({ onClose, popupMessage, primaryButtonAction = () => { } }) => {
                   className="popup-image"
               />
           )}
-
+{popupMessage?.rating && (
+  <p className="rating-text">
+    Rating : {popupMessage.rating}
+  </p>
+)}
           <h1>{popupMessage?.title}</h1>
           <p>{popupMessage?.body}</p>
           {popupMessage?.button == "Continue" && (
