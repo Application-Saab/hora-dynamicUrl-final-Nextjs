@@ -16,6 +16,8 @@ import checkIcon from '../../assets/checkIcon.png';
 import inviteGuest from '../../assets/inviteGuest.png';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
+import {getCancellationPolicy, infoList, foodDeliveryInclusionItems, cateringInclusionItems, chefInclusionItems, foodDeliveryPolicy, chefPolicy} from '../../utils/pointsOfPolicies';
+ 
 
 import CouponPopup from "../CouponPopup";
 import Ratingsection from "../RatingSection";
@@ -46,7 +48,7 @@ const OrderDetailTab = ({
  const [reviewSubmitted, setReviewSubmitted] = useState(false);
  const [selectedRating, setSelectedRating] = useState(null);
  const [couponCode, setCouponCode] = useState("");
-  console.log(orderDetail, "orderdetaillive");
+  
   const comments = orderDetail.decoration_comments
     ? orderDetail.decoration_comments.split('\n').map(comment => comment.trim()).filter(Boolean)
     : [];
@@ -405,7 +407,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
             <div style={{ fontSize: "13.17px" }}>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Address :</span>
-                <span> {' '}{ `${orderDetail?.addressId?.address1 || "NA"}`}</span>
+                <span> {' '}{`${orderDetail?.addressId?.address1 || "NA"}`}</span>
               </div>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">City :</span>
@@ -417,7 +419,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
               </div>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Google Map Location :</span>
-                 <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
+                <a href={orderDetail?.addressId?.address2} className="myordergoogle-location" target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
               </div>
             </div>
 
@@ -553,7 +555,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
               </div>
               <div style={{ marginBottom: "8px" }}>
                 <span className="fw-semiBold">Google Map Location :</span>
-                 <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
+                <a href={orderDetail?.addressId?.address2} className="myordergoogle-location" target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
               </div>
             </div>
 
@@ -645,28 +647,28 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                 Additional Comments
               </div>
               {orderDetail.comments ? (
-              <div className="info-row">
-                <div className="info-icon">
-                  <Image
-                    src={checkIcon}
-                    alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
-                  />
-                </div>
-                <div>
-                  {orderDetail.comments}
-                </div>
-              </div>
-            ) : 'NA'
-            }
-      
-            </div>
-              <div className="fw-semiBold myOrderDetails-heading">
-                    Price Details
+                <div className="info-row">
+                  <div className="info-icon">
+                    <Image
+                      src={checkIcon}
+                      alt="Info"
+                      style={{ height: 13, width: 13, marginRight: '5px' }}
+                    />
                   </div>
+                  <div>
+                    {orderDetail.comments}
+                  </div>
+                </div>
+              ) : 'NA'
+              }
 
-                  <div style={{ fontSize: "14px", color: "#97538C" }}>
-                    {/* <div className="myOrder-amountList">
+            </div>
+            <div className="fw-semiBold myOrderDetails-heading">
+              Price Details
+            </div>
+
+            <div style={{ fontSize: "14px", color: "#97538C" }}>
+              {/* <div className="myOrder-amountList">
                       <div className="myOrder-labelStyle">Original Price :</div>
                       <div>₹ {orderDetail?.total_amount || 0}</div>
                     </div>
@@ -676,47 +678,47 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                       <div style={{ color: "#F7941D" }}>₹ {orderDetail?.discount || 0} OFF</div>
                     </div> */}
 
-                    <div className="myOrder-amountList">
-                      <div className="myOrder-labelStyle">Final Amount :</div>
-                      <div>₹ {orderDetail?.payable_amount || 0}</div>
-                    </div>
+              <div className="myOrder-amountList">
+                <div className="myOrder-labelStyle">Final Amount :</div>
+                <div>₹ {orderDetail?.payable_amount || 0}</div>
+              </div>
 
-                    <div className="myOrder-amountList">
-                      <div className="myOrder-labelStyle">Advance Amount :</div>
-                      <div>₹ {orderDetail?.advance_amount || 0}</div>
-                    </div>
+              <div className="myOrder-amountList">
+                <div className="myOrder-labelStyle">Advance Amount :</div>
+                <div>₹ {orderDetail?.advance_amount || 0}</div>
+              </div>
 
-                    <div className="myOrder-amountList">
-                      <div className="myOrder-labelStyle">Balance Amount :</div>
-                      <div>₹ {orderDetail?.balance_amount || 0}</div>
-                    </div>
-                  </div>
-                  <div className="fw-semiBold myOrderDetails-heading">
-                    Venue Details
-                  </div>
+              <div className="myOrder-amountList">
+                <div className="myOrder-labelStyle">Balance Amount :</div>
+                <div>₹ {orderDetail?.balance_amount || 0}</div>
+              </div>
+            </div>
+            <div className="fw-semiBold myOrderDetails-heading">
+              Venue Details
+            </div>
 
-                  <div style={{ fontSize: "13.17px" }}>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Address :</span>
-                      <span> {' '}
-                        {orderDetail?.addressId?.address1 || "NA"}
-                      </span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">City :</span>
-                      <span>{' '}{orderDetail?.addressId?.city || "NA"}</span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Pin Code :</span>
-                      <span>{' '}{orderDetail?.order_pincode || "NA"}</span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                      <span className="fw-semiBold">Google Map Location :</span>
-                      <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
-                    </div>
-                  </div>
+            <div style={{ fontSize: "13.17px" }}>
+              <div style={{ marginBottom: "8px" }}>
+                <span className="fw-semiBold">Address :</span>
+                <span> {' '}
+                  {orderDetail?.addressId?.address1 || "NA"}
+                </span>
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                <span className="fw-semiBold">City :</span>
+                <span>{' '}{orderDetail?.addressId?.city || "NA"}</span>
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                <span className="fw-semiBold">Pin Code :</span>
+                <span>{' '}{orderDetail?.order_pincode || "NA"}</span>
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                <span className="fw-semiBold">Google Map Location :</span>
+                <a href={orderDetail?.addressId?.address2} className="myordergoogle-location" target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
+              </div>
+            </div>
 
-                  {/* <div className="fw-semiBold myOrderDetails-heading ">
+            {/* <div className="fw-semiBold myOrderDetails-heading ">
                     Points For Considerations
                   </div>
 
@@ -735,29 +737,29 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                     ))}
                   </div> */}
 
-                  {/* Cancellation and Order Change Policy */}
-                  <div className="mt-2 mx-3 cancellation-policy border-0">
+            {/* Cancellation and Order Change Policy */}
+            <div className="mt-2 mx-3 cancellation-policy border-0">
 
-                    <div style={{ display: "flex", alignItems: "center", }}>
-                      <span>
-                        <Image
-                          src={cancellation}
-                          alt="cancellation"
-                          style={{ height: 15, width: 13, marginRight: '4px' }}
-                        />
-                      </span>
-                      <p
-                        style={{ fontSize: "13.54px", color: "#4C494A", margin: "0px" }} >
-                        Cancellation and Order Change Policy
-                      </p>
-                    </div>
+              <div style={{ display: "flex", alignItems: "center", }}>
+                <span>
+                  <Image
+                    src={cancellation}
+                    alt="cancellation"
+                    style={{ height: 15, width: 13, marginRight: '4px' }}
+                  />
+                </span>
+                <p
+                  style={{ fontSize: "13.54px", color: "#4C494A", margin: "0px" }} >
+                  Cancellation and Order Change Policy
+                </p>
+              </div>
 
-                    {foodDeliveryPolicy.map((policy, index) => (
-                      <p key={index} style={{ fontSize: "11.6px", color: "#9D60B3" }} className="m-1">
-                        {index + 1}. {policy}
-                      </p>
-                    ))}
-                  </div>
+              {foodDeliveryPolicy.map((policy, index) => (
+                <p key={index} style={{ fontSize: "11.6px", color: "#9D60B3" }} className="m-1">
+                  {index + 1}. {policy}
+                </p>
+              ))}
+            </div>
             {/* <div class="live-catering-title">Exclusion:</div>
             <ul class="live-catering-exclusions">
               <li>
@@ -832,7 +834,41 @@ orderId={orderDetail?.order_id}
                             </div>
 
                             <div>
-                              {item.name || "NA"} =  ₹{item.price || "NA"} x 1 = ₹{item.price || "NA"}
+                              {/* {item.name || "NA"} =  ₹{item.price || "NA"} x 1 = ₹{item.price || "NA"} */}
+                              {(() => {
+                                const rawTitle =
+                                  item?.name ||
+                                  "N/A";
+
+                                const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
+                                const extractedQuantity = quantityMatch
+                                  ? Number(quantityMatch[1])
+                                  : null;
+
+                                const cleanedTitle = rawTitle?.replace(
+                                  /\s*-\s*Quantity\s*\d+/i,
+                                  ""
+                                ).trim();
+
+                                const quantity =
+                                  extractedQuantity || Number(item?.quantity) || 1;
+
+                                const price = Number(
+                                  item?.price ||
+                                  0
+                                );
+
+                                const total =
+                                  item?.totalPrice
+                                    ? Number(item.totalPrice)
+                                    : price * quantity;
+
+                                return (
+                                  <>
+                                    {cleanedTitle} = ₹{price} x {quantity} = ₹{total}
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         ))}
@@ -916,7 +952,7 @@ orderId={orderDetail?.order_id}
                     </div>
                     <div style={{ marginBottom: "8px" }}>
                       <span className="fw-semiBold">Google Map Location :</span>
-                      <a href={orderDetail?.addressId?.address2} className="myordergoogle-location"  target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
+                      <a href={orderDetail?.addressId?.address2} className="myordergoogle-location" target="_blank" rel="noopener">{' '}{orderDetail?.addressId?.address2}</a>
                     </div>
                   </div>
 
@@ -925,7 +961,7 @@ orderId={orderDetail?.order_id}
                   </div>
 
                   <div>
-                    {cancellationPolicy.map((text, index) => (
+                    {infoList.map((text, index) => (
                       <div key={index} className="info-row">
                         <div className="info-icon">
                           <Image
@@ -985,174 +1021,171 @@ orderId={orderDetail?.order_id}
       {(() => {
         const photography = orderDetail?.items?.[0]?.photography;
 
-        return (
-          <div className="myOrder-decDetailsRight">
+              return (
+                <div className="myOrder-decDetailsRight">
 
-            {/* ================= PRODUCT NAME ================= */}
-            <h1 className="mb-2">
-              {photography?.name || "Photography Service"}
-            </h1>
+                  {/* ================= PRODUCT NAME ================= */}
+                  <h1 className="mb-2">
+                    {photography?.name || "Photography Service"}
+                  </h1>
 
-            {/* ================= INCLUSIONS ================= */}
-            {photography?.inclusion?.length > 0 && (
-              <>
-                <div className="fw-semiBold myOrderDetails-heading">
-                  Inclusions
-                </div>
+                  {/* ================= INCLUSIONS ================= */}
+                  {photography?.inclusion?.length > 0 && (
+                    <>
+                      <div className="fw-semiBold myOrderDetails-heading">
+                        Inclusions
+                      </div>
 
-                <div
-                  className="photography-inclusions"
-                  dangerouslySetInnerHTML={{
-                    __html: photography.inclusion.join(""),
-                  }}
-                />
-              </>
-            )}
+                      <div
+                        className="photography-inclusions"
+                        dangerouslySetInnerHTML={{
+                          __html: photography.inclusion.join(""),
+                        }}
+                      />
+                    </>
+                  )}
 
-            {/* ================= ADD ONS ================= */}
-            <div className="fw-semiBold myOrderDetails-heading">
-              Add-ons
-            </div>
-
-            {orderDetail?.add_on?.length > 0 ? (
-              orderDetail.add_on.map((item, index) => (
-                <div key={index} className="info-row">
-                  <Image
-                    src={checkIcon}
-                    alt=""
-                    width={13}
-                    height={13}
-                    style={{ marginRight: 8 }}
-                  />
-                  <div>
-                    {item?.title || "NA"} – ₹{item?.price || 0}
+                  {/* ================= ADD ONS ================= */}
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Add-ons
                   </div>
+
+                  {orderDetail?.add_on?.length > 0 ? (
+                    orderDetail.add_on.map((item, index) => (
+                      <div key={index} className="info-row">
+                        <Image
+                          src={checkIcon}
+                          alt=""
+                          width={13}
+                          height={13}
+                          style={{ marginRight: 8 }}
+                        />
+                        <div>
+                          {item?.title || "NA"} – ₹{item?.price || 0}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ fontSize: 13 }}>NA</div>
+                  )}
+
+                  {/* ================= ADDITIONAL COMMENTS ================= */}
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Additional Comments
+                  </div>
+
+                  <div className="info-row">
+                    <Image
+                      src={checkIcon}
+                      alt=""
+                      width={13}
+                      height={13}
+                      style={{ marginRight: 8 }}
+                    />
+                    <div>{orderDetail.decoration_comments || "N/A"}</div>
+                  </div>
+
+
+                  {/* ================= PRICE DETAILS ================= */}
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Price Details
+                  </div>
+
+                  <div style={{ fontSize: 14, color: "#97538C" }}>
+                    <div className="myOrder-amountList">
+                      <div>Final Amount :</div>
+                      <div>₹ {orderDetail?.total_amount || 0}</div>
+                    </div>
+
+                    <div className="myOrder-amountList">
+                      <div>Advance Amount :</div>
+                      <div>₹ {orderDetail?.advance_amount || 0}</div>
+                    </div>
+
+                    <div className="myOrder-amountList">
+                      <div>Balance Amount :</div>
+                      <div>₹ {orderDetail?.balance_amount || 0}</div>
+                    </div>
+                  </div>
+
+                  {/* ================= DURATION ================= */}
+                  {photography?.duration && (
+                    <>
+                      <div className="fw-semiBold myOrderDetails-heading">
+                        Duration
+                      </div>
+                      <div style={{ fontSize: 13 }}>{photography.duration}</div>
+                    </>
+                  )}
+
+                  {/* ================= VENUE DETAILS ================= */}
+                  <div className="fw-semiBold myOrderDetails-heading">
+                    Venue Details
+                  </div>
+
+                  <div style={{ fontSize: 13 }}>
+                    <div className="mb-2">
+                      <strong>Address :</strong>{" "}
+                      {orderDetail?.addressId?.address1 || "NA"}
+                    </div>
+
+                    <div className="mb-2">
+                      <strong>City :</strong>{" "}
+                      {orderDetail?.addressId?.city || "NA"}
+                    </div>
+
+                    <div className="mb-2">
+                      <strong>Pin Code :</strong>{" "}
+                      {orderDetail?.order_pincode || "NA"}
+                    </div>
+
+                    {orderDetail?.addressId?.address2 && (
+                      <div className="mb-2">
+                        <strong>Google Map :</strong>{" "}
+                        <a
+                          href={orderDetail.addressId.address2}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="myordergoogle-location"
+                        >
+                          View Location
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ================= CANCELLATION POLICY ================= */}
+                  {cancellationPolicy?.length > 0 && (
+                    <div className="mt-3 cancellation-policy">
+                      <div className="d-flex align-items-center mb-1">
+                        <Image
+                          src={cancellation}
+                          alt="cancellation"
+                          width={14}
+                          height={14}
+                          style={{ marginRight: "6" }}
+                        />
+                        <span style={{ fontSize: "13" }}>
+                          Cancellation and Order Change Policy
+                        </span>
+                      </div>
+
+                      {cancellationPolicy.map((policy, index) => (
+                        <p
+                          key={index}
+                          style={{ fontSize: "11.5", color: "#9D60B3" }}
+                          className="m-0"
+                        >
+                          {index + 1}. {policy}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))
-            ) : (
-              <div style={{ fontSize: 13 }}>NA</div>
-            )}
-
-            {/* ================= ADDITIONAL COMMENTS ================= */}
-            <div className="fw-semiBold myOrderDetails-heading">
-              Additional Comments
-            </div>
-
-            {orderDetail?.comments ? (
-              <div className="info-row">
-                <Image
-                  src={checkIcon}
-                  alt=""
-                  width={13}
-                  height={13}
-                  style={{ marginRight: 8 }}
-                />
-                <div>{orderDetail.comments}</div>
-              </div>
-            ) : (
-              <div style={{ fontSize: 13 }}>NA</div>
-            )}
-
-            {/* ================= PRICE DETAILS ================= */}
-            <div className="fw-semiBold myOrderDetails-heading">
-              Price Details
-            </div>
-
-            <div style={{ fontSize: 14, color: "#97538C" }}>
-              <div className="myOrder-amountList">
-                <div>Final Amount :</div>
-                <div>₹ {orderDetail?.total_amount || 0}</div>
-              </div>
-
-              <div className="myOrder-amountList">
-                <div>Advance Amount :</div>
-                <div>₹ {orderDetail?.advance_amount || 0}</div>
-              </div>
-
-              <div className="myOrder-amountList">
-                <div>Balance Amount :</div>
-                <div>₹ {orderDetail?.balance_amount || 0}</div>
-              </div>
-            </div>
-
-            {/* ================= DURATION ================= */}
-            {photography?.duration && (
-              <>
-                <div className="fw-semiBold myOrderDetails-heading">
-                  Duration
-                </div>
-                <div style={{ fontSize: 13 }}>{photography.duration}</div>
-              </>
-            )}
-
-            {/* ================= VENUE DETAILS ================= */}
-            <div className="fw-semiBold myOrderDetails-heading">
-              Venue Details
-            </div>
-
-            <div style={{ fontSize: 13 }}>
-              <div className="mb-2">
-                <strong>Address :</strong>{" "}
-                {orderDetail?.addressId?.address1 || "NA"}
-              </div>
-
-              <div className="mb-2">
-                <strong>City :</strong>{" "}
-                {orderDetail?.addressId?.city || "NA"}
-              </div>
-
-              <div className="mb-2">
-                <strong>Pin Code :</strong>{" "}
-                {orderDetail?.order_pincode || "NA"}
-              </div>
-
-              {orderDetail?.addressId?.address2 && (
-                <div className="mb-2">
-                  <strong>Google Map :</strong>{" "}
-                  <a
-                    href={orderDetail.addressId.address2}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="myordergoogle-location"
-                  >
-                    View Location
-                  </a>
-                </div>
-              )}
-            </div>
-
-            {/* ================= CANCELLATION POLICY ================= */}
-            {cancellationPolicy?.length > 0 && (
-              <div className="mt-3 cancellation-policy">
-                <div className="d-flex align-items-center mb-1">
-                  <Image
-                    src={cancellation}
-                    alt="cancellation"
-                    width={14}
-                    height={14}
-                    style={{ marginRight: "6" }}
-                  />
-                  <span style={{ fontSize: "13" }}>
-                    Cancellation and Order Change Policy
-                  </span>
-                </div>
-
-                {cancellationPolicy.map((policy, index) => (
-                  <p
-                    key={index}
-                    style={{ fontSize: "11.5", color: "#9D60B3" }}
-                    className="m-0"
-                  >
-                    {index + 1}. {policy}
-                  </p>
-                ))}
-              </div>
-            )}
+              );
+            })()}
           </div>
-        );
-      })()}
-    </div>
-  </div>
+        </div>
       ) : null}
 
       {/* <div className="rate-us-footer">
