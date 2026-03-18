@@ -31,7 +31,7 @@ export const GET_FOOD_DELIVERY_DETAILS =
 export const GET_PHOTOGRAPHY_BY_TAG = "/api/photography/searchByTag/"
 
 export const IMAGE_UPLOAD = "/api/image_upload";
-export const ADD_RATING_REVIEWS = "/api/order/add-rating-reviews";
+
 // Wonderland API Endpoints
 export const CREATE_EVENT_INVITE = "/api/customer/event/create-event-invite";
 export const GET_EVENT_BY_ID = "/api/customer/event/event-invites";
