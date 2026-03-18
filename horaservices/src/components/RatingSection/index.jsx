@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { BASE_URL, ADD_RATING_REVIEWS } from "@/utils/apiconstants";
 import { ratingConfig } from "@/utils/ratingConfig";
+import Popup from "@/utils/popup";
 
 const Ratingsection = ({
   orderId,
@@ -15,54 +16,56 @@ const Ratingsection = ({
   const [showPopup, setShowPopup] = useState(false);
   const [selected, setSelected] = useState(null);
   const [message, setMessage] = useState("");
+  const [popupMessage, setPopupMessage] = useState(null);
+  const selectedConfig = ratingConfig.find(
+    (item) => item.key === selected
+  );
 
   const handleSelect = (key) => {
     setSelected(key);
     setSelectedRating(key);
   };
 
-  const handleSubmit = async () => {
+ const handleSubmit = async () => {
 
-    if (!selected || message.trim() === "") return;
+  if (!selected || message.trim() === "") return;
 
-    const selectedConfig = ratingConfig.find(
-      (item) => item.key === selected
-    );
+  try {
 
-    try {
+    const res = await fetch(`${BASE_URL}${ADD_RATING_REVIEWS}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId,
+        rating: selectedConfig?.value,
+        reviews: message,
+      }),
+    });
 
-      const res = await fetch(`${BASE_URL}${ADD_RATING_REVIEWS}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderId,
-          rating: selectedConfig.value,
-          reviews: message,
-        }),
-      });
+    const data = await res.json();
 
-      const data = await res.json();
+    if (!data.error) {
 
-      if (!data.error) {
-
-        if (selected === "low") {
-          setCouponCode(data?.data?.couponCode || "HLLM5263");
-        }
-
-        setShowPopup(true);
-        onSubmitSuccess();
+      if (selected === "low") {
+        setCouponCode(data?.data?.couponCode || "HLLM5263");
       }
 
-    } catch (error) {
-      console.error("Submit Error:", error);
-    }
-  };
+      setPopupMessage({
+        title: "Thanks for your feedback!",
+        body: "We’re so glad you’re enjoying HORA. Please take a few seconds to rate us in the App Store - it would mean a lot!",
+        button: "OK",
+        img: selectedConfig?.emoji,
+        rating: selectedConfig?.label
+      });
 
-  const selectedConfig = ratingConfig.find(
-    (item) => item.key === selected
-  );
+    }
+
+  } catch (error) {
+    console.error("Submit Error:", error);
+  }
+};
 
   return (
 
@@ -141,47 +144,15 @@ const Ratingsection = ({
 
       {/* Popup */}
 
-      {showPopup && selectedConfig && (
-
-        <div className="review-popup-overlay">
-
-          <div className="review-popup-card">
-
-            <button
-              className="popup-close-btn"
-              onClick={() => setShowPopup(false)}
-            >
-              ✕
-            </button>
-
-            <Image
-              src={selectedConfig.emoji}
-              alt="rating"
-              width={60}
-              height={60}
-              className="emojiImage"
-            />
-
-            <p className="rating-text">
-              Rating : {selectedConfig.label}
-            </p>
-
-            <h3 className="cardheadding">
-              Thanks for your feedback!
-            </h3>
-
-            <p className="popup-desc">
-              We’re so glad you’re enjoying HORA.
-              Please take a few seconds to rate us
-              in the App Store - it would mean a lot!
-            </p>
-
-          </div>
-
-        </div>
-
-      )}
-
+   {popupMessage && (
+  <Popup
+    popupMessage={popupMessage}
+    onClose={() => {
+      setPopupMessage(null);
+      onSubmitSuccess();
+    }}
+  />
+)}
     </div>
 
   );
