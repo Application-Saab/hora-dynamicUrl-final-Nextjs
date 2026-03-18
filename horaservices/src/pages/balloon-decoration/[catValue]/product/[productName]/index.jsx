@@ -209,16 +209,12 @@ function DecorationCatDetails({ city, locality }) {
   const [sendCategoryId, setSendCategoryId] = useState("");
   const [passCategoryId, setPassCategoryId] = useState("");
   const [openProductUrl, setOpenProductUrl] = useState("");
-  const [extraProduct, setExtraProduct] = useState([]);
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
   const searchParams = useSearchParams();
-  // const [similarByPrice, setSimilarByPrice] = useState([]);
-  // const [similarByName, setSimilarByName] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
 const [similarByTheme, setSimilarByTheme] = useState([]);
 const [levelUp1000, setLevelUp1000] = useState([]);
 const [levelUp2000, setLevelUp2000] = useState([]);
-
 
   const router = useRouter();
   const params = useParams();
@@ -228,27 +224,14 @@ const [levelUp2000, setLevelUp2000] = useState([]);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
   const cityName = params?.city;
+
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
-
-
-  useEffect(() => {
-    if (params?.catValue) {
-      setCatValue(params.catValue);
-    }
-  }, [params]);
-
-  // 2️⃣ Get URL params when router is ready
-
- 
-
-
-
-  useEffect(() => {
+useEffect(() => {
     if (router.isReady) {
       const { subCategory, catValue: urlCatValue, productName } = router.query;
 
@@ -293,26 +276,31 @@ const [levelUp2000, setLevelUp2000] = useState([]);
 
 
 
-  useEffect(() => {
-    if (router.isReady && router.query.catValue) {
-      const rawCatValue = router.query.catValue;
-      setCatValue(rawCatValue); // For UI
-      setSendCategoryId(rawCatValue); // For API calls
-    }
-  }, [router.isReady, router.query.catValue]);
+useEffect(() => {
+  if (!router.isReady) return;
 
+  const { subCategory, catValue: urlCatValue, productName } = router.query;
 
-  useEffect(() => {
-    if (!router.isReady || !router.query.catValue) return;
+  // Category slug
+  if (urlCatValue) {
+    setCatValue(urlCatValue);
 
-    const rawCatValue = router.query.catValue;
+    const mappedCat = getMappedCatValue(urlCatValue);
+    setSendCategoryId(mappedCat);
+  }
 
-    const mappedCat = getMappedCatValue(rawCatValue);  // ✅ Your map function
+  // Sub category
+  if (subCategory) {
+    setSubCategory(subCategory);
+  }
 
-    setCatValue(rawCatValue);      // For showing on UI — can be slug like 'birthday-decoration'
-    setSendCategoryId(mappedCat);  // For API calls — mapped to your DB slug
+  // Product name
+  if (productName) {
+    const formattedProduct = productName.replace(/-/g, " ");
+    setApiProduct(formattedProduct);
+  }
 
-  }, [router.isReady, router.query.catValue]);
+}, [router.isReady]);
 
   useEffect(() => {
     if (product?.categoryId) {
@@ -323,18 +311,13 @@ const [levelUp2000, setLevelUp2000] = useState([]);
     }
   }, [product, catValue]);
 
-  useEffect(() => {
-    if (product?.price && similar.length > 0) {
-      filterSimilarByPrice(product.price, similar, product._id);
-      filterSimilarByName(product, similar, product._id);
-    }
-  }, [product, similar]);
 
-  useEffect(() => {
-    if (passCategoryId) {
-      getCategoryProducts(passCategoryId);
-    }
-  }, [passCategoryId]);
+ useEffect(() => {
+  if (passCategoryId) {
+    getCategoryProducts(passCategoryId);
+  }
+}, [passCategoryId]);
+
 
 
 const getCategoryProducts = async (categoryId) => {
@@ -350,11 +333,6 @@ const getCategoryProducts = async (categoryId) => {
   }
 };
 
-useEffect(() => {
-  if (passCategoryId) {
-    getCategoryProducts(passCategoryId);
-  }
-}, [passCategoryId]);
 
 useEffect(() => {
 
@@ -365,54 +343,6 @@ useEffect(() => {
 }, [product, allProducts]);
 
 
-// const filterSimilarProducts = (product, productsArray = []) => {
-
-//   if (!product || !productsArray.length) return;
-
-//   const name = product.name.toLowerCase();
-
-//   // ⭐ themeFilters se keyword detect
-//   const matchedTheme = themeFilters.find(t =>
-//     t.value !== "all" &&
-//     name.includes(t.value.toLowerCase())
-//   );
-
-//   // ⭐ Agar keyword mil gaya (Unicorn / Cocomelon etc)
-//   if (matchedTheme) {
-
-//     const keyword = matchedTheme.value.toLowerCase();
-
-//     const filtered = productsArray.filter(item =>
-//       item._id !== product._id &&
-//       item.name.toLowerCase().includes(keyword)
-//     );
-
-//     if (filtered.length > 0) {
-//       setSimilarByTheme(filtered);
-//       return;
-//     }
-//   }
-
-//   // ⭐ Agar keyword nahi mila → price logic
-//   const price = Number(product.price);
-//   const min = price - 500;
-//   const max = price + 500;
-
-//   const filtered = productsArray.filter(item => {
-
-//     const itemPrice = Number(item.price);
-
-//     return (
-//       item._id !== product._id &&
-//       itemPrice >= min &&
-//       itemPrice <= max
-//     );
-
-//   });
-
-//   setSimilarByTheme(filtered);
-
-// };
 const filterSimilarProducts = (product, productsArray = []) => {
 
   if (!product || !productsArray.length) return;
@@ -450,6 +380,7 @@ const filterSimilarProducts = (product, productsArray = []) => {
       return;
     }
   }
+
 
   // ⭐ Price Logic
   const price = Number(product.price);
@@ -772,21 +703,7 @@ const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
     setSelCat(result);
   }
 
-  function getSubCategory(catValue) {
-    if (catValue === "birthday-decoration") {
-      return "Birthday";
-    } else if (catValue === "anniversary-decoration") {
-      return "Anniversary";
-    } else {
-      const parts = catValue.split("-"); // Split by hyphens
-      return parts
-        .slice(0, 2) // Take only the first two parts
-        .map(
-          (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-        ) // Capitalize each part
-        .join(""); // Join parts together without spaces
-    }
-  }
+  
   const handleShare = () => {
     const cleanUrl = window.location.origin + window.location.pathname;
 
