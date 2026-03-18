@@ -13,7 +13,7 @@ const axios = require("axios");
 import './orderDetails.css';
 import cancellation from '../../assets/cancellation.png';
 import checkIcon from '../../assets/checkIcon.svg';
-import inviteGuest from '../../assets/inviteGuest.png';
+import inviteGuest from '../../assets/inviteGuest.svg';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
  
@@ -422,7 +422,7 @@ const OrderDetailTab = ({
             </div>
 
             {/* Cancellation and Order Change Policy */}
-            <div className="mt-2 mx-3 cancellation-policy border-0">
+            <div className="cancellation-policy border-0">
               <div style={{ display: "flex", alignItems: "center", }}>
                 <span>
                   <Image
@@ -558,7 +558,7 @@ const OrderDetailTab = ({
             </div> 
 
             {/* Cancellation and Order Change Policy */}
-            <div className="mt-2 mx-3 cancellation-policy border-0">
+            <div className="  cancellation-policy border-0">
 
               <div style={{ display: "flex", alignItems: "center", }}>
                 <span>
@@ -717,7 +717,7 @@ const OrderDetailTab = ({
                   </div> 
 
             {/* Cancellation and Order Change Policy */}
-            <div className="mt-2 mx-3 cancellation-policy border-0">
+            <div className="cancellation-policy border-0">
 
               <div style={{ display: "flex", alignItems: "center", }}>
                 <span>
@@ -942,7 +942,7 @@ const OrderDetailTab = ({
                   </div> 
 
                   {/* Cancellation and Order Change Policy */}
-                  <div className="mt-2 mx-3 cancellation-policy border-0">
+                  <div className="  cancellation-policy border-0">
 
                     <div style={{ display: "flex", alignItems: "center", }}>
                       <span>
