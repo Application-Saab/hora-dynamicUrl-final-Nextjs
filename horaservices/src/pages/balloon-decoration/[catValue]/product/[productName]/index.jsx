@@ -6,6 +6,12 @@ import {
   getDecorationProductOrganizationSchema,
   getProductFAQSchemaProductDetails,
 } from "../../../../../utils/schema";
+
+import {
+  filterSimilarProducts,
+  filterLevelUpProducts,
+  getMappedCatValue
+} from "../../../../../utils/similarProductUtils";
 import "../../../../../css/decoration.css";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -337,135 +343,46 @@ const getCategoryProducts = async (categoryId) => {
 useEffect(() => {
 
   if (product && allProducts.length > 0) {
-    filterSimilarProducts(product, allProducts);
+
+    const similar = filterSimilarProducts(
+      product,
+      allProducts,
+      themeFilters
+    );
+
+    setSimilarByTheme(similar);
+
   }
 
 }, [product, allProducts]);
+ useEffect(() => {
+    if (!router.isReady || !router.query.catValue) return;
 
+    const rawCatValue = router.query.catValue;
 
-const filterSimilarProducts = (product, productsArray = []) => {
+    const mappedCat = getMappedCatValue(rawCatValue);  // ✅ Your map function
 
-  if (!product || !productsArray.length) return;
+    setCatValue(rawCatValue);      // For showing on UI — can be slug like 'birthday-decoration'
+    setSendCategoryId(mappedCat);  // For API calls — mapped to your DB slug
 
-  const name = product.name.toLowerCase();
+  }, [router.isReady, router.query.catValue]);
 
-  // ⭐ theme detect
-  const matchedTheme = themeFilters.find(t => {
-
-    if (t.value === "all") return false;
-
-    const keywords = t.value.toLowerCase().split("-");
-
-    return keywords.some(word => name.includes(word));
-  });
-
-  // ⭐ Same Theme Products
-  if (matchedTheme) {
-
-    const keywords = matchedTheme.value.toLowerCase().split("-");
-
-    const filtered = productsArray.filter(item => {
-
-      const itemName = item.name.toLowerCase();
-
-      return (
-        item._id !== product._id &&
-        keywords.some(word => itemName.includes(word))
-      );
-
-    });
-
-    if (filtered.length > 0) {
-      setSimilarByTheme(filtered);
-      return;
-    }
-  }
-
-
-  // ⭐ Price Logic
-  const price = Number(product.price);
-
-  const min = price - 500;
-  const max = price + 500;
-
-  const filtered = productsArray.filter(item => {
-
-    const itemPrice = Number(item.price);
-
-    return (
-      item._id !== product._id &&
-      itemPrice >= min &&
-      itemPrice <= max
-    );
-
-  });
-
-  setSimilarByTheme(filtered);
-};
 useEffect(() => {
 
   if (product?.price && allProducts.length > 0) {
 
-    filterLevelUpProducts(product.price, allProducts, product._id);
+    const { level1, level2 } = filterLevelUpProducts(
+      product.price,
+      allProducts,
+      product._id
+    );
+
+    setLevelUp1000(level1);
+    setLevelUp2000(level2);
 
   }
 
 }, [product, allProducts]);
-const filterLevelUpProducts = (price, productsArray = [], excludeId) => {
-
-  if (!price || !productsArray.length) return;
-
-  const basePrice = Number(price);
-
-  const level1Min = basePrice + 1000;
-  const level1Max = basePrice + 2000;
-
-  const level2Min = basePrice + 2000;
-  const level2Max = basePrice + 3500;
-
-  const level1 = productsArray.filter(item => {
-
-    const itemPrice = Number(item?.price);
-
-    return (
-      item._id !== excludeId &&
-      itemPrice >= level1Min &&
-      itemPrice <= level1Max
-    );
-
-  });
-
-  const level2 = productsArray.filter(item => {
-
-    const itemPrice = Number(item?.price);
-
-    return (
-      item._id !== excludeId &&
-      itemPrice >= level2Min &&
-      itemPrice <= level2Max
-    );
-
-  });
-
-  setLevelUp1000(level1);
-  setLevelUp2000(level2);
-
-};
-  const getMappedCatValue = (slug) => {
-    const map = {
-      "birthday-decoration": "Birthday",
-      "anniversary-decoration": "Anniversary",
-      "haldi-mehendi-decoration": "Haldi-Mehandi",
-      "first-night-decoration": "FirstNight",
-      "baby-shower-decoration": "BabyShower",
-      "welcome-baby-decoration": "WelcomeBaby",
-      "premium-decoration": "PremiumDecoration",
-      "bachelorette-decoration": "bachelorette",
-      "kids-birthday-decoration": "KidsBirthday"
-    };
-    return map[slug] || slug;  // If not mapped, return the same slug
-  };
-
 
 
   useEffect(() => {
