@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState } from "react";
 import daal_image from "../../assets/daal-image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
@@ -18,9 +18,6 @@ import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
 import {getCancellationPolicy, infoList, foodDeliveryInclusionItems, cateringInclusionItems, chefInclusionItems, foodDeliveryPolicy, chefPolicy} from '../../utils/pointsOfPolicies';
  
-
-import CouponPopup from "../CouponPopup";
-import Ratingsection from "../RatingSection";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -45,10 +42,10 @@ const OrderDetailTab = ({
   const [photographyImage, setPhotographyImage] = useState();
   const [popupMessage, setPopupMessage] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
- const [reviewSubmitted, setReviewSubmitted] = useState(false);
- const [selectedRating, setSelectedRating] = useState(null);
- const [couponCode, setCouponCode] = useState("");
-  
+
+  const cancellationPolicy = getCancellationPolicy(orderType);
+
+  console.log(orderDetail, "orderdetaillive");
   const comments = orderDetail.decoration_comments
     ? orderDetail.decoration_comments.split('\n').map(comment => comment.trim()).filter(Boolean)
     : [];
@@ -202,71 +199,6 @@ const OrderDetailTab = ({
 
   fetchAndMatchItems(orderDetail);
 
-  const cancellationPolicy = [
-    `If the order is beyond 48 Hours: You are eligible for a 100% refund of the advance payment.`,
-    `If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive a refund of the advance payment.`,
-    `If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for ${orderType === 8 ? "Photography" : "Decoration"} has to be paid by the customer.`,
-  ];
-
-  const infoList = [
-    "Our Supply Team will contact you 1 day prior to your order date to confirm all details and customizations, ensuring smooth communication and flawless execution.",
-    "The scheduled time slots for decoration cannot be changed on the day of order fulfillment.",
-    "A power socket near the decoration area is required. If unavailable, please arrange for appropriate extensions in advance.",
-    "Any rented items used for decoration will be collected within 24 hours of order completion. Please ensure accessibility for timely pickup. 🚚"
-  ];
-  const foodDeliveryInclusionItems = [
-    "Food Delivery at Door-Step",
-    "Free Delivery",
-    "Hygienically Packed boxes",
-    "Freshly Cooked Food",
-    "Quality Disposable set of Plates & Spoons & Forks",
-    "Water bottles (small bottles equal to number of people)"
-  ];
-  const cateringInclusionItems = [
-    "Well Groomed Waiters (2 Nos)",
-    "Bone-china Crockery & Quality disposal for loose items.",
-    "Transport (to & fro)",
-    "Dustbin with Garbage bag",
-    "Head Mask for waiters & chefs",
-    "Tandoor/Other cooking Utensiles",
-    "Chafing Dish",
-    "Cocktail Napkins",
-    "2 Chef",
-    "Water Can (Bisleri)(20 litres)",
-    "Hand gloves"
-  ];
-  const chefInclusionItems = [
-    "Professional Chef For Select Dishes",
-    "Fresh Cooking at your Location",
-    "Chef service available for up to 5 hours after arrival ",
-    "All dishes prepared as per selected menu",
-    "Hygiene & quality maintained throughout the service"
-  ];
-  const foodDeliveryPolicy = [
-    "If the order is not assigned to the kitchen: You are eligible for a 100% refund of the advance payment.",
-    "If the order is cancelled more than 24 hours before the scheduled delivery: You will receive a 50% refund of the advance payment.",
-    "If the order is cancelled within 24 hours of the scheduled delivery: The full advance amount will be non-refundable, and 100% of the payment is required.",
-  ];
-   const chefPolicy = [
-    "Till the order is not assign to the service provider , 100% of the amount will be refunded, othewise 50%of the advance will be deducted as a cancellation charges to componsate the service provider.",
-    "The order cannot be edited after paying the advance customers can cancel the order and replace it with a new order with the required changes.",
-    ];
-
-    useEffect(() => {
-  if (orderDetail?.userReviewRatingArray?.length > 0) {
-    setReviewSubmitted(true);
-
-    const rating = orderDetail.userReviewRatingArray[0];
-
-    if (rating === "1-6") setSelectedRating("low");
-    if (rating === "7-8") setSelectedRating("mid");
-    if (rating === "9-10") setSelectedRating("high");
-
-    setCouponCode(orderDetail?.couponCode);
-  }
-}, [orderDetail]);
-
-const showRating = [3, 4, 6].includes(orderDetail?.order_status);
   return (
     <>
       {/* <div className="chef-details">
@@ -770,20 +702,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
           </div>
         </div>
       ) : orderType === 1 ? (
-         
         <div className="decoration-container orderdetails">
-    {showRating && (
-  !reviewSubmitted ? (
- <Ratingsection
-orderId={orderDetail?.order_id}
-  onSubmitSuccess={() => setReviewSubmitted(true)}
-  setSelectedRating={setSelectedRating}
-  setCouponCode={setCouponCode}
-/>
-  ) : (
-  <CouponPopup selectedRating={selectedRating} couponCode={couponCode} />
-  )
-  )}
           {decorationArray?.map((product, index) => {
             return (
               <div className="myOrder-decDetails">
@@ -1004,22 +923,10 @@ orderId={orderDetail?.order_id}
           })}
         </div>
       ) : orderType === 8 ? (
-       <div className="decoration-container">
-         {showRating && (
-  !reviewSubmitted ? (
- <Ratingsection
-orderId={orderDetail?.order_id}
-  onSubmitSuccess={() => setReviewSubmitted(true)}
-  setSelectedRating={setSelectedRating}
-  setCouponCode={setCouponCode}
-/>
-  ) : (
-  <CouponPopup selectedRating={selectedRating} couponCode={couponCode} />
-  )
-  )}
-    <div className="decDetails">
-      {(() => {
-        const photography = orderDetail?.items?.[0]?.photography;
+        <div className="decoration-container">
+          <div className="decDetails">
+            {(() => {
+              const photography = orderDetail?.items?.[0]?.photography;
 
               return (
                 <div className="myOrder-decDetailsRight">
