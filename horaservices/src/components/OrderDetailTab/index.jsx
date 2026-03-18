@@ -1146,28 +1146,28 @@ const OrderDetailTab = ({
         <button className="rate-us-button">Rate Us</button>
       </div> */}
       {/* bottom buttons */}
-      <div className="mx-3" style={{ padding: "8px" }}>
-       {(orderStatus === 0 || orderStatus === 1 || orderStatus === 2) && (
-    <div className="order-btn-row">
+      <div style={{ padding: "8px" }}>
+        {(orderStatus === 0 || orderStatus === 1 || orderStatus === 2) && (
+          <div className="order-btn-row">
 
-      {/* CONTACT SUPPORT */}
-      <button
-        className="contact-support-btn"
-        onClick={contactUsRedirection}
-      >
-        CONTACT SUPPORT
-      </button>
+            {/* CONTACT SUPPORT */}
+            <button
+              className="contact-support-btn"
+              onClick={cancelcontactUsRedirection}
+            >
+              CONTACT SUPPORT
+            </button>
 
-      {/* CANCEL ORDER */}
-      <button
-        className="cancel-order-btn"
-        onClick={handleCancelOrder}
-      >
-        CANCEL ORDER
-      </button>
+            {/* CANCEL ORDER */}
+            <button
+              className="cancel-order-btn"
+              onClick={handleCancelOrder}
+            >
+              CANCEL ORDER
+            </button>
 
-    </div>
-  )}
+          </div>
+        )}
         {orderStatus === 3 ? (
           <div className="" onClick={contactUsRedirection}>
             <button className="fw-semiBold myOrder-cancelOrderBtn">
@@ -1175,9 +1175,23 @@ const OrderDetailTab = ({
             </button>
           </div>
         ) : null}
+
         {orderStatus === 4 ? (
-          <div className="" onClick={contactUsRedirection}>
-            <button className="fw-semiBold myOrder-cancelOrderBtn">Initiate Refund</button>
+          <div className="order-btn-row">
+            <button
+              className="contact-support-btn"
+              onClick={cancelcontactUsRedirection}
+            >
+              CONTACT SUPPORT
+            </button>
+
+            <button
+              className="cancel-order-btn"
+              onClick={contactUsRedirection}
+            >
+              INITIATE REFUND
+            </button>
+
           </div>
         ) : null}
       </div>
