@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import daal_image from "../../assets/daal-image.png";
 import OrderDetailsMenu from "../OrderDetailsMenu";
 import OrderDetailsIngre from "../OrderDetailsIngre";
@@ -16,7 +16,11 @@ import checkIcon from '../../assets/checkIcon.png';
 import inviteGuest from '../../assets/inviteGuest.png';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
+import {getCancellationPolicy, infoList, foodDeliveryInclusionItems, cateringInclusionItems, chefInclusionItems, foodDeliveryPolicy, chefPolicy} from '../../utils/pointsOfPolicies';
  
+
+import CouponPopup from "../CouponPopup";
+import Ratingsection from "../RatingSection";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -41,8 +45,10 @@ const OrderDetailTab = ({
   const [photographyImage, setPhotographyImage] = useState();
   const [popupMessage, setPopupMessage] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-
-  console.log(orderDetail, "orderdetaillive");
+ const [reviewSubmitted, setReviewSubmitted] = useState(false);
+ const [selectedRating, setSelectedRating] = useState(null);
+ const [couponCode, setCouponCode] = useState("");
+  
   const comments = orderDetail.decoration_comments
     ? orderDetail.decoration_comments.split('\n').map(comment => comment.trim()).filter(Boolean)
     : [];
@@ -241,11 +247,26 @@ const OrderDetailTab = ({
     "If the order is cancelled more than 24 hours before the scheduled delivery: You will receive a 50% refund of the advance payment.",
     "If the order is cancelled within 24 hours of the scheduled delivery: The full advance amount will be non-refundable, and 100% of the payment is required.",
   ];
-  const chefPolicy = [
+   const chefPolicy = [
     "Till the order is not assign to the service provider , 100% of the amount will be refunded, othewise 50%of the advance will be deducted as a cancellation charges to componsate the service provider.",
     "The order cannot be edited after paying the advance customers can cancel the order and replace it with a new order with the required changes.",
-  ];
+    ];
 
+    useEffect(() => {
+  if (orderDetail?.userReviewRatingArray?.length > 0) {
+    setReviewSubmitted(true);
+
+    const rating = orderDetail.userReviewRatingArray[0];
+
+    if (rating === "1-6") setSelectedRating("low");
+    if (rating === "7-8") setSelectedRating("mid");
+    if (rating === "9-10") setSelectedRating("high");
+
+    setCouponCode(orderDetail?.couponCode);
+  }
+}, [orderDetail]);
+
+const showRating = [3, 4, 6].includes(orderDetail?.order_status);
   return (
     <>
       {/* <div className="chef-details">
@@ -749,7 +770,20 @@ const OrderDetailTab = ({
           </div>
         </div>
       ) : orderType === 1 ? (
+         
         <div className="decoration-container orderdetails">
+    {showRating && (
+  !reviewSubmitted ? (
+ <Ratingsection
+orderId={orderDetail?.order_id}
+  onSubmitSuccess={() => setReviewSubmitted(true)}
+  setSelectedRating={setSelectedRating}
+  setCouponCode={setCouponCode}
+/>
+  ) : (
+  <CouponPopup selectedRating={selectedRating} couponCode={couponCode} />
+  )
+  )}
           {decorationArray?.map((product, index) => {
             return (
               <div className="myOrder-decDetails">
@@ -927,7 +961,7 @@ const OrderDetailTab = ({
                   </div>
 
                   <div>
-                    {cancellationPolicy.map((text, index) => (
+                    {infoList.map((text, index) => (
                       <div key={index} className="info-row">
                         <div className="info-icon">
                           <Image
@@ -970,10 +1004,22 @@ const OrderDetailTab = ({
           })}
         </div>
       ) : orderType === 8 ? (
-        <div className="decoration-container">
-          <div className="decDetails">
-            {(() => {
-              const photography = orderDetail?.items?.[0]?.photography;
+       <div className="decoration-container">
+         {showRating && (
+  !reviewSubmitted ? (
+ <Ratingsection
+orderId={orderDetail?.order_id}
+  onSubmitSuccess={() => setReviewSubmitted(true)}
+  setSelectedRating={setSelectedRating}
+  setCouponCode={setCouponCode}
+/>
+  ) : (
+  <CouponPopup selectedRating={selectedRating} couponCode={couponCode} />
+  )
+  )}
+    <div className="decDetails">
+      {(() => {
+        const photography = orderDetail?.items?.[0]?.photography;
 
               return (
                 <div className="myOrder-decDetailsRight">

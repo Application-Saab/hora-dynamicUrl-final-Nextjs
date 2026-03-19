@@ -7,13 +7,13 @@
 .premium-slide-decor-header {
   display: flex;
   justify-content: space-between;
-  padding:10px
+
 }
 
 .premium-slide-decor-header h2 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #97538C;
+  font-size: clamp(16px, calc(16px + (20 - 16) * ((100vw - 320px) / 160)), 20px);
+font-weight: 700;
+color: #97538C;
 }
 
 .premium-slide-decor-header a {

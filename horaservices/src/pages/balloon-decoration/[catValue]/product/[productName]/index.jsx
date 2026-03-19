@@ -41,7 +41,7 @@ import "../../../../../components/CategoryTabs/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
 import { allReviewsData } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
-import customiseIcon from "@/assets/customisationicon.png"
+import customiseIcon from "@/assets/customisationicon.svg"
 import AdditionalServices from "@/components/AdditionalServices";
 import ShareIcon from "@/assets/shareIcon.svg";
 import BannerImage from "../../../../../assets/customised.jpg";

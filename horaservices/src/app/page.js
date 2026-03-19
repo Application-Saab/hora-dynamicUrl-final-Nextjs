@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import axios from "axios";
+import Head from "next/head";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
@@ -108,7 +109,7 @@ const pathname = usePathname();
   
   return (
     <>
-     <head>
+     <Head>
          <title>HORA : One-Stop Party Planning: Customise, Create, Book</title>
          <meta name="description" content="🍽️ Food (Live Catering | Bulk Food Delivery | Chef for Party) 🎨 Decoration (Balloon Decoration | Flower Decoration) | 📸 Photography 🎉 Entertainment. Discover the ultimate solution for party planning with Hora’s one-stop platform. Customise your party packages, create your ideal celebration, and book everything you need all in one place. We make planning effortless and enjoyable! 🎈✨" />
          <meta name="keywords" content="Personal chef, private chef to cook in home in India, home chef, book a cook near you, chef at home, Private cook in Mumbai, Book a cook for home near you, Hire Chef in Bangalore, Private Chef in Delhi, Catering service, balloon, decoration, celebration, party, birthday, anniversary, decorator, candle light dinner,  surprises, couples, bouquets , online caterers, catering services, best caterers, birthday party catering, birthday caterers, party catering, home catering, corporate catering, caterers for small parties, wedding caterers" />
@@ -133,7 +134,7 @@ const pathname = usePathname();
          <meta property="og:url" content="https://horaservices.com" />
          <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
          <meta property="og:type" content="website" />
-     </head>
+     </Head>
 
       <HomeContent />
     </>
