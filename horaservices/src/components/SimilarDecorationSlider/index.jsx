@@ -15,7 +15,7 @@ const getDiscountedDifference = (price) => {
   return Math.floor(numericPrice - discountedPrice);
 };
 
-const UniversalDecorSlider = ({
+const SimilarDecorationSlider = ({
   title = "",
   viewAllLink = "",
   data = [],
@@ -152,4 +152,4 @@ const handleCardClick = (item) => {
   );
 };
 
-export default UniversalDecorSlider;
+export default SimilarDecorationSlider;

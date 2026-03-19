@@ -50,7 +50,7 @@ import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
-import UniversalDecorSlider from "@/components/UniversalDecorSlider";
+import SimilarDecorationSlider from "@/components/SimilarDecorationSlider";
 import ReviewSlider from "@/components/ReviewSection";
 import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
@@ -916,7 +916,7 @@ useEffect(() => {
               </div>
             </div>
             <div ref={similarRef}>
-              <UniversalDecorSlider
+              <SimilarDecorationSlider
                 title="Similar Decorations"
                 data={similarByTheme}  
                 showDiscount={true}
@@ -953,7 +953,7 @@ useEffect(() => {
             )}
 
             {levelUp1000.length > 0 && (
-              <UniversalDecorSlider
+              <SimilarDecorationSlider
                 title="You May Also Like This"
                 data={levelUp1000}
                 showDiscount={true}
@@ -966,7 +966,7 @@ useEffect(() => {
             )}
 
             {levelUp2000.length > 0 && (
-              <UniversalDecorSlider
+              <SimilarDecorationSlider
                 data={levelUp2000}
                 showDiscount={true}
                 city={city}
