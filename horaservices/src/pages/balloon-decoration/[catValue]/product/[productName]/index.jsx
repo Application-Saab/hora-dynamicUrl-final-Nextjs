@@ -6,6 +6,12 @@ import {
   getDecorationProductOrganizationSchema,
   getProductFAQSchemaProductDetails,
 } from "../../../../../utils/schema";
+
+import {
+  filterSimilarProducts,
+  filterLevelUpProducts,
+  getMappedCatValue
+} from "../../../../../utils/similarProductUtils";
 import "../../../../../css/decoration.css";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -15,6 +21,7 @@ import {
   BASE_URL,
   GET_DECORATION_BY_NAME,
   GET_DECORATION_CAT_ID,
+  GET_ADDON_BY_ID,
 } from "@/utils/apiconstants";
 import axios from "axios";
 import FAQSection from "@/components/FAQSection";
@@ -43,7 +50,7 @@ import GoogleRatingIMG from "../../../../../assets/GoogleRatingIMG4.png";
 import SocialMediaIMG from "../../../../../assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "../../../../../assets/TpBrandsIMG.png";
 import BrandBanner from "@/components/BrandBanner";
-import UniversalDecorSlider from "@/components/UniversalDecorSlider";
+import SimilarDecorationSlider from "@/components/SimilarDecorationSlider";
 import ReviewSlider from "@/components/ReviewSection";
 import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
@@ -208,11 +215,12 @@ function DecorationCatDetails({ city, locality }) {
   const [sendCategoryId, setSendCategoryId] = useState("");
   const [passCategoryId, setPassCategoryId] = useState("");
   const [openProductUrl, setOpenProductUrl] = useState("");
-  const [extraProduct, setExtraProduct] = useState([]);
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
   const searchParams = useSearchParams();
-  const [similarByPrice, setSimilarByPrice] = useState([]);
-  const [similarByName, setSimilarByName] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+const [similarByTheme, setSimilarByTheme] = useState([]);
+const [levelUp1000, setLevelUp1000] = useState([]);
+const [levelUp2000, setLevelUp2000] = useState([]);
 
   const router = useRouter();
   const params = useParams();
@@ -222,91 +230,14 @@ function DecorationCatDetails({ city, locality }) {
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
   const cityName = params?.city;
+
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
     { img: SocialMediaIMG, alt: "Social Media", bold: "OUR", sub: "SOCIAL MEDIA" },
     { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
   ];
-
-
-  useEffect(() => {
-    if (params?.catValue) {
-      setCatValue(params.catValue);
-    }
-  }, [params]);
-
-  // 2️⃣ Get URL params when router is ready
-
-  const filterSimilarByPrice = (price, productsArray = [], excludeId) => {
-    if (!price || !productsArray.length) return;
-
-    const min = Math.floor(price / 1000) * 1000;
-    const max = Math.ceil(price / 1000) * 1000 + 1000;
-
-    const filtered = productsArray.filter(item => {
-      const itemPrice = Number(item.price);
-      return (
-        itemPrice >= min &&
-        itemPrice <= max &&
-        item._id !== excludeId
-      );
-    });
-
-    console.log(`Filtered by Rounded Range ${min} - ${max}:`, filtered);
-    setSimilarByPrice(filtered);
-  };
-
-
-  const filterSimilarByName = (product, productsArray = [], excludeId) => {
-    if (!product?.name || !productsArray.length) return;
-
-    const mainWords = product.name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Remove special chars
-      .split(/\s+/)
-      .filter(Boolean);
-
-    const filtered = productsArray
-      .filter(item => item._id !== excludeId)
-      .map(item => {
-        const itemName = (item.name || "")
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, '');
-
-        const itemWords = itemName.split(/\s+/).filter(Boolean);
-
-        // Count how many words match
-        const matchCount = mainWords.filter(word => itemWords.includes(word)).length;
-
-        // Is it a strong match? (both words exist)
-        const isStrongMatch = mainWords.every(word => itemWords.includes(word));
-
-        // Optional: Order match
-        const isExactPhrase = itemName.includes(mainWords.join(' '));
-
-        return {
-          ...item,
-          matchCount,
-          isStrongMatch,
-          isExactPhrase
-        };
-      })
-      // Sort by exact phrase > strong match > matchCount
-      .sort((a, b) => {
-        if (b.isExactPhrase !== a.isExactPhrase) return b.isExactPhrase - a.isExactPhrase;
-        if (b.isStrongMatch !== a.isStrongMatch) return b.isStrongMatch - a.isStrongMatch;
-        return b.matchCount - a.matchCount;
-      });
-
-    console.log("Filtered by Name =>", filtered);
-    setSimilarByName(filtered);
-  };
-
-
-
-
-  useEffect(() => {
+useEffect(() => {
     if (router.isReady) {
       const { subCategory, catValue: urlCatValue, productName } = router.query;
 
@@ -340,6 +271,7 @@ function DecorationCatDetails({ city, locality }) {
         const discountDetails = getDiscountedPrice(fetchedProduct.price);
         setDiscountInfo(discountDetails);
       }
+      
 
       setLoading(false);
     } catch (error) {
@@ -350,16 +282,80 @@ function DecorationCatDetails({ city, locality }) {
 
 
 
+useEffect(() => {
+  if (!router.isReady) return;
+
+  const { subCategory, catValue: urlCatValue, productName } = router.query;
+
+  // Category slug
+  if (urlCatValue) {
+    setCatValue(urlCatValue);
+
+    const mappedCat = getMappedCatValue(urlCatValue);
+    setSendCategoryId(mappedCat);
+  }
+
+  // Sub category
+  if (subCategory) {
+    setSubCategory(subCategory);
+  }
+
+  // Product name
+  if (productName) {
+    const formattedProduct = productName.replace(/-/g, " ");
+    setApiProduct(formattedProduct);
+  }
+
+}, [router.isReady]);
+
   useEffect(() => {
-    if (router.isReady && router.query.catValue) {
-      const rawCatValue = router.query.catValue;
-      setCatValue(rawCatValue); // For UI
-      setSendCategoryId(rawCatValue); // For API calls
+    if (product?.categoryId) {
+      getCategoryProducts(product.categoryId);
+
+    } else if (catValue) {
+      getSubCatId(catValue);
     }
-  }, [router.isReady, router.query.catValue]);
+  }, [product, catValue]);
 
 
-  useEffect(() => {
+ useEffect(() => {
+  if (passCategoryId) {
+    getCategoryProducts(passCategoryId);
+  }
+}, [passCategoryId]);
+
+
+
+const getCategoryProducts = async (categoryId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
+    );
+
+    setAllProducts(response.data.data || []);
+
+  } catch (error) {
+    console.error("Error fetching category products:", error.message);
+  }
+};
+
+
+useEffect(() => {
+
+  if (product && allProducts.length > 0) {
+
+    const similar = filterSimilarProducts(
+      product,
+      allProducts,
+      themeFilters
+    );
+
+    setSimilarByTheme(similar);
+
+  }
+
+}, [product, allProducts]);
+ useEffect(() => {
     if (!router.isReady || !router.query.catValue) return;
 
     const rawCatValue = router.query.catValue;
@@ -371,55 +367,22 @@ function DecorationCatDetails({ city, locality }) {
 
   }, [router.isReady, router.query.catValue]);
 
-  useEffect(() => {
-    if (product?.categoryId) {
-      getCategoryProducts(product.categoryId);
+useEffect(() => {
 
-    } else if (catValue) {
-      getSubCatId(catValue);
-    }
-  }, [product, catValue]);
+  if (product?.price && allProducts.length > 0) {
 
-  useEffect(() => {
-    if (product?.price && similar.length > 0) {
-      filterSimilarByPrice(product.price, similar, product._id);
-      filterSimilarByName(product, similar, product._id);
-    }
-  }, [product, similar]);
+    const { level1, level2 } = filterLevelUpProducts(
+      product.price,
+      allProducts,
+      product._id
+    );
 
-  useEffect(() => {
-    if (passCategoryId) {
-      getCategoryProducts(passCategoryId);
-    }
-  }, [passCategoryId]);
+    setLevelUp1000(level1);
+    setLevelUp2000(level2);
 
+  }
 
-  const getCategoryProducts = async (categoryId) => {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
-      );
-      setSimilar(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching category products:", error.message);
-    }
-  };
-
-  const getMappedCatValue = (slug) => {
-    const map = {
-      "birthday-decoration": "Birthday",
-      "anniversary-decoration": "Anniversary",
-      "haldi-mehendi-decoration": "Haldi-Mehandi",
-      "first-night-decoration": "FirstNight",
-      "baby-shower-decoration": "BabyShower",
-      "welcome-baby-decoration": "WelcomeBaby",
-      "premium-decoration": "PremiumDecoration",
-      "bachelorette-decoration": "bachelorette",
-      "kids-birthday-decoration": "KidsBirthday"
-    };
-    return map[slug] || slug;  // If not mapped, return the same slug
-  };
-
+}, [product, allProducts]);
 
 
   useEffect(() => {
@@ -657,21 +620,7 @@ function DecorationCatDetails({ city, locality }) {
     setSelCat(result);
   }
 
-  function getSubCategory(catValue) {
-    if (catValue === "birthday-decoration") {
-      return "Birthday";
-    } else if (catValue === "anniversary-decoration") {
-      return "Anniversary";
-    } else {
-      const parts = catValue.split("-"); // Split by hyphens
-      return parts
-        .slice(0, 2) // Take only the first two parts
-        .map(
-          (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-        ) // Capitalize each part
-        .join(""); // Join parts together without spaces
-    }
-  }
+  
   const handleShare = () => {
     const cleanUrl = window.location.origin + window.location.pathname;
 
@@ -724,6 +673,8 @@ function DecorationCatDetails({ city, locality }) {
   };
 
 
+
+ const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
   if (loading) {
     return <SkeletonLoader />; // Show skeleton loader while loading
   }
@@ -965,20 +916,21 @@ function DecorationCatDetails({ city, locality }) {
               </div>
             </div>
             <div ref={similarRef}>
-              <UniversalDecorSlider
+              <SimilarDecorationSlider
                 title="Similar Decorations"
-                data={similar}   // ✅ Fetched data pass karo
+                data={similarByTheme}  
                 showDiscount={true}
                 imageSize={{ width: 120, height: 120 }}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
-                catValue={router.query.catValue}   // 🔑 SLUG ONLY
-
-
+                catValue={router.query.catValue} 
               />
             </div>
-            {catValue?.toLowerCase() === "kids-birthday-decoration" && (
+          
+
+{kidsCategories.includes(catValue?.toLowerCase()) && (
+              
               <div className="category-tabs-outer">
                 <CategoryTabs
                   data={themeFilters.map((item) => ({
@@ -1000,10 +952,10 @@ function DecorationCatDetails({ city, locality }) {
               </div>
             )}
 
-            {similarByPrice.length > 0 && (
-              <UniversalDecorSlider
+            {levelUp1000.length > 0 && (
+              <SimilarDecorationSlider
                 title="You May Also Like This"
-                data={similarByPrice}
+                data={levelUp1000}
                 showDiscount={true}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
@@ -1013,9 +965,9 @@ function DecorationCatDetails({ city, locality }) {
               />
             )}
 
-            {similarByName.length > 0 && (
-              <UniversalDecorSlider
-                data={similarByName}
+            {levelUp2000.length > 0 && (
+              <SimilarDecorationSlider
+                data={levelUp2000}
                 showDiscount={true}
                 city={city}
                 hasCityPageParam={hasCityPageParam}
