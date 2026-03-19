@@ -71,11 +71,13 @@ const Popup = ({
               className={`popup-image ${imageClass}`}
             />
           )}
-
-          <h1 className={titleClass}>{popupMessage?.title}</h1>
-
-          <p className={textClass}>{popupMessage?.body}</p>
-
+{popupMessage?.rating && (
+  <p className="rating-text">
+    Rating : {popupMessage.rating}
+  </p>
+)}
+          <h1>{popupMessage?.title}</h1>
+          <p>{popupMessage?.body}</p>
           {popupMessage?.button == "Continue" && (
             <button
               className={`add-more-button ${buttonClass}`}

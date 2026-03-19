@@ -1,63 +1,50 @@
-
-.small-card-grid-outer {
-margin-bottom: 10px;
+/* .small-card-grid-outer {
+  margin-bottom: 10px;
 }
 
+/* GRID LAYOUT */
 .small-card-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  justify-items: center;
 }
 
-/* Default — 3 per row */
+/* Wrapper */
 .small-card-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 0 0 calc(33.33% - 10px);
-  max-width: 100px;
 }
 
-/* Card Styling */
+/* Card */
 .small-card {
   border-radius: 16px;
   overflow: hidden;
-  padding: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  width: 100px;
-  height: 100px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+  width: clamp(95px, 28vw, 120px);
+  height: clamp(95px, 28vw, 120px);
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Image */
 .small-card img {
   border-radius: 12px;
   object-fit: cover;
-  width: 100%;
-  height: 100%;
+  width: 85%;
+  height: 85%;
 }
 
+/* Name */
 .small-card-name {
-  margin: 6px 0 0;
+  margin-top: 6px;
   font-weight: 800;
-  font-size: 11.7px;
+  font-size: clamp(11px, 3vw, 13px);
   color: #000;
   text-align: center;
-    font-family: 'Inter', sans-serif;
-}
-
-/* For screens up to 375px — Keep 3 per row, reduce card size */
-@media (max-width: 375px) {
-  .small-card-wrapper {
-    flex: 0 0 calc(33.33% - 10px);
-  }
-  .small-card {
-    width: 80px;
-    height: 80px;
-  }
-  .small-card-name {
-    font-size: 10px;
-  }
+  font-family: 'Inter', sans-serif;
 }
