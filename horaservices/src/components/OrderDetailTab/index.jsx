@@ -147,7 +147,7 @@ const OrderDetailTab = ({
   const contactUsRedirection = async () => {
     try {
       window.open(
-        `whatsapp://send?phone=+917338584828&text=I've canceled my order, kindly assist with the refund process. Thanks!`
+         "whatsapp://send?phone=+917338584828&text=I%20have%20cancelled%20my%20order%20and%20would%20like%20to%20request%20a%20refund."
       );
     } catch (error) {
       console.log("contactUsRedirection error", error);
@@ -157,7 +157,7 @@ const OrderDetailTab = ({
   const cancelcontactUsRedirection = async () => {
     try {
       window.open(
-        "whatsapp://send?phone=+917338584828&text=I%20have%20canceled%20my%20order%20kindly%20assist%20with%20the%20refund%20process%20Thanks!"
+     "whatsapp://send?phone=+917338584828&text=I%20need%20assistance%20regarding%20my%20order."
       );
     } catch (error) {
       console.log("cancelcontactUsRedirection error", error);
@@ -1214,13 +1214,6 @@ orderId={orderDetail?.order_id}
 
           </div>
         )}
-        {orderStatus === 3 ? (
-          <div className="" onClick={contactUsRedirection}>
-            <button className="fw-semiBold myOrder-cancelOrderBtn">
-              Share Your Feedback With Us
-            </button>
-          </div>
-        ) : null}
 
         {orderStatus === 4 ? (
           <div className="order-btn-row">
