@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CateringCard from "@/components/CateringCard";
 import "@/components/CateringCard/catering.css";
 import CateringBanner from "@/components/CateringBanner";
@@ -14,36 +14,8 @@ import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import {balloonreviews} from "@/utils/balloonReviews";
 import ReviewSlider from "@/components/ReviewSection";
 import VegToggle from "@/components/VegNonVegToggle";
-const data = [
-  {
-    image: "/images/catering1.jpg",
-    title: "Value Bites",
-    price: "385",
-    oldPrice: "15195",
-    dish: "9",
-  },
-  {
-    image: "/images/catering2.jpg",
-    title: "The Complete Spread",
-    price: "470",
-    oldPrice: "15195",
-    dish: "10",
-  },
-  {
-    image: "/images/catering3.jpg",
-    title: "Kids snack Party Birthday",
-    price: "490",
-    oldPrice: "15195",
-    dish: "6",
-  },
-  {
-    image: "/images/catering4.jpg",
-    title: "Cocktail Party",
-    price: "520",
-    oldPrice: "15195",
-    dish: "8",
-  },
-];
+import { BASE_URL } from "@/utils/apiconstants";
+
 const brandItems = [
   { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
   { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -51,17 +23,63 @@ const brandItems = [
   { img: TopBrandIMg, alt: "Top Brands", bold: "TOP BRANDS", sub: "PARTNERED" },
 ];
 const FoodDelivery = () => {
+   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [foodType, setFoodType] = useState(""); // veg / non-veg
+const [packageType, setPackageType] = useState("bulkFood");
+  // ✅ API CALL
+ const fetchPackages = async (type = packageType, food = "") => {
+  try {
+    setLoading(true);
+
+    let url = `${BASE_URL}/api/food-Package/getAllFoodPackageList?packageType=${type}`;
+
+    if (food) {
+      url += `&foodType=${food}`;
+    }
+
+    const res = await fetch(url);
+    const result = await res.json();
+
+    setData(result?.data || []);
+  } catch (error) {
+    console.log("Error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  fetchPackages(packageType, foodType);
+}, [packageType, foodType]);
+
   return (
     <div className="catering-page">
  <CateringBanner image={CateringBannerImage} />
- <CateringTabs />
+ <CateringTabs onChange={(type) => setPackageType(type)} />
       {/* Toggle Buttons */}
-  <VegToggle/>
+  <VegToggle onChange={(type) => setFoodType(type)} />
       {/* Card Grid */}
-      <div className="catering-grid">
-        {data.map((item, index) => (
-          <CateringCard key={index} {...item} />
-        ))}
+    <div className="catering-grid">
+        {loading ? (
+          <p>Loading...</p>
+        ) : data.length > 0 ? (
+          data.map((item, index) => (
+            <CateringCard
+              key={index}
+         image={
+  item.image
+    ? `https://horaservices.com/api/uploads/${item.image}`
+    : "/default-image.webp"
+}
+              title={item.title || item.name}
+              price={item.price}
+              oldPrice={item.oldPrice || item.actualPrice}
+              dish={item.dish || item.dishCount}
+            />
+          ))
+        ) : (
+          <p>No Packages Found</p>
+        )}
       </div>
  <CateringBanner image={livebannerImage} />
  <CateringBanner image={BrandBannerIMG} />
