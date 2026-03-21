@@ -12,8 +12,8 @@ import logo from '../../assets/new_logo_light.png';
 const axios = require("axios");
 import './orderDetails.css';
 import cancellation from '../../assets/cancellation.png';
-import checkIcon from '../../assets/checkIcon.png';
-import inviteGuest from '../../assets/inviteGuest.png';
+import checkIcon from '../../assets/checkIcon.svg';
+import inviteGuest from '../../assets/inviteGuest.svg';
 import cancleOrderIcon from '../../assets/cancleOrderIcon.png';
 import Popup from '../../utils/popup';
 import {getCancellationPolicy, infoList, foodDeliveryInclusionItems, cateringInclusionItems, chefInclusionItems, foodDeliveryPolicy, chefPolicy} from '../../utils/pointsOfPolicies';
@@ -77,7 +77,7 @@ const OrderDetailTab = ({
           <Image
             src={checkIcon}
             alt="Info"
-            style={{ height: 13, width: 13, marginRight: '5px' }}
+            className="info-icon-img"
           />
         </div>
         <div>
@@ -147,7 +147,7 @@ const OrderDetailTab = ({
   const contactUsRedirection = async () => {
     try {
       window.open(
-        `whatsapp://send?phone=+917338584828&text=I've canceled my order, kindly assist with the refund process. Thanks!`
+         "whatsapp://send?phone=+917338584828&text=I%20have%20cancelled%20my%20order%20and%20would%20like%20to%20request%20a%20refund."
       );
     } catch (error) {
       console.log("contactUsRedirection error", error);
@@ -157,7 +157,7 @@ const OrderDetailTab = ({
   const cancelcontactUsRedirection = async () => {
     try {
       window.open(
-        "whatsapp://send?phone=+917338584828&text=I%20have%20canceled%20my%20order%20kindly%20assist%20with%20the%20refund%20process%20Thanks!"
+     "whatsapp://send?phone=+917338584828&text=I%20need%20assistance%20regarding%20my%20order."
       );
     } catch (error) {
       console.log("cancelcontactUsRedirection error", error);
@@ -303,7 +303,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                   className="info-icon-img"
                   />
                 </div>
                 <div>
@@ -358,7 +358,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                   className="info-icon-img"
                   />
                 </div>
 
@@ -423,8 +423,8 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
               </div>
             </div>
 
-            {/* <div className="fw-semiBold myOrderDetails-heading ">
-              Points For Considerations
+            <div className="fw-semiBold myOrderDetails-heading ">
+              Points For Considerations :
             </div>
 
             <div>
@@ -440,10 +440,10 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   <div>{text}</div>
                 </div>
               ))}
-            </div> */}
+            </div>
 
             {/* Cancellation and Order Change Policy */}
-            <div className="mt-2 mx-3 cancellation-policy border-0">
+            <div className="cancellation-policy border-0">
               <div style={{ display: "flex", alignItems: "center", }}>
                 <span>
                   <Image
@@ -491,7 +491,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                    className="info-icon-img"
                   />
                 </div>
                 <div>
@@ -559,8 +559,8 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
               </div>
             </div>
 
-            {/* <div className="fw-semiBold myOrderDetails-heading ">
-              Points For Considerations
+            <div className="fw-semiBold myOrderDetails-heading ">
+              Points For Considerations :
             </div>
 
             <div>
@@ -576,10 +576,10 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   <div>{text}</div>
                 </div>
               ))}
-            </div> */}
+            </div> 
 
             {/* Cancellation and Order Change Policy */}
-            <div className="mt-2 mx-3 cancellation-policy border-0">
+            <div className="  cancellation-policy border-0">
 
               <div style={{ display: "flex", alignItems: "center", }}>
                 <span>
@@ -629,7 +629,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   <Image
                     src={checkIcon}
                     alt="Info"
-                    style={{ height: 13, width: 13, marginRight: '5px' }}
+                    className="info-icon-img"
                   />
                 </div>
                 <div>
@@ -718,8 +718,8 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
               </div>
             </div>
 
-            {/* <div className="fw-semiBold myOrderDetails-heading ">
-                    Points For Considerations
+          <div className="fw-semiBold myOrderDetails-heading ">
+                    Points For Considerations :
                   </div>
 
                   <div>
@@ -735,10 +735,10 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                         <div>{text}</div>
                       </div>
                     ))}
-                  </div> */}
+                  </div> 
 
             {/* Cancellation and Order Change Policy */}
-            <div className="mt-2 mx-3 cancellation-policy border-0">
+            <div className="cancellation-policy border-0">
 
               <div style={{ display: "flex", alignItems: "center", }}>
                 <span>
@@ -829,7 +829,7 @@ orderId={orderDetail?.order_id}
                               <Image
                                 src={checkIcon}
                                 alt="Info"
-                                style={{ height: 13, width: 13, marginRight: "5px" }}
+                               className="info-icon-img"
                               />
                             </div>
 
@@ -890,7 +890,7 @@ orderId={orderDetail?.order_id}
                           <Image
                             src={checkIcon}
                             alt="Info"
-                            style={{ height: 13, width: 13, marginRight: '5px' }}
+                            className="info-icon-img"
                           />
                         </div>
 
@@ -957,7 +957,7 @@ orderId={orderDetail?.order_id}
                   </div>
 
                   <div className="fw-semiBold myOrderDetails-heading ">
-                    Points For Considerations
+                    Points For Considerations :
                   </div>
 
                   <div>
@@ -973,10 +973,10 @@ orderId={orderDetail?.order_id}
                         <div>{text}</div>
                       </div>
                     ))}
-                  </div>
+                  </div> 
 
                   {/* Cancellation and Order Change Policy */}
-                  <div className="mt-2 mx-3 cancellation-policy border-0">
+                  <div className="  cancellation-policy border-0">
 
                     <div style={{ display: "flex", alignItems: "center", }}>
                       <span>
@@ -1192,22 +1192,45 @@ orderId={orderDetail?.order_id}
         <button className="rate-us-button">Rate Us</button>
       </div> */}
       {/* bottom buttons */}
-      <div className="mx-3" style={{ padding: "8px" }}>
-        {orderStatus === 0 || orderStatus === 1 || orderStatus === 2 ? (
-          <div className="" onClick={handleCancelOrder}>
-            <button className="fw-semiBold myOrder-cancelOrderBtn">CANCLE ORDER</button>
-          </div>
-        ) : null}
-        {orderStatus === 3 ? (
-          <div className="" onClick={contactUsRedirection}>
-            <button className="fw-semiBold myOrder-cancelOrderBtn">
-              Share Your Feedback With Us
+      <div style={{ padding: "8px" }}>
+        {(orderStatus === 0 || orderStatus === 1 || orderStatus === 2) && (
+          <div className="order-btn-row">
+
+            {/* CONTACT SUPPORT */}
+            <button
+              className="contact-support-btn"
+              onClick={cancelcontactUsRedirection}
+            >
+              CONTACT SUPPORT
             </button>
+
+            {/* CANCEL ORDER */}
+            <button
+              className="cancel-order-btn"
+              onClick={handleCancelOrder}
+            >
+              CANCEL ORDER
+            </button>
+
           </div>
-        ) : null}
+        )}
+
         {orderStatus === 4 ? (
-          <div className="" onClick={contactUsRedirection}>
-            <button className="fw-semiBold myOrder-cancelOrderBtn">Initiate Refund</button>
+          <div className="order-btn-row">
+            <button
+              className="contact-support-btn"
+              onClick={cancelcontactUsRedirection}
+            >
+              CONTACT SUPPORT
+            </button>
+
+            <button
+              className="cancel-order-btn"
+              onClick={contactUsRedirection}
+            >
+              INITIATE REFUND
+            </button>
+
           </div>
         ) : null}
       </div>
