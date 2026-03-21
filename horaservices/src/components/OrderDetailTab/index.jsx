@@ -880,25 +880,27 @@ orderId={orderDetail?.order_id}
                   </div>
 
                   {/* Additional Comments */}
-                  <div>
+                <div>
                     <div className="fw-semiBold myOrderDetails-heading">
                       Additional Comments
                     </div>
                     {decorationComments && (
-                      <div className="info-row">
-                        <div className="info-icon">
+                    <div>
+                    {decorationComments.split('\n').map((comment, index) => (
+                       <div key={index} className="info-row">
+                          <div className="info-icon">
                           <Image
-                            src={checkIcon}
-                            alt="Info"
-                            className="info-icon-img"
-                          />
-                        </div>
+                           src={checkIcon}
+                           alt="Info"
+                           className="info-icon-img"
+                           />
+                          </div>
 
-                        <div>
-                          {decorationComments}
-                        </div>
+                       <div>{comment}</div>
                       </div>
-                    )}
+                    ))}
+                  </div>
+                )}
                   </div>
 
                   <div className="fw-semiBold myOrderDetails-heading">
@@ -1072,19 +1074,27 @@ orderId={orderDetail?.order_id}
                   {/* ================= ADDITIONAL COMMENTS ================= */}
                   <div className="fw-semiBold myOrderDetails-heading">
                     Additional Comments
-                  </div>
+                  </div> 
+                  
+                  {orderDetail.decoration_comments && (
+                    <div>
+                    {orderDetail.decoration_comments.split('\n').map((comment, index) => (
+                       <div key={index} className="info-row">
+                          <div className="info-icon">
+                          <Image
+                           src={checkIcon}
+                           alt="Info"
+                           width={13}
+                           height={13}
+                           style={{ marginRight: 8 }}
+                           />
+                          </div>
 
-                  <div className="info-row">
-                    <Image
-                      src={checkIcon}
-                      alt=""
-                      width={13}
-                      height={13}
-                      style={{ marginRight: 8 }}
-                    />
-                    <div>{orderDetail.decoration_comments || "N/A"}</div>
+                       <div>{comment}</div>
+                      </div>
+                    ))}
                   </div>
-
+                )}
 
                   {/* ================= PRICE DETAILS ================= */}
                   <div className="fw-semiBold myOrderDetails-heading">
