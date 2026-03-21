@@ -15,6 +15,7 @@ import {balloonreviews} from "@/utils/balloonReviews";
 import ReviewSlider from "@/components/ReviewSection";
 import VegToggle from "@/components/VegNonVegToggle";
 import { BASE_URL } from "@/utils/apiconstants";
+import CateringModal from "@/components/CateringModal";
 
 const brandItems = [
   { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
@@ -27,6 +28,7 @@ const FoodDelivery = () => {
   const [loading, setLoading] = useState(true);
   const [foodType, setFoodType] = useState(""); // veg / non-veg
 const [packageType, setPackageType] = useState("bulkFood");
+const [selectedPackage, setSelectedPackage] = useState(null);
   // ✅ API CALL
  const fetchPackages = async (type = packageType, food = "") => {
   try {
@@ -76,16 +78,24 @@ useEffect(() => {
               price={item.price}
               oldPrice={item.oldPrice || item.actualPrice}
               dish={item.dish || item.dishCount}
+               onView={(data) => setSelectedPackage(data)}
             />
           ))
         ) : (
           <p>No Packages Found</p>
         )}
       </div>
+      {selectedPackage && (
+  <CateringModal
+    data={selectedPackage}
+    onClose={() => setSelectedPackage(null)}
+  />
+)}
  <CateringBanner image={livebannerImage} />
  <CateringBanner image={BrandBannerIMG} />
  <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
 <ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
+
     </div>
 
   );

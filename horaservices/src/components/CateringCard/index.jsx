@@ -1,7 +1,7 @@
 import React from "react";
 import "./catering.css";
 
-const CateringCard = ({item, image, title, price, oldPrice, dish }) => {
+const CateringCard = ({item, image, title, price, oldPrice, dish,onView }) => {
   const dishCount = item?.packageItems?.length ?? item?.dish ?? item?.dishCount ?? 0;
 
 
@@ -20,7 +20,9 @@ const CateringCard = ({item, image, title, price, oldPrice, dish }) => {
 
         <p className="custom-text">Customization Available</p>
 
-        <button className="view-btn">View More</button>
+       <button className="view-btn" onClick={() => onView(item)}>
+          View More
+        </button>
       </div>
     </div>
   );
