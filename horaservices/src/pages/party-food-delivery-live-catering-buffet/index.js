@@ -65,6 +65,7 @@ useEffect(() => {
         ) : data.length > 0 ? (
           data.map((item, index) => (
             <CateringCard
+            item={item}
               key={index}
          image={
   item.image

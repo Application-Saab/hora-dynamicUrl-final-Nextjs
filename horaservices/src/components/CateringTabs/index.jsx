@@ -4,7 +4,7 @@ import bulkIcon from "@/assets/bulk.svg";
 import liveIcon from "@/assets/live.svg";
 import Image from "next/image";
 const CateringTabs =({ onChange }) => {
-  const [active, setActive] = useState("live");
+  const [active, setActive] = useState("bulk");
   const handleClick = (type) => {
     setActive(type);
 

@@ -1,7 +1,10 @@
 import React from "react";
 import "./catering.css";
 
-const CateringCard = ({ image, title, price, oldPrice, dish }) => {
+const CateringCard = ({item, image, title, price, oldPrice, dish }) => {
+  const dishCount = item?.packageItems?.length ?? item?.dish ?? item?.dishCount ?? 0;
+
+
   return (
     <div className="catering-card">
       <img src={image} alt={title} className="catering-img" />
@@ -12,7 +15,7 @@ const CateringCard = ({ image, title, price, oldPrice, dish }) => {
         <div className="price-row">
           <span className="price">₹{price}/-</span>
           <span className="old-price">₹{oldPrice}</span>
-          <span className="dish">Dish ({dish})</span>
+        <span className="dish">Dish{"{"}{dishCount}{"}"}</span>
         </div>
 
         <p className="custom-text">Customization Available</p>
