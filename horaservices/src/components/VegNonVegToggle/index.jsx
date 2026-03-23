@@ -1,28 +1,24 @@
 import React, { useState } from "react";
 import "./vegToggle.css";
 
-const VegToggle = ({ onChange }) => {
-  const [type, setType] = useState("veg");
-
+const VegToggle = ({ value = "veg", onChange }) => {
 
   const handleChange = (value) => {
-    setType(value);
-
     if (onChange) {
-      onChange(value);   // 👈 PARENT KO BHEJ DO
+      onChange(value);
     }
   };
   return (
     <div className="veg-toggle">
       <button
-        className={`veg-btn veg ${type === "veg" ? "active" : ""}`}
+        className={`veg-btn veg ${value === "veg" ? "active" : ""}`}
        onClick={() => handleChange("veg")}
       >
         Only Veg
       </button>
 
       <button
-        className={`veg-btn nonveg ${type === "non-veg" ? "active" : ""}`}
+        className={`veg-btn nonveg ${value === "non-veg" ? "active" : ""}`}
         onClick={() => handleChange("non-veg")}
       >
         Non-Veg
@@ -30,5 +26,4 @@ const VegToggle = ({ onChange }) => {
     </div>
   );
 };
-
 export default VegToggle;

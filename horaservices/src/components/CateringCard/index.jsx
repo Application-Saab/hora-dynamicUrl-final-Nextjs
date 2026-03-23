@@ -1,6 +1,8 @@
 import React from "react";
 import "./catering.css";
-
+import Image from "next/image";
+import vegIcon from "@/assets/veg.svg";
+import nonVegIcon from "@/assets/nonveg.svg";
 const CateringCard = ({item, image, title, price, oldPrice, dish,onView }) => {
   const dishCount = item?.packageItems?.length ?? item?.dish ?? item?.dishCount ?? 0;
 
@@ -10,8 +12,19 @@ const CateringCard = ({item, image, title, price, oldPrice, dish,onView }) => {
       <img src={image} alt={title} className="catering-img" />
 
       <div className="catering-content">
-        <h3 className="catering-title">{title}</h3>
+     <div className="title-row">
+          <h3 className="catering-title">{title}</h3>
 
+          <Image
+            src={
+              item?.foodType?.toLowerCase() === "veg"
+                ? vegIcon
+                : nonVegIcon
+            }
+            alt="food type"
+            className="fooddot"
+          />
+        </div>
         <div className="price-row">
           <span className="price">₹{price}/-</span>
           <span className="old-price">₹{oldPrice}</span>

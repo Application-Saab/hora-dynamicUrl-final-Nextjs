@@ -21,7 +21,8 @@
   background: #fff;
   border-radius: 16px;
   padding: 16px;
-
+  display: flex;
+  flex-direction: column; /* IMPORTANT */
 }
 
 
@@ -46,13 +47,35 @@ line-height: 1.2;
 letter-spacing: 0;
 text-align: center;
 color: #000000;
+margin: 10px 0px 0px 0px;
 }
-
+.divider-line {
+  width: 80%;
+  height: 1px;
+  background: #dcdcdc;
+  margin: 10px auto 0;
+}
+.dish-list {
+  flex: 1;             
+  overflow-y: auto;     
+  margin: 10px 0;
+}
 .dish-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 8px ;
+}
+.meal-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(14px, 4vw, 16px);
+  color: #97538C;
+}
+.food-dot {
+ width: clamp(20px, 2.5vw, 24.26px);
+  height: clamp(20px, 2.6vw, 25.06px);
+  margin-left: 8px;
 }
 .dishname{
     font-family: 'Inter', sans-serif;
@@ -74,25 +97,50 @@ object-fit: cover;
   margin-top: 15px;
   font-weight: 600;
 }
-
+.total-price{
+font-family: 'Inter', sans-serif;
+font-weight: 500;
+font-size: clamp(14px, 3.8vw, 16px);
+line-height: 1;
+letter-spacing: 0;
+text-align: center;
+color: #97538C;
+}
+.Amountprice{
+font-family: 'Inter', sans-serif;
+font-weight: 500;
+font-size: clamp(14px, 3.8vw, 16px);
+line-height: 1;
+letter-spacing: 0;
+text-align: center;
+color: #97538C;
+}
 .btn-row {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  margin: 20px 0px;
 }
 
 .outline-btn {
-  flex: 1;
-  border: 1px solid purple;
+  border: 1px solid #97538C;
   background: white;
-  padding: 10px;
+  padding: clamp(10px, 2vw, 12px) clamp(14px, 3vw, 18px);
   border-radius: 10px;
+  color: #97538C;
+   font-family: 'Inter', sans-serif;
+font-weight: 600;
+font-size: clamp(14px, 4vw, 18px);
+text-align: center;
 }
 
 .filled-btn {
-  flex: 1;
-  background: purple;
+  background:#97538C;
   color: white;
   padding: 10px;
   border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+font-weight: 600;
+font-size: clamp(14px, 4vw, 18px);
+text-align: center;
+border: none;
 }

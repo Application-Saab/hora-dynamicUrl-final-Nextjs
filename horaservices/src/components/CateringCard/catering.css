@@ -34,6 +34,15 @@ object-fit:cover;
 .catering-content{
 padding: clamp(6px, 2vw, 7px) clamp(4px, 2vw, 5px);
 }
+.title-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.fooddot {
+  width: clamp(14px, 2vw, 18px);
+  height: clamp(14px, 2vw, 18px);
+}
 
 .catering-title{
 font-family: 'Rubik', sans-serif;
