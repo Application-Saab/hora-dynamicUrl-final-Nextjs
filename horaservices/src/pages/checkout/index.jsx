@@ -39,6 +39,7 @@ import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/DecorBackgorundImgDetails.png"
 import Infoicon from "../../assets/info-icon.png"
 import "./checkout.css"
+import UrgentBookingModal from "@/components/UrgentBookingModal";
 const Checkout = () => {
   const router = useRouter();
 
@@ -76,6 +77,7 @@ const Checkout = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [combinedDateTime, setCombinedDateTime] = useState(null);
   const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
@@ -84,6 +86,9 @@ const Checkout = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const fromPath = router.query.from || "";
   const cityName = fromPath.split("/")[1] || "";
+  useEffect(() => {
+    setIsClosed(false); // 🔥 har baar reset
+  }, [combinedDateTimeError]);
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
     const loggedInStatus = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -138,14 +143,14 @@ const Checkout = () => {
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setSelectedDateError(false);
-    combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
+    // combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
   };
 
   const handleTimeSlotChange = (event) => {
     const timeSlot = event.target.value;
     setSelectedTimeSlot(timeSlot);
     setSelectedDateError(false);
-    combineDateTime(selectedDate, timeSlot); // Pass the current selected date
+    // combineDateTime(selectedDate, timeSlot); // Pass the current selected date
   };
 
   const combineDateTime = (date, timeSlot) => {
@@ -165,20 +170,32 @@ const Checkout = () => {
       combinedDate.setMilliseconds(0);
       setCombinedDateTime(combinedDate);
       validateDateTime(combinedDate);
+      return combinedDate;
     }
   };
 
+  // const validateDateTime = (combinedDate) => {
+  //   const now = new Date();
+  //   const timeDifference = combinedDate - now;
+
+  //   if (timeDifference < 24 * 60 * 60 * 1000) {
+  //     // 🔥 force re-trigger
+  //     setCombinedDateTimeError(false);
+
+  //     setTimeout(() => {
+  //       setCombinedDateTimeError(true);
+  //     }, 0);
+
+  //   } else {
+  //     setCombinedDateTimeError(false);
+  //   }
+  // };
   const validateDateTime = (combinedDate) => {
-    const now = new Date();
-    const timeDifference = combinedDate - now;
+  const now = new Date();
+  const timeDifference = combinedDate - now;
 
-    if (timeDifference < 24 * 60 * 60 * 1000) {
-      // 24 hours in milliseconds
-      setCombinedDateTimeError(true);
-    } else {
-      setCombinedDateTimeError(false);
-    }
-  };
+  return timeDifference < 24 * 60 * 60 * 1000;
+};
 
   const generateTimeSlots = () => {
     const startTime = 7; // Starting hour
@@ -243,12 +260,6 @@ const Checkout = () => {
     return Math.random() * (max - min) + min;
   }
 
-  const openWhatsppLink = () => {
-    window.open(
-      "https://wa.me/+917338584828/?text=Hi%2CI%20saw%20your%20website%20and%20want%20to%20know%20more%20about%20payment%20in%20Decoration%20services",
-      "_blank"
-    );
-  };
 
   const saveAddress = async () => {
     try {
@@ -287,6 +298,23 @@ const Checkout = () => {
 
   const onContinueClick = async () => {
     setLoading(true);
+
+  const combinedDate = combineDateTime(selectedDate, selectedTimeSlot);
+
+  if (!combinedDate) {
+    setLoading(false);
+    return;
+  }
+
+  const isInvalid = validateDateTime(combinedDate);
+
+  if (isInvalid) {
+    setCombinedDateTimeError(true); // 🔥 modal trigger
+    setLoading(false);
+    return;
+  }
+
+  setCombinedDateTimeError(false);
     const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await localStorage.getItem("userID");
     // const phoneNumber = await localStorage.getItem('mobileNumber')
@@ -379,35 +407,35 @@ const Checkout = () => {
     } catch (error) {
       console.error("API error:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
-const contactUsRedirect = (category, cityName) => {
-  const categoryMessages = {
-    "kids-birthday-decoration": "kids birthday decoration",
-    "birthday-decoration": "birthday decoration",
-    "anniversary-decoration": "anniversary decoration",
-    "baby-shower-decoration": "baby shower decoration",
-    "welcome-baby-decoration": "welcome baby decoration",
-    "first-night-decoration": "first night decoration",
-    "premium-decoration": "premium decoration",
-    "haldi-mehendi-decoration": "haldi & mehendi decoration",
-    "Wedding": "wedding decoration",
-    "bachelorette-decoration": "bachelorette decoration",
+  const contactUsRedirect = (category, cityName) => {
+    const categoryMessages = {
+      "kids-birthday-decoration": "kids birthday decoration",
+      "birthday-decoration": "birthday decoration",
+      "anniversary-decoration": "anniversary decoration",
+      "baby-shower-decoration": "baby shower decoration",
+      "welcome-baby-decoration": "welcome baby decoration",
+      "first-night-decoration": "first night decoration",
+      "premium-decoration": "premium decoration",
+      "haldi-mehendi-decoration": "haldi & mehendi decoration",
+      "Wedding": "wedding decoration",
+      "bachelorette-decoration": "bachelorette decoration",
+    };
+    let categoryText = categoryMessages[category] || "decoration";
+    let message = `Hi, I want to place ${categoryText} order urgently`;
+    if (cityName) {
+      message += ` for ${cityName}, can you help me pls!`;
+    } else {
+      message += ", can you help me pls!";
+    }
+    window.open(
+      `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
   };
-  let categoryText = categoryMessages[category] || "decoration";
-  let message = `Hi, I want to place ${categoryText} order urgently`;
-  if (cityName) {
-    message += ` for ${cityName}, can you help me pls!`;
-  } else {
-    message += ", can you help me pls!";
-  }
-  window.open(
-    `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
-    "_blank"
-  );
-};
 
 
   const contactUsRedirection = (category, cityName) => {
@@ -538,29 +566,19 @@ const contactUsRedirect = (category, cityName) => {
                 </div>
               </div>
             </div>
-
-            {combinedDateTimeError && (
-              <div className="support-box">
-                <p className="support-text">Need it in under <strong>24 hrs</strong>?</p>
-                <button
-  className="support-button"
-  onClick={() => contactUsRedirect(category, cityName)}
->
-  Contact Support
-</button>
-
-              </div>
+            {combinedDateTimeError && !isClosed && (
+              <UrgentBookingModal onClose={() => setIsClosed(true)}  onWhatsApp={() => contactUsRedirect(category, cityName)}  />
             )}
-<div className="amountBox">
-  <div className="amountRow">
-    <span className="labels">TOTAL AMOUNT :</span>
-    <span className="value">₹ {totalAmount}</span>
-  </div>
-  <div className="amountRow">
-    <span className="labels">ADVANCE AMOUNT :</span>
-    <span className="value">₹ {Math.round(totalAmount * 0.4)}</span>
-  </div>
-</div>
+            <div className="amountBox">
+              <div className="amountRow">
+                <span className="labels">TOTAL AMOUNT :</span>
+                <span className="value">₹ {totalAmount}</span>
+              </div>
+              <div className="amountRow">
+                <span className="labels">ADVANCE AMOUNT :</span>
+                <span className="value">₹ {Math.round(totalAmount * 0.4)}</span>
+              </div>
+            </div>
 
             <div className="form-group input-with-icon">
               <label className="form-label">Share comments</label>
@@ -683,7 +701,7 @@ const contactUsRedirect = (category, cityName) => {
 
                 </div>
               </div>
-                <div className='detailitem'>
+              <div className='detailitem'>
                 <label style={{ color: "rgb(157, 74, 147)" }}>Total Amount:</label>
                 <p style={{ color: "rgb(157, 74, 147)" }}>₹{totalAmount}</p>
               </div>
@@ -703,7 +721,7 @@ const contactUsRedirect = (category, cityName) => {
               flexDirection: "row",
               alignItems: " center",
               justifyContent: "space-evenly",
-            
+
               width: "100%",
             }}
           >
