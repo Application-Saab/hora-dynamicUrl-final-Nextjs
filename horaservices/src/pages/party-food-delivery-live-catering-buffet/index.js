@@ -18,6 +18,7 @@ import VegToggle from "@/components/VegNonVegToggle";
 import { BASE_URL, GET_MEAL_DISH_ENDPOINT } from "@/utils/apiconstants";
 import CateringModal from "@/components/CateringModal";
 import { useRouter } from "next/router";
+import CardSkeleton from "@/components/CardSkeleton";
 
 const brandItems = [
   { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
@@ -120,45 +121,72 @@ const FoodDelivery = () => {
       {/* Veg Toggle */}
       <VegToggle value={foodType} onChange={(type) => setFoodType(type)} />
 
-      {/* Cards */}
-      <div className="catering-grid">
-        {loading ? (
-          <p>Loading...</p>
-        ) : data.length > 0 ? (
-          data.map((item, index) => (
-            <CateringCard
-              key={index}
-              item={item}
-              image={
-                item.image
-                  ? `https://horaservices.com/api/uploads/${item.image}`
-                  : "/default-image.webp"
-              }
-              title={item.title || item.name}
-              price={item.price}
-              oldPrice={item.oldPrice || item.actualPrice}
-              dish={item.dish || item.dishCount}
-              onView={() => setSelectedPackage(item)}  // 🔥 IMPORTANT FIX
-            />
-          ))
-        ) : (
-          <p>No Packages Found</p>
-        )}
-      </div>
+{/* 🔥 FIRST GRID */}
+<div className="catering-grid">
+  {loading ? (
+    [...Array(4)].map((_, index) => (
+      <CardSkeleton key={index} />
+    ))
+  ) : data.length > 0 ? (
+    data.slice(0, 4).map((item, index) => (
+      <CateringCard
+        key={index}
+        item={item}
+        image={
+          item.image
+            ? `https://horaservices.com/api/uploads/${item.image}`
+            : "/default-image.webp"
+        }
+        title={item.title || item.name}
+        price={item.price}
+        oldPrice={item.oldPrice || item.actualPrice}
+        dish={item.dish || item.dishCount}
+        onView={() => setSelectedPackage(item)}
+      />
+    ))
+  ) : (
+    <p>No Packages Found</p>
+  )}
+</div>
 
-      {/* Modal */}
-      {selectedPackage && (
+{/* 🔥 BANNER (ALWAYS SHOW) */}
+<CateringBanner
+  image={
+    packageType === "liveCatering"
+      ? livebannerImage
+      : bulkBannerImage
+  }
+/>
+
+{/* 🔥 SECOND GRID */}
+{!loading && data.length > 4 && (
+  <div className="catering-grid">
+    {data.slice(4).map((item, index) => (
+      <CateringCard
+        key={index + 4}
+        item={item}
+        image={
+          item.image
+            ? `https://horaservices.com/api/uploads/${item.image}`
+            : "/default-image.webp"
+        }
+        title={item.title || item.name}
+        price={item.price}
+        oldPrice={item.oldPrice || item.actualPrice}
+        dish={item.dish || item.dishCount}
+        onView={() => setSelectedPackage(item)}
+      />
+    ))}
+  </div>
+)}
+        {selectedPackage && (
         <CateringModal
           data={selectedPackage}
           mealTypes={mealTypes}  
           onClose={() => setSelectedPackage(null)}
         />
       )}
-
-      {/* Extra Sections */}
-      <CateringBanner
-        image={packageType === "liveCatering" ? livebannerImage : bulkBannerImage}
-      />      <CateringBanner image={BrandBannerIMG} />
+       <CateringBanner image={BrandBannerIMG} />
       <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
       <ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
 

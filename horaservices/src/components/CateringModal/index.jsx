@@ -3,7 +3,9 @@ import "./cateringModal.css";
 import Image from "next/image";
 import vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";
+import { useRouter } from "next/router";
 const CateringModal = ({ data, mealTypes = [], onClose }) => {
+  const router = useRouter();
   if (!data) return null;
 
   const items = data.packageItems || [];
@@ -38,7 +40,37 @@ const CateringModal = ({ data, mealTypes = [], onClose }) => {
 
   return acc;
 }, {});
+const handleOrderNow = () => {
 
+  // 🔥 Agar dish select nahi hai → default bana do
+  const selectedDishDictionary = {};
+
+  const selectedDishQuantities = (data.packageItems || []).map(item => ({
+    name: item.name,
+    image: item.image,
+    price: item.price || 0,
+    quantity: 1,
+    unit: "plate",
+    id: item.mealId
+  }));
+
+  router.push({
+    pathname: `/party-food-delivery-live-catering-buffet-select-date/${data.packageType}`,
+    query: {
+      selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+      selectedDishPrice: data.price,
+      selectedDishes: data.packageItems?.length || 0,
+      orderType: "package",
+      isDishSelected: false,
+      selectedCount: data.packageItems?.length || 0,
+      selectedDishQuantities: JSON.stringify(selectedDishQuantities),
+      selectedOption: data.packageType
+    },
+  });
+};
+const handleCustomize = () => {
+  router.push("/party-food-delivery-live-catering-buffet/party-food-delivery");
+};
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
@@ -97,8 +129,10 @@ const CateringModal = ({ data, mealTypes = [], onClose }) => {
         </div>
 
         <div className="btn-row">
-          <button className="outline-btn">Order Now</button>
-          <button className="filled-btn">Customize Package</button>
+          <button className="outline-btn" onClick={handleOrderNow}>
+  Order Now
+</button>
+          <button className="filled-btn" onClick={handleCustomize}>Customize Package</button>
         </div>
 
       </div>
