@@ -143,15 +143,14 @@ const Checkout = () => {
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setSelectedDateError(false);
-    // combineDateTime(date, selectedTimeSlot); // Pass the current selected time slot
-  };
+    };
 
   const handleTimeSlotChange = (event) => {
     const timeSlot = event.target.value;
     setSelectedTimeSlot(timeSlot);
-    setSelectedDateError(false);
-    // combineDateTime(selectedDate, timeSlot); // Pass the current selected date
-  };
+    setSelectedTimeSlotError(false);
+    setCombinedDateTimeError(false); 
+};
 
   const combineDateTime = (date, timeSlot) => {
     if (date && timeSlot) {
@@ -296,8 +295,14 @@ const Checkout = () => {
     }
   };
 
-  const onContinueClick = async () => {
-    setLoading(true);
+const onContinueClick = async () => {
+  setIsClosed(false);
+ 
+  if (!selectedTimeSlot) {
+    setSelectedTimeSlotError(true);
+    setLoading(false);
+    return;
+  }
 
   const combinedDate = combineDateTime(selectedDate, selectedTimeSlot);
 
@@ -305,16 +310,15 @@ const Checkout = () => {
     setLoading(false);
     return;
   }
-
+   setLoading(true);
   const isInvalid = validateDateTime(combinedDate);
 
   if (isInvalid) {
-    setCombinedDateTimeError(true); // 🔥 modal trigger
-    setLoading(false);
-    return;
+    setCombinedDateTimeError(true);
+      setLoading(false); 
+  } else {
+    setCombinedDateTimeError(false);
   }
-
-  setCombinedDateTimeError(false);
     const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await localStorage.getItem("userID");
     // const phoneNumber = await localStorage.getItem('mobileNumber')
@@ -359,9 +363,13 @@ const Checkout = () => {
         },
       });
       merchantTransactionId = response.data.data._id;
-      //}
     } catch (error) {
       console.log("Error Confirming Order:", error.message);
+    }
+
+    if (isInvalid) {
+    setLoading(false);
+    return; 
     }
 
     const requestData2 = {
@@ -373,12 +381,11 @@ const Checkout = () => {
     };
     try {
       if (city && pinCode && address && selectedTimeSlot && selectedDate) {
-        if (combinedDateTimeError) {
-          alert(
-            "The selected date and time must be at least 24 hours from now."
-          );
-          return;
-        }
+    if (isInvalid) {
+      setCombinedDateTimeError(true); 
+      setLoading(false);
+      return; 
+    }
         const response2 = await axios.post(apiUrl, requestData2, {
           headers: {
             "Content-Type": "application/json",
@@ -566,9 +573,7 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
-            {combinedDateTimeError && !isClosed && (
-              <UrgentBookingModal onClose={() => setIsClosed(true)}  onWhatsApp={() => contactUsRedirect(category, cityName)}  />
-            )}
+          
             <div className="amountBox">
               <div className="amountRow">
                 <span className="labels">TOTAL AMOUNT :</span>
@@ -790,7 +795,9 @@ const Checkout = () => {
           Confirm Order
         </button>
       </div>
-
+  {combinedDateTimeError && !isClosed && (
+              <UrgentBookingModal  onClose={() => { setIsClosed(true); setCombinedDateTimeError(false);}} onWhatsApp={() => contactUsRedirect(category, cityName)}  />
+            )}
     </div>
   );
 };
