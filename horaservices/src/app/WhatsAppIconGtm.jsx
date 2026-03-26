@@ -39,6 +39,7 @@ import {
   foodSelectDateMessage,
   photographyMainMessage,
 } from "@/utils/whatsappMessages";
+import WhatsAppFloat from '@/components/WhatsAppFloat';
 const WhatsAppIcon = ({ router }) => {
   const { pathname, query } = router;
   const { catValue, productName, city } = query;
@@ -352,12 +353,10 @@ let message = defaultMessage;
   return (
     <>
       {shouldShowWhatsAppIcon() && (
-        <Image
-          className='whatappicon gtmPage'
-          src={whatsppicon}
-          alt="WhatsApp Icon"
-          onClick={handleWhatsAppClick} // Call handleWhatsAppClick on click
-        />
+      <WhatsAppFloat
+  shouldShow={shouldShowWhatsAppIcon()}
+  handleWhatsAppClick={handleWhatsAppClick}
+/>
       )}
     </>
   );
