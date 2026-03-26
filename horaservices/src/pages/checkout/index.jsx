@@ -173,22 +173,7 @@ const Checkout = () => {
     }
   };
 
-  // const validateDateTime = (combinedDate) => {
-  //   const now = new Date();
-  //   const timeDifference = combinedDate - now;
-
-  //   if (timeDifference < 24 * 60 * 60 * 1000) {
-  //     // 🔥 force re-trigger
-  //     setCombinedDateTimeError(false);
-
-  //     setTimeout(() => {
-  //       setCombinedDateTimeError(true);
-  //     }, 0);
-
-  //   } else {
-  //     setCombinedDateTimeError(false);
-  //   }
-  // };
+ 
   const validateDateTime = (combinedDate) => {
   const now = new Date();
   const timeDifference = combinedDate - now;
