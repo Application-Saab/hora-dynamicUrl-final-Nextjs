@@ -67,7 +67,7 @@ color: #3B3636;
 }
 
 .whatsapp-btn {
-  background: #1CB30E;
+  background: #0D8708;
   color: white;
   border: none;
   padding: 12px 18px;
@@ -83,9 +83,6 @@ font-size: clamp(12px, 3.5vw, 14px);
 text-transform: capitalize;
 }
 
-.whatsapp-btn:hover {
-  background: #1ebe5d;
-}
 
 .note {
  font-family: Inter;
@@ -96,6 +93,6 @@ text-align: center;
 color: #3B3636;
 }
 .wa-icon {
-  width: 18px;
-  height: 18px;
+  width: clamp(16px, 5vw, 22px) !important;
+  height: clamp(16px, 5vw, 22px) !important;
 }
