@@ -1,0 +1,118 @@
+
+.wa-wrapper {
+  position: fixed;
+  bottom: 70px;
+  right: clamp(12px, 4vw, 20px);
+  z-index: 9999;
+}
+
+.wa-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: clamp(45px, 12vw, 55px);
+  padding-right: 0px;
+  cursor: pointer;
+  
+}
+
+/* Bubble */
+.wa-bubble {
+  background: #0D8708;
+  padding: clamp(6px, 2vw, 10px) clamp(12px, 4vw, 20px);
+  border-radius: clamp(30px, 10vw, 50px) 0 0 clamp(30px, 10vw, 50px);
+    position: relative;
+  right: 35px;
+  transform: translateX(120%);
+  animation: slideBubble 3s ease-in-out infinite;
+}
+
+.wa-text {
+  color: #fff;
+  font-size: clamp(10px, 3vw, 12px);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Icon */
+.wa-icon {
+  position: absolute;
+  top: -7px;
+  right: -12px;
+  width: clamp(60px, 65px, 70px);
+  height: clamp(60px, 65px, 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden; /* 🔥 IMPORTANT */
+  border-radius: 50%; /* circle banane ke liye */
+}
+
+.wa-icon img {
+  width: clamp(50px, 55px, 60px);
+}
+
+/* Wave */
+.wa-icon::before,
+.wa-icon::after {
+  content: "";
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: #47C757;
+  animation: wave 3s infinite;
+  z-index: -1;
+}
+
+.wa-icon::after {
+  animation-delay: 3s;
+}
+
+/* Animations */
+@keyframes slideBubble {
+  0% { 
+    transform: translateX(100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  30% { 
+    transform: translateX(40%); /* 👈 abhi bhi icon ke paas hai */
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  40% {
+    visibility: visible; /* 👈 yaha se dikhega */
+  }
+
+  45% { 
+    transform: translateX(0); 
+    opacity: 1;
+  }
+
+  70% { 
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 0;
+  }
+
+  100% { 
+    transform: translateX(100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes wave {
+  0%,25% { opacity: 0; transform: scale(1); }
+  30% { opacity: 0.6; transform: scale(1.2); }
+  50% { opacity: 0.4; transform: scale(1.6); }
+  70% { opacity: 0; transform: scale(2); }
+  100% { opacity: 0; }
+}
