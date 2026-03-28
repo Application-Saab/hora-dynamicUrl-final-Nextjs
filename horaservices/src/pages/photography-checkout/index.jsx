@@ -24,6 +24,7 @@ import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";
 import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
+import UrgentBookingModal from '@/components/UrgentBookingModal';
 const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
@@ -47,6 +48,7 @@ const Checkout = () => {
   const [cityError, setCityError] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [combinedDateTime, setCombinedDateTime] = useState(null);
+   const [isClosed, setIsClosed] = useState(false);
   const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
@@ -69,7 +71,9 @@ const Checkout = () => {
     const divs = doc.querySelectorAll('div');
     return Array.from(divs).map(div => div.textContent.trim());
   };
-
+  useEffect(() => {
+    setIsClosed(false); 
+  }, [combinedDateTimeError]);
   useEffect(() => {
     if (!router.isReady) return;
 
@@ -138,50 +142,30 @@ const Checkout = () => {
 
   const handleTimeSlotChange = (event) => {
     const timeSlot = event.target.value;
-    // console.log(`Time slot selected: ${timeSlot}`);
     setSelectedTimeSlot(timeSlot);
-    setSelectedDateError(false);
-    combineDateTime(selectedDate, timeSlot); // Pass the current selected date
-  };
+    setSelectedTimeSlotError(false);
+    setCombinedDateTimeError(false); 
+};
+ const combineDateTime = (date, timeSlot) => {
+  if (!date || !timeSlot) return null;
 
-  const combineDateTime = (date, timeSlot) => {
-    // console.log(`Combining Date: ${date} with Time Slot: ${timeSlot}`);
-    if (date && timeSlot) {
-      const [startHour, period] = timeSlot.split('-')[0].trim().split(' ');
-      let hour = parseInt(startHour.split(':')[0], 10);
-      if (period === 'PM' && hour !== 12) {
-        hour += 12;
-      } else if (period === 'AM' && hour === 12) {
-        hour = 0;
-      }
+  const [startHour, period] = timeSlot.split('-')[0].trim().split(' ');
+  let hour = parseInt(startHour.split(':')[0], 10);
 
-      const combinedDate = new Date(date);
-      // console.log(`Initial Combined Date: ${combinedDate}`);
-      combinedDate.setHours(hour);
-      combinedDate.setMinutes(0);
-      combinedDate.setSeconds(0);
-      combinedDate.setMilliseconds(0);
-      // console.log(`Final Combined Date: ${combinedDate}`);
-      setCombinedDateTime(combinedDate);
-      validateDateTime(combinedDate);
-    }
-  };
+  if (period === 'PM' && hour !== 12) hour += 12;
+  if (period === 'AM' && hour === 12) hour = 0;
 
-  const validateDateTime = (combinedDate) => {
-    const now = new Date();
-    // console.log(`Combined Date for Validation: ${combinedDate}`);
-    const timeDifference = combinedDate - now;
-    // console.log(`Time Difference: ${timeDifference} ms`);
-    // Check if the combined date and time are at least 24 hours in the future
-    if (timeDifference < 24 * 60 * 60 * 1000) { // 24 hours in milliseconds
-      console.log("The selected date and time are less than 24 hours from now.");
-      setCombinedDateTimeError(true);
-    } else {
-      console.log("The selected date and time are valid.");
-      setCombinedDateTimeError(false);
-    }
-  };
+  const combinedDate = new Date(date);
+  combinedDate.setHours(hour, 0, 0, 0);
 
+  return combinedDate; // ✅ IMPORTANT
+};
+const validateDateTime = (combinedDate) => {
+  const now = new Date();
+  const timeDifference = combinedDate - now;
+
+  return timeDifference < 24 * 60 * 60 * 1000; // true = invalid
+};
   const generateTimeSlots = () => {
     const startTime = 7; // Starting hour
     const endTime = 22; // Ending hour
@@ -281,7 +265,28 @@ const balanceAmount = totalAmount - advanceAmount;
 
 
   const onContinueClick = async () => {
-    setLoading(true);
+    setIsClosed(false);
+ if (!selectedTimeSlot) {
+    setSelectedTimeSlotError(true);
+    setLoading(false);
+    return;
+  }
+
+   const combinedDate = combineDateTime(selectedDate, selectedTimeSlot);
+
+  if (!combinedDate) {
+    setLoading(false);
+    return;
+  }
+   setLoading(true);
+  const isInvalid = validateDateTime(combinedDate);
+
+  if (isInvalid) {
+    setCombinedDateTimeError(true);
+      setLoading(false); 
+  } else {
+    setCombinedDateTimeError(false);
+  }
     const apiUrl = BASE_URL + PAYMENT;
     const storedUserID = await localStorage.getItem('userID');
     // const phoneNumber = await localStorage.getItem('mobileNumber')
@@ -333,8 +338,10 @@ const balanceAmount = totalAmount - advanceAmount;
     } catch (error) {
       console.log('Error Confirming Order:', error.message);
     }
-
-console.log("advanceAmount",advanceAmount);
+  if (isInvalid) {
+    setLoading(false);
+    return; 
+    }
 
     const requestData2 = {
       user_id: storedUserID,
@@ -345,10 +352,11 @@ console.log("advanceAmount",advanceAmount);
     };
     try {
       if (city && pinCode && address && selectedTimeSlot && selectedDate) {
-        if (combinedDateTimeError) {
-          alert("The selected date and time must be at least 24 hours from now.");
-          return;
-        }
+      if (isInvalid) {
+      setCombinedDateTimeError(true); 
+      setLoading(false);
+      return; 
+    }
         const response2 = await axios.post(apiUrl, requestData2, {
           headers: {
             'Content-Type': 'application/json',
@@ -522,11 +530,7 @@ const contactUsRedirection = (productName) => {
               </div>
             </div>
 
-            {combinedDateTimeError && (
-              <p className="error-text">
-                The selected date and time must be at least 24 hours from now.
-              </p>
-            )}
+          
 <div className="amountBox">
   <div className="amountRow">
     <span className="labels">TOTAL AMOUNT :</span>
@@ -731,7 +735,15 @@ const contactUsRedirection = (productName) => {
     Confirm Order
   </button>
 </div>
-
+{combinedDateTimeError && !isClosed && (
+  <UrgentBookingModal
+    onClose={() => {
+      setIsClosed(true);
+      setCombinedDateTimeError(false);
+    }}
+    onWhatsApp={() => contactUsRedirect(category, cityName)}
+  />
+)}
       </div>
   );
 }
