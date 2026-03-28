@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import axios from "axios";
-import Head from "next/head";
+// import Head from "next/head";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
@@ -13,13 +13,33 @@ import {
 import { getHomeOrganizationSchema } from "@/utils/schema";
 import HomeContent from "@/components/HomeContent";
 import { useLayoutEffect } from "react";
+import { sendError } from "../utils/errorTracker";
+
 export default function Home() {
   const router = useRouter();
 
 const pathname = usePathname();
+const schemaOrg = getHomeOrganizationSchema();
+const scriptTag = JSON.stringify(schemaOrg);
 
-  const schemaOrg = getHomeOrganizationSchema();
-  const scriptTag = JSON.stringify(schemaOrg);
+
+useEffect(() => {
+  console.log("app crash");
+  sendError();
+
+  const handleError = () => sendError();
+  const handleRejection = () => sendError();
+
+  window.addEventListener("error", handleError);
+  window.addEventListener("unhandledrejection", handleRejection);
+
+  return () => {
+    window.removeEventListener("error", handleError);
+    window.removeEventListener("unhandledrejection", handleRejection);
+  };
+}, []);
+  
+
 
   useEffect(() => {
   const checkPaymentStatus = async (transactionId) => {
@@ -80,7 +100,8 @@ const pathname = usePathname();
     checkPaymentStatus(transactionId);
   }
   }, [router]);
-  
+
+    
   useEffect(() => {
     // Google Tag Manager script for GTM
     (function(w,d,s,l,i){

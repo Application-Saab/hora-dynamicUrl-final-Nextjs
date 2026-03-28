@@ -26,6 +26,17 @@ function MyApp({ Component, pageProps }) {
     (typeof window !== "undefined" && localStorage.getItem("userID")) || "",
   );
   // ================= BLOCK KEYS + CONTEXT MENU =================
+
+  // ✅ GLOBAL ERROR TRACKING (runs early)
+if (typeof window !== "undefined") {
+  window.onerror = function () {
+    sendError();
+  };
+
+  window.onunhandledrejection = function () {
+    sendError();
+  };
+}
   useEffect(() => {
     const blockContextMenu = (e) => {
       const target = e.target;

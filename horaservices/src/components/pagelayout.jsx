@@ -29,6 +29,21 @@ const PageLayout = ({ children }) => {
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");
 
+
+   useEffect(() => {
+      console.log("app crrash");
+      // Catch JS errors
+      window.onerror = function () {
+        sendError();
+      };
+  
+      // Catch async errors
+      window.onunhandledrejection = function () {
+        sendError();
+      };
+  
+    }, []);
+
   return (
     <div className="page-container container-fluid p-0">
       <Head>

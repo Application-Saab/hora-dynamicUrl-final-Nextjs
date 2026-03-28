@@ -14,32 +14,63 @@ export default function Document() {
           content="black-translucent"
         />
 
+        {/* ✅ EXISTING SCRIPT */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
-      window.pwaDeferredPrompt = null;
-      window.addEventListener('beforeinstallprompt', function(e) {
-        e.preventDefault();
-        window.pwaDeferredPrompt = e;
-        console.log('🔥 [Early] beforeinstallprompt event captured');
-      });
-    `,
+              window.pwaDeferredPrompt = null;
+              window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                window.pwaDeferredPrompt = e;
+                console.log('🔥 [Early] beforeinstallprompt event captured');
+              });
+            `,
+          }}
+        />
+
+        {/* ✅ ADD THIS: ERROR TRACKING (IMPORTANT) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                function sendError() {
+                  try {
+                    fetch("/api/error-logs/track-error", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        url: window.location.pathname
+                      })
+                    });
+                  } catch (e) {}
+                }
+
+                window.onerror = function() {
+                  sendError();
+                };
+
+                window.onunhandledrejection = function() {
+                  sendError();
+                };
+              })();
+            `,
           }}
         />
       </Head>
+
       <body>
         <Main />
         <NextScript />
 
-        {/* Register service worker for A2HS */}
+        {/* Register service worker */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                   navigator.serviceWorker.register('/firebase-messaging-sw.js')
-                    .then(reg => console.log(' SW registered:', reg.scope))
-                    .catch(err => console.error('❌ SW registration failed:', err));
+                    .then(reg => console.log('SW registered:', reg.scope))
+                    .catch(err => console.error('SW registration failed:', err));
                 });
               }
             `,
