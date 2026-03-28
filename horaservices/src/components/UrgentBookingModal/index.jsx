@@ -1,7 +1,7 @@
 import React from "react";
 import "./urgentModal.css";
 import Image from "next/image";
-import ClockImage from "@/assets/ClockCircle.svg"
+import ClockImage from "@/assets/ClockCircle.webp"
 import WhatsAppIcon from "@/assets/whatsapp-icon.svg";
 const UrgentBookingModal = ({ onClose ,onWhatsApp}) => {
 
