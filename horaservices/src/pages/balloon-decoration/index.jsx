@@ -63,25 +63,49 @@ import {
   PremiumData,
   BallonBData,
 } from "../../utils/DecorationData.js";
+import { usePathname } from "next/navigation";
+import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 
+
+
+const Decoration = ({ city, locality  }) => {
+
+  const [showMoreCards, setShowMoreCards] = useState(false);
+  const smallCardRef = useRef(null); // 👈 ref for SmallCardGrid
+
+  const router = useRouter();
+
+  const schemaOrg = getDecorationOrganizationSchema();
+  const scriptTag = JSON.stringify(schemaOrg);
+
+  const hasCityPageParam = city ? true : false;
+  const buttonRefs = useRef([]);
+  const [handStep, setHandStep] = useState(0);
+const pathname = usePathname();
+
+const getCategorySlug = () =>
+  getCategorySlugFromPath(pathname, city, locality);
 const cardsData = [
   {
     image: Kidsbirthday,
     title: "Kids Birthday Decoration",
     subtitle: "EXPLORE 1000+ DESIGN",
-    link: "balloon-decoration/kids-birthday-decoration",
+    catValue: "kids-birthday-decoration",
+     link: `/${getCategorySlug()}/kids-birthday-decoration`,
     sizeClass: "category-grid__card--tall",
   },
   {
     image: BabyWelcome,
     title: "Baby Welcome",
-    link: "balloon-decoration/welcome-baby-decoration",
+ catValue: "welcome-baby-decoration",
+      link: `/${getCategorySlug()}/welcome-baby-decoration`,
     sizeClass: "category-grid__card--small",
   },
   {
     image: Anniversary,
     title: "Anniversary",
-    link: "balloon-decoration/anniversary-decoration",
+    catValue: "anniversary-decoration",
+       link: `/${getCategorySlug()}/anniversary-decoration`,
     sizeClass: "category-grid__card--small",
     catValue: "Anniversary",
   },
@@ -91,7 +115,8 @@ const largeCard = {
   image: decorationWedding,
   title: "Wedding",
   description: "DECORATIONS",
-  link: "balloon-decoration/wedding-decoration",
+  // link: "balloon-decoration/wedding-decoration",
+    link: `/${getCategorySlug()}/wedding-decoration`,
   catValue: "Wedding",
 };
 const brandItems = [
@@ -104,7 +129,8 @@ const smallCards = [
   {
     image: decorationhaldi,
     title: "Haldi-Mehandi",
-    link: "balloon-decoration/haldi-mehendi-decoration",
+    // link: "balloon-decoration/haldi-mehendi-decoration",
+      link: `/${getCategorySlug()}/haldi-mehendi-decoration`,
     categoryName: "Haldi Mhendi",
     subCategory: "Haldi-Mehandi",
     catValue: "haldi-mehendi-decoration",
@@ -113,7 +139,8 @@ const smallCards = [
   {
     image: decorationBridetobe,
     title: "Bride To-be",
-    link: "balloon-decoration/bachelorette-decoration",
+    // link: "balloon-decoration/bachelorette-decoration",
+      link: `/${getCategorySlug()}/bachelorette-decoration`,
     categoryName: "bachelorette",
     subCategory: "bachelorette",
     catValue: "bachelorette-decoration",
@@ -143,21 +170,6 @@ const stats = [
     label: "Completed Decoration",
   },
 ];
-
-const Decoration = ({ city, locality  }) => {
-
-  const [showMoreCards, setShowMoreCards] = useState(false);
-  const smallCardRef = useRef(null); // 👈 ref for SmallCardGrid
-
-  const router = useRouter();
-
-  const schemaOrg = getDecorationOrganizationSchema();
-  const scriptTag = JSON.stringify(schemaOrg);
-
-  const hasCityPageParam = city ? true : false;
-  const buttonRefs = useRef([]);
-  const [handStep, setHandStep] = useState(0);
-
   const handleWhatsApp = () => {
     const phoneNumber = "7338584828";
     const message = encodeURIComponent("I want to customize a decoration");
@@ -169,12 +181,23 @@ const Decoration = ({ city, locality  }) => {
       smallCardRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100); // small delay ensures it's rendered first
   };
-  const openCatItems = (item) => {
-    const path = hasCityPageParam
-      ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
-      : `/balloon-decoration/${item.catValue}`;
-    router.push(path);
-  };
+  // const openCatItems = (item) => {
+  //   const path = hasCityPageParam
+  //     ? `/${city.toLowerCase()}/balloon-decoration/${item.catValue}`
+  //     : `/balloon-decoration/${item.catValue}`;
+  //   router.push(path);
+  // };
+const openCatItems = (item) => {
+  if (!item?.catValue) return;
+
+  const categorySlug = getCategorySlug();
+
+  const path = hasCityPageParam
+    ? `/${city.toLowerCase()}/${categorySlug}/${item.catValue}`
+    : `/${categorySlug}/${item.catValue}`;
+
+  router.push(path);
+};
 
   const openWahtsappRedirection = (catTitle) => {
     window.open(
@@ -186,15 +209,15 @@ const Decoration = ({ city, locality  }) => {
   const bannerImages = [Banner1, Banner2, Banner3];
 
   const categories = [
-    { name: "Birthday", image: HappyBirthdayImg },
-    { name: "Baby Shower", image: BabyShowerImg },
-    { name: "Kids Birthday", image: kidsBirthdayImg },
-    { name: "Welcome Baby", image: BabyWelcomeImg },
-    { name: "Big Celebration", image: PremiumDecorImg },
-    { name: "Bachelorette", image: BacheloretteImg },
-    { name: "Haldi Mehandi", image: HaldiMehandiImg },
-    { name: "First Night", image: FirstNightImg },
-    { name: "Anniversary", image: AnniversaryImg },
+    { name: "Birthday", image: HappyBirthdayImg ,catValue: "birthday-decoration"},
+    { name: "Baby Shower", image: BabyShowerImg ,catValue: "baby-shower-decoration"},
+    { name: "Kids Birthday", image: kidsBirthdayImg, catValue: "kids-birthday-decoration" },
+    { name: "Welcome Baby", image: BabyWelcomeImg, catValue: "welcome-baby-decoration" },
+    { name: "Stage Decoration", image: PremiumDecorImg , catValue: "premium-decoration" },
+    { name: "Bachelorette", image: BacheloretteImg, catValue: "bachelorette-decoration" },
+    { name: "Haldi Mehandi", image: HaldiMehandiImg, catValue: "haldi-mehendi-decoration" },
+    { name: "First Night", image: FirstNightImg , catValue: "first-night-decoration" },
+    { name: "Anniversary", image: AnniversaryImg, catValue: "anniversary-decoration" },
   ];
   // const features = [
   //   {
@@ -296,9 +319,9 @@ const Decoration = ({ city, locality  }) => {
       </div>
 
       <div className="CategoryGrid-outer">
-        <div className="page-width">
+       
           <CategoryGrid cardsData={cardsData} city={city} locality={locality} />
-        </div>
+   
       </div>
 
       {/* SEE MORE BUTTON */}
@@ -385,7 +408,8 @@ const Decoration = ({ city, locality  }) => {
 
       <DecorSlider
         title="Big Celebration"
-        viewAllLink="/balloon-decoration/premium-decoration"
+         catValue="premium-decoration" 
+          viewAllLink={`/${getCategorySlug()}/premium-decoration`}
         data={PremiumData}
         showDiscount={true}
         imageSize={{ width: 120, height: 120 }}
@@ -395,25 +419,7 @@ const Decoration = ({ city, locality  }) => {
         locality={locality}
       />
 
-      {/* <FeatureAnimation features={features} clickAnim={click} />
-{buttonRefs.current[handStep] && (
-  <video
-    src="/hand-click.webm" // replace with your hand animation
-    autoPlay
-    loop
-    muted
-    playsInline
-    className="floating-hand"
-    style={{
-      position: 'absolute',
-      top: buttonRefs.current[handStep].getBoundingClientRect().top + window.scrollY - 20,
-      left: buttonRefs.current[handStep].getBoundingClientRect().left + window.scrollX + 40,
-      width: '40px',
-      zIndex: 1000,
-      pointerEvents: 'none',
-    }}
-  />
-)} */}
+    
 
       <section className="decorationBanner">
         <Image
@@ -429,10 +435,12 @@ const Decoration = ({ city, locality  }) => {
       <ProductSliderSection
         title="Birthday Decoration"
         data={birthdayData}
-        viewLink="/balloon-decoration/birthday-decoration"
+        // viewLink="/balloon-decoration/birthday-decoration"
+         viewLink={`/${getCategorySlug()}/birthday-decoration`}
         city={city}
         hasCityPageParam={hasCityPageParam}
         locality={locality}
+        catValue="birthday-decoration"
       />
 
 
@@ -456,7 +464,9 @@ const Decoration = ({ city, locality  }) => {
 
       <DecorSlider
         title="Anniversary Decoration"
-        viewAllLink="/balloon-decoration/anniversary-decoration"
+        // viewAllLink="/balloon-decoration/anniversary-decoration"
+         catValue="anniversary-decoration" 
+         viewAllLink={`/${getCategorySlug()}/anniversary-decoration`}
         data={AnniversaryData}
         showDiscount={true}
         imageSize={{ width: 120, height: 120 }}
@@ -479,8 +489,12 @@ const Decoration = ({ city, locality  }) => {
       <ProductSliderSection
         title="Babyshower Decoration"
         data={BabyShowerData}
-        viewLink="/balloon-decoration/baby-shower-decoration"
+        // viewLink="/balloon-decoration/baby-shower-decoration"
+          viewLink={`/${getCategorySlug()}/baby-shower-decoration`}
         locality={locality}
+          hasCityPageParam={hasCityPageParam}
+        catValue="baby-shower-decoration"
+        city={city}
       />
 
       <section className="BabyShowerBanner">

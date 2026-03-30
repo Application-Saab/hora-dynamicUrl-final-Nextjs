@@ -15,6 +15,7 @@ import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
 import { setState } from "../../../actions/action";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
@@ -43,14 +44,16 @@ import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp";
 import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
 import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.webp";
-import { useDecorationEvents } from "@/utils/decorationEvents";
+
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
 import NationPride from "@/assets/categories/NationPride.jpeg";
+import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
+    const pathname = usePathname();
   const [city, setCity] = useState("");
   const [catValue, setCatValue] = useState("");
   useEffect(() => {
@@ -101,8 +104,7 @@ const DecorationCatPage = ({ locality }) => {
   const searchParams = useSearchParams();
   const selectedTheme = searchParams.get("theme");
   const isThemePage = !!selectedTheme;
-  const { handleViewDetails } = useDecorationEvents(city, hasCityPageParam, decCat, locality, orderType);
-
+  
 
   function getSubCategory(catValue) {
     if (!catValue) {
@@ -381,6 +383,41 @@ const DecorationCatPage = ({ locality }) => {
   };
 
 
+const handleViewDetails = (item) => {
+  if (!item?.slug && !item?.product_slug && !item?.name) return;
+
+  const productSlug =
+    item.slug ||
+    item.product_slug ||
+    item.name.toLowerCase().replace(/\s+/g, "-");
+
+  // 🔥 category slug nikaalo properly
+  const categorySlug = getCategorySlugFromPath(
+    pathname,
+    city,
+    locality
+  );
+
+  if (!categorySlug || !catValue) {
+    console.warn("Missing categorySlug or catValue", {
+      categorySlug,
+      catValue,
+    });
+    return;
+  }
+
+  // 🔥 same pattern as DecorSlider
+  let base = "";
+  if (city) base += `/${city.toLowerCase()}`;
+  if (locality) base += `/${locality.toLowerCase()}`;
+
+  const finalPath = `${base}/${categorySlug}/${catValue}/product/${productSlug}`;
+
+  router.push(finalPath);
+};
+
+
+
   const PageTitle = (catValue, city, theme) => {
     let baseTitle;
 
@@ -547,11 +584,11 @@ const DecorationCatPage = ({ locality }) => {
   </div>
 )}
 
-              <ProductGrid data={catalogueData.slice(0, 4)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+              <ProductGrid data={catalogueData.slice(0, 4)}   onCardClick={handleViewDetails}  catValue={catValue} />
 
               <HighPriceProduct
                 data={highPriceProducts.slice(0, 1)}
-                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+                onCardClick={handleViewDetails}
               />
               <div className="filterBar">
                 <div className="filterBarInner">
@@ -562,11 +599,11 @@ const DecorationCatPage = ({ locality }) => {
                 <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
               </section>
 
-              <ProductGrid data={catalogueData.slice(4, 10)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+              <ProductGrid data={catalogueData.slice(4, 10)}  onCardClick={handleViewDetails} catValue={catValue} />
 
               <HighPriceProduct
                 data={highPriceProducts.slice(1, 2)}
-                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+                onCardClick={handleViewDetails}
               />
               {!shouldHideBanner("DidyouKnow") && (
                 <section className="decorationBanner">
@@ -574,10 +611,10 @@ const DecorationCatPage = ({ locality }) => {
                 </section>
               )}
 
-              <ProductGrid data={catalogueData.slice(10, 14)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+              <ProductGrid data={catalogueData.slice(10, 14)}  onCardClick={handleViewDetails} catValue={catValue} />
               <HighPriceProduct
                 data={highPriceProducts.slice(2, 3)}
-                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+                onCardClick={handleViewDetails}
               />
               {!shouldHideBanner("makeItMemorable") && (
                 <section className="decorationBanner">
@@ -585,19 +622,19 @@ const DecorationCatPage = ({ locality }) => {
                 </section>
               )}
 
-              <ProductGrid data={catalogueData.slice(14, 20)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+              <ProductGrid data={catalogueData.slice(14, 20)}  onCardClick={handleViewDetails} catValue={catValue} />
               <HighPriceProduct
                 data={highPriceProducts.slice(3, 4)}
-                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+               onCardClick={handleViewDetails}
               />
               <section className="decorationBanner">
                 <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
               </section>
 
-              <ProductGrid data={catalogueData.slice(20, 26)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+              <ProductGrid data={catalogueData.slice(20, 26)}  onCardClick={handleViewDetails} catValue={catValue} />
               <HighPriceProduct
                 data={highPriceProducts.slice(4, 5)}
-                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+                 onCardClick={handleViewDetails}
               />
               {!shouldHideBanner("makeitmemorablebanner") && (
                 <section className="decorationBanner">
@@ -605,10 +642,10 @@ const DecorationCatPage = ({ locality }) => {
                 </section>
               )}
 
-              <ProductGrid data={catalogueData.slice(26, 32)} onCardClick={(item) => handleViewDetails(subCategory, catValue, item)} catValue={catValue} />
+              <ProductGrid data={catalogueData.slice(26, 32)}  onCardClick={handleViewDetails} catValue={catValue} />
               <HighPriceProduct
                 data={highPriceProducts.slice(5, 6)}
-                onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
+                 onCardClick={handleViewDetails}
               />
               <div className="highlight-wrapper">
                 <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
@@ -653,9 +690,7 @@ const DecorationCatPage = ({ locality }) => {
       <React.Fragment key={groupIndex}>
         <ProductGrid
           data={groupProducts}
-          onCardClick={(item) =>
-            handleViewDetails(subCategory, catValue, item)
-          }
+         onCardClick={handleViewDetails}
           catValue={catValue}
         />
 
@@ -666,9 +701,7 @@ const DecorationCatPage = ({ locality }) => {
               highPriceIndex,
               highPriceIndex + 1
             )}
-            onCardClick={(item) =>
-              handleViewDetails(subCategory, catValue, item)
-            }
+            onCardClick={handleViewDetails}
           />
         )}
       </React.Fragment>

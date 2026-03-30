@@ -1,68 +1,72 @@
+
+
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import "./DecorSlider.css";
-import { useDecorationEvents } from "@/utils/decorationEvents";
+import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 
 const getDiscountedDifference = (price) => {
-  price = parseFloat(price.replace(/[^0-9.-]+/g, ""));
-  if (isNaN(price) || price < 0) return 0;
+  const numeric = parseFloat(price?.replace(/[^0-9.-]+/g, ""));
+  if (isNaN(numeric) || numeric < 0) return 0;
 
-  let discount;
-  if (price < 3000) discount = 20;
-  else if (price <= 5000) discount = 27;
-  else discount = 35;
-
-  const discountedPrice = Math.floor(price * (1 - discount / 100));
-  return Math.floor(price - discountedPrice);
+  const discount = numeric < 3000 ? 20 : numeric <= 5000 ? 27 : 35;
+  const discounted = Math.floor(numeric * (1 - discount / 100));
+  return Math.floor(numeric - discounted);
 };
 
 const DecorSlider = ({
   title,
-  viewAllLink,
-  data,
+  data = [],
+  catValue, // ✅ MAIN HERO
   showDiscount = false,
-  imageSize = { width: 120, height: 120 },
   city = "",
-  hasCityPageParam = false,
-  decCat = [],
   locality = "",
 }) => {
-  const { handleSliderViewMore, handleItemClick } = useDecorationEvents(
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const categorySlug = getCategorySlugFromPath(
+    pathname,
     city,
-    hasCityPageParam,
-    decCat,
     locality
   );
 
-  const buildCityLink = (link) => {
-    if (!link) return "#";
-    const base = link.startsWith("/") ? link : `/${link}`;
-    if (city && locality) return `/${city.toLowerCase()}/${locality.toLowerCase()}${base}`;
-    if (city && hasCityPageParam) return `/${city.toLowerCase()}${base}`;
-    return base;
+  const formatPath = (path) => {
+    let base = "";
+    if (city) base += `/${city.toLowerCase()}`;
+    if (locality) base += `/${locality.toLowerCase()}`;
+    return `${base}${path}`;
+  };
+
+  const handleItemClick = (item) => {
+    if (!item?.slug || !catValue) {
+      console.warn("Missing slug or catValue", { item, catValue });
+      return;
+    }
+
+    const path = formatPath(
+      `/${categorySlug}/${catValue}/product/${item.slug}`
+    );
+
+    router.push(path);
   };
 
   return (
     <section className="premium-slide-decor">
       <div className="premium-slide-decor-header">
         <h2>{title}</h2>
-        <span onClick={() => handleSliderViewMore(viewAllLink, title)}>
-          <Link href={buildCityLink(viewAllLink)}>View All</Link>
-        </span>
       </div>
 
       <div className="premium-scroll-wrapper">
         {data.map((item, index) => {
-          const numericPrice = parseInt(item.price.replace("₹", "")) || 0;
-          const discountDifference = getDiscountedDifference(item.price);
-          const originalPrice = numericPrice + discountDifference;
-          const link = buildCityLink(item.link);
+          const discountDiff = getDiscountedDifference(item.price);
+          const price =
+            parseInt(item.price?.replace(/[^\d]/g, "")) || 0;
 
           return (
-            <Link
-              href={link}
+            <div
               key={index}
               className="premium-card"
               onClick={() => handleItemClick(item)}
@@ -71,30 +75,35 @@ const DecorSlider = ({
                 <Image
                   src={item.Image}
                   alt={item.title}
-                  width={imageSize.width}
-                  height={imageSize.height}
-                  className="premium-img"
+                  className="premium-img" 
+    fill
+    sizes="(max-width:480px) 100vw"
                 />
+
                 {showDiscount && (
-                  <div className="premium-discount">₹{discountDifference} off</div>
+                  <div className="premium-discount">
+                    ₹{discountDiff} off
+                  </div>
                 )}
               </div>
-              {/* <div className="premium-content">
-                <p className="premium-title">{item.title}</p>
-               
-              </div> */}
+
               <div className="premium-content">
-  <p className="premium-title">
-    {item.title.length > 20 ? `${item.title.slice(0, 20)}...` : item.title}
-  </p>
-</div>
-               <div className="premium-price-wrapper">
-                  <span className="premium-price">{item.price}</span>
-                  {showDiscount && (
-                    <span className="premium-original">₹{originalPrice}</span>
-                  )}
-                </div>
-            </Link>
+                <p className="premium-title">
+                  {item.title.length > 20
+                    ? item.title.slice(0, 20) + "..."
+                    : item.title}
+                </p>
+              </div>
+
+              <div className="premium-price-wrapper">
+                <span className="premium-price">{item.price}</span>
+                {showDiscount && (
+                  <span className="premium-original">
+                    ₹{price + discountDiff}
+                  </span>
+                )}
+              </div>
+            </div>
           );
         })}
       </div>

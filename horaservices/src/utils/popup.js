@@ -6,7 +6,20 @@ import orderWarning from "../assets/OrderWarning.png"
   import imageivew from '../assets/logout.png';
 import Image from "next/image";
 
-const Popup = ({ onClose, popupMessage, primaryButtonAction = () => { } }) => {
+const Popup = ({
+  onClose,
+  popupMessage,
+  primaryButtonAction = () => {},
+
+  overlayClass = "",
+  contentClass = "",
+  bodyClass = "",
+  titleClass = "",
+  textClass = "",
+  buttonClass = "",
+  imageClass = "",
+}) => {
+
   const handleContinue = () => {
     onClose();
   };
@@ -37,64 +50,88 @@ const Popup = ({ onClose, popupMessage, primaryButtonAction = () => { } }) => {
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
+    <div className={`popup-overlay ${overlayClass}`}>
+      <div className={`popup-content ${contentClass}`}>
         <div className="logout-popup-header">
           <AiOutlineClose className="close-icon" onClick={onClose} size={20} />
         </div>
-        <div className="popup-body">
-          {/*<img
-            src={popupMessage?.image}
-            alt="Order Amount"
-            className="popup-image"
-          />*/}
+
+        <div className={`popup-body ${bodyClass}`}>
 
           {popupMessage?.img ? (
-              <Image
-                  src={popupMessage.img}
-                  alt="Popup"
-                  className="popup-image"
-              />
+            <Image
+              src={popupMessage.img}
+              alt="Popup"
+              className={`popup-image ${imageClass}`}
+            />
           ) : (
-              <Image
-                  src= {imageivew}
-                  alt="Default"
-                  className="popup-image"
-              />
+            <Image
+              src={imageivew}
+              alt="Default"
+              className={`popup-image ${imageClass}`}
+            />
           )}
-
+{popupMessage?.rating && (
+  <p className="rating-text">
+    Rating : {popupMessage.rating}
+  </p>
+)}
           <h1>{popupMessage?.title}</h1>
           <p>{popupMessage?.body}</p>
           {popupMessage?.button == "Continue" && (
-            <button className="add-more-button" onClick={handleContinue}>
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleContinue}
+            >
               {popupMessage?.button}
             </button>
           )}
+
           {popupMessage?.button == "Contact Us" && (
-            <button className="add-more-button" onClick={handleContactUs}>
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleContactUs}
+            >
               {popupMessage?.button}
             </button>
           )}
 
           {popupMessage?.button == "Add More" && (
-            <button className="add-more-button" onClick={handleAddMore}>
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleAddMore}
+            >
               + {popupMessage?.button}
             </button>
-          )}{popupMessage?.button === "OK" && (
-            <button className="add-more-button" onClick={handleOk}>
+          )}
+
+          {popupMessage?.button === "OK" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleOk}
+            >
               {popupMessage?.button}
             </button>
-        )}
-        {popupMessage?.button === "Call Vendor" && (
-          <button className="add-more-button" onClick={handleCallExecutor}>
-            {popupMessage?.button}
-          </button>
-      )}
-      {popupMessage?.button === "Yes ,Cancel Order" && (
-          <button className="add-more-button" onClick={cancleOrder}>
-            {popupMessage?.button}
-          </button>
-      )}
+          )}
+
+          {popupMessage?.button === "Call Vendor" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleCallExecutor}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
+          {popupMessage?.button === "Yes ,Cancel Order" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={cancleOrder}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
         </div>
       </div>
     </div>

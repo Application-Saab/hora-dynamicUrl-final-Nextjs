@@ -61,12 +61,12 @@ export async function create3SecClip(videoFile) {
 
 // Presigned URL
 export const getPresignedUrl = async (file, userId, eventId, folderName) => {
-  let token =  localStorage.getItem('token')
+  let token = localStorage.getItem("token");
   const res = await fetch(`${BASE_URL}/api/customer/event/get-presigned-url`, {
     method: "POST",
-    headers: { 
+    headers: {
       "Content-Type": "application/json",
-      "Authorization": `${token}`
+      Authorization: `${token}`,
     },
     body: JSON.stringify({
       fileName: file.name,
@@ -125,7 +125,7 @@ export async function convertToWebP(file) {
           resolve(webpFile);
         },
         "image/webp",
-        1 // quality (0–1)
+        0.9,
       );
     };
   });
@@ -136,16 +136,31 @@ export async function uploadImage(
   userId,
   eventId,
   folderName,
-  onProgress
+  onProgress,
+  isNotes = false,
 ) {
   // STEP 1: compression
   const thumb = await imageCompression(file, {
-    maxSizeMB: 0.15,
-    maxWidthOrHeight: 400,
+    // maxSizeMB: 0.25,
+    // maxWidthOrHeight: 400,
+    maxSizeMB: 0.6, // size
+    maxWidthOrHeight: 800, // better resolution
+    initialQuality: 0.9,
+    useWebWorker: true,
   });
 
   // STEP 2: convert to WebP
-  const webpThumbnail = await convertToWebP(thumb);
+  let webpThumbnail;
+  try {
+    if (!isNotes) {
+      webpThumbnail = await convertToWebP(thumb);
+    } else {
+      webpThumbnail = await convertToWebP(file);
+    }
+  } catch (error) {
+    console.error("WebP conversion failed, using original thumb", error);
+    webpThumbnail = thumb;
+  }
 
   // STEP 3: presigned URLs
   const [origSigned, thumbSigned] = await Promise.all([
@@ -174,7 +189,7 @@ export async function uploadVideo(
   userId,
   eventId,
   folderName,
-  onProgress
+  onProgress,
 ) {
   const thumbnailFile = await create3SecClip(file);
 

@@ -4,8 +4,8 @@ export const birthdayData = [
     title: 'Purple Pastel Ring',
     price: '₹3699',
     rating: 4.8,
-    link: '/balloon-decoration/birthday-decoration/product/Purple-Pastel-Ring',
-  
+    slug:'Purple-Pastel-Ring',
+   
   },
 
   {
@@ -13,8 +13,8 @@ export const birthdayData = [
     title: 'Lovely Birthday Decoration',
     price: '₹1871',
     rating: null,
-    link: '/balloon-decoration/birthday-decoration/product/Lovely-Birthday-Decoration',
-  },
+    slug:'Lovely-Birthday-Decoration',
+    },
 
 
 
@@ -23,26 +23,16 @@ export const birthdayData = [
     title: 'Flamingo Theme Light Decor',
     price: '₹8214',
     rating: 4.7,
-    link: '/balloon-decoration/birthday-decoration/product/Flamingo-Theme-Light-Decor',
-  },
+    slug:'Flamingo-Theme-Light-Decor',
+ },
   {
     Image: "https://horaservices.com/api/uploads/compressed_webp/1st Birthday Decoration-1747226092055.webp",
     title: '1st Birthday Decoration',
     price: '₹5813',
     rating: null,
-    link: '/balloon-decoration/birthday-decoration/product/1st-Birthday-Decoration',
-  },
+    slug:'1st-Birthday-Decoration',
+ },
 
-
-
-  {
-    Image: '',
-    title: '',
-    price: '',
-    rating: '',
-    link: "/balloon-decoration/kids-birthday-decoration/product/Mermaid-Sea-Shell-Shore-Decor",
-    isViewMore: true,
-  },
 
 
 ];
@@ -133,21 +123,24 @@ export const AnniversaryData = [
   title: 'Silver n White Elegance Circle Decor',
   price: '₹5289',
   rating: 4.8,
-  link: '/balloon-decoration/anniversary-decoration/product/Silver-n-White-Elegance-Circle-Decor',
+  slug:'Silver-n-White-Elegance-Circle-Decor',
+  // link: '/balloon-decoration/anniversary-decoration/product/Silver-n-White-Elegance-Circle-Decor',
 },
 {
   Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1713183105255.png',
   title: 'Blue & White Room Decor',
   price: '₹1404',
   rating: 4.7,
-  link: '/balloon-decoration/anniversary-decoration/product/Blue-&-White-Room-Decor',
+  slug:'Blue-&-White-Room-Decor',
+  // link: '/balloon-decoration/anniversary-decoration/product/Blue-&-White-Room-Decor',
 },
 {
   Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1713184150845.png',
   title: 'Canopy Decoration For Anniversary',
   price: '₹4680',
   rating: null,
-  link: '/balloon-decoration/anniversary-decoration/product/Canopy-Decoration-For-Anniversary',
+  slug:'Canopy-Decoration-For-Anniversary',
+  // link: '/balloon-decoration/anniversary-decoration/product/Canopy-Decoration-For-Anniversary',
 },
 
 {
@@ -155,7 +148,8 @@ export const AnniversaryData = [
   title: 'Hearty Balloon Wall',
   price: '₹2457',
   rating: null,
-  link: '/balloon-decoration/anniversary-decoration/product/Hearty-Balloon-Wall',
+  slug:'Hearty-Balloon-Wall',
+  // link: '/balloon-decoration/anniversary-decoration/product/Hearty-Balloon-Wall',
 },
 
 
@@ -165,49 +159,56 @@ export const AnniversaryData = [
     title: 'Lavender Rose Extravaganza Anniversary Decor',
     price: '₹3509',
     rating: 4.6,
-    link: "/balloon-decoration/anniversary-decoration/product/Lavender-Rose-Extravaganza-Anniversary-Decor",
+    slug:'Lavender-Rose-Extravaganza-Anniversary-Decor',
+    // link: "/balloon-decoration/anniversary-decoration/product/Lavender-Rose-Extravaganza-Anniversary-Decor",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1706460114319.png',
     title: 'White & Gold Enchantment Anniversary Decoration',
     price: '₹2924',
     rating: 4.2,
-    link: "/balloon-decoration/anniversary-decoration/product/White-&-Gold-Enchantment-Anniversary-Decoration",
+    slug:'White-&-Gold-Enchantment-Anniversary-Decoration',
+    // link: "/balloon-decoration/anniversary-decoration/product/White-&-Gold-Enchantment-Anniversary-Decoration",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1713965416898.png',
     title: 'Anniversary Decoration With Ring Shape',
     price: '₹4972',
     rating: 4.5,
-    link: "/balloon-decoration/anniversary-decoration/product/Anniversary-Decoration-With-Ring-Shape",
+    slug:'Anniversary-Decoration-With-Ring-Shape',
+    // link: "/balloon-decoration/anniversary-decoration/product/Anniversary-Decoration-With-Ring-Shape",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1725953653670.png',
     title: 'Rose and Gold Heaven Balloon Decor',
     price: '₹9770',
     rating: 4.5,
-    link: "/balloon-decoration/anniversary-decoration/product/Rose-and-Gold-Heaven-Balloon-Decor",
+    slug:'Rose-and-Gold-Heaven-Balloon-Decor',
+    // link: "/balloon-decoration/anniversary-decoration/product/Rose-and-Gold-Heaven-Balloon-Decor",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1713189291302.png',
     title: 'Bed Decoration For First Night',
     price: '₹3323',
     rating: 4.0,
-    link: "/balloon-decoration/anniversary-decoration/product/Bed-Decoration-For-First-Night",
+    slug:'Bed-Decoration-For-First-Night',
+    // link: "/balloon-decoration/anniversary-decoration/product/Bed-Decoration-For-First-Night",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1718046543520.png',
     title: 'Floral Anniversary Decor',
     price: '₹5148',
     rating: 4.5,
-    link: "/balloon-decoration/anniversary-decoration/product/Floral-Anniversary-Decor",
+    slug:'Floral-Anniversary-Decor',
+    // link: "/balloon-decoration/anniversary-decoration/product/Floral-Anniversary-Decor",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1725951536862.png',
     title: 'Golden n White Petals Balloon decor',
     price: '₹3358',
     rating: 4.8,
-    link: "/balloon-decoration/anniversary-decoration/product/Golden-n-White-Petals-Balloon-decor",
+    slug:'Golden-n-White-Petals-Balloon-decor',
+    // link: "/balloon-decoration/anniversary-decoration/product/Golden-n-White-Petals-Balloon-decor",
   },
 
 
@@ -304,7 +305,8 @@ export const BabyShowerData = [
   title: 'White Theme Oh Baby Decoration',
   price: '₹6435',
   rating: 4.2,
-  link: '/balloon-decoration/premium-decoration/product/White-Theme-Oh-Baby-Decoration',
+  slug:'White-Theme-Oh-Baby-Decoration',
+  // link: '/balloon-decoration/premium-decoration/product/White-Theme-Oh-Baby-Decoration',
 },
 
  {
@@ -312,7 +314,8 @@ export const BabyShowerData = [
   title: 'Baby Shower Theme Girl & Boy',
   price: '₹2457',
   rating: 4.5,
-  link: '/balloon-decoration/premium-decoration/product/Baby-Shower-Theme-Girl-&-Boy',
+  slug:'Baby-Shower-Theme-Girl-&-Boy',
+  // link: '/balloon-decoration/premium-decoration/product/Baby-Shower-Theme-Girl-&-Boy',
 },
 
 
@@ -321,7 +324,8 @@ export const BabyShowerData = [
   title: 'Half and Half Baby Shower Decoration',
   price: '₹2316',
   rating: 4.2,
-  link: '/balloon-decoration/premium-decoration/product/Half-and-Half-Baby-Shower-Decoration',
+  slug:'Half-and-Half-Baby-Shower-Decoration',
+  // link: '/balloon-decoration/premium-decoration/product/Half-and-Half-Baby-Shower-Decoration',
 },
 
  {
@@ -329,17 +333,9 @@ export const BabyShowerData = [
   title: 'Arch Baby Shower Decoration',
   price: '₹2925',
   rating: 4.8,
-  link: '/balloon-decoration/premium-decoration/product/Arch-Baby-Shower-Decoration',
+  slug:'Arch-Baby-Shower-Decoration',
 },
 
-  {
-    Image: 'https://horaservices.com/api/uploads/compressed_images/wahtsapp-decoration-redirection.jpeg',
-    title: '',
-    price: '',
-    rating: '',
-    link: "/balloon-decoration/kids-birthday-decoration/product/Mermaid-Sea-Shell-Shore-Decor",
-    isViewMore: true,
-  },
   // {
   //   Image: 'https://horaservices.com/api/uploads/attachment-1726062561916.png',
   //   title: 'Teddys wonderLand pink deocr',
@@ -403,21 +399,24 @@ export const PremiumData = [
     title: 'Pretty Ur Party Boss Baby Theme',
     price: '₹11256',
     rating: null,
-    link: '/balloon-decoration/premium-decoration/product/Pretty-Ur-Party-Boss-Baby-Theme',
+    slug:'Pretty-Ur-Party-Boss-Baby-Theme',
+    // link: '/balloon-decoration/premium-decoration/product/Pretty-Ur-Party-Boss-Baby-Theme',
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1711711395150.png',
     title: 'Silver & White Theme Birthday Decor',
     price: '₹7428',
     rating: null,
-    link: '/balloon-decoration/premium-decoration/product/Silver-&-White-Theme-Birthday-Decor',
+    slug:'Silver-&-White-Theme-Birthday-Decor',
+    // link: '/balloon-decoration/premium-decoration/product/Silver-&-White-Theme-Birthday-Decor',
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1713005111181.png',
     title: 'Birthday Decor With Cocomelon Setup',
     price: '₹10261',
     rating: 4.4,
-    link: "/balloon-decoration/premium-decoration/product/Birthday-Decor-With-Cocomelon-Setup",
+    slug:'Birthday-Decor-With-Cocomelon-Setup',
+    // link: "/balloon-decoration/premium-decoration/product/Birthday-Decor-With-Cocomelon-Setup",
   },
 
   {
@@ -425,14 +424,16 @@ export const PremiumData = [
     title: 'Boy & Girl Baby Shower Theme',
     price: '₹8950',
     rating: 4.6,
-    link: "/balloon-decoration/premium-decoration/product/Boy-&-Girl-Baby-Shower-Theme",
+    slug:'Boy-&-Girl-Baby-Shower-Theme',
+    // link: "/balloon-decoration/premium-decoration/product/Boy-&-Girl-Baby-Shower-Theme",
   },
   {
     Image: 'https://horaservices.com/api/uploads/compressed_images/attachment-1706463835447.png',
     title: 'Multi Balloon Round Ring',
     price: '₹5464',
     rating: 4.7,
-    link: "/balloon-decoration/premium-decoration/product/Multi-Balloon-Round-Ring",
+    slug:'Multi-Balloon-Round-Ring',
+    // link: "/balloon-decoration/premium-decoration/product/Multi-Balloon-Round-Ring",
   },
 
   {
@@ -440,7 +441,8 @@ export const PremiumData = [
     title: 'Unicorn Theme Birthday Surprise',
     price: '₹8657',
     rating: 4.6,
-    link: "/balloon-decoration/premium-decoration/product/Unicorn-Theme-Birthday-Surprise",
+    slug:'Unicorn-Theme-Birthday-Surprise',
+    // link: "/balloon-decoration/premium-decoration/product/Unicorn-Theme-Birthday-Surprise",
   },
 
 ];
