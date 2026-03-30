@@ -21,7 +21,7 @@ const UrgentBookingModal = ({ onClose ,onWhatsApp}) => {
         </p>
 
    <button className="whatsapp-btn" onClick={onWhatsApp}>
-  <Image src={WhatsAppIcon} alt="whatsapp" className="wa-icon" />
+  <Image src={WhatsAppIcon} alt="whatsapp"  />
   Book On WhatsApp
 </button>
 

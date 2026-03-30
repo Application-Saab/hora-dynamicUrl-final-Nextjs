@@ -5,7 +5,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  z-index: 9999;
+  z-index: 999999;
 }
 
 .login-card {

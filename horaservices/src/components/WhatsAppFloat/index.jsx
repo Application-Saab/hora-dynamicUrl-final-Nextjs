@@ -37,7 +37,7 @@ export default function WhatsAppFloat({
           <div className="wa-text">{texts[index]}</div>
         </div>
 
-        <div className="wa-icon">
+        <div className="what-icon">
           <Image
             src={whatsappIcon}
             alt="whatsapp"
