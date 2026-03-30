@@ -582,7 +582,13 @@ useEffect(() => {
     }, 300);
   };
 
-
+const generateSlug = (name) => {
+  return name
+    ?.toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "");
+};
   const handleCheckout = (subCategory, product, selectedAddOnProduct) => {
     const totalPrice = calculateTotalPrice(product.price); // ✅ Calculate total
 
@@ -605,6 +611,7 @@ useEffect(() => {
         selectedAddOnProduct: JSON.stringify(selectedAddOnProduct),
         itemQuantities: JSON.stringify(itemQuantities),
         totalAmount: totalPrice,
+          slug: product.slug || generateSlug(product.name),
       },
     });
   };

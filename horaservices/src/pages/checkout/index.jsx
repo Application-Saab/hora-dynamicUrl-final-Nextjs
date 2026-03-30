@@ -52,6 +52,7 @@ const Checkout = () => {
     totalAmount,
   } = router.query;
   let { subCategory, product } = router.query;
+  const productSlugFromUrl = router.query.slug;
   const urlParams = new URLSearchParams(window.location.search);
   const category = urlParams.get("catValue");
   const selectedAddOnProduct = router.query.selectedAddOnProduct
@@ -403,31 +404,73 @@ const onContinueClick = async () => {
     }
   };
 
-  const contactUsRedirect = (category, cityName) => {
-    const categoryMessages = {
-      "kids-birthday-decoration": "kids birthday decoration",
-      "birthday-decoration": "birthday decoration",
-      "anniversary-decoration": "anniversary decoration",
-      "baby-shower-decoration": "baby shower decoration",
-      "welcome-baby-decoration": "welcome baby decoration",
-      "first-night-decoration": "first night decoration",
-      "premium-decoration": "premium decoration",
-      "haldi-mehendi-decoration": "haldi & mehendi decoration",
-      "Wedding": "wedding decoration",
-      "bachelorette-decoration": "bachelorette decoration",
-    };
-    let categoryText = categoryMessages[category] || "decoration";
-    let message = `Hi, I want to place ${categoryText} order urgently`;
-    if (cityName) {
-      message += ` for ${cityName}, can you help me pls!`;
-    } else {
-      message += ", can you help me pls!";
-    }
-    window.open(
-      `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+ const contactUsRedirect = ({
+  category,
+  city,
+  selectedDate,
+  selectedTimeSlot,
+  address,
+  totalAmount,
+  product,
+  selectedAddOnProduct,
+  comment,
+}) => {
+  const categoryMessages = {
+    "kids-birthday-decoration": "kids birthday decoration",
+    "birthday-decoration": "birthday decoration",
+    "anniversary-decoration": "anniversary decoration",
+    "baby-shower-decoration": "baby shower decoration",
+    "welcome-baby-decoration": "welcome baby decoration",
+    "first-night-decoration": "first night decoration",
+    "premium-decoration": "premium decoration",
+    "haldi-mehendi-decoration": "haldi & mehendi decoration",
+    "Wedding": "wedding decoration",
+    "bachelorette-decoration": "bachelorette decoration",
   };
+
+  let categoryText = categoryMessages[category] || "decoration";
+const basePath = router.query.from || "";
+  const productSlug =
+  product?.slug ||
+  router.query.slug ||
+  product?.name?.toLowerCase().replace(/\s+/g, "-");
+
+  const formattedDate = selectedDate
+    ? new Date(selectedDate).toLocaleDateString("en-GB")
+    : "N/A";
+
+  const message = `
+Hi, I want to place ${categoryText} order urgently for ${city || "N/A"}.
+
+*Order Details:*
+Order Date: ${formattedDate}
+Address: ${address ? address : "Not Provided"}
+GoogleMapLocation: https://www.google.com/maps/search/?q=${encodeURIComponent(address || "India")}
+Arrival Time: ${selectedTimeSlot || "Not Selected"}
+
+*Amount: ₹${totalAmount || 0}*
+
+*Comments:*
+${comment || "No Comments"}
+
+*Add-On Items:*
+${
+  selectedAddOnProduct?.length
+    ? selectedAddOnProduct.join(", ")
+    : "No Add-ons"
+}
+
+*Product Name:* ${
+  product?.product_name || product?.name || "No Product Found"
+}
+
+*Product Page:* https://horaservices.com${basePath}/product/${productSlug}
+`;
+  window.open(
+    `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
 
 
   const contactUsRedirection = (category, cityName) => {
@@ -781,7 +824,19 @@ const onContinueClick = async () => {
         </button>
       </div>
   {combinedDateTimeError && !isClosed && (
-              <UrgentBookingModal  onClose={() => { setIsClosed(true); setCombinedDateTimeError(false);}} onWhatsApp={() => contactUsRedirect(category, cityName)}  />
+              <UrgentBookingModal  onClose={() => { setIsClosed(true); setCombinedDateTimeError(false);}} onWhatsApp={() =>
+  contactUsRedirect({
+    category,
+    city: cityName,
+    selectedDate,
+    selectedTimeSlot,
+    address,
+    totalAmount,
+    product,
+    selectedAddOnProduct,
+    comment: getFinalComment(),
+  })
+} />
             )}
     </div>
   );

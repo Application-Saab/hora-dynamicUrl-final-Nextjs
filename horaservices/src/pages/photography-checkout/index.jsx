@@ -392,7 +392,82 @@ const balanceAmount = totalAmount - advanceAmount;
   }
 
 
+const contactUsRedirect = ({
+  category,
+  city,
+  selectedDate,
+  selectedTimeSlot,
+  address,
+  totalAmount,
+  product,
+  selectedAddOnProduct,
+  comment,
+}) => {
+  const categoryMessages = {
+    "Birthday-Photography": "birthday photography",
+    "Anniversary-Photography": "anniversary photography",
+    "House-warming-Photography": "house warming photography",
+    "Naming-ceremony-Photography": "naming ceremony photography",
+    "Bachelorette-Photography": "bachelorette photography",
+    "Baby-Shower-Photography": "baby shower photography",
+    "Engagement-Photography": "engagement photography",
+    "Wedding-Photography": "wedding photography",
+    "Maternity-Photography": "maternity photography",
+    "New-Born-Baby-Photography": "new born baby photography",
+    "Intimate-Gathering": "intimate gathering photography",
+  };
 
+  let categoryText =
+    categoryMessages[category] ||
+    category?.replace(/-/g, " ").toLowerCase() ||
+    "photography";
+
+  const basePath = router.query.from || "";
+
+  const productSlug =
+    product?.slug ||
+    router.query.slug ||
+    product?.name?.toLowerCase().replace(/\s+/g, "-");
+
+  const formattedDate = selectedDate
+    ? new Date(selectedDate).toLocaleDateString("en-GB")
+    : "N/A";
+
+  const message = `
+Hi, I want to place ${categoryText} order urgently for ${city || "N/A"}.
+
+*Order Details:*
+Order Date: ${formattedDate}
+Address: ${address ? address : "Not Provided"}
+GoogleMapLocation: https://www.google.com/maps/search/?q=${encodeURIComponent(address || "India")}
+Arrival Time: ${selectedTimeSlot || "Not Selected"}
+
+*Amount: ₹${totalAmount || 0}*
+
+*Comments:*
+${comment || "No Comments"}
+
+*Add-On Items:*
+${
+  selectedAddOnProduct?.length
+    ? selectedAddOnProduct.join(", ")
+    : "No Add-ons"
+}
+
+*Service:* Photography
+
+*Product Name:* ${
+    product?.product_name || product?.name || "No Product Found"
+  }
+
+*Product Page:* https://horaservices.com${basePath}/product/${productSlug}
+`;
+
+  window.open(
+    `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
 const contactUsRedirection = (productName) => {
   // productName example: "Candid Anniversary Photography Package"
 
@@ -741,7 +816,17 @@ const contactUsRedirection = (productName) => {
       setIsClosed(true);
       setCombinedDateTimeError(false);
     }}
-    onWhatsApp={() => contactUsRedirect(category, cityName)}
+    onWhatsApp={() =>
+  contactUsRedirect({
+    city,
+    selectedDate,
+    selectedTimeSlot,
+    address,
+    totalAmount,
+    product,
+    comment,
+  })
+}
   />
 )}
       </div>
