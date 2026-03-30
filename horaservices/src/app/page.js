@@ -4,6 +4,15 @@ import { useEffect } from "react";
 import axios from "axios";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import {
+  BASE_URL,
+  PAYMENT_STATUS,
+  UPDATE_ORDER_STATUS,
+} from "@/utils/apiconstants";
+import { getHomeOrganizationSchema } from "@/utils/schema";
+import HomeContent from "@/components/HomeContent";
+import { useLayoutEffect } from "react";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 
