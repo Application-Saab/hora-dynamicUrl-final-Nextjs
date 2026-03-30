@@ -74,7 +74,6 @@ function MyApp({ Component, pageProps }) {
 
 
   useEffect(() => {
-    console.log("visitor cliced");
     const visitorId = getVisitorId();
     console.log('visitor id' , visitorId);
     const { device, os } = getDeviceInfo();
