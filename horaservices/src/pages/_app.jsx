@@ -73,32 +73,33 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
 
-  // useEffect(() => {
-  //   const visitorId = getVisitorId();
-  //   console.log('visitor id' , visitorId);
-  //   const { device, os } = getDeviceInfo();
-  //   const browser = getBrowserInfo();
-  //   console.log(JSON.stringify({
-  //       visitorId,
-  //       device,
-  //       os,
-  //       browser, 
-  //       page: window.location.pathname, // 👈 include page path
-  //     }))
+  useEffect(() => {
+    console.log("visitor cliced");
+    const visitorId = getVisitorId();
+    console.log('visitor id' , visitorId);
+    const { device, os } = getDeviceInfo();
+    const browser = getBrowserInfo();
+    console.log(JSON.stringify({
+        visitorId,
+        device,
+        os,
+        browser, 
+        page: window.location.pathname, // 👈 include page path
+      }))
 
-  //   // Track daily visit with page info
-  //   fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({
-  //       visitorId,
-  //       device,
-  //       os,
-  //       browser, 
-  //       page: window.location.pathname, // 👈 include page path
-  //     }),
-  //   });
-  // }, []);
+    // Track daily visit with page info
+    fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        visitorId,
+        device,
+        os,
+        browser, 
+        page: window.location.pathname, // 👈 include page path
+      }),
+    });
+  }, []);
   
   const requestPermission = async () => {
     try {
