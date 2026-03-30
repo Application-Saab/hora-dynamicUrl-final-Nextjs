@@ -17,6 +17,7 @@ import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
+import VisitorTracker from "@/utils/VisitorTracker";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -230,6 +231,9 @@ function MyApp({ Component, pageProps }) {
 
                   <div className="whatsapp-container">
                     <WhatsAppIcon router={router} />
+                  </div>
+                  <div>
+                    <VisitorTracker/>
                   </div>
                 </PageLayout>
               </ChatProviderMain>
