@@ -18,9 +18,7 @@ import VisitorTracker from "@/utils/VisitorTracker";
 
 export default function Home() {
   const router = useRouter();
-
 const pathname = usePathname();
-
   const schemaOrg = getHomeOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
 
@@ -83,6 +81,34 @@ const pathname = usePathname();
     checkPaymentStatus(transactionId);
   }
   }, [router]);
+
+   useEffect(() => {
+      console.log("visitor cliced");
+      const visitorId = getVisitorId();
+      console.log('visitor id' , visitorId);
+      const { device, os } = getDeviceInfo();
+      const browser = getBrowserInfo();
+      console.log(JSON.stringify({
+          visitorId,
+          device,
+          os,
+          browser, 
+          page: window.location.pathname, // 👈 include page path
+        }))
+  
+      // Track daily visit with page info
+      fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          visitorId,
+          device,
+          os,
+          browser, 
+          page: window.location.pathname, // 👈 include page path
+        }),
+      });
+    }, []);
   
   useEffect(() => {
     // Google Tag Manager script for GTM
@@ -138,8 +164,10 @@ const pathname = usePathname();
          <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
          <meta property="og:type" content="website" />
      </Head>
-
       <HomeContent />
+      <div>
+        <VisitorTracker/>
+      </div>
     </>
   );
 }
