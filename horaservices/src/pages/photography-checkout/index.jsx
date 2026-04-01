@@ -25,12 +25,19 @@ import PinIcon from "../../assets/Pincode.jpeg";
 import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 import UrgentBookingModal from '@/components/UrgentBookingModal';
+import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
 const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
    const scriptTag = JSON.stringify(schemaOrg);
   let { product, totalAmount, orderType,duration } = router.query;
+const from = router.query.from || "";
 
+let category =
+  router.query.catValue ||
+  product?.tag?.[0]?.name ||
+  from.split("/")[2] ||
+  "photography";
  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
 
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
@@ -60,6 +67,7 @@ const Checkout = () => {
   const [productImage, setProductImage] = useState(null);
   // const [productDuration, setProductDuration] = useState(null);
   const [productData, setProductData] = useState(null);
+
 
   if (product) {
     product = JSON.parse(product)
@@ -390,7 +398,6 @@ const balanceAmount = totalAmount - advanceAmount;
       setLoading(false); // Hide loader
     }
   }
-
 
 
 const contactUsRedirection = (productName) => {
@@ -736,13 +743,27 @@ const contactUsRedirection = (productName) => {
   </button>
 </div>
 {combinedDateTimeError && !isClosed && (
-  <UrgentBookingModal
-    onClose={() => {
-      setIsClosed(true);
-      setCombinedDateTimeError(false);
-    }}
-    onWhatsApp={() => contactUsRedirect(category, cityName)}
-  />
+ <UrgentBookingModal
+  onClose={() => {
+    setIsClosed(true);
+    setCombinedDateTimeError(false);
+  }}
+  onWhatsApp={() =>
+    contactUsRedirect({
+      type: "photography",
+      category,
+      city,
+      selectedDate,
+      selectedTimeSlot,
+      address,
+      totalAmount,
+      product,
+      selectedAddOnProduct,
+      comment,
+      router
+    })
+  }
+/>
 )}
       </div>
   );

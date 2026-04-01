@@ -35,7 +35,7 @@
 }
 
 /* Icon */
-.wa-icon {
+.what-icon {
   position: absolute;
   top: -7px;
   right: -12px;
@@ -49,13 +49,13 @@
   border-radius: 50%; /* circle banane ke liye */
 }
 
-.wa-icon img {
+.what-icon img {
   width: clamp(50px, 55px, 60px);
 }
 
 /* Wave */
-.wa-icon::before,
-.wa-icon::after {
+.what-icon::before,
+.what-icon::after {
   content: "";
   position: absolute;
   width: 60%;
@@ -66,7 +66,7 @@
   z-index: -1;
 }
 
-.wa-icon::after {
+.what-icon::after {
   animation-delay: 3s;
 }
 
