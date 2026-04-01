@@ -25,12 +25,19 @@ import PinIcon from "../../assets/Pincode.jpeg";
 import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 import UrgentBookingModal from '@/components/UrgentBookingModal';
+import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
 const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
    const scriptTag = JSON.stringify(schemaOrg);
   let { product, totalAmount, orderType,duration } = router.query;
+const from = router.query.from || "";
 
+let category =
+  router.query.catValue ||
+  product?.tag?.[0]?.name ||
+  from.split("/")[2] ||
+  "photography";
  const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
 
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
@@ -60,6 +67,7 @@ const Checkout = () => {
   const [productImage, setProductImage] = useState(null);
   // const [productDuration, setProductDuration] = useState(null);
   const [productData, setProductData] = useState(null);
+
 
   if (product) {
     product = JSON.parse(product)
@@ -392,82 +400,6 @@ const balanceAmount = totalAmount - advanceAmount;
   }
 
 
-const contactUsRedirect = ({
-  category,
-  city,
-  selectedDate,
-  selectedTimeSlot,
-  address,
-  totalAmount,
-  product,
-  selectedAddOnProduct,
-  comment,
-}) => {
-  const categoryMessages = {
-    "Birthday-Photography": "birthday photography",
-    "Anniversary-Photography": "anniversary photography",
-    "House-warming-Photography": "house warming photography",
-    "Naming-ceremony-Photography": "naming ceremony photography",
-    "Bachelorette-Photography": "bachelorette photography",
-    "Baby-Shower-Photography": "baby shower photography",
-    "Engagement-Photography": "engagement photography",
-    "Wedding-Photography": "wedding photography",
-    "Maternity-Photography": "maternity photography",
-    "New-Born-Baby-Photography": "new born baby photography",
-    "Intimate-Gathering": "intimate gathering photography",
-  };
-
-  let categoryText =
-    categoryMessages[category] ||
-    category?.replace(/-/g, " ").toLowerCase() ||
-    "photography";
-
-  const basePath = router.query.from || "";
-
-  const productSlug =
-    product?.slug ||
-    router.query.slug ||
-    product?.name?.toLowerCase().replace(/\s+/g, "-");
-
-  const formattedDate = selectedDate
-    ? new Date(selectedDate).toLocaleDateString("en-GB")
-    : "N/A";
-
-  const message = `
-Hi, I want to place ${categoryText} order urgently for ${city || "N/A"}.
-
-*Order Details:*
-Order Date: ${formattedDate}
-Address: ${address ? address : "Not Provided"}
-GoogleMapLocation: https://www.google.com/maps/search/?q=${encodeURIComponent(address || "India")}
-Arrival Time: ${selectedTimeSlot || "Not Selected"}
-
-*Amount: ₹${totalAmount || 0}*
-
-*Comments:*
-${comment || "No Comments"}
-
-*Add-On Items:*
-${
-  selectedAddOnProduct?.length
-    ? selectedAddOnProduct.join(", ")
-    : "No Add-ons"
-}
-
-*Service:* Photography
-
-*Product Name:* ${
-    product?.product_name || product?.name || "No Product Found"
-  }
-
-*Product Page:* https://horaservices.com${basePath}/product/${productSlug}
-`;
-
-  window.open(
-    `https://wa.me/917338584828?text=${encodeURIComponent(message)}`,
-    "_blank"
-  );
-};
 const contactUsRedirection = (productName) => {
   // productName example: "Candid Anniversary Photography Package"
 
@@ -811,23 +743,27 @@ const contactUsRedirection = (productName) => {
   </button>
 </div>
 {combinedDateTimeError && !isClosed && (
-  <UrgentBookingModal
-    onClose={() => {
-      setIsClosed(true);
-      setCombinedDateTimeError(false);
-    }}
-    onWhatsApp={() =>
-  contactUsRedirect({
-    city,
-    selectedDate,
-    selectedTimeSlot,
-    address,
-    totalAmount,
-    product,
-    comment,
-  })
-}
-  />
+ <UrgentBookingModal
+  onClose={() => {
+    setIsClosed(true);
+    setCombinedDateTimeError(false);
+  }}
+  onWhatsApp={() =>
+    contactUsRedirect({
+      type: "photography",
+      category,
+      city,
+      selectedDate,
+      selectedTimeSlot,
+      address,
+      totalAmount,
+      product,
+      selectedAddOnProduct,
+      comment,
+      router
+    })
+  }
+/>
 )}
       </div>
   );
