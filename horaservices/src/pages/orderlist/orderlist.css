@@ -118,7 +118,7 @@ font-size: clamp(13px, calc(14.84 * 100vw / 393), 17px);
   display: flex;
   flex-direction: column;
   align-items: start;
-  justify-content: start;
+  justify-content: flex-start;
 }
 .view-details {
   padding: 4px 18px !important;

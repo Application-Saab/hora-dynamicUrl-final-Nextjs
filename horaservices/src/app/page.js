@@ -13,8 +13,8 @@ import {
 import { getHomeOrganizationSchema } from "@/utils/schema";
 import HomeContent from "@/components/HomeContent";
 import { useLayoutEffect } from "react";
-import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
-import VisitorTracker from "@/utils/VisitorTracker";
+// import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
+// import VisitorTracker from "@/utils/VisitorTracker";
 
 export default function Home() {
   const router = useRouter();
@@ -82,33 +82,33 @@ const pathname = usePathname();
   }
   }, [router]);
 
-   useEffect(() => {
-      console.log("visitor cliced");
-      const visitorId = getVisitorId();
-      console.log('visitor id' , visitorId);
-      const { device, os } = getDeviceInfo();
-      const browser = getBrowserInfo();
-      console.log(JSON.stringify({
-          visitorId,
-          device,
-          os,
-          browser, 
-          page: window.location.pathname, // 👈 include page path
-        }))
+  //  useEffect(() => {
+  //     console.log("visitor cliced");
+  //     const visitorId = getVisitorId();
+  //     console.log('visitor id' , visitorId);
+  //     const { device, os } = getDeviceInfo();
+  //     const browser = getBrowserInfo();
+  //     console.log(JSON.stringify({
+  //         visitorId,
+  //         device,
+  //         os,
+  //         browser, 
+  //         page: window.location.pathname, // 👈 include page path
+  //       }))
   
-      // Track daily visit with page info
-      fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          visitorId,
-          device,
-          os,
-          browser, 
-          page: window.location.pathname, // 👈 include page path
-        }),
-      });
-    }, []);
+  //     // Track daily visit with page info
+  //     fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         visitorId,
+  //         device,
+  //         os,
+  //         browser, 
+  //         page: window.location.pathname, // 👈 include page path
+  //       }),
+  //     });
+  //   }, []);
   
   useEffect(() => {
     // Google Tag Manager script for GTM
@@ -165,9 +165,9 @@ const pathname = usePathname();
          <meta property="og:type" content="website" />
      </Head>
       <HomeContent />
-      <div>
+      {/* <div>
         <VisitorTracker/>
-      </div>
+      </div> */}
     </>
   );
 }
