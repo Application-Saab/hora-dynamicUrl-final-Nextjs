@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./cateringTabs.css";
 import bulkIcon from "@/assets/bulk.svg";
 import liveIcon from "@/assets/live.svg";
 import Image from "next/image";
-const CateringTabs =({ onChange }) => {
+import { useRouter } from "next/router";
+
+const CateringTabs = ({ onChange }) => {
+  const router = useRouter();
   const [active, setActive] = useState("bulk");
+
+  useEffect(() => {
+    if (router.query.type === "liveCatering") {
+      setActive("live");
+    } else {
+      setActive("bulk");
+    }
+  }, [router.query.type]);
+
   const handleClick = (type) => {
     setActive(type);
 
-    // 👇 parent ko bhejo
     if (onChange) {
       onChange(type === "bulk" ? "bulkFood" : "liveCatering");
     }

@@ -156,7 +156,7 @@ const handleContactClick = () => {
   role="button"
   tabIndex={0}
   onClick={() =>
-    goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")
+    goTo("/party-food-delivery-live-catering-buffet")
   }
 >
   <Image src={partyfood} alt="Party Food" className="card-bg-img" />
@@ -324,7 +324,7 @@ Enjoy food delivery with Hora </p>
       Guaranteed support
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet?type=bulkFood")}>Explore Packages</button>
      </div>
       </div>
           {/* Card 5 */}
@@ -372,7 +372,7 @@ Enjoy food delivery with Hora </p>
          Guaranteed support
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet/party-live-buffet-catering")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet?type=liveCatering")}>Explore Packages</button>
      </div>
       </div>
     </div>

@@ -31,10 +31,17 @@ const FoodDelivery = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [foodType, setFoodType] = useState("veg");
-  const [packageType, setPackageType] = useState("bulkFood");
+  const [packageType, setPackageType] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [mealTypes, setMealTypes] = useState([]);
   const [mealList, setMealList] = useState([]);
+  useEffect(() => {
+  if (!router.isReady) return;
+
+  const type = router.query.type;
+
+  setPackageType(type === "liveCatering" ? "liveCatering" : "bulkFood");
+}, [router.isReady, router.query.type]);
   const handlePackageChange = (type) => {
     setPackageType(type);
 
@@ -107,9 +114,11 @@ const FoodDelivery = () => {
     fetchMealTypes();
   }, []);
 
-  useEffect(() => {
-    fetchPackages();
-  }, [packageType, foodType]);
+ useEffect(() => {
+  if (!packageType) return;
+
+  fetchPackages();
+}, [packageType, foodType]);
 
   return (
     <div className="catering-page">
