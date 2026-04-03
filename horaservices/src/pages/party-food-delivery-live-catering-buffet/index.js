@@ -35,6 +35,19 @@ const FoodDelivery = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [mealTypes, setMealTypes] = useState([]);
   const [mealList, setMealList] = useState([]);
+useEffect(() => {
+  const handleBack = () => {
+    if (selectedPackage) {
+      setSelectedPackage(null); // 👈 modal close
+    }
+  };
+
+  window.addEventListener("popstate", handleBack);
+
+  return () => {
+    window.removeEventListener("popstate", handleBack);
+  };
+}, [selectedPackage]);
   useEffect(() => {
   if (!router.isReady) return;
 
@@ -119,7 +132,9 @@ const FoodDelivery = () => {
 
   fetchPackages();
 }, [packageType, foodType]);
-
+const handleCloseModal = () => {
+  setSelectedPackage(null);
+};
   return (
     <div className="catering-page">
 
@@ -151,7 +166,8 @@ const FoodDelivery = () => {
               price={item.price}
               oldPrice={item.oldPrice || item.actualPrice}
               dish={item.dish || item.dishCount}
-              onView={() => setSelectedPackage(item)}
+             onView={() => { setSelectedPackage(item);
+              window.history.pushState(null, "");}}
             />
           ))
         ) : (
@@ -184,7 +200,10 @@ const FoodDelivery = () => {
               price={item.price}
               oldPrice={item.oldPrice || item.actualPrice}
               dish={item.dish || item.dishCount}
-              onView={() => setSelectedPackage(item)}
+              onView={() => {
+  setSelectedPackage(item);
+  window.history.pushState(null, "");
+}}
             />
           ))}
         </div>
@@ -193,7 +212,7 @@ const FoodDelivery = () => {
         <CateringModal
           data={selectedPackage}
           mealTypes={mealTypes}
-          onClose={() => setSelectedPackage(null)}
+         onClose={handleCloseModal}
           allDishes={mealList}
         />
       )}
