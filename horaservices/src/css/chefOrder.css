@@ -1,3 +1,10 @@
+.search-bar-container{
+   display: flex;
+   justify-content: flex-end;
+}
+.search-bar-container {
+  transition: all 0.3s ease;
+}
 .righysercchefinner {
     justify-content: flex-start;
     align-items: flex-start;

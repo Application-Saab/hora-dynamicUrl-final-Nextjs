@@ -28,6 +28,7 @@ import InfoIcon from '../../assets/info.png';
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Popup from '../../utils/popup';
+import SearchBar from "@/components/SearchBar";
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
 
@@ -58,12 +59,14 @@ const CreateOrder = ({ history, currentStep }) => {
     const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] = useState(false);
     const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] = useState(false);
     const [isViewAllExpanded, setIsViewAllExpanded] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const [popupMessage, setPopupMessage] = useState({
         img: "",
         title: "",
         body: "",
         button: "",
     });
+const [searchTerm, setSearchTerm] = useState("");
     // Handler for 'Only Veg' toggle switch
     const handleVegSwitch = () => {
         if (isNonVegSelected) return; // Prevent switching if 'Non-Veg' is selected
@@ -104,7 +107,10 @@ const CreateOrder = ({ history, currentStep }) => {
         }
         return false; // Show nothing if neither are selected
     });
-
+const allDishes = mealList.flatMap((meal) => meal.dish);
+const suggestions = allDishes.filter((dish) =>
+  dish.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
     // Filter the meal list based on selected state
     const filteredMealList = mealList.filter(meal => {
         if (isVegSelected && !isNonVegSelected) {
@@ -600,6 +606,19 @@ const CreateOrder = ({ history, currentStep }) => {
             setIsNonVegSelected(true);
         }
     };
+    useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (!e.target.closest(".search-bar-container")) {
+      setIsSearching(false);
+    }
+  };
+
+  document.addEventListener("click", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("click", handleClickOutside);
+  };
+}, []);
 
     const handleViewAll = (categoryId) => {
         setIsViewAllExpanded(!isViewAllExpanded);
@@ -614,7 +633,58 @@ const CreateOrder = ({ history, currentStep }) => {
                     : [...prevExpanded, categoryId]
         );
     };
+const sortedMealList = [...filteredMealList].sort((a, b) => {
+  if (!searchTerm) return 0;
 
+  const search = searchTerm.toLowerCase();
+
+  const aHasMatch = a.dish.some((dish) =>
+    dish.name.toLowerCase().includes(search)
+  );
+
+  const bHasMatch = b.dish.some((dish) =>
+    dish.name.toLowerCase().includes(search)
+  );
+
+  // ✅ 1. Match wali category upar
+  if (aHasMatch && !bHasMatch) return -1;
+  if (!aHasMatch && bHasMatch) return 1;
+
+  // ✅ 2. Dono match ya dono non-match → alphabetical sort
+  return a.mealObject.name.localeCompare(b.mealObject.name);
+});
+const matched = [];
+const unmatched = [];
+
+filteredMealList.forEach((meal) => {
+  const hasMatch = meal.dish.some((dish) =>
+    dish.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (hasMatch) matched.push(meal);
+  else unmatched.push(meal);
+});
+
+
+const finalMealList = sortedMealList.map((meal) => {
+  if (!searchTerm) return meal;
+
+  const sortedDishes = [...meal.dish].sort((a, b) => {
+    const search = searchTerm.toLowerCase();
+
+    const aMatch = a.name.toLowerCase().includes(search);
+    const bMatch = b.name.toLowerCase().includes(search);
+
+    if (aMatch && !bMatch) return -1;
+    if (!aMatch && bMatch) return 1;
+    return 0;
+  });
+
+  return {
+    ...meal,
+    dish: sortedDishes,
+  };
+});
     if (loading) {
         return <SkeletonLoader loading={true} />;
     };
@@ -682,29 +752,59 @@ const CreateOrder = ({ history, currentStep }) => {
                     </Step>
                 </div>
             </div>
+         
             <div className="order-container chef-bottum">
                 <Row className="d-flex justify-content-start">
                     <div style={{ display: "flex", margin: "5px 0 0" }}>
-                        <div style={{ marginRight: "10px" }}>
-                            <Button
-                                variant={selected === "veg" ? "success" : "outline-success"}
-                                onClick={() => handleSwitchChange("veg")}
-                                className="cuisinebtn"
-                            >
-                                Only Veg
-                            </Button>
-                        </div>
-                        <div>
-                            <Button
-                                variant={
-                                    selected === "non-veg" ? "danger" : "outline-danger"
-                                }
-                                onClick={() => handleSwitchChange("non-veg")}
-                                className="cuisinebtn"
-                            >
-                                Non-Veg
-                            </Button>
-                        </div>
+                 
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+  }}
+>
+  {!isSearching && (
+    <div style={{ display: "flex", gap: "10px" }}>
+      <Button
+        variant={selected === "veg" ? "success" : "outline-success"}
+        onClick={() => handleSwitchChange("veg")}
+        className="cuisinebtn"
+      >
+        Veg
+      </Button>
+
+      <Button
+        variant={selected === "non-veg" ? "danger" : "outline-danger"}
+        onClick={() => handleSwitchChange("non-veg")}
+        className="cuisinebtn"
+      >
+        Non-Veg
+      </Button>
+    </div>
+  )}
+
+  <div
+    className="search-bar-container"
+    style={{
+      flex: 1,
+      marginLeft: isSearching ? 0 : "10px",
+      transition: "all 0.3s ease",
+    }}
+  >
+    <SearchBar
+  searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
+  suggestions={suggestions}
+  isSearching={isSearching}   // 🔥 add this
+  onFocus={() => setIsSearching(true)}
+  onSelect={(dish) => {
+    handleIncreaseQuantity(dish, selectedDishes.includes(dish._id));
+    setIsSearching(false);
+  }}
+/>
+  </div>
+</div>
                     </div>
                     <div className="chef-divider" style={{ marginTop: "10px" }}></div>
                     <div style={{ margin: "10px 0 0 0" }}>
@@ -732,7 +832,7 @@ const CreateOrder = ({ history, currentStep }) => {
                     <Col>
                         {selectedCuisines.length > 0 && (
                             <ListGroup className="dish-list">
-                                {mealList.map((meal) => (
+                                {finalMealList.map((meal) => (
                                     <div className='w-100'>
                                         <ListGroupItem key={meal._id} className="dish-item">
                                             {renderDishItem({ item: meal })}
