@@ -60,6 +60,7 @@ const CreateOrder = ({ history, currentStep }) => {
     const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] = useState(false);
     const [isViewAllExpanded, setIsViewAllExpanded] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
+const [selectedSearchDishes, setSelectedSearchDishes] = useState([]);
     const [popupMessage, setPopupMessage] = useState({
         img: "",
         title: "",
@@ -634,24 +635,26 @@ const suggestions = allDishes.filter((dish) =>
         );
     };
 const sortedMealList = [...filteredMealList].sort((a, b) => {
-  if (!searchTerm) return 0;
+  if (selectedSearchDishes.length === 0) return 0;
 
-  const search = searchTerm.toLowerCase();
-
-  const aHasMatch = a.dish.some((dish) =>
-    dish.name.toLowerCase().includes(search)
+  const aIndex = selectedSearchDishes.findIndex((selectedDish) =>
+    a.dish.some((d) => d._id === selectedDish._id)
   );
 
-  const bHasMatch = b.dish.some((dish) =>
-    dish.name.toLowerCase().includes(search)
+  const bIndex = selectedSearchDishes.findIndex((selectedDish) =>
+    b.dish.some((d) => d._id === selectedDish._id)
   );
 
-  // ✅ 1. Match wali category upar
-  if (aHasMatch && !bHasMatch) return -1;
-  if (!aHasMatch && bHasMatch) return 1;
+  // 🔥 jisme selected dish hai → wo upar
+  if (aIndex !== -1 && bIndex === -1) return -1;
+  if (aIndex === -1 && bIndex !== -1) return 1;
 
-  // ✅ 2. Dono match ya dono non-match → alphabetical sort
-  return a.mealObject.name.localeCompare(b.mealObject.name);
+  // 🔥 order maintain (jo pehle select hua wo upar)
+  if (aIndex !== -1 && bIndex !== -1) {
+    return aIndex - bIndex;
+  }
+
+  return 0;
 });
 const matched = [];
 const unmatched = [];
@@ -667,16 +670,19 @@ filteredMealList.forEach((meal) => {
 
 
 const finalMealList = sortedMealList.map((meal) => {
-  if (!searchTerm) return meal;
+  if (selectedSearchDishes.length === 0) return meal;
 
   const sortedDishes = [...meal.dish].sort((a, b) => {
-    const search = searchTerm.toLowerCase();
+    const aIndex = selectedSearchDishes.findIndex((d) => d._id === a._id);
+    const bIndex = selectedSearchDishes.findIndex((d) => d._id === b._id);
 
-    const aMatch = a.name.toLowerCase().includes(search);
-    const bMatch = b.name.toLowerCase().includes(search);
+    if (aIndex !== -1 && bIndex === -1) return -1;
+    if (aIndex === -1 && bIndex !== -1) return 1;
 
-    if (aMatch && !bMatch) return -1;
-    if (!aMatch && bMatch) return 1;
+    if (aIndex !== -1 && bIndex !== -1) {
+      return aIndex - bIndex;
+    }
+
     return 0;
   });
 
@@ -798,10 +804,33 @@ const finalMealList = sortedMealList.map((meal) => {
   suggestions={suggestions}
   isSearching={isSearching}   // 🔥 add this
   onFocus={() => setIsSearching(true)}
-  onSelect={(dish) => {
-    handleIncreaseQuantity(dish, selectedDishes.includes(dish._id));
-    setIsSearching(false);
-  }}
+onSelect={(dish) => {
+  setSelectedSearchDishes((prev) => {
+    // 🔥 duplicate avoid
+    if (prev.find((d) => d._id === dish._id)) return prev;
+    return [...prev, dish];
+  });
+
+  const parentMeal = mealList.find((meal) =>
+    meal.dish.some((d) => d._id === dish._id)
+  );
+
+  if (parentMeal) {
+    setExpandedCategories((prev) => {
+      if (!prev.includes(parentMeal.mealObject._id)) {
+        return [...prev, parentMeal.mealObject._id];
+      }
+      return prev;
+    });
+  }
+
+  handleIncreaseQuantity(dish, selectedDishes.includes(dish._id));
+  setIsSearching(false);
+
+  setTimeout(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, 100);
+}}
 />
   </div>
 </div>
@@ -833,7 +862,7 @@ const finalMealList = sortedMealList.map((meal) => {
                         {selectedCuisines.length > 0 && (
                             <ListGroup className="dish-list">
                                 {finalMealList.map((meal) => (
-                                    <div className='w-100'>
+                                    <div className='w-100' id={meal.mealObject._id}>
                                         <ListGroupItem key={meal._id} className="dish-item">
                                             {renderDishItem({ item: meal })}
                                         </ListGroupItem>
