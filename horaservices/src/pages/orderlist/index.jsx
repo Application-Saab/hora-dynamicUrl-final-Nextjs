@@ -215,7 +215,7 @@ const Orderlist = () => {
       try {
         // Fetch executor details from the API
         const response = await fetch(
-          `https://horaservices.com:3000/api/admin/getUserDetails/${orderId}`
+          `${BASE_URL}/api/admin/getUserDetails/${orderId}`
         );
 
         console.log(response, "response");
