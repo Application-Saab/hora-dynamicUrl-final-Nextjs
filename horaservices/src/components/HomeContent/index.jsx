@@ -17,10 +17,10 @@ import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.svg";
 import Entertainment from "@/assets/Home/Entertainment.svg";
 import LiveCatering from "@/assets/Home/LiveCatering.svg";
 import Homevideo from '../../../public/assets/Homevideo.mp4';
-import Photographybanner from '@/assets/Home/Photographybanner.jpg'
-import decorationbanner from '@/assets/Home/decorationbanner.jpg'
-import chefforparty from "@/assets/Home/chefforparty.jpg"
-import partyfood from "@/assets/Home/partyfood.jpg"
+import Photographybanner from '@/assets/Home/Photographybanner.webp'
+import decorationbanner from '@/assets/Home/decorationbanner.webp'
+import chefforparty from "@/assets/Home/chefforparty.webp"
+import partyfood from "@/assets/Home/partyfood.webp"
 import photo1 from "@/assets/Home/photo1.svg"
 import photo2 from "@/assets/Home/photo2.svg"
 import photo3 from "@/assets/Home/photo3.svg"
