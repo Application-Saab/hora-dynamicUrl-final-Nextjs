@@ -50,12 +50,22 @@ import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
 import NationPride from "@/assets/categories/NationPride.jpeg";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
+import BirthdayCalendarPopup from "@/components/DatePopup";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
     const pathname = usePathname();
   const [city, setCity] = useState("");
   const [catValue, setCatValue] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+const scrollTimeoutRef = useRef(null);
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setShowPopup(true);
+  }, 8000); // 5 seconds
+
+  return () => clearTimeout(timer);
+}, []);
   useEffect(() => {
     if (router.isReady) {
       const { catValue: queryCatValue, city: queryCity } = router.query;
@@ -734,6 +744,7 @@ const handleViewDetails = (item) => {
 
         </>
       )}
+      {showPopup && <BirthdayCalendarPopup onClose={() => setShowPopup(false)} />}
     </div>
   );
 
