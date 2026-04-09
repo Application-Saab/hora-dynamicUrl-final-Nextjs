@@ -69,18 +69,19 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
     }
   } // Accessing subCategory and itemName safely
   // selectedDishQuantities = Array.isArray(selectedDishQuantities) ? selectedDishQuantities : [];
-  const data = selectedDishDictionary;
+  const data = selectedDishDictionary || {};
   const [dishPrice, setDishPrice] = useState(selectedDishPrice);
 
-  const selectedMealList = Object.values(data).map(dish => {
-    return {
+  const selectedMealList = Object.values(data || {})
+  .filter(dish => dish) 
+    .map(dish => ({
         name: dish.name,
         image: dish.image,
         price: Number(dish.cuisineArray[0]),
         id: dish._id,
         mealId: dish.mealId
-    };
-});
+    }
+));
 
 const dishObject = selectedMealList.filter(x =>
   x.name !== "Tawa Rotis" &&
@@ -959,7 +960,9 @@ const contactUsRedirection = () => {
             className="dishes-selected"
           >
             {Object.keys(selected_dish_quantities).length > 0 ? (
-              Object.keys(selected_dish_quantities).map((key, index) => (
+              Object.keys(selected_dish_quantities)
+              .filter(key => selected_dish_quantities[key]?.isActive !== false)
+              .map((key, index) => (
                 <RenderDishQuantity
                   key={index}
                   item={selected_dish_quantities[key]}

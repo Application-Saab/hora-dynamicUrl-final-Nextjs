@@ -31,19 +31,21 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
     });
 
   const groupedItems = items.reduce((acc, dish) => {
-    let mealId = dish?.mealId;
-    if (Array.isArray(mealId)) {
+  const realDish = dishMap?.[dish._id];
+  if (!realDish) return acc;
+
+  let mealId = realDish?.mealId;
+  if (Array.isArray(mealId)) {
       mealId = mealId[0];
     }
     const category =
-      dish?.mealObject?.name || mealMap[mealId] || "Others";
+      realDish?.mealObject?.name || mealMap[mealId] || "Others";
     if (!acc[category]) {
       acc[category] = [];
     }
-    acc[category].push(dish);
+   acc[category].push(realDish);
     return acc;
   }, {});
-
   const handleOrderNow = () => {
 
   const selectedDishDictionary = {};
@@ -63,6 +65,7 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
       };
     } 
     else {
+      if (!pkgItem?._id || !dishMap[pkgItem._id]) return;
       selectedDishDictionary[pkgItem._id] = {
         name: pkgItem.name,
         image: pkgItem.image,
@@ -84,7 +87,8 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
     price: item.cuisineArray[0],
     quantity: item.cuisineArray[1],
     unit: item.cuisineArray[2],
-    id: item.mealId
+    id: item.mealId,
+    isActive: item.isActive
   }));
 
   router.push({
