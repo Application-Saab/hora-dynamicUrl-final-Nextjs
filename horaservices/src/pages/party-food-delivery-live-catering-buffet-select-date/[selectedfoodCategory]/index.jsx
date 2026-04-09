@@ -57,7 +57,7 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
   } = router.query;
 
   const [peopleCount, setPeopleCount] = useState(
-    selectedOption === 'party-live-buffet-catering' ? 20 : 10
+    selectedOption === 'party-live-buffet-catering' ? 25 : 10
   );
 
   if (selectedDishDictionary) {
@@ -342,7 +342,7 @@ console.log(dishCount)
     button: "",
   });
 
-  const minPeopleCount = selectedOption === 'party-live-buffet-catering' ? 20 : 10;
+  const minPeopleCount = selectedOption === 'party-live-buffet-catering' ? 25 : 10;
   const maxPeopleCount = 100;
   const step = 5;
 

@@ -101,7 +101,7 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
       isDishSelected: false,
       selectedCount: Object.keys(selectedDishDictionary).length,
       selectedDishQuantities: JSON.stringify(selectedDishQuantities),
-      selectedOption: selectedType
+      selectedOption: selectedType,
     },
   });
 };
@@ -124,9 +124,10 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
           />
         </h2>
         <div className="divider-line"></div>
-        <p className="min-order">
-          Minimum order starts from 10 people
-        </p>
+       <p className="min-order">
+  Minimum order starts from{" "}
+  {data.packageType === "liveCatering" ? 25 : 10} people
+</p>
 
         {/* 🔥 Scrollable Dish List */}
         <div className="dish-list">
