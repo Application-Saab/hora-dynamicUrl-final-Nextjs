@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import CateringCard from "@/components/CateringCard";
 import "@/components/CateringCard/catering.css";
 import CateringBanner from "@/components/CateringBanner";
-import CateringBannerImage from "@/assets/CateringBanner.jpeg";
+import CateringBannerImage from "@/assets/CateringBanner.webp";
 import livebannerImage from "@/assets/livebanner.jpeg";
-import bulkBannerImage from "@/assets/BulkBanner.svg"
+import bulkBannerImage from "@/assets/BulkBanner.webp"
 import BrandBannerIMG from "@/assets/BrandBannerIMG.webp";
 import CateringTabs from "@/components/CateringTabs";
 import BrandBanner from "@/components/BrandBanner";
