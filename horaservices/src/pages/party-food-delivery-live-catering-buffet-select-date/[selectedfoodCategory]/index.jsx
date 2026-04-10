@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
@@ -56,9 +56,28 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
     selectedDishQuantities,
   } = router.query;
 
-  const [peopleCount, setPeopleCount] = useState(
-    selectedOption === 'party-live-buffet-catering' ? 20 : 10
-  );
+   const { packageId } = router.query;
+
+  const [peopleCount, setPeopleCount] = useState(10);
+ const specialPackageIds = [
+    "69c373caa294881c6863251f",
+    "69c372f3a294881c686323b5",
+    "69c369f2a294881c6863148b",
+    "69c3697ca294881c68631381"
+  ];
+
+  const isSpecialPackage = specialPackageIds.includes(String(packageId));
+  
+ useEffect(() => {
+    let count = 10;
+    if (selectedOption === "party-live-buffet-catering") {
+      count = 25;
+    }
+    if (selectedOption === "party-food-delivery") {
+      count = isSpecialPackage ? 20 : 10;
+    }
+    setPeopleCount(count);
+  }, [packageId, selectedOption]);
 
   if (selectedDishDictionary) {
     try {
@@ -69,18 +88,19 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
     }
   } // Accessing subCategory and itemName safely
   // selectedDishQuantities = Array.isArray(selectedDishQuantities) ? selectedDishQuantities : [];
-  const data = selectedDishDictionary;
+  const data = selectedDishDictionary || {};
   const [dishPrice, setDishPrice] = useState(selectedDishPrice);
 
-  const selectedMealList = Object.values(data).map(dish => {
-    return {
+  const selectedMealList = Object.values(data || {})
+  .filter(dish => dish) 
+    .map(dish => ({
         name: dish.name,
         image: dish.image,
         price: Number(dish.cuisineArray[0]),
         id: dish._id,
         mealId: dish.mealId
-    };
-});
+    }
+));
 
 const dishObject = selectedMealList.filter(x =>
   x.name !== "Tawa Rotis" &&
@@ -341,7 +361,13 @@ console.log(dishCount)
     button: "",
   });
 
-  const minPeopleCount = selectedOption === 'party-live-buffet-catering' ? 20 : 10;
+ const minPeopleCount = useMemo(() => {
+  if (selectedOption === 'party-live-buffet-catering') return 25;
+  if (selectedOption === 'party-food-delivery') {
+    return isSpecialPackage ? 20 : 10;
+  }
+  return 10;
+}, [selectedOption, isSpecialPackage]);
   const maxPeopleCount = 100;
   const step = 5;
 
@@ -350,12 +376,12 @@ console.log(dishCount)
   };
 
   const decreasePeopleCount = () => {
-    if (peopleCount > 10) {
-      setPeopleCount(peopleCount - 1);
-    } else {
-      alert("Minimum guest count should be 10");
-    }
-  };
+  if (peopleCount > minPeopleCount) {
+    setPeopleCount(peopleCount - 1);
+  } else {
+    alert(`Minimum guest count should be ${minPeopleCount}`);
+  }
+};
 
   const handleRangeChange = (e) => {
     console.log(e.target.value);
@@ -959,7 +985,9 @@ const contactUsRedirection = () => {
             className="dishes-selected"
           >
             {Object.keys(selected_dish_quantities).length > 0 ? (
-              Object.keys(selected_dish_quantities).map((key, index) => (
+              Object.keys(selected_dish_quantities)
+              .filter(key => selected_dish_quantities[key]?.isActive !== false)
+              .map((key, index) => (
                 <RenderDishQuantity
                   key={index}
                   item={selected_dish_quantities[key]}
