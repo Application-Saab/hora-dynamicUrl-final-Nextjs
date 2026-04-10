@@ -102,6 +102,7 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
       selectedCount: Object.keys(selectedDishDictionary).length,
       selectedDishQuantities: JSON.stringify(selectedDishQuantities),
       selectedOption: selectedType,
+       packageId: data._id,
     },
   });
 };

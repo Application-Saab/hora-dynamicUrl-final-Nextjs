@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
@@ -56,9 +56,28 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
     selectedDishQuantities,
   } = router.query;
 
-  const [peopleCount, setPeopleCount] = useState(
-    selectedOption === 'party-live-buffet-catering' ? 25 : 10
-  );
+   const { packageId } = router.query;
+
+  const [peopleCount, setPeopleCount] = useState(10);
+ const specialPackageIds = [
+    "69c373caa294881c6863251f",
+    "69c372f3a294881c686323b5",
+    "69c369f2a294881c6863148b",
+    "69c3697ca294881c68631381"
+  ];
+
+  const isSpecialPackage = specialPackageIds.includes(String(packageId));
+  
+ useEffect(() => {
+    let count = 10;
+    if (selectedOption === "party-live-buffet-catering") {
+      count = 25;
+    }
+    if (selectedOption === "party-food-delivery") {
+      count = isSpecialPackage ? 20 : 10;
+    }
+    setPeopleCount(count);
+  }, [packageId, selectedOption]);
 
   if (selectedDishDictionary) {
     try {
@@ -342,7 +361,13 @@ console.log(dishCount)
     button: "",
   });
 
-  const minPeopleCount = selectedOption === 'party-live-buffet-catering' ? 25 : 10;
+ const minPeopleCount = useMemo(() => {
+  if (selectedOption === 'party-live-buffet-catering') return 25;
+  if (selectedOption === 'party-food-delivery') {
+    return isSpecialPackage ? 20 : 10;
+  }
+  return 10;
+}, [selectedOption, isSpecialPackage]);
   const maxPeopleCount = 100;
   const step = 5;
 
@@ -351,12 +376,12 @@ console.log(dishCount)
   };
 
   const decreasePeopleCount = () => {
-    if (peopleCount > 10) {
-      setPeopleCount(peopleCount - 1);
-    } else {
-      alert("Minimum guest count should be 10");
-    }
-  };
+  if (peopleCount > minPeopleCount) {
+    setPeopleCount(peopleCount - 1);
+  } else {
+    alert(`Minimum guest count should be ${minPeopleCount}`);
+  }
+};
 
   const handleRangeChange = (e) => {
     console.log(e.target.value);
