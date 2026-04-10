@@ -24,7 +24,7 @@ export default function VisitorTracker() {
 
     console.log("Tracking visit:", payload);
 
-    fetch("http://localhost:5000/api/analytics/track-daily-visit", {
+    fetch("https://horaservices.com/api/analytics/track-daily-visit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
