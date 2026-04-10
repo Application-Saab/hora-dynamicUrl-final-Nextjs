@@ -19,7 +19,7 @@ import { BASE_URL, GET_MEAL_DISH_ENDPOINT } from "@/utils/apiconstants";
 import CateringModal from "@/components/CateringModal";
 import { useRouter } from "next/router";
 import CardSkeleton from "@/components/CardSkeleton";
-
+import { getMealTypes, getPackages } from "@/services/cateringService";
 const brandItems = [
   { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+ HAPPY", sub: "CUSTOMERS" },
   { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -67,70 +67,37 @@ useEffect(() => {
       { shallow: true }
     );
   };
-  const fetchMealTypes = async () => {
-    try {
-      const url = `${BASE_URL}${GET_MEAL_DISH_ENDPOINT}`;
-
-      const requestData = {
-        cuisineId: [],
-        is_dish: foodType === "non-veg" ? 0 : 1,
-      };
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      const result = await res.json();
-
-      setMealList(result?.data || []);
-      const formattedMeals = (result?.data || [])
-        .filter(item => item?.mealObject?._id)
-        .map(item => ({
-          _id: item.mealObject._id,
-          name: item.mealObject.name
-        }));
-
-      setMealTypes(formattedMeals);
-
-    } catch (err) {
-      console.log("Meal API Error:", err);
-    }
-  };
-  // 🔥 Fetch Packages
-  const fetchPackages = async () => {
-    try {
-      setLoading(true);
-
-      let url = `${BASE_URL}/api/food-Package/getAllFoodPackageList?packageType=${packageType}`;
-
-      if (foodType) {
-        url += `&foodType=${foodType}`;
-      }
-
-      const res = await fetch(url);
-      const result = await res.json();
-
-      setData(result?.data || []);
-    } catch (error) {
-      console.log("Package API Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Effects
   useEffect(() => {
-    fetchMealTypes();
-  }, []);
+  const fetchData = async () => {
+    const meals = await getMealTypes(foodType);
 
- useEffect(() => {
+    setMealList(meals);
+
+    const formattedMeals = meals
+      .filter(item => item?.mealObject?._id)
+      .map(item => ({
+        _id: item.mealObject._id,
+        name: item.mealObject.name
+      }));
+
+    setMealTypes(formattedMeals);
+  };
+
+  fetchData();
+}, [foodType]);
+useEffect(() => {
   if (!packageType) return;
 
-  fetchPackages();
+  const fetchData = async () => {
+    setLoading(true);
+
+    const packages = await getPackages(packageType, foodType);
+    setData(packages);
+
+    setLoading(false);
+  };
+
+  fetchData();
 }, [packageType, foodType]);
 const handleCloseModal = () => {
   setSelectedPackage(null);
