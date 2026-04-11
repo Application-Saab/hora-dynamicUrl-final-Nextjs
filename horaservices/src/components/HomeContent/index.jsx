@@ -10,12 +10,12 @@ import "slick-carousel/slick/slick-theme.css";
 import sparkle from "@/assets/Home/sparkle.png"
 
 import { usePathname } from "next/navigation";
-import Decoration from "@/assets/Home/Decoration.svg";
-import PhotoGraphy from "@/assets/Home/Photography.svg";
-import ChefForParty from "@/assets/Home/ChefForParty.svg";
-import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.svg";
-import Entertainment from "@/assets/Home/Entertainment.svg";
-import LiveCatering from "@/assets/Home/LiveCatering.svg";
+import Decoration from "@/assets/Home/Decoration.webp";
+import PhotoGraphy from "@/assets/Home/Photography.webp";
+import ChefForParty from "@/assets/Home/ChefForParty.webp";
+import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.webp";
+import Entertainment from "@/assets/Home/Entertainment.webp";
+import LiveCatering from "@/assets/Home/LiveCatering.webp";
 import Homevideo from '../../../public/assets/Homevideo.mp4';
 import Photographybanner from '@/assets/Home/Photographybanner.webp'
 import decorationbanner from '@/assets/Home/decorationbanner.webp'
@@ -95,16 +95,9 @@ const handleContactClick = () => {
 
       {/* HEADING */}
       <div className="section-heading">
-      <h2 className="heading">
-  <Image
-    src={sparkle}
-    alt="icon"
-    className="heading-icon"
-  />
-  What are you into?
-</h2>
-
-        <p>Choose what you need. We'll handle the rest</p>
+      <h1 className="heading">
+India’s One-Stop Party Services Platform
+</h1>
       </div>
 
 {/* CARD 1 - LEFT IMAGE */}
@@ -115,7 +108,7 @@ const handleContactClick = () => {
   role="button"
   tabIndex={0}
 >
-  <Image src={decorationbanner} alt="Decoration" className="card-bg-img" />
+  <Image src={decorationbanner} alt="balloon decoration for birthday party" className="card-bg-img" />
   <div className="card-content">
     <h3>DECORATION</h3>
     <button
@@ -136,7 +129,7 @@ const handleContactClick = () => {
   tabIndex={0}
   onClick={() => goTo("/photography-page")}
 >
-  <Image src={Photographybanner} alt="Photography" className="card-bg-img" />
+  <Image src={Photographybanner} alt="professional event photography services" className="card-bg-img" />
   <div className="card-content">
     <h3>PHOTOGRAPHY</h3>
     <button
@@ -159,7 +152,7 @@ const handleContactClick = () => {
     goTo("/party-food-delivery-live-catering-buffet")
   }
 >
-  <Image src={partyfood} alt="Party Food" className="card-bg-img" />
+  <Image src={partyfood} alt="party food delivery and catering" className="card-bg-img" />
   <div className="card-content">
     <h3>PARTY FOOD</h3>
     <button
@@ -180,7 +173,7 @@ const handleContactClick = () => {
   onClick={() => goTo("/book-chef-cook-for-party")}
  
 >
-  <Image src={chefforparty} alt="Chef" className="card-bg-img" />
+  <Image src={chefforparty} alt="chef for party at home in India" className="card-bg-img" />
   <div className="card-content">
     <h3>CHEF FOR PARTY</h3>
     <button
@@ -197,7 +190,7 @@ const handleContactClick = () => {
     <h2 className="why-title">
   <Image
     src={sparkle}
-    alt="icon"
+    alt=""
     className="heading-icon"
   />
  Why Choose HORA?
@@ -225,23 +218,23 @@ const handleContactClick = () => {
     Contact Us
   </button>
 </div>
-<ReviewSlider reviews={balloonreviews} title="Customer Reviews" />
+<ReviewSlider reviews={balloonreviews} title="What Our Customers Say About HORA" />
  <div className="services-container">
       {/* Card 1 */}
       <div className="service-card">
-        <Image src={Decoration} alt="Decoration" className="service-card-image" />
+        <Image src={Decoration} alt="party decoration packages by HORA" className="service-card-image" />
         <h3>Decoration</h3>
         <p className="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
           1000+ unique designs – Birthdays, Anniversaries, Baby showers,
           Weddings, and more!
         </p>
         <p className="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
           Get your venue decorated in just 2 hours, indoors or outdoors.
         </p>
          <p className="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
          Best prices, timely service, and support
         </p>
          <div className="package-wrapper">
@@ -251,19 +244,19 @@ const handleContactClick = () => {
 
       {/* Card 2 */}
       <div className="service-card">
-        <Image src={PhotoGraphy} alt="Photography" className="service-card-image" />
+        <Image src={PhotoGraphy} alt="photography packages for parties and events" className="service-card-image" />
         <h3>Photography</h3>
        <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
          100+ Professional Photographers – Best prices, timely service,
           expert support.
         </p>
        <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
         Life time photo storage
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
          Best prices, timely service, and support
         </p>
          <div className="package-wrapper">
@@ -273,26 +266,26 @@ const handleContactClick = () => {
 
       {/* Card 3 */}
       <div className="service-card">
-        <Image src={ChefForParty} alt="Chef for Party" className="service-card-image" />
+        <Image src={ChefForParty} alt="private chef service for parties" className="service-card-image" />
         <h3>Chef for Party</h3>
          <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
         HORA brings professional chefs to your kitchen
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
          They use your ingredients and utensils
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
          Experience 400 restaurant-style dishes.
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
          Affordable & customizable.
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
        Full hygiene control.
         </p>
          <div className="package-wrapper">
@@ -302,25 +295,25 @@ const handleContactClick = () => {
 
       {/* Card 4 */}
       <div className="service-card">
-        <Image src={BulkFoodDelivery} alt="Bulk Food Delivery" className="service-card-image"  />
+        <Image src={BulkFoodDelivery} alt="bulk food delivery for parties" className="service-card-image"  />
         <h3>Bulk Food Delivery</h3>
          <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
 Enjoy food delivery with Hora </p>
           <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
       Best prices , Timely service
         </p>
           <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
       Delicious taste
         </p>
           <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
          Good Packing
         </p>
           <p class="points">
-           <Image src={sparkle} alt="icon" class="points-icon" />
+           <Image src={sparkle} alt="" class="points-icon" />
       Guaranteed support
         </p>
         <div className="package-wrapper">
@@ -329,10 +322,10 @@ Enjoy food delivery with Hora </p>
       </div>
           {/* Card 5 */}
       <div className="service-card">
-        <Image src={Entertainment} alt="Bulk Food Delivery" className="service-card-image" />
+        <Image src={Entertainment} alt="party entertainment services" className="service-card-image" />
         <h3>Entertainment</h3>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
      Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services
         </p>
         <p>
@@ -353,22 +346,22 @@ Enjoy food delivery with Hora </p>
       </div>
           {/* Card 6 */}
           <div className="service-card">
-        <Image src={LiveCatering} alt="Bulk Food Delivery" className="service-card-image" />
+        <Image src={LiveCatering} alt="live catering and buffet service" className="service-card-image" />
         <h3>Live Catering</h3>
          <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
        Best prices , Timely service
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
         Delicious taste
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
         Good packing
         </p>
           <p className="points">
-           <Image src={sparkle} alt="icon" className="points-icon" />
+           <Image src={sparkle} alt="" className="points-icon" />
          Guaranteed support
         </p>
         <div className="package-wrapper">

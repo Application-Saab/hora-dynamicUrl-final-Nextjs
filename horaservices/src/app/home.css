@@ -27,10 +27,13 @@ margin-right: clamp(6.50px, 2.04vw, 9.80px);
 
 }
 .heading {
-  display: flex;
-  align-items: center;
-  gap: 2px; /* image aur text ke beech space */
-  justify-content: center;
+font-family: 'Inter', sans-serif;
+font-weight: 500;
+font-size: clamp(14px, 4.6vw, 20px);
+text-align: center;
+text-align: center;
+color: #000000;
+margin: 0;
 }
 
 .heading-icon {
