@@ -310,7 +310,7 @@ const HeaderCards = ({
               <img src={allPhotos.src} alt="All" />
             </div>
           </div>
-          <p>All</p>
+          <span>All</span>
         </div>
 
         {/* MY PHOTOS */}
@@ -334,7 +334,7 @@ const HeaderCards = ({
                 />
               </div>
             </div>
-            <p>{myPhotosFolder.folderName}</p>
+            <span>{myPhotosFolder.folderName}</span>
           </div>
         ) : (
           <div
@@ -350,7 +350,7 @@ const HeaderCards = ({
                 <img src={myPhoto.src} alt="My Photos" />
               </div>
             </div>
-            <p>My Photos</p>
+            <span>My Photos</span>
           </div>
         )}
 
@@ -373,7 +373,7 @@ const HeaderCards = ({
                 />
               </div>
             </div>
-            <p>{sf.name}</p>
+            <span>{sf.name}</span>
           </div>
         ))}
 
@@ -389,7 +389,7 @@ const HeaderCards = ({
           <div className="circle-img add circle-img-both">
             <span>+</span>
           </div>
-          <p>Create Album</p>
+          <span>Create Album</span>
         </div>
       </div>
 
@@ -439,6 +439,7 @@ const HeaderCards = ({
         isOpen={showCreateFolderPopup}
         onClose={() => setShowCreateFolderPopup(false)}
         title="Create New Folder"
+        titleFontSize="22px"
         onSubmit={handleCreateFolder}
         disabled={isCreateDisabled}
         buttonContent={

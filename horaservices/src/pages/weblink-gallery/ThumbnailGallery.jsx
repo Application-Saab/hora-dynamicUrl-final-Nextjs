@@ -3,16 +3,15 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Slider from "react-slick";
 import Image from 'next/image';
-
 import './gallery.css'; // Ensure this path is correct
-import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is correct
 import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
-import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
 import { BASE_URL } from "@/utils/apiconstants";
 import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGalleryItem";
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import OtpLogin from "@/components/OtpLoginPopup";
 import ArrowImg from '../../assets/arrow.svg'
+import Crossicon from '../../assets/Crossicon.svg'
+import share from '../../assets/share.svg'
 import nextIcon from '../../assets/nextIcon.svg'
 import multiGroup from '../../assets/multiGroup.svg'
 import plusVector from '../../assets/plusVector.svg'
@@ -21,11 +20,9 @@ import shareVector from '../../assets/shareVector.svg'
 import deleteVector from '../../assets/deleteVector.svg'
 import CommonPopup from "@/components/CommonPop";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
+import LazyImage from "@/components/LazyImage";
+import userIcon from "../../assets/userIcon.svg";
 
-
-// If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
-// import "slick-carousel/slick/slick.css"; 
-// import "slick-carousel/slick/slick-theme.css";
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
@@ -63,7 +60,29 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const isSearchActive = isMyPhotosTabActive && isSearching;
   const [isStreamSearching, setIsStremSearching] = useState(false);
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
+  const actionMenuRef = useRef(null);
+  const [limit, setLimit] = useState(3000);
+  const [totalPages, setTotalPages] = useState(1);
 
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        actionMenuRef.current &&
+        !actionMenuRef.current.contains(event.target)
+      ) {
+        setShowActionMenu(false);
+      }
+    };
+
+    if (showActionMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showActionMenu]);
 
   useEffect(() => {
     if (matchedKeys?.length > 0 || myPhotosFolder?.length > 0) {
@@ -111,6 +130,13 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     setLocalUserId(userId)
   }, []);
 
+  const handleSelectImage = (id) => {
+    if (selectedImages.includes(id)) {
+      setSelectedImages(prev => prev.filter(item => item !== id));
+    } else {
+      setSelectedImages(prev => [...prev, id]);
+    }
+  };
 
   const PrevArrow = ({ className, style, onClick }) => {
     return (
@@ -234,11 +260,11 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         .filter(img => img.folderIds?.includes(activeSubFolderId))
         .map(img => img._id);
 
-      if (activeTab !== "my-photos") {
-        if (ids.length === 0) {
-          setIsEditing(true);
-        }
-      }
+      // if (activeTab !== "my-photos") {
+      //   if (ids.length === 0) {
+      //     setIsEditing(true);
+      //   }
+      // }
 
       setSelectedImages(ids);
       setInitialSubfolderImages(ids);
@@ -300,25 +326,26 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       }
       setLoading(true); setError(null);
       try {
-        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
+        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}&pageNo=${currentPage}&limit=${limit}`);
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
 
         // const mainFolder = data.folders.find(
         //   (folder) => folder.folderName === folderName
         // );
-        setSubFolders(data.folder?.subFolders || []);
+        setSubFolders(data.folders[0]?.subFolders || []);
         // setSubFolders(mainFolder?.subFolders || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
-        setAllThumbnails(fetchedThumbnails); setCurrentPage(1);
+        setAllThumbnails(fetchedThumbnails);
+        setTotalPages(data.pagination?.totalPages || 1);
       } catch (fetchError) {
         console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
       } finally { setLoading(false); }
     };
     fetchThumbnails();
-  }, [folderName, customerId]);
+  }, [folderName, customerId, currentPage, limit]);
 
   const handleSubFolderCreated = (newSubFolder) => {
     setSubFolders(prev => [...prev, newSubFolder]);
@@ -334,18 +361,18 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
 
   // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
-  const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
-    if (isIOSMobile) {
-      const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
-      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      const endIndex = startIndex + ITEMS_PER_PAGE;
-      const currentItems = allThumbnails.slice(startIndex, endIndex);
-      return { currentThumbnailsOnPage: currentItems, totalPages: total };
-    } else {
-      // Not iOS mobile: show all thumbnails, no pagination UI
-      return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
-    }
-  }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+  // const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+  //   if (isIOSMobile) {
+  //     const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
+  //     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  //     const endIndex = startIndex + ITEMS_PER_PAGE;
+  //     const currentItems = allThumbnails.slice(startIndex, endIndex);
+  //     return { currentThumbnailsOnPage: currentItems, totalPages: total };
+  //   } else {
+  //     // Not iOS mobile: show all thumbnails, no pagination UI
+  //     return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+  //   }
+  // }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
   // const handleImageClick = useCallback((indexInDisplayedList) => {
   //   let originalIndex;
@@ -440,7 +467,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       id => !selectedImages.includes(id)
     );
 
-    await fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
+    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -520,21 +547,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     <div className="thumbnail-gallery">
       <div>
         <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-          <div className="gallery-header">
-            <div className="gallery-header-content">
-              {typeof handleShareicon === 'function' && (
-                <Image
-                  src={shareIcon}
-                  alt="Share"
-                  className="gallery-share-icon"
-                  onClick={handleShareicon}
-                  width={22}
-                  height={22}
-                />
-              )}
-            </div>
-          </div>
-
           {/* Conditional Pagination Rendering */}
           {isIOSMobile && totalPages > 1 && (
             <div className="gallery-pagination-container">
@@ -548,7 +560,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
         </div>
 
-      {currentThumbnailsOnPage.length > 0 ? (
+        {/* {currentThumbnailsOnPage.length > 0 ? (
         <div className="masonryGrid">
           {currentThumbnailsOnPage.map((thumbnail, indexOnPage) => (
             <LazyImage
@@ -564,7 +576,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         // Show message if on iOS and current page is empty (shouldn't happen with correct totalPages logic)
         // Or if allThumbnails is genuinely empty after loading.
         isIOSMobile && totalPages > 0 && <div className="thumbnail-gallery-status">No photos on this page.</div>
-      )}
+      )} */}
 
         {loading ?
           <HeaderCardsFlashLoader />
@@ -638,13 +650,29 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
 
           {!loading && activeTab === "all" && (
-            <button
-              className="add-new-btn"
-              onClick={() => addMoreImagesRef.current?.click()}
-            >
-              <span className="add-icon">+</span>
-              <span>Add New Photos</span>
-            </button>
+            <div className="buttons-container">
+              <button
+                className="add-new-btn"
+                onClick={() => addMoreImagesRef.current?.click()}
+              >
+                <span className="add-icon">+</span>
+                <span>Add New Photos</span>
+              </button>
+              <button
+                className="share-capsule-btn"
+                onClick={handleShareicon}
+              >
+                <span className="">
+                  {typeof handleShareicon === 'function' && (
+                    <Image
+                      src={share}
+                      alt="share"
+                    />
+                  )}
+                </span>
+                <span>Share Event Capsule</span>
+              </button>
+            </div>
 
           )}
         </div>
@@ -661,101 +689,95 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             if (!files.length) return;
 
             const timestamp = Date.now();
-
-            // ================= TEMP PREVIEW CREATE =================
             const tempThumbnails = files.map((file, index) => {
               const objectUrl = URL.createObjectURL(file);
 
               return {
                 _id: `temp-${timestamp}-${index}`,
+                file,
                 type: file.type.startsWith("video") ? "video" : "image",
                 originalUrl: objectUrl,
-                thumbnailImageUrl: file.type.startsWith("image")
-                  ? objectUrl
-                  : null,
-                videoClipUrl: file.type.startsWith("video")
-                  ? objectUrl
-                  : null,
-                folderIds: [],
-                isTemp: true,
+                thumbnailImageUrl: file.type.startsWith("image") ? objectUrl : null,
+                videoClipUrl: file.type.startsWith("video") ? objectUrl : null,
+                isTemp: true,        
                 uploading: true,
-                stableKey: `temp-${timestamp}-${index}`,
+                uploaded: false,
               };
             });
-
-            // temp IDs store kar lo (replacement ke liye)
-            const tempIds = tempThumbnails.map(t => t._id);
-
-            // UI me instantly show karo
             setAllThumbnails(prev => [...tempThumbnails, ...prev]);
 
-            try {
-              const formData = new FormData();
+            await Promise.all(
+              tempThumbnails.map(async (temp) => {
+                const formData = new FormData();
 
-              files.forEach((file) => {
-                formData.append("images", file);
-              });
+                formData.append("files", temp.file);
 
-              formData.append("folderName", folderName);
-              formData.append("customerId", localUserId);
-              formData.append("phoneNo", localPhoneNumber);
+                formData.append("folderName", folderName);
+                formData.append("customerId", localUserId);
+                formData.append("phoneNo", localPhoneNumber);
 
-              const res = await fetch(
-                "https://mediaprocessv2.horaservices.com/upload-multiple",
-                {
-                  method: "POST",
-                  body: formData,
-                }
-              );
-
-              if (!res.ok) {
-                const err = await res.text();
-                throw new Error(err);
-              }
-
-              const data = await res.json();
-
-              if (data?.images?.length) {
-                const newThumbnails = data.images.map((img, index) => ({
-                  _id: img.imageId,
-                  type: img.videoUrl ? "video" : "image",
-                  originalUrl: img.imageUrl || img.videoUrl,
-                  thumbnailImageUrl: img.thumbnailUrl || null,
-                  videoClipUrl: img.clipUrl || null,
-                  folderIds: [],
-                  stableKey: `new-upload-${img.imageId}-${Date.now()}-${index}`,
-                }));
-
-                // ================= REPLACE TEMP WITH REAL =================
-                setAllThumbnails(prev => {
-                  const withoutCurrentTemps = prev.filter(
-                    item => !tempIds.includes(item._id)
+                try {
+                  const res = await fetch(
+                    "https://mediaprocessv2.horaservices.com/upload",
+                    {
+                      method: "POST",
+                      body: formData,
+                    }
                   );
 
-                  return [...newThumbnails, ...withoutCurrentTemps];
-                });
+                  const data = await res.json();
 
-                // ================= CLEANUP OBJECT URL =================
-                tempThumbnails.forEach(item => {
-                  if (item.originalUrl?.startsWith("blob:")) {
-                    URL.revokeObjectURL(item.originalUrl);
+                  const img = data?.files?.[0];
+
+                  if (img) {
+                    // const newThumb = {
+                    //   _id: img.imageId || Date.now(),
+                    //   type: img.videoUrl ? "video" : "image",
+                    //   originalUrl: img.imageUrl || img.videoUrl,
+                    //   thumbnailImageUrl: img.thumbnailUrl || null,
+                    //   videoClipUrl: img.clipUrl || null,
+                    // };
+                    const newThumb = {
+                      _id: img.imageId || Date.now(),
+                      type: img.videoUrl ? "video" : "image",
+                      originalUrl: img.imageUrl || img.videoUrl,
+                      thumbnailImageUrl: img.thumbnailUrl || null,
+                      videoClipUrl: img.clipUrl || null,
+                      isTemp: true,        
+                      uploading: false,
+                      uploaded: true,
+                    };
+                    setAllThumbnails(prev =>
+                      prev.map(item =>
+                        item._id === temp._id ? newThumb : item
+                      )
+                    );
+
+                    setTimeout(() => {
+                      setAllThumbnails(prev =>
+                        prev.map(item =>
+                          item._id === newThumb._id
+                            ? { ...item, isTemp: false }
+                            : item
+                        )
+                      );
+                    }, 2000);
+
                   }
-                });
-              }
 
-              setIsEditing(false);
+                  URL.revokeObjectURL(temp.originalUrl);
 
-            } catch (err) {
-              console.error("Upload failed:", err);
-              alert("Image upload failed");
+                } catch (err) {
+                  console.error("Upload failed:", err);
+                  alert("Image upload failed");
+                  setAllThumbnails(prev =>
+                    prev.filter(item => item._id !== temp._id)
+                  );
+                }
+              })
+            );
 
-              // error aaye toh temp remove kar do
-              setAllThumbnails(prev =>
-                prev.filter(item => !tempIds.includes(item._id))
-              );
-            } finally {
-              e.target.value = "";
-            }
+            e.target.value = "";
           }}
         />
 
@@ -824,9 +846,24 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       backgroundColor: "transparent",
                       display: "grid",
                     }}
-                    onClick={() => handleImageClick(indexOnPage)}
+                    // onClick={() => handleImageClick(indexOnPage)}
+                    onClick={() => {
+                      if (isEditing) {
+                        handleSelectImage(thumbnail._id);
+                      } else {
+                        handleImageClick(indexOnPage);
+                      }
+                    }}
                   >
                     <div className="image-wrapper" style={{ position: "relative" }}>
+                      {thumbnail.isTemp && (
+                        <div
+                          className={`upload-badge ${thumbnail.uploading ? "uploading" : "uploaded"
+                            }`}
+                        >
+                          {thumbnail.uploading ? "Uploading..." : "Uploaded"}
+                        </div>
+                      )}
                       {isEditing &&
                         !isSearchMode &&
                         activeSubFolderId &&
@@ -888,7 +925,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                   <div className="popupHeader-left">
                     <button className="closeButton" onClick={closePopup} aria-label="Close image viewer">
                       <Image
-                        src={ArrowImg}
+                        src={Crossicon}
                         alt="Back"
                         width={18}
                         height={18}
@@ -913,7 +950,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                         />
 
                         {showActionMenu && (
-                          <div className="action-menu">
+                          <div className="action-menu" ref={actionMenuRef}>
                             <div className="action-item">
                               <strong>Shared by:</strong>
                               <p>{number}</p>
@@ -930,7 +967,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                                 setShowActionMenu(false);
                               }}
                             >
-                              <Image src={plusVector} width={16} height={16} />
+                              <Image src={plusVector} width={11} height={11} />
                               <span>Add to Folder</span>
                             </div>
 
@@ -944,7 +981,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                                   setShowActionMenu(false);
                                 }}
                               >
-                                <Image src={downloadVector} width={16} height={16} />
+                                <Image src={downloadVector} width={11} height={11} />
                                 <span>Download</span>
                               </div>
                             )}
@@ -958,7 +995,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                                 setShowActionMenu(false);
                               }} className="action-item flex gallery-share-icon">
                               <Image
-                                src={shareVector} width={16} height={16} />
+                                src={shareVector} width={11} height={11} />
                               <span>Share</span>
                             </div>
                             {String(rawPhoneNumber) === String(localPhoneNumber) &&
@@ -1002,7 +1039,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                                   }
                                 }}
                               >
-                                <Image src={deleteVector} width={16} height={16} />
+                                <Image src={deleteVector} width={11} height={11} />
                                 <span>Delete</span>
                               </div>
                             }
@@ -1075,6 +1112,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         }}
         popupHeight="420"
         title="Add to Folder"
+        titleFontSize="22px"
         buttonContent={subFolders.length === 0 ? "Create Folder" : "Add Now"}
         disabled={subFolders.length === 0 ? false : JSON.stringify(folderSelection) === JSON.stringify(initialPopupFolders)}
         onSubmit={() => {
@@ -1092,7 +1130,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
           const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
 
-          fetch("https://horaservices.com:3000/api/internal/assign-to-subfolder", {
+          fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1123,11 +1161,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                   <label key={sf._id} className="folder-checkbox-row">
                     <div className="folder-info">
                       <div className="folder-dp">
-                        {sf.folderDp ? (
-                          <img src={sf.folderDp.thumbnailUrl} alt={sf.folderName} />
-                        ) : (
-                          <span>{sf.folderName.charAt(0)}</span>
-                        )}
+                        <img src={sf?.folderDp?.thumbnailUrl || userIcon?.src} alt={sf.folderName} />
                       </div>
                       <span className="folder-name">{sf.folderName}</span>
                     </div>

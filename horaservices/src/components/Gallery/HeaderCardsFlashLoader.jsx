@@ -10,10 +10,10 @@ const HeaderCardsFlashLoader = () => {
           <div className="card-item" key={i}>
             <span
               className="placeholder rounded-circle"
-              style={{ width: "90px", height: "90px" }}
+              style={{ width: "81px", height: "81px" }}
             />
             <span
-              className="placeholder mt-3"
+              className="placeholder mt-1"
               style={{ width: "60px", height: "14px", borderRadius: "8px" }}
             />
           </div>
@@ -21,11 +21,20 @@ const HeaderCardsFlashLoader = () => {
       </div>
 
       {/* ADD NEW IMAGES BUTTON SKELETON */}
-      <div className="d-flex mt-4 placeholder-glow">
+      <div className="d-flex gap-2 mt-4 placeholder-glow">
         <span
           className="placeholder"
           style={{
-            width: "150px",
+            width: "138px",
+            height: "37px",
+            borderRadius: "49.26px",
+            marginBottom:"15px"
+          }}
+        />
+          <span
+          className="placeholder"
+          style={{
+            width: "170px",
             height: "37px",
             borderRadius: "49.26px",
             marginBottom:"15px"

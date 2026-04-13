@@ -54,7 +54,6 @@ const PhotoGallery = () => {
         isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
       )} */}
                 <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={handleShareicon} />
-
     </div>
   );
 };

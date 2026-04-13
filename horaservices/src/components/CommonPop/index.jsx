@@ -16,6 +16,7 @@ const CommonPopup = ({
   buttonContent,
   disabled = false,
   popupHeight = 356,
+  titleFontSize = "clamp(18px, 4.5vw, 22px)", 
 }) => {
   if (!isOpen) return null;
 
@@ -30,13 +31,13 @@ const CommonPopup = ({
           <Image
             src={backarrow}
             alt="Back"
-            width={24}
-            height={24}
+            width={0}
+            height={0}
             className="popup-back-icon"
             onClick={onClose}
           />
 
-          <h2 className="popup-title">
+          <h2 style={{ fontSize: titleFontSize }} className="popup-title">
             {title}
           </h2>
         </div>

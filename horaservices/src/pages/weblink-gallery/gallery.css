@@ -108,8 +108,7 @@
   background-color: rgba(0,0,0,0.9);  /* black overlay better */
   display: flex;
   justify-content: center;
-  top: 130px;
-  align-items: center;   /* 👈 center karo */
+  align-items: center;  
   z-index: 9999;
 }
 
@@ -219,7 +218,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 12px;
+  padding: 45px 12px 25px 12px;
 }
 .image-index {
   margin-bottom: 0;
@@ -259,7 +258,6 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
 }
 
 /* Checked state */
@@ -270,11 +268,17 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 
 .image-checkbox:checked {
   border-color: transparent;
-  background-image: url("../../assets/checkIcon.svg");
-  background-size: cover;
+  background-image: url("../../assets/checkedCheckbox.svg");   
+  background-size: 12px;  
   background-position: center;
   background-repeat: no-repeat;
 } 
+.popup-checkbox:checked {
+  background-image: url("../../assets/checkedCheckbox.svg");
+  background-size: 18px;  
+  background-position: center;
+  background-repeat: no-repeat;
+}
 /* EDIT BUTTON */
 .edit-image-btn {
   background-color: #97538C;
@@ -282,17 +286,19 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   border-radius: 49.26px;
   border: none;
   font-weight: 700;
-  padding: 5px 16px;
   font-family: 'Montserrat', 'Inter';
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  margin-bottom: 30px;
+  gap: 4px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  height: 35px;
+  width: 77px;
+display: flex;
+  align-items: center;        /* vertical center */
+  justify-content: center;    /* horizontal center */  
 }
 
 .edit-plus {
-  font-size: 32px;     
+  font-size: clamp(25px, 5vw, 19px);
   font-weight: 500;
   line-height: 1;
 }
@@ -304,10 +310,14 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   border-radius: 49.26px;
   border: none;
   font-weight: 700;
-  padding: 9px 20px;
-  font-family: 'Montserrat', 'Inter';
-  margin-top: 10px;
-  margin-bottom: 30px;
+  padding: 11px 28px;
+  margin-bottom: 15px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;        /* vertical center */
+  justify-content: center;    /* horizontal center */
+  height: 35.13px;
+  width: 75.86px;
 }
 
 .add-new-btn{
@@ -316,20 +326,37 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   font-weight: 700;
   border-radius: 49.26px;
   border: none;
-  padding: 9px 12px;
-  margin-top: 10px;
-  margin-bottom: 15px;
+  padding:4px 10px;
   display: flex;
   align-items: center;
   gap: 5px;
+    font-size: clamp(11px, 3vw, 12px);
+
+}
+.share-capsule-btn{
+  background-color: transparent;
+  color: #09AE00;
+  font-weight: 700;
+  border-radius: 17px;
+  border: 1px solid #09AE00;
+  padding:7px 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+    font-size: clamp(11px, 3.2vw, 12px);
+}
+.buttons-container{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
 }
 
 .add-new-btn .add-icon {
-  font-size: clamp(28px, 5vw, 24px);
-  font-weight: 500;
+  font-size: clamp(25px, 5vw, 19px);
+  font-weight: 400;
   line-height: 1;
-  display: flex;
-  align-items: center;
+  margin-bottom: 4px;
 }
 
 .popup-addbtn{
@@ -348,7 +375,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 .popupHeader-left{
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 14px;
 }
 
 .slick-prev,
@@ -390,14 +417,16 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   border: 1px solid #ACA6A6;
   border-radius: 10px;
   z-index: 1000;
+  padding-bottom: 14px;
 }
 
 .action-item {
-  padding: 8px 14px;
+  padding: 8px 14px 6px 14px;
   font-size: 11.96px;
   cursor: pointer;
   color: #3D3B3B;
   font-weight: 400;
+  font-family: "Roboto", sans-serif;
 }
 .flex{
 display: flex;
@@ -409,6 +438,7 @@ display: flex;
   display: block;
   font-weight: 500;
   color: #302C2C;
+  font-size: 14px;
 }
 .action-item p {
   font-weight: 300;
@@ -418,9 +448,9 @@ display: flex;
 .add-folder-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 0px 10px;
+  padding: 0px 6px 0px 0px;
 }
 
 .folder-checkbox-row {
@@ -446,8 +476,8 @@ display: flex;
 }
 
 .folder-dp {
-  width: 40.1px;
-  height: 40.1px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   overflow: hidden;
   background: #eaeaea;
@@ -466,12 +496,12 @@ display: flex;
 }
 
 .folder-name {
-  font-size: 16px;
+  font-size: 22.45px;
 }
 
 .popup-checkbox {
-  width: 20px;
-  height: 20px;
+  width: 29px;
+  height: 29px;
   border-radius: 50%;       /* circular */
   border: 1px solid black;  /* black border */
   background-color: transparent;
@@ -485,21 +515,7 @@ display: flex;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
 }
-
-/* Checked state */
-.popup-checkbox:checked {
-  background-color: white;   /* white background when checked */
-  border: 1px solid black;
-}
-
-.popup-checkbox:checked {
-  background-image: url("../../assets/checkIcon.svg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-} 
 .no-subfolder-text {
   font-size: 22px;
   color: #262424;
@@ -529,6 +545,7 @@ display: flex;
       display: flex;
     justify-content: center;
     min-height: 100vh;
+    font-family: inter;
 }
 .image-wrapper{
   width: 100%;
@@ -544,6 +561,7 @@ display: flex;
 }
 
 .placeholder {
+    background-color: #737171;
   animation: placeholder-glow 2s ease-in-out infinite;
 }
 .gallery-image-grid{
@@ -556,4 +574,24 @@ display: flex;
   display: flex;
   justify-content: center;
   color: #534E4E;
+}
+.upload-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 500;
+  z-index: 5;
+}
+
+.upload-badge.uploading {
+  background-color: #facc15; 
+  color: #fff; 
+}
+
+.upload-badge.uploaded {
+  background-color: #1b9949; 
 }
