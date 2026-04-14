@@ -61,8 +61,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [isStreamSearching, setIsStremSearching] = useState(false);
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const actionMenuRef = useRef(null);
-  const [limit, setLimit] = useState(3000);
-  const [totalPages, setTotalPages] = useState(1);
 
 
   useEffect(() => {
@@ -326,7 +324,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       }
       setLoading(true); setError(null);
       try {
-        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}&pageNo=${currentPage}&limit=${limit}`);
+        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
 
@@ -339,13 +337,12 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
         setAllThumbnails(fetchedThumbnails);
-        setTotalPages(data.pagination?.totalPages || 1);
       } catch (fetchError) {
         console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
       } finally { setLoading(false); }
     };
     fetchThumbnails();
-  }, [folderName, customerId, currentPage, limit]);
+  }, [folderName, customerId]);
 
   const handleSubFolderCreated = (newSubFolder) => {
     setSubFolders(prev => [...prev, newSubFolder]);
@@ -546,19 +543,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   return (
     <div className="thumbnail-gallery">
       <div>
-        <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-          {/* Conditional Pagination Rendering */}
-          {isIOSMobile && totalPages > 1 && (
-            <div className="gallery-pagination-container">
-              <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                inline={true} // Keep compact style
-              />
-            </div>
-          )}
-        </div>
 
         {/* {currentThumbnailsOnPage.length > 0 ? (
         <div className="masonryGrid">
@@ -1086,21 +1070,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               </div>
             </div>
           )}
-
-          <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-            <div className="gallery-header-content">
-              {totalPages > 0 && (
-                <div className="gallery-pagination-container">
-                  <PaginationControls
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    inline={true}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
       </div>

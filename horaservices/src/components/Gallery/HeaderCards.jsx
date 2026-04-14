@@ -61,6 +61,12 @@ const HeaderCards = ({
     [localMyPhotos, subFolders, localUserId]
   );
 
+  useEffect(() => {
+  if (showCameraPopup) {
+    setCapturedImage(null);
+  }
+}, [showCameraPopup]);
+
   const isCreateDisabled =
     !newFolderName.trim() || isLoading;
 
@@ -221,6 +227,7 @@ const HeaderCards = ({
     try {
       setIsCreating(true);
       setIsSearching(true);
+      onSearchResults([]);
       const myFolder = await ensureMyPhotosFolder(blob);
       setShowCameraPopup(false);
       const fd = new FormData();
@@ -315,6 +322,7 @@ const HeaderCards = ({
 
         {/* MY PHOTOS */}
         {myPhotosFolder ? (
+          <div>
           <div
             className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""
               }`}
@@ -334,7 +342,25 @@ const HeaderCards = ({
                 />
               </div>
             </div>
-            <span>{myPhotosFolder.folderName}</span>
+            <div className="flex">
+            <span>My..</span> 
+            <button
+      className="edit-myphoto-btn"
+      onClick={(e) => {
+        e.stopPropagation(); // important
+
+        setIsActualMyPhotos(true);     // search mode ON
+        setIsSearching(false);         // reset state
+        onSearchResults([]); 
+        setCapturedImage(null);
+        setShowCameraPopup(true);
+      }}
+    >
+      Edit
+          </button>
+          </div>
+          </div>
+          
           </div>
         ) : (
           <div

@@ -310,3 +310,12 @@ border-radius: 50%;
 .create-btn{
   padding: 0px 14px;
 }
+.edit-myphoto-btn{
+  padding: 2px 4px;
+  background-color: #97538C;
+  color: #fff;
+  font-size: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
