@@ -2,12 +2,13 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import "./headerCards.css";
 
-import myPhoto from "../../assets/myPhoto.svg";
+import myPhoto from "../../assets/myPhotos.jpg";
 import allPhotos from "../../assets/allPhotos.svg";
 import captureIcon from "../../assets/captureIcon.svg";
 import userIcon from "../../assets/userIcon.svg";
 import imagePicker from "../../assets/imagePicker.svg";
 import selfieCapture from "../../assets/selfieCapture.png";
+import user2 from '../../assets/user2.svg';
 
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
@@ -81,7 +82,7 @@ const HeaderCards = ({
         _id: sf._id,
         name: sf.folderName,
         folderDp: {
-          thumbnailUrl: sf.folderDp?.thumbnailUrl || userIcon.src,
+          thumbnailUrl: sf.folderDp?.thumbnailUrl,
         },
       }));
     setAlbums(mapped);
@@ -380,29 +381,6 @@ const HeaderCards = ({
           </div>
         )}
 
-        {/* ALBUMS */}
-        {albums.map(sf => (
-          <div
-            key={sf._id}
-            className={`card-item ${activeTab === sf._id ? "active" : ""}`}
-            onClick={() => {
-              setActiveTab(sf._id);
-              onSelectSubFolder(sf._id);
-              setIsActualMyPhotos(false)
-            }}
-          >
-            <div className="circle-img-folder circle-img-both">
-              <div className="circle-img-inner">
-                <img
-                  src={sf.folderDp.thumbnailUrl}
-                  alt={sf.name}
-                />
-              </div>
-            </div>
-            <span>{sf.name}</span>
-          </div>
-        ))}
-
         {/* CREATE ALBUM */}
         <div
           className="card-item"
@@ -417,6 +395,31 @@ const HeaderCards = ({
           </div>
           <span>Create Album</span>
         </div>
+
+        {/* ALBUMS */}
+        {albums.map(sf => (
+          <div
+            key={sf._id}
+            className={`card-item ${activeTab === sf._id ? "active" : ""}`}
+            onClick={() => {
+              setActiveTab(sf._id);
+              onSelectSubFolder(sf._id);
+              setIsActualMyPhotos(false)
+            }}
+          >
+            <div className="circle-img-folder circle-img-both">
+              <div className={`${sf.folderDp.thumbnailUrl ? 'circle-img-inner' : ""}`}>
+                <img
+                  src={sf?.folderDp?.thumbnailUrl || user2.src}
+                  alt={sf?.name || "Album"}
+                />
+              </div>
+            </div>
+            <span>{sf.name}</span>
+          </div>
+        ))}
+
+        
       </div>
 
       {/* CAMERA POPUP */}
