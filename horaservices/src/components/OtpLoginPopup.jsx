@@ -11,6 +11,7 @@ import {
 } from "../utils/apiconstants";
 import "./login.css";
 import { useTimer } from "../utils/useTimer";
+import { trackUserLogin } from "@/utils/VisitorTracker";
 import Image from "next/image";
 import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
@@ -185,6 +186,11 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false }) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
+
+        trackUserLogin({
+          userId: res.data.data._id,
+          mobileNumber,
+        });
 
         window.dispatchEvent(new Event("loginStateChange"));
 
