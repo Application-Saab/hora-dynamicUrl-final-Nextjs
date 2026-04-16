@@ -7,9 +7,7 @@ import { BASE_URL } from "@/utils/apiconstants";
 import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGalleryItem";
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import OtpLogin from "@/components/OtpLoginPopup";
-import ArrowImg from '../../assets/arrow.svg'
 import share from '../../assets/share.svg'
-import nextIcon from '../../assets/nextIcon.svg'
 import multiGroup from '../../assets/multiGroup.svg'
 import plusVector from '../../assets/plusVector.svg'
 import downloadVector from '../../assets/downloadVector.svg'
@@ -106,39 +104,39 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   };
 
   const handleAddToFolderSubmit = () => {
-  if (usableFolders.length === 0) {
-    setPendingAssignImageId(currentImage?._id);
+    if (usableFolders.length === 0) {
+      setPendingAssignImageId(currentImage?._id);
 
-    setShowAddToFolderPopup(false);
-    setShowCreateFolderPopup(true);
-    return;
-  }
+      setShowAddToFolderPopup(false);
+      setShowCreateFolderPopup(true);
+      return;
+    }
 
-  if (!currentImage?._id) return;
+    if (!currentImage?._id) return;
 
-  const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
-  const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
+    const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
+    const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
 
-  fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      subFolderId: folderSelection,
-      addImageIds: toAdd.length ? [currentImage._id] : [],
-      removeImageIds: toRemove.length ? [currentImage._id] : [],
-    }),
-  }).then(() => {
-    setAllThumbnails(prev =>
-      prev.map(img =>
-        img._id === currentImage._id
-          ? { ...img, folderIds: folderSelection }
-          : img
-      )
-    );
-    setShowAddToFolderPopup(false);
-    setIsEditing(false);
-  });
-};
+    fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subFolderId: folderSelection,
+        addImageIds: toAdd.length ? [currentImage._id] : [],
+        removeImageIds: toRemove.length ? [currentImage._id] : [],
+      }),
+    }).then(() => {
+      setAllThumbnails(prev =>
+        prev.map(img =>
+          img._id === currentImage._id
+            ? { ...img, folderIds: folderSelection }
+            : img
+        )
+      );
+      setShowAddToFolderPopup(false);
+      setIsEditing(false);
+    });
+  };
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn");
@@ -166,42 +164,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     } else {
       setSelectedImages(prev => [...prev, id]);
     }
-  };
-
-  const PrevArrow = ({ className, style, onClick }) => {
-    return (
-      <div
-        className={`${className} custom-arrow prev-arrow`}
-        style={{ ...style }}
-        onClick={onClick}
-      >
-        <Image
-          src={ArrowImg}
-          alt="Back"
-          width={30}
-          height={30}
-          className=""
-        />
-      </div>
-    );
-  };
-
-  const NextArrow = ({ className, style, onClick }) => {
-    return (
-      <div
-        className={`${className} custom-arrow next-arrow`}
-        style={{ ...style }}
-        onClick={onClick}
-      >
-        <Image
-          src={nextIcon}
-          alt="next"
-          width={30}
-          height={30}
-          className=""
-        />
-      </div>
-    );
   };
 
   useEffect(() => {
@@ -332,23 +294,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const closePopup = useCallback(() => {
     setSelectedIndex(null);
   }, []);
-
-  const sliderSettings = useMemo(() => ({
-    dots: false,
-    infinite: allThumbnails.length > 1,
-    speed: 300,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    lazyLoad: 'ondemand',
-    adaptiveHeight: false,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-
-    afterChange: (current) => {
-      setSelectedIndex(current);
-      setShowActionMenu(false);
-    },
-  }), [allThumbnails.length]);
 
   const handleSearchResults = (matches) => {
     if (!Array.isArray(matches)) return;
@@ -618,15 +563,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                   const img = data?.files?.[0];
 
                   if (img) {
-                    // const newThumb = {
-                    //   _id: img.imageId || Date.now(),
-                    //   type: img.videoUrl ? "video" : "image",
-                    //   originalUrl: img.imageUrl || img.videoUrl,
-                    //   thumbnailImageUrl: img.thumbnailUrl || null,
-                    //   videoClipUrl: img.clipUrl || null,
-                    // };
                     const newThumb = {
-                        _id: String(img.imageId),
+                      _id: String(img.imageId),
                       type: img.videoUrl ? "video" : "image",
                       originalUrl: img.imageUrl || img.videoUrl,
                       thumbnailImageUrl: img.thumbnailUrl || null,
@@ -637,21 +575,21 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       orderByName: localPhoneNumber,
                     };
                     setAllThumbnails(prev =>
-  prev.map(item => {
-    if (item._id === temp._id) {
-      return {
-        ...newThumb,
-        folderIds: item.folderIds || [],
-      };
-    }
-    return item;
-  })
-);
+                      prev.map(item => {
+                        if (item._id === temp._id) {
+                          return {
+                            ...newThumb,
+                            folderIds: item.folderIds || [],
+                          };
+                        }
+                        return item;
+                      })
+                    );
 
-setSelectedIndex(prevIndex => {
-  if (prevIndex === null) return prevIndex;
-  return prevIndex;
-});
+                    setSelectedIndex(prevIndex => {
+                      if (prevIndex === null) return prevIndex;
+                      return prevIndex;
+                    });
 
                     setTimeout(() => {
                       setAllThumbnails(prev =>
@@ -746,7 +684,6 @@ setSelectedIndex(prevIndex => {
                       backgroundColor: "transparent",
                       display: "grid",
                     }}
-                    // onClick={() => handleImageClick(indexOnPage)}
                     onClick={() => {
                       if (isEditing) {
                         handleSelectImage(thumbnail._id);
@@ -857,14 +794,14 @@ setSelectedIndex(prevIndex => {
             <div className="emptyFolder-container">
               <div className="no-subfolder-text">No Folders Found</div>
               <div className="sub-text-empty">You don’t have any folder yet.</div>
-            <div className="pop-btn-container">
-            <button
-              className="popup-btn"
-              onClick={handleAddToFolderSubmit}
-            >
-             Create Folder
-            </button>
-          </div>
+              <div className="pop-btn-container">
+                <button
+                  className="popup-btn"
+                  onClick={handleAddToFolderSubmit}
+                >
+                  Create Folder
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -955,21 +892,19 @@ setSelectedIndex(prevIndex => {
                             throw new Error(err);
                           }
 
-                          // Remove the image locally
                           setAllThumbnails(prev => {
                             const newList = prev.filter(img => img._id !== currentImage._id);
-                            // Adjust selectedIndex
                             if (newList.length === 0) {
-                              setSelectedIndex(null); // no more images → close popup
+                              setSelectedIndex(null);
                             } else if (selectedIndex >= newList.length) {
-                              setSelectedIndex(newList.length - 1); // deleted last image → move to previous
+                              setSelectedIndex(newList.length - 1);
                             } else {
-                              setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
+                              setSelectedIndex(selectedIndex);
                             }
                             return newList;
                           });
 
-                          setShowActionMenu(false); 
+                          setShowActionMenu(false);
 
                         } catch (err) {
                           console.error("Delete failed:", err);

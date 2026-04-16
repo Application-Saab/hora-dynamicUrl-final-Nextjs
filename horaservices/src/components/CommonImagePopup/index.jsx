@@ -29,6 +29,19 @@ const CommonImagePopup = ({
   const actionMenuRef = useRef(null);
 
   useEffect(() => {
+  const videos = document.querySelectorAll("video");
+
+  videos.forEach((video, i) => {
+    if (i === selectedIndex) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  });
+}, [selectedIndex]);
+
+  useEffect(() => {
     if (selectedIndex !== null) {
       document.body.style.overflow = "hidden";
     } else {
@@ -78,7 +91,7 @@ const CommonImagePopup = ({
                   <video
                     src={img.originalUrl}
                     controls
-                    autoPlay
+                    autoPlay={idx === selectedIndex}
                     className="popupVideo"
                   />
                 ) : (
