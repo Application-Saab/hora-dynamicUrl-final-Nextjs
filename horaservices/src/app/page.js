@@ -13,8 +13,8 @@ import {
 import { getHomeOrganizationSchema } from "@/utils/schema";
 import HomeContent from "@/components/HomeContent";
 import { useLayoutEffect } from "react";
-// import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
-// import VisitorTracker from "@/utils/VisitorTracker";
+import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
+import VisitorTracker from "@/utils/VisitorTracker";
 
 export default function Home() {
   const router = useRouter();
@@ -165,9 +165,9 @@ const pathname = usePathname();
          <meta property="og:type" content="website" />
      </Head>
       <HomeContent />
-      {/* <div>
+       <div>
         <VisitorTracker/>
-      </div> */}
+      </div> 
     </>
   );
 }

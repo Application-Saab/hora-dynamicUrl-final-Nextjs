@@ -1,0 +1,137 @@
+/* .search-wrapper {
+  position: relative;
+  width: 100%;
+
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background: #f1f1f3;
+  border-radius: 12px;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  
+}
+
+.search-icon-img {
+    margin-right: 8px;
+    color: #b07bb5;
+    width: 20px;
+    height: 20px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  color: #97538C;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-top: 5px;
+  z-index: 1000;
+   scrollbar-width: none;     
+  -ms-overflow-style: none;  
+}
+.search-dropdown::-webkit-scrollbar {
+  display: none;
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+} */
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background: #f1f1f3;
+  border-radius: clamp(10px, 2.5vw, 12px);
+  padding: clamp(5px, 1.8vw, 8px) clamp(6px, 2vw, 10px);
+  border: 1px solid #ddd;
+}
+
+.search-icon-img {
+  margin-right: clamp(6px, 2vw, 10px);
+  width: clamp(16px, 4vw, 20px);
+  height: clamp(16px, 4vw, 20px);
+  color: #b07bb5;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: clamp(13px, 3.5vw, 15px);
+  color: #97538C;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: clamp(150px, 40vw, 200px);
+  overflow-y: auto;
+  background: white;
+  border-radius: clamp(8px, 2vw, 10px);
+  box-shadow: 0 clamp(3px, 1vw, 4px) clamp(8px, 2vw, 10px) rgba(0,0,0,0.1);
+  margin-top: clamp(4px, 1.5vw, 6px);
+  z-index: 1000;
+
+  scrollbar-width: none;     
+  -ms-overflow-style: none;  
+}
+
+.search-dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 10px);
+  padding: clamp(8px, 2.5vw, 12px);
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.dropdown-img {
+  width: clamp(32px, 9vw, 40px);
+  height: clamp(32px, 9vw, 40px);
+  border-radius: clamp(6px, 2vw, 8px);
+  object-fit: cover;
+}

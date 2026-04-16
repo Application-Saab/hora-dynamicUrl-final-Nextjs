@@ -28,6 +28,7 @@ import InfoIcon from '../../assets/info.png';
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Popup from '../../utils/popup';
+import SearchBar from "@/components/SearchBar";
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
 
@@ -58,12 +59,15 @@ const CreateOrder = ({ history, currentStep }) => {
     const [isWarningVisibleForDishCount, setWarningVisibleForDishCount] = useState(false);
     const [isWarningVisibleForCuisineCount, setWarningVisibleForCuisineCount] = useState(false);
     const [isViewAllExpanded, setIsViewAllExpanded] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+const [selectedSearchDishes, setSelectedSearchDishes] = useState([]);
     const [popupMessage, setPopupMessage] = useState({
         img: "",
         title: "",
         body: "",
         button: "",
     });
+const [searchTerm, setSearchTerm] = useState("");
     // Handler for 'Only Veg' toggle switch
     const handleVegSwitch = () => {
         if (isNonVegSelected) return; // Prevent switching if 'Non-Veg' is selected
@@ -104,7 +108,10 @@ const CreateOrder = ({ history, currentStep }) => {
         }
         return false; // Show nothing if neither are selected
     });
-
+const allDishes = mealList.flatMap((meal) => meal.dish);
+const suggestions = allDishes.filter((dish) =>
+  dish.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
     // Filter the meal list based on selected state
     const filteredMealList = mealList.filter(meal => {
         if (isVegSelected && !isNonVegSelected) {
@@ -600,6 +607,19 @@ const CreateOrder = ({ history, currentStep }) => {
             setIsNonVegSelected(true);
         }
     };
+    useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (!e.target.closest(".search-bar-container")) {
+      setIsSearching(false);
+    }
+  };
+
+  document.addEventListener("click", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("click", handleClickOutside);
+  };
+}, []);
 
     const handleViewAll = (categoryId) => {
         setIsViewAllExpanded(!isViewAllExpanded);
@@ -614,7 +634,63 @@ const CreateOrder = ({ history, currentStep }) => {
                     : [...prevExpanded, categoryId]
         );
     };
+const sortedMealList = [...filteredMealList].sort((a, b) => {
+  if (selectedSearchDishes.length === 0) return 0;
 
+  const aIndex = selectedSearchDishes.findIndex((selectedDish) =>
+    a.dish.some((d) => d._id === selectedDish._id)
+  );
+
+  const bIndex = selectedSearchDishes.findIndex((selectedDish) =>
+    b.dish.some((d) => d._id === selectedDish._id)
+  );
+
+  // 🔥 jisme selected dish hai → wo upar
+  if (aIndex !== -1 && bIndex === -1) return -1;
+  if (aIndex === -1 && bIndex !== -1) return 1;
+
+  // 🔥 order maintain (jo pehle select hua wo upar)
+  if (aIndex !== -1 && bIndex !== -1) {
+    return aIndex - bIndex;
+  }
+
+  return 0;
+});
+const matched = [];
+const unmatched = [];
+
+filteredMealList.forEach((meal) => {
+  const hasMatch = meal.dish.some((dish) =>
+    dish.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (hasMatch) matched.push(meal);
+  else unmatched.push(meal);
+});
+
+
+const finalMealList = sortedMealList.map((meal) => {
+  if (selectedSearchDishes.length === 0) return meal;
+
+  const sortedDishes = [...meal.dish].sort((a, b) => {
+    const aIndex = selectedSearchDishes.findIndex((d) => d._id === a._id);
+    const bIndex = selectedSearchDishes.findIndex((d) => d._id === b._id);
+
+    if (aIndex !== -1 && bIndex === -1) return -1;
+    if (aIndex === -1 && bIndex !== -1) return 1;
+
+    if (aIndex !== -1 && bIndex !== -1) {
+      return aIndex - bIndex;
+    }
+
+    return 0;
+  });
+
+  return {
+    ...meal,
+    dish: sortedDishes,
+  };
+});
     if (loading) {
         return <SkeletonLoader loading={true} />;
     };
@@ -682,29 +758,82 @@ const CreateOrder = ({ history, currentStep }) => {
                     </Step>
                 </div>
             </div>
+         
             <div className="order-container chef-bottum">
                 <Row className="d-flex justify-content-start">
                     <div style={{ display: "flex", margin: "5px 0 0" }}>
-                        <div style={{ marginRight: "10px" }}>
-                            <Button
-                                variant={selected === "veg" ? "success" : "outline-success"}
-                                onClick={() => handleSwitchChange("veg")}
-                                className="cuisinebtn"
-                            >
-                                Only Veg
-                            </Button>
-                        </div>
-                        <div>
-                            <Button
-                                variant={
-                                    selected === "non-veg" ? "danger" : "outline-danger"
-                                }
-                                onClick={() => handleSwitchChange("non-veg")}
-                                className="cuisinebtn"
-                            >
-                                Non-Veg
-                            </Button>
-                        </div>
+                 
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+  }}
+>
+  {!isSearching && (
+    <div style={{ display: "flex", gap: "10px" }}>
+      <Button
+        variant={selected === "veg" ? "success" : "outline-success"}
+        onClick={() => handleSwitchChange("veg")}
+        className="cuisinebtn"
+      >
+        Veg
+      </Button>
+
+      <Button
+        variant={selected === "non-veg" ? "danger" : "outline-danger"}
+        onClick={() => handleSwitchChange("non-veg")}
+        className="cuisinebtn"
+      >
+        Non-Veg
+      </Button>
+    </div>
+  )}
+
+  <div
+    className="search-bar-container"
+    style={{
+      flex: 1,
+      marginLeft: isSearching ? 0 : "10px",
+      transition: "all 0.3s ease",
+    }}
+  >
+    <SearchBar
+  searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
+  suggestions={suggestions}
+  isSearching={isSearching}   // 🔥 add this
+  onFocus={() => setIsSearching(true)}
+onSelect={(dish) => {
+  setSelectedSearchDishes((prev) => {
+    // 🔥 duplicate avoid
+    if (prev.find((d) => d._id === dish._id)) return prev;
+    return [...prev, dish];
+  });
+
+  const parentMeal = mealList.find((meal) =>
+    meal.dish.some((d) => d._id === dish._id)
+  );
+
+  if (parentMeal) {
+    setExpandedCategories((prev) => {
+      if (!prev.includes(parentMeal.mealObject._id)) {
+        return [...prev, parentMeal.mealObject._id];
+      }
+      return prev;
+    });
+  }
+
+  handleIncreaseQuantity(dish, selectedDishes.includes(dish._id));
+  setIsSearching(false);
+
+  setTimeout(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, 100);
+}}
+/>
+  </div>
+</div>
                     </div>
                     <div className="chef-divider" style={{ marginTop: "10px" }}></div>
                     <div style={{ margin: "10px 0 0 0" }}>
@@ -732,8 +861,8 @@ const CreateOrder = ({ history, currentStep }) => {
                     <Col>
                         {selectedCuisines.length > 0 && (
                             <ListGroup className="dish-list">
-                                {mealList.map((meal) => (
-                                    <div className='w-100'>
+                                {finalMealList.map((meal) => (
+                                    <div className='w-100' id={meal.mealObject._id}>
                                         <ListGroupItem key={meal._id} className="dish-item">
                                             {renderDishItem({ item: meal })}
                                         </ListGroupItem>

@@ -16,8 +16,8 @@ import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
-// import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
-// import VisitorTracker from "@/utils/VisitorTracker";
+import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
+import VisitorTracker from "@/utils/VisitorTracker";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -87,7 +87,7 @@ function MyApp({ Component, pageProps }) {
   //     }))
 
   //   // Track daily visit with page info
-  //   fetch("https://horaservices.com:3000/api/analytics/track-daily-visit", {
+  //   fetch("https://horaservices.com/api/analytics/track-daily-visit", {
   //     method: "POST",
   //     headers: { "Content-Type": "application/json" },
   //     body: JSON.stringify({
@@ -233,6 +233,9 @@ function MyApp({ Component, pageProps }) {
                     <WhatsAppIcon router={router} />
                   </div>
                   )}
+                  <div>
+                    <VisitorTracker/>
+                  </div> 
                 </PageLayout>
               </ChatProviderMain>
             </ChatProvider>
