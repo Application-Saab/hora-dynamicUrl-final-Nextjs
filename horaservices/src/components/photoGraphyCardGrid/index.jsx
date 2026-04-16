@@ -61,7 +61,7 @@ export default function PhotoGraphyCard({
         />
         <div className="imageOverlaygrid" />
         <div className="titleWrappergrid">
-          <h3 className="titlegrid">{title}</h3>
+          <h2 className="titlegrid">{title}</h2>
         </div>
       </div>
 

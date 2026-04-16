@@ -6,7 +6,7 @@ export default function PhotoGraphyCard({
   src,
   title,
   subCategory,
-  city = "",
+  city ,
   locality = "",
   photoCat = [],
   hasCityPageParam = false,
@@ -20,13 +20,20 @@ const handleViewMore = () => {
 
   const finalSubCategory = categoryItem?.subCategory || subCategory;
   if (!finalSubCategory) return;
-
+const citySlug = city
+  ?.toLowerCase()
+  ?.replace(/\s+/g, "-");
+  
+const localitySlug = locality
+  ?.toLowerCase()
+  ?.replace(/\s+/g, "-");
   let path = `/photography-page/${finalSubCategory}`;
 
-  if (city && locality) {
-    path = `/${city.toLowerCase()}/${locality.toLowerCase()}${path}`;
-  } else if (city) {
-    path = `/${city.toLowerCase()}${path}`;
+
+  if (citySlug && localitySlug) {
+    path = `/${citySlug}/${localitySlug}${path}`;
+  } else if (citySlug) {
+    path = `/${citySlug}${path}`;
   }
 
   window.dataLayer = window.dataLayer || [];
@@ -49,7 +56,7 @@ const handleViewMore = () => {
         <Image src={src} alt={title} fill className="photo-image" priority />
         <div className="photo-imageOverlay"></div>
         <div className="photo-titleWrapper">
-          <h3 className="photo-title">{title}</h3>
+          <h2 className="photo-title">{title}</h2>
         </div>
       </div>
       <div className="photo-footer">
