@@ -3,9 +3,9 @@ import React, { useEffect, useRef } from "react";
 import Slider from "react-slick";
 import Image from "next/image";
 
-import Crossicon from "../assets/Crossicon.svg";
-import ArrowImg from "../assets/arrow.svg";
-import nextIcon from "../assets/nextIcon.svg";
+import Crossicon from "../../assets/Crossicon.svg";
+import ArrowImg from "../../assets/arrow.svg";
+import nextIcon from "../../assets/nextIcon.svg";
 
 const PrevArrow = ({ className, onClick }) => (
   <div className={`${className} custom-arrow prev-arrow`} onClick={onClick}>

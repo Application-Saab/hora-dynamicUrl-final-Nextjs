@@ -12,10 +12,11 @@ import user2 from '../../assets/user2.svg';
 
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
-import {MEDIA_WORKER_URL, FACE_FINDER_URL} from '../../utils/apiconstants'
+import { MEDIA_WORKER_URL, FACE_FINDER_URL } from '../../utils/apiconstants'
 
 const HeaderCards = ({
   folderName,
+  mainFolderId,
   customerId,
   setIsSearching,
   onSearchResults,
@@ -32,6 +33,7 @@ const HeaderCards = ({
   setActiveTab,
   setIsActualMyPhotos,
   setIsStremSearching,
+  setSubFolders,
 }) => {
   /* ================= STATE ================= */
   const [showCameraPopup, setShowCameraPopup] = useState(false);
@@ -44,6 +46,7 @@ const HeaderCards = ({
   const [isCreating, setIsCreating] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
+  const [isEditingDP, setIsEditingDP] = useState(false);
 
 
   const fileInputRef = useRef(null);
@@ -51,7 +54,7 @@ const HeaderCards = ({
   const streamRef = useRef(null);
 
   const localUserId = localStorage.getItem("userID");
-  const localPhoneNumber =localStorage.getItem("mobileNumber")
+  const localPhoneNumber = localStorage.getItem("mobileNumber")
 
   /* ================= DERIVED ================= */
   const myPhotosFolder = useMemo(
@@ -64,10 +67,10 @@ const HeaderCards = ({
   );
 
   useEffect(() => {
-  if (showCameraPopup) {
-    setCapturedImage(null);
-  }
-}, [showCameraPopup]);
+    if (showCameraPopup) {
+      setCapturedImage(null);
+    }
+  }, [showCameraPopup]);
 
   const isCreateDisabled =
     !newFolderName.trim() || isLoading;
@@ -93,10 +96,14 @@ const HeaderCards = ({
   const handleFileChange = e => {
     const file = e.target.files[0];
     if (!file) return;
-    setPreviewFile(file);
-    setPreview(URL.createObjectURL(file));
-  };
 
+    if (isEditingDP) {
+      handleUpdateSubfolderDP(file, myPhotosFolder?._id);
+    } else {
+      setPreviewFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
   /* ================= CAMERA START / STOP ================= */
   useEffect(() => {
     if (!showCameraPopup) return;
@@ -155,97 +162,104 @@ const HeaderCards = ({
   /* ================= SEARCH STREAM ================= */
   const startSearchStream = async formData => {
     setIsStremSearching(true);
-    try{
-  const response = await fetch(`${FACE_FINDER_URL}/search`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    const matches = [];
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const events = buffer.split("\n\n");
-      buffer = events.pop();
-
-      events.forEach(event => {
-        if (!event.startsWith("data:")) return;
-        const payload = JSON.parse(event.replace("data:", ""));
-        if (payload.type === "match") {
-          matches.push(payload);
-          onSearchResults([...matches]);
-        }
-        if (payload.type === "complete") {
-          setIsStremSearching(false);
-          return;
-        }
+    try {
+      const response = await fetch(`${FACE_FINDER_URL}/search`, {
+        method: "POST",
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      const matches = [];
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop();
+
+        events.forEach(event => {
+          if (!event.startsWith("data:")) return;
+          const payload = JSON.parse(event.replace("data:", ""));
+          if (payload.type === "match") {
+            matches.push(payload);
+            onSearchResults([...matches]);
+          }
+          if (payload.type === "complete") {
+            setIsStremSearching(false);
+            return;
+          }
+        });
+      }
     }
-    }
-    catch(error){
-    console.error("Search stream error:", error);
-    setIsStremSearching(false);
+    catch (error) {
+      console.error("Search stream error:", error);
+      setIsStremSearching(false);
+      setIsSearching(false);
     }
   };
 
   /* ================= CAPTURE ================= */
- const handleCapture = async () => {
-  if (!cameraReady || !videoRef.current) return;
+  const handleCapture = async () => {
+    if (!cameraReady || !videoRef.current) return;
 
-  const video = videoRef.current;
+    const video = videoRef.current;
 
-  const size = Math.min(video.videoWidth, video.videoHeight);
-  const sx = (video.videoWidth - size) / 2;
-  const sy = (video.videoHeight - size) / 2;
+    const size = Math.min(video.videoWidth, video.videoHeight);
+    const sx = (video.videoWidth - size) / 2;
+    const sy = (video.videoHeight - size) / 2;
 
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
 
-  const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
 
-  ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.clip();
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
 
-  ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
+    ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size);
 
-  const imageDataUrl = canvas.toDataURL("image/png");
-  setCapturedImage(imageDataUrl);
+    const imageDataUrl = canvas.toDataURL("image/png");
+    setCapturedImage(imageDataUrl);
 
-  streamRef.current?.getTracks().forEach(track => track.stop());
-  setCameraReady(false);
+    streamRef.current?.getTracks().forEach(track => track.stop());
+    setCameraReady(false);
 
-  canvas.toBlob(async (blob) => {
-    if (!blob) return;
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
 
-    try {
-      setIsCreating(true);
-      setIsSearching(true);
-      onSearchResults([]);
-      const myFolder = await ensureMyPhotosFolder(blob);
-      setShowCameraPopup(false);
-      const fd = new FormData();
-      fd.append("sample_image", blob, "capture.png");
-      fd.append("folder_name", folderName);
-      fd.append("customer_id", customerId);
-      fd.append("subFolderId", myFolder._id);
+      try {
+        setIsCreating(true);
+        setIsSearching(true);
+        onSearchResults([]);
+        const myFolder = await ensureMyPhotosFolder(blob);
 
-      await startSearchStream(fd);
-    } finally {
-      setIsSearching(false);
-      setIsCreating(false);
-    }
-  }, "image/png");
-};
+        await handleUpdateSubfolderDP(blob, myFolder._id);
 
+        setShowCameraPopup(false);
+        const fd = new FormData();
+        fd.append("sample_image", blob, "capture.png");
+        fd.append("folder_name", folderName);
+        fd.append("customer_id", customerId);
+        fd.append("subFolderId", myFolder._id);
+
+        await startSearchStream(fd);
+      } finally {
+        setIsSearching(false);
+        setIsCreating(false);
+      }
+    }, "image/png");
+  };
 
   /* ================= CREATE ALBUM ================= */
   const handleCreateFolder = async () => {
@@ -289,17 +303,68 @@ const HeaderCards = ({
       setPreview(null);
       setPreviewFile(null);
       setNewFolderName("");
-    } catch(error){
+    } catch (error) {
       console.error("create folder error :", error?.message);
       // alert("create folder error :",error?.message)
       alert("create folder error: " + error?.message)
     }
-     finally {
+    finally {
       setIsLoading(false);
     }
   };
 
-  /* ================= UI ================= */
+const updateAllStates = (subFolderId, url) => {
+  setAlbums(prev =>
+    prev.map(album =>
+      album._id === subFolderId
+        ? { ...album, folderDp: { thumbnailUrl: url } }
+        : album
+    )
+  );
+  setLocalMyPhotos(prev =>
+    prev && prev._id === subFolderId
+      ? { ...prev, folderDp: { thumbnailUrl: url } }
+      : prev
+  );
+
+  setSubFolders(prev =>
+    prev.map(sf =>
+      sf._id === subFolderId
+        ? { ...sf, folderDp: { thumbnailUrl: url } }
+        : sf
+    )
+  );
+};
+
+const handleUpdateSubfolderDP = async (file, subFolderId) => {
+  try {
+    const previewUrl = URL.createObjectURL(file);
+
+    updateAllStates(subFolderId, previewUrl);
+
+    const fd = new FormData();
+    fd.append("image", file);
+    fd.append("folderId", mainFolderId);
+    fd.append("subFolderId", subFolderId);
+    fd.append("phoneNo", localPhoneNumber)
+
+    const res = await fetch(`${MEDIA_WORKER_URL}/update-subfolder-dp`, {
+      method: "PUT",
+      body: fd,
+    });
+
+    const data = await res.json();
+
+    if (data?.data?.thumbnailUrl) {
+      updateAllStates(subFolderId, data.data.thumbnailUrl);
+    }
+
+  } catch (err) {
+    console.error("DP update failed", err);
+    alert("Failed to update image");
+  }
+};
+
   return (
     <>
       {/* HEADER CARDS */}
@@ -325,44 +390,47 @@ const HeaderCards = ({
         {/* MY PHOTOS */}
         {myPhotosFolder ? (
           <div>
-          <div
-            className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""
-              }`}
-            onClick={() => {
-              setIsActualMyPhotos(true)
-              setActiveTab("my-photos");
-              onSelectSubFolder(myPhotosFolder._id);
-            }}
-          >
-            <div className="circle-img-folder circle-img-both">
-              <div className="circle-img-inner">
-                <img
-                  src={
-                    myPhotosFolder.folderDp?.thumbnailUrl || myPhoto.src
-                  }
-                  alt="My Photos"
-                />
+            <div
+              className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""
+                }`}
+              onClick={() => {
+                setIsActualMyPhotos(true)
+                setActiveTab("my-photos");
+                onSelectSubFolder(myPhotosFolder._id);
+              }}
+            >
+              <div className="circle-img-folder circle-img-both">
+                <div className="circle-img-inner">
+                  <img
+                    src={
+                      myPhotosFolder.folderDp?.thumbnailUrl || myPhoto.src
+                    }
+                    alt="My Photos"
+                  />
+                </div>
+              </div>
+              <div className="flex">
+                <span>My..</span>
+                <button
+                  className="edit-myphoto-btn"
+
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    setIsEditingDP(true);
+                    onSelectSubFolder(myPhotosFolder._id);
+                    setIsActualMyPhotos(true);
+                    setIsSearching(false);
+                    onSearchResults([]);
+                    setCapturedImage(null);
+                    setShowCameraPopup(true);
+                  }}
+                >
+                  Edit
+                </button>
               </div>
             </div>
-            <div className="flex">
-            <span>My..</span> 
-            <button
-      className="edit-myphoto-btn"
-      onClick={(e) => {
-        e.stopPropagation(); // important
 
-        setIsActualMyPhotos(true);     // search mode ON
-        setIsSearching(false);         // reset state
-        onSearchResults([]); 
-        setCapturedImage(null);
-        setShowCameraPopup(true);
-      }}
-    >
-      Edit
-          </button>
-          </div>
-          </div>
-          
           </div>
         ) : (
           <div
@@ -420,7 +488,7 @@ const HeaderCards = ({
           </div>
         ))}
 
-        
+
       </div>
 
       {/* CAMERA POPUP */}
@@ -481,7 +549,10 @@ const HeaderCards = ({
         <div className="picker-container">
           <div
             className="image-picker"
-            onClick={() => fileInputRef.current.click()}
+            onClick={() => {
+              setIsEditingDP(false);
+              fileInputRef.current.click();
+            }}
           >
             {preview ? (
               <div

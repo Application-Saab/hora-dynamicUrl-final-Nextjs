@@ -17,12 +17,13 @@ const CommonPopup = ({
   disabled = false,
   popupHeight = 356,
   titleFontSize = "clamp(18px, 4.5vw, 22px)", 
+  containerClass = "justify-between",
 }) => {
   if (!isOpen) return null;
 
   return (
     <div className="popup-overlay">
-      <div className="popup-container"
+      <div className={`${containerClass} popup-container`}
         style={{ height: `${popupHeight}px` }}
       >
 
@@ -49,7 +50,7 @@ const CommonPopup = ({
         </div>
 
         {/* Footer */}
-        {showButton && (
+        {(showButton && buttonContent !== null) && (
           <div className="pop-btn-container">
             <button
               className="popup-btn"

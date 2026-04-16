@@ -21,7 +21,6 @@
     clamp(10px, 3vw, 16px);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 /* HEADER */
@@ -77,4 +76,8 @@ padding-bottom: 8px;
   margin: 0;
   text-align: center;
   white-space: nowrap;
+}
+
+.justify-between{
+  justify-content: space-between;
 }

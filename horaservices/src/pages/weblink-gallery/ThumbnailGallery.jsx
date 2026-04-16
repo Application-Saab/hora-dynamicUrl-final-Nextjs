@@ -1,7 +1,6 @@
 // ThumbnailGallery.js
 "use client";
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import Slider from "react-slick";
 import Image from 'next/image';
 import './gallery.css'; // Ensure this path is correct
 import { BASE_URL } from "@/utils/apiconstants";
@@ -9,7 +8,6 @@ import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGa
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import OtpLogin from "@/components/OtpLoginPopup";
 import ArrowImg from '../../assets/arrow.svg'
-import Crossicon from '../../assets/Crossicon.svg'
 import share from '../../assets/share.svg'
 import nextIcon from '../../assets/nextIcon.svg'
 import multiGroup from '../../assets/multiGroup.svg'
@@ -21,6 +19,7 @@ import CommonPopup from "@/components/CommonPop";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
+import CommonImagePopup from "@/components/CommonImagePopup";
 
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
@@ -58,6 +57,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [isStreamSearching, setIsStremSearching] = useState(false);
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const actionMenuRef = useRef(null);
+  const [mainFolderId, setMainFolderId] = useState(null);
 
 
   useEffect(() => {
@@ -104,6 +104,41 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       alert("Image link copied!");
     }
   };
+
+  const handleAddToFolderSubmit = () => {
+  if (usableFolders.length === 0) {
+    setPendingAssignImageId(currentImage?._id);
+
+    setShowAddToFolderPopup(false);
+    setShowCreateFolderPopup(true);
+    return;
+  }
+
+  if (!currentImage?._id) return;
+
+  const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
+  const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
+
+  fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      subFolderId: folderSelection,
+      addImageIds: toAdd.length ? [currentImage._id] : [],
+      removeImageIds: toRemove.length ? [currentImage._id] : [],
+    }),
+  }).then(() => {
+    setAllThumbnails(prev =>
+      prev.map(img =>
+        img._id === currentImage._id
+          ? { ...img, folderIds: folderSelection }
+          : img
+      )
+    );
+    setShowAddToFolderPopup(false);
+    setIsEditing(false);
+  });
+};
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn");
@@ -216,6 +251,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     return allThumbnails;
   }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, myPhotosFolder, activeSubFolderId, isEditing]);
 
+  const usableFolders = subFolders.filter(sf => sf.type !== "my_photos");
 
   const downloadFile = async (url) => {
     const fileWithExt = url.split("/").pop();
@@ -264,6 +300,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
         setSubFolders(data.folders[0]?.subFolders || []);
+        setMainFolderId(data?.folders[0]?._id || null)
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
@@ -456,6 +493,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
             setIsActualMyPhotos={setIsActualMyPhotos}
             setIsStremSearching={setIsStremSearching}
+
+            mainFolderId={mainFolderId}
+
+            setSubFolders={setSubFolders}
           />
         }
         <div>
@@ -545,9 +586,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 originalUrl: objectUrl,
                 thumbnailImageUrl: file.type.startsWith("image") ? objectUrl : null,
                 videoClipUrl: file.type.startsWith("video") ? objectUrl : null,
-                isTemp: true,        
+                isTemp: true,
                 uploading: true,
                 uploaded: false,
+                orderByName: localPhoneNumber,
               };
             });
             setAllThumbnails(prev => [...tempThumbnails, ...prev]);
@@ -584,20 +626,32 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                     //   videoClipUrl: img.clipUrl || null,
                     // };
                     const newThumb = {
-                      _id: img.imageId || Date.now(),
+                        _id: String(img.imageId),
                       type: img.videoUrl ? "video" : "image",
                       originalUrl: img.imageUrl || img.videoUrl,
                       thumbnailImageUrl: img.thumbnailUrl || null,
                       videoClipUrl: img.clipUrl || null,
-                      isTemp: true,        
+                      isTemp: true,
                       uploading: false,
                       uploaded: true,
+                      orderByName: localPhoneNumber,
                     };
                     setAllThumbnails(prev =>
-                      prev.map(item =>
-                        item._id === temp._id ? newThumb : item
-                      )
-                    );
+  prev.map(item => {
+    if (item._id === temp._id) {
+      return {
+        ...newThumb,
+        folderIds: item.folderIds || [],
+      };
+    }
+    return item;
+  })
+);
+
+setSelectedIndex(prevIndex => {
+  if (prevIndex === null) return prevIndex;
+  return prevIndex;
+});
 
                     setTimeout(() => {
                       setAllThumbnails(prev =>
@@ -648,7 +702,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
 
           {/* ================= SEARCHING STATE ================= */}
-          {!loading && isStreamSearching && isActualMyPhotos && matchedKeys.length === 0 && (
+          {!loading && isStreamSearching && isSearching && isActualMyPhotos && matchedKeys.length === 0 && (
             <>
               <div className="thumbnail-gallery-status">Searching Photos.... </div>
               <div className="gallery-image-grid">
@@ -753,183 +807,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               })}
             </div>
           )}
-
-          {/* ================= IOS EMPTY PAGE CASE ================= */}
-          {!loading &&
-            !isStreamSearching &&
-            visibleThumbnails.length === 0 && (
-              <div className="thumbnail-gallery-status">No photos on this page.</div>
-            )}
-
-
-          {selectedIndex !== null && popupImages[selectedIndex] && (
-            <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true" aria-labelledby="popup-title">
-              <div className="popupContent" onClick={(e) => e.stopPropagation()}>
-                <div className="popupHeader">
-                  <div className="popupHeader-left">
-                    <button className="closeButton" onClick={closePopup} aria-label="Close image viewer">
-                      <Image
-                        src={Crossicon}
-                        alt="Back"
-                        width={18}
-                        height={18}
-                        className=""
-                        onClick={closePopup}
-                      />
-                    </button>
-                    <div id="popup-title" className="image-index">
-                      {`${selectedIndex + 1} / ${popupImages.length}`}
-                    </div>
-                  </div>
-                  <div>
-                    {typeof handleImageShare === 'function' && (
-                      <div style={{ position: "relative" }}>
-                        <Image
-                          src={multiGroup}
-                          alt="More"
-                          width={22}
-                          height={22}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => setShowActionMenu(prev => !prev)}
-                        />
-
-                        {showActionMenu && (
-                          <div className="action-menu" ref={actionMenuRef}>
-                            <div className="action-item">
-                              <strong>Shared by:</strong>
-                              <p>{number}</p>
-                            </div>
-
-                            <div
-                              className="action-item flex"
-                              onClick={() => {
-                                if (!currentImage) return;
-
-                                setFolderSelection(currentImage.folderIds || []);
-                                setInitialPopupFolders(currentImage.folderIds || []);
-                                setShowAddToFolderPopup(true);
-                                setShowActionMenu(false);
-                              }}
-                            >
-                              <Image src={plusVector} width={11} height={11} />
-                              <span>Add to Folder</span>
-                            </div>
-
-
-                            {currentImage?.type !== "video" && (
-                              <div
-                                className="action-item flex"
-                                onClick={() => {
-                                  const current = allThumbnails[selectedIndex];
-                                  downloadFile(current.originalUrl);
-                                  setShowActionMenu(false);
-                                }}
-                              >
-                                <Image src={downloadVector} width={11} height={11} />
-                                <span>Download</span>
-                              </div>
-                            )}
-
-                            <div
-                              onClick={() => {
-                                const current = allThumbnails[selectedIndex];
-                                if (!current) return;
-
-                                handleImageShare(current?.originalUrl);
-                                setShowActionMenu(false);
-                              }} className="action-item flex gallery-share-icon">
-                              <Image
-                                src={shareVector} width={11} height={11} />
-                              <span>Share</span>
-                            </div>
-                            {String(rawPhoneNumber) === String(localPhoneNumber) &&
-                              <div
-                                className="action-item flex"
-                                onClick={async () => {
-                                  const currentImage = allThumbnails[selectedIndex];
-                                  if (!currentImage?._id) return;
-
-                                  // Confirm deletion (optional)
-                                  if (!window.confirm("Are you sure you want to delete this image?")) return;
-
-                                  try {
-                                    // Call your API to delete the image
-                                    const res = await fetch(`${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`, {
-                                      method: "DELETE",
-                                    });
-
-                                    if (!res.ok) {
-                                      const err = await res.text();
-                                      throw new Error(err);
-                                    }
-
-                                    // Remove the image locally
-                                    setAllThumbnails(prev => {
-                                      const newList = prev.filter(img => img._id !== currentImage._id);
-                                      // Adjust selectedIndex
-                                      if (newList.length === 0) {
-                                        setSelectedIndex(null); // no more images → close popup
-                                      } else if (selectedIndex >= newList.length) {
-                                        setSelectedIndex(newList.length - 1); // deleted last image → move to previous
-                                      } else {
-                                        setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
-                                      }
-                                      return newList;
-                                    });
-
-                                  } catch (err) {
-                                    console.error("Delete failed:", err);
-                                    alert("Failed to delete image");
-                                  }
-                                }}
-                              >
-                                <Image src={deleteVector} width={11} height={11} />
-                                <span>Delete</span>
-                              </div>
-                            }
-                          </div>
-                        )}
-                      </div>
-
-                    )}
-                  </div>
-                </div>
-                <div className="popupSliderWrapper">
-                  <Slider
-                    {...sliderSettings}
-                    initialSlide={selectedIndex}
-                    key={`slick-slider-${selectedIndex}-${allThumbnails[selectedIndex]?.stableKey}`}
-                  >
-                    {popupImages.map((thumb, idx) => {
-                      const isVideo = thumb.type === "video";
-
-                      return (
-                        <div key={thumb.stableKey || idx} className="slick-slide-item">
-                          {isVideo ? (
-                            <video
-                              src={thumb.originalUrl}
-                              controls
-                              autoPlay
-                              muted
-                              playsInline
-                              className="popupVideo"
-                            />
-                          ) : (
-                            <img
-                              src={thumb.thumbnailImageUrl || thumb.originalUrl}
-                              alt={`Enlarged ${idx + 1}`}
-                              className="popupImage"
-                            />
-                          )}
-
-                        </div>
-                      );
-                    })}
-                  </Slider>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
       </div>
@@ -942,82 +819,174 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         popupHeight="420"
         title="Add to Folder"
         titleFontSize="22px"
-        buttonContent={subFolders.length === 0 ? "Create Folder" : "Add Now"}
-        disabled={subFolders.length === 0 ? false : JSON.stringify(folderSelection) === JSON.stringify(initialPopupFolders)}
-        onSubmit={() => {
-          if (subFolders.length === 0) {
-            setPendingAssignImageId(currentImage?._id);
-
-            setShowAddToFolderPopup(false);
-            setShowCreateFolderPopup(true);
-            return;
-          }
-
-          // Normal "Add Now" flow
-          if (!currentImage?._id) return;
-
-          const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
-          const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
-
-          fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              subFolderId: folderSelection,
-              addImageIds: toAdd.length ? [currentImage._id] : [],
-              removeImageIds: toRemove.length ? [currentImage._id] : [],
-            }),
-          }).then(() => {
-            setAllThumbnails(prev =>
-              prev.map(img =>
-                img._id === currentImage._id
-                  ? { ...img, folderIds: folderSelection }
-                  : img
-              )
-            );
-            setShowAddToFolderPopup(false);
-            setIsEditing(false);
-          });
-        }}
+        buttonContent={usableFolders.length === 0 ? null : "Add Now"}
+        disabled={JSON.stringify(folderSelection) === JSON.stringify(initialPopupFolders)}
+        onSubmit={handleAddToFolderSubmit}
+        containerClass=""
       >
         <div
           className="add-folder-list" style={{ maxHeight: "300px", overflowY: "auto" }}>
-          {subFolders.length > 0 ? (
-            subFolders.filter(sf => sf.type !== "my_photos")
-              .map(sf => {
-                return (
-                  <label key={sf._id} className="folder-checkbox-row">
-                    <div className="folder-info">
-                      <div className={`${sf.folderDp?.thumbnailUrl ? 'folder-dp' : 'default-folder-dp'}`}>
-                        <img src={sf?.folderDp?.thumbnailUrl || user2?.src} alt={sf.folderName} />
-                      </div>
-                      <span className="folder-name">{sf.folderName}</span>
+          {usableFolders.length > 0 ? (
+            usableFolders?.map(sf => {
+              return (
+                <label key={sf._id} className="folder-checkbox-row">
+                  <div className="folder-info">
+                    <div className={`${sf.folderDp?.thumbnailUrl ? 'folder-dp' : 'default-folder-dp'}`}>
+                      <img src={sf?.folderDp?.thumbnailUrl || user2?.src} alt={sf.folderName} />
                     </div>
-                    <input
-                      type="checkbox"
-                      className="popup-checkbox"
-                      checked={folderSelection.includes(sf._id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setFolderSelection(prev => [...prev, sf._id]);
-                        } else {
-                          setFolderSelection(prev =>
-                            prev.filter(id => id !== sf._id)
-                          );
-                        }
-                      }}
-                    />
-                  </label>
-                );
-              })
+                    <span className="folder-name">{sf.folderName}</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="popup-checkbox"
+                    checked={folderSelection.includes(sf._id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFolderSelection(prev => [...prev, sf._id]);
+                      } else {
+                        setFolderSelection(prev =>
+                          prev.filter(id => id !== sf._id)
+                        );
+                      }
+                    }}
+                  />
+                </label>
+              );
+            })
           ) : (
             <div className="emptyFolder-container">
-              <div className="no-subfolder-text">No subfolder found</div>
+              <div className="no-subfolder-text">No Folders Found</div>
               <div className="sub-text-empty">You don’t have any folder yet.</div>
+            <div className="pop-btn-container">
+            <button
+              className="popup-btn"
+              onClick={handleAddToFolderSubmit}
+            >
+             Create Folder
+            </button>
+          </div>
             </div>
           )}
         </div>
       </CommonPopup>
+
+      <CommonImagePopup
+        images={popupImages}
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+        onClose={closePopup}
+        renderActions={(currentImage, index) => (
+          <div>
+            <div style={{ position: "relative" }}>
+              <Image
+                src={multiGroup}
+                alt="More"
+                width={22}
+                height={22}
+                onClick={() => setShowActionMenu(prev => !prev)}
+              />
+
+              {showActionMenu && (
+                <div className="action-menu" ref={actionMenuRef}>
+                  <div className="action-item">
+                    <strong>Shared by:</strong>
+                    <p>{number}</p>
+                  </div>
+
+                  <div
+                    className="action-item flex"
+                    onClick={() => {
+                      if (!currentImage) return;
+                      setFolderSelection(currentImage.folderIds || []);
+                      setInitialPopupFolders(currentImage.folderIds || []);
+                      setShowAddToFolderPopup(true);
+                      setShowActionMenu(false);
+                    }}
+                  >
+                    <Image src={plusVector} width={11} height={11} />
+                    <span>Add to Folder</span>
+                  </div>
+
+
+                  {currentImage?.type !== "video" && (
+                    <div
+                      className="action-item flex"
+                      onClick={() => {
+                        const current = allThumbnails[selectedIndex];
+                        downloadFile(current.originalUrl);
+                        setShowActionMenu(false);
+                      }}
+                    >
+                      <Image src={downloadVector} width={11} height={11} />
+                      <span>Download</span>
+                    </div>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      const current = allThumbnails[selectedIndex];
+                      if (!current) return;
+
+                      handleImageShare(current?.originalUrl);
+                      setShowActionMenu(false);
+                    }} className="action-item flex gallery-share-icon">
+                    <Image
+                      src={shareVector} width={11} height={11} />
+                    <span>Share</span>
+                  </div>
+                  {String(rawPhoneNumber) === String(localPhoneNumber) &&
+                    <div
+                      className="action-item flex"
+                      onClick={async () => {
+                        const currentImage = allThumbnails[selectedIndex];
+                        if (!currentImage?._id) return;
+
+                        // Confirm deletion (optional)
+                        if (!window.confirm("Are you sure you want to delete this image?")) return;
+
+                        try {
+                          // Call your API to delete the image
+                          const res = await fetch(`${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`, {
+                            method: "DELETE",
+                          });
+
+                          if (!res.ok) {
+                            const err = await res.text();
+                            throw new Error(err);
+                          }
+
+                          // Remove the image locally
+                          setAllThumbnails(prev => {
+                            const newList = prev.filter(img => img._id !== currentImage._id);
+                            // Adjust selectedIndex
+                            if (newList.length === 0) {
+                              setSelectedIndex(null); // no more images → close popup
+                            } else if (selectedIndex >= newList.length) {
+                              setSelectedIndex(newList.length - 1); // deleted last image → move to previous
+                            } else {
+                              setSelectedIndex(selectedIndex); // else stay on current index → next image shifts automatically
+                            }
+                            return newList;
+                          });
+
+                          setShowActionMenu(false); 
+
+                        } catch (err) {
+                          console.error("Delete failed:", err);
+                          alert("Failed to delete image");
+                        }
+                      }}
+                    >
+                      <Image src={deleteVector} width={11} height={11} />
+                      <span>Delete</span>
+                    </div>
+                  }
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      />
 
       {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} />}
 
