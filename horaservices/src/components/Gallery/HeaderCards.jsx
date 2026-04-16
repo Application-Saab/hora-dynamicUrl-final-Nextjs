@@ -12,6 +12,7 @@ import user2 from '../../assets/user2.svg';
 
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
+import {MEDIA_WORKER_URL, FACE_FINDER_URL} from '../../utils/apiconstants'
 
 const HeaderCards = ({
   folderName,
@@ -132,7 +133,7 @@ const HeaderCards = ({
       fd.append("file", file);
       fd.append("phoneNo", localPhoneNumber)
 
-      const res = await fetch("https://mediaprocessv2.horaservices.com/create-subfolder", {
+      const res = await fetch(`${MEDIA_WORKER_URL}/create-subfolder`, {
         method: "POST",
         body: fd,
       });
@@ -155,7 +156,7 @@ const HeaderCards = ({
   const startSearchStream = async formData => {
     setIsStremSearching(true);
     try{
-  const response = await fetch("https://facefinderv2.horaservices.com/search", {
+  const response = await fetch(`${FACE_FINDER_URL}/search`, {
       method: "POST",
       body: formData,
     });
@@ -261,7 +262,7 @@ const HeaderCards = ({
       fd.append("customerId", customerId);
       fd.append("phoneNo", localPhoneNumber)
 
-      const res = await fetch("https://mediaprocessv2.horaservices.com/create-subfolder", {
+      const res = await fetch(`${MEDIA_WORKER_URL}/create-subfolder`, {
         method: "POST",
         body: fd,
       });

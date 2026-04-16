@@ -64,3 +64,6 @@ export const SUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/subscribe";
 export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
+
+export const MEDIA_WORKER_URL = "https://mediaprocessv2.horaservices.com";
+export const FACE_FINDER_URL = "https://facefinderv2.horaservices.com";

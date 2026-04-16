@@ -4,7 +4,6 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import Slider from "react-slick";
 import Image from 'next/image';
 import './gallery.css'; // Ensure this path is correct
-import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
 import { BASE_URL } from "@/utils/apiconstants";
 import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGalleryItem";
 import HeaderCards from "@/components/Gallery/HeaderCards";
@@ -20,8 +19,8 @@ import shareVector from '../../assets/shareVector.svg'
 import deleteVector from '../../assets/deleteVector.svg'
 import CommonPopup from "@/components/CommonPop";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
-import LazyImage from "@/components/LazyImage";
-import userIcon from "../../assets/userIcon.svg";
+import user2 from "../../assets/user2.svg";
+import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
 
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
@@ -29,8 +28,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isIOSMobile, setIsIOSMobile] = useState(false);
   const [isSearching, setIsSearching] = useState(false)
   const [subFolders, setSubFolders] = useState([]);
   const [activeSubFolderId, setActiveSubFolderId] = useState(null);
@@ -196,33 +193,26 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     ? popupImages[selectedIndex]
     : null;
 
-  const alreadyAssignedFolders = currentImage?.folderIds || [];
-
   const visibleThumbnails = useMemo(() => {
 
     if (!isActualMyPhotos) {
-      //  EDIT MODE: sari images dikhao
       if (isEditing) {
         return allThumbnails;
       }
     }
 
-    // when searching
     if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
       return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
     }
 
-    // My Photos tab normal flow
     if (isMyPhotosTabActive && myPhotosFolder) {
       return allThumbnails.filter(img => img.folderIds?.includes(myPhotosFolder._id));
     }
 
-    // Subfolder flow
     if (activeSubFolderId) {
       return allThumbnails.filter(img => img.folderIds?.includes(activeSubFolderId));
     }
 
-    // Default All tab
     return allThumbnails;
   }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, myPhotosFolder, activeSubFolderId, isEditing]);
 
@@ -258,81 +248,22 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         .filter(img => img.folderIds?.includes(activeSubFolderId))
         .map(img => img._id);
 
-      // if (activeTab !== "my-photos") {
-      //   if (ids.length === 0) {
-      //     setIsEditing(true);
-      //   }
-      // }
-
       setSelectedImages(ids);
       setInitialSubfolderImages(ids);
     }
   }, [activeSubFolderId, allThumbnails]);
 
-
-
-
-  // iOS Mobile Detection
-  useEffect(() => {
-    const detectIOSMobile = () => {
-      if (typeof navigator !== 'undefined') {
-        // Basic check for iPhone, iPad, iPod.
-        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
-        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
-        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
-        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      }
-      return false;
-    };
-    setIsIOSMobile(detectIOSMobile());
-  }, []);
-
-  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
-  const getItemsPerPage = useCallback(() => {
-    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
-    // For iOS mobile, a smaller number might be better, e.g. 12-15.
-    // For other devices (where pagination is hidden), this number doesn't directly limit display
-    // but affects the `totalPages` calculation if we were to show it.
-    // Let's adjust: more items for wider screens if pagination *were* shown.
-    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
-    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
-    if (isIOSMobile) {
-      return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
-    }
-    return window.innerWidth >= 768 ? 36 : 24; // Fallback for general calculation (though UI is hidden)
-
-  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
-
-
-  const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
-
-  useEffect(() => {
-    const handleResize = () => {
-      setItemsPerPage(getItemsPerPage());
-    };
-    if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, [isIOSMobile, getItemsPerPage]);
-
-
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); setCurrentPage(1); return;
+        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
       }
       setLoading(true); setError(null);
       try {
         const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
         if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
         const data = await response.json();
-
-        // const mainFolder = data.folders.find(
-        //   (folder) => folder.folderName === folderName
-        // );
         setSubFolders(data.folders[0]?.subFolders || []);
-        // setSubFolders(mainFolder?.subFolders || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
@@ -356,34 +287,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     setInitialSubfolderImages([]);
   };
 
-
-  // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
-  // const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
-  //   if (isIOSMobile) {
-  //     const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
-  //     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  //     const endIndex = startIndex + ITEMS_PER_PAGE;
-  //     const currentItems = allThumbnails.slice(startIndex, endIndex);
-  //     return { currentThumbnailsOnPage: currentItems, totalPages: total };
-  //   } else {
-  //     // Not iOS mobile: show all thumbnails, no pagination UI
-  //     return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
-  //   }
-  // }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
-
-  // const handleImageClick = useCallback((indexInDisplayedList) => {
-  //   let originalIndex;
-  //   if (isIOSMobile) {
-  //     originalIndex = (currentPage - 1) * ITEMS_PER_PAGE + indexInDisplayedList;
-  //   } else {
-  //     originalIndex = indexInDisplayedList; // Index is direct from allThumbnails
-  //   }
-
-  //   if (originalIndex >= 0 && originalIndex < allThumbnails.length) {
-  //     setSelectedIndex(originalIndex);
-  //   }
-  // }, [currentPage, ITEMS_PER_PAGE, allThumbnails.length, isIOSMobile]);
-
   const handleImageClick = useCallback((indexInDisplayedList) => {
     setSelectedIndex(indexInDisplayedList);
   }, []);
@@ -391,19 +294,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   const closePopup = useCallback(() => {
     setSelectedIndex(null);
-  }, []);
-
-  const handlePageChange = useCallback((pageNumber) => {
-    setCurrentPage(pageNumber);
-    // Scroll to top of gallery header after a short delay to allow UI to update
-    setTimeout(() => {
-      const galleryHeader = document.querySelector('.gallery-header');
-      if (galleryHeader) {
-        galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 100);
   }, []);
 
   const sliderSettings = useMemo(() => ({
@@ -422,15 +312,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       setShowActionMenu(false);
     },
   }), [allThumbnails.length]);
-
-  // const handleSearchResults = (matches) => {
-  //   if (!Array.isArray(matches)) return;
-  //   const keys = matches.map(m => m?.file);
-  //   setMatchedKeys(keys);
-  //   setIsSearching(true);
-  //   setIsSearchComplete(false);
-
-  // };
 
   const handleSearchResults = (matches) => {
     if (!Array.isArray(matches)) return;
@@ -543,25 +424,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   return (
     <div className="thumbnail-gallery">
       <div>
-
-        {/* {currentThumbnailsOnPage.length > 0 ? (
-        <div className="masonryGrid">
-          {currentThumbnailsOnPage.map((thumbnail, indexOnPage) => (
-            <LazyImage
-              key={thumbnail._id}
-              src={thumbnail.thumbnailImageUrl}
-              alt={`Photo ${isIOSMobile ? ((currentPage - 1) * ITEMS_PER_PAGE + indexOnPage + 1) : (indexOnPage + 1)}`}
-              wrapperClassName="masonry-item"
-              onClick={() => handleImageClick(indexOnPage)}
-            />
-          ))}
-        </div>
-      ) : (
-        // Show message if on iOS and current page is empty (shouldn't happen with correct totalPages logic)
-        // Or if allThumbnails is genuinely empty after loading.
-        isIOSMobile && totalPages > 0 && <div className="thumbnail-gallery-status">No photos on this page.</div>
-      )} */}
-
         {loading ?
           <HeaderCardsFlashLoader />
           :
@@ -702,7 +564,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                 try {
                   const res = await fetch(
-                    "https://mediaprocessv2.horaservices.com/upload",
+                    `${MEDIA_WORKER_URL}/upload`,
                     {
                       method: "POST",
                       body: formData,
@@ -895,8 +757,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           {/* ================= IOS EMPTY PAGE CASE ================= */}
           {!loading &&
             !isStreamSearching &&
-            isIOSMobile &&
-            totalPages > 0 &&
             visibleThumbnails.length === 0 && (
               <div className="thumbnail-gallery-status">No photos on this page.</div>
             )}
@@ -994,7 +854,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                                   try {
                                     // Call your API to delete the image
-                                    const res = await fetch(`https://mediaprocessv2.horaservices.com/delete-image/${currentImage._id}`, {
+                                    const res = await fetch(`${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`, {
                                       method: "DELETE",
                                     });
 
@@ -1125,12 +985,11 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           {subFolders.length > 0 ? (
             subFolders.filter(sf => sf.type !== "my_photos")
               .map(sf => {
-                const isAlreadyAdded = alreadyAssignedFolders.includes(sf._id);
                 return (
                   <label key={sf._id} className="folder-checkbox-row">
                     <div className="folder-info">
-                      <div className="folder-dp">
-                        <img src={sf?.folderDp?.thumbnailUrl || userIcon?.src} alt={sf.folderName} />
+                      <div className={`${sf.folderDp?.thumbnailUrl ? 'folder-dp' : 'default-folder-dp'}`}>
+                        <img src={sf?.folderDp?.thumbnailUrl || user2?.src} alt={sf.folderName} />
                       </div>
                       <span className="folder-name">{sf.folderName}</span>
                     </div>
