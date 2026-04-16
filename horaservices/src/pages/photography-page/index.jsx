@@ -117,7 +117,7 @@ const brandItems = [
         <div className="hora-price-box">
           <div className="hora-price-row">
             <span className="hora-price-from">Starting from</span>
-            <span className="hora-price-amt">₹3499/-</span>
+            <span className="hora-price-amt">₹3599/-</span>
           </div>
         </div>
 
