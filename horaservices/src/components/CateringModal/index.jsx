@@ -5,7 +5,7 @@ import vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";
 import { useRouter } from "next/router";
 
-const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
+const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose, isVenueView = false }) => {
   const router = useRouter();
 
   if (!data) return null;
@@ -31,11 +31,11 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
     });
 
   const groupedItems = items.reduce((acc, dish) => {
-  const realDish = dishMap?.[dish._id];
-  if (!realDish) return acc;
+    const realDish = dishMap?.[dish._id];
+    if (!realDish) return acc;
 
-  let mealId = realDish?.mealId;
-  if (Array.isArray(mealId)) {
+    let mealId = realDish?.mealId;
+    if (Array.isArray(mealId)) {
       mealId = mealId[0];
     }
     const category =
@@ -43,74 +43,72 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
     if (!acc[category]) {
       acc[category] = [];
     }
-   acc[category].push(realDish);
+    acc[category].push(realDish);
     return acc;
   }, {});
+
   const handleOrderNow = () => {
+    const selectedDishDictionary = {};
 
-  const selectedDishDictionary = {};
+    (data.packageItems || []).forEach((pkgItem) => {
+      const realDish = dishMap?.[pkgItem._id];
 
-  (data.packageItems || []).forEach((pkgItem) => {
+      if (realDish) {
+        selectedDishDictionary[pkgItem._id] = {
+          name: realDish.name,
+          image: realDish.image,
+          cuisineArray: realDish.cuisineArray,
+          _id: realDish._id,
+          mealId: realDish.mealId
+        };
+      } else {
+        if (!pkgItem?._id || !dishMap[pkgItem._id]) return;
+        selectedDishDictionary[pkgItem._id] = {
+          name: pkgItem.name,
+          image: pkgItem.image,
+          cuisineArray: [
+            pkgItem.price,
+            pkgItem.per_plate_qty?.qty || 100,
+            pkgItem.per_plate_qty?.unit || "Gram"
+          ],
+          _id: pkgItem._id,
+          mealId: pkgItem.mealId
+        };
+      }
+    });
 
-    const realDish = dishMap?.[pkgItem._id];
+    const selectedDishQuantities = Object.values(selectedDishDictionary).map(item => ({
+      name: item.name,
+      image: item.image,
+      price: item.cuisineArray[0],
+      quantity: item.cuisineArray[1],
+      unit: item.cuisineArray[2],
+      id: item.mealId,
+      isActive: item.isActive
+    }));
 
-    // 🔥 अगर API data मिला → use it
-    if (realDish) {
-      selectedDishDictionary[pkgItem._id] = {
-        name: realDish.name,
-        image: realDish.image,
-        cuisineArray: realDish.cuisineArray,
-        _id: realDish._id,
-        mealId: realDish.mealId
-      };
-    } 
-    else {
-      if (!pkgItem?._id || !dishMap[pkgItem._id]) return;
-      selectedDishDictionary[pkgItem._id] = {
-        name: pkgItem.name,
-        image: pkgItem.image,
-        cuisineArray: [
-          pkgItem.price,                 
-          pkgItem.per_plate_qty?.qty || 100,  
-          pkgItem.per_plate_qty?.unit || "Gram" 
-        ],
-        _id: pkgItem._id,
-        mealId: pkgItem.mealId
-      };
-    }
+    router.push({
+      pathname: `/party-food-delivery-live-catering-buffet-select-date/${selectedType}`,
+      query: {
+        selectedDishDictionary: JSON.stringify(selectedDishDictionary),
+        selectedDishPrice: data.price,
+        selectedDishes: Object.keys(selectedDishDictionary).length,
+        orderType: "package",
+        isDishSelected: false,
+        selectedCount: Object.keys(selectedDishDictionary).length,
+        selectedDishQuantities: JSON.stringify(selectedDishQuantities),
+        selectedOption: selectedType,
+        packageId: data._id,
+      },
+    });
+  };
 
-  });
-
-  const selectedDishQuantities = Object.values(selectedDishDictionary).map(item => ({
-    name: item.name,
-    image: item.image,
-    price: item.cuisineArray[0],
-    quantity: item.cuisineArray[1],
-    unit: item.cuisineArray[2],
-    id: item.mealId,
-    isActive: item.isActive
-  }));
-
-  router.push({
-    pathname: `/party-food-delivery-live-catering-buffet-select-date/${selectedType}`,
-    query: {
-      selectedDishDictionary: JSON.stringify(selectedDishDictionary),
-      selectedDishPrice: data.price,
-      selectedDishes: Object.keys(selectedDishDictionary).length,
-      orderType: "package",
-      isDishSelected: false,
-      selectedCount: Object.keys(selectedDishDictionary).length,
-      selectedDishQuantities: JSON.stringify(selectedDishQuantities),
-      selectedOption: selectedType,
-       packageId: data._id,
-    },
-  });
-};
   const handleCustomize = () => {
     router.push(
       `/party-food-delivery-live-catering-buffet/${selectedType}`
     );
   };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
@@ -125,22 +123,17 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
           />
         </h2>
         <div className="divider-line"></div>
-       <p className="min-order">
-  Minimum order starts from{" "}
-  {data.packageType === "liveCatering" ? 25 : 10} people
-</p>
+        <p className="min-order">
+          Minimum order starts from{" "}
+          {data.packageType === "liveCatering" ? 25 : 10} people
+        </p>
 
-        {/* 🔥 Scrollable Dish List */}
+        {/* Scrollable Dish List */}
         <div className="dish-list">
-
           {Object.keys(groupedItems).length > 0 ? (
             Object.keys(groupedItems).map((category, index) => (
               <div key={index} className="meal-group">
-
-                {/* Heading */}
                 <h4 className="meal-heading">{category}</h4>
-
-                {/* Dishes */}
                 {groupedItems[category].map((dish, i) => (
                   <div key={i} className="dish-row">
                     <img
@@ -154,13 +147,11 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
                     <span className="dishname">{dish.name}</span>
                   </div>
                 ))}
-
               </div>
             ))
           ) : (
             <p>No dishes available</p>
           )}
-
         </div>
 
         {/* Footer */}
@@ -169,12 +160,17 @@ const CateringModal = ({ data, mealTypes = [], allDishes = [], onClose }) => {
           <span className="Amountprice">₹{data.price}/-</span>
         </div>
 
-        <div className="btn-row">
-          <button className="outline-btn" onClick={handleOrderNow}>
-            Order Now
-          </button>
-          <button className="filled-btn" onClick={handleCustomize}>Customize Package</button>
-        </div>
+        {/* Buttons — venue view mein nahi dikhenge */}
+        {!isVenueView && (
+          <div className="btn-row">
+            <button className="outline-btn" onClick={handleOrderNow}>
+              Order Now
+            </button>
+            <button className="filled-btn" onClick={handleCustomize}>
+              Customize Package
+            </button>
+          </div>
+        )}
 
       </div>
     </div>

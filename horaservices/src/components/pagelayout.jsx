@@ -2,13 +2,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
-import BottomNav from "./BottomNav"; 
+import BottomNav from "./BottomNav";
 import "../app/globals.css";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/router"; // NEW
 
 const PageLayout = ({ children }) => {
   const pathname = usePathname();
+  const router = useRouter(); // NEW
   const [userId, setUserId] = useState("");
 
   // Get userID from localStorage on client side
@@ -19,13 +21,22 @@ const PageLayout = ({ children }) => {
     }
   }, []);
 
+  // ─── Venue flow check ───────────────────────────────────────────────────────
+  const isVenueFlow = router.query?.invenue === "true";
+  // ────────────────────────────────────────────────────────────────────────────
+
   // Show BottomNav only on these paths
   const showBottomNav =
-    pathname === "/wonderland" ||
-    pathname === "/wonderland/create-invite-template" ||
-    pathname === "/templates" ||
-    pathname?.startsWith("/chat") || // covers /chat?id=123 also
-    pathname === "/about" || pathname === '/accounts' || pathname === "/services" || pathname === '/wonderland/invite';
+    !isVenueFlow && ( // venue flow mein BottomNav hide
+      pathname === "/wonderland" ||
+      pathname === "/wonderland/create-invite-template" ||
+      pathname === "/templates" ||
+      pathname?.startsWith("/chat") ||
+      pathname === "/about" ||
+      pathname === "/accounts" ||
+      pathname === "/services" ||
+      pathname === "/wonderland/invite"
+    );
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");
 
@@ -44,8 +55,11 @@ const PageLayout = ({ children }) => {
         <section className="p-0">{children}</section>
       </main>
 
-      {/*  Show BottomNav on selected pages, passing userId */}
-      {showBottomNav ? <BottomNav id={userId} /> : !isWonderlandPath && <Footer />}
+      {showBottomNav ? (
+        <BottomNav id={userId} />
+      ) : (
+        !isWonderlandPath && !isVenueFlow && <Footer />
+      )}
     </div>
   );
 };

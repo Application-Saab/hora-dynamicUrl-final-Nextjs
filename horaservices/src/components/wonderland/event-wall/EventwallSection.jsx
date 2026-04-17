@@ -26,6 +26,7 @@ const EventwallSection = ({
   rsvpSubmitted,
   setPushRsvpClick,
   isHost,
+  isVenueHost = false, // NEW — venue flow ke liye
 }) => {
   const router = useRouter();
   const { eventid } = router.query;
@@ -37,7 +38,10 @@ const EventwallSection = ({
   const [selectedIndex, setSelectedIndex] = useState(null);
   const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
   const [imageNumber, setImageNumber] = useState(0);
-
+  const canShowActionButtons = isVenueHost
+    ? isHost
+    : isHost || rsvpSubmitted;
+   const canSeeImages = isVenueHost ? true : isHost || rsvpSubmitted;
   useEffect(() => {
     imagesRef.current = allImages;
   }, [allImages]);
@@ -343,34 +347,30 @@ const EventwallSection = ({
 
   return (
     <>
-      <div className="event-wall-action-ctn">
-        {actionButtons.map(({ label, icon, onClick }, index) => (
-          index !== 1 &&
-          <button
-            key={index}
-            className={`event-wall-action-btn event-wall-action-btn-${index}`}
-            onClick={() => {
-              isHost
-                ? onClick()
-                : rsvpSubmitted
-                  ? onClick()
-                  : setPushRsvpClick(true);
-            }}
-          >
-            <img
-              src={icon}
-              alt={`${label} Icon`}
-              className="event-wall-action-icon me-1"
-              height="18px"
-              width="16px"
-            />
-            {label}
-          </button>
-        ))}
-      </div>
+     {canShowActionButtons && (
+        <div className="event-wall-action-ctn">
+          {actionButtons.map(({ label, icon, onClick }, index) => (
+            index !== 1 &&
+            <button
+              key={index}
+              className={`event-wall-action-btn event-wall-action-btn-${index}`}
+              onClick={onClick}
+            >
+              <img
+                src={icon}
+                alt={`${label} Icon`}
+                className="event-wall-action-icon me-1"
+                height="18px"
+                width="16px"
+              />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div>
-        {allImages.length === 0 || (!rsvpSubmitted && !isHost) ? (
+        {allImages.length === 0 || !canSeeImages ? (
           <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img src={NopostCamera.src} alt="No Post Camera" className="" />
@@ -380,7 +380,7 @@ const EventwallSection = ({
               <p className="line-2">
                 Everyone can upload photos & videos from the event!
               </p>
-              <p className="line-2 line-3">Let’s fill this wall with joy!</p>
+              <p className="line-2 line-3">Let's fill this wall with joy!</p>
             </div>
           </div>
         ) : (
