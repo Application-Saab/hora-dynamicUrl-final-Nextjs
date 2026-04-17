@@ -20,6 +20,7 @@ import Homevideo from '../../../public/assets/Homevideo.mp4';
 import Photographybanner from '@/assets/Home/Photographybanner.webp'
 import decorationbanner from '@/assets/Home/decorationbanner.webp'
 import chefforparty from "@/assets/Home/chefforparty.webp"
+import chef from '@/assets/Home/chef.webp'
 import partyfood from "@/assets/Home/partyfood.webp"
 import photo1 from "@/assets/Home/photo1.svg"
 import photo2 from "@/assets/Home/photo2.svg"
@@ -110,7 +111,7 @@ India’s One-Stop Party Services Platform
 >
   <Image src={decorationbanner} alt="balloon decoration for birthday party" className="card-bg-img" />
   <div className="card-content">
-    <h3>DECORATION</h3>
+    <h2>DECORATION</h2>
     <button
       onClick={(e) => {
         goTo("/balloon-decoration");
@@ -131,7 +132,7 @@ India’s One-Stop Party Services Platform
 >
   <Image src={Photographybanner} alt="professional event photography services" className="card-bg-img" />
   <div className="card-content">
-    <h3>PHOTOGRAPHY</h3>
+    <h2>PHOTOGRAPHY</h2>
     <button
       onClick={(e) => {
      
@@ -154,7 +155,7 @@ India’s One-Stop Party Services Platform
 >
   <Image src={partyfood} alt="party food delivery and catering" className="card-bg-img" />
   <div className="card-content">
-    <h3>PARTY FOOD</h3>
+    <h2>PARTY FOOD</h2>
     <button
       onClick={(e) => {
        goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")
@@ -175,7 +176,7 @@ India’s One-Stop Party Services Platform
 >
   <Image src={chefforparty} alt="chef for party at home in India" className="card-bg-img" />
   <div className="card-content">
-    <h3>CHEF FOR PARTY</h3>
+    <h2>CHEF FOR PARTY</h2>
     <button
       onClick={(e) => {
         goTo("/book-chef-cook-for-party");
@@ -223,7 +224,7 @@ India’s One-Stop Party Services Platform
       {/* Card 1 */}
       <div className="service-card">
         <Image src={Decoration} alt="party decoration packages by HORA" className="service-card-image" />
-        <h3>Decoration</h3>
+        <h2>Decoration</h2>
         <p className="points">
            <Image src={sparkle} alt="" class="points-icon" />
           1000+ unique designs – Birthdays, Anniversaries, Baby showers,
@@ -245,7 +246,7 @@ India’s One-Stop Party Services Platform
       {/* Card 2 */}
       <div className="service-card">
         <Image src={PhotoGraphy} alt="photography packages for parties and events" className="service-card-image" />
-        <h3>Photography</h3>
+        <h2>Photography</h2>
        <p className="points">
            <Image src={sparkle} alt="" className="points-icon" />
          100+ Professional Photographers – Best prices, timely service,
@@ -266,8 +267,8 @@ India’s One-Stop Party Services Platform
 
       {/* Card 3 */}
       <div className="service-card">
-        <Image src={ChefForParty} alt="private chef service for parties" className="service-card-image" />
-        <h3>Chef for Party</h3>
+        <Image src={chef} alt="private chef service for parties" className="service-card-image" />
+        <h2>Chef for Party</h2>
          <p className="points">
            <Image src={sparkle} alt="" className="points-icon" />
         HORA brings professional chefs to your kitchen
@@ -296,7 +297,7 @@ India’s One-Stop Party Services Platform
       {/* Card 4 */}
       <div className="service-card">
         <Image src={BulkFoodDelivery} alt="bulk food delivery for parties" className="service-card-image"  />
-        <h3>Bulk Food Delivery</h3>
+        <h2>Bulk Food Delivery</h2>
          <p class="points">
            <Image src={sparkle} alt="" class="points-icon" />
 Enjoy food delivery with Hora </p>
@@ -323,7 +324,7 @@ Enjoy food delivery with Hora </p>
           {/* Card 5 */}
       <div className="service-card">
         <Image src={Entertainment} alt="party entertainment services" className="service-card-image" />
-        <h3>Entertainment</h3>
+        <h2>Entertainment</h2>
           <p className="points">
            <Image src={sparkle} alt="" className="points-icon" />
      Make your event unforgettable by engaging your guests! ✨ Choose from over 10 amazing services
@@ -347,7 +348,7 @@ Enjoy food delivery with Hora </p>
           {/* Card 6 */}
           <div className="service-card">
         <Image src={LiveCatering} alt="live catering and buffet service" className="service-card-image" />
-        <h3>Live Catering</h3>
+        <h2>Live Catering</h2>
          <p className="points">
            <Image src={sparkle} alt="" className="points-icon" />
        Best prices , Timely service
