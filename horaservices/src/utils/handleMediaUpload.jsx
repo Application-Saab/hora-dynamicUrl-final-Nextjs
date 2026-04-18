@@ -1,11 +1,10 @@
-// utils/handleMediaUpload.jsx
 "use client";
 
 import axios from "axios";
 import imageCompression from "browser-image-compression";
 const { BASE_URL, MEDIA_PROCESSING_URL } = require("./apiconstants");
 
-// 3-Second Video Clip Generator
+// 3 Second Video Clip Generator
 export async function create3SecClip(videoFile) {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -220,14 +219,20 @@ export async function uploadMedia(
   userName,
   eventId,
   onProgress,
+  fileId = null,
 ) {
   const formData = new FormData();
-  console.log("Files being appended:", files.length, files.map(f => f.name)); // ← add this
+  console.log(
+    "Files being appended:",
+    files.length,
+    files.map((f) => f.name),
+  ); // ← add this
 
   files.forEach((file) => {
     formData.append("files", file);
   });
 
+  formData.append("fileId", fileId);
   formData.append("postById", userId);
   formData.append("postByName", userName);
   formData.append("postType", "selfUploaded");
@@ -241,7 +246,6 @@ export async function uploadMedia(
     {
       headers: {
         Authorization: token,
-        // "Content-Type": "multipart/form-data",
       },
       onUploadProgress: (p) => {
         const percent = Math.round((p.loaded * 100) / p.total);
@@ -253,14 +257,10 @@ export async function uploadMedia(
   return res.data.posts;
 }
 
+import { openDB, deleteDB, wrap, unwrap } from "idb";
 
-
-
-// utils/uploadQueueDB.js
-import { openDB, deleteDB, wrap, unwrap } from 'idb';
-
-const DB_NAME    = 'EventWallUploads';
-const STORE_NAME = 'pending';
+const DB_NAME = "EventWallUploads";
+const STORE_NAME = "pending";
 const DB_VERSION = 1;
 
 let dbPromise = null;
@@ -270,9 +270,9 @@ export async function getDB() {
     dbPromise = openDB(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion) {
         if (!db.objectStoreNames.contains(STORE_NAME)) {
-          const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-          store.createIndex('eventId', 'eventId');
-          store.createIndex('status', 'status');
+          const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          store.createIndex("eventId", "eventId");
+          store.createIndex("status", "status");
         }
       },
     });
@@ -287,12 +287,12 @@ export async function addToQueue(item) {
 
 export async function getPendingUploads(eventId) {
   const db = await getDB();
-  return db.getAllFromIndex(STORE_NAME, 'eventId', eventId);
+  return db.getAllFromIndex(STORE_NAME, "eventId", eventId);
 }
 
 export async function updateQueueItem(id, changes) {
   const db = await getDB();
-  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const tx = db.transaction(STORE_NAME, "readwrite");
   const store = tx.objectStore(STORE_NAME);
   const item = await store.get(id);
   if (!item) return null;
@@ -308,9 +308,9 @@ export async function removeFromQueue(id) {
 
 export async function clearQueueForEvent(eventId) {
   const db = await getDB();
-  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const tx = db.transaction(STORE_NAME, "readwrite");
   const store = tx.objectStore(STORE_NAME);
-  const index = store.index('eventId');
+  const index = store.index("eventId");
   const items = await index.getAll(eventId);
   for (const item of items) {
     await store.delete(item.id);

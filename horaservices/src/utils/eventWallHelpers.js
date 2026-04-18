@@ -1,4 +1,3 @@
-// utils/eventWallHelpers.js
 // Measure height of thumbnail/local image
 function measureImageHeight(url) {
   return new Promise((resolve) => {
@@ -9,7 +8,7 @@ function measureImageHeight(url) {
   });
 }
 
-// Reorder — Tallest image → Big block (pos 3)
+// Reorder -> Tallest image -> Big block
 function reorderByHeight(items) {
   const result = [];
 
@@ -42,7 +41,7 @@ export async function processImagesWithHeight(list) {
 
   // Separate pinned & unpinned
   const pinned = list.filter(
-    (item) => item.isPin && Number.isInteger(item.pinPosition)
+    (item) => item.isPin && Number.isInteger(item.pinPosition),
   );
 
   const unpinned = list.filter((item) => !item.isPin);
@@ -52,9 +51,9 @@ export async function processImagesWithHeight(list) {
     unpinned.map(async (item) => ({
       ...item,
       height: await measureImageHeight(
-        item?.postWebpUrl || item?.postUrl || item?.localPreview
+        item?.postWebpUrl || item?.postUrl || item?.localPreview,
       ),
-    }))
+    })),
   );
 
   // Apply existing height-based reorder
@@ -73,16 +72,18 @@ export async function processImagesWithHeight(list) {
   return finalResult;
 }
 
-
-
-// utils/opfsHelper.js
-const OPFS_ROOT_DIR = 'eventwall-temp-uploads';
+const OPFS_ROOT_DIR = "eventwall-temp-uploads";
 
 export async function saveFileToOPFS(file, eventId, uniqueId) {
   try {
     const root = await navigator.storage.getDirectory();
     const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: true });
-    const fileHandle = await dir.getFileHandle(`${eventId}__${uniqueId}`, { create: true });
+    const ext = file.name.split(".").pop();
+
+    const fileHandle = await dir.getFileHandle(
+      `${eventId}__${uniqueId}.${ext}`,
+      { create: true },
+    );
 
     const writable = await fileHandle.createWritable();
     await writable.write(file);
@@ -90,16 +91,24 @@ export async function saveFileToOPFS(file, eventId, uniqueId) {
 
     return true;
   } catch (err) {
-    console.error('OPFS save failed:', err);
+    console.error("OPFS save failed:", err);
     return false;
   }
 }
 
-export async function getFileFromOPFS(eventId, uniqueId) {
+export async function getFileFromOPFS(eventId, uniqueId, mimeType, fileName) {
   const root = await navigator.storage.getDirectory();
   const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: false });
-  const fileHandle = await dir.getFileHandle(`${eventId}__${uniqueId}`, { create: false });
-  return await fileHandle.getFile();
+
+  const ext = fileName.split(".").pop();
+
+  const fileHandle = await dir.getFileHandle(`${eventId}__${uniqueId}.${ext}`, {
+    create: false,
+  });
+
+  const blob = await fileHandle.getFile();
+
+  return new File([blob], fileName, { type: mimeType });
 }
 
 export async function deleteFromOPFS(eventId, uniqueId) {
@@ -108,4 +117,14 @@ export async function deleteFromOPFS(eventId, uniqueId) {
     const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: false });
     await dir.removeEntry(`${eventId}__${uniqueId}`);
   } catch {}
+}
+
+export async function getPreviewFromOPFS(eventId, id, fileName) {
+  try {
+    const file = await getFileFromOPFS(eventId, id, "", fileName);
+    return URL.createObjectURL(file);
+  } catch (err) {
+    console.error("Preview load failed", err);
+    return null;
+  }
 }
