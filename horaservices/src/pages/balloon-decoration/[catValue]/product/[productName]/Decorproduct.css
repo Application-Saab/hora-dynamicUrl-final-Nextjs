@@ -1,17 +1,17 @@
-/* .decDetails {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 10px;
-  position: relative;
-} */
+
  .decDetails{
     max-width:600px;
     margin:auto;
  }
-.decDetailsLeft{
-  width: 100%;
-   text-align:center;
+.decDetailsLeft {
+
+    position: relative;
+    top: 10px;
+  }
+  img.hora-watermark-image {
+    width: clamp(36px, calc(36px + 8 * ((100vw - 320px)/160)), 44px);
+  height: clamp(45px, calc(45px + 10 * ((100vw - 320px)/160)), 55px);
+  
 }
 .decDetailsImage{
    width: 100%;
@@ -19,46 +19,138 @@
   margin: 0 auto;
   position: relative;
 }
+.breadcrumb-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+       margin-bottom: 5px;
+    margin-top: 5px;
+}
 
-/* .decDetailsRight{
-  width: 50%;
-  padding-left: 20px;
-  padding-right: 50px;
-} */
+.breadcrumb-text{
+  font-family: Inter, sans-serif;
+  font-weight:500;
+  font-size:clamp(11px,3.3vw,13px);
+  line-height:100%;
+  letter-spacing:0%;
+  color:#222;
+  margin:clamp(6px,2vw,8px) 0;
+}
 
-.addon-prices li {
-  list-style: none;
+.breadcrumb-link{
+  color:#97538C;
+  text-decoration:none;
+  font-size:clamp(11px,3.3vw,13px);
+}
+
+ .view-similar-btn{
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+ font-size: clamp(11px, 3.3vw, 13px);
+  color: #97538C;
   display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.8vw, 6.9px);
+  padding: clamp(4px, 1.8vw, 6.9px);
+  background: none;
+  border-radius: 5px;
+  border: 1px solid #97538C;
+
+  line-height: 100%;
+  text-align: center;
+
+  box-shadow: 0px 4px 4px 0px #00000029;
+
+  cursor: pointer;
+}
+.product-title{
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+
+  font-size: clamp(16px, 4.6vw, 18px);
+  line-height: clamp(22px, 6.3vw, 25px);
+
+  letter-spacing: 0%;
+  color: #000000;
+}
+.pro-details-price{
+  display:flex;
+   justify-content: flex-start;
+  align-items: center;
+   gap: clamp(8px, 2.5vw, 12px);
 }
 
-ul.decoration-addons {
-  margin: 10px 0 17px !important;
-  padding: 13px !important;
-  background-color: #fff;
+/* main price */
+.product-price{
+   font-family: Inter, sans-serif;
+font-size: clamp(15px, 4.6vw, 21px);
+  font-weight:600;
+  color:#97538C;
+  line-height: clamp(22px, 6vw, 25px);
+  margin:0;
 }
 
-.addon-prices.mobile {
+/* old price */
+.product-old-price{
+   font-family: Inter, sans-serif;
+  color:#444;
+  font-weight:600;
+  font-size: clamp(16px, 4.6vw, 18px);
+  text-decoration:line-through;
+  margin: clamp(5px, 1.8vw, 7px) 0;
+}
+
+/* discount badge */
+.product-discount{
+   font-family: Inter, sans-serif;
+  font-size: clamp(12px, 3.5vw, 14px);
+  font-weight:600;
+  color:#fff;
+  background: rgb(249, 158, 31);
+  padding: clamp(2px,1vw,4px) clamp(6px,2vw,8px);
+  border-radius:6px;
+  width:fit-content;
+}
+/* Heading */
+.inclusion-section{
+padding: 0 clamp(8px, 2.5vw, 10px) 0;
+}
+.inclusion-heading{
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: clamp(18px, 5.3vw, 21px);
+  margin-bottom: clamp(8px, 2.5vw, 10px);
+  padding-bottom: 3px;
+}
+
+/* list container */
+.inclusion-list{
+  padding-left: 0;
   margin: 0;
-  padding: 0;
-}
-
-.addon-prices.mobile label {
-  padding: 0;
-  margin: 0 0 9px 0;
-  font-size: 14px;
-}
-
-.addon-prices.mobile li {
-  padding: 0;
-  margin: 0 0 10px 0;
-  font-size: 12px;
   list-style: none;
-  display: flex;
-  justify-content: space-between;
 }
+
+/* list item */
+.inclusionstyle{
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-size: clamp(12px, 3.6vw, 14px); /* 320→12px | 393→14px */
+  line-height: clamp(22px, 6vw, 27.32px);
+  display: flex;
+  align-items: flex-start;
+ gap: clamp(4px, 1.5vw, 6px); 
+}
+
+/* icon */
+.inclusionstyle img,
+.inclusionstyle svg{
+  width: clamp(16px, 5vw, 20px);
+  height: clamp(16px, 5vw, 20px);
+  flex-shrink: 0;
+  margin-top: 4px; 
+}
+
 
 
 
@@ -108,7 +200,6 @@ ul.decoration-addons {
 
 .decorke-celebrate-banner {
   width: 100%;
-  margin: 5px 0;
   display: flex;
   justify-content: center;
 }
@@ -124,14 +215,21 @@ ul.decoration-addons {
 .decorke-why-section {
     background-color: #F7E7C7;
     text-align: center;
-    padding: 10px;
-    margin: 10px 0px 0px 0px;
+   padding: clamp(18px, 6.4vw, 30px) 0;
 }
 
 .decorke-why-title {
-  color: #9225aa;
-  font-size: 24px;
+
+  font-family: Inter, sans-serif;
   font-weight: 700;
+
+  font-size: clamp(20px, 6.4vw, 28px);
+ margin-bottom: clamp(14px, 4.8vw, 22px);
+  color: #97538C;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+
 }
 
 .decorke-why-features {
@@ -146,17 +244,23 @@ ul.decoration-addons {
 }
 
 .decorke-why-icon {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 12px;
+    width: clamp(36px, 10.7vw, 50px);
+  height: clamp(32px, 9.7vw, 46px);
+
+  margin-bottom: clamp(8px, 3vw, 12px);
 }
 
 .decorke-why-text {
-  font-size: 10px;
-  font-weight: 600;
-  color: #812a98;
-  line-height: 1.4;
+  color: #97538C;
+  font-family: Inter, sans-serif;
+font-weight: 500;
+font-size: clamp(10.5px, 3.2vw, 14px);
+line-height: 1.4;
+letter-spacing: 0%;
+text-align: center;
 }
+
+
 
 
 .customisation-box {
@@ -221,8 +325,12 @@ ul.decoration-addons {
 }
 
 .media-heading {
-  font-size: 24px;
-  font-weight: bold;
+ font-family: "Inter", sans-serif;
+font-weight: 700;
+font-size: clamp(15px, calc(9px + 2.2vw), 20px);
+line-height: 1;
+letter-spacing: 0;
+text-align: center;
   color: #97538C;
   margin-bottom: 20px;
 }
@@ -246,7 +354,7 @@ ul.decoration-addons {
 
 .custom-banner-section {
   position: relative;
-  display: inline-block;
+
 }
 
 .custom-banner-section .custom-banner-image {
@@ -259,10 +367,10 @@ ul.decoration-addons {
 
 .custom-banner-section button {
   position: absolute;
-  bottom: 10%;
-  left: 10%;
+  bottom: 5%;
+  left: 5%;
   font-size: 12px;
-  padding: 5px !important;
+  padding: 5px 10px !important;
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 3px;
@@ -287,3 +395,34 @@ ul.decoration-addons {
 .custom-banner-section button:hover {
   background: #fff;
 }
+
+.share-btn {
+  width: clamp(28px, 8.5vw, 33px);
+  height: clamp(28px, 8.5vw, 33px);
+  border-radius: clamp(6px, 1.8vw, 7px);
+  border: 1px solid #34c759;
+  padding: clamp(4px, 1.2vw, 5px);
+  background: #ecfdf3;
+  box-shadow: 0px 4px 4px 0px #221B1B69;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.price-share-row {
+
+        justify-content: space-between;
+    display: flex;
+    align-items: center;
+    padding-right: 25px;
+    white-space: nowrap;
+}
+/* Icon */
+.share-icon-img {
+  width: clamp(14px, 4vw, 18px);
+  height: clamp(14px, 4vw, 18px);
+  object-fit: contain;
+}
+

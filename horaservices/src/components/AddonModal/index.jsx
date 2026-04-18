@@ -23,7 +23,6 @@ const AddonModal = ({
         style={{
           maxHeight: "400px",
           overflowY: "scroll",
-          padding: "10px",
           backgroundColor: "#FFF3DB",
           margin: "auto",
         }}
@@ -31,17 +30,17 @@ const AddonModal = ({
         <div
           className="modal-content11"
           onClick={(e) => e.stopPropagation()}
-          style={{ marginTop: "10px" }}
+          style={{ marginTop: "0px 10px" }}
         >
           <div className="modal-middle-box">
             <div className="modalcard-container">
               {addOnProducts.map((item, index) => (
                 <div key={index} className="modalcard">
-                  <img src={`https://horaservices.com/api/uploads/compressed_webp/${item.image}`} alt={item.title} className="model-image" />
+                  <img src={item.image} alt={item.title} className="model-image" />
                   <h3>{item.title}</h3>
                   {/* <p className="Addon-description">{item.description}</p> */}
 
-                  <div className="price-container">
+                  <div className="price-container-addon">
                     <span className="prices">
                       {typeof item.price === "number" ? `₹${item.price}` : "Included"}
                     </span>

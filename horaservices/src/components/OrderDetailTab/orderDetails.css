@@ -38,8 +38,9 @@
   padding: 8px;
 }
 .myOrder-decDetailsRight h1 {
-  font-size: 97% !important;
-  font-weight: 600;
+ font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(15px, calc(18 * 100vw / 393), 21px);
   color: #312c2c;
   margin-bottom: 5px;
   margin-top: 8px;
@@ -54,15 +55,42 @@
 .myOrder-labelStyle {
   min-width: 130px;
 }
-.myOrder-cancelOrderBtn {
-  background-color: #97538C;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 9.67px;
-  cursor: pointer;
-  font-size: 13.54px;
-  margin-bottom: 15px;
+
+.order-btn-row{
+display:flex;
+gap:clamp(10px, calc(12 * 100vw / 393), 15px);
+margin-top:10px;
+max-width: 480px;
+    margin: auto;
+
+}
+
+.contact-support-btn{
+flex:1;
+border: clamp(1.5px, calc(2 * 100vw / 393), 2.5px) solid #97538C;
+background:#fff;
+color:#97538C;
+font-weight:600;
+border-radius:clamp(11px, calc(14 * 100vw / 393), 17px);
+padding:clamp(10px, calc(12 * 100vw / 393), 15px) clamp(8px, calc(10 * 100vw / 393), 12px);
+max-width:fit-content;
+font-size:clamp(12px, calc(14 * 100vw / 393), 17px);
+margin:auto;
+cursor:pointer;
+}
+
+.cancel-order-btn{
+flex:1;
+background:#97538C;
+color:#fff;
+border:none;
+font-weight:600;
+border-radius:clamp(11px, calc(14 * 100vw / 393), 17px);
+padding: 
+clamp(10px, calc(12 * 100vw / 393), 15px)
+clamp(8px, calc(10 * 100vw / 393), 12px);
+font-size: clamp(12px, calc(14 * 100vw / 393), 17px);
+cursor:pointer;
 }
 .myOrderDetails-heading {
   font-size: 16px;
@@ -78,10 +106,13 @@
 }
 .info-row {
   display: flex;
-  font-size: 13.17px;
   margin-bottom: 6px;
   gap: 4px;
   align-items: flex-start;
+  font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(11px, calc(13.17 * 100vw / 393), 15px);
+color: #000000;
 }
 
 .info-icon {
@@ -89,8 +120,8 @@
 }
 
 .info-icon-img {
-  height: 13px;
-  width: 13px;
+width: clamp(15px, calc(18.81 * 100vw / 393), 23px);
+height: clamp(15px, calc(18.81 * 100vw / 393), 23px);
   margin-right: 5px;
   flex-shrink: 0;
 }
@@ -113,3 +144,12 @@
   border-bottom: 1px solid #3856FF;
   font-size: 13.72px;
 }
+.myOrder-cancelOrderBtn {
+  background-color: #97538C;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 9.67px;
+  cursor: pointer;
+  font-size: 13.54px;
+  margin-bottom: 15px;}

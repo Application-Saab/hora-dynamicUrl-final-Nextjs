@@ -17,10 +17,10 @@ import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.svg";
 import Entertainment from "@/assets/Home/Entertainment.svg";
 import LiveCatering from "@/assets/Home/LiveCatering.svg";
 import Homevideo from '../../../public/assets/Homevideo.mp4';
-import Photographybanner from '@/assets/Home/Photographybanner.jpg'
-import decorationbanner from '@/assets/Home/decorationbanner.jpg'
-import chefforparty from "@/assets/Home/chefforparty.jpg"
-import partyfood from "@/assets/Home/partyfood.jpg"
+import Photographybanner from '@/assets/Home/Photographybanner.webp'
+import decorationbanner from '@/assets/Home/decorationbanner.webp'
+import chefforparty from "@/assets/Home/chefforparty.webp"
+import partyfood from "@/assets/Home/partyfood.webp"
 import photo1 from "@/assets/Home/photo1.svg"
 import photo2 from "@/assets/Home/photo2.svg"
 import photo3 from "@/assets/Home/photo3.svg"
@@ -156,7 +156,7 @@ const handleContactClick = () => {
   role="button"
   tabIndex={0}
   onClick={() =>
-    goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")
+    goTo("/party-food-delivery-live-catering-buffet")
   }
 >
   <Image src={partyfood} alt="Party Food" className="card-bg-img" />
@@ -324,7 +324,7 @@ Enjoy food delivery with Hora </p>
       Guaranteed support
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet/party-food-delivery")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet?type=bulkFood")}>Explore Packages</button>
      </div>
       </div>
           {/* Card 5 */}
@@ -372,7 +372,7 @@ Enjoy food delivery with Hora </p>
          Guaranteed support
         </p>
         <div className="package-wrapper">
-        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet/party-live-buffet-catering")}>Explore Packages</button>
+        <button className="package-btn"     onClick={() => goTo("/party-food-delivery-live-catering-buffet?type=liveCatering")}>Explore Packages</button>
      </div>
       </div>
     </div>

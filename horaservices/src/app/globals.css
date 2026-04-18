@@ -255,12 +255,7 @@ li {
   line-height: 32px;
 }
 
-li.inclusionstyle {
-  list-style: none;
-  padding-left: 2px;
-  padding-top: 4px;
-  margin-left: 1px;
-}
+
 
 .tabButton {
   border: none;
@@ -1219,17 +1214,7 @@ button.view-details.order-details {
     padding: 1px 6px !important;
   }
 
-  .decDetailsLeft {
-    width: 50%;
-    text-align: center;
-    position: -webkit-sticky;
-    /* Safari */
-    position: relative;
-    top: 10px;
-    max-height: calc(100vh - 20px);
-    /* Adjust this value as needed */
-    overflow-y: auto;
-  }
+  
 
   .dish-item-inner {
     width: 32%;
@@ -1358,17 +1343,8 @@ button.view-details.order-details {
     box-sizing: border-box;
   }
 
-  .decDetailsRight h1 {
-    font-size: 97% !important;
-  }
+  
 
-  .decDetailsImage {
-    width: 94% !important;
-    box-sizing: border-box;
-    text-align: center;
-    box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 5px !important;
-    padding: 5px !important;
-  }
 
   .whyHoraSecInner {
     flex-direction: row !important;
@@ -1388,9 +1364,6 @@ button.view-details.order-details {
     max-width: 60% !important;
   }
 
-  li.inclusionstyle {
-    font-size: 77%;
-  }
 
   .whyHoraHeading {
     font-size: 100% !important;
@@ -2425,13 +2398,6 @@ button.view-details.order-details {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 5px;
-  text-align: start;
-}
-
-.product-price {
-  font-size: 14px;
-  color: grey;
-  margin-bottom: 10px;
   text-align: start;
 }
 

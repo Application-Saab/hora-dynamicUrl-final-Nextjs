@@ -1,7 +1,9 @@
-export const BASE_URL = "https://swmhkvn8-5000.inc1.devtunnels.ms";
-export const MEDIA_PROCESSING_URL = "http://localhost:4000";
+export const BASE_URL = "https://horaservices.com";
+export const MEDIA_PROCESSING_URL = "https://mediaprocessv2.horaservices.com";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
+export const COMPRESSED_WEBP_IMG_URL =
+  "https://horaservices.com/api/uploads/compressed_webp/";
 export const GET_USER_DETAIL_ENDPOINT = "/api/users/user_details";
 export const UPDATE_USER_DETAIL_ENDPOINT = "/api/users/user_update";
 export const UPDATE_ORDER_STATUS = "/api/order/update_order_status";
@@ -30,7 +32,7 @@ export const GET_FOOD_DELIVERY_DETAILS =
 export const GET_PHOTOGRAPHY_BY_TAG = "/api/photography/searchByTag/"
 
 export const IMAGE_UPLOAD = "/api/image_upload";
-
+export const ADD_RATING_REVIEWS = "/api/order/add-rating-reviews";
 // Wonderland API Endpoints
 export const CREATE_EVENT_INVITE = "/api/customer/event/create-event-invite";
 export const GET_EVENT_BY_ID = "/api/customer/event/event-invites";
@@ -62,4 +64,4 @@ export const CREATE_DIRECT_CHAT_ROOM = "/api/customer/event/chat/create-direct-r
 export const SUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/subscribe";
 export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
-export const GET_ADDON_BY_ID = "/api/addon/get"
+export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";

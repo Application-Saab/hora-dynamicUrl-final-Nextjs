@@ -1,64 +1,84 @@
 .brandBanner {
   text-align: center;
+  padding: 2px 10px;
 }
 
 .brandBanner-heading {
-  font-size: 20px;
-  font-weight: 600;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 4vw, 22px);
+  line-height: 1.2;
+  text-align: center;
   color: #97538C;
-  margin-top: 20px;
+  margin:
+    clamp(8px, calc(10px + (13 - 10) * ((100vw - 393px) / 87)), 13px) 0 clamp(12px, calc(15px + (20 - 15) * ((100vw - 393px) / 87)), 20px);
+  padding: 0 clamp(14px,
+      calc(20px + (26 - 20) * ((100vw - 393px) / 87)),
+      26px);
 }
 
 .brandBanner-grid {
-    display: flex;
-    grid-template-columns: repeat(4, 1fr);
-    justify-items: center;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 20px;
-   gap:5px
+  display: flex;
+  flex-wrap: nowrap;
+  /* ek line me 4 cards */
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 4px;
 }
 
+.brandBanner-grid>* {
+  flex: 2;
+  /* sab equal width */
+}
 
 .brandBanner-card {
-    padding: 5px;
-    border-radius: 10px;
-    border: 1px solid #6c757d;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 4px;
+
+  border: 1px solid #00000033;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: clamp(100px,
+      calc(109.84px + (134 - 109.84) * ((100vw - 393px) / 87)),
+      134px);
+  gap: 4px;
 }
 
-.brandBanner-card:hover {
-  transform: translateY(-4px);
+.small-img {
+  width: clamp(49.7px,
+      calc(61.03px + (75 - 61.03) * ((100vw - 393px) / 87)),
+      75px);
+
+  height: clamp(49.7px,
+      calc(61.03px + (75 - 61.03) * ((100vw - 393px) / 87)),
+      75px);
+  border-radius: clamp(23px,
+      calc(28.43px + (35 - 28.43) * ((100vw - 393px) / 87)),
+      35px);
+
+  object-fit: cover;
 }
 
 .brandBanner-bold {
-  font-size: 8px;
-  font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 0 !important;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  font-size: clamp(11px, 3vw, 14px);
+  margin: 0;
 }
 
 .brandBanner-sub {
- font-size: 8px;
-  font-weight: bold;
-  margin-bottom: 0 !important;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: clamp(8px, 2.5vw, 10px);
+  margin: 0;
 }
-@media (max-width: 320px) {
-  /* Brand grid responsiveness */
-  .brandBanner-grid {
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
 
-  .brandBanner-card {
-    flex: 0 0 45%;
-    padding: 8px;
-  } 
-
-  .brandBanner-bold,
-  .brandBanner-sub {
-    font-size: 13px;
-  } }
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
