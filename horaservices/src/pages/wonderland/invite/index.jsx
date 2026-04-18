@@ -15,7 +15,111 @@ import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templ
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 import CateringCard from "@/components/CateringCard";
 import CateringModal from "@/components/CateringModal";
-import { getMealTypes, getPackages } from "@/services/cateringService";
+import VenueFoodModal from "@/components/VenueFoodModal";
+import VenueFoodCard from "@/components/VenueFoodCard";
+
+// ─── Static Food Packages Data ──────────────────────────────────────────────
+const STATIC_FOOD_PACKAGES = [
+  {
+    id: 1,
+    name: "FOOD",
+    price: "₹1,400/-",
+    tag: "All Inclusive",
+    includes: {
+      appetisers: {
+        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
+        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
+        note: "Choose any 3 from each",
+      },
+      mainCourse: {
+        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
+        note: "Choose any 7",
+      },
+      beverage: ["Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
+      desserts: ["Chocolate Brownie & Ice Cream"],
+    },
+  },
+  {
+    id: 2,
+    name: "FOOD & BEER",
+    price: "₹1,600/-",
+    tag: "All Inclusive",
+    includes: {
+      appetisers: {
+        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
+        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
+        note: "Choose any 3 from each",
+      },
+      mainCourse: {
+        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
+        note: "Choose any 7",
+      },
+      beverage: ["Beer", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
+      desserts: ["Chocolate Brownie & Ice Cream"],
+    },
+  },
+  {
+    id: 3,
+    name: "FOOD & IMFL",
+    subtitle: "(Indian Made Foreign Liquor)",
+    price: "₹2,500/-",
+    tag: "All Inclusive",
+    includes: {
+      appetisers: {
+        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
+        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
+        note: "Choose any 3 from each",
+      },
+      mainCourse: {
+        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
+        note: "Choose any 7",
+      },
+      beverage: ["IMFL", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
+      desserts: ["Chocolate Brownie & Ice Cream"],
+    },
+  },
+  {
+    id: 4,
+    name: "FOOD & IL",
+    subtitle: "(Imported Liquor)",
+    price: "₹3,500/-",
+    tag: "All Inclusive",
+    includes: {
+      appetisers: {
+        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
+        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
+        note: "Choose any 3 from each",
+      },
+      mainCourse: {
+        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
+        note: "Choose any 7",
+      },
+      beverage: ["Imported Liquor", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
+      desserts: ["Chocolate Brownie & Ice Cream"],
+    },
+  },
+  {
+    id: 5,
+    name: "FOOD & PL",
+    subtitle: "(Premium Liquor)",
+    price: "₹4,500/-",
+    tag: "All Inclusive",
+    includes: {
+      appetisers: {
+        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
+        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
+        note: "Choose any 3 from each",
+      },
+      mainCourse: {
+        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
+        note: "Choose any 7",
+      },
+      beverage: ["Premium Liquor", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
+      desserts: ["Chocolate Brownie & Ice Cream"],
+    },
+  },
+];
+// ────────────────────────────────────────────────────────────────────────────
 
 const InvitesPage = () => {
   const router = useRouter();
@@ -42,14 +146,7 @@ const InvitesPage = () => {
     rsvpRefetch,
   );
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
-
-  // ─── Food Packages State ────────────────────────────────────────────────────
-  const [foodPackages, setFoodPackages] = useState([]);
-  const [foodPackagesLoading, setFoodPackagesLoading] = useState(true);
-  const [mealTypes, setMealTypes] = useState([]);
-  const [mealList, setMealList] = useState([]);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  // ────────────────────────────────────────────────────────────────────────────
 
   const {
     data: eventData,
@@ -59,22 +156,15 @@ const InvitesPage = () => {
   } = useApi();
   const { makeRequest: fetchUserData } = useApi();
 
-  // Normal host check
   const isHost = eventDetails?.userId === loggedinUserId;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!router.isReady) return;
-
-      if (!queryEventId && loggedinUserId) {
-        setOpenCreateInviteModal(true);
-      }
-      if (queryEventId && !loggedinUserId) {
-        setShowGuestLoginModal(true);
-      }
+      if (!queryEventId && loggedinUserId) setOpenCreateInviteModal(true);
+      if (queryEventId && !loggedinUserId) setShowGuestLoginModal(true);
       setFullPageLoader(false);
     }, 600);
-
     return () => clearTimeout(timer);
   }, [router.isReady, queryEventId, loggedinUserId]);
 
@@ -95,10 +185,7 @@ const InvitesPage = () => {
     const fetchUserDetails = async () => {
       if (queryEventId && loggedinUserId) {
         try {
-          let resp = await fetchUserData(
-            `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET",
-          );
+          let resp = await fetchUserData(`${GET_USER_BY_ID}/${loggedinUserId}`, "GET");
           setUserData(resp?.data);
         } catch (err) {
           console.error("Error fetching user details:", err);
@@ -117,23 +204,14 @@ const InvitesPage = () => {
 
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
-      if (isHost) {
-        setSkipRsvpCheck(true);
-      } else {
-        setSkipRsvpCheck(false);
-      }
+      setSkipRsvpCheck(isHost ? true : false);
     }
   }, [eventDetails, loggedinUserId]);
 
-  // Listen local storage changes for login state
   useEffect(() => {
-    const syncLoginState = () => {
-      setLoggedinUserId(localStorage.getItem("userID") || "");
-    };
-
+    const syncLoginState = () => setLoggedinUserId(localStorage.getItem("userID") || "");
     window.addEventListener("storage", syncLoginState);
     window.addEventListener("loginStateChange", syncLoginState);
-
     return () => {
       window.removeEventListener("storage", syncLoginState);
       window.removeEventListener("loginStateChange", syncLoginState);
@@ -142,44 +220,10 @@ const InvitesPage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (eventDetails && isHost) {
-        setShowHostActionSection(true);
-      } else {
-        setShowHostActionSection(false);
-      }
+      setShowHostActionSection(eventDetails && isHost ? true : false);
     }, 1000);
   }, [eventDetails, loggedinUserId]);
 
-  // ─── Venue flow mein food packages fetch karo ──────────────────────────────
-  useEffect(() => {
-    if (!isVenueHost) return;
-
-    const fetchFoodData = async () => {
-      setFoodPackagesLoading(true);
-      try {
-        const meals = await getMealTypes("veg");
-        setMealList(meals);
-        const formattedMeals = meals
-          .filter(item => item?.mealObject?._id)
-          .map(item => ({
-            _id: item.mealObject._id,
-            name: item.mealObject.name,
-          }));
-        setMealTypes(formattedMeals);
-
-        const packages = await getPackages("bulkFood", "veg");
-       setFoodPackages(packages.slice(0, 4));
-      } catch (err) {
-        console.error("Error fetching food packages:", err);
-      } finally {
-        setFoodPackagesLoading(false);
-      }
-    };
-
-    fetchFoodData();
-  }, [isVenueHost]);
-
-  // Modal back button handle
   useEffect(() => {
     const handleBack = () => {
       if (selectedPackage) setSelectedPackage(null);
@@ -216,7 +260,7 @@ const InvitesPage = () => {
               )}
             </div>
 
-            {/* Step 2: Sirf Address + Google Map — date/time nahi dikhega */}
+            {/* Step 2: Sirf Address + Google Map */}
             {(eventDetails?.location || eventDetails?.googleMapLink) && (
               <div className="invite-address-section">
                 <InviteAddressSection
@@ -226,7 +270,7 @@ const InvitesPage = () => {
               </div>
             )}
 
-            {/* Step 3: InviteActions — sirf actual host ko dikhega */}
+            {/* Step 3: InviteActions — sirf actual host ko */}
             {isHost && (
               <div className="invite-action-container">
                 <InviteActions
@@ -236,39 +280,22 @@ const InvitesPage = () => {
               </div>
             )}
 
-            {/* Step 4: Food Packages */}
-            <div className="whos-joining-container" style={{ marginTop: "10px" }}>
-              <p className="wall-heading text-center m-0 p-0">Food Packages</p>
-              <div className="catering-grid" style={{ marginTop: "10px" }}>
-                {foodPackagesLoading ? (
-                  [...Array(4)].map((_, i) => (
-                    <TemplatecardSkeleton key={i} width="100%" height="180px" borderRadius="10px" />
-                  ))
-                ) : foodPackages.length > 0 ? (
-                  foodPackages.map((item, index) => (
-                    <CateringCard
-                      key={index}
-                      item={item}
-                      image={
-                        item.image
-                          ? `https://horaservices.com/api/uploads/${item.image}`
-                          : "/default-image.webp"
-                      }
-                      title={item.title || item.name}
-                      price={item.price}
-                      oldPrice={item.oldPrice || item.actualPrice}
-                      dish={item.dish || item.dishCount}
-                      onView={() => {
-                        setSelectedPackage(item);
-                        window.history.pushState(null, "");
-                      }}
-                    />
-                  ))
-                ) : (
-                  <p>No Packages Found</p>
-                )}
-              </div>
-            </div>
+            {/* Step 4: Static Food Packages — 5 packages */}
+          <div className="whos-joining-container" style={{ marginTop: "10px" }}>
+  <p className="wall-heading text-center m-0 p-0">Food Packages</p>
+  <div style={{ marginTop: "10px", padding: "0 4px" }}>
+    {STATIC_FOOD_PACKAGES.map((item, index) => (
+      <VenueFoodCard
+        key={index}
+        item={item}
+        onView={() => {
+          setSelectedPackage(item);
+          window.history.pushState(null, "");
+        }}
+      />
+    ))}
+  </div>
+</div>
 
             {/* Step 5: Celebration Wall */}
             <div className="event-wall-container">
@@ -285,15 +312,12 @@ const InvitesPage = () => {
           </div>
         </div>
 
-        {/* Food Package Modal — venue view mein buttons nahi dikhenge */}
+        {/* Food Package Modal */}
         {selectedPackage && (
-          <CateringModal
+         <VenueFoodModal
             data={selectedPackage}
-            mealTypes={mealTypes}
-            allDishes={mealList}
             onClose={() => setSelectedPackage(null)}
-            isVenueView={true}
-          />
+  />
         )}
 
         <LoginModal
@@ -382,7 +406,6 @@ const InvitesPage = () => {
       />
     </>
   );
-  // ────────────────────────────────────────────────────────────────────────────
 };
 
 export default InvitesPage;

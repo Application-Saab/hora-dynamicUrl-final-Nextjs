@@ -1,0 +1,162 @@
+.vfm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.vfm-card {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 18px 30px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.vfm-header {
+  position: relative;
+  text-align: center;
+  padding-bottom: 4px;
+}
+
+.vfm-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 2px;
+}
+
+.vfm-subtitle {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 4px;
+}
+
+.vfm-close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #f3f3f3;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Divider */
+.vfm-divider {
+  height: 1px;
+  background: #efefef;
+  margin: 10px 0;
+}
+
+/* Price row */
+.vfm-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.vfm-price-label {
+  font-size: 13px;
+  color: #777;
+}
+
+.vfm-price-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+/* Scrollable list */
+.vfm-dish-list {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 4px;
+}
+
+.vfm-dish-list::-webkit-scrollbar {
+  width: 3px;
+}
+.vfm-dish-list::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
+}
+
+/* Group */
+.vfm-group {
+  margin-bottom: 14px;
+}
+
+.vfm-group-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1.5px solid #f0f0f0;
+}
+
+.vfm-note {
+  font-size: 11px;
+  font-weight: 400;
+  color: #aaa;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Sub group */
+.vfm-sub-group {
+  margin-bottom: 8px;
+}
+
+.vfm-sub-heading {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin: 4px 0 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Dish row */
+.vfm-dish-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.vfm-dish-name {
+  font-size: 13px;
+  color: #444;
+}
+
+/* Dots */
+.vfm-dot {
+  font-size: 10px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.vfm-dot.veg      { color: #22c55e; }
+.vfm-dot.nonveg   { color: #ef4444; }
+.vfm-dot.beverage { color: #3b82f6; }
+.vfm-dot.dessert  { color: #f97316; }
