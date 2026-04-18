@@ -15,6 +15,7 @@ import HomeContent from "@/components/HomeContent";
 import { useLayoutEffect } from "react";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
+import ProductRecommendationChat from "@/components/ProductRecommendationChat";
 
 export default function Home() {
   const router = useRouter();
@@ -167,7 +168,8 @@ const pathname = usePathname();
       <HomeContent />
        <div>
         <VisitorTracker/>
-      </div> 
+      </div>
+      <ProductRecommendationChat categoryBasePath="/balloon-decoration" />
     </>
   );
 }

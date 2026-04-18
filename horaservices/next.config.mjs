@@ -3,7 +3,7 @@ const nextConfig = {
     images:{
         unoptimized:true
       },
-    output: "export",
+    // output: "export",  // Commented out to allow API routes
     // trailingSlash: true,
     webpack(config) {
         config.module.rules.push({
