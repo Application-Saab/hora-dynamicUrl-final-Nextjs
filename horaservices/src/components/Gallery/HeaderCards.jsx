@@ -34,9 +34,15 @@ const HeaderCards = ({
   setIsActualMyPhotos,
   setIsStremSearching,
   setSubFolders,
+  setIsRefreshShow,
+  isEditingDP,
+  setIsEditingDP,
+  showCameraPopup,
+  setShowCameraPopup,
+  setCapturedImage,
+  capturedImage
 }) => {
   /* ================= STATE ================= */
-  const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [preview, setPreview] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
@@ -45,8 +51,6 @@ const HeaderCards = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-  const [capturedImage, setCapturedImage] = useState(null);
-  const [isEditingDP, setIsEditingDP] = useState(false);
 
 
   const fileInputRef = useRef(null);
@@ -244,7 +248,10 @@ const HeaderCards = ({
         onSearchResults([]);
         const myFolder = await ensureMyPhotosFolder(blob);
 
-        await handleUpdateSubfolderDP(blob, myFolder._id);
+        if(isEditingDP){
+         await handleUpdateSubfolderDP(blob, myFolder._id);
+        }
+       
 
         setShowCameraPopup(false);
         const fd = new FormData();
@@ -377,6 +384,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
             setActiveTab("all");
             onSelectSubFolder(null);
             setIsSearching(false);
+            setIsRefreshShow(false)
           }}
         >
           <div className="circle-img-folder circle-img-both">
@@ -394,9 +402,11 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
               className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""
                 }`}
               onClick={() => {
+                setActiveTab(myPhotosFolder._id);
+
                 setIsActualMyPhotos(true)
-                setActiveTab("my-photos");
                 onSelectSubFolder(myPhotosFolder._id);
+                setIsRefreshShow(true);
               }}
             >
               <div className="circle-img-folder circle-img-both">
@@ -410,24 +420,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
                 </div>
               </div>
               <div className="flex">
-                <span>My..</span>
-                <button
-                  className="edit-myphoto-btn"
-
-                  onClick={(e) => {
-                    e.stopPropagation();
-
-                    setIsEditingDP(true);
-                    onSelectSubFolder(myPhotosFolder._id);
-                    setIsActualMyPhotos(true);
-                    setIsSearching(false);
-                    onSearchResults([]);
-                    setCapturedImage(null);
-                    setShowCameraPopup(true);
-                  }}
-                >
-                  Edit
-                </button>
+                <span>My Photos</span>
               </div>
             </div>
 
@@ -438,6 +431,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
             onClick={() => {
               setIsActualMyPhotos(true)
               setShowCameraPopup(true)
+              setIsRefreshShow(false)
             }
             }
           >
@@ -456,6 +450,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
           onClick={() => {
             setShowCreateFolderPopup(true)
             setIsActualMyPhotos(false)
+            setIsRefreshShow(false)
           }
           }
         >
@@ -474,6 +469,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
               setActiveTab(sf._id);
               onSelectSubFolder(sf._id);
               setIsActualMyPhotos(false)
+              setIsRefreshShow(false)
             }}
           >
             <div className="circle-img-folder circle-img-both">
@@ -540,6 +536,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
         titleFontSize="22px"
         onSubmit={handleCreateFolder}
         disabled={isCreateDisabled}
+        popupHeight={365}
         buttonContent={
           <div className="create-btn">
             <span>{isLoading ? "Creating" : "Create"}</span>

@@ -26,7 +26,7 @@ const CommonPopup = ({
       <div className={`${containerClass} popup-container`}
         style={{ height: `${popupHeight}px` }}
       >
-
+<div className="popup-inner-container">
         {/* Header */}
         <div className="popup-header">
           <Image
@@ -48,6 +48,7 @@ const CommonPopup = ({
         <div className="popup-body">
           {children}
         </div>
+</div>
 
         {/* Footer */}
         {(showButton && buttonContent !== null) && (

@@ -1,9 +1,22 @@
-.gallery-headerCard {
+/* .gallery-headerCard {
   display: flex;
   align-items: center;
   gap: 12px;
   overflow-x: auto;
   margin: 18px 0 22px 0px;
+} */
+.gallery-headerCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto; 
+  scroll-behavior: smooth;
+  padding: 20px 0px;
+  scrollbar-width: none;    
+}
+
+.gallery-headerCard::-webkit-scrollbar {
+  display: none;          
 }
 
 .card-item {
@@ -12,12 +25,23 @@
   align-items: center;
   flex-shrink: 0; 
   gap: 8px;
+  position: relative;
 }
-
+.card-item::after {
+  content: "";
+  width: 49px;
+  height: 7px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background-color: #E9E7E7; 
+}
+.card-item.active::after {
+  background-color: #97538C; 
+}
 .card-item span {
   font-weight: 600;
   font-size: 14px;
-  color: #97538C;
+  color: #65758B;
 }
 
 .circle-img-folder {
@@ -44,9 +68,8 @@ border: 1px solid #0000001F;
   overflow: hidden;
 }
 .card-item.active .circle-img-inner {
-  width: calc(100% - 7px);
-  height: calc(100% - 7px);
-  margin: 3.5px; /* gap center karne ke liye */
+  width: calc(100% - 5px);
+  height: calc(100% - 5px);
 }
 
 .card-item.active .circle-img-folder {
@@ -133,10 +156,11 @@ border: 1px solid #0000001F;
   border-radius: 5px;
   font-weight: 500;
   font-size: 18px;
+  padding: 2px 0px;
 }
 .capture-icon{
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
 }
 .captureBtn-container{
  display: flex;
@@ -315,7 +339,7 @@ border-radius: 50%;
 }
 
 .create-btn{
-  padding: 0px 14px;
+  padding: 1px 35px;
 }
 .edit-myphoto-btn{
   padding: 2px 4px;

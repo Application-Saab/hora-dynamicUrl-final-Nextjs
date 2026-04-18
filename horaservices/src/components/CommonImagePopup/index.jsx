@@ -25,6 +25,7 @@ const CommonImagePopup = ({
   setSelectedIndex,
   onClose,
   renderActions, 
+  renderFooter,
 }) => {
   const actionMenuRef = useRef(null);
 
@@ -104,6 +105,10 @@ const CommonImagePopup = ({
               </div>
             ))}
           </Slider>
+        </div>
+
+        <div className="popupFooter">
+          {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
         </div>
       </div>
     </div>

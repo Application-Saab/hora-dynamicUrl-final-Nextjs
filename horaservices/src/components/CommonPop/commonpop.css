@@ -17,10 +17,17 @@
     padding: 
     clamp(6px, 1.5vw, 10px)
     clamp(10px, 3vw, 16px)
-    clamp(22px, 4vw, 22px)   
+    clamp(26px, 4vw, 26px)   
     clamp(10px, 3vw, 16px);
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+}
+
+.popup-inner-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* HEADER */
@@ -56,7 +63,7 @@ padding-bottom: 8px;
   background: #97538C;
   color: #fff;
   border: none;
-  padding: 8px 14px;
+  padding: 5px 22px;
   border-radius: 8.78px;
   font-size: 17.57px;
   cursor: pointer;

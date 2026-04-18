@@ -12,13 +12,19 @@ import multiGroup from '../../assets/multiGroup.svg'
 import plusVector from '../../assets/plusVector.svg'
 import downloadVector from '../../assets/downloadVector.svg'
 import shareVector from '../../assets/shareVector.svg'
-import deleteVector from '../../assets/deleteVector.svg'
+import deleteVector from '../../assets/DeleteVector.svg'
 import CommonPopup from "@/components/CommonPop";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
-
+import refreshIcon from '../../assets/refreshIcon.svg';
+import checkWithBoard from '../../assets/checkWithBoard.svg';
+import CircularLoader from "@/components/Gallery/CircularLoader";
+import unLike from '../../assets/unLike.svg';
+import whiteShareIcon from '../../assets/whiteShareIcon.svg';
+import LikeFill from '../../assets/LikedFill.svg';
+import like from '../../assets/like.svg'
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
@@ -56,6 +62,11 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const actionMenuRef = useRef(null);
   const [mainFolderId, setMainFolderId] = useState(null);
+  const [isRefreshShow, setIsRefreshShow] = useState(false);
+  const [isEditingDP, setIsEditingDP] = useState(false);
+  const [showCameraPopup, setShowCameraPopup] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [likedImages, setLikedImages] = useState({});
 
 
   useEffect(() => {
@@ -274,6 +285,21 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     fetchThumbnails();
   }, [folderName, customerId]);
 
+
+  useEffect(() => {
+    if (!localUserId || allThumbnails.length === 0) return;
+
+    const initialLikes = {};
+
+    allThumbnails.forEach(img => {
+      initialLikes[img._id] = img.likedBy?.some(id => String(id) === String(localUserId));
+    });
+
+    setLikedImages(initialLikes);
+  }, [allThumbnails, localUserId]);
+
+
+
   const handleSubFolderCreated = (newSubFolder) => {
     setSubFolders(prev => [...prev, newSubFolder]);
   };
@@ -401,7 +427,92 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     return null;
   }
 
+  const handleSubFolderSelect = (id) => {
+    setActiveSubFolderId(id);
 
+    setSelectedImages([]);
+
+    if (activeTab !== "my-photos") {
+      setIsEditing(false);
+
+      setActiveTab(id ?? "all");
+    }
+  };
+
+const handleLikeToggle = async (imageId) => {
+  const userId = localUserId;
+
+  const isCurrentlyLiked = likedImages[imageId];
+
+  setLikedImages(prev => ({
+    ...prev,
+    [imageId]: !isCurrentlyLiked,
+  }));
+
+  setAllThumbnails(prev =>
+    prev.map(img => {
+      if (img._id === imageId) {
+        let updatedLikedBy = [...(img.likedBy || [])];
+
+        if (isCurrentlyLiked) {
+          updatedLikedBy = updatedLikedBy.filter(
+            id => String(id) !== String(userId)
+          );
+        } else {
+          updatedLikedBy = [...updatedLikedBy, userId];
+        }
+
+        return {
+          ...img,
+          likedBy: updatedLikedBy,
+        };
+      }
+      return img;
+    })
+  );
+
+  try {
+    await fetch(`https://horaservices.com/api/internal/toggle-like`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        imageIds: [imageId],
+        userId,
+      }),
+    });
+  } catch (error) {
+    console.error(error);
+
+    setLikedImages(prev => ({
+      ...prev,
+      [imageId]: isCurrentlyLiked,
+    }));
+
+    setAllThumbnails(prev =>
+      prev.map(img => {
+        if (img._id === imageId) {
+          let updatedLikedBy = [...(img.likedBy || [])];
+
+          if (!isCurrentlyLiked) {
+            updatedLikedBy = updatedLikedBy.filter(
+              id => String(id) !== String(userId)
+            );
+          } else {
+            updatedLikedBy = [...updatedLikedBy, userId];
+          }
+
+          return {
+            ...img,
+            likedBy: updatedLikedBy,
+          };
+        }
+        return img;
+      })
+    );
+  }
+};
 
   return (
     <div className="thumbnail-gallery">
@@ -415,14 +526,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             setIsSearching={setIsSearching}
             onSearchResults={handleSearchResults}
             subFolders={subFolders}
-            onSelectSubFolder={(id) => {
-              setActiveSubFolderId(id);
-              setSelectedImages([]);
-              if (activeTab !== "my-photos") {
-                setIsEditing(false)
-                setActiveTab(id ?? "all");
-              }
-            }}
+            onSelectSubFolder={handleSubFolderSelect}
             onSubFolderCreated={handleSubFolderCreated}
             onNewFolderActivate={activateNewSubFolderEditMode}
 
@@ -442,6 +546,15 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             mainFolderId={mainFolderId}
 
             setSubFolders={setSubFolders}
+            setIsRefreshShow={setIsRefreshShow}
+            isEditingDP={isEditingDP}
+            setIsEditingDP={setIsEditingDP}
+
+            showCameraPopup={showCameraPopup}
+            setShowCameraPopup={setShowCameraPopup}
+
+            capturedImage={capturedImage}
+            setCapturedImage={setCapturedImage}
           />
         }
         <div>
@@ -472,7 +585,15 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       cursor: !hasChanges ? "not-allowed" : "pointer",
                     }}
                   >
-                    Save
+                    <span className="save-icon">
+                      <Image
+                        src={checkWithBoard}
+                        alt="share"
+                        height={13}
+                        width={11}
+                      />
+                    </span>
+                    <span>Save Photos To Album</span>
                   </button>
                 )}
               </div>
@@ -488,7 +609,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 onClick={() => addMoreImagesRef.current?.click()}
               >
                 <span className="add-icon">+</span>
-                <span>Add New Photos</span>
+                <span>Add Photos To Album</span>
               </button>
               <button
                 className="share-capsule-btn"
@@ -506,6 +627,37 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               </button>
             </div>
 
+          )}
+
+          {isRefreshShow && (
+            <div className="buttons-container">
+              <button
+                className="refresh-image-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  setIsEditingDP(true);
+                  setIsActualMyPhotos(true);
+                  setIsSearching(false);
+                  handleSearchResults([]);
+                  setCapturedImage(null);
+                  setShowCameraPopup(true);
+                setIsRefreshShow(true);
+                }}
+              >
+                <span className="refresh-icon">
+                  {typeof handleShareicon === 'function' && (
+                    <Image
+                      src={refreshIcon}
+                      alt="share"
+                      height={12}
+                      width={14}
+                    />
+                  )}
+                </span>
+                <span>Refresh</span>
+              </button>
+            </div>
           )}
         </div>
         {/* Hidden file input – Add More Images */}
@@ -673,7 +825,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             <div className="event-image-grid">
               {visibleThumbnails.map((thumbnail, indexOnPage) => {
                 const type = getBlockType(indexOnPage);
-
+                const hasAnyLike = (thumbnail.likedBy?.length || 0) > 0;
                 return (
                   <div
                     key={thumbnail.stableKey || indexOnPage}
@@ -693,12 +845,26 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                     }}
                   >
                     <div className="image-wrapper" style={{ position: "relative" }}>
-                      {thumbnail.isTemp && (
+                      {!isEditing && hasAnyLike && (
                         <div
-                          className={`upload-badge ${thumbnail.uploading ? "uploading" : "uploaded"
-                            }`}
+                          style={{
+                            position: "absolute",
+                            top: "5px",
+                            left: "8px",
+                            zIndex: 10,
+                          }}
                         >
-                          {thumbnail.uploading ? "Uploading..." : "Uploaded"}
+                          <Image
+                            src={LikeFill}
+                            alt="liked"
+                            width={16}
+                            height={16}
+                          />
+                        </div>
+                      )}
+                      {thumbnail.isTemp && thumbnail.uploading && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+                          <CircularLoader />
                         </div>
                       )}
                       {isEditing &&
@@ -753,7 +919,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         onClose={() => {
           setShowAddToFolderPopup(false);
         }}
-        popupHeight="420"
+        popupHeight="269"
         title="Add to Folder"
         titleFontSize="22px"
         buttonContent={usableFolders.length === 0 ? null : "Add Now"}
@@ -796,7 +962,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               <div className="sub-text-empty">You don’t have any folder yet.</div>
               <div className="pop-btn-container">
                 <button
-                  className="popup-btn"
+                  className="popup-btn emptyFolder-popup-btn"
                   onClick={handleAddToFolderSubmit}
                 >
                   Create Folder
@@ -818,8 +984,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               <Image
                 src={multiGroup}
                 alt="More"
-                width={22}
-                height={22}
+                width={25}
+                height={25}
                 onClick={() => setShowActionMenu(prev => !prev)}
               />
 
@@ -830,97 +996,129 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                     <p>{number}</p>
                   </div>
 
-                  <div
-                    className="action-item flex"
-                    onClick={() => {
-                      if (!currentImage) return;
-                      setFolderSelection(currentImage.folderIds || []);
-                      setInitialPopupFolders(currentImage.folderIds || []);
-                      setShowAddToFolderPopup(true);
-                      setShowActionMenu(false);
-                    }}
-                  >
-                    <Image src={plusVector} width={11} height={11} />
-                    <span>Add to Folder</span>
-                  </div>
-
-
-                  {currentImage?.type !== "video" && (
+                  <div className="action-inner-container">
                     <div
                       className="action-item flex"
                       onClick={() => {
-                        const current = allThumbnails[selectedIndex];
-                        downloadFile(current.originalUrl);
+                        if (!currentImage) return;
+                        setFolderSelection(currentImage.folderIds || []);
+                        setInitialPopupFolders(currentImage.folderIds || []);
+                        setShowAddToFolderPopup(true);
                         setShowActionMenu(false);
                       }}
                     >
-                      <Image src={downloadVector} width={11} height={11} />
-                      <span>Download</span>
+                      <Image src={plusVector} width={19} height={15} />
+                      <span>Add to Folder</span>
                     </div>
-                  )}
-
-                  <div
-                    onClick={() => {
-                      const current = allThumbnails[selectedIndex];
-                      if (!current) return;
-
-                      handleImageShare(current?.originalUrl);
-                      setShowActionMenu(false);
-                    }} className="action-item flex gallery-share-icon">
-                    <Image
-                      src={shareVector} width={11} height={11} />
-                    <span>Share</span>
-                  </div>
-                  {String(rawPhoneNumber) === String(localPhoneNumber) &&
-                    <div
-                      className="action-item flex"
-                      onClick={async () => {
-                        const currentImage = allThumbnails[selectedIndex];
-                        if (!currentImage?._id) return;
-
-                        // Confirm deletion (optional)
-                        if (!window.confirm("Are you sure you want to delete this image?")) return;
-
-                        try {
-                          // Call your API to delete the image
-                          const res = await fetch(`${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`, {
-                            method: "DELETE",
-                          });
-
-                          if (!res.ok) {
-                            const err = await res.text();
-                            throw new Error(err);
-                          }
-
-                          setAllThumbnails(prev => {
-                            const newList = prev.filter(img => img._id !== currentImage._id);
-                            if (newList.length === 0) {
-                              setSelectedIndex(null);
-                            } else if (selectedIndex >= newList.length) {
-                              setSelectedIndex(newList.length - 1);
-                            } else {
-                              setSelectedIndex(selectedIndex);
-                            }
-                            return newList;
-                          });
-
+                    {currentImage?.type !== "video" && (
+                      <div
+                        className="action-item flex"
+                        onClick={() => {
+                          const current = allThumbnails[selectedIndex];
+                          downloadFile(current.originalUrl);
                           setShowActionMenu(false);
+                        }}
+                      >
+                        <Image src={downloadVector} width={15} height={15} />
+                        <span>Download</span>
+                      </div>
+                    )}
 
-                        } catch (err) {
-                          console.error("Delete failed:", err);
-                          alert("Failed to delete image");
-                        }
-                      }}
-                    >
-                      <Image src={deleteVector} width={11} height={11} />
-                      <span>Delete</span>
+                    <div
+                      onClick={() => {
+                        const current = allThumbnails[selectedIndex];
+                        if (!current) return;
+                        handleImageShare(current?.originalUrl);
+                        setShowActionMenu(false);
+                      }} className="action-item flex gallery-share-icon">
+                      <Image
+                        src={shareVector} width={13} height={14} />
+                      <span>Share</span>
                     </div>
-                  }
+                    {String(rawPhoneNumber) === String(localPhoneNumber) &&
+                      <div
+                        className="action-item flex"
+                        onClick={async () => {
+                          const currentImage = allThumbnails[selectedIndex];
+                          if (!currentImage?._id) return;
+
+                          if (!window.confirm("Are you sure you want to delete this image?")) return;
+
+                          try {
+                            const res = await fetch(`${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`, {
+                              method: "DELETE",
+                            });
+
+                            if (!res.ok) {
+                              const err = await res.text();
+                              throw new Error(err);
+                            }
+
+                            setAllThumbnails(prev => {
+                              const newList = prev.filter(img => img._id !== currentImage._id);
+                              if (newList.length === 0) {
+                                setSelectedIndex(null);
+                              } else if (selectedIndex >= newList.length) {
+                                setSelectedIndex(newList.length - 1);
+                              } else {
+                                setSelectedIndex(selectedIndex);
+                              }
+                              return newList;
+                            });
+
+                            setShowActionMenu(false);
+
+                          } catch (err) {
+                            console.error("Delete failed:", err);
+                            alert("Failed to delete image");
+                          }
+                        }}
+                      >
+                        <Image src={deleteVector} width={13} height={17} />
+                        <span>Delete</span>
+                      </div>
+                    }
+                  </div>
+
                 </div>
               )}
             </div>
           </div>
         )}
+        renderFooter={(currentImage, index) => {
+          const imageId = currentImage?._id;
+
+          const isLiked = likedImages[imageId];
+
+          return (
+            <div className="imagepopup-footer">
+              <div>
+                <Image
+                  src={isLiked ? like : unLike}
+                  alt="Like"
+                  width={30}
+                  height={32}
+                  style={{ filter: "none", cursor: "pointer" }}
+                  onClick={() => handleLikeToggle(imageId)}
+                />
+              </div>
+
+              <div>
+                <Image
+                  src={whiteShareIcon}
+                  alt="Share"
+                  width={30}
+                  height={32}
+                  style={{ filter: "none", cursor: "pointer" }}
+                  onClick={() => {
+                    if (!currentImage) return;
+                    handleImageShare(currentImage?.originalUrl);
+                  }}
+                />
+              </div>
+            </div>
+          );
+        }}
       />
 
       {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} />}
