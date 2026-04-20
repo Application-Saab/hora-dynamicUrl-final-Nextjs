@@ -108,6 +108,38 @@ export const checkoutMessagesByCategory = {
     "wedding-decoration": "Hi, I liked your wedding decor design, can you help me in booking process",
     "bachelorette-decoration": "Hi, I liked your bachelorette decor design, can you help me in booking process"
   };
+
+  export const photographyMessagesByCategory = {
+  "birthday-photography":
+    "Hi, I saw your birthday photography services and would like more details",
+
+  "anniversary-photography":
+    "Hi, I saw your anniversary photography services and would like more details",
+
+  "wedding-photography":
+    "Hi, I saw your wedding photography services and would like more details",
+
+  "maternity-photography":
+    "Hi, I saw your maternity photography services and would like more details",
+
+  "baby-shower-photography":
+    "Hi, I saw your baby shower photography services and would like more details",
+
+  "naming-ceremony-photography":
+    "Hi, I saw your naming ceremony photography services and would like more details",
+
+  "house-warming-photography":
+    "Hi, I saw your house warming photography services and would like more details",
+
+  "engagement-photography":
+    "Hi, I saw your engagement photography services and would like more details",
+
+  "bachelorette-photography":
+    "Hi, I saw your bachelorette photography services and would like more details",
+
+  "new-born-baby-photography":
+    "Hi, I saw your newborn baby photography services and would like more details",
+};
 /* =========================================================
    Other Services Messages
 ========================================================= */
