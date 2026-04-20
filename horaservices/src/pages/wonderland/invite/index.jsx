@@ -125,13 +125,26 @@ const InvitesPage = () => {
     }, 1000);
   }, [eventDetails, loggedinUserId]);
 
-  useEffect(() => {
-    const handleBack = () => {
-      if (selectedPackage) setSelectedPackage(null);
-    };
-    window.addEventListener("popstate", handleBack);
-    return () => window.removeEventListener("popstate", handleBack);
-  }, [selectedPackage]);
+// ─── selectedPackage ke liye back button handler ────────────────────────────
+useEffect(() => {
+  if (!isVenueHost) return;
+
+  if (selectedPackage) {
+    // Dummy state push karo taaki back press intercept ho sake
+    window.history.pushState({ venueModal: true }, "");
+  }
+
+  const handleBack = (e) => {
+    if (selectedPackage) {
+      // Browser ko back jane se roko — sirf modal band karo
+      window.history.pushState({ venueModal: true }, "");
+      setSelectedPackage(null);
+    }
+  };
+
+  window.addEventListener("popstate", handleBack);
+  return () => window.removeEventListener("popstate", handleBack);
+}, [selectedPackage, isVenueHost]);
 
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
@@ -182,10 +195,9 @@ const InvitesPage = () => {
                     <VenueFoodCard
                       key={index}
                       item={item}
-                      onView={() => {
-                        setSelectedPackage(item);
-                        window.history.pushState(null, "");
-                      }}
+                    onView={() => {
+  setSelectedPackage(item);
+}}
                     />
                   ))}
                 </div>
