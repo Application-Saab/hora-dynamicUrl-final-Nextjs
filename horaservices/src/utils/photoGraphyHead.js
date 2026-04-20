@@ -1,48 +1,204 @@
 import Head from "next/head";
-
+import {
+  categoryBannerMap,
+  normalizeCatValue,
+} from "@/pages/photography-page/[catValue]/index.jsx";
 export function SeoMain({ city, scriptTag }) {
   return (
-    <Head>
-      <title>
-        {city
-         ? `HORA Photography in ${city} | Professional Event Photography – Birthdays, Weddings & More – Starting at ₹3500`
-              : 'HORA Photography : Professional photography for all events - Birthdays, Parties, & Weddings – Starting at ₹3500'}
-      </title>
+   <Head>
+  {/* Title (within 60 chars) */}
+<title>
+  {city
+    ? `Photographers in ${city} for All Events | Book Online | HORA`
+    : `Professional Photographers for All Events | Book Online | HORA`}
+</title>
+  {/* Meta Description */}
+  <meta
+  name="description"
+  content={
+    city
+      ? `Book professional photographers in ${city} for birthdays, weddings, baby showers & more. 100+ photographers. Lifetime photo storage. Book HORA now.`
+      : `Book professional photographers for birthdays, anniversaries, weddings, maternity, baby showers & more. 100+ photographers across India. Lifetime photo storage. Book HORA now.`
+  }
+/>
 
-      <meta
-        name="description"
-        content={
-          city
-            ? `📸 Capture Every Moment in ${city}! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉 in ${city}, our professional photographers are here to make your moments look as magical as they felt.`
-            : `📸 Capture Every Moment, Forever! ✨ Welcome to HORA Photography — where every click tells your story! 😊 Whether it's a dreamy wedding, a cute baby welcome, or a rocking birthday bash 🎉, our professional photographers are here to make your moments look as magical as they felt. Specialized packages for Weddings, Maternity, Baby, Birthday, Newborn, Couples, Anniversaries, Corporate Events & More.`
-        }
-      />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
 
-      <MetaCommon scriptTag={scriptTag} />
-    </Head>
+  {/* Canonical */}
+  <link rel="canonical" href="https://horaservices.com/photography-page" />
+
+  {/* Favicon */}
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+  />
+
+  {/* Open Graph */}
+  <meta
+    property="og:title"
+    content="Professional Photographers for All Events | HORA"
+  />
+  <meta
+    property="og:description"
+    content="Book photographers for birthdays, weddings & events across India."
+  />
+  <meta
+    property="og:url"
+    content="https://horaservices.com/photography-page"
+  />
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    name="twitter:title"
+    content="Professional Photographers | HORA"
+  />
+  <meta
+    name="twitter:description"
+    content="Hire photographers for birthdays, weddings & events."
+  />
+  <meta
+    name="twitter:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Schema - Service */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: "Professional Event Photography Services",
+        provider: {
+          "@type": "Organization",
+          name: "HORA",
+          url: "https://horaservices.com/",
+          logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        },
+        areaServed: {
+          "@type": "Country",
+          name: "India",
+        },
+        description:
+          "Professional photographers for birthdays, weddings, baby showers and corporate events across India.",
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.8",
+          reviewCount: "100",
+        },
+      }),
+    }}
+  />
+
+  {/* Schema - WebPage */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Photography Services",
+        url: "https://horaservices.com/photography-page",
+        description:
+          "Book professional photographers for events across India.",
+      }),
+    }}
+  />
+
+
+</Head>
   );
 }
 
+export function SeoCategory({ city, catValue, seoData }) {
+  const seo = seoData?.[catValue] || {};
 
-export function SeoCategory({ city, catValue, scriptTag }) {
+  // ✅ SAFE values
+  const safeCat = catValue ? catValue.replace(/-/g, " ") : "";
+  const safeDesc = seo?.description || "";
+
+  const citySlug = city?.toLowerCase()?.replace(/\s+/g, "-");
+
+  const formattedCity = city ? `in ${city}` : "in India";
+
+  // ✅ Title
+  const title = city
+    ? `${safeCat} in ${city} | Book Photographer | HORA`
+    : seo?.title || `${safeCat} Photography | HORA`;
+
+  // ✅ Description
+  const description = city
+    ? safeDesc
+      ? safeDesc.replace(
+          "Book",
+          `Book ${safeCat.toLowerCase()} in ${city}. Book`
+        )
+      : `Book ${safeCat.toLowerCase()} photography in ${city}.`
+    : safeDesc;
+
+  // ✅ URL
+  const url = citySlug
+    ? `https://horaservices.com/${citySlug}/photography/${catValue}`
+    : `https://horaservices.com/photography/${catValue}`;
+
+  // ✅ Banner Image (IMPORTANT 🔥)
+  const normalizedCat = normalizeCatValue(catValue);
+
+  const bannerToShow =
+    categoryBannerMap[normalizedCat] ||
+    categoryBannerMap["default"];
+
+  const bannerUrl = bannerToShow?.src || "";
+
   return (
     <Head>
-      <title>
-        {city
-          ?`HORA Photography ${city} ${catValue} by Professionals Photographer, Starting at ₹3500`
-            : `HORA Photography ${catValue} by Professionals Photographer, Starting at ₹3500`}
-      </title>
+      {/* ✅ Basic SEO */}
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <link rel="canonical" href={url} />
 
-      <meta
-        name="description"
-        content={
-          city
-            ? `📸 Capture Every Moment, Forever! ✨ Welcome to HORA ${city} ${catValue} — where every click tells your story! 😊 Weddings, Baby Shoots, Birthdays, and more — our professional photographers make your memories magical.`
-            : `📸 Capture Every Moment, Forever! ✨ Welcome to HORA ${catValue} — where every click tells your story! 😊 Weddings, Baby Shoots, Birthdays, and more — our professional photographers make your memories magical.`
-        }
+      {/* ✅ Open Graph */}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={url} />
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content={bannerUrl} />
+
+      {/* ✅ Twitter */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={bannerUrl} />
+
+      {/* ✅ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: `${safeCat} ${formattedCity}`,
+            description: description,
+            areaServed: {
+              "@type": city ? "City" : "Country",
+              name: city || "India",
+            },
+            provider: {
+              "@type": "Organization",
+              name: "HORA",
+              url: "https://horaservices.com",
+            },
+            image: [bannerUrl],
+          }),
+        }}
       />
-
-      <MetaCommon scriptTag={scriptTag} />
     </Head>
   );
 }

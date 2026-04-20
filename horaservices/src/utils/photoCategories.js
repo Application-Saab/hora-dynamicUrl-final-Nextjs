@@ -104,3 +104,86 @@ export const photoCat = [
   
  
 ];
+
+
+export const seoData = {
+  "Birthday-Photography": {
+    title: "Birthday Photoshoot | Birthday Party Photographer | HORA",
+    description:
+      "Book a professional birthday photoshoot at home or venue. Birthday party photographers, cake smash, pre-birthday, 1st birthday & 18th birthday shoots. Starting ₹1999. Book HORA.",
+    h1: "Birthday Photoshoot at Home & Venue",
+    color: '#be9be2',
+  },
+
+  "Anniversary-Photography": {
+    title: "Anniversary Photoshoot | Couple Photography | HORA",
+    description: "Book a romantic anniversary photoshoot or couple photography session at home or outdoors. Candid and posed styles. Surprise setup available. Book HORA anniversary photography today.",
+    h1: "Anniversary Photoshoot for Couples",
+    color: '#5a6b33',
+  },
+
+  "House-warming-Photography": {
+    title: "Housewarming Photography | Griha Pravesh Photoshoot | HORA",
+    description:"Book professional housewarming photography for your griha pravesh or gruhapravesam ceremony. Capture the joy of your new home with HORA. Book a housewarming photographer near you",
+    h1: "Housewarming & Griha Pravesh Photoshoot",
+    color: '#cea555',
+  },
+
+  "Naming-ceremony-Photography": {
+    title: "Naming Ceremony Photography | Baby Naming Shoot | HORA",
+    description:"Book professional naming ceremony photography, cradle ceremony photoshoots, baptism & christening photography. Barasala, annaprashan & more. HORA covers all ceremonies near you.",
+        h1: "Baby Naming Ceremony Photoshoot",
+    color: '#774800',
+  },
+
+  "Bachelorette-Photography": {
+    title: "Bachelorette Party Photoshoot | Fun Girls Shoot | HORA",
+    description:"Book a professional bachelorette party photographer for your hen party, girls trip or pre-wedding celebration. Candid, fun and stylish photoshoots. Book HORA bachelorette photography",
+    h1: "Bachelorette Party Photoshoot",
+    color: '#2a2a2a',
+  },
+
+  "Baby-Shower-Photography": {
+    title: "Baby Shower Photoshoot | Maternity Celebration | HORA",
+    description:"Book professional baby shower photography for your godh bharai or seemantham ceremony. Baby bump photoshoots, maternity-style baby shower coverage. Book HORA baby shower photographer.",
+    h1: "Baby Shower Photoshoot",
+    color: '#c576bf',
+  },
+
+  "Engagement-Photography": {
+    title: "Engagement Photoshoot | Pre Wedding Photography | HORA",
+    description:"Book professional engagement photoshoot and ring ceremony photography. Candid, cinematic and traditional styles. Indoor & outdoor sessions. Book HORA engagement photographer today.",
+    h1: "Engagement & Pre-Wedding Photoshoot",
+    color: '#624859',
+  },
+
+  "Wedding-Photography": {
+    title: "Wedding Photography | Professional Wedding Photographers | HORA",
+    description:"Book professional wedding photographers and pre-wedding photoshoot packages. Candid, cinematic & traditional wedding coverage. Best prices. Book HORA wedding photography today.",
+    h1: "Professional Wedding Photography",
+    color: '#bb3a4a',
+  },
+
+  "Maternity-Photography": {
+    title: "Maternity Photoshoot | Pregnancy Photography | HORA",
+    description:"Book a professional maternity photoshoot during pregnancy. Couple maternity sessions, baby bump photography, indoor & outdoor. Expert photographers. Book HORA maternity shoot today.",
+    h1: "Maternity & Pregnancy Photoshoot",
+    color: '#b65f5d',
+  },
+
+  "New-Born-Baby-Photography": {
+    title: "Newborn Baby Photoshoot | Baby Photography | HORA",
+    description:
+      "Capture your newborn baby moments with cute themed photoshoots. Safe & professional baby photography. Starting ₹1999.",
+    h1: "Newborn Baby Photoshoot",
+    color: '#92694e',
+  },
+
+  "Intimate-Gathering": {
+    title: "Intimate Event Photography | Small Party Photoshoot | HORA",
+    description:
+      "Book photographers for intimate gatherings, small parties & private celebrations. Capture every special moment. Starting ₹1999.",
+    h1: "Intimate & Private Event Photoshoot",
+    color: '#97538C',
+  },
+};
