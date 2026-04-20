@@ -2,7 +2,17 @@
 
 /* Full viewport backdrop */
 .login-modal-backdrop {
-  height: calc(100dvh - 60px) !important;
+   position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 81px;
+  z-index: 1050;
 }
 
 /* Modal Content Box */

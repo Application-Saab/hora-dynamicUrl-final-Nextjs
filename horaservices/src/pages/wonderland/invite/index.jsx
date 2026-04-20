@@ -13,121 +13,18 @@ import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
-import CateringCard from "@/components/CateringCard";
-import CateringModal from "@/components/CateringModal";
 import VenueFoodModal from "@/components/VenueFoodModal";
 import VenueFoodCard from "@/components/VenueFoodCard";
 
-// ─── Static Food Packages Data ──────────────────────────────────────────────
-const STATIC_FOOD_PACKAGES = [
-  {
-    id: 1,
-    name: "FOOD",
-    price: "₹1,400/-",
-    tag: "All Inclusive",
-    includes: {
-      appetisers: {
-        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
-        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
-        note: "Choose any 3 from each",
-      },
-      mainCourse: {
-        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
-        note: "Choose any 7",
-      },
-      beverage: ["Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-  {
-    id: 2,
-    name: "FOOD & BEER",
-    price: "₹1,600/-",
-    tag: "All Inclusive",
-    includes: {
-      appetisers: {
-        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
-        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
-        note: "Choose any 3 from each",
-      },
-      mainCourse: {
-        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
-        note: "Choose any 7",
-      },
-      beverage: ["Beer", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-  {
-    id: 3,
-    name: "FOOD & IMFL",
-    subtitle: "(Indian Made Foreign Liquor)",
-    price: "₹2,500/-",
-    tag: "All Inclusive",
-    includes: {
-      appetisers: {
-        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
-        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
-        note: "Choose any 3 from each",
-      },
-      mainCourse: {
-        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
-        note: "Choose any 7",
-      },
-      beverage: ["IMFL", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-  {
-    id: 4,
-    name: "FOOD & IL",
-    subtitle: "(Imported Liquor)",
-    price: "₹3,500/-",
-    tag: "All Inclusive",
-    includes: {
-      appetisers: {
-        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
-        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
-        note: "Choose any 3 from each",
-      },
-      mainCourse: {
-        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
-        note: "Choose any 7",
-      },
-      beverage: ["Imported Liquor", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-  {
-    id: 5,
-    name: "FOOD & PL",
-    subtitle: "(Premium Liquor)",
-    price: "₹4,500/-",
-    tag: "All Inclusive",
-    includes: {
-      appetisers: {
-        veg: ["French Paneer", "Mushroom Pepper", "Babycorn Chili", "American Corn", "Hara Bhara Kabab", "Paneer Tikka"],
-        nonVeg: ["Chicken Kebab", "Chilly Chicken", "Fish Pepper", "Fish Koliwada", "Chicken Tikka", "Murgh Ke Sholay", "French Chicken"],
-        note: "Choose any 3 from each",
-      },
-      mainCourse: {
-        items: ["Steamed Rice", "Jeera Rice", "Veg Biryani", "Veg Diwani Handi", "Chicken Biryani", "Dal Fry", "Paneer Butter Masala", "Chicken Butter Masala", "Dhingri Mutter", "Chicken Hyderabadi", "Tomato Kaju Masala", "Veg Noodles", "Chicken Noodles", "Assorted Roti", "Naan, Tandoori, Kulcha"],
-        note: "Choose any 7",
-      },
-      beverage: ["Premium Liquor", "Mocktails", "Canned Juices", "Water", "Coke, Sprite, Soda", "Tonic Water"],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-];
+// ─── Dynamic food packages — event ID ke hisaab se ──────────────────────────
+import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
 // ────────────────────────────────────────────────────────────────────────────
 
 const InvitesPage = () => {
   const router = useRouter();
   const { eventid: queryEventId, invenue } = router.query;
 
-  // ─── Venue Host Flag (URL se) ───────────────────────────────────────────────
   const isVenueHost = invenue === "true";
-  // ────────────────────────────────────────────────────────────────────────────
 
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
@@ -157,6 +54,10 @@ const InvitesPage = () => {
   const { makeRequest: fetchUserData } = useApi();
 
   const isHost = eventDetails?.userId === loggedinUserId;
+
+  // ─── Event ID ke hisaab se food packages ────────────────────────────────────
+  const foodPackages = getFoodPackagesByEventId(queryEventId);
+  // ────────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -231,11 +132,10 @@ const InvitesPage = () => {
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
   }, [selectedPackage]);
-  // ────────────────────────────────────────────────────────────────────────────
 
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
-  // ─── VENUE FLOW ───────────────────────────────────────────────────────────────
+  // ─── VENUE FLOW ─────────────────────────────────────────────────────────────
   if (isVenueHost) {
     return (
       <>
@@ -245,11 +145,7 @@ const InvitesPage = () => {
             {/* Step 1: Template */}
             <div className="invite-template-shell">
               {fetchEventLoading ? (
-                <TemplatecardSkeleton
-                  width="100%"
-                  height="200px"
-                  borderRadius="10px"
-                />
+                <TemplatecardSkeleton width="100%" height="200px" borderRadius="10px" />
               ) : (
                 <TemplateRenderer
                   fetchEventLoading={fetchEventLoading}
@@ -260,13 +156,10 @@ const InvitesPage = () => {
               )}
             </div>
 
-            {/* Step 2: Sirf Address + Google Map */}
+            {/* Step 2: Address + Google Map */}
             {(eventDetails?.location || eventDetails?.googleMapLink) && (
               <div className="invite-address-section">
-                <InviteAddressSection
-                  eventData={eventDetails}
-                  hideDateAndTime={true}
-                />
+                <InviteAddressSection eventData={eventDetails} hideDateAndTime={true} />
               </div>
             )}
 
@@ -280,22 +173,24 @@ const InvitesPage = () => {
               </div>
             )}
 
-            {/* Step 4: Static Food Packages — 5 packages */}
-          <div className="whos-joining-container" style={{ marginTop: "10px" }}>
-  <p className="wall-heading text-center m-0 p-0">Food Packages</p>
-  <div style={{ marginTop: "10px", padding: "0 4px" }}>
-    {STATIC_FOOD_PACKAGES.map((item, index) => (
-      <VenueFoodCard
-        key={index}
-        item={item}
-        onView={() => {
-          setSelectedPackage(item);
-          window.history.pushState(null, "");
-        }}
-      />
-    ))}
-  </div>
-</div>
+            {/* Step 4: Food Packages — event ID ke hisaab se */}
+            {foodPackages.length > 0 && (
+              <div className="whos-joining-container" style={{ marginTop: "10px" }}>
+                <p className="wall-heading text-center m-0 p-0">Food Packages</p>
+                <div style={{ marginTop: "10px", padding: "0 4px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {foodPackages.map((item, index) => (
+                    <VenueFoodCard
+                      key={index}
+                      item={item}
+                      onView={() => {
+                        setSelectedPackage(item);
+                        window.history.pushState(null, "");
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Step 5: Celebration Wall */}
             <div className="event-wall-container">
@@ -304,7 +199,7 @@ const InvitesPage = () => {
                 userData={userData}
                 setPushRsvpClick={setPushRsvpClick}
                 rsvpSubmitted={rsvpSubmitted}
-                isHost={isHost}          
+                isHost={isHost}
                 isVenueHost={true}
               />
             </div>
@@ -312,12 +207,11 @@ const InvitesPage = () => {
           </div>
         </div>
 
-        {/* Food Package Modal */}
         {selectedPackage && (
-         <VenueFoodModal
+          <VenueFoodModal
             data={selectedPackage}
             onClose={() => setSelectedPackage(null)}
-  />
+          />
         )}
 
         <LoginModal
@@ -329,18 +223,14 @@ const InvitesPage = () => {
   }
   // ────────────────────────────────────────────────────────────────────────────
 
-  // ─── NORMAL FLOW (unchanged) ─────────────────────────────────────────────────
+  // ─── NORMAL FLOW ────────────────────────────────────────────────────────────
   return (
     <>
       <div className="invite-page">
         <div className="invite-page-container">
           <div className="invite-template-shell">
             {fetchEventLoading ? (
-              <TemplatecardSkeleton
-                width="100%"
-                height="200px"
-                borderRadius="10px"
-              />
+              <TemplatecardSkeleton width="100%" height="200px" borderRadius="10px" />
             ) : (
               <TemplateRenderer
                 fetchEventLoading={fetchEventLoading}

@@ -1,18 +1,46 @@
+
 import React from "react";
 import "./VenueFoodCard.css";
+import Image from "next/image";
 
 const VenueFoodCard = ({ item, onView }) => {
   return (
-    <div className="vfc-card" onClick={() => onView(item)}>
-      <div className="vfc-left">
-        <h3 className="vfc-title">{item.name}</h3>
-        {item.subtitle && <p className="vfc-subtitle">{item.subtitle}</p>}
-        <span className="vfc-tag">{item.tag}</span>
-      </div>
+    <div className="vfc-card">
+      <div className="vfc-row">
 
-      <div className="vfc-right">
-        <span className="vfc-price">{item.price}</span>
-        <button className="vfc-btn">View Menu</button>
+        {/* IMAGE */}
+        <div className="vfc-imgBox">
+          <Image
+            src={item.image}
+            alt={item.name}
+            className="vfc-img"
+          />
+        </div>
+
+        {/* LEFT */}
+        <div className="vfc-left">
+          <h3 className="vfc-title">{item.name}</h3>
+
+          {item.subtitle && (
+            <p className="vfc-subtitle">{item.subtitle}</p>
+          )}
+        </div>
+
+        {/* RIGHT */}
+       <div className="vfc-right">
+  <div className="vfc-priceBox">
+    <span className="vfc-price">{item.price}</span>
+    <span className="vfc-inclusive">{item.tag}</span>
+  </div>
+
+  <button
+    className="vfc-link"
+    onClick={() => onView(item)}
+  >
+    View Menu →
+  </button>
+</div>
+
       </div>
     </div>
   );
