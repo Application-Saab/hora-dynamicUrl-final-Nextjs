@@ -1,5 +1,8 @@
 import veneue from "@/assets/venue.jpeg";
-
+import  VEGETARIAN from "@/assets/venueimages/vegetarian.webp";
+import VEGETARIANDELUXE from "@/assets/venueimages/VEGETARIANDELUXE.webp";
+import NONVEGETARIAN from "@/assets/venueimages/non-vegetarian.webp";
+import NONVEGETARIANDELUXE from "@/assets/venueimages/non-vegetarindeluxe.webp";
 export const OAKWOOD_FOOD_PACKAGES = [
     {
     id: 1,
@@ -7,7 +10,7 @@ export const OAKWOOD_FOOD_PACKAGES = [
     subtitle: "1 Welcome Drink • 2 Veg Starters • 1 Soup • 2 Salads • 2 Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 1 Dessert • 1 Ice Cream",
     price: "₹1,250/-",
     tag: "All Inclusive",
-    image: veneue,
+    image: VEGETARIAN,
     includes: {
       beverage: [
         "Shirley Temple",
@@ -193,7 +196,7 @@ export const OAKWOOD_FOOD_PACKAGES = [
     subtitle: " 3 Welcome drinks, 3 Veg starters, 1 soup, 3 salads, 3 Veg main courses, 1 Dal, 1 flavoured rice, 1 indian bread, 2 Dessert ,1 icecream",
     price: "₹1,400/-",
     tag: "All Inclusive",
-    image: veneue,
+    image: VEGETARIANDELUXE,
      includes: {
       beverage: [
         "Shirley Temple",
@@ -379,7 +382,7 @@ export const OAKWOOD_FOOD_PACKAGES = [
     subtitle: "1 Welcome Drink • 2 Veg Starters • 1 Non-Veg Starter • 2 Soups (Veg/Non-Veg) • 3 Salads • 2 Veg Main Course • 1 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 2 Desserts • 1 Ice Cream",
     price: "₹1,500/-",
     tag: "All Inclusive",
-    image: veneue,
+    image: NONVEGETARIAN,
     includes: {
       beverage: [
         "Shirley Temple",
@@ -619,7 +622,7 @@ export const OAKWOOD_FOOD_PACKAGES = [
     subtitle: "2 Welcome Drinks • 2 Veg Starters • 2 Non-Veg Starters • 2 Soups (Veg/Non-Veg) • 4 Salads • 2 Veg Main Course • 2 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 3 Desserts • 1 Ice Cream",
     price: "₹1,600/-",
     tag: "All Inclusive",
-    image: veneue,
+    image: NONVEGETARIANDELUXE,
     includes: {
       beverage: [
         "Shirley Temple",

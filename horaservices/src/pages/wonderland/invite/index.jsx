@@ -125,27 +125,40 @@ const InvitesPage = () => {
     }, 1000);
   }, [eventDetails, loggedinUserId]);
 
-// ─── selectedPackage ke liye back button handler ────────────────────────────
+// ─── Sabhi modals ke liye back button handler ────────────────────────────────
 useEffect(() => {
-  if (!isVenueHost) return;
+  const anyModalOpen =
+    selectedPackage ||
+    showGuestLoginModal ||
+    openCreateInviteModal;
 
-  if (selectedPackage) {
-    // Dummy state push karo taaki back press intercept ho sake
-    window.history.pushState({ venueModal: true }, "");
+  if (anyModalOpen) {
+    window.history.pushState({ modalOpen: true }, "");
   }
 
-  const handleBack = (e) => {
+  const handleBack = () => {
     if (selectedPackage) {
-      // Browser ko back jane se roko — sirf modal band karo
-      window.history.pushState({ venueModal: true }, "");
+      window.history.pushState({ modalOpen: true }, "");
       setSelectedPackage(null);
+      return;
     }
+    if (showGuestLoginModal) {
+      window.history.pushState({ modalOpen: true }, "");
+      setShowGuestLoginModal(false);
+      return;
+    }
+    if (openCreateInviteModal) {
+      window.history.pushState({ modalOpen: true }, "");
+      setOpenCreateInviteModal(false);
+      return;
+    }
+    // ── Koi modal open nahi → normal back ──
+    router.back();
   };
 
   window.addEventListener("popstate", handleBack);
   return () => window.removeEventListener("popstate", handleBack);
-}, [selectedPackage, isVenueHost]);
-
+}, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   // ─── VENUE FLOW ─────────────────────────────────────────────────────────────
