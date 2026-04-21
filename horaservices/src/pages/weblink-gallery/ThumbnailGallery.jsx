@@ -876,11 +876,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                           />
                         </div>
                       )}
-                      {thumbnail.isTemp && thumbnail.uploading && (
-                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-                          <CircularLoader />
-                        </div>
-                      )}
+                      
                       {isEditing &&
                         !isSearchMode &&
                         activeSubFolderId &&
@@ -905,6 +901,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       <EventwallGalleryItem
                         isVideo={thumbnail.type === "video"}
                         indexOnPage={indexOnPage}
+                        isLoading={thumbnail.isTemp && thumbnail.uploading}
                         id={thumbnail._id}
                         imageUrl={
                           thumbnail.type === "image"

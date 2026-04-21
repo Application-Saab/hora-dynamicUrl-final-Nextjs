@@ -1,11 +1,17 @@
 import LazyVideo from "../../common/LazyVideo";
 import EventLazyImage from "../../common/EventLazyImage";
 import '../../common/EventLazyImage.css';
+import CircularLoader from "@/components/Gallery/CircularLoader";
 
-const EventwallGalleryItem = ({ isVideo, indexOnPage, fullVideoSrc, isEventWall=false ,progress = null, postType = null, id, imageUrl, previewSrc  }) => {
+const EventwallGalleryItem = ({ isVideo, indexOnPage, fullVideoSrc, isEventWall=false ,progress = null, postType = null, id, imageUrl, previewSrc , isLoading }) => {
 
   return (
-    <>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      {isLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+          <CircularLoader />
+        </div>
+      )}
       {isVideo ? (
           <LazyVideo
             previewSrc={previewSrc}
@@ -23,7 +29,7 @@ const EventwallGalleryItem = ({ isVideo, indexOnPage, fullVideoSrc, isEventWall=
           postType={postType}
         />
       )}
-    </>
+    </div>
   );
 };
 
