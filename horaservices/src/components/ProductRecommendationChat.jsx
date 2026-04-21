@@ -69,7 +69,7 @@ const ProductRecommendationChat = ({ categoryBasePath = "/balloon-decoration" })
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([
     buildChatMessage(
-      "👋 Hi! I'm here to help you with your event planning. Let's get started with some details.",
+      "👋 Hi! i am your Hora assistant. I will help you find the perfect decoration for your event.",
       "bot"
     ),
     buildChatMessage(questions[0].question, "bot"),
