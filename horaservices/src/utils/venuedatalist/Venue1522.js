@@ -1,37 +1,17 @@
 import veneue from "@/assets/venue.jpeg";
-
+import foodIl from "@/assets/venueimages/foodil.jpeg"
+import foodImfl from "@/assets/venueimages/foodimfl.jpeg"
+import FoodPL from "@/assets/venueimages/FoodPL.jpeg"
 export const STATIC_FOOD_PACKAGES = [
   {
     id: 1,
     name: "FOOD",
+    subtitle:
+      "3 Veg Starters • 3 Non-Veg Starters • 7 Main Course (Veg/Non-Veg) • Dessert • Ice Cream",
     price: "₹1,400/-",
     tag: "All Inclusive",
     image: veneue,
     includes: {
-      appetisers: {
-        veg: [
-          "French Paneer",
-          "American Corn",
-          "Hara Bhara Kabab",
-        ],
-        nonVeg: [
-          "Chicken Tukda Kebab",
-          "Chilly Chicken",
-          "Fish Pepper",
-        ],
-        note: "Choose any 3",
-      },
-      mainCourse: {
-        items: [
-          "Veg Biryani",
-          "Chicken Biryani",
-          "Dal Kichdi",
-          "Chicken Butter Masala",
-          "Tomato Kaju Masala",
-          "Assorted Roti - Naan, Tandoori, Kulcha",
-        ],
-        note: "Choose any 5",
-      },
       beverage: [
         "Mocktails",
         "Canned Juices",
@@ -39,81 +19,29 @@ export const STATIC_FOOD_PACKAGES = [
         "Coke, Sprite, Soda",
         "Tonic Water",
       ],
-      desserts: ["Gulab Jamoon & Ice Cream"],
-    },
-  },
+      beverageNote: "All beverages included",
 
-  {
-    id: 2,
-    name: "FOOD & BEER",
-    price: "₹1,600/-",
-    tag: "All Inclusive",
-    image: veneue,
-    includes: {
-      appetisers: {
-        veg: [
-          "French Paneer",
-          "American Corn",
-          "Hara Bhara Kabab",
-        ],
-        nonVeg: [
-          "Chicken Tukda Kebab",
-          "Chilly Chicken",
-          "Fish Pepper",
-        ],
-        note: "Choose any 3",
-      },
-      mainCourse: {
-        items: [
-          "Veg Biryani",
-          "Chicken Biryani",
-          "Dal Kichdi",
-          "Chicken Butter Masala",
-          "Tomato Kaju Masala",
-          "Assorted Roti - Naan, Tandoori, Kulcha",
-        ],
-        note: "Choose any 6",
-      },
-      beverage: [
-        "Beer",
-        "Mocktails",
-        "Canned Juices",
-        "Water",
-        "Coke, Sprite, Soda",
-        "Tonic Water",
-      ],
-      desserts: ["Gulab Jamoon & Ice Cream"],
-    },
-  },
-
-  {
-    id: 3,
-    name: "FOOD & IMFL",
-    subtitle: "(Indian Made Foreign Liquor)",
-    price: "₹2,500/-",
-    tag: "All Inclusive",
-    image: veneue,
-    includes: {
       appetisers: {
         veg: [
           "French Paneer",
           "Mushroom Pepper",
-          "Babycorn Chili",
+          "Babycorn Chilli",
           "American Corn",
           "Hara Bhara Kabab",
           "Paneer Tikka",
         ],
         nonVeg: [
           "Chicken Kebab",
-          "Chilly Chicken",
+          "Chilli Chicken",
           "Fish Pepper",
           "Fish Koliwada",
           "Chicken Tikka",
           "Murgh Ke Sholay",
           "French Chicken",
         ],
-        note: "Choose any 3",
+        note: "Choose any 3 Veg + 3 Non-Veg Starters",
       },
+
       mainCourse: {
         items: [
           "Steamed Rice",
@@ -133,6 +61,19 @@ export const STATIC_FOOD_PACKAGES = [
         ],
         note: "Choose any 7",
       },
+
+      desserts: ["Chocolate Brownie & Ice Cream"],
+      dessertsNote: "Included",
+    },
+  },
+  {
+    id: 2,
+    name: "FOOD & IMFL",
+    subtitle: "3 Veg Starters • 3 Non-Veg Starters • 7 Main Course • Dessert | (Indian Made Foreign Liquor)",
+    price: "₹1,600/-",
+    tag: "All Inclusive",
+    image: foodImfl,
+    includes: {
       beverage: [
         "Whisky - Black Dog 8 years, Black & White",
         "Rum - Bacardi (White), Old Monk",
@@ -145,18 +86,7 @@ export const STATIC_FOOD_PACKAGES = [
         "Coke, Sprite, Soda",
         "Tonic Water",
       ],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-
-  {
-    id: 4,
-    name: "FOOD & IL",
-    subtitle: "(Imported Liquor)",
-    price: "₹3,500/-",
-    tag: "All Inclusive",
-    image: veneue,
-    includes: {
+      beverageNote: "2 Whisky • 2 Rum • 1 Vodka • 1 Gin • 1 Beer",
       appetisers: {
         veg: [
           "French Paneer",
@@ -175,7 +105,7 @@ export const STATIC_FOOD_PACKAGES = [
           "Murgh Ke Sholay",
           "French Chicken",
         ],
-        note: "Choose any 3",
+        note: "Choose any 3 Veg + 3 Non-Veg Starters",
       },
       mainCourse: {
         items: [
@@ -196,6 +126,19 @@ export const STATIC_FOOD_PACKAGES = [
         ],
         note: "Choose any 7",
       },
+      desserts: ["Chocolate Brownie & Ice Cream"],
+      dessertsNote: "Included",
+    },
+  },
+
+  {
+    id: 3,
+    name: "FOOD & IL",
+    subtitle: "3 Veg Starters • 3 Non-Veg Starters • 7 Main Course • Dessert | (Imported Liquor)",
+    price: "₹3,500/-",
+    tag: "All Inclusive",
+    image: foodIl,
+    includes: {
       beverage: [
         "Whisky - Jameson, Ballantine's, Jim Beam",
         "Rum - Bacardi (White), Old Monk",
@@ -208,18 +151,7 @@ export const STATIC_FOOD_PACKAGES = [
         "Coke, Sprite, Soda",
         "Tonic Water",
       ],
-      desserts: ["Chocolate Brownie & Ice Cream"],
-    },
-  },
-
-  {
-    id: 5,
-    name: "FOOD & PL",
-    subtitle: "(Premium Liquor)",
-    price: "₹4,500/-",
-    tag: "All Inclusive",
-    image: veneue,
-    includes: {
+      beverageNote: "3 Whisky • 2 Rum • 1 Vodka • 2 Gin • 1 Beer",
       appetisers: {
         veg: [
           "French Paneer",
@@ -238,7 +170,7 @@ export const STATIC_FOOD_PACKAGES = [
           "Murgh Ke Sholay",
           "French Chicken",
         ],
-        note: "Choose any 3",
+        note: "Choose any 3 Veg + 3 Non-Veg Starters",
       },
       mainCourse: {
         items: [
@@ -259,6 +191,19 @@ export const STATIC_FOOD_PACKAGES = [
         ],
         note: "Choose any 7",
       },
+      desserts: ["Chocolate Brownie & Ice Cream"],
+      dessertsNote: "Included",
+    },
+  },
+
+  {
+    id: 4,
+    name: "FOOD & PL",
+    subtitle: "3 Veg Starters • 3 Non-Veg Starters • 7 Main Course • Dessert | (Premium Liquor)",
+    price: "₹4,500/-",
+    tag: "All Inclusive",
+    image: FoodPL,
+    includes: {
       beverage: [
         "Whisky - Chivas 12 years, Jack Daniels, Black Label",
         "Rum - Bacardi (White), Old Monk",
@@ -271,7 +216,48 @@ export const STATIC_FOOD_PACKAGES = [
         "Coke, Sprite, Soda",
         "Tonic Water",
       ],
+      beverageNote: "3 Whisky • 2 Rum • 2 Vodka • 2 Gin • 1 Beer",
+      appetisers: {
+        veg: [
+          "French Paneer",
+          "Mushroom Pepper",
+          "Babycorn Chili",
+          "American Corn",
+          "Hara Bhara Kabab",
+          "Paneer Tikka",
+        ],
+        nonVeg: [
+          "Chicken Kebab",
+          "Chilly Chicken",
+          "Fish Pepper",
+          "Fish Koliwada",
+          "Chicken Tikka",
+          "Murgh Ke Sholay",
+          "French Chicken",
+        ],
+        note: "Choose any 3 Veg + 3 Non-Veg Starters",
+      },
+      mainCourse: {
+        items: [
+          "Steamed Rice",
+          "Jeera Rice",
+          "Veg Biryani",
+          "Veg Diwani Handi",
+          "Chicken Biryani",
+          "Dal Fry",
+          "Paneer Butter Masala",
+          "Chicken Butter Masala",
+          "Dhingri Mutter",
+          "Chicken Hyderabadi",
+          "Tomato Kaju Masala",
+          "Veg Noodles",
+          "Chicken Noodles",
+          "Assorted Roti - Naan, Tandoori, Kulcha",
+        ],
+        note: "Choose any 7",
+      },
       desserts: ["Chocolate Brownie & Ice Cream"],
+      dessertsNote: "Included",
     },
   },
 ];

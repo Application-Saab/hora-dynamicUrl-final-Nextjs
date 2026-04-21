@@ -1,8 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./invite.css";
-import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import InviteActions from "@/components/wonderland/common/InviteActions";
-import WhosJoining from "@/components/wonderland/rsvp/WhosJoining";
+import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import EventwallSection from "@/components/wonderland/event-wall/EventwallSection";
 import { useRouter } from "next/router";
 import useApi from "@/hooks/useApi";
@@ -12,13 +11,14 @@ import InviteAddressSection from "@/components/wonderland/common/InviteAddressSe
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
-import useRsvpStatus from "@/hooks/useRsvpStatus";
+import VenueFoodModal from "@/components/VenueFoodModal";
+import VenueFoodCard from "@/components/VenueFoodCard";
+import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
 
-const InvitesPage = () => {
+const PartyhallsInvitePage = () => {
   const router = useRouter();
   const { eventid: queryEventId } = router.query;
 
-  const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
@@ -26,14 +26,8 @@ const InvitesPage = () => {
   const [loggedinUserId, setLoggedinUserId] = useState(
     localStorage.getItem("userID") || ""
   );
-  const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
-  const [rsvpRefetch, setRsvpRefetch] = useState(0);
-  const [showHostActionSection, setShowHostActionSection] = useState(false);
-  const { rsvpSubmitted } = useRsvpStatus(
-    queryEventId,
-    skipRsvpCheck,
-    rsvpRefetch
-  );
+  const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
 
   const {
@@ -45,6 +39,9 @@ const InvitesPage = () => {
   const { makeRequest: fetchUserData } = useApi();
 
   const isHost = eventDetails?.userId === loggedinUserId;
+
+  // Event ID ke hisaab se food packages
+  const foodPackages = getFoodPackagesByEventId(queryEventId);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -93,12 +90,6 @@ const InvitesPage = () => {
     }
   }, [eventData]);
 
-  useLayoutEffect(() => {
-    if (eventDetails && loggedinUserId) {
-      setSkipRsvpCheck(isHost ? true : false);
-    }
-  }, [eventDetails, loggedinUserId]);
-
   useEffect(() => {
     const syncLoginState = () =>
       setLoggedinUserId(localStorage.getItem("userID") || "");
@@ -110,21 +101,20 @@ const InvitesPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowHostActionSection(eventDetails && isHost ? true : false);
-    }, 1000);
-  }, [eventDetails, loggedinUserId]);
-
   // Back button handler
   useEffect(() => {
-    const anyModalOpen = showGuestLoginModal || openCreateInviteModal;
+    const anyModalOpen = selectedPackage || showGuestLoginModal || openCreateInviteModal;
 
     if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
     }
 
     const handleBack = () => {
+      if (selectedPackage) {
+        window.history.pushState({ modalOpen: true }, "");
+        setSelectedPackage(null);
+        return;
+      }
       if (showGuestLoginModal) {
         window.history.pushState({ modalOpen: true }, "");
         setShowGuestLoginModal(false);
@@ -140,7 +130,7 @@ const InvitesPage = () => {
 
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
-  }, [showGuestLoginModal, openCreateInviteModal]);
+  }, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
 
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
@@ -149,6 +139,7 @@ const InvitesPage = () => {
       <div className="invite-page">
         <div className="invite-page-container">
 
+          {/* Template */}
           <div className="invite-template-shell">
             {fetchEventLoading ? (
               <TemplatecardSkeleton
@@ -161,21 +152,23 @@ const InvitesPage = () => {
                 fetchEventLoading={fetchEventLoading}
                 eventDetails={eventDetails}
                 orderDetails={eventDetails}
-                isHost={isHost}
+                isHost={true}
               />
             )}
           </div>
 
-          {((eventDetails && eventDetails?.eventDate) ||
-            eventData?.location ||
-            eventData?.googleMapLink ||
-            eventData?.eventTime) && (
+          {/* Address + Google Map — date/time hide */}
+          {(eventDetails?.location || eventDetails?.googleMapLink) && (
             <div className="invite-address-section">
-              <InviteAddressSection eventData={eventDetails} />
+              <InviteAddressSection
+                eventData={eventDetails}
+                hideDateAndTime={true}
+              />
             </div>
           )}
 
-          {showHostActionSection && (
+          {/* InviteActions — sirf actual host ko */}
+          {isHost && (
             <div className="invite-action-container">
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}
@@ -184,33 +177,54 @@ const InvitesPage = () => {
             </div>
           )}
 
-          <div
-            className="whos-joining-container"
-            style={{ marginTop: !showHostActionSection ? "10px" : "0px" }}
-          >
-            <WhosJoining
-              isHost={isHost}
-              userData={userData}
-              loggedinUserId={loggedinUserId}
-              rsvpSubmitted={rsvpSubmitted}
-              setPushRsvpClick={setPushRsvpClick}
-              pushRsvpClick={pushRsvpClick}
-              onRsvpUpdate={() => setRsvpRefetch((prev) => prev + 1)}
-            />
-          </div>
+          {/* Food Packages */}
+          {foodPackages.length > 0 && (
+            <div
+              className="whos-joining-container"
+              style={{ marginTop: "10px" }}
+            >
+              <p className="wall-heading text-center m-0 p-0">Packages</p>
+              <div
+                style={{
+                  marginTop: "10px",
+                  padding: "0 4px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                {foodPackages.map((item, index) => (
+                  <VenueFoodCard
+                    key={index}
+                    item={item}
+                    onView={() => setSelectedPackage(item)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
+          {/* Celebration Wall */}
           <div className="event-wall-container">
-            <p className="wall-heading text-center m-0 p-0">Celebration Wall</p>
+            <p className="wall-heading text-center m-0 p-0">Gallery</p>
             <EventwallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
-              rsvpSubmitted={rsvpSubmitted}
+              rsvpSubmitted={false}
               isHost={isHost}
+              isVenueHost={true}
             />
           </div>
 
         </div>
       </div>
+
+      {selectedPackage && (
+        <VenueFoodModal
+          data={selectedPackage}
+          onClose={() => setSelectedPackage(null)}
+        />
+      )}
 
       <CreateInviteModal
         isOpen={openCreateInviteModal}
@@ -224,4 +238,4 @@ const InvitesPage = () => {
   );
 };
 
-export default InvitesPage;
+export default PartyhallsInvitePage;

@@ -5,48 +5,61 @@ import vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";
 
 const SECTION_CONFIG = [
-  { id: "beverage",   title: "Welcome Drink", emoji: "🥂", itemsKey: "beverage",   noteKey: "beverageNote"      },
-  { id: "appetisers", title: "Appetisers",    emoji: "🍢", itemsKey: "appetisers", noteKey: "appetisers.note", splitVegNonVeg: true },
-  { id: "soups",      title: "Soup",          emoji: "🍵", itemsKey: "soups",      noteKey: "soupsNote.note" ,splitVegNonVeg: true        },
-  { id: "salads",     title: "Salads",        emoji: "🥗", itemsKey: "salads",     noteKey: "saladsNote"        },
-  { id: "mainCourse", title: "Main Course",   emoji: "🍛", itemsKey: "mainCourse", noteKey: "mainCourse.note", splitVegNonVeg: true },
-  { id: "dal",        title: "Dal",           emoji: "🫕", itemsKey: "dal",        noteKey: "dalNote"           },
-  { id: "rice",       title: "Rice",          emoji: "🍚", itemsKey: "rice",       noteKey: "riceNote"          },
-  { id: "bread",      title: "Bread",         emoji: "🫓", itemsKey: "bread",      noteKey: "breadNote"         },
-  { id: "desserts",   title: "Desserts",      emoji: "🍮", itemsKey: "desserts",   noteKey: "dessertsNote"      },
-  { id: "iceCream",   title: "Ice Cream",     emoji: "🍦", itemsKey: "iceCream",   noteKey: "iceCreamNote"      },
+  { id: "beverage",   title: "Welcome Drink", emoji: "🥂", itemsKey: "beverage",   noteKey: "beverageNote"                          },
+  { id: "appetisers", title: "Appetisers",    emoji: "🍢", itemsKey: "appetisers", noteKey: "appetisers.note", splitVegNonVeg: true  },
+  { id: "soups",      title: "Soup",          emoji: "🍵", itemsKey: "soups",      noteKey: "soupsNote",       splitVegNonVeg: true  },
+  { id: "salads",     title: "Salads",        emoji: "🥗", itemsKey: "salads",     noteKey: "saladsNote"                             },
+  { id: "mainCourse", title: "Main Course",   emoji: "🍛", itemsKey: "mainCourse", noteKey: "mainCourse.note", splitVegNonVeg: true  },
+  { id: "dal",        title: "Dal",           emoji: "🫕", itemsKey: "dal",        noteKey: "dalNote"                                },
+  { id: "rice",       title: "Rice",          emoji: "🍚", itemsKey: "rice",       noteKey: "riceNote"                               },
+  { id: "bread",      title: "Bread",         emoji: "🫓", itemsKey: "bread",      noteKey: "breadNote"                              },
+  { id: "desserts",   title: "Desserts",      emoji: "🍮", itemsKey: "desserts",   noteKey: "dessertsNote"                           },
+  { id: "iceCream",   title: "Ice Cream",     emoji: "🍦", itemsKey: "iceCream",   noteKey: "iceCreamNote"                           },
 ];
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 // Dotted path reader: get(obj, "mainCourse.note") → obj.mainCourse.note
 const get = (obj, path) => path.split(".").reduce((acc, k) => acc?.[k], obj);
+
 function normaliseItems(raw) {
   if (!raw) return [];
 
-  // Case 1: simple array
+  // Case 1: simple array  → ["Jeera Rice", ...]
   if (Array.isArray(raw)) {
     return raw.map((label) => ({ label, isNonVeg: false }));
   }
 
-  // Case 2: veg / nonVeg structure (NEW + IMPORTANT)
+  // Case 2: { items: [...] }  → STATIC_FOOD_PACKAGES mainCourse style
+  if (Array.isArray(raw.items)) {
+    return raw.items.map((label) => ({ label, isNonVeg: false }));
+  }
+
+  // Case 3: { veg: [...], nonVeg: [...] }  → OAKWOOD appetisers / mainCourse style
   if (raw.veg || raw.nonVeg) {
     return [
-      ...(raw.veg || []).map((label) => ({ label, isNonVeg: false })),
-      ...(raw.nonVeg || []).map((label) => ({ label, isNonVeg: true })),
+      ...(raw.veg    || []).map((label) => ({ label, isNonVeg: false })),
+      ...(raw.nonVeg || []).map((label) => ({ label, isNonVeg: true  })),
+    ];
+  }
+
+  // Case 4: { veg: [...], nonVeg: [...] } inside soups (OAKWOOD soups)
+  if (raw.veg || raw.nonVeg) {
+    return [
+      ...(raw.veg    || []).map((label) => ({ label, isNonVeg: false })),
+      ...(raw.nonVeg || []).map((label) => ({ label, isNonVeg: true  })),
     ];
   }
 
   return [];
 }
 
-// ─── renderList ───────────────────────────────────────────────────────────────
-
 const renderList = (title, emoji, items, note, splitVegNonVeg = false) => {
   if (!items || items.length === 0) return null;
 
   const vegItems    = items.filter((i) => !i.isNonVeg);
   const nonVegItems = items.filter((i) =>  i.isNonVeg);
+
+  // Agar nonVeg items hi nahi hain toh splitVegNonVeg ignore karo
+  const shouldSplit = splitVegNonVeg && nonVegItems.length > 0;
 
   return (
     <div className="vfm-section">
@@ -56,7 +69,7 @@ const renderList = (title, emoji, items, note, splitVegNonVeg = false) => {
         {note && <span className="vfm-choose-badge">{note}</span>}
       </div>
 
-      {splitVegNonVeg && nonVegItems.length > 0 ? (
+      {shouldSplit ? (
         <>
           {vegItems.length > 0 && (
             <>
@@ -92,8 +105,6 @@ const renderList = (title, emoji, items, note, splitVegNonVeg = false) => {
   );
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
 const VenueFoodModal = ({ data, onClose }) => {
   if (!data) return null;
 
@@ -103,7 +114,6 @@ const VenueFoodModal = ({ data, onClose }) => {
     <div className="vfm-overlay" onClick={onClose}>
       <div className="vfm-card" onClick={(e) => e.stopPropagation()}>
 
-        {/* Header */}
         <div className="vfm-header">
           <h2 className="vfm-title">{data.name}</h2>
           <button className="vfm-close-btn" onClick={onClose}>✕</button>
@@ -113,9 +123,7 @@ const VenueFoodModal = ({ data, onClose }) => {
           </div>
         </div>
 
-        {/* Scrollable body — SECTION_CONFIG loop se sab sections auto-render */}
         <div className="vfm-body">
-
           {SECTION_CONFIG.map((cfg) => {
             const rawItems = get(includes, cfg.itemsKey);
             const note     = get(includes, cfg.noteKey);
@@ -126,7 +134,8 @@ const VenueFoodModal = ({ data, onClose }) => {
               </React.Fragment>
             );
           })}
-          {includes?.addOns?.length && (
+
+          {includes?.addOns?.length > 0 && (
             <div className="vfm-section">
               <div className="vfm-sec-head">
                 <div className="vfm-sec-icon">➕</div>
@@ -139,8 +148,8 @@ const VenueFoodModal = ({ data, onClose }) => {
               ))}
             </div>
           )}
-
         </div>
+
       </div>
     </div>
   );
