@@ -165,9 +165,7 @@ const CommonImagePopup = ({
           key={`eventwall-slider-${selectedIndex}`}
         >
           {images.map((item, idx) => {
-            const isLoading = !item.postWebpUrl && item.status !== "done";
-            const mediaUrl = isLoading ? item.localPreview : item.postWebpUrl;
-            const isVideo = item.isVideo || isVideoFile(mediaUrl);
+            const isVideo = item.type === "video" ;
 
             return (
               <div
