@@ -45,11 +45,11 @@ const CommonImagePopup = ({
     adaptiveHeight: true,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
-
-    beforeChange: (_, next) => {
-      pauseAllVideos();
-      setImageNumber(next + 1);
-    },
+    beforeChange: (current, next) => { 
+    pauseAllVideos();
+    setImageNumber(next + 1);
+    setSelectedIndex(next); 
+  },
 
     afterChange: () => {
       playActiveVideo();
