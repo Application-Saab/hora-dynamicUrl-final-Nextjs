@@ -270,28 +270,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   background-position: center;
   background-repeat: no-repeat;
 }
-.edit-image-btn {
-  background-color: #97538C;
-  color: white;
-  border-radius: 49.26px;
-  border: none;
-  font-weight: 700;
-  font-family: 'Montserrat', 'Inter';
-  gap: 4px;
-  margin-bottom: 15px;
-  font-size: 12px;
-  height: 38px;
-  width: 80px;
-display: flex;
-  align-items: center;        /* vertical center */
-  justify-content: center;    /* horizontal center */  
-}
 
-.edit-plus {
-  font-size: clamp(25px, 5vw, 19px);
-  font-weight: 500;
-  line-height: 1;
-}
 .refresh-image-btn {
   background-color: #97538C;
   color: white;

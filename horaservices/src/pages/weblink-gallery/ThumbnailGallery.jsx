@@ -202,16 +202,28 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     : null;
 
   const visibleThumbnails = useMemo(() => {
+    const normalize = (val) => (val || "").trim().toLowerCase();
 
     if (!isActualMyPhotos) {
       if (isEditing) {
         return allThumbnails;
       }
     }
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
 
-    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-      return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+      const normalizedKeys = matchedKeys.map(normalize);
+
+      return allThumbnails.filter(img => {
+        if (img.type !== "image") return false;
+
+        return normalizedKeys.includes(normalize(img.thumbnailKey));
+      });
     }
+
+
+    // if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
+    //   return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+    // }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
       return allThumbnails.filter(img => img.folderIds?.includes(myPhotosFolder._id));
@@ -439,55 +451,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     }
   };
 
-const handleLikeToggle = async (imageId) => {
-  const userId = localUserId;
+  const handleLikeToggle = async (imageId) => {
+    const userId = localUserId;
 
-  const isCurrentlyLiked = likedImages[imageId];
-
-  setLikedImages(prev => ({
-    ...prev,
-    [imageId]: !isCurrentlyLiked,
-  }));
-
-  setAllThumbnails(prev =>
-    prev.map(img => {
-      if (img._id === imageId) {
-        let updatedLikedBy = [...(img.likedBy || [])];
-
-        if (isCurrentlyLiked) {
-          updatedLikedBy = updatedLikedBy.filter(
-            id => String(id) !== String(userId)
-          );
-        } else {
-          updatedLikedBy = [...updatedLikedBy, userId];
-        }
-
-        return {
-          ...img,
-          likedBy: updatedLikedBy,
-        };
-      }
-      return img;
-    })
-  );
-
-  try {
-    await fetch(`https://horaservices.com/api/internal/toggle-like`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        imageIds: [imageId],
-        userId,
-      }),
-    });
-  } catch (error) {
-    console.error(error);
+    const isCurrentlyLiked = likedImages[imageId];
 
     setLikedImages(prev => ({
       ...prev,
-      [imageId]: isCurrentlyLiked,
+      [imageId]: !isCurrentlyLiked,
     }));
 
     setAllThumbnails(prev =>
@@ -495,7 +466,7 @@ const handleLikeToggle = async (imageId) => {
         if (img._id === imageId) {
           let updatedLikedBy = [...(img.likedBy || [])];
 
-          if (!isCurrentlyLiked) {
+          if (isCurrentlyLiked) {
             updatedLikedBy = updatedLikedBy.filter(
               id => String(id) !== String(userId)
             );
@@ -511,8 +482,49 @@ const handleLikeToggle = async (imageId) => {
         return img;
       })
     );
-  }
-};
+
+    try {
+      await fetch(`https://horaservices.com/api/internal/toggle-like`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageIds: [imageId],
+          userId,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+
+      setLikedImages(prev => ({
+        ...prev,
+        [imageId]: isCurrentlyLiked,
+      }));
+
+      setAllThumbnails(prev =>
+        prev.map(img => {
+          if (img._id === imageId) {
+            let updatedLikedBy = [...(img.likedBy || [])];
+
+            if (!isCurrentlyLiked) {
+              updatedLikedBy = updatedLikedBy.filter(
+                id => String(id) !== String(userId)
+              );
+            } else {
+              updatedLikedBy = [...updatedLikedBy, userId];
+            }
+
+            return {
+              ...img,
+              likedBy: updatedLikedBy,
+            };
+          }
+          return img;
+        })
+      );
+    }
+  };
 
   return (
     <div className="thumbnail-gallery">
@@ -563,16 +575,18 @@ const handleLikeToggle = async (imageId) => {
             {activeTab !== "my-photos" &&
               <div>
                 {!isMyPhotosTab && activeSubFolderId && !isEditing && (
-                  <button
-                    className="edit-image-btn"
-                    onClick={() => {
+                  <div className="buttons-container">
+              <button
+                className="add-new-btn"
+                onClick={() => {
                       setSelectedImages(initialSubfolderImages);
                       setIsEditing(true);
                     }}
-                  >
-                    <span className="edit-plus">+</span>
-                    <span>Edit</span>
-                  </button>
+              >
+                <span className="add-icon">+</span>
+                <span>Add Photos To Album</span>
+              </button>
+              </div>
                 )}
 
                 {!isMyPhotosTab && activeSubFolderId && isEditing && (
@@ -609,7 +623,7 @@ const handleLikeToggle = async (imageId) => {
                 onClick={() => addMoreImagesRef.current?.click()}
               >
                 <span className="add-icon">+</span>
-                <span>Add Photos To Album</span>
+                <span>Add New Photos</span>
               </button>
               <button
                 className="share-capsule-btn"
@@ -642,7 +656,7 @@ const handleLikeToggle = async (imageId) => {
                   handleSearchResults([]);
                   setCapturedImage(null);
                   setShowCameraPopup(true);
-                setIsRefreshShow(true);
+                  setIsRefreshShow(true);
                 }}
               >
                 <span className="refresh-icon">
@@ -919,7 +933,7 @@ const handleLikeToggle = async (imageId) => {
         onClose={() => {
           setShowAddToFolderPopup(false);
         }}
-        popupHeight="269"
+        popupHeight={usableFolders.length === 0 ? "269" : ""}
         title="Add to Folder"
         titleFontSize="22px"
         buttonContent={usableFolders.length === 0 ? null : "Add Now"}
