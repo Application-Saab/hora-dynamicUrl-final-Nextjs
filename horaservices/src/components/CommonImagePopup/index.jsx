@@ -1,11 +1,11 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
-import Image from "next/image";
-
-import Crossicon from "../../assets/Crossicon.svg";
 import ArrowImg from "../../assets/arrow.svg";
 import nextIcon from "../../assets/nextIcon.svg";
+import Image from "next/image";
+import Crossicon from "../../assets/Crossicon.svg";
+import './commonPopup.css'
 
 const PrevArrow = ({ className, onClick }) => (
   <div className={`${className} custom-arrow prev-arrow`} onClick={onClick}>
@@ -19,28 +19,105 @@ const NextArrow = ({ className, onClick }) => (
   </div>
 );
 
+const pauseAllVideos = () => {
+  const videos = document.querySelectorAll('.popupContent video');
+  videos.forEach((video) => {
+    video.pause();
+    video.currentTime = 0;
+  });
+};
+
 const CommonImagePopup = ({
   images = [],
   selectedIndex,
   setSelectedIndex,
+  renderActions,
   onClose,
-  renderActions, 
-  renderFooter,
+  renderFooter
 }) => {
-  const actionMenuRef = useRef(null);
+
+  const sliderSettings = {
+    dots: false,
+    infinite: images.length > 1,
+    speed: 300,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow />,
+
+    beforeChange: (_, next) => {
+      pauseAllVideos();
+      setImageNumber(next + 1);
+    },
+
+    afterChange: () => {
+      playActiveVideo();
+    },
+  };
+  useEffect(() => {
+    if (selectedIndex === null) {
+      pauseAllVideos();
+    }
+  }, [selectedIndex]);
+
+  const playActiveVideo = () => {
+    const activeVideo = document.querySelector('.slick-current video');
+    if (!activeVideo) return;
+
+    activeVideo.currentTime = 0;
+
+    const playWhenReady = () => {
+      activeVideo.play().catch(console.error);
+    };
+
+    if (activeVideo.readyState >= 2) {
+      playWhenReady();
+    } else {
+      activeVideo.addEventListener('loadeddata', playWhenReady, { once: true });
+    }
+  };
+
+  const sliderRef = useRef(null);
+  const [imageNumber, setImageNumber] = useState(0);
+  const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
 
   useEffect(() => {
-  const videos = document.querySelectorAll("video");
-
-  videos.forEach((video, i) => {
-    if (i === selectedIndex) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-      video.currentTime = 0;
+    if (selectedIndex !== null) {
+      setImageNumber(selectedIndex + 1);
+      // Slight delay to ensure slider is mounted and classes are applied
+      setTimeout(() => {
+        playActiveVideo();
+      }, 0);
     }
-  });
-}, [selectedIndex]);
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (selectedIndex === null) {
+      pauseAllVideos();
+    }
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (!sliderRef.current) return;
+
+    const videos = sliderRef.current.querySelectorAll("video");
+
+    videos.forEach((video) => {
+      const isActive = video
+        .closest(".slick-slide")
+        ?.classList.contains("slick-current");
+
+      if (isActive) {
+        video.muted = false;
+        video.play().catch(() => { });
+      } else {
+        video.pause();
+        video.currentTime = 0;
+        video.muted = true;
+      }
+    });
+  }, [selectedIndex]);
 
   useEffect(() => {
     if (selectedIndex !== null) {
@@ -54,63 +131,84 @@ const CommonImagePopup = ({
 
   if (selectedIndex === null || !images[selectedIndex]) return null;
 
-  const sliderSettings = {
-    dots: false,
-    infinite: images.length > 1,
-    speed: 300,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    afterChange: (current) => setSelectedIndex(current),
-  };
-
   return (
-    <div className="popupOverlay" onClick={onClose}>
-      <div className="popupContent" onClick={(e) => e.stopPropagation()}>
-        
-        {/* HEADER */}
+    <div
+      className="popupOverlay"
+      onClick={() => setSelectedIndex(null)}
+      role="dialog"
+      aria-modal="true"
+      style={{ zIndex: 9999 }}
+    >
+      <div
+        className="popupContent"
+        onClick={(e) => e.stopPropagation()}
+      >
+
         <div className="popupHeader">
           <div className="popupHeader-left">
             <button className="closeButton" onClick={onClose}>
               <Image src={Crossicon} alt="Close" width={18} height={18} />
             </button>
             <div className="image-index">
-              {`${selectedIndex + 1} / ${images.length}`}
+              {`${imageNumber} / ${images.length}`}
             </div>
           </div>
 
           {renderActions && renderActions(images[selectedIndex], selectedIndex)}
         </div>
 
-        {/* SLIDER */}
+        {/* Slider */}
         <div className="popupSliderWrapper">
-          <Slider {...sliderSettings} initialSlide={selectedIndex}>
-            {images.map((img, idx) => (
-              <div key={img._id || idx} className="slick-slide-item">
-                {img.type === "video" ? (
+        <Slider
+          {...sliderSettings}
+          initialSlide={selectedIndex}
+          key={`eventwall-slider-${selectedIndex}`}
+        >
+          {images.map((item, idx) => {
+            const isLoading = !item.postWebpUrl && item.status !== "done";
+            const mediaUrl = isLoading ? item.localPreview : item.postWebpUrl;
+            const isVideo = item.isVideo || isVideoFile(mediaUrl);
+
+            return (
+              <div
+                key={item._id || idx}
+                className="slick-slide-item"
+              >
+                {isVideo ? (
                   <video
-                    src={img.originalUrl}
+                    src={item.originalUrl}
                     controls
-                    autoPlay={idx === selectedIndex}
-                    className="popupVideo"
+                    playsInline
+                    muted={false}
+                    preload="auto"
+                    style={{
+                      maxHeight: "80vh",
+                      width: "100%",
+                      objectFit: "contain",
+                      background: "#000",
+                    }}
                   />
                 ) : (
                   <img
-                    src={img.thumbnailImageUrl || img.originalUrl}
-                    className="popupImage"
-                    alt=""
+                    src={item.thumbnailImageUrl || item.originalUrl}
+                    alt={`Media ${idx + 1}`}
+                    style={{
+                      maxHeight: "80vh",
+                      width: "100%",
+                      objectFit: "contain",
+                    }}
                   />
                 )}
               </div>
-            ))}
-          </Slider>
+            );
+          })}
+        </Slider>
         </div>
-
-        <div className="popupFooter">
-          {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
-        </div>
+         <div className="popupFooter">
+        {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
       </div>
+      </div>
+     
     </div>
   );
 };

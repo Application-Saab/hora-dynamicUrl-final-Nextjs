@@ -189,6 +189,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 }
 .slick-prev, .slick-next {
   z-index: 111 !important;
+  background-color: transparent !important;
 }
 .slick-initialized .slick-slide {
   display: flex !important;
