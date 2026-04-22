@@ -1,47 +1,41 @@
-import { formateDateInDMDFormat } from "@/utils/dateFormatters";
 import React, { useState } from "react";
 import DirectionsImage from "@/assets/wonderland/addressLocationIcon.svg";
 import Image from "next/image";
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
-import ErrorPopup from "../../common/ErrorPopup";
+import ErrorPopup from "@/components/common/ErrorPopup";
+import "./VenueAddressSection.css";
 
-
-const InviteAddressSection = ({ eventData }) => {
+const VenueAddressSection = ({ eventData }) => {
   const [openLocationAlertModal, setOpenLocationAlertModal] = useState(false);
 
   const handleLocationClick = () => {
     const mapLink = eventData?.googleMapLink;
-
     if (!mapLink) {
       setOpenLocationAlertModal(true);
       return;
     }
     window.open(mapLink, "_blank");
   };
+
   return (
     <>
       <div
         className="d-flex justify-content-between align-items-start"
         style={{ gap: "30px", marginTop: "9px" }}
       >
-        <div className="address-part-ctn">
-          {(eventData?.eventDate || eventData?.eventTime) && (
-            <span className="date-time-text">
-              {eventData?.eventDate &&
-                formateDateInDMDFormat(eventData?.eventDate)}
-              <span className="ms-2">
-                {eventData?.eventTime && `@ ${eventData?.eventTime}`}
-              </span>
-            </span>
+        {/* LEFT — Venue Name + Address */}
+        <div className="vas-info">
+          {eventData?.hostName && (
+            <h3 className="vas-venue-name">{eventData.hostName
+}</h3>
           )}
           {eventData?.location && (
-            <span className="address-text">{eventData?.location}</span>
+            <span className="vas-address">{eventData.location}</span>
           )}
         </div>
-        <div
-          className="d-flex align-items-center"
-          style={{ marginLeft: "-30px" }}
-        >
+
+        {/* RIGHT — Direction (same as Wonderland) */}
+        <div className="d-flex align-items-center" style={{ marginLeft: "-30px" }}>
           <div className="direction-ctn">
             <img
               src="/assets/wonderland/MapGraphImage.png"
@@ -49,7 +43,6 @@ const InviteAddressSection = ({ eventData }) => {
               className="direction-bg-img"
             />
           </div>
-
           <div
             className="d-flex justify-content-center align-items-center flex-column direction-icon-ctn"
             onClick={handleLocationClick}
@@ -63,17 +56,17 @@ const InviteAddressSection = ({ eventData }) => {
           </div>
         </div>
       </div>
-<ErrorPopup
-  isOpen={openLocationAlertModal}
-  onClose={() => setOpenLocationAlertModal(false)}
-  heading="Location Missing"
-  message= "Map location is not available"
-  buttonLabel="OK"
-  icon={AlertIcon}
-/>
 
+      <ErrorPopup
+        isOpen={openLocationAlertModal}
+        onClose={() => setOpenLocationAlertModal(false)}
+        heading="Location Missing"
+        message="Map location is not available"
+        buttonLabel="OK"
+        icon={AlertIcon}
+      />
     </>
   );
 };
 
-export default InviteAddressSection;
+export default VenueAddressSection;

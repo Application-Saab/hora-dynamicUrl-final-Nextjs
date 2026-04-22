@@ -14,10 +14,13 @@ import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templ
 import VenueFoodModal from "@/components/VenueFoodModal";
 import VenueFoodCard from "@/components/VenueFoodCard";
 import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
+import TermsModal from "@/components/TermsModal";
+import VenueAddressSection from "@/components/VenueCommon/VenueAddressSection";
 
 const PartyhallsInvitePage = () => {
   const router = useRouter();
   const { eventid: queryEventId } = router.query;
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
@@ -160,7 +163,7 @@ const PartyhallsInvitePage = () => {
           {/* Address + Google Map — date/time hide */}
           {(eventDetails?.location || eventDetails?.googleMapLink) && (
             <div className="invite-address-section">
-              <InviteAddressSection
+              <VenueAddressSection
                 eventData={eventDetails}
                 hideDateAndTime={true}
               />
@@ -183,7 +186,7 @@ const PartyhallsInvitePage = () => {
               className="whos-joining-container"
               style={{ marginTop: "10px" }}
             >
-              <p className="wall-heading text-center m-0 p-0">Packages</p>
+              <p className="wall-heading text-center m-0 p-0"></p>
               <div
                 style={{
                   marginTop: "10px",
@@ -203,10 +206,18 @@ const PartyhallsInvitePage = () => {
               </div>
             </div>
           )}
+ <h2 className="terms-heading" onClick={() => setShowTermsModal(true)}>
+  Terms &amp; Condition
+</h2>
 
+<TermsModal
+  isOpen={showTermsModal}
+  onClose={() => setShowTermsModal(false)}
+  eventId={queryEventId}
+/>
           {/* Celebration Wall */}
           <div className="event-wall-container">
-            <p className="wall-heading text-center m-0 p-0">Gallery</p>
+            <p className="wall-heading text-center m-0 p-0">Explore Spaces</p>
             <EventwallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}

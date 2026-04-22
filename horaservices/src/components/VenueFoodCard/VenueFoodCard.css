@@ -1,105 +1,222 @@
-.vfc-card {
-  background: #F9F9F9;
-  border-radius: 14px;
- padding: clamp(8px, 2.5vw, 10px);
-  margin:0px;
-  border: 1px solid #E1E1E1
-}
-
-
-/* ROW */
-.vfc-row {
+/* ── PARENT GRID — 1 column (landscape cards full width) ── */
+.vfc-grid {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 4px;
 }
 
-/* IMAGE */
-.vfc-imgBox {
-  width: clamp(68px, 21.5vw, 84.48px);
-height: clamp(63px, 19.8vw, 78.06px);
-border-radius: clamp(7px, 2.4vw, 9.62px);
-border-width: clamp(0.8px, 0.3vw, 1px);
+/* ── CARD ── */
+.vfc-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(60, 30, 0, 0.11);
+  border: 1.5px solid rgba(201, 168, 76, 0.13);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.vfc-card:active {
+  transform: scale(0.98);
+}
+
+/* ── STRIPE — top ── */
+.vfc-stripe {
+  height: 4px;
+  width: 100%;
   flex-shrink: 0;
 }
+.vfc-stripe--veg     { background: linear-gradient(90deg, #2e6b3e, #5eaa6f, #2e6b3e); }
+.vfc-stripe--vegdlx  { background: linear-gradient(90deg, #1a6b5a, #3ec8a0, #1a6b5a); }
+.vfc-stripe--nveg    { background: linear-gradient(90deg, #8c2020, #e05252, #8c2020); }
+.vfc-stripe--nvegdlx { background: linear-gradient(90deg, #7a3010, #d4703a, #7a3010); }
 
-.vfc-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-/* LEFT */
-.vfc-left {
+/* ── HORIZONTAL ROW ── */
+.vfc-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
   flex: 1;
 }
 
-/* TITLE */
-.vfc-title {
-  font-family: 'Inter', sans-serif;
-font-weight: 700;
-font-size: clamp(13px, calc(9.54px + 1.65vw), 18px);
-text-transform: uppercase;
-  color: #97538C;
-  margin: 0;
+/* ── IMAGE — left side ── */
+.vfc-imgBox {
+  position: relative;
+  width: 100px;
+  min-width: 100px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.vfc-imgBox::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* background: linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.52) 100%); */
+  pointer-events: none;
+}
+.vfc-img {
+  object-fit: cover;
 }
 
-/* SUBTITLE */
-.vfc-subtitle {
-  margin-bottom: 0px;
-  color: #000000;
- margin-top: clamp(7px, calc(5.6px + 0.85vw), 11px);
-font-family: 'Rubik', sans-serif;
-font-weight: 300;
-font-size: clamp(8.5px, calc(6.9px + 0.8vw), 11.5px);
-line-height: 1.3;
+/* discount ribbon */
+.vfc-discount {
+  position: absolute;
+  top: 8px;
+  left: -1px;
+  background: linear-gradient(135deg, #c0392b 55%, #e74c3c);
+  color: #fff;
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 3px 7px 3px 5px;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 1px 2px 6px rgba(192, 57, 43, 0.35);
+  z-index: 2;
+  white-space: nowrap;
 }
-/* RIGHT */
+
+/* price row — inside body */
+.vfc-priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.vfc-origPrice {
+  font-size: 0.60rem;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+.vfc-price {
+  font-size: 0.95rem;
+  color: #1a1208;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.vfc-save {
+  font-size: 0.55rem;
+  color: #2e6b3e;
+  font-weight: 700;
+  background: #e8f5ec;
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
+/* ── RIGHT SIDE ── */
 .vfc-right {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-end;
+  min-width: 0;
 }
 
-/* PRICE BOX */
-.vfc-priceBox {
-  text-align: right;
+/* ── BODY ── */
+.vfc-body {
+  padding: 5px 8px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
-/* PRICE */
-.vfc-price {
-  display: block;
-  font-family: 'Rubik', sans-serif;
-  font-weight: 600;
-  font-size: clamp(13px, 3.8vw, 14.97px);
-  color: #97538C;
+/* type tag */
+.vfc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  width: fit-content;
+}
+.vfc-tag--veg     { background: #e8f5ec; color: #2e6b3e; }
+.vfc-tag--vegdlx  { background: #e8f5f2; color: #1a6b5a; }
+.vfc-tag--nveg    { background: #fdecea; color: #c0392b; }
+.vfc-tag--nvegdlx { background: #fdf0ea; color: #7a3010; }
+
+.vfc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.vfc-dot--veg     { background: #2e6b3e; }
+.vfc-dot--vegdlx  { background: #1a6b5a; }
+.vfc-dot--nveg    { background: #c0392b; }
+.vfc-dot--nvegdlx { background: #7a3010; }
+
+/* title */
+.vfc-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #1a1208;
+  line-height: 1.25;
+  margin: 0;
+  white-space: normal;
 }
 
-/* ALL INCLUSIVE */
+/* all-inclusive pill */
 .vfc-inclusive {
-  display: block;
-  font-family: 'Rubik', sans-serif;
-font-weight: 300;
-font-size: clamp(8.5px, calc(6.9px + 0.8vw), 11.5px);
-color: #000000;
-text-align: center;
-  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  color: #8c6a1a;
+  font-size: 0.52rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  width: fit-content;
 }
 
-/* LINK (BOTTOM FIXED) */
+/* subtitle */
+.vfc-subtitle {
+  margin: 0;
+  color: #4a3a1a;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
+  font-size: clamp(8px, calc(6.5px + 0.75vw), 10.5px);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── FOOTER ── */
+.vfc-footer {
+  padding: 0px 10px;
+}
 .vfc-link {
-  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background:none;
+  color: #8c6a1a;
+  font-size: 0.64rem;
+  font-weight: 600;
+  padding: 7px 0;
   border: none;
-  padding: 0;
-  color: #221F1F;
-  font-family: 'Rubik', sans-serif;
-font-weight: 400;
-font-size: clamp(9px, calc(7.4px + 0.85vw), 12px);
-line-height: 1.3;
-letter-spacing: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.vfc-link:active {
-  opacity: 0.7;
+
+/* ── 360px and below ── */
+@media (max-width: 360px) {
+  .vfc-imgBox   { width: 110px; min-width: 110px; }
+  .vfc-title    { font-size: 0.70rem; }
+  .vfc-price    { font-size: 0.82rem; }
+  .vfc-link     { font-size: 0.60rem; }
 }

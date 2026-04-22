@@ -1,15 +1,880 @@
-import veneue from "@/assets/venue.jpeg";
-import  VEGETARIAN from "@/assets/venueimages/vegetarian.webp";
+// import veneue from "@/assets/venue.jpeg";
+// import  VEGETARIAN from "@/assets/venueimages/vegetarian.webp";
+// import VEGETARIANDELUXE from "@/assets/venueimages/VEGETARIANDELUXE.webp";
+// import NONVEGETARIAN from "@/assets/venueimages/non-vegetarian.webp";
+// import NONVEGETARIANDELUXE from "@/assets/venueimages/non-vegetarindeluxe.webp";
+// export const OAKWOOD_FOOD_PACKAGES = [
+//     {
+//     id: 1,
+//     name: "VEGETARIAN MENU",
+//     subtitle: "1 Welcome Drink • 2 Veg Starters • 1 Soup • 2 Salads • 2 Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 1 Dessert • 1 Ice Cream",
+//     price: "₹1,250/-",
+//     tag: "All Inclusive",
+//     image: VEGETARIAN,
+//     includes: {
+//       beverage: [
+//         "Shirley Temple",
+//         "Preserved Juices",
+//         "Aerated Beverages",
+//         "Blue Lagoon",
+//         "Fresh Lime Soda",
+//       ],
+//       beverageNote: "Choose any 1 Welcome Drink",
+
+//       appetisers: {
+//         veg: [
+//           "Paneer Tikka",
+//           "Hara Bara Kebabs",
+//           "Teen Mirchi Paneer Tikka",
+//           "Veg Seekh Kebab",
+//           "Aloo Mutter Ki Tikki",
+//           "Tandoori Khazana",
+//           "Malai Paneer Tikka",
+//           "Hariyali Paneer Tikka",
+//           "Lahori Paneer Tikka",
+//           "Cheese Ball",
+//           "Veg Croquette",
+//           "Veg Cutlet",
+//           "Vegetable Spring Roll",
+//           "Vegetable Finger",
+//           "Chili Paneer",
+//           "Gobi Manchurian",
+//           "Veg Ball Manchurian",
+//           "Salt & Pepper Veg",
+//           "Crispy Fried Veg",
+//         ],
+//         nonVeg: [],
+//         note: "Choose any 2 Veg Starters",
+//       },
+
+//       soups: [
+//         "Cream of Tomato",
+//         "Manchow Soup",
+//         "Sweet Corn Soup",
+//         "Hot & Sour Veg Soup",
+//         "Lemon Coriander Veg Soup",
+//         "Vegetable Clear Soup",
+//         "Jade Corn Soup",
+//         "Cream of Mushroom",
+//         "Cream of Spinach",
+//       ],
+//       soupsNote: "Choose any 1 Soup",
+
+//       salads: [
+//         "Hawaiian Salad",
+//         "Korean Kimchi Salad",
+//         "Fattoush Salad",
+//         "Tossed Salad",
+//         "Mexican Salad",
+//         "Waldorf Salad",
+//         "Russian Salad",
+//         "Garden Green Salad",
+//         "Crunchy Lettuce Salad",
+//         "Anari Chana Chaat",
+//         "Sprouts Salad",
+//         "Aloo Chana Chaat",
+//         "Corn Chaat",
+//         "Papdi Chaat",
+//         "Dahi Bhalla",
+//         "Fried Idly Salad",
+//         "Kosambari Salad",
+//         "Three Bean Salad",
+//         "Kachumber Salad",
+//       ],
+//       saladsNote: "Choose any 2 Salads",
+
+//       mainCourse: {
+//         items: [
+//           "Kadai Paneer",
+//           "Palak Paneer",
+//           "Paneer Butter Masala",
+//           "Paneer Lababdar",
+//           "Paneer Khurchan",
+//           "Paneer Jalfrezi",
+//           "Paneer Tikka Masala",
+//           "Paneer Do Pyaza",
+//           "Matar Paneer",
+//           "Methi Malai Matar",
+//           "Vegetable Kofta Curry",
+//           "Malai Kofta",
+//           "Mushroom Mutter Masala",
+//           "Aloo Gobi Adraki",
+//           "Dum Aloo Banarasi",
+//           "Kadai Vegetable",
+//           "Bhindi Do Pyaz",
+//           "Mix Veg Curry",
+//           "Baghara Baigan",
+//           "Gobi Matar Hara Pyaz",
+//           "Subzi Saag Wala",
+//           "Aloo Methi",
+//           "Handi Subzi",
+//           "Amritsari Chole",
+//           "Kadi Pakoda",
+//           "Rajma Masala",
+//           "Asian Veggie in Chilli Basil Sauce",
+//           "Veg Ball Manchurian",
+//           "Gobi Manchurian",
+//           "Asian Vegetable in Schezwan Sauce",
+//           "Stir Fried Vegetable in Hunan Sauce",
+//         ],
+//         note: "Choose any 2 Veg Main Course",
+//       },
+
+//       dal: [
+//         "Dal Tadka",
+//         "Dal Makhani",
+//         "Dal Palak",
+//         "Sambar",
+//         "Dal Panchratan",
+//       ],
+//       dalNote: "Choose any 1 Dal",
+
+//       rice: [
+//         "Hyderabadi Subz Biryani",
+//         "Lucknowi Subz Biryani",
+//         "Vegetable Pulao",
+//         "Kashmiri Pulao",
+//         "Jeera Matar Pulao",
+//         "Peas Pulao",
+//         "Jeera Rice",
+//         "Lemon Rice",
+//         "Curd Rice",
+//         "Vegetable Fried Rice",
+//         "Szechwan Fried Rice",
+//         "Vegetable Hakka Noodles",
+//         "Szechwan Noodles",
+//       ],
+//       riceNote: "Choose any 1 Flavored Rice",
+
+//       bread: [
+//         "Roti",
+//         "Naan",
+//         "Kulcha",
+//         "Laccha Paratha",
+//       ],
+//       breadNote: "Choose any 1 Indian Bread",
+
+//       desserts: [
+//         "Gulab Jamun",
+//         "Gajar Halwa",
+//         "Rice Kheer",
+//         "Semiya Payasam",
+//         "Chocolate Brownie",
+//         "Moong Dal Halwa",
+//         "Shahi Tukda",
+//         "Phirni",
+//         "Semiya Kheer",
+//         "Dudhi Halwa",
+//         "Pineapple Halwa",
+//         "Chocolate Mousse",
+//         "Cream Caramel",
+//         "Fruit Trifle",
+//         "Fresh Cut Fruits",
+//       ],
+//       dessertsNote: "Choose any 1 Dessert",
+
+//       iceCream: [
+//         "Vanilla",
+//         "Strawberry",
+//         "Chocolate",
+//         "Mango",
+//         "Butter Scotch",
+//       ],
+//       iceCreamNote: "Choose any 1 Ice Cream",
+
+//       addOns: [
+//         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
+//         "Mutton — ₹250/- per person",
+//       ],
+//       note: "All Inclusive",
+//     },
+//   },
+
+//   {
+//     id: 2,
+//     name: "VEGETARIAN DELUXE ",
+//     subtitle: " 3 Welcome drinks, 3 Veg starters, 1 soup, 3 salads, 3 Veg main courses, 1 Dal, 1 flavoured rice, 1 indian bread, 2 Dessert ,1 icecream",
+//     price: "₹1,400/-",
+//     tag: "All Inclusive",
+//     image: VEGETARIANDELUXE,
+//      includes: {
+//       beverage: [
+//         "Shirley Temple",
+//         "Preserved Juices",
+//         "Aerated Beverages",
+//         "Blue Lagoon",
+//         "Fresh Lime Soda",
+//       ],
+//       beverageNote: "Choose any 3 Welcome Drink",
+
+//       appetisers: {
+//         veg: [
+//           "Paneer Tikka",
+//           "Hara Bara Kebabs",
+//           "Teen Mirchi Paneer Tikka",
+//           "Veg Seekh Kebab",
+//           "Aloo Mutter Ki Tikki",
+//           "Tandoori Khazana",
+//           "Malai Paneer Tikka",
+//           "Hariyali Paneer Tikka",
+//           "Lahori Paneer Tikka",
+//           "Cheese Ball",
+//           "Veg Croquette",
+//           "Veg Cutlet",
+//           "Vegetable Spring Roll",
+//           "Vegetable Finger",
+//           "Chili Paneer",
+//           "Gobi Manchurian",
+//           "Veg Ball Manchurian",
+//           "Salt & Pepper Veg",
+//           "Crispy Fried Veg",
+//         ],
+//         nonVeg: [],
+//         note: "Choose any 3 Veg Starters",
+//       },
+
+//       soups: [
+//         "Cream of Tomato",
+//         "Manchow Soup",
+//         "Sweet Corn Soup",
+//         "Hot & Sour Veg Soup",
+//         "Lemon Coriander Veg Soup",
+//         "Vegetable Clear Soup",
+//         "Jade Corn Soup",
+//         "Cream of Mushroom",
+//         "Cream of Spinach",
+//       ],
+//       soupsNote: "Choose any 1 Soup",
+
+//       salads: [
+//         "Hawaiian Salad",
+//         "Korean Kimchi Salad",
+//         "Fattoush Salad",
+//         "Tossed Salad",
+//         "Mexican Salad",
+//         "Waldorf Salad",
+//         "Russian Salad",
+//         "Garden Green Salad",
+//         "Crunchy Lettuce Salad",
+//         "Anari Chana Chaat",
+//         "Sprouts Salad",
+//         "Aloo Chana Chaat",
+//         "Corn Chaat",
+//         "Papdi Chaat",
+//         "Dahi Bhalla",
+//         "Fried Idly Salad",
+//         "Kosambari Salad",
+//         "Three Bean Salad",
+//         "Kachumber Salad",
+//       ],
+//       saladsNote: "Choose any 3 Salads",
+
+//       mainCourse: {
+//         items: [
+//           "Kadai Paneer",
+//           "Palak Paneer",
+//           "Paneer Butter Masala",
+//           "Paneer Lababdar",
+//           "Paneer Khurchan",
+//           "Paneer Jalfrezi",
+//           "Paneer Tikka Masala",
+//           "Paneer Do Pyaza",
+//           "Matar Paneer",
+//           "Methi Malai Matar",
+//           "Vegetable Kofta Curry",
+//           "Malai Kofta",
+//           "Mushroom Mutter Masala",
+//           "Aloo Gobi Adraki",
+//           "Dum Aloo Banarasi",
+//           "Kadai Vegetable",
+//           "Bhindi Do Pyaz",
+//           "Mix Veg Curry",
+//           "Baghara Baigan",
+//           "Gobi Matar Hara Pyaz",
+//           "Subzi Saag Wala",
+//           "Aloo Methi",
+//           "Handi Subzi",
+//           "Amritsari Chole",
+//           "Kadi Pakoda",
+//           "Rajma Masala",
+//           "Asian Veggie in Chilli Basil Sauce",
+//           "Veg Ball Manchurian",
+//           "Gobi Manchurian",
+//           "Asian Vegetable in Schezwan Sauce",
+//           "Stir Fried Vegetable in Hunan Sauce",
+//         ],
+//         note: "Choose any 3 Veg Main Course",
+//       },
+
+//       dal: [
+//         "Dal Tadka",
+//         "Dal Makhani",
+//         "Dal Palak",
+//         "Sambar",
+//         "Dal Panchratan",
+//       ],
+//       dalNote: "Choose any 1 Dal",
+
+//       rice: [
+//         "Hyderabadi Subz Biryani",
+//         "Lucknowi Subz Biryani",
+//         "Vegetable Pulao",
+//         "Kashmiri Pulao",
+//         "Jeera Matar Pulao",
+//         "Peas Pulao",
+//         "Jeera Rice",
+//         "Lemon Rice",
+//         "Curd Rice",
+//         "Vegetable Fried Rice",
+//         "Szechwan Fried Rice",
+//         "Vegetable Hakka Noodles",
+//         "Szechwan Noodles",
+//       ],
+//       riceNote: "Choose any 1 Flavored Rice",
+
+//       bread: [
+//         "Roti",
+//         "Naan",
+//         "Kulcha",
+//         "Laccha Paratha",
+//       ],
+//       breadNote: "Choose any 1 Indian Bread",
+
+//       desserts: [
+//         "Gulab Jamun",
+//         "Gajar Halwa",
+//         "Rice Kheer",
+//         "Semiya Payasam",
+//         "Chocolate Brownie",
+//         "Moong Dal Halwa",
+//         "Shahi Tukda",
+//         "Phirni",
+//         "Semiya Kheer",
+//         "Dudhi Halwa",
+//         "Pineapple Halwa",
+//         "Chocolate Mousse",
+//         "Cream Caramel",
+//         "Fruit Trifle",
+//         "Fresh Cut Fruits",
+//       ],
+//       dessertsNote: "Choose any 2 Dessert",
+
+//       iceCream: [
+//         "Vanilla",
+//         "Strawberry",
+//         "Chocolate",
+//         "Mango",
+//         "Butter Scotch",
+//       ],
+//       iceCreamNote: "Choose any 1 Ice Cream",
+
+//       addOns: [
+//         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
+//         "Mutton — ₹250/- per person",
+//       ],
+//       note: "All Inclusive",
+//     },
+//   },
+
+//   {
+//     id: 3,
+//     name: "NON-VEGETARIAN ",
+//     subtitle: "1 Welcome Drink • 2 Veg Starters • 1 Non-Veg Starter • 2 Soups (Veg/Non-Veg) • 3 Salads • 2 Veg Main Course • 1 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 2 Desserts • 1 Ice Cream",
+//     price: "₹1,500/-",
+//     tag: "All Inclusive",
+//     image: NONVEGETARIAN,
+//     includes: {
+//       beverage: [
+//         "Shirley Temple",
+//         "Preserved Juices",
+//         "Aerated Beverages",
+//         "Blue Lagoon",
+//         "Fresh Lime Soda",
+//       ],
+//       beverageNote: "Choose any 1 Welcome Drink",
+
+//       appetisers: {
+//         veg: [
+//           "Paneer Tikka",
+//           "Hara Bara Kebabs",
+//           "Teen Mirchi Paneer Tikka",
+//           "Veg Seekh Kebab",
+//           "Aloo Mutter Ki Tikki",
+//           "Tandoori Khazana",
+//           "Malai Paneer Tikka",
+//           "Hariyali Paneer Tikka",
+//           "Lahori Paneer Tikka",
+//           "Cheese Ball",
+//           "Veg Croquette",
+//           "Veg Cutlet",
+//           "Vegetable Spring Roll",
+//           "Vegetable Finger",
+//           "Chili Paneer",
+//           "Gobi Manchurian",
+//           "Veg Ball Manchurian",
+//           "Salt & Pepper Veg",
+//           "Crispy Fried Veg",
+//         ],
+//         nonVeg: [
+//           "Hariyali Murgh Tikka",
+//           "Murgh Malai Kebab",
+//           "Lahori Murgh Tikka",
+//           "Murgh Angare",
+//           "Chicken Tikka",
+//           "Chicken 65",
+//           "Chicken Nuggets",
+//           "Fish Finger",
+//           "Crumbed Fried Fish",
+//           "Chilly Chicken",
+//           "Chicken Manchurian",
+//           "Chicken Lollipop",
+//           "Chicken Spring Roll",
+//           "Chili Fish",
+//           "Fish Peri Peri",
+//           "Salt & Pepper Fish",
+//           "Szechwan Fish",
+//           "Schezwan Chilli Chicken",
+//         ],
+//         note: "Choose any 2 Veg + 1 Non-Veg Starter",
+//       },
+
+//       soups: {
+//         veg: [
+//           "Cream of Tomato",
+//           "Manchow Soup",
+//           "Sweet Corn Soup",
+//           "Hot & Sour Veg Soup",
+//           "Lemon Coriander Veg Soup",
+//           "Vegetable Clear Soup",
+//           "Jade Corn Soup",
+//           "Cream of Mushroom",
+//           "Cream of Spinach",
+//         ],
+//         nonVeg: [
+//           "Sweet Corn Chicken Soup",
+//           "Manchow Chicken Soup",
+//           "Hot & Sour Chicken Soup",
+//           "Chicken Lemon Coriander Soup",
+//           "Chicken Clear Soup",
+//           "Cream of Chicken Soup",
+//           "Murgh Badami Shorba",
+//           "Murgh Dhaniya Shorba",
+//         ],
+//       },
+//       soupsNote: "Choose any 2 Soups (Veg / Non-Veg)",
+
+//       salads: [
+//         "Hawaiian Salad",
+//         "Korean Kimchi Salad",
+//         "Fattoush Salad",
+//         "Tossed Salad",
+//         "Mexican Salad",
+//         "Waldorf Salad",
+//         "Russian Salad",
+//         "Garden Green Salad",
+//         "Crunchy Lettuce Salad",
+//         "Anari Chana Chaat",
+//         "Sprouts Salad",
+//         "Aloo Chana Chaat",
+//         "Corn Chaat",
+//         "Papdi Chaat",
+//         "Dahi Bhalla",
+//         "Fried Idly Salad",
+//         "Kosambari Salad",
+//         "Three Bean Salad",
+//         "Kachumber Salad",
+//       ],
+//       saladsNote: "Choose any 3 Salads",
+
+//       mainCourse: {
+//         veg: [
+//           "Kadai Paneer",
+//           "Palak Paneer",
+//           "Paneer Butter Masala",
+//           "Paneer Lababdar",
+//           "Paneer Khurchan",
+//           "Paneer Jalfrezi",
+//           "Paneer Tikka Masala",
+//           "Paneer Do Pyaza",
+//           "Matar Paneer",
+//           "Methi Malai Matar",
+//           "Vegetable Kofta Curry",
+//           "Malai Kofta",
+//           "Mushroom Mutter Masala",
+//           "Aloo Gobi Adraki",
+//           "Dum Aloo Banarasi",
+//           "Kadai Vegetable",
+//           "Bhindi Do Pyaz",
+//           "Mix Veg Curry",
+//           "Baghara Baigan",
+//           "Gobi Matar Hara Pyaz",
+//           "Subzi Saag Wala",
+//           "Aloo Methi",
+//           "Handi Subzi",
+//           "Amritsari Chole",
+//           "Kadi Pakoda",
+//           "Rajma Masala",
+//           "Asian Veggie in Chilli Basil Sauce",
+//           "Veg Ball Manchurian",
+//           "Gobi Manchurian",
+//           "Asian Vegetable in Schezwan Sauce",
+//           "Stir Fried Vegetable in Hunan Sauce",
+//         ],
+//         nonVeg: [
+//           "Butter Chicken",
+//           "Methi Murgh",
+//           "Murgh Lababdar",
+//           "Chicken Saagwala",
+//           "Chicken Do Pyaza",
+//           "Kadhai Murgh",
+//           "Achari Murgh",
+//           "Laal Murgh",
+//           "Grilled Fish with Lemon Butter Sauce",
+//           "Roasted Chicken with Rosemary Jus",
+//           "Mutton Rogan Josh",
+//           "Mutton Do Pyaza",
+//           "Mutton Laal Maas",
+//           "Mutton Saagwala",
+//           "Kadai Gosht",
+//           "Bhuna Murgh",
+//           "Chicken Chettinad",
+//           "Amritsari Fish Curry",
+//           "Bengali Fish Curry",
+//           "Malabar Fish Curry",
+//           "Goan Fish Curry",
+//           "Alleppy Fish Curry",
+//           "Szechwan Chicken",
+//           "Fish Manchurian",
+//           "Chicken in Hunan Sauce",
+//           "Chili Chicken",
+//           "Chicken in Hot Garlic Sauce",
+//           "Honey Glazed Chicken",
+//           "Kung Pao Chicken",
+//           "Murgh Dum Biryani",
+//           "Lucknowi Murgh Dum Biryani",
+//           "Mutton Dum Biryani",
+//         ],
+//         note: "Choose any 2 Veg + 1 Non-Veg Main Course",
+//       },
+
+//       dal: [
+//         "Dal Tadka",
+//         "Dal Makhani",
+//         "Dal Palak",
+//         "Sambar",
+//         "Dal Panchratan",
+//       ],
+//       dalNote: "Choose any 1 Dal",
+
+//       rice: [
+//         "Hyderabadi Subz Biryani",
+//         "Lucknowi Subz Biryani",
+//         "Vegetable Pulao",
+//         "Kashmiri Pulao",
+//         "Jeera Matar Pulao",
+//         "Peas Pulao",
+//         "Jeera Rice",
+//         "Lemon Rice",
+//         "Curd Rice",
+//         "Vegetable Fried Rice",
+//         "Szechwan Fried Rice",
+//         "Vegetable Hakka Noodles",
+//         "Szechwan Noodles",
+//       ],
+//       riceNote: "Choose any 1 Flavored Rice",
+
+//       bread: ["Roti", "Naan", "Kulcha", "Laccha Paratha"],
+//       breadNote: "Choose any 1 Indian Bread",
+
+//       desserts: [
+//         "Gulab Jamun",
+//         "Gajar Halwa",
+//         "Rice Kheer",
+//         "Semiya Payasam",
+//         "Chocolate Brownie",
+//         "Moong Dal Halwa",
+//         "Shahi Tukda",
+//         "Phirni",
+//         "Semiya Kheer",
+//         "Dudhi Halwa",
+//         "Pineapple Halwa",
+//         "Chocolate Mousse",
+//         "Cream Caramel",
+//         "Fruit Trifle",
+//         "Fresh Cut Fruits",
+//       ],
+//       dessertsNote: "Choose any 2 Desserts",
+
+//       iceCream: ["Vanilla", "Strawberry", "Chocolate", "Mango", "Butter Scotch"],
+//       iceCreamNote: "Choose any 1 Ice Cream",
+
+//       addOns: [
+//         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
+//         "Mutton — ₹250/- per person",
+//       ],
+//       note: "All Inclusive",
+//     },
+//   },
+
+//   {
+//     id: 4,
+//     name: "NON-VEGETARIAN DELUXE ",
+//     subtitle: "2 Welcome Drinks • 2 Veg Starters • 2 Non-Veg Starters • 2 Soups (Veg/Non-Veg) • 4 Salads • 2 Veg Main Course • 2 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 3 Desserts • 1 Ice Cream",
+//     price: "₹1,600/-",
+//     tag: "All Inclusive",
+//     image: NONVEGETARIANDELUXE,
+//     includes: {
+//       beverage: [
+//         "Shirley Temple",
+//         "Preserved Juices",
+//         "Aerated Beverages",
+//         "Blue Lagoon",
+//         "Fresh Lime Soda",
+//       ],
+//       beverageNote: "Choose any 2 Welcome Drinks",
+
+//       appetisers: {
+//         veg: [
+//           "Paneer Tikka",
+//           "Hara Bara Kebabs",
+//           "Teen Mirchi Paneer Tikka",
+//           "Veg Seekh Kebab",
+//           "Aloo Mutter Ki Tikki",
+//           "Tandoori Khazana",
+//           "Malai Paneer Tikka",
+//           "Hariyali Paneer Tikka",
+//           "Lahori Paneer Tikka",
+//           "Cheese Ball",
+//           "Veg Croquette",
+//           "Veg Cutlet",
+//           "Vegetable Spring Roll",
+//           "Vegetable Finger",
+//           "Chili Paneer",
+//           "Gobi Manchurian",
+//           "Veg Ball Manchurian",
+//           "Salt & Pepper Veg",
+//           "Crispy Fried Veg",
+//         ],
+//         nonVeg: [
+//           "Hariyali Murgh Tikka",
+//           "Murgh Malai Kebab",
+//           "Lahori Murgh Tikka",
+//           "Murgh Angare",
+//           "Chicken Tikka",
+//           "Chicken 65",
+//           "Chicken Nuggets",
+//           "Fish Finger",
+//           "Crumbed Fried Fish",
+//           "Chilly Chicken",
+//           "Chicken Manchurian",
+//           "Chicken Lollipop",
+//           "Chicken Spring Roll",
+//           "Chili Fish",
+//           "Fish Peri Peri",
+//           "Salt & Pepper Fish",
+//           "Szechwan Fish",
+//           "Schezwan Chilli Chicken",
+//         ],
+//         note: "Choose any 2 Veg + 2 Non-Veg Starters",
+//       },
+
+//       soups: {
+//         veg: [
+//           "Cream of Tomato",
+//           "Manchow Soup",
+//           "Sweet Corn Soup",
+//           "Hot & Sour Veg Soup",
+//           "Lemon Coriander Veg Soup",
+//           "Vegetable Clear Soup",
+//           "Jade Corn Soup",
+//           "Cream of Mushroom",
+//           "Cream of Spinach",
+//         ],
+//         nonVeg: [
+//           "Sweet Corn Chicken Soup",
+//           "Manchow Chicken Soup",
+//           "Hot & Sour Chicken Soup",
+//           "Chicken Lemon Coriander Soup",
+//           "Chicken Clear Soup",
+//           "Cream of Chicken Soup",
+//           "Murgh Badami Shorba",
+//           "Murgh Dhaniya Shorba",
+//         ],
+//       },
+//       soupsNote: "Choose any 2 Soups (Veg / Non-Veg)",
+
+//       salads: [
+//         "Hawaiian Salad",
+//         "Korean Kimchi Salad",
+//         "Fattoush Salad",
+//         "Tossed Salad",
+//         "Mexican Salad",
+//         "Waldorf Salad",
+//         "Russian Salad",
+//         "Garden Green Salad",
+//         "Crunchy Lettuce Salad",
+//         "Anari Chana Chaat",
+//         "Sprouts Salad",
+//         "Aloo Chana Chaat",
+//         "Corn Chaat",
+//         "Papdi Chaat",
+//         "Dahi Bhalla",
+//         "Fried Idly Salad",
+//         "Kosambari Salad",
+//         "Three Bean Salad",
+//         "Kachumber Salad",
+//       ],
+//       saladsNote: "Choose any 4 Salads",
+
+//       mainCourse: {
+//         veg: [
+//           "Kadai Paneer",
+//           "Palak Paneer",
+//           "Paneer Butter Masala",
+//           "Paneer Lababdar",
+//           "Paneer Khurchan",
+//           "Paneer Jalfrezi",
+//           "Paneer Tikka Masala",
+//           "Paneer Do Pyaza",
+//           "Matar Paneer",
+//           "Methi Malai Matar",
+//           "Vegetable Kofta Curry",
+//           "Malai Kofta",
+//           "Mushroom Mutter Masala",
+//           "Aloo Gobi Adraki",
+//           "Dum Aloo Banarasi",
+//           "Kadai Vegetable",
+//           "Bhindi Do Pyaz",
+//           "Mix Veg Curry",
+//           "Baghara Baigan",
+//           "Gobi Matar Hara Pyaz",
+//           "Subzi Saag Wala",
+//           "Aloo Methi",
+//           "Handi Subzi",
+//           "Amritsari Chole",
+//           "Kadi Pakoda",
+//           "Rajma Masala",
+//           "Asian Veggie in Chilli Basil Sauce",
+//           "Veg Ball Manchurian",
+//           "Gobi Manchurian",
+//           "Asian Vegetable in Schezwan Sauce",
+//           "Stir Fried Vegetable in Hunan Sauce",
+//         ],
+//         nonVeg: [
+//           "Butter Chicken",
+//           "Methi Murgh",
+//           "Murgh Lababdar",
+//           "Chicken Saagwala",
+//           "Chicken Do Pyaza",
+//           "Kadhai Murgh",
+//           "Achari Murgh",
+//           "Laal Murgh",
+//           "Grilled Fish with Lemon Butter Sauce",
+//           "Roasted Chicken with Rosemary Jus",
+//           "Mutton Rogan Josh",
+//           "Mutton Do Pyaza",
+//           "Mutton Laal Maas",
+//           "Mutton Saagwala",
+//           "Kadai Gosht",
+//           "Bhuna Murgh",
+//           "Chicken Chettinad",
+//           "Amritsari Fish Curry",
+//           "Bengali Fish Curry",
+//           "Malabar Fish Curry",
+//           "Goan Fish Curry",
+//           "Alleppy Fish Curry",
+//           "Szechwan Chicken",
+//           "Fish Manchurian",
+//           "Chicken in Hunan Sauce",
+//           "Chili Chicken",
+//           "Chicken in Hot Garlic Sauce",
+//           "Honey Glazed Chicken",
+//           "Kung Pao Chicken",
+//           "Murgh Dum Biryani",
+//           "Lucknowi Murgh Dum Biryani",
+//           "Mutton Dum Biryani",
+//         ],
+//         note: "Choose any 2 Veg + 2 Non-Veg Main Course",
+//       },
+
+//       dal: [
+//         "Dal Tadka",
+//         "Dal Makhani",
+//         "Dal Palak",
+//         "Sambar",
+//         "Dal Panchratan",
+//       ],
+//       dalNote: "Choose any 1 Dal",
+
+//       rice: [
+//         "Hyderabadi Subz Biryani",
+//         "Lucknowi Subz Biryani",
+//         "Vegetable Pulao",
+//         "Kashmiri Pulao",
+//         "Jeera Matar Pulao",
+//         "Peas Pulao",
+//         "Jeera Rice",
+//         "Lemon Rice",
+//         "Curd Rice",
+//         "Vegetable Fried Rice",
+//         "Szechwan Fried Rice",
+//         "Vegetable Hakka Noodles",
+//         "Szechwan Noodles",
+//       ],
+//       riceNote: "Choose any 1 Flavored Rice",
+
+//       bread: ["Roti", "Naan", "Kulcha", "Laccha Paratha"],
+//       breadNote: "Choose any 1 Indian Bread",
+
+//       desserts: [
+//         "Gulab Jamun",
+//         "Gajar Halwa",
+//         "Rice Kheer",
+//         "Semiya Payasam",
+//         "Chocolate Brownie",
+//         "Moong Dal Halwa",
+//         "Shahi Tukda",
+//         "Phirni",
+//         "Semiya Kheer",
+//         "Dudhi Halwa",
+//         "Pineapple Halwa",
+//         "Chocolate Mousse",
+//         "Cream Caramel",
+//         "Fruit Trifle",
+//         "Fresh Cut Fruits",
+//       ],
+//       dessertsNote: "Choose any 3 Desserts",
+
+//       iceCream: ["Vanilla", "Strawberry", "Chocolate", "Mango", "Butter Scotch"],
+//       iceCreamNote: "Choose any 1 Ice Cream",
+
+//       addOns: [
+//         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
+//         "Mutton — ₹250/- per person",
+//       ],
+//       note: "All Inclusive",
+//     },
+//   },
+// ];
+
+import VEGETARIAN from "@/assets/venueimages/vegetarian.webp";
 import VEGETARIANDELUXE from "@/assets/venueimages/VEGETARIANDELUXE.webp";
-import NONVEGETARIAN from "@/assets/venueimages/non-vegetarian.webp";
+import NONVEGETARIAN from "@/assets/venueimages/non-veg.jpeg";
 import NONVEGETARIANDELUXE from "@/assets/venueimages/non-vegetarindeluxe.webp";
+
 export const OAKWOOD_FOOD_PACKAGES = [
-    {
+  {
     id: 1,
     name: "VEGETARIAN MENU",
-    subtitle: "1 Welcome Drink • 2 Veg Starters • 1 Soup • 2 Salads • 2 Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 1 Dessert • 1 Ice Cream",
+    subtitle:
+      "1 Welcome Drink • 2 Veg Starters • 1 Soup • 2 Salads • 2 Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 1 Dessert • 1 Ice Cream",
     price: "₹1,250/-",
+    // originalPrice: "₹1,389/-",
+    // saving: "₹139",
+    // discount: "10% OFF",
     tag: "All Inclusive",
+    type: "veg",
+    typeLabel: "Veg",
     image: VEGETARIAN,
     includes: {
       beverage: [
@@ -20,7 +885,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fresh Lime Soda",
       ],
       beverageNote: "Choose any 1 Welcome Drink",
-
       appetisers: {
         veg: [
           "Paneer Tikka",
@@ -46,7 +910,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         nonVeg: [],
         note: "Choose any 2 Veg Starters",
       },
-
       soups: [
         "Cream of Tomato",
         "Manchow Soup",
@@ -59,7 +922,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Cream of Spinach",
       ],
       soupsNote: "Choose any 1 Soup",
-
       salads: [
         "Hawaiian Salad",
         "Korean Kimchi Salad",
@@ -82,7 +944,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Kachumber Salad",
       ],
       saladsNote: "Choose any 2 Salads",
-
       mainCourse: {
         items: [
           "Kadai Paneer",
@@ -119,16 +980,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
         note: "Choose any 2 Veg Main Course",
       },
-
-      dal: [
-        "Dal Tadka",
-        "Dal Makhani",
-        "Dal Palak",
-        "Sambar",
-        "Dal Panchratan",
-      ],
+      dal: ["Dal Tadka", "Dal Makhani", "Dal Palak", "Sambar", "Dal Panchratan"],
       dalNote: "Choose any 1 Dal",
-
       rice: [
         "Hyderabadi Subz Biryani",
         "Lucknowi Subz Biryani",
@@ -145,15 +998,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Szechwan Noodles",
       ],
       riceNote: "Choose any 1 Flavored Rice",
-
-      bread: [
-        "Roti",
-        "Naan",
-        "Kulcha",
-        "Laccha Paratha",
-      ],
+      bread: ["Roti", "Naan", "Kulcha", "Laccha Paratha"],
       breadNote: "Choose any 1 Indian Bread",
-
       desserts: [
         "Gulab Jamun",
         "Gajar Halwa",
@@ -172,19 +1018,11 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fresh Cut Fruits",
       ],
       dessertsNote: "Choose any 1 Dessert",
-
-      iceCream: [
-        "Vanilla",
-        "Strawberry",
-        "Chocolate",
-        "Mango",
-        "Butter Scotch",
-      ],
+      iceCream: ["Vanilla", "Strawberry", "Chocolate", "Mango", "Butter Scotch"],
       iceCreamNote: "Choose any 1 Ice Cream",
-
       addOns: [
         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
-        "Mutton — ₹250/- per person",
+       
       ],
       note: "All Inclusive",
     },
@@ -192,12 +1030,18 @@ export const OAKWOOD_FOOD_PACKAGES = [
 
   {
     id: 2,
-    name: "VEGETARIAN DELUXE ",
-    subtitle: " 3 Welcome drinks, 3 Veg starters, 1 soup, 3 salads, 3 Veg main courses, 1 Dal, 1 flavoured rice, 1 indian bread, 2 Dessert ,1 icecream",
+    name: "VEGETARIAN DELUXE",
+    subtitle:
+      "3 Welcome Drinks • 3 Veg Starters • 1 Soup • 3 Salads • 3 Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 2 Desserts • 1 Ice Cream",
     price: "₹1,400/-",
+    // originalPrice: "₹1,592/-",
+    // saving: "₹192",
+    // discount: "12% OFF",
     tag: "All Inclusive",
+    type: "vegdlx",
+    typeLabel: "Veg Deluxe",
     image: VEGETARIANDELUXE,
-     includes: {
+    includes: {
       beverage: [
         "Shirley Temple",
         "Preserved Juices",
@@ -205,8 +1049,7 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Blue Lagoon",
         "Fresh Lime Soda",
       ],
-      beverageNote: "Choose any 3 Welcome Drink",
-
+      beverageNote: "Choose any 3 Welcome Drinks",
       appetisers: {
         veg: [
           "Paneer Tikka",
@@ -232,7 +1075,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         nonVeg: [],
         note: "Choose any 3 Veg Starters",
       },
-
       soups: [
         "Cream of Tomato",
         "Manchow Soup",
@@ -245,7 +1087,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Cream of Spinach",
       ],
       soupsNote: "Choose any 1 Soup",
-
       salads: [
         "Hawaiian Salad",
         "Korean Kimchi Salad",
@@ -268,7 +1109,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Kachumber Salad",
       ],
       saladsNote: "Choose any 3 Salads",
-
       mainCourse: {
         items: [
           "Kadai Paneer",
@@ -305,16 +1145,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
         note: "Choose any 3 Veg Main Course",
       },
-
-      dal: [
-        "Dal Tadka",
-        "Dal Makhani",
-        "Dal Palak",
-        "Sambar",
-        "Dal Panchratan",
-      ],
+      dal: ["Dal Tadka", "Dal Makhani", "Dal Palak", "Sambar", "Dal Panchratan"],
       dalNote: "Choose any 1 Dal",
-
       rice: [
         "Hyderabadi Subz Biryani",
         "Lucknowi Subz Biryani",
@@ -331,15 +1163,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Szechwan Noodles",
       ],
       riceNote: "Choose any 1 Flavored Rice",
-
-      bread: [
-        "Roti",
-        "Naan",
-        "Kulcha",
-        "Laccha Paratha",
-      ],
+      bread: ["Roti", "Naan", "Kulcha", "Laccha Paratha"],
       breadNote: "Choose any 1 Indian Bread",
-
       desserts: [
         "Gulab Jamun",
         "Gajar Halwa",
@@ -357,20 +1182,11 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fruit Trifle",
         "Fresh Cut Fruits",
       ],
-      dessertsNote: "Choose any 2 Dessert",
-
-      iceCream: [
-        "Vanilla",
-        "Strawberry",
-        "Chocolate",
-        "Mango",
-        "Butter Scotch",
-      ],
+      dessertsNote: "Choose any 2 Desserts",
+      iceCream: ["Vanilla", "Strawberry", "Chocolate", "Mango", "Butter Scotch"],
       iceCreamNote: "Choose any 1 Ice Cream",
-
       addOns: [
         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
-        "Mutton — ₹250/- per person",
       ],
       note: "All Inclusive",
     },
@@ -378,10 +1194,16 @@ export const OAKWOOD_FOOD_PACKAGES = [
 
   {
     id: 3,
-    name: "NON-VEGETARIAN ",
-    subtitle: "1 Welcome Drink • 2 Veg Starters • 1 Non-Veg Starter • 2 Soups (Veg/Non-Veg) • 3 Salads • 2 Veg Main Course • 1 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 2 Desserts • 1 Ice Cream",
+    name: "NON-VEGETARIAN",
+    subtitle:
+      "1 Welcome Drink • 2 Veg Starters • 1 NV Starter • 2 Soups • 3 Salads • 2 Veg Main Course • 1 NV Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 2 Desserts • 1 Ice Cream",
     price: "₹1,500/-",
+    // originalPrice: "₹1,630/-",
+    // saving: "₹130",
+    // discount: "8% OFF",
     tag: "All Inclusive",
+    type: "nveg",
+    typeLabel: "Non-Veg",
     image: NONVEGETARIAN,
     includes: {
       beverage: [
@@ -392,7 +1214,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fresh Lime Soda",
       ],
       beverageNote: "Choose any 1 Welcome Drink",
-
       appetisers: {
         veg: [
           "Paneer Tikka",
@@ -437,7 +1258,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
         note: "Choose any 2 Veg + 1 Non-Veg Starter",
       },
-
       soups: {
         veg: [
           "Cream of Tomato",
@@ -462,7 +1282,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
       },
       soupsNote: "Choose any 2 Soups (Veg / Non-Veg)",
-
       salads: [
         "Hawaiian Salad",
         "Korean Kimchi Salad",
@@ -485,7 +1304,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Kachumber Salad",
       ],
       saladsNote: "Choose any 3 Salads",
-
       mainCourse: {
         veg: [
           "Kadai Paneer",
@@ -556,16 +1374,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
         note: "Choose any 2 Veg + 1 Non-Veg Main Course",
       },
-
-      dal: [
-        "Dal Tadka",
-        "Dal Makhani",
-        "Dal Palak",
-        "Sambar",
-        "Dal Panchratan",
-      ],
+      dal: ["Dal Tadka", "Dal Makhani", "Dal Palak", "Sambar", "Dal Panchratan"],
       dalNote: "Choose any 1 Dal",
-
       rice: [
         "Hyderabadi Subz Biryani",
         "Lucknowi Subz Biryani",
@@ -582,10 +1392,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Szechwan Noodles",
       ],
       riceNote: "Choose any 1 Flavored Rice",
-
       bread: ["Roti", "Naan", "Kulcha", "Laccha Paratha"],
       breadNote: "Choose any 1 Indian Bread",
-
       desserts: [
         "Gulab Jamun",
         "Gajar Halwa",
@@ -604,10 +1412,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fresh Cut Fruits",
       ],
       dessertsNote: "Choose any 2 Desserts",
-
       iceCream: ["Vanilla", "Strawberry", "Chocolate", "Mango", "Butter Scotch"],
       iceCreamNote: "Choose any 1 Ice Cream",
-
       addOns: [
         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
         "Mutton — ₹250/- per person",
@@ -618,10 +1424,16 @@ export const OAKWOOD_FOOD_PACKAGES = [
 
   {
     id: 4,
-    name: "NON-VEGETARIAN DELUXE ",
-    subtitle: "2 Welcome Drinks • 2 Veg Starters • 2 Non-Veg Starters • 2 Soups (Veg/Non-Veg) • 4 Salads • 2 Veg Main Course • 2 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 3 Desserts • 1 Ice Cream",
+    name: " NON-VEGETARIAN DELUXE ",
+    subtitle:
+      "2 Welcome Drinks • 2 Veg Starters • 2 NV Starters • 2 Soups • 4 Salads • 2 Veg Main Course • 2 NV Main Course • 1 Dal • 1 Flavored Rice • 1 Indian Bread • 3 Desserts • 1 Ice Cream",
     price: "₹1,600/-",
+    // originalPrice: "₹1,882/-",
+    // saving: "₹282",
+    // discount: "15% OFF",
     tag: "All Inclusive",
+    type: "nvegdlx",
+    typeLabel: "NV Deluxe",
     image: NONVEGETARIANDELUXE,
     includes: {
       beverage: [
@@ -632,7 +1444,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fresh Lime Soda",
       ],
       beverageNote: "Choose any 2 Welcome Drinks",
-
       appetisers: {
         veg: [
           "Paneer Tikka",
@@ -677,7 +1488,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
         note: "Choose any 2 Veg + 2 Non-Veg Starters",
       },
-
       soups: {
         veg: [
           "Cream of Tomato",
@@ -702,7 +1512,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
       },
       soupsNote: "Choose any 2 Soups (Veg / Non-Veg)",
-
       salads: [
         "Hawaiian Salad",
         "Korean Kimchi Salad",
@@ -725,7 +1534,6 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Kachumber Salad",
       ],
       saladsNote: "Choose any 4 Salads",
-
       mainCourse: {
         veg: [
           "Kadai Paneer",
@@ -796,16 +1604,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         ],
         note: "Choose any 2 Veg + 2 Non-Veg Main Course",
       },
-
-      dal: [
-        "Dal Tadka",
-        "Dal Makhani",
-        "Dal Palak",
-        "Sambar",
-        "Dal Panchratan",
-      ],
+      dal: ["Dal Tadka", "Dal Makhani", "Dal Palak", "Sambar", "Dal Panchratan"],
       dalNote: "Choose any 1 Dal",
-
       rice: [
         "Hyderabadi Subz Biryani",
         "Lucknowi Subz Biryani",
@@ -822,10 +1622,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Szechwan Noodles",
       ],
       riceNote: "Choose any 1 Flavored Rice",
-
       bread: ["Roti", "Naan", "Kulcha", "Laccha Paratha"],
       breadNote: "Choose any 1 Indian Bread",
-
       desserts: [
         "Gulab Jamun",
         "Gajar Halwa",
@@ -844,10 +1642,8 @@ export const OAKWOOD_FOOD_PACKAGES = [
         "Fresh Cut Fruits",
       ],
       dessertsNote: "Choose any 3 Desserts",
-
       iceCream: ["Vanilla", "Strawberry", "Chocolate", "Mango", "Butter Scotch"],
       iceCreamNote: "Choose any 1 Ice Cream",
-
       addOns: [
         "Live Counter (Any 1) — ₹150/- per person (Pasta / Chaat / Pav Bhaaji)",
         "Mutton — ₹250/- per person",
