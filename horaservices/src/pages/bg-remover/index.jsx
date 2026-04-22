@@ -25,7 +25,7 @@ const BgRemover = () => {
     try {
       // Python Backend URL (Make sure your Python server is running on port 8000)
       const response = await axios.post(
-        "https://swmhkvn8-8000.inc1.devtunnels.ms/remove-bg",
+        "http://localhost:8000/remove-bg",
         formData,
         {
           responseType: "blob", // Important: Image binary data receive karne ke liye
