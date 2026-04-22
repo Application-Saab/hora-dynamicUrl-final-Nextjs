@@ -1,0 +1,529 @@
+/* gallery.css */
+
+/* This is the class passed as wrapperClassName to LazyImage. It's the masonry grid item. */
+.masonry-item { /* Renamed from .lazy-image-container-wrapper for clarity in component use */
+  margin-bottom: 10px; /* Or your preferred gap */
+  break-inside: avoid;
+  border-radius: 4px;  /* Consistent rounding */
+  overflow: hidden;    /* Important for child elements like absolutely positioned spinners or rounded images */
+  background-color: #e9ecef; /* Light grey background, acts as placeholder color */
+  min-height: 50px;  /* CRITICAL: Provides a minimum height before image loads. Adjust this value based on typical smallest image height or desired placeholder size. */
+  position: relative;    /* For positioning spinner overlay */
+  display: block;        /* Ensure it takes block-level layout */
+  transition: background-color 0.3s; /* Smooth transition if needed */
+}
+.masonry-item:hover {
+  /* background-color: #dee2e6; /* Optional: darker placeholder on hover */
+}
+
+
+/* Styles for the <img> tag itself within LazyImage */
+.lazy-image-actual-img {
+  display: block;        /* Remove extra space below image */
+  width: 100%;           /* Take full width of .masonry-item (column) */
+  height: auto;          /* CRITICAL: Allows image to define its own height, maintaining aspect ratio */
+  opacity: 0;            /* Start hidden */
+  transition: opacity 0.5s ease-in-out; /* Fade-in transition */
+  border-radius: inherit; /* Inherit border-radius from parent if you want rounded images too */
+}
+
+.lazy-image-actual-img.loaded {
+  opacity: 1; /* Fade in when loaded */
+}
+
+.lazy-image-actual-img.loading {
+  /* Image is loading, opacity is 0. Spinner should be visible over .masonry-item background. */
+}
+
+
+/* Spinner container and spinner animation */
+.lazy-image-spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* Cover the entire area of .masonry-item */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1; /* Ensure spinner is above the .masonry-item background */
+  pointer-events: none; /* Allow clicks to pass through to image if it loads under it somehow */
+}
+
+.lazy-image-spinner-animation {
+  width: 28px;   /* Size of the spinner */
+  height: 28px;
+  border: 3px solid rgba(0, 0, 0, 0.2); /* Lighter track for the spinner */
+  border-top-color: #333; /* Spinner active color, ensure contrast with placeholder bg */
+  border-radius: 50%;
+  animation: lazy-image-spin 0.7s linear infinite;
+}
+
+@keyframes lazy-image-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Masonry Grid column setup (ensure these are suitable for your design) */
+.masonryGrid {
+  column-count: 2;
+  column-gap: 10px;
+}
+@media (min-width: 480px) { .masonryGrid { column-count: 3; } }
+@media (min-width: 768px) { .masonryGrid { column-count: 4; } }
+@media (min-width: 1024px) { .masonryGrid { column-count: 5; } }
+@media (min-width: 1280px) { .masonryGrid { column-count: 6; } }
+
+
+
+
+.gallery-header {
+  width: 100%;
+}
+
+.gallery-header-content {
+  display: flex;
+  justify-content: flex-end; /* pushes icon to right */
+  align-items: center;
+  padding: 10px; /* optional spacing */
+}
+
+.gallery-share-icon {
+  cursor: pointer;
+}
+
+
+
+
+
+.gallery-pagination-container {
+  display: flex;
+  align-items: center;
+}
+
+
+
+
+
+.popup-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 15px 8px 40px 8px;
+}
+
+.slick-slider,
+.slick-list,
+.slick-track {
+  height: 100%;
+}
+
+.slick-slide {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
+  height: 13px !important;
+}
+
+ .slick-next:before  {
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #e2e8f0;
+}
+.slick-prev:before {
+  border-top: 10px solid transparent; 
+  border-bottom: 10px solid transparent; 
+  border-right: 10px solid #e2e8f0; 
+}
+
+/* Optional Image Styling */
+.popupImage,
+.popupVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;  
+}
+
+.slick-prev, .slick-next {
+  z-index: 111 !important;
+  background-color: transparent !important;
+}
+/* .slick-initialized .slick-slide {
+  display: flex !important;
+    justify-content: center;
+    align-items: center;
+    height: 85vh;
+    padding: 0px;
+} */
+
+
+/* popup css */
+  
+@media (max-width: 800px) {
+  .masonryGrid {
+    column-count: 2; 
+    column-gap: 6px;
+  }
+}
+/* Container for positioning */
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.image-checkbox {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;       /* circular */
+  border: 2px solid black;  /* black border */
+  background-color: transparent;
+  cursor: pointer;
+  z-index: 10;
+
+  /* Remove default checkbox styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Checked state */
+.image-checkbox:checked {
+  background-color: white;   /* white background when checked */
+  border: none;              /* remove border when checked */
+}
+
+.image-checkbox:checked {
+  border-color: transparent;
+  background-image: url("../../assets/checkedCheckbox.svg");   
+  background-size: 12px;  
+  background-position: center;
+  background-repeat: no-repeat;
+} 
+.popup-checkbox:checked {
+  background-image: url("../../assets/checkedCheckbox.svg");
+  background-size: 18px;  
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.refresh-image-btn {
+  background-color: #97538C;
+  color: white;
+  font-weight: 700;
+  border-radius: 49.26px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(11px, 3vw, 12px);
+  height: 38px;
+  width: 98px;
+  justify-content: center;
+}
+
+/* SAVE BUTTON */
+.save-image-btn {
+  background-color: #539753;
+  color: white;
+  margin-bottom: 15px;
+  font-weight: 700;
+  border-radius: 49.26px;
+  border: none;
+  padding:9px 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: clamp(11px, 3vw, 12px);
+}
+
+.save-icon{
+  margin-bottom: 2px;
+}
+
+.add-new-btn{
+  background-color: #97538C;
+  color: white;
+  font-weight: 700;
+  border-radius: 49.26px;
+  border: none;
+  padding:4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: clamp(11px, 3vw, 12px);
+
+}
+.share-capsule-btn{
+  background-color: transparent;
+  color: #09AE00;
+  font-weight: 700;
+  border-radius: 17px;
+  border: 1px solid #09AE00;
+  padding:7px 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+    font-size: clamp(11px, 3.2vw, 12px);
+}
+.buttons-container{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.add-new-btn .add-icon {
+  font-size: clamp(25px, 5vw, 22px);
+  font-weight: 400;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.popup-addbtn{
+  padding: 9px 12px;
+  border: none;
+  border-radius: 10px;
+  color: black;
+  background-color: white;
+}
+
+.slick-prev::before,
+.slick-next::before {
+  display: none !important;
+  content: "" !important;
+}
+
+
+.slick-prev,
+.slick-next {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+  z-index: 50;
+
+  width: 40px;
+  height: 40px;
+
+  background: rgba(0,0,0,0.4);
+  border-radius: 50%;
+
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.slick-prev {
+  left: 10px !important;
+}
+
+.slick-next {
+  right: 10px !important;
+}
+
+.action-menu {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  width: 210px;
+  background: #F8F6FB;
+  border-radius: 10px;
+  z-index: 1000;
+  padding-bottom: 14px;
+}
+
+.action-inner-container{
+  background-color: #fff;
+  margin: 3px 8px;
+  border-radius: 12.3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 4px 0px;
+}
+
+.action-item {
+  padding: 5px 14px;
+  font-size: 14.71px;
+  cursor: pointer;
+  color: #3D3B3B;
+  font-weight: 400;
+  font-family: "Roboto", sans-serif;
+}
+.flex{
+display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.action-item strong {
+  display: block;
+  font-weight: 500;
+  color: #302C2C;
+  font-size: 17px;
+}
+.action-item p {
+  font-weight: 300;
+  color: #474242;
+  margin: 0px;
+}
+.add-folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 0px 6px 0px 0px;
+}
+
+.folder-checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.folder-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.folder-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.folder-dp {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.folder-dp img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.folder-name {
+  font-size: 22.45px;
+}
+
+.popup-checkbox {
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;       /* circular */
+  border: 1px solid black;  /* black border */
+  background-color: transparent;
+  cursor: pointer;
+  z-index: 10;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.no-subfolder-text {
+  font-size: 22px;
+  color: #262424;
+  font-weight: 600;
+}
+.emptyFolder-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;   
+  text-align: center;  
+  gap: 9px; 
+  margin-top: 35px;
+}
+.emptyFolder-popup-btn{
+  margin-top: 6px;
+}
+.sub-text-empty{
+  color: #262424;
+  font-size: 16px;
+}
+.thumbnail-gallery{
+     display: flex;
+    max-width: 480px;
+    width: 100%;
+    flex-direction: column;
+    padding-inline: 7px;
+}
+.photo-container{
+      display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: inter;
+}
+.image-wrapper{
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.image-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+}
+
+.placeholder {
+    background-color: #737171;
+  animation: placeholder-glow 2s ease-in-out infinite;
+}
+.gallery-image-grid{
+  gap: 4px; 
+  display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+.thumbnail-gallery-status{
+  margin: 20px 0px;
+  display: flex;
+  justify-content: center;
+  color: #534E4E;
+}
+.upload-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 500;
+  z-index: 5;
+}
+.imagepopup-footer{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0px 20px 80px 20px;
+  justify-content: end !important;
+  margin: 30px 0px 10px 0px;
+}
