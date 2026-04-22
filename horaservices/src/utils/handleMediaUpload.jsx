@@ -256,6 +256,49 @@ export async function uploadMedia(
 
   return res.data.posts;
 }
+export async function uploadMediaWeblink(
+  files,
+  folderName,
+  customerId,
+  phoneNo,
+  onProgress,
+  fileId = null
+) {
+  console.log("uploadMediaWeblink CALLED", files);
+  const formData = new FormData();
+
+  files.forEach((file) => {
+    
+    formData.append("files", file); // only once
+  });
+
+  formData.append("folderName", folderName);
+  formData.append("customerId", customerId);
+  formData.append("phoneNo", phoneNo);
+  formData.append("fileId", fileId);
+
+  const token = localStorage.getItem("token");
+try{
+  const res = await axios.post(
+    `${MEDIA_PROCESSING_URL}/upload`,
+    formData,
+    {
+      headers: {
+        Authorization: token,
+      },
+      onUploadProgress: (p) => {
+        const percent = Math.round((p.loaded * 100) / p.total);
+        onProgress?.(percent);
+      },
+    }
+  );
+  return res.thumbnails;
+}
+catch(err){
+  console.log(err)
+}
+
+}
 
 import { openDB, deleteDB, wrap, unwrap } from "idb";
 

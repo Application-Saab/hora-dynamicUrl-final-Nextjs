@@ -20,11 +20,31 @@ import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import refreshIcon from '../../assets/refreshIcon.svg';
 import checkWithBoard from '../../assets/checkWithBoard.svg';
-import CircularLoader from "@/components/Gallery/CircularLoader";
 import unLike from '../../assets/unLike.svg';
 import whiteShareIcon from '../../assets/whiteShareIcon.svg';
 import LikeFill from '../../assets/LikedFill.svg';
 import like from '../../assets/like.svg'
+import {
+  uploadMediaWeblink,
+  getPendingUploads,
+  updateQueueItem,
+  removeFromQueue,
+  addToQueue,
+} from "@/utils/handleMediaUpload";
+import {
+  deleteFromOPFS,
+  getFileFromOPFS,
+  getPreviewFromOPFS,
+  processImagesWithHeight,
+  saveFileToOPFS,
+} from "@/utils/eventWallHelpers";
+import {
+  cacheEvent,
+  clearAllEventCache,
+  getCachedEvent,
+} from "@/utils/eventCache";
+import useApi from "@/hooks/useApi";
+
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
@@ -67,6 +87,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
+  const { makeRequest: getAllPosts } = useApi();
+  const [totalPages, setTotalPages] = useState(1);
+  
+
 
 
   useEffect(() => {
@@ -428,6 +452,295 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     if (pos === 4) return "small-right-top";
     if (pos === 5) return "small-right-bottom";
   }
+    const updateProgress = (id, percent) => {
+    setAllThumbnails((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, progress: percent } : item,
+      ),
+    );
+  };
+
+  const updateStatus = (id, status) => {
+    setAllThumbnails((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status } : item)),
+    );
+  };
+
+  async function loadEventPosts(pageToLoad = 1) {
+    if (!customerId) return;
+
+    const draftBase64 = localStorage.getItem(`thankyou-note-draft-${customerId}`);
+
+    let draftItem = null;
+
+    if (draftBase64) {
+      draftItem = {
+        id: "draft-temp",
+        file: null,
+        localPreview: draftBase64,
+        isVideo: false,
+        progress: 0,
+        status: "draft",
+        postUrl: null,
+        postWebpUrl: null,
+        postType: "thankYouNote",
+      };
+    }
+
+    // Show cache instantly (only page 1)
+    if (pageToLoad === 1) {
+      const cached = getCachedEvent(customerId);
+      if (cached) {
+        let merged = draftItem ? [draftItem, ...cached] : cached;
+        setAllThumbnails(await processImagesWithHeight(merged));
+      }
+    }
+
+    const resp = await getAllPosts(
+      `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`,
+      "GET",
+    );
+console.log("resp-------------",resp)
+    if (resp?.thumbnails) {
+      let fresh = [...resp.thumbnails];
+
+      if (draftItem && pageToLoad === 1) {
+        fresh = [draftItem, ...fresh];
+      }
+
+      const processed = await processImagesWithHeight(fresh);
+
+      // if (isIOSMobile) {
+      //   setAllThumbnails(processed);
+      // } else {
+        setAllThumbnails((prev) => {
+          const pendingItems = prev.filter((item) =>
+            ["queued", "uploading", "failed"].includes(item.status),
+          );
+
+          const oldBackendItems = prev.filter(
+            (item) => !["queued", "uploading", "failed"].includes(item.status),
+          );
+
+          const newBackendItems = processed;
+
+          const existingUrls = new Set(
+            oldBackendItems.map((item) => item.postUrl),
+          );
+
+          const mergedBackend = [
+            ...oldBackendItems,
+            ...newBackendItems.filter(
+              (item) => !existingUrls.has(item.postUrl),
+            ),
+          ];
+
+          return [...pendingItems, ...mergedBackend];
+        });
+      // }
+
+      // setTotalPages(resp.data.totalPages);
+
+      if (pageToLoad === 1) {
+        cacheEvent(customerId, resp.thumbnails);
+      }
+    }
+  }
+  async function processUploadQueue() {
+    if (!customerId) return;
+
+    let pending = await getPendingUploads(customerId);
+
+    // reset stuck uploads
+    for (const item of pending) {
+      if (item.status === "uploading") {
+        await updateQueueItem(item.id, { status: "queued" });
+      }
+    }
+
+    pending = await getPendingUploads(customerId);
+
+    for (const item of pending) {
+      if (item.status === "done") continue;
+
+      try {
+        await updateQueueItem(item.id, { status: "uploading" });
+
+        const file = await getFileFromOPFS(
+          customerId,
+          item.id,
+          item.mimeType,
+          item.fileName,
+        );
+
+        const posts = await uploadMediaWeblink(
+          [file],
+          folderName,     
+          customerId,     
+          localPhoneNumber,        
+          (percent) => {
+            updateProgress(item.id, percent);
+            updateQueueItem(item.id, { progress: percent });
+          },
+          item.id
+        );
+
+        const post = posts[0];
+
+        await updateUploadedUrls(item.id, post.postUrl, post.postWebpUrl);
+        updateStatus(item.id, "done");
+
+        await removeFromQueue(item.id);
+        await deleteFromOPFS(customerId, item.id);
+      } catch (err) {
+        const newRetry = (item.retryCount || 0) + 1;
+        const status = newRetry > 5 ? "failed" : "queued";
+
+        await updateQueueItem(item.id, {
+          status,
+          retryCount: newRetry,
+        });
+
+        updateStatus(item.id, status);
+      }
+    }
+  }
+  const MAX_FILES = 10;
+
+  const handleAddMoreClick = async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*,video/*";
+    input.multiple = true;
+
+    input.onchange = async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length > MAX_FILES) {
+        alert(`Maximum ${MAX_FILES} files allowed at once.`);
+        return;
+      }
+
+      const optimisticItems = [];
+      const now = Date.now();
+
+      for (const file of files) {
+        const id = crypto.randomUUID();
+        const isVideo = file.type.startsWith("video/");
+        const localPreview = URL.createObjectURL(file);
+
+        const queueItem = {
+          id,
+          eventId: customerId,
+          fileName: file.name,
+          mimeType: file.type,
+          isVideo,
+          status: "queued",
+          progress: 0,
+          retryCount: 0,
+          createdAt: now,
+        };
+
+        // 1. OPFS save
+        const saved = await saveFileToOPFS(file, customerId, id);
+        if (!saved) {
+          console.warn("Could not save to OPFS, skipping optimistic UI");
+          continue;
+        }
+
+        // 2. IndexedDB queue
+        await addToQueue(queueItem);
+
+        // 3. Optimistic UI item
+        optimisticItems.push({
+          id,
+          localPreview,
+          isVideo,
+          progress: 0,
+          status: "queued",
+          postType: "selfUploaded",
+        });
+      }
+
+      if (optimisticItems.length > 0) {
+        const processed = await processImagesWithHeight(optimisticItems);
+        setAllThumbnails((prev) => [...processed, ...prev]);
+      }
+
+      // Trigger upload
+      processUploadQueue();
+    };
+
+    input.click();
+  };
+
+  useEffect(() => {
+    if (!customerId) return;
+
+    const init = async () => {
+      const cached = getCachedEvent(customerId);
+      if (cached) {
+        let merged = [];
+        const draftBase64 = localStorage.getItem(
+          `thankyou-note-draft-${customerId}`,
+        );
+        if (draftBase64) {
+          merged.push({
+            id: "draft-temp",
+            localPreview: draftBase64,
+            isVideo: false,
+            status: "draft",
+            postType: "thankYouNote",
+          });
+        }
+        const processed = await processImagesWithHeight(cached);
+        setAllThumbnails(merged.length ? [...merged, ...processed] : processed);
+      }
+
+      // B. Pending uploads check & resume
+      const pending = await getPendingUploads(customerId);
+      if (pending.length > 0) {
+        const existingIds = new Set(allThumbnails.map((i) => i.id));
+        const toShow = pending.filter((p) => !existingIds.has(p.id));
+
+        if (toShow.length > 0) {
+          const tempItems = await Promise.all(
+            toShow.map(async (p) => {
+              const preview = await getPreviewFromOPFS(
+                customerId,
+                p.id,
+                p.fileName,
+              );
+              return {
+                id: p.id,
+                localPreview: preview,
+                isVideo: p.isVideo,
+                status: p.status,
+                progress: p.progress || 0,
+                postType: "selfUploaded",
+              };
+            }),
+          );
+          const processed = await processImagesWithHeight(tempItems);
+
+          setAllThumbnails((prev) => {
+            const existingIds = new Set(prev.map((i) => i.id));
+
+            const newItems = processed.filter((i) => !existingIds.has(i.id));
+
+            return [...newItems, ...prev];
+          });
+        }
+
+        // Start uploading failed/queued ones
+        processUploadQueue(true); // silent = true if you want no extra UI flash
+      }
+
+      // C. Fresh load from backend (page 1)
+      await loadEventPosts(1);
+    };
+
+    init();
+  }, [customerId]);
 
   if (error) {
     return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
@@ -576,17 +889,17 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               <div>
                 {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                   <div className="buttons-container">
-              <button
-                className="add-new-btn"
-                onClick={() => {
-                      setSelectedImages(initialSubfolderImages);
-                      setIsEditing(true);
-                    }}
-              >
-                <span className="add-icon">+</span>
-                <span>Add Photos To Album</span>
-              </button>
-              </div>
+                    <button
+                      className="add-new-btn"
+                      onClick={() => {
+                        setSelectedImages(initialSubfolderImages);
+                        setIsEditing(true);
+                      }}
+                    >
+                      <span className="add-icon">+</span>
+                      <span>Add Photos To Album</span>
+                    </button>
+                  </div>
                 )}
 
                 {!isMyPhotosTab && activeSubFolderId && isEditing && (
@@ -620,7 +933,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             <div className="buttons-container">
               <button
                 className="add-new-btn"
-                onClick={() => addMoreImagesRef.current?.click()}
+                // onClick={() => addMoreImagesRef.current?.click()}
+                onClick={handleAddMoreClick}
               >
                 <span className="add-icon">+</span>
                 <span>Add New Photos</span>
@@ -675,7 +989,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
         </div>
         {/* Hidden file input – Add More Images */}
-        <input
+        {/* <input 
           type="file"
           id="addMoreImagesInput"
           ref={addMoreImagesRef}
@@ -709,7 +1023,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               tempThumbnails.map(async (temp) => {
                 const formData = new FormData();
 
-                formData.append("files", temp.file);
+                files.forEach((file) => {
+  formData.append("files", file);
+});
 
                 formData.append("folderName", folderName);
                 formData.append("customerId", localUserId);
@@ -783,7 +1099,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
             e.target.value = "";
           }}
-        />
+        /> */}
 
 
         <div>
@@ -876,7 +1192,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                           />
                         </div>
                       )}
-                      
+
                       {isEditing &&
                         !isSearchMode &&
                         activeSubFolderId &&
