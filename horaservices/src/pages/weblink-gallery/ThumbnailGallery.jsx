@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Image from 'next/image';
 import './gallery.css'; // Ensure this path is correct
-import { BASE_URL } from "@/utils/apiconstants";
 import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGalleryItem";
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import OtpLogin from "@/components/OtpLoginPopup";
@@ -24,6 +23,10 @@ import unLike from '../../assets/unLike.svg';
 import whiteShareIcon from '../../assets/whiteShareIcon.svg';
 import LikeFill from '../../assets/LikedFill.svg';
 import like from '../../assets/like.svg'
+import { assignToSubfolder, getImagesbyFolderName } from "@/services/weblinkServices";
+import { downloadFile } from "@/utils/downloadFile";
+import emptyFolder from '../../assets/emptyFolder.svg';
+import { filterThumbnails } from "@/utils/filterThumbnails";
 
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
@@ -67,7 +70,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
-  
+
 
 
 
@@ -116,7 +119,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     }
   };
 
-  const handleAddToFolderSubmit = () => {
+  const handleAddToFolderSubmit = async () => {
     if (usableFolders.length === 0) {
       setPendingAssignImageId(currentImage?._id);
 
@@ -129,16 +132,13 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
     const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
     const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
-
-    fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await assignToSubfolder({
         subFolderId: folderSelection,
         addImageIds: toAdd.length ? [currentImage._id] : [],
         removeImageIds: toRemove.length ? [currentImage._id] : [],
-      }),
-    }).then(() => {
+      });
+
       setAllThumbnails(prev =>
         prev.map(img =>
           img._id === currentImage._id
@@ -146,9 +146,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             : img
         )
       );
+
       setShowAddToFolderPopup(false);
       setIsEditing(false);
-    });
+
+    } catch (error) {
+      console.error(error);
+    }
+
   };
 
   useEffect(() => {
@@ -204,66 +209,18 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     : null;
 
   const visibleThumbnails = useMemo(() => {
-    const normalize = (val) => (val || "").trim().toLowerCase();
-
-    if (!isActualMyPhotos) {
-      if (isEditing) {
-        return allThumbnails;
-      }
-    }
-    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
-
-      const normalizedKeys = matchedKeys.map(normalize);
-
-      return allThumbnails.filter(img => {
-        if (img.type !== "image") return false;
-
-        return normalizedKeys.includes(normalize(img.thumbnailKey));
-      });
-    }
-
-
-    // if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-    //   return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
-    // }
-
-    if (isMyPhotosTabActive && myPhotosFolder) {
-      return allThumbnails.filter(img => img.folderIds?.includes(myPhotosFolder._id));
-    }
-
-    if (activeSubFolderId) {
-      return allThumbnails.filter(img => img.folderIds?.includes(activeSubFolderId));
-    }
-
-    return allThumbnails;
-  }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, myPhotosFolder, activeSubFolderId, isEditing]);
+    return filterThumbnails({
+      allThumbnails,
+      matchedKeys,
+      isMyPhotosTabActive,
+      isSearchActive,
+      activeSubFolderId,
+      isEditing,
+      isActualMyPhotos,
+    });
+  }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, activeSubFolderId, isEditing]);
 
   const usableFolders = subFolders.filter(sf => sf.type !== "my_photos");
-
-  const downloadFile = async (url) => {
-    const fileWithExt = url.split("/").pop();
-
-    const parts = fileWithExt.split("-");
-    const ext = parts.pop();
-    const filename = parts.join("-") + "." + ext;
-    try {
-      const response = await fetch(url, { mode: "cors" });
-      const blob = await response.blob();
-
-      // Create a download link
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = filename || "downloaded-image.jpg";
-      document.body.appendChild(link);
-      link.click();
-
-      // Cleanup
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error("Error downloading the file:", error);
-    }
-  };
 
   useEffect(() => {
     if (activeSubFolderId) {
@@ -283,9 +240,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       }
       setLoading(true); setError(null);
       try {
-        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
-        if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
-        const data = await response.json();
+        const data = await getImagesbyFolderName({
+          folderName,
+          customerId,
+        });
         setSubFolders(data.folders[0]?.subFolders || []);
         setMainFolderId(data?.folders[0]?._id || null)
         const fetchedThumbnails = (data.thumbnails || [])
@@ -367,40 +325,41 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       id => !selectedImages.includes(id)
     );
 
-    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await assignToSubfolder({
         subFolderId: activeSubFolderId,
         addImageIds: toAdd,
         removeImageIds: toRemove,
-      }),
-    });
+      });
 
-    setAllThumbnails(prev =>
-      prev.map(img => {
-        if (toAdd.includes(img._id)) {
-          return {
-            ...img,
-            folderIds: [...(img.folderIds || []), activeSubFolderId],
-          };
-        }
+      setAllThumbnails(prev =>
+        prev.map(img => {
+          if (toAdd.includes(img._id)) {
+            return {
+              ...img,
+              folderIds: [...(img.folderIds || []), activeSubFolderId],
+            };
+          }
 
-        if (toRemove.includes(img._id)) {
-          return {
-            ...img,
-            folderIds: (img.folderIds || []).filter(
-              id => id !== activeSubFolderId
-            ),
-          };
-        }
+          if (toRemove.includes(img._id)) {
+            return {
+              ...img,
+              folderIds: (img.folderIds || []).filter(
+                id => id !== activeSubFolderId
+              ),
+            };
+          }
 
-        return img;
-      })
-    );
+          return img;
+        })
+      );
 
-    setInitialSubfolderImages(selectedImages);
-    setIsEditing(false);
+      setInitialSubfolderImages(selectedImages);
+      setIsEditing(false);
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const formatPhoneNumber = (num) => {
@@ -677,7 +636,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
         </div>
         {/* Hidden file input – Add More Images */}
-        <input 
+        <input
           type="file"
           id="addMoreImagesInput"
           ref={addMoreImagesRef}
@@ -712,8 +671,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 const formData = new FormData();
 
                 files.forEach((file) => {
-  formData.append("files", file);
-});
+                  formData.append("files", file);
+                });
 
                 formData.append("folderName", folderName);
                 formData.append("customerId", localUserId);
@@ -838,6 +797,17 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
               <div className="thumbnail-gallery-status">No images found</div>
             )}
 
+          {(visibleThumbnails.length === 0 && activeSubFolderId) && (
+            <div className="weblink-emptyFolder-container">
+              <Image
+                src={emptyFolder}
+                alt="no images select"
+              />
+              <p className="label">No Photos Yet!</p>
+              <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
+            </div>
+          )}
+
           {/* ================= MAIN IMAGE GRID ================= */}
           {!loading && visibleThumbnails.length > 0 && (
             <div className="event-image-grid">
@@ -934,7 +904,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         onClose={() => {
           setShowAddToFolderPopup(false);
         }}
-        popupHeight={usableFolders.length === 0 ? "269" : "420"}
+        popupHeight={usableFolders.length === 0 ? "269" : "435"}
         title="Add to Folder"
         titleFontSize="22px"
         buttonContent={usableFolders.length === 0 ? null : "Add Now"}
@@ -1029,7 +999,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       <div
                         className="action-item flex"
                         onClick={() => {
-                          const current = allThumbnails[selectedIndex];
+                          const current = popupImages[selectedIndex];
                           downloadFile(current.originalUrl);
                           setShowActionMenu(false);
                         }}
@@ -1041,7 +1011,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                     <div
                       onClick={() => {
-                        const current = allThumbnails[selectedIndex];
+                        const current = popupImages[selectedIndex];
                         if (!current) return;
                         handleImageShare(current?.originalUrl);
                         setShowActionMenu(false);
@@ -1054,7 +1024,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       <div
                         className="action-item flex"
                         onClick={async () => {
-                          const currentImage = allThumbnails[selectedIndex];
+                          const currentImage = popupImages[selectedIndex];
                           if (!currentImage?._id) return;
 
                           if (!window.confirm("Are you sure you want to delete this image?")) return;

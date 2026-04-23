@@ -2,17 +2,17 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import "./headerCards.css";
 
-import myPhoto from "../../assets/myPhotos.jpg";
+import myPhoto from "../../assets/myPhotos.svg";
 import allPhotos from "../../assets/allPhotos.svg";
 import captureIcon from "../../assets/captureIcon.svg";
 import userIcon from "../../assets/userIcon.svg";
 import imagePicker from "../../assets/imagePicker.svg";
 import selfieCapture from "../../assets/selfieCapture.png";
 import user2 from '../../assets/user2.svg';
-
+import { createSubfolder, updateSubfolderDP } from "@/services/weblinkServices";
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
-import { MEDIA_WORKER_URL, FACE_FINDER_URL } from '../../utils/apiconstants'
+import { FACE_FINDER_URL } from '../../utils/apiconstants'
 
 const HeaderCards = ({
   folderName,
@@ -144,12 +144,8 @@ const HeaderCards = ({
       fd.append("file", file);
       fd.append("phoneNo", localPhoneNumber)
 
-      const res = await fetch(`${MEDIA_WORKER_URL}/create-subfolder`, {
-        method: "POST",
-        body: fd,
-      });
-
-      const data = await res.json();
+      const data = await createSubfolder(fd);
+    
       const created = data.subFolder;
 
       onSubFolderCreated(created);
@@ -283,12 +279,7 @@ const HeaderCards = ({
       fd.append("customerId", customerId);
       fd.append("phoneNo", localPhoneNumber)
 
-      const res = await fetch(`${MEDIA_WORKER_URL}/create-subfolder`, {
-        method: "POST",
-        body: fd,
-      });
-
-      const data = await res.json();
+      const data = await createSubfolder(fd); 
       const newFolder = data.subFolder;
 
       onSubFolderCreated(newFolder);
@@ -355,12 +346,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
     fd.append("subFolderId", subFolderId);
     fd.append("phoneNo", localPhoneNumber)
 
-    const res = await fetch(`${MEDIA_WORKER_URL}/update-subfolder-dp`, {
-      method: "PUT",
-      body: fd,
-    });
-
-    const data = await res.json();
+     const data = await updateSubfolderDP(fd); 
 
     if (data?.data?.thumbnailUrl) {
       updateAllStates(subFolderId, data.data.thumbnailUrl);
