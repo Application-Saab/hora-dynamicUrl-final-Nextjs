@@ -4,7 +4,7 @@ import PACKAGE3 from "@/assets/venueimages/non-veg.jpeg";
 export const SPOT360_FOOD_PACKAGES = [
   {
     id: 1,
-    name: "SPOT 360 SET MENU PACKAGE 1",
+    name: "SPOT 360 MENU PACKAGE 1",
     subtitle:
       "2 Veg Starters • 2 Non-Veg Starters • 2 Veg Main Course • 2 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 4 Breads • Complimentary: Brown Onion, Papad, Pickle • 2 Desserts",
     price: "₹2,500/-",
@@ -65,7 +65,7 @@ export const SPOT360_FOOD_PACKAGES = [
 
   {
     id: 2,
-    name: "SPOT 360 SET MENU PACKAGE 2",
+    name: "SPOT 360 MENU PACKAGE 2",
     subtitle:
       "3 Veg Starters • 3 Non-Veg Starters • 3 Soups • 2 Veg Main Course • 2 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 4 Breads • Complimentary: Brown Onion, Papad, Pickle • 2 Desserts • 1 Cake • 1 Ice Cream",
     price: "₹3,000/-",
@@ -134,7 +134,7 @@ export const SPOT360_FOOD_PACKAGES = [
 
   {
     id: 3,
-    name: "SPOT 360 SET MENU PACKAGE 3",
+    name: "SPOT 360 MENU PACKAGE 3",
     subtitle:
       "4 Veg Starters • 4 Non-Veg Starters • 2 Soups • 3 Veg Main Course • 3 Non-Veg Main Course • 1 Dal • 1 Flavored Rice • 4 Breads • Complimentary: Brown Onion, Papad, Pickle • 2 Desserts • 1 Cake • 1 Ice Cream",
     price: "₹3,500/-",
@@ -204,3 +204,7 @@ export const SPOT360_FOOD_PACKAGES = [
     },
   },
 ];
+
+
+
+
