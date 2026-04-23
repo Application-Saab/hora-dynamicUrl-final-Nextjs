@@ -795,20 +795,35 @@ export const OAKWOOD_FOOD_PACKAGES = [
 ];
 
 
-export const OAKWOOD_TERMS = {
-  kids: [
-    "Below 5 yrs — Non chargeable",
-    "5 to 10 yrs — Half charge",
-    "Above 10 yrs — Count as an adult",
-  ],
-  billing: [
-    "Billing will be done at the agreed rate for the guaranteed number of guests or the actual number of guests present, whichever is higher.",
-    "The quoted rates are applicable exclusively for the above-mentioned event.",
-    "Food will be prepared for up to 110% of the guaranteed number of guests.",
-  ],
-  payment: [
-    "A 50% advance payment is required at least to confirm the booking.",
-    "The remaining 50% balance must be settled before the event.",
-    "Any additional charges must be settled immediately after the event by cash, UPI or credit card.",
-  ],
-};
+export const OAKWOOD_TERMS = [
+  {
+    title: "Kids Policy",
+    icon: "👶",
+    key: "kids",
+    points: [
+      "Below 5 years — Non-chargeable",
+      "Between 5 to 10 years — 50% charge applicable",
+      "Above 10 years — Considered as an adult"
+    ]
+  },
+  {
+    title: "Billing Information",
+    icon: "🧾",
+    key: "billing",
+    points: [
+      "Billing will be done at the agreed rate for the guaranteed number of guests or the actual number of guests present, whichever is higher.",
+      "The quoted rates are applicable only for the above-mentioned event.",
+      "Food will be prepared for up to 110% of the guaranteed number of guests."
+    ]
+  },
+  {
+    title: "Payment Terms",
+    icon: "💳",
+    key: "payment",
+    points: [
+      "A 50% advance payment is required to confirm the booking.",
+      "The remaining 50% balance must be settled before the event.",
+      "Any additional charges must be settled immediately after the event via cash, UPI, or credit card."
+    ]
+  }
+];

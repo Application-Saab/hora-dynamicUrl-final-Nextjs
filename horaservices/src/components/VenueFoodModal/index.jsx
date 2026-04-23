@@ -106,7 +106,7 @@ const VenueFoodModal = ({ data, onClose }) => {
               </svg>
               <div className="vfm-cell-text">
                 <span className="vfm-cell-main">{data.price}</span>
-                <span className="vfm-cell-sub">Per Person / All Inclusive</span>
+                <span className="vfm-cell-sub">Per Person / {data.tag}</span>
               </div>
             </div>
 

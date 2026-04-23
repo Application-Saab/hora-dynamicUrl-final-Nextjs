@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import useApi from "@/hooks/useApi";
 import { GET_EVENT_BY_ID, GET_USER_BY_ID } from "@/utils/apiconstants";
 import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlashLoader";
-import InviteAddressSection from "@/components/wonderland/common/InviteAddressSection";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
