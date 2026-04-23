@@ -228,10 +228,11 @@ function MyApp({ Component, pageProps }) {
                       style={{ display: "none", visibility: "hidden" }}
                     ></iframe>
                   </noscript>
-
+{pathname !== "/weblink-gallery" && (
                   <div className="whatsapp-container">
                     <WhatsAppIcon router={router} />
                   </div>
+                  )}
                   <div>
                     <VisitorTracker/>
                   </div> 
