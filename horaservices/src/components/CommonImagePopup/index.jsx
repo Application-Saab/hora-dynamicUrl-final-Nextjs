@@ -45,11 +45,11 @@ const CommonImagePopup = ({
     adaptiveHeight: true,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
-    beforeChange: (current, next) => { 
-    pauseAllVideos();
-    setImageNumber(next + 1);
-    setSelectedIndex(next); 
-  },
+    beforeChange: (current, next) => {
+      pauseAllVideos();
+      setImageNumber(next + 1);
+      setSelectedIndex(next);
+    },
 
     afterChange: () => {
       playActiveVideo();
@@ -159,54 +159,59 @@ const CommonImagePopup = ({
 
         {/* Slider */}
         <div className="popupSliderWrapper">
-        <Slider
-          {...sliderSettings}
-          initialSlide={selectedIndex}
-          key={`eventwall-slider-${selectedIndex}`}
-        >
-          {images.map((item, idx) => {
-            const isVideo = item.type === "video" ;
+          <Slider
+            {...sliderSettings}
+            initialSlide={selectedIndex}
+            key="eventwall-slider"
+          >
+            {images.map((item, idx) => {
+              const isVisible =
+                Math.abs(idx - selectedIndex) <= 1;
 
-            return (
-              <div
-                key={item._id || idx}
-                className="slick-slide-item"
-              >
-                {isVideo ? (
-                  <video
-                    src={item.originalUrl}
-                    controls
-                    playsInline
-                    muted={false}
-                    preload="auto"
-                    style={{
-                      maxHeight: "80vh",
-                      width: "100%",
-                      objectFit: "contain",
-                      background: "#000",
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={item.thumbnailImageUrl || item.originalUrl}
-                    alt={`Media ${idx + 1}`}
-                    style={{
-                      maxHeight: "80vh",
-                      width: "100%",
-                      objectFit: "contain",
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </Slider>
+              if (!isVisible) {
+                return <div key={idx} />;
+              }
+
+              const isVideo = item.type === "video";
+
+              return (
+                <div key={item._id || idx} className="slick-slide-item">
+                  {isVideo ? (
+                    <video
+                      src={item.originalUrl}
+                      controls
+                      playsInline
+                      muted={false}
+                      preload="metadata"
+                      style={{
+                        maxHeight: "80vh",
+                        width: "100%",
+                        objectFit: "contain",
+                        background: "#000",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={item.thumbnailImageUrl || item.originalUrl}
+                      loading="lazy"
+                      alt={`Media ${idx + 1}`}
+                      style={{
+                        maxHeight: "80vh",
+                        width: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </Slider>
         </div>
-         <div className="popupFooter">
-        {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
+        <div className="popupFooter">
+          {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
+        </div>
       </div>
-      </div>
-     
+
     </div>
   );
 };
