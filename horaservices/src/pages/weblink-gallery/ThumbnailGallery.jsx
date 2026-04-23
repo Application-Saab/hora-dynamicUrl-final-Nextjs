@@ -56,11 +56,11 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const isMyPhotosTab = subFolders.find(sf => sf._id === activeTab)?.type === "my_photos";
-  const isSearchMode = isSearching && matchedKeys.length > 0;
+  const isSearchMode = isSearching;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const myPhotosFolder = subFolders.find(sf => sf.type === "my_photos");
   const isMyPhotosTabActive = activeTab === (myPhotosFolder?._id || "my-photos");
-  const isSearchActive = isMyPhotosTabActive && isSearching;
+  const isSearchActive = isSearching;
   const [isStreamSearching, setIsStremSearching] = useState(false);
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const actionMenuRef = useRef(null);
@@ -70,6 +70,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
+  const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
 
 
 
@@ -94,10 +95,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }, [showActionMenu]);
 
   useEffect(() => {
-    if (matchedKeys?.length > 0 || myPhotosFolder?.length > 0) {
+    if (matchedKeys?.length > 0 || myPhotosFolder) {
       setIsEditing(false);
     }
-  }, [matchedKeys.length > 0]);
+  }, [matchedKeys, myPhotosFolder]);
 
 
   const handleImageShare = async (imageUrl) => {
@@ -218,7 +219,14 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       isEditing,
       isActualMyPhotos,
     });
-  }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, activeSubFolderId, isEditing]);
+  }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, isActualMyPhotos, activeSubFolderId, isEditing]);
+
+  const finalThumbnails =
+    isActualMyPhotos && myPhotoSearchResults.length > 0
+      ? allThumbnails.filter(img =>
+        myPhotoSearchResults.includes(img.thumbnailKey)
+      )
+      : visibleThumbnails;
 
   const usableFolders = subFolders.filter(sf => sf.type !== "my_photos");
 
@@ -293,12 +301,12 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     setSelectedIndex(null);
   }, []);
 
-  const handleSearchResults = (matches) => {
-    if (!Array.isArray(matches)) return;
+  const handleSearchResults = useCallback((matches) => {
     const keys = matches.map(m => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
-  };
+    setMyPhotoSearchResults(keys);
+  }, []);
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
@@ -402,12 +410,13 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   const handleSubFolderSelect = (id) => {
     setActiveSubFolderId(id);
-
     setSelectedImages([]);
+
+    setIsSearching(false);
+    setMyPhotoSearchResults([]);
 
     if (activeTab !== "my-photos") {
       setIsEditing(false);
-
       setActiveTab(id ?? "all");
     }
   };
@@ -528,6 +537,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
             capturedImage={capturedImage}
             setCapturedImage={setCapturedImage}
+            matchedKeys={matchedKeys}
           />
         }
         <div>
@@ -790,13 +800,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
 
           {/* ================= NO SEARCH RESULT ================= */}
-          {!loading &&
-            !isStreamSearching &&
-            isActualMyPhotos &&
-            visibleThumbnails.length === 0 && (
-              <div className="thumbnail-gallery-status">No images found</div>
-            )}
-
           {(visibleThumbnails.length === 0 && activeSubFolderId) && (
             <div className="weblink-emptyFolder-container">
               <Image
@@ -809,9 +812,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
 
           {/* ================= MAIN IMAGE GRID ================= */}
-          {!loading && visibleThumbnails.length > 0 && (
+          {!loading && finalThumbnails.length > 0 && (
             <div className="event-image-grid">
-              {visibleThumbnails.map((thumbnail, indexOnPage) => {
+              {finalThumbnails.map((thumbnail, indexOnPage) => {
                 const type = getBlockType(indexOnPage);
                 const hasAnyLike = (thumbnail.likedBy?.length || 0) > 0;
                 return (
