@@ -5,7 +5,7 @@ import ArrowImg from "../../assets/arrow.svg";
 import nextIcon from "../../assets/nextIcon.svg";
 import Image from "next/image";
 import Crossicon from "../../assets/Crossicon.svg";
-import './commonPopup.css'
+import "./commonPopup.css";
 
 const PrevArrow = ({ className, onClick }) => (
   <div className={`${className} custom-arrow prev-arrow`} onClick={onClick}>
@@ -20,7 +20,7 @@ const NextArrow = ({ className, onClick }) => (
 );
 
 const pauseAllVideos = () => {
-  const videos = document.querySelectorAll('.popupContent video');
+  const videos = document.querySelectorAll(".popupContent video");
   videos.forEach((video) => {
     video.pause();
     video.currentTime = 0;
@@ -33,9 +33,9 @@ const CommonImagePopup = ({
   setSelectedIndex,
   renderActions,
   onClose,
-  renderFooter
+  renderFooter,
+  isEventWall = false,
 }) => {
-
   const sliderSettings = {
     dots: false,
     infinite: images.length > 1,
@@ -45,11 +45,11 @@ const CommonImagePopup = ({
     adaptiveHeight: true,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
-    beforeChange: (current, next) => { 
-    pauseAllVideos();
-    setImageNumber(next + 1);
-    setSelectedIndex(next); 
-  },
+    beforeChange: (current, next) => {
+      pauseAllVideos();
+      setImageNumber(next + 1);
+      setSelectedIndex(next);
+    },
 
     afterChange: () => {
       playActiveVideo();
@@ -62,7 +62,7 @@ const CommonImagePopup = ({
   }, [selectedIndex]);
 
   const playActiveVideo = () => {
-    const activeVideo = document.querySelector('.slick-current video');
+    const activeVideo = document.querySelector(".slick-current video");
     if (!activeVideo) return;
 
     activeVideo.currentTime = 0;
@@ -74,7 +74,7 @@ const CommonImagePopup = ({
     if (activeVideo.readyState >= 2) {
       playWhenReady();
     } else {
-      activeVideo.addEventListener('loadeddata', playWhenReady, { once: true });
+      activeVideo.addEventListener("loadeddata", playWhenReady, { once: true });
     }
   };
 
@@ -110,7 +110,7 @@ const CommonImagePopup = ({
 
       if (isActive) {
         video.muted = false;
-        video.play().catch(() => { });
+        video.play().catch(() => {});
       } else {
         video.pause();
         video.currentTime = 0;
@@ -139,11 +139,7 @@ const CommonImagePopup = ({
       aria-modal="true"
       style={{ zIndex: 9999 }}
     >
-      <div
-        className="popupContent"
-        onClick={(e) => e.stopPropagation()}
-      >
-
+      <div className="popupContent" onClick={(e) => e.stopPropagation()}>
         <div className="popupHeader">
           <div className="popupHeader-left">
             <button className="closeButton" onClick={onClose}>
@@ -159,54 +155,61 @@ const CommonImagePopup = ({
 
         {/* Slider */}
         <div className="popupSliderWrapper">
-        <Slider
-          {...sliderSettings}
-          initialSlide={selectedIndex}
-          key={`eventwall-slider-${selectedIndex}`}
-        >
-          {images.map((item, idx) => {
-            const isVideo = item.type === "video" ;
+          <Slider
+            {...sliderSettings}
+            initialSlide={selectedIndex}
+            key="eventwall-slider"
+          >
+            {images.map((item, idx) => {
+              const isVisible = Math.abs(idx - selectedIndex) <= 1;
 
-            return (
-              <div
-                key={item._id || idx}
-                className="slick-slide-item"
-              >
-                {isVideo ? (
-                  <video
-                    src={item.originalUrl}
-                    controls
-                    playsInline
-                    muted={false}
-                    preload="auto"
-                    style={{
-                      maxHeight: "80vh",
-                      width: "100%",
-                      objectFit: "contain",
-                      background: "#000",
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={item.thumbnailImageUrl || item.originalUrl}
-                    alt={`Media ${idx + 1}`}
-                    style={{
-                      maxHeight: "80vh",
-                      width: "100%",
-                      objectFit: "contain",
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </Slider>
+              if (!isVisible) {
+                return <div key={idx} />;
+              }
+
+              const isVideo = item.type === "video";
+
+              return (
+                <div key={item._id || idx} className="slick-slide-item">
+                  {isVideo ? (
+                    <video
+                      src={ isEventWall ? item?.postUrl : item.originalUrl}
+                      controls
+                      playsInline
+                      muted={false}
+                      preload="metadata"
+                      style={{
+                        maxHeight: "80vh",
+                        width: "100%",
+                        objectFit: "contain",
+                        background: "#000",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={
+                        isEventWall
+                          ? item?.postWebpUrl || item?.postUrl
+                          : item.thumbnailImageUrl || item.originalUrl
+                      }
+                      loading="lazy"
+                      alt={`Media ${idx + 1}`}
+                      style={{
+                        maxHeight: "80vh",
+                        width: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </Slider>
         </div>
-         <div className="popupFooter">
-        {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
+        <div className="popupFooter">
+          {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
+        </div>
       </div>
-      </div>
-     
     </div>
   );
 };

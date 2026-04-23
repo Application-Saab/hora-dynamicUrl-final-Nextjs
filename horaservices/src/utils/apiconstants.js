@@ -1,5 +1,7 @@
-export const BASE_URL = "https://horaservices.com";
-export const MEDIA_PROCESSING_URL = "https://mediaprocessv2.horaservices.com";
+export const BASE_URL = "http://localhost:5000";
+export const MEDIA_WORKER_URL = "http://localhost:4000";
+export const FACE_FINDER_URL = "https://horaservices.com/face-api";
+
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const COMPRESSED_WEBP_IMG_URL =
@@ -42,6 +44,8 @@ export const CREATE_GUEST_BY_EVENTID = "/api/customer/event/event-guest";
 export const UPDATE_RSVP_STATUS = "/api/customer/event/event-guest";
 export const GET_ALL_TEMPLATES = "/api/photo/templates";
 export const GET_TEMPLATES_BY_ID = "/api/photo/templates";
+export const EVENT_POST_LIKE_UNLIKE = '/api/customer/event';
+export const LIKED_POST_BY_EVENT_AND_USERID = "/api/customer/event/liked-posts"
 
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
 export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
@@ -66,5 +70,3 @@ export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
 
-export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
-export const FACE_FINDER_URL = "https://horaservices.com/face-api";

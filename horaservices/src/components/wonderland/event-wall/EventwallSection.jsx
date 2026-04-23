@@ -1,10 +1,25 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import NotesButtonIcon from "@/assets/wonderland/NotesButtonIcon.svg";
 import PostBadgeButtonIcon from "@/assets/wonderland/PostBadgeButtonIcon.svg";
 import GalleryButtonIcon from "@/assets/wonderland/GalleryButtonIcon.svg";
 import NopostCamera from "@/assets/wonderland/NopostCamera.svg";
+import share from "@/assets/share.svg";
+import multiGroup from "@/assets/multiGroup.svg";
+import plusVector from "@/assets/plusVector.svg";
+import downloadVector from "@/assets/downloadVector.svg";
+import shareVector from "@/assets/shareVector.svg";
+import deleteVector from "@/assets/DeleteVector.svg";
+import whiteShareIcon from "@/assets/whiteShareIcon.svg";
+import unLike from "@/assets/unLike.svg";
+import like from "@/assets/like.svg";
 import {
   uploadMedia,
   getPendingUploads,
@@ -13,14 +28,14 @@ import {
   addToQueue,
 } from "@/utils/handleMediaUpload";
 import useApi from "@/hooks/useApi";
-import { GET_ALL_POSTS } from "@/utils/apiconstants";
 import {
-  cacheEvent,
-  clearAllEventCache,
-  getCachedEvent,
-} from "@/utils/eventCache";
+  BASE_URL,
+  EVENT_POST_LIKE_UNLIKE,
+  GET_ALL_POSTS,
+  LIKED_POST_BY_EVENT_AND_USERID,
+} from "@/utils/apiconstants";
 import "../../common/EventLazyImage.css";
-import EventwallGalleryItem from "./EventwallGalleryItem";
+import { EventwallGalleryItemWonderland } from "./EventwallGalleryItem";
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -31,9 +46,12 @@ import {
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../../../pages/photo-gallery/gallery.css";
+// import "../../../pages/photo-gallery/gallery.css";
+import "../../../pages/weblink-gallery/gallery.css";
 import { IoCloseSharp } from "react-icons/io5";
-import PaginationControls from "@/components/PaginationControls";
+import ImageGrid from "@/components/image-galleries/ImageGrid";
+import CommonImagePopup from "@/components/CommonImagePopup";
+import Image from "next/image";
 const EventwallSection = ({
   userData,
   rsvpSubmitted,
@@ -43,18 +61,39 @@ const EventwallSection = ({
   const router = useRouter();
   const { eventid } = router.query;
   const { makeRequest: getAllPosts } = useApi();
+  const { makeRequest: getAllLikes } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
   const imagesRef = useRef([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [matchedKeys, setMatchedKeys] = useState([]);
+  const [activeSubFolderId, setActiveSubFolderId] = useState(null);
+  const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
+  const isSearchMode = isSearching && matchedKeys.length > 0;
   const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
   const [imageNumber, setImageNumber] = useState(0);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const ITEMS_PER_PAGE = 25;
   const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+  const [subFolders, setSubFolders] = useState([]);
+  const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const isMyPhotosTabActive =
+    activeTab === (myPhotosFolder?._id || "my-photos");
+  const isMyPhotosTab =
+    subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
+  const isSearchActive = isMyPhotosTabActive && isSearching;
+  const [showActionMenu, setShowActionMenu] = useState(false);
+  const [number, setNumber] = useState("");
+  const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
+  const [folderSelection, setFolderSelection] = useState([]);
+  const [initialPopupFolders, setInitialPopupFolders] = useState([]);
+  const [localPhoneNumber, setLocalPhoneNumber] = useState(localStorage.getItem("mobileNumber") || "");
+  const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
+  const [likedImages, setLikedImages] = useState({});
+
+  const actionMenuRef = useRef(null);
 
   const currentImages = allImages;
 
@@ -68,6 +107,26 @@ const EventwallSection = ({
   useEffect(() => {
     imagesRef.current = allImages;
   }, [allImages]);
+
+  useEffect(() => {
+    if (!userId || allImages.length === 0) return;
+
+    
+    const fetchLikes = async () => {
+      const initialLikes = {};
+      const resp = await getAllLikes(
+        `${LIKED_POST_BY_EVENT_AND_USERID}/${eventid}/${userId}`,
+        "GET",
+      );
+
+      resp?.posts?.forEach((post) => {
+        initialLikes[post._id] = true;
+      });
+
+      setLikedImages(initialLikes);
+    };
+    fetchLikes();
+  }, [allImages, userId]);
 
   const pauseAllVideos = () => {
     const videos = document.querySelectorAll(".popupContent video");
@@ -112,7 +171,7 @@ const EventwallSection = ({
     },
   };
 
-  async function loadEventPosts(pageToLoad = 1) {
+  async function loadEventPosts() {
     if (!eventid) return;
 
     const draftBase64 = localStorage.getItem(`thankyou-note-draft-${eventid}`);
@@ -133,24 +192,12 @@ const EventwallSection = ({
       };
     }
 
-    // Show cache instantly (only page 1)
-    if (pageToLoad === 1) {
-      const cached = getCachedEvent(eventid);
-      if (cached) {
-        let merged = draftItem ? [draftItem, ...cached] : cached;
-        setAllImages(await processImagesWithHeight(merged));
-      }
-    }
-
-    const resp = await getAllPosts(
-      `${GET_ALL_POSTS}/${eventid}?page=${pageToLoad}&limit=${ITEMS_PER_PAGE}`,
-      "GET",
-    );
+    const resp = await getAllPosts(`${GET_ALL_POSTS}/${eventid}`, "GET");
 
     if (resp?.data?.posts) {
       let fresh = [...resp.data.posts];
 
-      if (draftItem && pageToLoad === 1) {
+      if (draftItem) {
         fresh = [draftItem, ...fresh];
       }
 
@@ -184,12 +231,6 @@ const EventwallSection = ({
           return [...pendingItems, ...mergedBackend];
         });
       }
-
-      setTotalPages(resp.data.totalPages);
-
-      if (pageToLoad === 1) {
-        cacheEvent(eventid, resp.data.posts);
-      }
     }
   }
 
@@ -197,25 +238,6 @@ const EventwallSection = ({
     if (!eventid) return;
 
     const init = async () => {
-      const cached = getCachedEvent(eventid);
-      if (cached) {
-        let merged = [];
-        const draftBase64 = localStorage.getItem(
-          `thankyou-note-draft-${eventid}`,
-        );
-        if (draftBase64) {
-          merged.push({
-            id: "draft-temp",
-            localPreview: draftBase64,
-            isVideo: false,
-            status: "draft",
-            postType: "thankYouNote",
-          });
-        }
-        const processed = await processImagesWithHeight(cached);
-        setAllImages(merged.length ? [...merged, ...processed] : processed);
-      }
-
       // B. Pending uploads check & resume
       const pending = await getPendingUploads(eventid);
       if (pending.length > 0) {
@@ -256,7 +278,7 @@ const EventwallSection = ({
       }
 
       // C. Fresh load from backend (page 1)
-      await loadEventPosts(1);
+      await loadEventPosts();
     };
 
     init();
@@ -352,7 +374,7 @@ const EventwallSection = ({
             updateProgress(item.id, percent);
             updateQueueItem(item.id, { progress: percent });
           },
-          item.id
+          item.id,
         );
 
         const post = posts[0];
@@ -361,7 +383,7 @@ const EventwallSection = ({
         updateStatus(item.id, "done");
 
         await removeFromQueue(item.id);
-        await deleteFromOPFS(eventid, item.id);
+        await deleteFromOPFS(eventid, item.id, item.fileName);
       } catch (err) {
         const newRetry = (item.retryCount || 0) + 1;
         const status = newRetry > 5 ? "failed" : "queued";
@@ -444,7 +466,6 @@ const EventwallSection = ({
 
   useEffect(() => {
     const clear = () => {
-      clearAllEventCache();
       localStorage.removeItem("thankyou-note-draft");
     };
 
@@ -496,28 +517,192 @@ const EventwallSection = ({
     }
   }, [selectedIndex]);
 
-  useEffect(() => {
-    if (isIOSMobile) return;
+  const handleSelectImage = (id) => {
+    if (selectedImages.includes(id)) {
+      setSelectedImages((prev) => prev.filter((item) => item !== id));
+    } else {
+      setSelectedImages((prev) => [...prev, id]);
+    }
+  };
 
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 300 &&
-        !loadingMore &&
-        currentPage < totalPages
-      ) {
-        setLoadingMore(true);
-        const nextPage = currentPage + 1;
-        setCurrentPage(nextPage);
-        loadEventPosts(nextPage).finally(() => {
-          setLoadingMore(false);
-        });
+  const handleImageClick = useCallback((indexInDisplayedList) => {
+    setSelectedIndex(indexInDisplayedList);
+  }, []);
+
+  const closePopup = useCallback(() => {
+    setSelectedIndex(null);
+  }, []);
+
+  const visibleThumbnails = useMemo(() => {
+    const normalize = (val) => (val || "").trim().toLowerCase();
+
+    if (!isActualMyPhotos) {
+      if (isEditing) {
+        return allImages;
       }
-    };
+    }
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+      const normalizedKeys = matchedKeys.map(normalize);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentPage, totalPages, loadingMore, isIOSMobile]);
+      return allImages.filter((img) => {
+        if (img.type !== "image") return false;
+
+        return normalizedKeys.includes(normalize(img.thumbnailKey));
+      });
+    }
+
+    // if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
+    //   return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+    // }
+
+    if (isMyPhotosTabActive && myPhotosFolder) {
+      return allImages.filter((img) =>
+        img.folderIds?.includes(myPhotosFolder._id),
+      );
+    }
+
+    if (activeSubFolderId) {
+      return allImages.filter((img) =>
+        img.folderIds?.includes(activeSubFolderId),
+      );
+    }
+
+    return allImages;
+  }, [
+    allImages,
+    matchedKeys,
+    activeTab,
+    isMyPhotosTabActive,
+    isSearchActive,
+    myPhotosFolder,
+    activeSubFolderId,
+    isEditing,
+  ]);
+
+  const popupImages = useMemo(() => {
+    if (!activeSubFolderId) return allImages;
+
+    return allImages.filter((img) =>
+      img.folderIds?.includes(activeSubFolderId),
+    );
+  }, [allImages, activeSubFolderId]);
+
+  const downloadFile = async (url) => {
+    const fileWithExt = url.split("/").pop();
+
+    const parts = fileWithExt.split("-");
+    const ext = parts.pop();
+    const filename = parts.join("-") + "." + ext;
+    try {
+      const response = await fetch(url, { mode: "cors" });
+      const blob = await response.blob();
+
+      // Create a download link
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename || "downloaded-image.jpg";
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Error downloading the file:", error);
+    }
+  };
+
+  const handleImageShare = async (imageUrl) => {
+    if (!imageUrl) return;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Photo",
+          text: "Check out this photo!",
+          url: imageUrl,
+        });
+      } catch (error) {
+        console.error("Error sharing image:", error);
+      }
+    } else {
+      await navigator.clipboard.writeText(imageUrl);
+      alert("Image link copied!");
+    }
+  };
+
+  const handleLikeToggle = async (imageId) => {
+    const isCurrentlyLiked = likedImages[imageId];
+
+    setLikedImages((prev) => ({
+      ...prev,
+      [imageId]: !isCurrentlyLiked,
+    }));
+
+    setAllImages((prev) =>
+      prev.map((img) => {
+        if (img._id === imageId) {
+          let updatedLikedBy = [...(img.likedBy || [])];
+
+          if (isCurrentlyLiked) {
+            updatedLikedBy = updatedLikedBy.filter(
+              (id) => String(id) !== String(userId),
+            );
+          } else {
+            updatedLikedBy = [...updatedLikedBy, userId];
+          }
+
+          return {
+            ...img,
+            likedBy: updatedLikedBy,
+          };
+        }
+        return img;
+      }),
+    );
+
+    try {
+      await fetch(`${BASE_URL}${EVENT_POST_LIKE_UNLIKE}/${imageId}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          likedById: userId,
+          likedByName: userData?.name || "Guest",
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+
+      setLikedImages((prev) => ({
+        ...prev,
+        [imageId]: isCurrentlyLiked,
+      }));
+
+      setAllImages((prev) =>
+        prev.map((img) => {
+          if (img._id === imageId) {
+            let updatedLikedBy = [...(img.likedBy || [])];
+
+            if (!isCurrentlyLiked) {
+              updatedLikedBy = updatedLikedBy.filter(
+                (id) => String(id) !== String(userId),
+              );
+            } else {
+              updatedLikedBy = [...updatedLikedBy, userId];
+            }
+
+            return {
+              ...img,
+              likedBy: updatedLikedBy,
+            };
+          }
+          return img;
+        }),
+      );
+    }
+  };
 
   return (
     <>
@@ -570,18 +755,7 @@ const EventwallSection = ({
                 margin: "20px auto",
               }}
             >
-              {isIOSMobile && totalPages > 1 && (
-                <PaginationControls
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={(page) => {
-                    setCurrentPage(page);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  inline={true}
-                />
-              )}
-              <div className="event-image-grid">
+              {/* <div className="event-image-grid">
                 {currentImages?.map((thumbnail, indexOnPage) => {
                   const type = getBlockType(indexOnPage);
                   const isVideo =
@@ -599,14 +773,10 @@ const EventwallSection = ({
                       }}
                       className={`grid-item ${type}`}
                       onClick={() => {
-                        const originalIndex = isIOSMobile
-                          ? (currentPage - 1) * ITEMS_PER_PAGE + indexOnPage
-                          : indexOnPage;
-
-                        setSelectedIndex(originalIndex);
+                        setSelectedIndex(indexOnPage);
                       }}
                     >
-                      <EventwallGalleryItem
+                      <EventwallGalleryItemWonderland
                         isVideo={isVideo}
                         thumbnail={thumbnail}
                         indexOnPage={indexOnPage}
@@ -614,8 +784,194 @@ const EventwallSection = ({
                     </div>
                   );
                 })}
-              </div>
-              {selectedIndex !== null && allImages[selectedIndex] && (
+              </div> */}
+
+              <ImageGrid
+                data={visibleThumbnails}
+                loading={false}
+                isEventWall={true}
+                handleSelectImage={handleSelectImage}
+                handleImageClick={handleImageClick}
+                isEditing={isEditing}
+                isSearchMode={isSearchMode}
+                activeSubFolderId={activeSubFolderId}
+                isActualMyPhotos={isActualMyPhotos}
+              />
+
+              <CommonImagePopup
+                images={popupImages}
+                selectedIndex={selectedIndex}
+                setSelectedIndex={setSelectedIndex}
+                onClose={closePopup}
+                isEventWall={true}
+                renderActions={(currentImage, index) => (
+                  <div>
+                    <div style={{ position: "relative" }}>
+                      <Image
+                        src={multiGroup}
+                        alt="More"
+                        width={25}
+                        height={25}
+                        onClick={() => setShowActionMenu((prev) => !prev)}
+                      />
+
+                      {showActionMenu && (
+                        <div className="action-menu" ref={actionMenuRef}>
+                          <div className="action-item">
+                            <strong>Shared by:</strong>
+                            <p>{number}</p>
+                          </div>
+
+                          <div className="action-inner-container">
+                            <div
+                              className="action-item flex"
+                              onClick={() => {
+                                if (!currentImage) return;
+                                setFolderSelection(
+                                  currentImage.folderIds || [],
+                                );
+                                setInitialPopupFolders(
+                                  currentImage.folderIds || [],
+                                );
+                                setShowAddToFolderPopup(true);
+                                setShowActionMenu(false);
+                              }}
+                            >
+                              <Image src={plusVector} width={19} height={15} />
+                              <span>Add to Folder</span>
+                            </div>
+                            {currentImage?.type !== "video" && (
+                              <div
+                                className="action-item flex"
+                                onClick={() => {
+                                  const current = allImages[selectedIndex];
+                                  downloadFile(current.postUrl);
+                                  setShowActionMenu(false);
+                                }}
+                              >
+                                <Image
+                                  src={downloadVector}
+                                  width={15}
+                                  height={15}
+                                />
+                                <span>Download</span>
+                              </div>
+                            )}
+
+                            <div
+                              onClick={() => {
+                                const current = allImages[selectedIndex];
+                                if (!current) return;
+                                handleImageShare(current?.postUrl);
+                                setShowActionMenu(false);
+                              }}
+                              className="action-item flex gallery-share-icon"
+                            >
+                              <Image src={shareVector} width={13} height={14} />
+                              <span>Share</span>
+                            </div>
+                            {String(rawPhoneNumber) ===
+                              String(localPhoneNumber) && (
+                              <div
+                                className="action-item flex"
+                                onClick={async () => {
+                                  const currentImage = allImages[selectedIndex];
+                                  if (!currentImage?._id) return;
+
+                                  if (
+                                    !window.confirm(
+                                      "Are you sure you want to delete this image?",
+                                    )
+                                  )
+                                    return;
+
+                                  try {
+                                    const res = await fetch(
+                                      `${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`,
+                                      {
+                                        method: "DELETE",
+                                      },
+                                    );
+
+                                    if (!res.ok) {
+                                      const err = await res.text();
+                                      throw new Error(err);
+                                    }
+
+                                    setAllImages((prev) => {
+                                      const newList = prev.filter(
+                                        (img) => img._id !== currentImage._id,
+                                      );
+                                      if (newList.length === 0) {
+                                        setSelectedIndex(null);
+                                      } else if (
+                                        selectedIndex >= newList.length
+                                      ) {
+                                        setSelectedIndex(newList.length - 1);
+                                      } else {
+                                        setSelectedIndex(selectedIndex);
+                                      }
+                                      return newList;
+                                    });
+
+                                    setShowActionMenu(false);
+                                  } catch (err) {
+                                    console.error("Delete failed:", err);
+                                    alert("Failed to delete image");
+                                  }
+                                }}
+                              >
+                                <Image
+                                  src={deleteVector}
+                                  width={13}
+                                  height={17}
+                                />
+                                <span>Delete</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                renderFooter={(currentImage, index) => {
+                  const imageId = currentImage?._id;
+
+                  const isLiked = likedImages[imageId];
+
+                  return (
+                    <div className="imagepopup-footer">
+                      <div>
+                        <Image
+                          src={isLiked ? like : unLike}
+                          alt="Like"
+                          width={30}
+                          height={32}
+                          style={{ filter: "none", cursor: "pointer" }}
+                          onClick={() => handleLikeToggle(imageId)}
+                        />
+                      </div>
+
+                      <div>
+                        <Image
+                          src={whiteShareIcon}
+                          alt="Share"
+                          width={30}
+                          height={32}
+                          style={{ filter: "none", cursor: "pointer" }}
+                          onClick={() => {
+                            if (!currentImage) return;
+                            handleImageShare(currentImage?.postUrl);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+
+              {/* {selectedIndex !== null && allImages[selectedIndex] && (
                 <div
                   className="popupOverlay"
                   onClick={() => setSelectedIndex(null)}
@@ -627,7 +983,6 @@ const EventwallSection = ({
                     className="popupContent"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {/* Header */}
                     <div className="popupHeader">
                       <span className="image-index">
                         {`${imageNumber} / ${allImages.length}`}
@@ -642,7 +997,6 @@ const EventwallSection = ({
                       </button>
                     </div>
 
-                    {/* Slider */}
                     <Slider
                       {...sliderSettings}
                       initialSlide={selectedIndex}
@@ -694,7 +1048,7 @@ const EventwallSection = ({
                     </Slider>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         )}
