@@ -26,11 +26,11 @@ const VenueAddressSection = ({ eventData }) => {
         {/* LEFT — Venue Name + Address */}
         <div className="vas-info">
           {eventData?.hostName && (
-            <h3 className="vas-venue-name">{eventData.hostName
-}</h3>
+            <h1 className="vas-venue-name">{eventData.hostName
+}</h1>
           )}
           {eventData?.location && (
-            <span className="vas-address">{eventData.location}</span>
+            <p className="vas-address">{eventData.location}</p>
           )}
         </div>
 

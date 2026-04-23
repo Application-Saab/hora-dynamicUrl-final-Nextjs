@@ -2,34 +2,13 @@
 
 import React from "react";
 import "./TermsModal.css";
+import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms.js";
 
-const TERMS_DATA = {
-  default: {
-    kids: [
-      "Below 5 yrs — Non chargeable",
-      "5 to 10 yrs — Half charge",
-      "Above 10 yrs — Count as an adult",
-    ],
-    billing: [
-      "Billing will be done at the agreed rate for the guaranteed number of guests or the actual number of guests present, whichever is higher. The minimum guarantee, once confirmed, cannot be reduced.",
-      "The quoted rates are applicable exclusively for the above-mentioned event and shall not be valid for future events.",
-      "Food will be prepared for up to 110% of the guaranteed number of guests.",
-    ],
-    payment: [
-      "A 50% advance payment is required at least to confirm the booking.",
-      "The remaining 50% balance must be settled before the event.",
-      "Any additional charges (if applicable) must be settled immediately after the event by cash, UPI or credit card.",
-      "Should you have any questions or require further clarification, please do not hesitate to reach out to me. I am more than happy to assist you.",
-    ],
-  },
-};
 
 const TermsModal = ({ isOpen, onClose, eventId }) => {
   if (!isOpen) return null;
 
-  // Future mein eventId se alag terms load kar sakte ho
-  const terms = TERMS_DATA[eventId] || TERMS_DATA.default;
-
+  const terms = getTermsByEventId(eventId);
   return (
     <div className="tm-overlay" onClick={onClose}>
       <div className="tm-sheet" onClick={(e) => e.stopPropagation()}>

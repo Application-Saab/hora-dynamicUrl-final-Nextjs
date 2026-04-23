@@ -16,12 +16,13 @@ import VenueFoodCard from "@/components/VenueFoodCard";
 import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
 import TermsModal from "@/components/TermsModal";
 import VenueAddressSection from "@/components/VenueCommon/VenueAddressSection";
+import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms";
 
 const PartyhallsInvitePage = () => {
   const router = useRouter();
   const { eventid: queryEventId } = router.query;
   const [showTermsModal, setShowTermsModal] = useState(false);
-
+ const venueTerms = getTermsByEventId(queryEventId);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
@@ -184,9 +185,9 @@ const PartyhallsInvitePage = () => {
           {foodPackages.length > 0 && (
             <div
               className="whos-joining-container"
-              style={{ marginTop: "10px" }}
+              style={{ marginTop: "10px", marginBottom: "10px" }}
             >
-              <p className="wall-heading text-center m-0 p-0"></p>
+              <h2 className="wall-heading text-center m-0 p-0">Packages</h2>
               <div
                 style={{
                   marginTop: "10px",
@@ -206,18 +207,35 @@ const PartyhallsInvitePage = () => {
               </div>
             </div>
           )}
- <h2 className="terms-heading" onClick={() => setShowTermsModal(true)}>
-  Terms &amp; Condition
-</h2>
+    
+{venueTerms && (
+  <>
+    <div className="terms-strip" onClick={() => setShowTermsModal(true)}>
+      <div className="terms-blob" />
+      <div className="terms-blob2" />
+      <div className="terms-seal">
+        <svg viewBox="0 0 24 24" fill="none" width={20} height={20}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      <div className="terms-body">
+        <p className="terms-title">Terms &amp; Conditions</p>
+        <p className="terms-sub">Tap to read before booking</p>
+      </div>
+      <div className="terms-view-btn">View</div>
+    </div>
 
-<TermsModal
-  isOpen={showTermsModal}
-  onClose={() => setShowTermsModal(false)}
-  eventId={queryEventId}
-/>
+    <TermsModal
+      isOpen={showTermsModal}
+      onClose={() => setShowTermsModal(false)}
+      eventId={queryEventId}
+    />
+  </>
+)}
           {/* Celebration Wall */}
           <div className="event-wall-container">
-            <p className="wall-heading text-center m-0 p-0">Explore Spaces</p>
+            <h2 className="wall-heading text-center m-0 p-0">Explore Spaces</h2>
             <EventwallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}

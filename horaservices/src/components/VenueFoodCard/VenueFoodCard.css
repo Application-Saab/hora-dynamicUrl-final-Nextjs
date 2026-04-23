@@ -1,15 +1,15 @@
-/* ── PARENT GRID — 1 column (landscape cards full width) ── */
+/* ── PARENT GRID ── */
 .vfc-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 0 4px;
+  gap: clamp(6px, 2vw, 10px);
+  padding: 0 clamp(2px, 1vw, 4px);
 }
 
 /* ── CARD ── */
 .vfc-card {
   background: #fff;
-  border-radius: 14px;
+  border-radius: clamp(10px, 3.5vw, 14px);
   overflow: hidden;
   box-shadow: 0 4px 18px rgba(60, 30, 0, 0.11);
   border: 1.5px solid rgba(201, 168, 76, 0.13);
@@ -22,9 +22,9 @@
   transform: scale(0.98);
 }
 
-/* ── STRIPE — top ── */
+/* ── STRIPE ── */
 .vfc-stripe {
-  height: 4px;
+  height: clamp(3px, 1vw, 4px);
   width: 100%;
   flex-shrink: 0;
 }
@@ -41,11 +41,11 @@
   flex: 1;
 }
 
-/* ── IMAGE — left side ── */
+/* ── IMAGE ── */
 .vfc-imgBox {
   position: relative;
-  width: 100px;
-  min-width: 100px;
+  width: clamp(80px, 25vw, 100px);
+  min-width: clamp(80px, 25vw, 100px);
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -53,54 +53,53 @@
   content: '';
   position: absolute;
   inset: 0;
-  /* background: linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.52) 100%); */
   pointer-events: none;
 }
 .vfc-img {
   object-fit: cover;
 }
 
-/* discount ribbon */
+/* ── DISCOUNT RIBBON ── */
 .vfc-discount {
   position: absolute;
-  top: 8px;
+  top: clamp(5px, 2vw, 8px);
   left: -1px;
   background: linear-gradient(135deg, #c0392b 55%, #e74c3c);
   color: #fff;
-  font-size: 0.56rem;
+  font-size: clamp(0.48rem, 1.4vw, 0.56rem);
   font-weight: 700;
-  padding: 3px 7px 3px 5px;
+  padding: clamp(2px, 0.6vw, 3px) clamp(5px, 1.8vw, 7px) clamp(2px, 0.6vw, 3px) clamp(3px, 1.2vw, 5px);
   border-radius: 0 12px 12px 0;
   box-shadow: 1px 2px 6px rgba(192, 57, 43, 0.35);
   z-index: 2;
   white-space: nowrap;
 }
 
-/* price row — inside body */
+/* ── PRICE ROW ── */
 .vfc-priceRow {
   display: flex;
   align-items: baseline;
-  gap: 5px;
+  gap: clamp(3px, 1.2vw, 5px);
   flex-wrap: wrap;
 }
 .vfc-origPrice {
-  font-size: 0.60rem;
+  font-size: clamp(0.52rem, 1.5vw, 0.60rem);
   color: #999;
   text-decoration: line-through;
   font-weight: 500;
 }
 .vfc-price {
-  font-size: 0.95rem;
+  font-size: clamp(0.80rem, 2.4vw, 0.95rem);
   color: #1a1208;
   font-weight: 700;
   line-height: 1.1;
 }
 .vfc-save {
-  font-size: 0.55rem;
+  font-size: clamp(0.46rem, 1.3vw, 0.55rem);
   color: #2e6b3e;
   font-weight: 700;
   background: #e8f5ec;
-  padding: 1px 5px;
+  padding: 1px clamp(3px, 1.2vw, 5px);
   border-radius: 10px;
 }
 
@@ -115,24 +114,24 @@
 
 /* ── BODY ── */
 .vfc-body {
-  padding: 5px 8px 0px;
+  padding: clamp(4px, 1.2vw, 5px) clamp(6px, 2vw, 8px) 0px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: clamp(3px, 1vw, 4px);
   flex: 1;
 }
 
-/* type tag */
+/* ── TYPE TAG ── */
 .vfc-tag {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: 0.55rem;
+  gap: clamp(2px, 0.8vw, 3px);
+  font-size: clamp(0.46rem, 1.4vw, 0.55rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.7px;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 2px clamp(4px, 1.5vw, 6px);
   width: fit-content;
 }
 .vfc-tag--veg     { background: #e8f5ec; color: #2e6b3e; }
@@ -141,8 +140,8 @@
 .vfc-tag--nvegdlx { background: #fdf0ea; color: #7a3010; }
 
 .vfc-dot {
-  width: 6px;
-  height: 6px;
+  width: clamp(5px, 1.5vw, 6px);
+  height: clamp(5px, 1.5vw, 6px);
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
@@ -152,9 +151,9 @@
 .vfc-dot--nveg    { background: #c0392b; }
 .vfc-dot--nvegdlx { background: #7a3010; }
 
-/* title */
+/* ── TITLE ── */
 .vfc-title {
-  font-size: 0.76rem;
+  font-size: clamp(0.66rem, 2vw, 0.76rem);
   font-weight: 700;
   color: #1a1208;
   line-height: 1.25;
@@ -162,29 +161,29 @@
   white-space: normal;
 }
 
-/* all-inclusive pill */
+/* ── ALL-INCLUSIVE PILL ── */
 .vfc-inclusive {
   display: inline-flex;
   align-items: center;
   background: rgba(201, 168, 76, 0.1);
   border: 1px solid rgba(201, 168, 76, 0.28);
   color: #8c6a1a;
-  font-size: 0.52rem;
+  font-size: clamp(0.44rem, 1.3vw, 0.52rem);
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 2px clamp(5px, 1.8vw, 7px);
   border-radius: 20px;
   letter-spacing: 0.3px;
   text-transform: uppercase;
   width: fit-content;
 }
 
-/* subtitle */
+/* ── SUBTITLE ── */
 .vfc-subtitle {
   margin: 0;
   color: #4a3a1a;
   font-family: 'Rubik', sans-serif;
   font-weight: 400;
-  font-size: clamp(8px, calc(6.5px + 0.75vw), 10.5px);
+  font-size: clamp(8px, calc(6px + 0.9vw), 10.5px);
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -194,29 +193,22 @@
 
 /* ── FOOTER ── */
 .vfc-footer {
-  padding: 0px 10px;
+  padding: 0px clamp(8px, 2.5vw, 10px);
 }
 .vfc-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  background:none;
+  gap: clamp(3px, 1vw, 4px);
+  background: none;
   color: #8c6a1a;
-  font-size: 0.64rem;
+  font-size: clamp(0.56rem, 1.8vw, 0.64rem);
   font-weight: 600;
-  padding: 7px 0;
+  padding: clamp(5px, 1.8vw, 7px) 0;
   border: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 
-
-/* ── 360px and below ── */
-@media (max-width: 360px) {
-  .vfc-imgBox   { width: 110px; min-width: 110px; }
-  .vfc-title    { font-size: 0.70rem; }
-  .vfc-price    { font-size: 0.82rem; }
-  .vfc-link     { font-size: 0.60rem; }
-}
+/* ── 360px and below — media query hata diya, clamp handle kar raha hai ── */

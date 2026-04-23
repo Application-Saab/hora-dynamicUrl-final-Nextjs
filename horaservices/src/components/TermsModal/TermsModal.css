@@ -100,7 +100,7 @@
 .tm-section-title {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #97538C;
+  color: #8c6a1a;
   margin: 0;
   letter-spacing: 0.2px;
 }
@@ -125,7 +125,7 @@
 }
 
 .tm-bullet {
-  color: #97538C;
+  color: #8c6a1a;
   font-size: 0.5rem;
   margin-top: 4px;
   flex-shrink: 0;
@@ -156,7 +156,7 @@
 .tm-accept-btn {
   width: 100%;
   padding: 11px 0;
-  background: #97538C;
+   background: #8c6a1a;
   color: #fff;
   font-size: 0.78rem;
   font-weight: 700;
@@ -166,4 +166,3 @@
   letter-spacing: 0.3px;
   -webkit-tap-highlight-color: transparent;
 }
-.tm-accept-btn:active { background: #5e2f6e; }
