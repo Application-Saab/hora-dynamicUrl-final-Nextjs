@@ -79,41 +79,46 @@ export const ICON_PREMIER_PACKAGES = [
     includes: {
       appetisers: {
         veg: [
-          "Hara Bhara Kebab","Vegetable Sheekh Kebab","Cauliflower 65",
-          "Vegetable Manchurian","Spring Roll","Chilli Garlic Potato"
+          "Hara Bhara Kebab","Dahi Ke Kebab","Aloo Mutter Ki Tikki","Vegetable Sheekh Kebab",
+          "Mini Masala Pungulu","Masala Wada","Mirchi Bhaji","Cauliflower 65",
+          "Vegetable Manchurian","Crispy Fried Vegetables","Vegetable Spring Roll",
+          "Chilli Garlic Potato","Cottage Cheese & Corn Nuggets","Falafel",
+          "Spicy Cheese Balls","Vegetable Bullets"
         ],
         nonVeg: [],
         note: "Choose any 2 Veg Starters"
       },
 
       soups: [
-        "Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup"
+        "Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup",
+        "Noodle Soup","Burnt Garlic Vegetable Soup","Cream of Tomato Soup"
       ],
       soupsNote: "Choose any 2 Veg Soup",
 
       salads: [
-        "Garden Green Salad","Russian Salad","Greek Salad","Thai Salad"
+       "Garden Green Salad","Russian Salad","Greek Salad","Mexican Salad",
+        "Aloo Papdi Chaat","Channa Chaat","Thai Salad"
       ],
       saladsNote: "Choose any 2 Salads",
 
       mainCourse: {
         items: [
-          "Paneer Butter Masala","Palak Paneer","Kadhai Paneer",
-          "Vegetable Kofta Curry","Mixed Vegetable Korma"
+            "Paneer Butter Masala","Palak Paneer","Kadhai Paneer",
+          "Vegetable Kofta Curry","Mixed Vegetable Korma","Bhindi Do Pyaza"
         ],
         note: "Choose any 3 Veg Main Course"
       },
 
-      dal: ["Dal Tadka","Dal Makhani"],
+      dal: ["Dal Tadka","Dal Makhani","Dal Panchratan"],
       dalNote: "Choose any 1 Dal",
 
-      rice: ["Jeera Rice","Veg Biryani"],
+      rice: ["Jeera Rice","Vegetable Pulao","Veg Biryani"],
       riceNote: "Choose any 1 Rice",
 
-      bread: ["Tandoori Roti","Naan"],
+     bread: ["Tandoori Roti","Naan"],
       breadNote: "Choose any 1 Bread",
 
-      desserts: ["Gulab Jamun","Rasgulla"],
+       desserts: ["Gulab Jamun","Rasgulla","Gajar Halwa","Fruit Salad"],
       dessertsNote: "Choose any 2 Desserts",
 
       defaultIncludes: ["Papad","Pickle","Curd"]
@@ -133,41 +138,46 @@ export const ICON_PREMIER_PACKAGES = [
     includes: {
       appetisers: {
         veg: [
-          "Hara Bhara Kebab","Dahi Ke Kebab","Vegetable Sheekh Kebab",
-          "Cauliflower 65","Manchurian","Spring Roll","Spicy Cheese Balls"
+          "Hara Bhara Kebab","Dahi Ke Kebab","Aloo Mutter Ki Tikki","Vegetable Sheekh Kebab",
+          "Mini Masala Pungulu","Masala Wada","Mirchi Bhaji","Cauliflower 65",
+          "Vegetable Manchurian","Crispy Fried Vegetables","Vegetable Spring Roll",
+          "Chilli Garlic Potato","Cottage Cheese & Corn Nuggets","Falafel",
+          "Spicy Cheese Balls","Vegetable Bullets"
         ],
         nonVeg: [],
         note: "Choose any 4 Veg Starters"
       },
 
       soups: [
-        "Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup"
+          "Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup",
+        "Noodle Soup","Burnt Garlic Vegetable Soup","Cream of Tomato Soup"
       ],
       soupsNote: "Choose any 2 Veg Soup",
 
       salads: [
-        "Garden Green Salad","Greek Salad","Russian Salad","Thai Salad"
+        "Garden Green Salad","Russian Salad","Greek Salad","Mexican Salad",
+        "Aloo Papdi Chaat","Channa Chaat","Thai Salad"
       ],
       saladsNote: "Choose any 3 Salads",
 
       mainCourse: {
         items: [
           "Paneer Butter Masala","Palak Paneer","Kadhai Paneer",
-          "Mixed Vegetable Korma"
+          "Vegetable Kofta Curry","Mixed Vegetable Korma","Bhindi Do Pyaza"
         ],
         note: "Choose any 2 Veg Main Course"
       },
 
-      dal: ["Dal Makhani"],
+        dal: ["Dal Tadka","Dal Makhani","Dal Panchratan"],
       dalNote: "1 Dal Included",
 
-      rice: ["Veg Biryani"],
+       rice: ["Jeera Rice","Vegetable Pulao","Veg Biryani"],
       riceNote: "1 Rice Included",
 
-      bread: ["Naan"],
+        bread: ["Tandoori Roti","Naan"],
       breadNote: "1 Bread Included",
 
-      desserts: ["Gulab Jamun","Ice Cream"],
+       desserts: ["Gulab Jamun","Rasgulla","Gajar Halwa","Fruit Salad"],
       dessertsNote: "2 Desserts",
 
       defaultIncludes: ["Papad","Pickle","Curd"]
@@ -186,33 +196,40 @@ export const ICON_PREMIER_PACKAGES = [
   image: PACKAGE4,
     includes: {
       appetisers: {
-        veg: ["Hara Bhara Kebab","Spring Roll"],
+        veg: ["Hara Bhara Kebab","Dahi Ke Kebab","Aloo Mutter Ki Tikki","Vegetable Sheekh Kebab",
+          "Mini Masala Pungulu","Masala Wada","Mirchi Bhaji","Cauliflower 65",
+          "Vegetable Manchurian","Crispy Fried Vegetables","Vegetable Spring Roll",
+          "Chilli Garlic Potato","Cottage Cheese & Corn Nuggets","Falafel",
+          "Spicy Cheese Balls","Vegetable Bullets"],
         nonVeg: ["Murgh Malai Kebab","Chicken Pepper Fry","Fish Amritsari"],
         note: "Choose 1 Veg + 1 Non-Veg Starter"
       },
 
-      soups: ["Lemon Coriander Soup","Sweet Corn Soup"],
+      soups: [   "Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup",
+        "Noodle Soup","Burnt Garlic Vegetable Soup","Cream of Tomato Soup"],
       soupsNote: "Choose any 1 Veg Soup",
 
-      salads: ["Garden Green Salad","Russian Salad"],
+      salads: [ "Garden Green Salad","Russian Salad","Greek Salad","Mexican Salad",
+        "Aloo Papdi Chaat","Channa Chaat","Thai Salad"],
       saladsNote: "Choose any 2 Salads",
 
       mainCourse: {
-        veg: ["Paneer Butter Masala","Palak Paneer"],
+        veg: [  "Paneer Butter Masala","Palak Paneer","Kadhai Paneer",
+          "Vegetable Kofta Curry","Mixed Vegetable Korma","Bhindi Do Pyaza"],
         nonVeg: ["Chicken Curry","Fish Curry"],
         note: "Choose 1 Veg + 1 Non-Veg Main"
       },
 
-      dal: ["Dal Tadka"],
+      dal: ["Dal Tadka","Dal Makhani","Dal Panchratan"],
       dalNote: "1 Dal Included",
 
-      rice: ["Veg Biryani"],
+        rice: ["Jeera Rice","Vegetable Pulao","Veg Biryani"],
       riceNote: "1 Rice Included",
 
-      bread: ["Naan"],
+       bread: ["Tandoori Roti","Naan"],
       breadNote: "1 Bread Included",
 
-      desserts: ["Gulab Jamun","Ice Cream"],
+       desserts: ["Gulab Jamun","Rasgulla","Gajar Halwa","Fruit Salad"],
       dessertsNote: "2 Desserts",
 
       defaultIncludes: ["Papad","Pickle","Curd"]
@@ -230,33 +247,40 @@ export const ICON_PREMIER_PACKAGES = [
     image: PACKAGE5,
     includes: {
       appetisers: {
-        veg: ["Paneer Tikka","Spring Roll"],
+        veg: [  "Hara Bhara Kebab","Dahi Ke Kebab","Aloo Mutter Ki Tikki","Vegetable Sheekh Kebab",
+          "Mini Masala Pungulu","Masala Wada","Mirchi Bhaji","Cauliflower 65",
+          "Vegetable Manchurian","Crispy Fried Vegetables","Vegetable Spring Roll",
+          "Chilli Garlic Potato","Cottage Cheese & Corn Nuggets","Falafel",
+          "Spicy Cheese Balls","Vegetable Bullets"],
         nonVeg: ["Chicken Tikka","Chilly Chicken"],
         note: "Choose 1 Veg + 1 Non-Veg Starter"
       },
 
-      soups: ["Veg Soup","Chicken Soup"],
+      soups: ["Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup",
+        "Noodle Soup","Burnt Garlic Vegetable Soup","Cream of Tomato Soup"],
       soupsNote: "1 Veg + 1 Non-Veg Soup",
 
-      salads: ["Garden Green Salad","Russian Salad"],
+      salads: [ "Garden Green Salad","Russian Salad","Greek Salad","Mexican Salad",
+        "Aloo Papdi Chaat","Channa Chaat","Thai Salad"],
       saladsNote: "Choose any 2 Salads",
 
       mainCourse: {
-        veg: ["Paneer Butter Masala","Mixed Veg"],
+        veg: ["Paneer Butter Masala","Palak Paneer","Kadhai Paneer",
+          "Vegetable Kofta Curry","Mixed Vegetable Korma","Bhindi Do Pyaza"],
         nonVeg: ["Chicken Curry"],
         note: "2 Veg + 1 Non-Veg Main"
       },
 
-      dal: ["Dal Makhani"],
+     dal: ["Dal Tadka","Dal Makhani","Dal Panchratan"],
       dalNote: "1 Dal Included",
 
-      rice: ["Veg Biryani","Fried Rice"],
+        rice: ["Jeera Rice","Vegetable Pulao","Veg Biryani"],
       riceNote: "2 Rice Included",
 
-      bread: ["Naan"],
+      bread: ["Tandoori Roti","Naan"],
       breadNote: "1 Bread Included",
 
-      desserts: ["Gulab Jamun","Ice Cream"],
+       desserts: ["Gulab Jamun","Rasgulla","Gajar Halwa","Fruit Salad"],
       dessertsNote: "2 Desserts",
 
       defaultIncludes: ["Papad","Pickle","Curd"]
@@ -275,38 +299,44 @@ export const ICON_PREMIER_PACKAGES = [
     image: PACKAGE6,
     includes: {
       appetisers: {
-        veg: ["Paneer Tikka","Hara Bhara Kebab"],
+        veg: [ "Hara Bhara Kebab","Dahi Ke Kebab","Aloo Mutter Ki Tikki","Vegetable Sheekh Kebab",
+          "Mini Masala Pungulu","Masala Wada","Mirchi Bhaji","Cauliflower 65",
+          "Vegetable Manchurian","Crispy Fried Vegetables","Vegetable Spring Roll",
+          "Chilli Garlic Potato","Cottage Cheese & Corn Nuggets","Falafel",
+          "Spicy Cheese Balls","Vegetable Bullets"],
         nonVeg: ["Chicken Tikka","Fish Fry"],
         note: "2 Veg + 2 Non-Veg Starters"
       },
 
-      soups: ["Veg Soup","Chicken Soup"],
+      soups: [  "Lemon Coriander Soup","Sweet Corn Soup","Hot & Sour Soup",
+        "Noodle Soup","Burnt Garlic Vegetable Soup","Cream of Tomato Soup"],
       soupsNote: "1 Veg + 1 Non-Veg Soup",
 
-      salads: ["Garden Green Salad","Russian Salad","Greek Salad"],
+      salads: [ "Garden Green Salad","Russian Salad","Greek Salad","Mexican Salad",
+        "Aloo Papdi Chaat","Channa Chaat","Thai Salad"],
       saladsNote: "Choose any 3 Salads",
 
       mainCourse: {
-        veg: ["Paneer Butter Masala","Mixed Veg"],
+        veg: ["Paneer Butter Masala","Palak Paneer","Kadhai Paneer",
+          "Vegetable Kofta Curry","Mixed Vegetable Korma","Bhindi Do Pyaza"],
         nonVeg: ["Chicken Curry","Fish Curry"],
         note: "2 Veg + 2 Non-Veg Main"
       },
 
-      dal: ["Dal Makhani"],
+      dal: ["Dal Tadka","Dal Makhani","Dal Panchratan"],
       dalNote: "1 Dal Included",
 
-      rice: ["Veg Biryani","Fried Rice"],
+       rice: ["Jeera Rice","Vegetable Pulao","Veg Biryani"],
       riceNote: "2 Rice Included",
 
-      bread: ["Naan"],
+       bread: ["Tandoori Roti","Naan"],
       breadNote: "1 Bread Included",
 
-      desserts: ["Gulab Jamun","Ice Cream"],
+        desserts: ["Gulab Jamun","Rasgulla","Gajar Halwa","Fruit Salad"],
       dessertsNote: "2 Desserts + Ice Cream",
 
       defaultIncludes: ["Papad","Pickle","Curd"]
     }},
-  // 👉 (same pattern se 5 & 6 bhi bana sakte ho – agar chaho full 6 ka extended version bhi de dunga)
 ];
 
 
