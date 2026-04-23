@@ -703,7 +703,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
                   if (img) {
                     const newThumb = {
-                      _id: String(img.imageId),
+                      _id: img._id,
                       type: img.videoUrl ? "video" : "image",
                       originalUrl: img.imageUrl || img.videoUrl,
                       thumbnailImageUrl: img.thumbnailUrl || null,
