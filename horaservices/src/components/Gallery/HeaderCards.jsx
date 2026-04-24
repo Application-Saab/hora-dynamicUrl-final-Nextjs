@@ -40,7 +40,8 @@ const HeaderCards = ({
   showCameraPopup,
   setShowCameraPopup,
   setCapturedImage,
-  capturedImage
+  capturedImage,
+  matchedKeys,
 }) => {
   /* ================= STATE ================= */
   const [newFolderName, setNewFolderName] = useState("");
@@ -145,7 +146,7 @@ const HeaderCards = ({
       fd.append("phoneNo", localPhoneNumber)
 
       const data = await createSubfolder(fd);
-    
+
       const created = data.subFolder;
 
       onSubFolderCreated(created);
@@ -194,6 +195,7 @@ const HeaderCards = ({
           }
           if (payload.type === "complete") {
             setIsStremSearching(false);
+            setIsCreating(false);
             return;
           }
         });
@@ -203,6 +205,7 @@ const HeaderCards = ({
       console.error("Search stream error:", error);
       setIsStremSearching(false);
       setIsSearching(false);
+      setIsCreating(false);
     }
   };
 
@@ -244,10 +247,10 @@ const HeaderCards = ({
         onSearchResults([]);
         const myFolder = await ensureMyPhotosFolder(blob);
 
-        if(isEditingDP){
-         await handleUpdateSubfolderDP(blob, myFolder._id);
+        if (isEditingDP) {
+          await handleUpdateSubfolderDP(blob, myFolder._id);
         }
-       
+
 
         setShowCameraPopup(false);
         const fd = new FormData();
@@ -257,9 +260,8 @@ const HeaderCards = ({
         fd.append("subFolderId", myFolder._id);
 
         await startSearchStream(fd);
-      } finally {
-        setIsSearching(false);
-        setIsCreating(false);
+      } catch (error) {
+        console.log("error :" + error)
       }
     }, "image/png");
   };
@@ -279,7 +281,7 @@ const HeaderCards = ({
       fd.append("customerId", customerId);
       fd.append("phoneNo", localPhoneNumber)
 
-      const data = await createSubfolder(fd); 
+      const data = await createSubfolder(fd);
       const newFolder = data.subFolder;
 
       onSubFolderCreated(newFolder);
@@ -311,52 +313,52 @@ const HeaderCards = ({
     }
   };
 
-const updateAllStates = (subFolderId, url) => {
-  setAlbums(prev =>
-    prev.map(album =>
-      album._id === subFolderId
-        ? { ...album, folderDp: { thumbnailUrl: url } }
-        : album
-    )
-  );
-  setLocalMyPhotos(prev =>
-    prev && prev._id === subFolderId
-      ? { ...prev, folderDp: { thumbnailUrl: url } }
-      : prev
-  );
+  const updateAllStates = (subFolderId, url) => {
+    setAlbums(prev =>
+      prev.map(album =>
+        album._id === subFolderId
+          ? { ...album, folderDp: { thumbnailUrl: url } }
+          : album
+      )
+    );
+    setLocalMyPhotos(prev =>
+      prev && prev._id === subFolderId
+        ? { ...prev, folderDp: { thumbnailUrl: url } }
+        : prev
+    );
 
-  setSubFolders(prev =>
-    prev.map(sf =>
-      sf._id === subFolderId
-        ? { ...sf, folderDp: { thumbnailUrl: url } }
-        : sf
-    )
-  );
-};
+    setSubFolders(prev =>
+      prev.map(sf =>
+        sf._id === subFolderId
+          ? { ...sf, folderDp: { thumbnailUrl: url } }
+          : sf
+      )
+    );
+  };
 
-const handleUpdateSubfolderDP = async (file, subFolderId) => {
-  try {
-    const previewUrl = URL.createObjectURL(file);
+  const handleUpdateSubfolderDP = async (file, subFolderId) => {
+    try {
+      const previewUrl = URL.createObjectURL(file);
 
-    updateAllStates(subFolderId, previewUrl);
+      updateAllStates(subFolderId, previewUrl);
 
-    const fd = new FormData();
-    fd.append("image", file);
-    fd.append("folderId", mainFolderId);
-    fd.append("subFolderId", subFolderId);
-    fd.append("phoneNo", localPhoneNumber)
+      const fd = new FormData();
+      fd.append("image", file);
+      fd.append("folderId", mainFolderId);
+      fd.append("subFolderId", subFolderId);
+      fd.append("phoneNo", localPhoneNumber)
 
-     const data = await updateSubfolderDP(fd); 
+      const data = await updateSubfolderDP(fd);
 
-    if (data?.data?.thumbnailUrl) {
-      updateAllStates(subFolderId, data.data.thumbnailUrl);
+      if (data?.data?.thumbnailUrl) {
+        updateAllStates(subFolderId, data.data.thumbnailUrl);
+      }
+
+    } catch (err) {
+      console.error("DP update failed", err);
+      alert("Failed to update image");
     }
-
-  } catch (err) {
-    console.error("DP update failed", err);
-    alert("Failed to update image");
-  }
-};
+  };
 
   return (
     <>
@@ -369,7 +371,7 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
           onClick={() => {
             setActiveTab("all");
             onSelectSubFolder(null);
-            setIsSearching(false);
+            setIsActualMyPhotos(false);
             setIsRefreshShow(false)
           }}
         >
@@ -393,6 +395,11 @@ const handleUpdateSubfolderDP = async (file, subFolderId) => {
                 setIsActualMyPhotos(true)
                 onSelectSubFolder(myPhotosFolder._id);
                 setIsRefreshShow(true);
+
+                if (matchedKeys.length > 0) {
+                  setIsSearching(true);
+                }
+
               }}
             >
               <div className="circle-img-folder circle-img-both">
