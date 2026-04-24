@@ -28,7 +28,15 @@ const PageLayout = ({ children }) => {
     pathname === "/about" || pathname === '/accounts' || pathname === "/services" || pathname === '/wonderland/invite';
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");
+const hideHeaderPaths = [
+  "/services",
+  "/partyhalls/invite"
+];
 
+const shouldHideHeader =
+  hideHeaderPaths.includes(pathname) ||
+  pathname?.startsWith("/partyhalls/invite");
+  
   return (
     <div className="page-container container-fluid p-0">
       <Head>
@@ -38,8 +46,7 @@ const PageLayout = ({ children }) => {
         />
       </Head>
 
-      {pathname !== "/services" && <Header />
-      }
+      {!shouldHideHeader && <Header />}
       <main className="page-main row m-0">
         <section className="p-0">{children}</section>
       </main>
