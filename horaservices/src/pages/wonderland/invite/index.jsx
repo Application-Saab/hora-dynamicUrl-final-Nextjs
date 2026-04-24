@@ -17,14 +17,13 @@ import useRsvpStatus from "@/hooks/useRsvpStatus";
 const InvitesPage = () => {
   const router = useRouter();
   const { eventid: queryEventId } = router.query;
-
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || ""
+    localStorage.getItem("userID") || "",
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
@@ -32,10 +31,9 @@ const InvitesPage = () => {
   const { rsvpSubmitted } = useRsvpStatus(
     queryEventId,
     skipRsvpCheck,
-    rsvpRefetch
+    rsvpRefetch,
   );
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
-
   const {
     data: eventData,
     loading: fetchEventLoading,
@@ -44,15 +42,19 @@ const InvitesPage = () => {
   } = useApi();
   const { makeRequest: fetchUserData } = useApi();
 
-  const isHost = eventDetails?.userId === loggedinUserId;
-
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!router.isReady) return;
-      if (!queryEventId && loggedinUserId) setOpenCreateInviteModal(true);
-      if (queryEventId && !loggedinUserId) setShowGuestLoginModal(true);
+
+      if (!queryEventId && loggedinUserId) {
+        setOpenCreateInviteModal(true);
+      }
+      if (queryEventId && !loggedinUserId) {
+        setShowGuestLoginModal(true);
+      }
       setFullPageLoader(false);
     }, 600);
+
     return () => clearTimeout(timer);
   }, [router.isReady, queryEventId, loggedinUserId]);
 
@@ -75,7 +77,7 @@ const InvitesPage = () => {
         try {
           let resp = await fetchUserData(
             `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET"
+            "GET",
           );
           setUserData(resp?.data);
         } catch (err) {
@@ -95,15 +97,25 @@ const InvitesPage = () => {
 
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
-      setSkipRsvpCheck(isHost ? true : false);
+      if (eventDetails?.userId === loggedinUserId) {
+        setSkipRsvpCheck(true);
+      } else {
+        setSkipRsvpCheck(false);
+      }
     }
   }, [eventDetails, loggedinUserId]);
 
+  // Listen local storage changes for login state
   useEffect(() => {
-    const syncLoginState = () =>
+    const syncLoginState = () => {
       setLoggedinUserId(localStorage.getItem("userID") || "");
+    };
+
     window.addEventListener("storage", syncLoginState);
+
+    // Sync on same tab login without change page
     window.addEventListener("loginStateChange", syncLoginState);
+
     return () => {
       window.removeEventListener("storage", syncLoginState);
       window.removeEventListener("loginStateChange", syncLoginState);
@@ -112,35 +124,13 @@ const InvitesPage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      setShowHostActionSection(eventDetails && isHost ? true : false);
+      if (eventDetails && eventDetails.userId === loggedinUserId) {
+        setShowHostActionSection(true);
+      } else {
+        setShowHostActionSection(false);
+      }
     }, 1000);
   }, [eventDetails, loggedinUserId]);
-
-  // Back button handler
-  useEffect(() => {
-    const anyModalOpen = showGuestLoginModal || openCreateInviteModal;
-
-    if (anyModalOpen) {
-      window.history.pushState({ modalOpen: true }, "");
-    }
-
-    const handleBack = () => {
-      if (showGuestLoginModal) {
-        window.history.pushState({ modalOpen: true }, "");
-        setShowGuestLoginModal(false);
-        return;
-      }
-      if (openCreateInviteModal) {
-        window.history.pushState({ modalOpen: true }, "");
-        setOpenCreateInviteModal(false);
-        return;
-      }
-      router.back();
-    };
-
-    window.addEventListener("popstate", handleBack);
-    return () => window.removeEventListener("popstate", handleBack);
-  }, [showGuestLoginModal, openCreateInviteModal]);
 
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
@@ -148,7 +138,6 @@ const InvitesPage = () => {
     <>
       <div className="invite-page">
         <div className="invite-page-container">
-
           <div className="invite-template-shell">
             {fetchEventLoading ? (
               <TemplatecardSkeleton
@@ -161,7 +150,7 @@ const InvitesPage = () => {
                 fetchEventLoading={fetchEventLoading}
                 eventDetails={eventDetails}
                 orderDetails={eventDetails}
-                isHost={isHost}
+                isHost={eventDetails?.userId === loggedinUserId}
               />
             )}
           </div>
@@ -183,13 +172,12 @@ const InvitesPage = () => {
               />
             </div>
           )}
-
           <div
             className="whos-joining-container"
             style={{ marginTop: !showHostActionSection ? "10px" : "0px" }}
           >
             <WhosJoining
-              isHost={isHost}
+              isHost={eventDetails?.userId === loggedinUserId}
               userData={userData}
               loggedinUserId={loggedinUserId}
               rsvpSubmitted={rsvpSubmitted}
@@ -198,20 +186,17 @@ const InvitesPage = () => {
               onRsvpUpdate={() => setRsvpRefetch((prev) => prev + 1)}
             />
           </div>
-
           <div className="event-wall-container">
             <p className="wall-heading text-center m-0 p-0">Celebration Wall</p>
             <EventwallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={rsvpSubmitted}
-              isHost={isHost}
+              isHost={eventDetails?.userId === loggedinUserId}
             />
           </div>
-
         </div>
       </div>
-
       <CreateInviteModal
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}

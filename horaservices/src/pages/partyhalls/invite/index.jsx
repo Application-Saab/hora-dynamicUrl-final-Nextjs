@@ -16,6 +16,7 @@ import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackage
 import TermsModal from "@/components/TermsModal";
 import VenueAddressSection from "@/components/VenueCommon/VenueAddressSection";
 import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms";
+import useRsvpStatus from "@/hooks/useRsvpStatus";
 
 const PartyhallsInvitePage = () => {
   const router = useRouter();
@@ -26,13 +27,18 @@ const PartyhallsInvitePage = () => {
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
+    const [showHostActionSection, setShowHostActionSection] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
     localStorage.getItem("userID") || ""
   );
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
-
+   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
+ const { } = useRsvpStatus(
+    queryEventId,
+    skipRsvpCheck,
+  );
   const {
     data: eventData,
     loading: fetchEventLoading,
@@ -41,20 +47,24 @@ const PartyhallsInvitePage = () => {
   } = useApi();
   const { makeRequest: fetchUserData } = useApi();
 
-  const isHost = eventDetails?.userId === loggedinUserId;
-
   // Event ID ke hisaab se food packages
   const foodPackages = getFoodPackagesByEventId(queryEventId);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!router.isReady) return;
-      if (!queryEventId && loggedinUserId) setOpenCreateInviteModal(true);
-      if (queryEventId && !loggedinUserId) setShowGuestLoginModal(true);
-      setFullPageLoader(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [router.isReady, queryEventId, loggedinUserId]);
+      const timer = setTimeout(() => {
+        if (!router.isReady) return;
+  
+        if (!queryEventId && loggedinUserId) {
+          setOpenCreateInviteModal(true);
+        }
+        if (queryEventId && !loggedinUserId) {
+          setShowGuestLoginModal(true);
+        }
+        setFullPageLoader(false);
+      }, 600);
+  
+      return () => clearTimeout(timer);
+    }, [router.isReady, queryEventId, loggedinUserId]);
 
   useLayoutEffect(() => {
     const fetchEventDetails = async () => {
@@ -92,6 +102,16 @@ const PartyhallsInvitePage = () => {
       setFullPageLoader(false);
     }
   }, [eventData]);
+  useLayoutEffect(() => {
+     if (eventDetails && loggedinUserId) {
+       if (eventDetails?.userId === loggedinUserId) {
+         setSkipRsvpCheck(true);
+       } else {
+         setSkipRsvpCheck(false);
+       }
+     }
+   }, [eventDetails, loggedinUserId]);
+console.log("loggedinUserId",loggedinUserId);
 
   useEffect(() => {
     const syncLoginState = () =>
@@ -134,7 +154,15 @@ const PartyhallsInvitePage = () => {
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
   }, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
-
+useEffect(() => {
+    setTimeout(() => {
+      if (eventDetails && eventDetails.userId === loggedinUserId) {
+        setShowHostActionSection(true);
+      } else {
+        setShowHostActionSection(false);
+      }
+    }, 1000);
+  }, [eventDetails, loggedinUserId]);
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   return (
@@ -155,7 +183,7 @@ const PartyhallsInvitePage = () => {
                 fetchEventLoading={fetchEventLoading}
                 eventDetails={eventDetails}
                 orderDetails={eventDetails}
-                isHost={true}
+                isHost={eventDetails?.userId === loggedinUserId}
               />
             )}
           </div>
@@ -171,7 +199,7 @@ const PartyhallsInvitePage = () => {
           )}
 
           {/* InviteActions — sirf actual host ko */}
-          {isHost && (
+         {showHostActionSection && (
             <div className="invite-action-container">
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}
@@ -239,7 +267,7 @@ const PartyhallsInvitePage = () => {
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={false}
-              isHost={isHost}
+              isHost={eventDetails?.userId === loggedinUserId}
               isVenueHost={true}
             />
           </div>
