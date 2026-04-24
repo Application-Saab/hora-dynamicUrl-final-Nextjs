@@ -50,7 +50,10 @@ const EventwallSection = ({
   const [selectedIndex, setSelectedIndex] = useState(null);
   const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
   const [imageNumber, setImageNumber] = useState(0);
-
+    const canShowActionButtons = isVenueHost
+    ? isHost
+    : isHost || rsvpSubmitted;
+   const canSeeImages = isVenueHost ? true : isHost || rsvpSubmitted;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -522,6 +525,7 @@ const EventwallSection = ({
 
   return (
     <>
+     {canShowActionButtons && (
       <div className="event-wall-action-ctn">
         {actionButtons.map(
           ({ label, icon, onClick }, index) =>
@@ -529,13 +533,7 @@ const EventwallSection = ({
               <button
                 key={index}
                 className={`event-wall-action-btn event-wall-action-btn-${index}`}
-                onClick={() => {
-                  isHost
-                    ? onClick()
-                    : rsvpSubmitted
-                      ? onClick()
-                      : setPushRsvpClick(true);
-                }}
+               onClick={onClick}
               >
                 <img
                   src={icon}
@@ -549,7 +547,7 @@ const EventwallSection = ({
             ),
         )}
       </div>
-
+ )}
       <div>
         {allImages.length === 0 || !canSeeImages ? (
           <div className="eventwall-nopost-ctn">
