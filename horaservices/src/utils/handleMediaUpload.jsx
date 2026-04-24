@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import imageCompression from "browser-image-compression";
-const { BASE_URL, MEDIA_PROCESSING_URL } = require("./apiconstants");
+const { BASE_URL, MEDIA_WORKER_URL } = require("./apiconstants");
 
 // 3 Second Video Clip Generator
 export async function create3SecClip(videoFile) {
@@ -241,7 +241,7 @@ export async function uploadMedia(
   const token = localStorage.getItem("token");
 
   const res = await axios.post(
-    `${MEDIA_PROCESSING_URL}/event/upload-event-media/${eventId}`,
+    `${MEDIA_WORKER_URL}/event/upload-event-media/${eventId}`,
     formData,
     {
       headers: {
