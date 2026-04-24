@@ -63,6 +63,59 @@ const getCategoryLinks = (text, city) => {
   return links;
 };
 
+// Kids Birthday Themes from the platform
+const kidsBirthdayThemes = [
+  { id: "minnie-mouse", name: "Minnie Mouse", emoji: "🎀" },
+  { id: "cocomelon", name: "Cocomelon", emoji: "🎵" },
+  { id: "mickey", name: "Mickey Ring", emoji: "👑" },
+  { id: "mermaid", name: "Mermaid", emoji: "🧜‍♀️" },
+  { id: "jungle", name: "Jungle", emoji: "🦁" },
+];
+
+// Product database with themes and categories
+const productsDatabase = [
+  // Minnie Mouse Products
+  { id: 1, name: "Minnie Mouse Theme Decoration", theme: "minnie-mouse", category: "kids-birthday", price: "₹1,812", image: "🎀", keywords: ["minnie", "mouse", "kids", "birthday"] },
+  { id: 2, name: "Minnie Mouse Birthday Ring Setup", theme: "minnie-mouse", category: "kids-birthday", price: "₹2,500", image: "🎀", keywords: ["minnie", "kids", "birthday"] },
+  { id: 3, name: "Cocomelon Theme For Birthday Kids", theme: "cocomelon", category: "kids-birthday", price: "₹2,887", image: "🎵", keywords: ["cocomelon", "kids", "birthday"] },
+  { id: 4, name: "Cocomelon theme With Shining Balloons", theme: "cocomelon", category: "kids-birthday", price: "₹7,687", image: "🎵", keywords: ["cocomelon", "theme", "kids"] },
+  { id: 5, name: "Mickey Ring Birthday Decoration", theme: "mickey", category: "kids-birthday", price: "₹3,158", image: "👑", keywords: ["mickey", "ring", "birthday", "kids"] },
+  { id: 6, name: "Mickey Mouse Theme Party", theme: "mickey", category: "kids-birthday", price: "₹2,800", image: "👑", keywords: ["mickey", "kids", "birthday"] },
+  { id: 7, name: "Mermaid Theme Birthday Ring Decor", theme: "mermaid", category: "kids-birthday", price: "₹7,019", image: "🧜‍♀️", keywords: ["mermaid", "theme", "birthday", "kids"] },
+  { id: 8, name: "Mermaid Sea Shell Shore Decor", theme: "mermaid", category: "kids-birthday", price: "₹2,293", image: "🧜‍♀️", keywords: ["mermaid", "kids", "birthday"] },
+  { id: 9, name: "Jungle Theme Birthday Decoration Bundle", theme: "jungle", category: "kids-birthday", price: "₹2,999", image: "🦁", keywords: ["jungle", "birthday", "kids"] },
+  { id: 10, name: "Safari Birthday Balloons & Banners", theme: "jungle", category: "kids-birthday", price: "₹1,999", image: "🦒", keywords: ["jungle", "kids", "birthday"] },
+];
+
+const getProductRecommendations = (text, selectedTheme) => {
+  const normalized = text.toLowerCase();
+  const recommendations = [];
+  const addedIds = new Set();
+
+  productsDatabase.forEach((product) => {
+    // If a theme is selected, prioritize that theme
+    if (selectedTheme && product.theme === selectedTheme) {
+      if (!addedIds.has(product.id)) {
+        recommendations.push({ ...product, matchScore: 10 });
+        addedIds.add(product.id);
+      }
+    } else if (!selectedTheme) {
+      // If no theme selected, match by keywords
+      const matchCount = product.keywords.filter((keyword) =>
+        normalized.includes(keyword)
+      ).length;
+
+      if (matchCount > 0 && !addedIds.has(product.id)) {
+        recommendations.push({ ...product, matchScore: matchCount });
+        addedIds.add(product.id);
+      }
+    }
+  });
+
+  // Sort by match score (descending)
+  return recommendations.sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
+};
+
 const ProductRecommendationChat = ({ categoryBasePath = "/balloon-decoration" }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +130,8 @@ const ProductRecommendationChat = ({ categoryBasePath = "/balloon-decoration" })
   const [currentStep, setCurrentStep] = useState(0);
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
 
   const handleUserResponse = async (userText) => {
     const userMessage = buildChatMessage(userText, "user");
@@ -101,32 +156,114 @@ const ProductRecommendationChat = ({ categoryBasePath = "/balloon-decoration" })
         const nextQuestion = questions[nextStep];
         setMessages((prev) => [
           ...prev,
-          ...categoryLinks.map((link) =>
-            buildChatMessage(
-              `I found a matching page for your category: ${link.label}`,
-              "bot",
-              { linkUrl: link.url, linkLabel: link.label }
-            )
-          ),
           buildChatMessage(nextQuestion.question, "bot"),
         ]);
       } else {
         // All questions answered
-        const summary = `Thank you for providing the details! Here's what you shared:\n\n🏙️ City: ${updatedInfo.city}\n📅 Event Date: ${updatedInfo.eventDate}\n📂 Categories: ${updatedInfo.categories}\n🎁 Product Preferences: ${updatedInfo.product}\n\nOur team will contact you soon with personalized recommendations! 🎉`;
-        setMessages((prev) => [
-          ...prev,
-          ...categoryLinks.map((link) =>
+        const userTextNormalized = updatedInfo.product.toLowerCase();
+        const isKidsBirthday = userTextNormalized.includes("kids") && userTextNormalized.includes("birthday");
+        
+        if (isKidsBirthday && !selectedTheme) {
+          // Show theme selector for kids birthday
+          setShowThemeSelector(true);
+          setMessages((prev) => [
+            ...prev,
             buildChatMessage(
-              `I found a matching page for your category: ${link.label}`,
-              "bot",
-              { linkUrl: link.url, linkLabel: link.label }
-            )
-          ),
-          buildChatMessage(summary, "bot"),
-        ]);
+              "✨ Great! We have amazing kids birthday themes! Select one that matches your preference:",
+              "bot"
+            ),
+            {
+              id: `theme-selector-${Date.now()}`,
+              text: "Select a theme",
+              role: "bot",
+              isThemeSelector: true,
+              themes: kidsBirthdayThemes,
+            },
+          ]);
+        } else {
+          // Get product recommendations - pass selectedTheme if available
+          const recommendations = getProductRecommendations(updatedInfo.product, selectedTheme);
+          const summary = `Thank you for providing the details! Here's what you shared:\n\n🏙️ City: ${updatedInfo.city}\n📅 Event Date: ${updatedInfo.eventDate}\n📂 Categories: ${updatedInfo.categories}\n🎁 Product Preferences: ${updatedInfo.product}${selectedTheme ? `\n🎨 Theme: ${kidsBirthdayThemes.find(t => t.id === selectedTheme)?.name}` : ""}\n\nCheck the below products 🎉`;
+          
+          const newMessages = [
+            ...messages,
+            buildChatMessage(summary, "bot"),
+          ];
+
+          // Add product recommendations if any found
+          if (recommendations.length > 0) {
+            newMessages.push(
+              buildChatMessage(
+                "✨ Based on your preferences, here are some products we recommend:",
+                "bot"
+              )
+            );
+            recommendations.forEach((product) => {
+              newMessages.push({
+                id: `product-${product.id}`,
+                text: product.name,
+                role: "bot",
+                isProduct: true,
+                product: {
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.image,
+                  category: product.category,
+                  theme: product.theme,
+                },
+              });
+            });
+          }
+
+          setMessages(newMessages);
+        }
       }
       setIsLoading(false);
     }, 500); // Small delay for natural feel
+  };
+
+  const handleThemeSelect = (themeId) => {
+    const selectedThemeObj = kidsBirthdayThemes.find(t => t.id === themeId);
+    setSelectedTheme(themeId);
+    setShowThemeSelector(false);
+    
+    // Add bot message confirming selection
+    setMessages((prev) => [
+      ...prev,
+      buildChatMessage(`You selected: ${selectedThemeObj.emoji} ${selectedThemeObj.name}`, "bot"),
+    ]);
+    
+    setIsLoading(true);
+    setTimeout(() => {
+      // Get product recommendations with selected theme
+      const recommendations = getProductRecommendations(userInfo.product, themeId);
+      const summary = `Great choice! ${selectedThemeObj.emoji} Here are the ${selectedThemeObj.name} decoration products we recommend:`;
+      
+      const newMessages = [
+        buildChatMessage(summary, "bot"),
+      ];
+
+      recommendations.forEach((product) => {
+        newMessages.push({
+          id: `product-${product.id}`,
+          text: product.name,
+          role: "bot",
+          isProduct: true,
+          product: {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            category: product.category,
+            theme: product.theme,
+          },
+        });
+      });
+
+      setMessages((prev) => [...prev, ...newMessages]);
+      setIsLoading(false);
+    }, 500);
   };
 
   const handleSendMessage = () => {
@@ -177,11 +314,44 @@ const ProductRecommendationChat = ({ categoryBasePath = "/balloon-decoration" })
                     : "userMessage"
                 }
               >
-                <p>{message.text}</p>
-                {message.linkUrl && (
-                  <a href={message.linkUrl} target="_blank" rel="noreferrer" className="chatLink">
-                    {message.linkLabel || message.linkUrl}
-                  </a>
+                {message.isProduct ? (
+                  <div className="productCard">
+                    <div className="productImage">{message.product.image}</div>
+                    <div className="productInfo">
+                      <h4>{message.product.name}</h4>
+                      <p className="productPrice">{message.product.price}</p>
+                      <button className="bookNowButton" onClick={() => {
+                        alert(`Product: ${message.product.name}\nPrice: ${message.product.price}\nTheme: ${message.product.theme}\n\nRedirecting to booking...`);
+                      }}>
+                        📅 Book Now
+                      </button>
+                    </div>
+                  </div>
+                ) : message.isThemeSelector ? (
+                  <div className="themeSelectorContainer">
+                    <p>{message.text}</p>
+                    <div className="themeButtonsGrid">
+                      {message.themes.map((theme) => (
+                        <button
+                          key={theme.id}
+                          className="themeButton"
+                          onClick={() => handleThemeSelect(theme.id)}
+                        >
+                          <span className="themeEmoji">{theme.emoji}</span>
+                          <span className="themeName">{theme.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p>{message.text}</p>
+                    {message.linkUrl && (
+                      <a href={message.linkUrl} target="_blank" rel="noreferrer" className="chatLink">
+                        {message.linkLabel || message.linkUrl}
+                      </a>
+                    )}
+                  </>
                 )}
               </div>
             ))}
