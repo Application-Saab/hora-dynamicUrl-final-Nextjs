@@ -1,32 +1,35 @@
 import LazyVideo from "../../common/LazyVideo";
 import EventLazyImage from "../../common/EventLazyImage";
 import '../../common/EventLazyImage.css';
+import CircularLoader from "@/components/Gallery/CircularLoader";
 
-const EventwallGalleryItem = ({ isVideo, thumbnail, indexOnPage }) => {
-  const isLoading = !thumbnail?.postWebpUrl && thumbnail.status !== "done";
+const EventwallGalleryItem = ({ isVideo, indexOnPage, fullVideoSrc, isEventWall=false ,progress = null, postType = null, id, imageUrl, previewSrc , isLoading }) => {
 
   return (
-    <>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      {isLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+          <CircularLoader />
+        </div>
+      )}
       {isVideo ? (
           <LazyVideo
-            previewSrc={
-              isLoading ? thumbnail.localPreview : thumbnail.postWebpUrl
-            }
-            fullVideoSrc={thumbnail?.postUrl}
-            isEventWall={true}
-            progress={thumbnail.progress}
+            previewSrc={previewSrc}
+            fullVideoSrc={fullVideoSrc}
+            isEventWall={isEventWall}
+            progress={progress}
           />
       ) : (
         <EventLazyImage
-          key={thumbnail?._id}
-          src={isLoading ? thumbnail.localPreview : thumbnail.postWebpUrl}
+          key={id}
+          src={imageUrl}
           alt={`Event Image ${indexOnPage + 1}`}
-          progress={thumbnail.progress}
+          progress={progress}
           wrapperClassName={`event-masonry-item`}
-          postType={thumbnail.postType}
+          postType={postType}
         />
       )}
-    </>
+    </div>
   );
 };
 

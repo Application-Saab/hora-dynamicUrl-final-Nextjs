@@ -85,12 +85,51 @@ const brandItems = [
                     height={400}
                     quality={100}
                     loading="eager"
-                    className="banner-image" />
+                    className="professional event photographer in India" />
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
         </div>
+ <div className="hora-wrap">
+      <div className="hora-card">
+        <span className="hora-tag">Book in minutes</span>
+        <h1>Professional event photographers across India</h1>
+
+        <div className="hora-stat">
+          <div className="hora-stat-item">
+            <div className="hora-stat-num">1000+</div>
+            <div className="hora-stat-label">Verified photographers</div>
+          </div>
+          <div className="hora-divider"></div>
+          <div className="hora-stat-item">
+            <div className="hora-stat-num">Pan</div>
+            <div className="hora-stat-label">India coverage</div>
+          </div>
+        </div>
+
+        <p>
+          Looking for a photographer near you?{" "}
+          <span className="hora-brand">HORA</span> covers birthdays,
+          anniversaries, weddings, maternity shoots, baby showers &amp; more.
+        </p>
+
+        <div className="hora-price-box">
+          <div className="hora-price-row">
+            <span className="hora-price-from">Starting from</span>
+            <span className="hora-price-amt">₹3599/-</span>
+          </div>
+        </div>
+
+        {/* <div className="hora-badges">
+          {events.map(tag => (
+            <span key={tag} className="hora-badge">{tag}</span>
+          ))}
+        </div> */}
+
+        {/* <button className="hora-cta">Book your photoshoot</button> */}
+      </div>
+    </div>
 
         <div className="gridContainer">
           {photoCat.slice(0, 6).map((item) => (
@@ -99,7 +138,7 @@ const brandItems = [
               src={item.image}
               title={item.name}
               subCategory={item.subCategory}
-              cityProps={cityProps}
+              city={city}
             />
           ))}
         </div>

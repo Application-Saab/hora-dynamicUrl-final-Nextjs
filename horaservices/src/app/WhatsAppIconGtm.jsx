@@ -38,6 +38,7 @@ import {
   chefCityPageMessage,
   foodSelectDateMessage,
   photographyMainMessage,
+  photographyMessagesByCategory,
 } from "@/utils/whatsappMessages";
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 const WhatsAppIcon = ({ router }) => {
@@ -68,7 +69,7 @@ const WhatsAppIcon = ({ router }) => {
   str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
 const formattedCity = capitalize(city);
-
+const formattedCatValue = catValue?.toLowerCase();
   const handleWhatsAppClick = () => {
     const PHONE = "7338584828";
 let eventName = "whatsapp_click";
@@ -204,7 +205,13 @@ let message = defaultMessage;
         productNameEvent = 'photography_page_whatsappclick';
         message = photographyMainMessage;
         break;
-
+      
+        case '/photography-page/[catValue]':
+         eventName = 'photography_productlistedpage_whatsapp_click';
+          productNameEvent = `photography_productlist_categorypage_whatsapp_click_${catValue}`;
+         message = photographyMessagesByCategory[formattedCatValue] || defaultMessage;
+         break;
+         
       case '/photography-checkout':
         eventName = 'photography_checkout_whatsappclick';
         productNameEvent = 'photography_checkout_whatsappclick';
