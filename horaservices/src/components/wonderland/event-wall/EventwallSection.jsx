@@ -98,11 +98,32 @@ const EventwallSection = ({
   const [folderSelection, setFolderSelection] = useState([]);
   const [initialPopupFolders, setInitialPopupFolders] = useState([]);
   const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
-  const [localPhoneNumber, setLocalPhoneNumber] = useState(localStorage.getItem("mobileNumber") || "");
+  const [localPhoneNumber, setLocalPhoneNumber] = useState(
+    localStorage.getItem("mobileNumber") || "",
+  );
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});
 
   const actionMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        actionMenuRef.current &&
+        !actionMenuRef.current.contains(event.target)
+      ) {
+        setShowActionMenu(false);
+      }
+    };
+
+    if (showActionMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showActionMenu]);
 
   const currentImages = allImages;
 
@@ -148,7 +169,6 @@ const EventwallSection = ({
   useEffect(() => {
     if (!userId || allImages.length === 0) return;
 
-    
     const fetchLikes = async () => {
       const initialLikes = {};
       const resp = await getAllLikes(
@@ -169,7 +189,10 @@ const EventwallSection = ({
     if (!eventid) return;
     const loadFolders = async () => {
       try {
-        const resp = await getEventInvite(`${GET_EVENT_BY_ID}/${eventid}`, "GET");
+        const resp = await getEventInvite(
+          `${GET_EVENT_BY_ID}/${eventid}`,
+          "GET",
+        );
         const folders = resp?.data?.subFolders || [];
         setSubFolders(Array.isArray(folders) ? folders : []);
       } catch (e) {
@@ -1120,9 +1143,17 @@ const EventwallSection = ({
                               <span>Share</span>
                             </div>
                             {(isHost ||
-                              String(currentImage?.postById) === String(userId)) && (
-                              <div className="action-item flex" onClick={handleDeletePost}>
-                                <Image src={deleteVector} width={13} height={17} />
+                              String(currentImage?.postById) ===
+                                String(userId)) && (
+                              <div
+                                className="action-item flex"
+                                onClick={handleDeletePost}
+                              >
+                                <Image
+                                  src={deleteVector}
+                                  width={13}
+                                  height={17}
+                                />
                                 <span>Delete</span>
                               </div>
                             )}
