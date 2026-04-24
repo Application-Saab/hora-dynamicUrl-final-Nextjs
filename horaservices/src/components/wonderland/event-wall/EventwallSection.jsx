@@ -20,7 +20,7 @@ import {
   getCachedEvent,
 } from "@/utils/eventCache";
 import "../../common/EventLazyImage.css";
-import EventwallGalleryItem from "./EventwallGalleryItem";
+import { EventwallGalleryItemWonderland } from "./EventwallGalleryItem";
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -605,7 +605,7 @@ const EventwallSection = ({
                         setSelectedIndex(originalIndex);
                       }}
                     >
-                      <EventwallGalleryItem
+                      <EventwallGalleryItemWonderland
                         isVideo={isVideo}
                         thumbnail={thumbnail}
                         indexOnPage={indexOnPage}

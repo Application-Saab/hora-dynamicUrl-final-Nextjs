@@ -1,5 +1,4 @@
 export const BASE_URL = "https://horaservices.com";
-export const MEDIA_PROCESSING_URL = "https://mediaprocessv2.horaservices.com";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const COMPRESSED_WEBP_IMG_URL =
