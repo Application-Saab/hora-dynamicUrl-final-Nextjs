@@ -19,7 +19,6 @@ import plusVector from "../../assets/plusVector.svg";
 import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/DeleteVector.svg";
-import CommonPopup from "@/components/CommonPop";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
@@ -31,6 +30,7 @@ import whiteShareIcon from "../../assets/whiteShareIcon.svg";
 import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
+import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -1065,80 +1065,21 @@ const ThumbnailGallery = ({
             isSearchMode={isSearchMode}
             activeSubFolderId={activeSubFolderId}
             isActualMyPhotos={isActualMyPhotos}
+            selectedImages={selectedImages}
           />
         </div>
       </div>
 
-      <CommonPopup
+      <AddToFolderPopup
         isOpen={showAddToFolderPopup}
-        onClose={() => {
-          setShowAddToFolderPopup(false);
-        }}
-        popupHeight={usableFolders.length === 0 ? "269" : "420"}
-        title="Add to Folder"
-        titleFontSize="22px"
-        buttonContent={usableFolders.length === 0 ? null : "Add Now"}
-        disabled={
-          JSON.stringify(folderSelection) ===
-          JSON.stringify(initialPopupFolders)
-        }
+        onClose={() => setShowAddToFolderPopup(false)}
+        folders={usableFolders}
+        folderSelection={folderSelection}
+        setFolderSelection={setFolderSelection}
+        initialSelection={initialPopupFolders}
         onSubmit={handleAddToFolderSubmit}
-        containerClass=""
-      >
-        <div
-          className="add-folder-list"
-          style={{ maxHeight: "300px", overflowY: "auto" }}
-        >
-          {usableFolders.length > 0 ? (
-            usableFolders?.map((sf) => {
-              return (
-                <label key={sf._id} className="folder-checkbox-row">
-                  <div className="folder-info">
-                    <div
-                      className={`${sf.folderDp?.thumbnailUrl ? "folder-dp" : "default-folder-dp"}`}
-                    >
-                      <img
-                        src={sf?.folderDp?.thumbnailUrl || user2?.src}
-                        alt={sf.folderName}
-                      />
-                    </div>
-                    <span className="folder-name">{sf.folderName}</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="popup-checkbox"
-                    checked={folderSelection.includes(sf._id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setFolderSelection((prev) => [...prev, sf._id]);
-                      } else {
-                        setFolderSelection((prev) =>
-                          prev.filter((id) => id !== sf._id),
-                        );
-                      }
-                    }}
-                  />
-                </label>
-              );
-            })
-          ) : (
-            <div className="emptyFolder-container">
-              <div className="no-subfolder-text">No Folders Found</div>
-              <div className="sub-text-empty">
-                You don’t have any folder yet.
-              </div>
-              <div className="pop-btn-container">
-                <button
-                  className="popup-btn emptyFolder-popup-btn"
-                  onClick={handleAddToFolderSubmit}
-                >
-                  Create Folder
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </CommonPopup>
+        onCreateFolder={handleAddToFolderSubmit}
+      />
 
       <CommonImagePopup
         images={popupImages}

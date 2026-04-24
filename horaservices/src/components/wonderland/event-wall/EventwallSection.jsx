@@ -30,12 +30,16 @@ import {
 import useApi from "@/hooks/useApi";
 import {
   BASE_URL,
+  ASSIGN_TO_EVENT_SUBFOLDER,
+  DELETE_EVENT_POST,
   EVENT_POST_LIKE_UNLIKE,
+  GET_EVENT_BY_ID,
   GET_ALL_POSTS,
   LIKED_POST_BY_EVENT_AND_USERID,
 } from "@/utils/apiconstants";
 import "../../common/EventLazyImage.css";
 import { EventwallGalleryItemWonderland } from "./EventwallGalleryItem";
+import EventWallHeaderTabs from "./EventWallHeaderTabs";
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -51,6 +55,7 @@ import "../../../pages/weblink-gallery/gallery.css";
 import { IoCloseSharp } from "react-icons/io5";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import CommonImagePopup from "@/components/CommonImagePopup";
+import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import Image from "next/image";
 const EventwallSection = ({
   userData,
@@ -62,13 +67,16 @@ const EventwallSection = ({
   const { eventid } = router.query;
   const { makeRequest: getAllPosts } = useApi();
   const { makeRequest: getAllLikes } = useApi();
+  const { makeRequest: getEventInvite } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
   const imagesRef = useRef([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [initialSubfolderImages, setInitialSubfolderImages] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isStreamSearching, setIsStreamSearching] = useState(false);
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeSubFolderId, setActiveSubFolderId] = useState(null);
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
@@ -89,6 +97,7 @@ const EventwallSection = ({
   const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
   const [folderSelection, setFolderSelection] = useState([]);
   const [initialPopupFolders, setInitialPopupFolders] = useState([]);
+  const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
   const [localPhoneNumber, setLocalPhoneNumber] = useState(localStorage.getItem("mobileNumber") || "");
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});
@@ -96,6 +105,34 @@ const EventwallSection = ({
   const actionMenuRef = useRef(null);
 
   const currentImages = allImages;
+
+  const otherFolders = useMemo(
+    () => subFolders.filter((sf) => sf.type === "others"),
+    [subFolders],
+  );
+
+  const hasChanges = useMemo(() => {
+    if (!activeSubFolderId) return false;
+    if (selectedImages.length !== initialSubfolderImages.length) return true;
+
+    const setA = new Set(selectedImages);
+    const setB = new Set(initialSubfolderImages);
+
+    for (let id of setA) {
+      if (!setB.has(id)) return true;
+    }
+    return false;
+  }, [selectedImages, initialSubfolderImages, activeSubFolderId]);
+
+  const handleSearchResults = useCallback((events = []) => {
+    const normalize = (v) => (v || "").trim();
+    const keys = (events || [])
+      .filter((e) => e?.type === "match")
+      .map((e) => e?.key || e?.thumbnailKey || e?.s3Key)
+      .map(normalize)
+      .filter(Boolean);
+    setMatchedKeys(keys);
+  }, []);
 
   useEffect(() => {
     if (typeof navigator !== "undefined") {
@@ -127,6 +164,20 @@ const EventwallSection = ({
     };
     fetchLikes();
   }, [allImages, userId]);
+
+  useEffect(() => {
+    if (!eventid) return;
+    const loadFolders = async () => {
+      try {
+        const resp = await getEventInvite(`${GET_EVENT_BY_ID}/${eventid}`, "GET");
+        const folders = resp?.data?.subFolders || [];
+        setSubFolders(Array.isArray(folders) ? folders : []);
+      } catch (e) {
+        console.error("Failed to load event subfolders", e);
+      }
+    };
+    loadFolders();
+  }, [eventid]);
 
   const pauseAllVideos = () => {
     const videos = document.querySelectorAll(".popupContent video");
@@ -517,6 +568,22 @@ const EventwallSection = ({
     }
   }, [selectedIndex]);
 
+  useEffect(() => {
+    if (!activeSubFolderId) {
+      setSelectedImages([]);
+      setInitialSubfolderImages([]);
+      return;
+    }
+
+    const ids = allImages
+      .filter((img) => img.folderIds?.includes(activeSubFolderId))
+      .map((img) => img._id)
+      .filter(Boolean);
+
+    setSelectedImages(ids);
+    setInitialSubfolderImages(ids);
+  }, [activeSubFolderId, allImages]);
+
   const handleSelectImage = (id) => {
     if (selectedImages.includes(id)) {
       setSelectedImages((prev) => prev.filter((item) => item !== id));
@@ -628,6 +695,142 @@ const EventwallSection = ({
     } else {
       await navigator.clipboard.writeText(imageUrl);
       alert("Image link copied!");
+    }
+  };
+
+  const handleSubFolderSelect = (id) => {
+    setActiveSubFolderId(id);
+    setSelectedImages([]);
+    setInitialSubfolderImages([]);
+    setIsEditing(false);
+    setActiveTab(id ?? "all");
+    setIsSearching(false);
+    setMatchedKeys([]);
+  };
+
+  const saveAssignToSubfolder = async ({
+    subFolderId,
+    addImageIds = [],
+    removeImageIds = [],
+  }) => {
+    const res = await fetch(`${BASE_URL}${ASSIGN_TO_EVENT_SUBFOLDER}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subFolderId, addImageIds, removeImageIds }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.message || "Failed to update folder");
+    return data;
+  };
+
+  const handleSaveAlbum = async () => {
+    if (!activeSubFolderId) return;
+
+    const toAdd = selectedImages.filter(
+      (id) => !initialSubfolderImages.includes(id),
+    );
+    const toRemove = initialSubfolderImages.filter(
+      (id) => !selectedImages.includes(id),
+    );
+
+    try {
+      await saveAssignToSubfolder({
+        subFolderId: activeSubFolderId,
+        addImageIds: toAdd,
+        removeImageIds: toRemove,
+      });
+
+      setAllImages((prev) =>
+        prev.map((img) => {
+          if (toAdd.includes(img._id)) {
+            return {
+              ...img,
+              folderIds: [...(img.folderIds || []), activeSubFolderId],
+            };
+          }
+
+          if (toRemove.includes(img._id)) {
+            return {
+              ...img,
+              folderIds: (img.folderIds || []).filter(
+                (fid) => fid !== activeSubFolderId,
+              ),
+            };
+          }
+
+          return img;
+        }),
+      );
+
+      setInitialSubfolderImages(selectedImages);
+      setIsEditing(false);
+    } catch (e) {
+      console.error(e);
+      alert(e?.message || "Failed to save album");
+    }
+  };
+
+  const handleSaveAddToFolder = async () => {
+    const current = allImages?.[selectedIndex];
+    if (!current?._id) {
+      setShowAddToFolderPopup(false);
+      return;
+    }
+
+    const before = new Set(initialPopupFolders || []);
+    const after = new Set(folderSelection || []);
+
+    const addTo = [...after].filter((x) => !before.has(x));
+    const removeFrom = [...before].filter((x) => !after.has(x));
+
+    try {
+      const addCalls = addTo.map((subFolderId) =>
+        saveAssignToSubfolder({ subFolderId, addImageIds: [current._id] }),
+      );
+      const removeCalls = removeFrom.map((subFolderId) =>
+        saveAssignToSubfolder({ subFolderId, removeImageIds: [current._id] }),
+      );
+      await Promise.all([...addCalls, ...removeCalls]);
+
+      setAllImages((prev) =>
+        prev.map((img) =>
+          img._id === current._id ? { ...img, folderIds: [...after] } : img,
+        ),
+      );
+      setShowAddToFolderPopup(false);
+    } catch (e) {
+      console.error(e);
+      alert(e?.message || "Failed to update folder");
+    }
+  };
+
+  const handleDeletePost = async () => {
+    const current = allImages?.[selectedIndex];
+    if (!current?._id) return;
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+
+    // Optimistic remove
+    const toDeleteId = current._id;
+    setAllImages((prev) => prev.filter((img) => img._id !== toDeleteId));
+    setShowActionMenu(false);
+
+    try {
+      const res = await fetch(`${BASE_URL}${DELETE_EVENT_POST}/${toDeleteId}`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || "Delete failed");
+      }
+      setSelectedIndex((idx) => {
+        if (idx === null) return idx;
+        return 0;
+      });
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete post");
+      // fallback: reload posts
+      loadEventPosts();
     }
   };
 
@@ -755,6 +958,51 @@ const EventwallSection = ({
                 margin: "20px auto",
               }}
             >
+              <EventWallHeaderTabs
+                eventId={eventid}
+                subFolders={subFolders}
+                setSubFolders={setSubFolders}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onSelectSubFolder={handleSubFolderSelect}
+                setIsSearching={setIsSearching}
+                onSearchResults={handleSearchResults}
+                setIsStreamSearching={setIsStreamSearching}
+                setMatchedKeys={setMatchedKeys}
+                setIsActualMyPhotos={setIsActualMyPhotos}
+                showCreateFolderPopup={showCreateFolderPopup}
+                setShowCreateFolderPopup={setShowCreateFolderPopup}
+              />
+
+              {activeTab !== "all" && !isMyPhotosTab && activeSubFolderId && (
+                <div className="buttons-container">
+                  {!isEditing ? (
+                    <button
+                      className="add-new-btn"
+                      onClick={() => {
+                        setSelectedImages(initialSubfolderImages);
+                        setIsEditing(true);
+                      }}
+                    >
+                      <span className="add-icon">+</span>
+                      <span>Add Photos To Album</span>
+                    </button>
+                  ) : (
+                    <button
+                      className="save-image-btn"
+                      onClick={handleSaveAlbum}
+                      disabled={!hasChanges}
+                      style={{
+                        opacity: !hasChanges ? 0.75 : 1,
+                        cursor: !hasChanges ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <span>Save Photos To Album</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* <div className="event-image-grid">
                 {currentImages?.map((thumbnail, indexOnPage) => {
                   const type = getBlockType(indexOnPage);
@@ -796,6 +1044,7 @@ const EventwallSection = ({
                 isSearchMode={isSearchMode}
                 activeSubFolderId={activeSubFolderId}
                 isActualMyPhotos={isActualMyPhotos}
+                selectedImages={selectedImages}
               />
 
               <CommonImagePopup
@@ -870,62 +1119,10 @@ const EventwallSection = ({
                               <Image src={shareVector} width={13} height={14} />
                               <span>Share</span>
                             </div>
-                            {String(rawPhoneNumber) ===
-                              String(localPhoneNumber) && (
-                              <div
-                                className="action-item flex"
-                                onClick={async () => {
-                                  const currentImage = allImages[selectedIndex];
-                                  if (!currentImage?._id) return;
-
-                                  if (
-                                    !window.confirm(
-                                      "Are you sure you want to delete this image?",
-                                    )
-                                  )
-                                    return;
-
-                                  try {
-                                    const res = await fetch(
-                                      `${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`,
-                                      {
-                                        method: "DELETE",
-                                      },
-                                    );
-
-                                    if (!res.ok) {
-                                      const err = await res.text();
-                                      throw new Error(err);
-                                    }
-
-                                    setAllImages((prev) => {
-                                      const newList = prev.filter(
-                                        (img) => img._id !== currentImage._id,
-                                      );
-                                      if (newList.length === 0) {
-                                        setSelectedIndex(null);
-                                      } else if (
-                                        selectedIndex >= newList.length
-                                      ) {
-                                        setSelectedIndex(newList.length - 1);
-                                      } else {
-                                        setSelectedIndex(selectedIndex);
-                                      }
-                                      return newList;
-                                    });
-
-                                    setShowActionMenu(false);
-                                  } catch (err) {
-                                    console.error("Delete failed:", err);
-                                    alert("Failed to delete image");
-                                  }
-                                }}
-                              >
-                                <Image
-                                  src={deleteVector}
-                                  width={13}
-                                  height={17}
-                                />
+                            {(isHost ||
+                              String(currentImage?.postById) === String(userId)) && (
+                              <div className="action-item flex" onClick={handleDeletePost}>
+                                <Image src={deleteVector} width={13} height={17} />
                                 <span>Delete</span>
                               </div>
                             )}
@@ -968,6 +1165,27 @@ const EventwallSection = ({
                       </div>
                     </div>
                   );
+                }}
+              />
+
+              <AddToFolderPopup
+                isOpen={showAddToFolderPopup}
+                onClose={() => setShowAddToFolderPopup(false)}
+                folders={otherFolders}
+                folderSelection={folderSelection}
+                setFolderSelection={setFolderSelection}
+                initialSelection={initialPopupFolders}
+                onSubmit={() => {
+                  if (otherFolders.length === 0) {
+                    setShowAddToFolderPopup(false);
+                    setShowCreateFolderPopup(true);
+                    return;
+                  }
+                  handleSaveAddToFolder();
+                }}
+                onCreateFolder={() => {
+                  setShowAddToFolderPopup(false);
+                  setShowCreateFolderPopup(true);
                 }}
               />
 

@@ -15,6 +15,7 @@ const ImageGrid = ({
   isSearchMode,
   activeSubFolderId,
   isActualMyPhotos,
+  selectedImages
 }) => {
   function getBlockType(index) {
     const pos = index % 6;
