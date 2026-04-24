@@ -5,18 +5,19 @@ import vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";
 
 const SECTION_CONFIG = [
-  { id: "beverage",        title: "Welcome Drink",  emoji: "🥂", itemsKey: "beverage",        noteKey: "beverageNote"                          },
-  { id: "appetisers",      title: "Appetisers",     emoji: "🍢", itemsKey: "appetisers",      noteKey: "appetisers.note", splitVegNonVeg: true  },
-  { id: "soups",           title: "Soup",           emoji: "🍵", itemsKey: "soups",           noteKey: "soupsNote",       splitVegNonVeg: true  },
-  { id: "salads",          title: "Salads",         emoji: "🥗", itemsKey: "salads",          noteKey: "saladsNote"                             },
-  { id: "mainCourse",      title: "Main Course",    emoji: "🍛", itemsKey: "mainCourse",      noteKey: "mainCourse.note", splitVegNonVeg: true  },
-  { id: "dal",             title: "Dal",            emoji: "🫕", itemsKey: "dal",             noteKey: "dalNote"                                },
-  { id: "rice",            title: "Rice",           emoji: "🍚", itemsKey: "rice",            noteKey: "riceNote"                               },
-  { id: "bread",           title: "Bread",          emoji: "🫓", itemsKey: "bread",           noteKey: "breadNote"                              },
-  { id: "accompaniments",  title: "Accompaniments", emoji: "🫙", itemsKey: "accompaniments",  noteKey: null                                     },
-  { id: "desserts",        title: "Desserts",       emoji: "🍮", itemsKey: "desserts",        noteKey: "dessertsNote"                           },
-  { id: "iceCream",        title: "Ice Cream",      emoji: "🍦", itemsKey: "iceCream",        noteKey: "iceCreamNote"                           },
-  { id: "addOns",          title: "Add-Ons",        emoji: "➕", itemsKey: "addOns",          noteKey: null                                     },
+  { id: "beverage",       title: "Welcome Drink",        emoji: "🥂", itemsKey: "beverage",       noteKey: "beverageNote"                          },
+  { id: "appetisers",     title: "Appetisers",           emoji: "🍢", itemsKey: "appetisers",     noteKey: "appetisers.note", splitVegNonVeg: true  },
+  { id: "pizza",          title: "Pizza",                emoji: "🍕", itemsKey: "pizza",          noteKey: "pizza.note",      splitVegNonVeg: true  },
+  { id: "soups",          title: "Soup",                 emoji: "🍵", itemsKey: "soups",          noteKey: "soupsNote",       splitVegNonVeg: true  },
+  { id: "salads",         title: "Salads",               emoji: "🥗", itemsKey: "salads",         noteKey: "saladsNote"                            },
+  { id: "mainCourse",     title: "Main Course",          emoji: "🍛", itemsKey: "mainCourse",     noteKey: "mainCourse.note", splitVegNonVeg: true  },
+  { id: "dal",            title: "Dal",                  emoji: "🫕", itemsKey: "dal",            noteKey: "dalNote"                               },
+  { id: "rice",           title: "Rice / Noodles / Pasta", emoji: "🍚", itemsKey: "rice",         noteKey: "riceNote",        splitVegNonVeg: true  },
+  { id: "bread",          title: "Bread",                emoji: "🫓", itemsKey: "bread",          noteKey: "breadNote"                             },
+  { id: "accompaniments", title: "Accompaniments",       emoji: "🫙", itemsKey: "accompaniments", noteKey: null                                    },
+  { id: "desserts",       title: "Desserts",             emoji: "🍮", itemsKey: "desserts",       noteKey: "dessertsNote"                          },
+  { id: "iceCream",       title: "Ice Cream",            emoji: "🍦", itemsKey: "iceCream",       noteKey: "iceCreamNote"                          },
+  { id: "addOns",         title: "Add-Ons",              emoji: "➕", itemsKey: "addOns",         noteKey: null                                    },
 ];
 const get = (obj, path) => {
   if (!path) return null;
