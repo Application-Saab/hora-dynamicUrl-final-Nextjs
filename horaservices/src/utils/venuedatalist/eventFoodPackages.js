@@ -9,6 +9,8 @@ import { JW_MARRIOTT } from "./JwMarriott.js";
 import { BRAHMA_BREWS } from "./BrahmaBrews.js";
 import { VIVANTA_BENGALURU } from "./VivantaBengaluru.js";
 import { HITLON_PACKAGES } from "./Hitlon.js";
+import { ARBOR_BREWING } from "./ArborBrewing.js";
+import { PAUL_PACKAGES } from "./paul.js";
 export const EVENT_FOOD_PACKAGES = {
 
   "69e3619f800de79c9491390d": STATIC_FOOD_PACKAGES, 
@@ -21,6 +23,8 @@ export const EVENT_FOOD_PACKAGES = {
     "69eb2bb59beae4c61eef01ee":BRAHMA_BREWS,
     "69eb36839beae4c61eef1a14":VIVANTA_BENGALURU,
     "69eb60e7c45e88294b7279a7":HITLON_PACKAGES,
+    "69ec4a69c45e88294b73d34a":ARBOR_BREWING,
+    "69ec81b8153fb91792cf4dda":PAUL_PACKAGES,
 };
 
 // ─── Helper function ─────────────────────────────────────────────────────────
