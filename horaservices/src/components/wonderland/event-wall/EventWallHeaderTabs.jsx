@@ -258,15 +258,15 @@ export default function EventWallHeaderTabs({
             setIsActualMyPhotos(false);
           }}
         >
-          <div className="circle-img-folder circle-img-both">
-            <div className="circle-img-inner">
+          <div className="circle-img-folder_wonderland circle-img-both" >
+            <div className="circle-img-inner circle-img-innner-wonderland">
               <img src={allPhotos.src} alt="All" />
             </div>
           </div>
           <span>All</span>
         </div>
 
-        {myPhotosFolder ? (
+        {/* {myPhotosFolder ? (
           <div
             className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""}`}
             onClick={() => {
@@ -275,8 +275,8 @@ export default function EventWallHeaderTabs({
               onSelectSubFolder(myPhotosFolder._id);
             }}
           >
-            <div className="circle-img-folder circle-img-both">
-              <div className="circle-img-inner">
+            <div className="circle-img-folder_wonderland circle-img-both">
+              <div className="circle-img-inner circle-img-innner-wonderland">
                 <img src={myPhotosFolder.folderDp?.thumbnailUrl || myPhoto.src} alt="My Photos" />
               </div>
             </div>
@@ -290,16 +290,16 @@ export default function EventWallHeaderTabs({
               setShowCameraPopup(true);
             }}
           >
-            <div className="circle-img-folder circle-img-both">
-              <div className="circle-img-inner">
+            <div className="circle-img-folder_wonderland circle-img-both">
+              <div className="circle-img-inner circle-img-innner-wonderland">
                 <img src={myPhoto.src} alt="My Photos" />
               </div>
             </div>
             <span>My Photos</span>
           </div>
-        )}
+        )} */}
 
-        <div
+        {/* <div
           className="card-item"
           onClick={() => {
             setShowCreateFolderPopup(true);
@@ -310,7 +310,7 @@ export default function EventWallHeaderTabs({
             <span>+</span>
           </div>
           <span>Create Album</span>
-        </div>
+        </div> */}
 
         {albums.map((sf) => (
           <div
@@ -322,8 +322,8 @@ export default function EventWallHeaderTabs({
               setIsActualMyPhotos(false);
             }}
           >
-            <div className="circle-img-folder circle-img-both">
-              <div className={`${sf.folderDp.thumbnailUrl ? "circle-img-inner" : ""}`}>
+            <div className="circle-img-folder_wonderland circle-img-both">
+              <div className={`${sf.folderDp.thumbnailUrl ? "circle-img-inner circle-img-innner-wonderland" : ""}`}>
                 <img src={sf.folderDp.thumbnailUrl || user2.src} alt={sf.name || "Album"} />
               </div>
             </div>

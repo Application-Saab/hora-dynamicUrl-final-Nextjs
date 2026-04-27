@@ -16,6 +16,7 @@ export default function AddToFolderPopup({
   primaryCtaLabel = "Add Now",
   onSubmit,
   onCreateFolder,
+  style = {},
 }) {
   const hasFolders = Array.isArray(folders) && folders.length > 0;
   const disabled =
@@ -32,6 +33,7 @@ export default function AddToFolderPopup({
       disabled={disabled}
       onSubmit={onSubmit}
       containerClass=""
+      style={style}
     >
       <div
         className="add-folder-list"

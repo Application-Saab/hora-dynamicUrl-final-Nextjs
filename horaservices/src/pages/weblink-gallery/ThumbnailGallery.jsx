@@ -56,6 +56,7 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
+  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -84,6 +85,7 @@ const ThumbnailGallery = ({
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
+  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
@@ -238,7 +240,7 @@ const ThumbnailGallery = ({
 
   const visibleThumbnails = useMemo(() => {
     const normalize = (val) => (val || "").trim().toLowerCase();
-
+    
     if (!isActualMyPhotos) {
       if (isEditing) {
         return allThumbnails;
@@ -254,25 +256,25 @@ const ThumbnailGallery = ({
       });
     }
 
-    // if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-    //   return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
-    // }
+    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
+      return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+    }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
       return allThumbnails.filter((img) =>
         img.folderIds?.includes(myPhotosFolder._id),
       );
     }
-
+    
     if (activeSubFolderId) {
       return allThumbnails.filter((img) =>
         img.folderIds?.includes(activeSubFolderId),
-      );
-    }
-
-    return allThumbnails;
-  }, [
-    allThumbnails,
+    );
+  }
+  
+  return allThumbnails;
+}, [
+  allThumbnails,
     matchedKeys,
     activeTab,
     isMyPhotosTabActive,
@@ -281,6 +283,8 @@ const ThumbnailGallery = ({
     activeSubFolderId,
     isEditing,
   ]);
+  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
+  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
   const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
@@ -397,6 +401,7 @@ const ThumbnailGallery = ({
   }, []);
 
   const handleSearchResults = (matches) => {
+    console.log('%c [ matches ]-402', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
     if (!Array.isArray(matches)) return;
     const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
@@ -1054,6 +1059,8 @@ const ThumbnailGallery = ({
               <div className="thumbnail-gallery-status">No images found</div>
             )}
 
+            {console.log("visibleThumbnails inside returned code", visibleThumbnails )}
+
           {/* ================= MAIN IMAGE GRID ================= */}
           <ImageGrid
             data={visibleThumbnails}
@@ -1079,6 +1086,7 @@ const ThumbnailGallery = ({
         initialSelection={initialPopupFolders}
         onSubmit={handleAddToFolderSubmit}
         onCreateFolder={handleAddToFolderSubmit}
+        style={{ zIndex: 100001 }}
       />
 
       <CommonImagePopup

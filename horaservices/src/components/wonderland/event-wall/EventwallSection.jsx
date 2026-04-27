@@ -11,7 +11,6 @@ import NotesButtonIcon from "@/assets/wonderland/NotesButtonIcon.svg";
 import PostBadgeButtonIcon from "@/assets/wonderland/PostBadgeButtonIcon.svg";
 import GalleryButtonIcon from "@/assets/wonderland/GalleryButtonIcon.svg";
 import NopostCamera from "@/assets/wonderland/NopostCamera.svg";
-import share from "@/assets/share.svg";
 import multiGroup from "@/assets/multiGroup.svg";
 import plusVector from "@/assets/plusVector.svg";
 import downloadVector from "@/assets/downloadVector.svg";
@@ -38,7 +37,6 @@ import {
   LIKED_POST_BY_EVENT_AND_USERID,
 } from "@/utils/apiconstants";
 import "../../common/EventLazyImage.css";
-import { EventwallGalleryItemWonderland } from "./EventwallGalleryItem";
 import EventWallHeaderTabs from "./EventWallHeaderTabs";
 import {
   deleteFromOPFS,
@@ -47,12 +45,9 @@ import {
   processImagesWithHeight,
   saveFileToOPFS,
 } from "@/utils/eventWallHelpers";
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-// import "../../../pages/photo-gallery/gallery.css";
 import "../../../pages/weblink-gallery/gallery.css";
-import { IoCloseSharp } from "react-icons/io5";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
@@ -70,6 +65,7 @@ const EventwallSection = ({
   const { makeRequest: getEventInvite } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
+  console.log('%c [ allImages ]-68', 'font-size:13px; background:pink; color:#bf2c9f;', allImages)
   const imagesRef = useRef([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -78,6 +74,7 @@ const EventwallSection = ({
   const [isSearching, setIsSearching] = useState(false);
   const [isStreamSearching, setIsStreamSearching] = useState(false);
   const [matchedKeys, setMatchedKeys] = useState([]);
+  const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
   const [activeSubFolderId, setActiveSubFolderId] = useState(null);
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const isSearchMode = isSearching && matchedKeys.length > 0;
@@ -149,10 +146,11 @@ const EventwallSection = ({
     const normalize = (v) => (v || "").trim();
     const keys = (events || [])
       .filter((e) => e?.type === "match")
-      .map((e) => e?.key || e?.thumbnailKey || e?.s3Key)
+      .map((e) => e?.key || e?.postWebpKey || e?.s3Key)
       .map(normalize)
       .filter(Boolean);
     setMatchedKeys(keys);
+    setMyPhotoSearchResults(keys);
   }, []);
 
   useEffect(() => {
@@ -631,19 +629,27 @@ const EventwallSection = ({
         return allImages;
       }
     }
+    
+    // Use myPhotoSearchResults for real-time search filtering
+    if (isActualMyPhotos && myPhotoSearchResults.length > 0) {
+      return allImages.filter((img) =>
+        myPhotoSearchResults.includes(img.postWebpKey)
+      );
+    }
+
     if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
       const normalizedKeys = matchedKeys.map(normalize);
 
       return allImages.filter((img) => {
         if (img.type !== "image") return false;
 
-        return normalizedKeys.includes(normalize(img.thumbnailKey));
+        return normalizedKeys.includes(normalize(img.postWebpKey));
       });
     }
 
-    // if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-    //   return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
-    // }
+    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
+      return allImages.filter(img => matchedKeys.includes(img.postWebpKey));
+    }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
       return allImages.filter((img) =>
@@ -667,6 +673,8 @@ const EventwallSection = ({
     myPhotosFolder,
     activeSubFolderId,
     isEditing,
+    isActualMyPhotos,
+    myPhotoSearchResults,
   ]);
 
   const popupImages = useMemo(() => {
@@ -729,6 +737,7 @@ const EventwallSection = ({
     setActiveTab(id ?? "all");
     setIsSearching(false);
     setMatchedKeys([]);
+    setMyPhotoSearchResults([]);
   };
 
   const saveAssignToSubfolder = async ({
@@ -1218,6 +1227,7 @@ const EventwallSection = ({
                   setShowAddToFolderPopup(false);
                   setShowCreateFolderPopup(true);
                 }}
+                style={{ zIndex: 100001 }}
               />
 
               {/* {selectedIndex !== null && allImages[selectedIndex] && (
