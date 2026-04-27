@@ -2,9 +2,9 @@
 
 import axios from "axios";
 import imageCompression from "browser-image-compression";
-const { BASE_URL } = require("./apiconstants");
+const { BASE_URL, MEDIA_WORKER_URL } = require("./apiconstants");
 
-// 3-Second Video Clip Generator
+// 3 Second Video Clip Generator
 export async function create3SecClip(videoFile) {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -211,4 +211,108 @@ export async function uploadVideo(
     originalUrl,
     thumbnailUrl,
   };
+}
+
+export async function uploadMedia(
+  files,
+  userId,
+  userName,
+  eventId,
+  onProgress,
+  fileId = null,
+) {
+  const formData = new FormData();
+  console.log(
+    "Files being appended:",
+    files.length,
+    files.map((f) => f.name),
+  ); // ← add this
+
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  formData.append("fileId", fileId);
+  formData.append("postById", userId);
+  formData.append("postByName", userName);
+  formData.append("postType", "selfUploaded");
+  formData.append("folder", "self-upload");
+
+  const token = localStorage.getItem("token");
+
+  const res = await axios.post(
+    `${MEDIA_WORKER_URL}/event/upload-event-media/${eventId}`,
+    formData,
+    {
+      headers: {
+        Authorization: token,
+      },
+      onUploadProgress: (p) => {
+        const percent = Math.round((p.loaded * 100) / p.total);
+        onProgress(percent);
+      },
+    },
+  );
+
+  return res.data.posts;
+}
+
+import { openDB, deleteDB, wrap, unwrap } from "idb";
+
+const DB_NAME = "EventWallUploads";
+const STORE_NAME = "pending";
+const DB_VERSION = 1;
+
+let dbPromise = null;
+
+export async function getDB() {
+  if (!dbPromise) {
+    dbPromise = openDB(DB_NAME, DB_VERSION, {
+      upgrade(db, oldVersion) {
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          store.createIndex("eventId", "eventId");
+          store.createIndex("status", "status");
+        }
+      },
+    });
+  }
+  return dbPromise;
+}
+
+export async function addToQueue(item) {
+  const db = await getDB();
+  return db.add(STORE_NAME, item);
+}
+
+export async function getPendingUploads(eventId) {
+  const db = await getDB();
+  return db.getAllFromIndex(STORE_NAME, "eventId", eventId);
+}
+
+export async function updateQueueItem(id, changes) {
+  const db = await getDB();
+  const tx = db.transaction(STORE_NAME, "readwrite");
+  const store = tx.objectStore(STORE_NAME);
+  const item = await store.get(id);
+  if (!item) return null;
+  const updated = { ...item, ...changes };
+  await store.put(updated);
+  return updated;
+}
+
+export async function removeFromQueue(id) {
+  const db = await getDB();
+  return db.delete(STORE_NAME, id);
+}
+
+export async function clearQueueForEvent(eventId) {
+  const db = await getDB();
+  const tx = db.transaction(STORE_NAME, "readwrite");
+  const store = tx.objectStore(STORE_NAME);
+  const index = store.index("eventId");
+  const items = await index.getAll(eventId);
+  for (const item of items) {
+    await store.delete(item.id);
+  }
 }
