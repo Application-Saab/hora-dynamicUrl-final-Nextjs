@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BASE_URL,
   OTP_GENERATE_END_POINT,
@@ -19,7 +19,19 @@ import ArrowImg from "../assets/arrow.svg";
 const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
+  const pathname = usePathname();
 
+  const isWonderland =
+    pathname === "/wonderland" ||
+    pathname === "/wonderland/create-invite-template" ||
+    pathname === "/templates" ||
+    pathname?.startsWith("/chat") ||
+    pathname === "/about" ||
+    pathname === "/accounts" ||
+    pathname === "/services" ||
+    pathname === "/wonderland/invite";
+
+  const isWonderlandPath = pathname?.startsWith("/wonderland") || isWonderland;
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [error, setError] = useState("");
@@ -85,14 +97,14 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     }
 
     try {
-      const res = await axios.post(
-        BASE_URL + OTP_GENERATE_END_POINT,
-        {
-          phone: mobileNumber,
-          role: "customer",
-        },
-        { headers: { "Content-Type": "application/json" } },
-      );
+      let payload = {
+        phone: mobileNumber,
+        role: "customer",
+        fromWonderland: isWonderlandPath ? true : false,
+      };
+      const res = await axios.post(BASE_URL + OTP_GENERATE_END_POINT, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (res.data.status === API_SUCCESS_CODE) {
         setIsOtpSent(true);
