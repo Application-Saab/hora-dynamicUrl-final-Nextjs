@@ -325,6 +325,7 @@ const DynamicTemplateRenderer = () => {
           monthCase: template.configs?.monthCase || "default",
           aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
           borderColor: template.configs?.borderColor,
+          isBgRemove: template.configs?.isBgRemove || false,
         });
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
@@ -791,23 +792,19 @@ const DynamicTemplateRenderer = () => {
     );
   }, [templateMeta?.borderColor]);
 
-  const handleImageUploadClick = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleBackgroundRemoval = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      // Python Backend URL (Make sure your Python server is running on port 8000)
       const response = await axios.post(
         "http://localhost:8000/remove-bg",
         formData,
         {
-          responseType: "blob", // Important: Image binary data receive karne ke liye
+          responseType: "blob",
         },
       );
 
-      // Binary blob ko URL mein convert karna taaki <img> tag mein dikh sake
       const imageUrl = URL.createObjectURL(response.data);
       setUploadedImage(imageUrl);
       setOriginalImage(imageUrl);
@@ -816,6 +813,18 @@ const DynamicTemplateRenderer = () => {
       alert(
         "error to connect to the server. Make sure your Python backend is running on port 8000.",
       );
+    }
+  };
+
+  const handleImageUploadClick = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (templateMeta?.isBgRemove) {
+      await handleBackgroundRemoval(file);
+    } else {
+      const url = URL.createObjectURL(file);
+      setUploadedImage(url);
+      setOriginalImage(url);
     }
   };
 
