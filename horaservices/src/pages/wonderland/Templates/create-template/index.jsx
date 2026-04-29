@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
+import { BASE_URL, BG_REMOVER_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "../../../../utils/dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
@@ -798,7 +798,7 @@ const DynamicTemplateRenderer = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/remove-bg",
+        `${BG_REMOVER_URL}`,
         formData,
         {
           responseType: "blob",
