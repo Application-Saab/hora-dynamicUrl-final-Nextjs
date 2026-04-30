@@ -1,5 +1,5 @@
 export const BASE_URL = "https://horaservices.com";
-export const BG_REMOVER_URL = "http://localhost:8000/remove-bg";
+export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const COMPRESSED_WEBP_IMG_URL =
