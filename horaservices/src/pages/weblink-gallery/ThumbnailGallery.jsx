@@ -125,10 +125,10 @@ const ThumbnailGallery = ({
   }, [showActionMenu]);
 
   useEffect(() => {
-    if (matchedKeys?.length > 0 || myPhotosFolder?.length > 0) {
+    if (matchedKeys?.length > 0 || myPhotosFolder) {
       setIsEditing(false);
     }
-  }, [matchedKeys.length > 0]);
+  }, [matchedKeys, myPhotosFolder]);
 
   const handleImageShare = async (imageUrl) => {
     if (!imageUrl) return;
@@ -149,7 +149,7 @@ const ThumbnailGallery = ({
     }
   };
 
-  const handleAddToFolderSubmit = () => {
+  const handleAddToFolderSubmit = async () => {
     if (usableFolders.length === 0) {
       setPendingAssignImageId(currentImage?._id);
 
@@ -183,9 +183,14 @@ const ThumbnailGallery = ({
             : img,
         ),
       );
+
       setShowAddToFolderPopup(false);
       setIsEditing(false);
-    });
+
+    } catch (error) {
+      console.error(error);
+    }
+
   };
 
   useEffect(() => {
@@ -288,31 +293,6 @@ const ThumbnailGallery = ({
 
   const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
-  const downloadFile = async (url) => {
-    const fileWithExt = url.split("/").pop();
-
-    const parts = fileWithExt.split("-");
-    const ext = parts.pop();
-    const filename = parts.join("-") + "." + ext;
-    try {
-      const response = await fetch(url, { mode: "cors" });
-      const blob = await response.blob();
-
-      // Create a download link
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = filename || "downloaded-image.jpg";
-      document.body.appendChild(link);
-      link.click();
-
-      // Cleanup
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error("Error downloading the file:", error);
-    }
-  };
-
   useEffect(() => {
     if (activeSubFolderId) {
       const ids = allThumbnails
@@ -406,7 +386,8 @@ const ThumbnailGallery = ({
     const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
-  };
+    setMyPhotoSearchResults(keys);
+  }, []);
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
@@ -432,15 +413,12 @@ const ThumbnailGallery = ({
       (id) => !selectedImages.includes(id),
     );
 
-    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await assignToSubfolder({
         subFolderId: activeSubFolderId,
         addImageIds: toAdd,
         removeImageIds: toRemove,
-      }),
-    });
+      });
 
     setAllThumbnails((prev) =>
       prev.map((img) => {
@@ -464,8 +442,12 @@ const ThumbnailGallery = ({
       }),
     );
 
-    setInitialSubfolderImages(selectedImages);
-    setIsEditing(false);
+      setInitialSubfolderImages(selectedImages);
+      setIsEditing(false);
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const formatPhoneNumber = (num) => {
@@ -712,12 +694,13 @@ const ThumbnailGallery = ({
 
   const handleSubFolderSelect = (id) => {
     setActiveSubFolderId(id);
-
     setSelectedImages([]);
+
+    setIsSearching(false);
+    setMyPhotoSearchResults([]);
 
     if (activeTab !== "my-photos") {
       setIsEditing(false);
-
       setActiveTab(id ?? "all");
     }
   };
@@ -831,6 +814,7 @@ const ThumbnailGallery = ({
             setShowCameraPopup={setShowCameraPopup}
             capturedImage={capturedImage}
             setCapturedImage={setCapturedImage}
+            matchedKeys={matchedKeys}
           />
         )}
         <div>
@@ -1052,12 +1036,16 @@ const ThumbnailGallery = ({
             )}
 
           {/* ================= NO SEARCH RESULT ================= */}
-          {!loading &&
-            !isStreamSearching &&
-            isActualMyPhotos &&
-            visibleThumbnails.length === 0 && (
-              <div className="thumbnail-gallery-status">No images found</div>
-            )}
+          {(visibleThumbnails.length === 0 && activeSubFolderId) && (
+            <div className="weblink-emptyFolder-container">
+              <Image
+                src={emptyFolder}
+                alt="no images select"
+              />
+              <p className="label">No Photos Yet!</p>
+              <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
+            </div>
+          )}
 
             {console.log("visibleThumbnails inside returned code", visibleThumbnails )}
 
@@ -1130,7 +1118,7 @@ const ThumbnailGallery = ({
                       <div
                         className="action-item flex"
                         onClick={() => {
-                          const current = allThumbnails[selectedIndex];
+                          const current = popupImages[selectedIndex];
                           downloadFile(current.originalUrl);
                           setShowActionMenu(false);
                         }}
@@ -1142,7 +1130,7 @@ const ThumbnailGallery = ({
 
                     <div
                       onClick={() => {
-                        const current = allThumbnails[selectedIndex];
+                        const current = popupImages[selectedIndex];
                         if (!current) return;
                         handleImageShare(current?.originalUrl);
                         setShowActionMenu(false);
@@ -1156,7 +1144,7 @@ const ThumbnailGallery = ({
                       <div
                         className="action-item flex"
                         onClick={async () => {
-                          const currentImage = allThumbnails[selectedIndex];
+                          const currentImage = popupImages[selectedIndex];
                           if (!currentImage?._id) return;
 
                           if (

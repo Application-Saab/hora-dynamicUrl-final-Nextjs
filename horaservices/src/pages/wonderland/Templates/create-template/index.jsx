@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BASE_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
+import { BASE_URL, BG_REMOVER_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "../../../../utils/dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
@@ -15,20 +15,25 @@ import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
 import ErrorPopup from "@/components/common/ErrorPopup";
 import { getCurrentTimeAMPM, formatToAMPM } from "@/utils/timeFormatters";
 import { saveTemplate } from "@/utils/indexedDB";
+import axios from "axios";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 const toText = (val) => (val ?? "").toString();
-const escapeRegex = (value) => toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegex = (value) =>
+  toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const wrapEditable = (html = "", formData = {}) => {
-  let rendered = html.replace(/<span class="editable"[^>]*>([\s\S]*?)<\/span>/g, "$1");
+  let rendered = html.replace(
+    /<span class="editable"[^>]*>([\s\S]*?)<\/span>/g,
+    "$1",
+  );
 
   ["name", "eventType"].forEach((field) => {
     const value = toText(formData[field]);
     if (!value) return;
     rendered = rendered.replace(
       new RegExp(escapeRegex(value)),
-      `<span class="editable" data-field="${field}">${value}</span>`
+      `<span class="editable" data-field="${field}">${value}</span>`,
     );
   });
 
@@ -38,7 +43,7 @@ const wrapEditable = (html = "", formData = {}) => {
       (_m, attrs, content) =>
         `<div class="${cls}"${attrs}>
           <span class="editable" data-field="${key}">${content.trim()}</span>
-        </div>`
+        </div>`,
     );
 
   rendered = wrapBlock("address", "address");
@@ -48,31 +53,44 @@ const wrapEditable = (html = "", formData = {}) => {
 };
 
 const renderTemplate = (templateHtml = "", rawData = {}, formData) => {
-  const withConditionals = templateHtml.replace(/{{#if (.*?)}}([\s\S]*?){{\/if}}/g, (_, key, inner) => {
-    const value = rawData[key.trim()];
-    if (!value) return "";
-    return inner.replace(/{{(.*?)}}/g, (_, innerKey) => rawData[innerKey.trim()] || "");
-  });
+  const withConditionals = templateHtml.replace(
+    /{{#if (.*?)}}([\s\S]*?){{\/if}}/g,
+    (_, key, inner) => {
+      const value = rawData[key.trim()];
+      if (!value) return "";
+      return inner.replace(
+        /{{(.*?)}}/g,
+        (_, innerKey) => rawData[innerKey.trim()] || "",
+      );
+    },
+  );
 
   let rendered = withConditionals.replace(/{{(.*?)}}/g, (_, key) => {
     try {
-      return key
-        .trim()
-        .split(".")
-        .reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData) ?? "";
+      return (
+        key
+          .trim()
+          .split(".")
+          .reduce(
+            (acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""),
+            rawData,
+          ) ?? ""
+      );
     } catch {
       return "";
     }
   });
 
-  ["name", "eventType", "address", "time", "day", "month", "year"].forEach((field) => {
-    const value = toText(rawData[field]);
-    if (!value) return;
-    rendered = rendered.replace(
-      new RegExp(escapeRegex(value)),
-      `<span class="editable" data-field="${field}">${value}</span>`
-    );
-  });
+  ["name", "eventType", "address", "time", "day", "month", "year"].forEach(
+    (field) => {
+      const value = toText(rawData[field]);
+      if (!value) return;
+      rendered = rendered.replace(
+        new RegExp(escapeRegex(value)),
+        `<span class="editable" data-field="${field}">${value}</span>`,
+      );
+    },
+  );
 
   return wrapEditable(rendered, formData);
 };
@@ -100,16 +118,18 @@ const DynamicTemplateRenderer = () => {
   const templateId = searchParams.get("templateId") || "";
   const eventId = searchParams.get("id");
 
-  const loadUserId = () => typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-  const loadToken = () => typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const loadUserId = () =>
+    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const loadToken = () =>
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const userId = loadUserId();
   const token = loadToken();
 
   const [templateLoading, setTemplateLoading] = useState(true);
-const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-const loading = templateLoading || !imageLoaded;
+  const loading = templateLoading || !imageLoaded;
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -133,8 +153,16 @@ const loading = templateLoading || !imageLoaded;
 
   const [uploadedImage, setUploadedImage] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
-  const [charCounts, setCharCounts] = useState({ eventType: 0, name: 0, address: 0 });
-  const [formErrors, setFormErrors] = useState({ eventType: "", name: "", address: "" });
+  const [charCounts, setCharCounts] = useState({
+    eventType: 0,
+    name: 0,
+    address: 0,
+  });
+  const [formErrors, setFormErrors] = useState({
+    eventType: "",
+    name: "",
+    address: "",
+  });
   const [isSaved, setIsSaved] = useState(false);
   const [modal, setModal] = useState({ calendar: false, time: false });
   const [selectedDate, setSelectedDate] = useState("");
@@ -143,26 +171,31 @@ const loading = templateLoading || !imageLoaded;
   const templatePayload = useMemo(() => {
     const today = new Date();
     const fallback = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
-      today.getDate()
+      today.getDate(),
     ).padStart(2, "0")}`;
 
+    const formatted = dateFormatter(
+      formData.date || fallback,
+      templateMeta?.dateFormatCase || "1",
+    );
 
-    const formatted = dateFormatter(formData.date || fallback, templateMeta?.dateFormatCase || "1");
-
-    const finalTime =
-      formData.time?.trim()
-        ? formData.time         // DB time present → Use it
-        : getCurrentTimeAMPM(); // No DB time → current time
-
-
+    const finalTime = formData.time?.trim()
+      ? formData.time // DB time present → Use it
+      : getCurrentTimeAMPM(); // No DB time → current time
 
     return {
       eventType: formData.eventType,
       name: applyCase(formData.name || "", templateMeta?.nameCase),
-    date: applyCase(formatted?.full || "", templateMeta?.dateCase || "default"),
-     day: formatted?.day || "",
-    //  month: formatted?.month || "",
-    month: applyCase(formatted?.month || "",templateMeta?.monthCase || "default"),
+      date: applyCase(
+        formatted?.full || "",
+        templateMeta?.dateCase || "default",
+      ),
+      day: formatted?.day || "",
+      //  month: formatted?.month || "",
+      month: applyCase(
+        formatted?.month || "",
+        templateMeta?.monthCase || "default",
+      ),
       year: formatted?.year || "",
       time: finalTime,
       borderColor: templateMeta?.borderColor,
@@ -171,8 +204,16 @@ const loading = templateLoading || !imageLoaded;
       templateId,
       image: uploadedImage || originalImage || DefaultImageBgCircle.src,
     };
-  }, [formData, templateMeta?.dateFormatCase, templateId, uploadedImage, originalImage, templateMeta?.configs?.nameCase, templateMeta?.configs?.addressCase, templateMeta?.configs?.monthCase]);
-
+  }, [
+    formData,
+    templateMeta?.dateFormatCase,
+    templateId,
+    uploadedImage,
+    originalImage,
+    templateMeta?.configs?.nameCase,
+    templateMeta?.configs?.addressCase,
+    templateMeta?.configs?.monthCase,
+  ]);
 
   /* --- enforce char limits on pre-filled data --- */
   useEffect(() => {
@@ -210,20 +251,32 @@ const loading = templateLoading || !imageLoaded;
       }
       return { ...prev, ...nextCounts };
     });
-  }, [formData.eventType, formData.name, formData.address, templateMeta?.charLimits]);
+  }, [
+    formData.eventType,
+    formData.name,
+    formData.address,
+    templateMeta?.charLimits,
+  ]);
 
   /* --- fetch template --- */
   useEffect(() => {
     let active = true;
     const fetchTemplate = async () => {
       if (!templateId) {
-     setTemplateLoading(false);
+        setTemplateLoading(false);
 
         return;
       }
       try {
-        const res = await fetch(`${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`);
+        const res = await fetch(
+          `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
+        );
         const { template, error: apiError, message } = await res.json();
+        console.log(
+          "%c [ template ]-228",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          template,
+        );
         if (!active) return;
         if (apiError || !template) {
           setError(message || "Failed to fetch template");
@@ -232,13 +285,31 @@ const loading = templateLoading || !imageLoaded;
 
         let { cssCode, jsCode, fontUrls } = template.configs;
         if (template.backgroundUrl) {
-          cssCode = cssCode?.replace(/url\((['"]?).*?\1\)/g, `url('${template.backgroundUrl}')`);
+          cssCode = cssCode?.replace(
+            /url\((['"]?).*?\1\)/g,
+            `url('${template.backgroundUrl}')`,
+          );
         }
 
         const heroConfig = template.configs?.heroImageConfig || {};
         const cropShape = heroConfig.cropShape === "round" ? "round" : "rect";
+        console.log(
+          "%c [ cropShape ]-242",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          cropShape,
+        );
         const ratioW = parseInt(heroConfig?.cropRatio?.width, 10) || 4;
+        console.log(
+          "%c [ ratioW ]-244",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          ratioW,
+        );
         const ratioH = parseInt(heroConfig?.cropRatio?.height, 10) || 3;
+        console.log(
+          "%c [ ratioH ]-246",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          ratioH,
+        );
 
         setTemplateMeta({
           cssCode: cssCode || "",
@@ -254,12 +325,12 @@ const loading = templateLoading || !imageLoaded;
           monthCase: template.configs?.monthCase || "default",
           aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
           borderColor: template.configs?.borderColor,
+          isBgRemove: template.configs?.isBgRemove || false,
         });
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
       } finally {
         if (active) setTemplateLoading(false);
-;
       }
     };
 
@@ -269,33 +340,42 @@ const loading = templateLoading || !imageLoaded;
     };
   }, [templateId]);
 
-
   useEffect(() => {
     if (!eventId) return;
     let active = true;
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId}`, {
-          headers: { "Content-Type": "application/json", Authorization: token || "" },
-        });
+        const res = await fetch(
+          `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token || "",
+            },
+          },
+        );
         const { data } = await res.json();
         if (!active || res.status !== 200 || !data) return;
 
-        const formattedDate = data.eventDate ? new Date(data.eventDate).toISOString().split("T")[0] : "";
+        const formattedDate = data.eventDate
+          ? new Date(data.eventDate).toISOString().split("T")[0]
+          : "";
         const formattedTime = data.eventTime
           ? formatToAMPM(data.eventTime) // DB time exists → Convert & use
           : "";
 
         setFormData((prev) => ({
           ...prev,
-        name: applyCase(data.hostName || "", templateMeta?.nameCase),
-  eventType: applyCase(data.eventType || "", templateMeta?.eventTypeCase),
-  address: applyCase(data.location || "", templateMeta?.addressCase),
+          name: applyCase(data.hostName || "", templateMeta?.nameCase),
+          eventType: applyCase(
+            data.eventType || "",
+            templateMeta?.eventTypeCase,
+          ),
+          address: applyCase(data.location || "", templateMeta?.addressCase),
           date: formattedDate,
           time: formattedTime,
-       
         }));
-        
+
         setCharCounts({
           eventType: data.eventType?.length || 0,
           name: data.hostName?.length || 0,
@@ -316,23 +396,19 @@ const loading = templateLoading || !imageLoaded;
     };
   }, [eventId, token]);
 
-
-
   useEffect(() => {
     if (!templateMeta?.jsCode) return;
 
-   
-const payloadWithPlaceholder = {
-  ...templatePayload,
-  ...scaledData,
-  name: formData.name || "Type your name",
-  address: formData.address || "Type your address",
-};
+    const payloadWithPlaceholder = {
+      ...templatePayload,
+      ...scaledData,
+      name: formData.name || "Type your name",
+      address: formData.address || "Type your address",
+    };
 
-setRenderedHTML(
-  renderTemplate(templateMeta.jsCode, payloadWithPlaceholder, formData)
-);
-
+    setRenderedHTML(
+      renderTemplate(templateMeta.jsCode, payloadWithPlaceholder, formData),
+    );
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
   const handleImageLoad = useCallback(() => {
@@ -343,19 +419,22 @@ setRenderedHTML(
     // const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
     // const scale = 1 - ratio;
 
- const effectiveWidth = Math.min(window.innerWidth, 480);
-  const scale = effectiveWidth / info.templateWidth;
-  
+    const effectiveWidth = Math.min(window.innerWidth, 480);
+    const scale = effectiveWidth / info.templateWidth;
+
     setScaledData({
       imgHeight: scale * info.templateHeight,
       nameFontSize: scale * info.templateNameSize,
-      nameLineHeight: scale * info.templateNameSize + info.templateNamelineHeight,
+      nameLineHeight:
+        scale * info.templateNameSize + info.templateNamelineHeight,
       namePosition: scale * info.templateNamePosition,
       dateTimeFontSize: scale * info.templateDateTimeSize,
-      dateTimeLineHeight: scale * info.templateDateTimeSize + info.templateDatetimelineHeight,
+      dateTimeLineHeight:
+        scale * info.templateDateTimeSize + info.templateDatetimelineHeight,
       dateTimePosition: scale * info.templateDateTimePosition,
       addressFontSize: scale * info.templateAddressSize,
-      addressLineHeight: scale * info.templateAddressSize * info.templateAddresslineHeight,
+      addressLineHeight:
+        scale * info.templateAddressSize * info.templateAddresslineHeight,
       addressPosition: scale * info.templateAddressPosition,
       imgCirclePosition: scale * info.templateCirclePosition,
       imgCircleHeight: scale * info.templateCircleHeight,
@@ -363,127 +442,142 @@ setRenderedHTML(
       dayFontSize: scale * info.templatedayfontSize,
       dayPosition: scale * info.templatedayposition,
     });
-  setImageLoaded(true);
-
+    setImageLoaded(true);
   }, [templateMeta?.templateInfo]);
 
-const PLACEHOLDERS = {
-  name: "Type your name",
-  address: "Type your address",
-};
+  const PLACEHOLDERS = {
+    name: "Type your name",
+    address: "Type your address",
+  };
 
-const handleEditableClick = useCallback(
-  (field, node) => {
-    const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
-    node.contentEditable = "true";
-    node.dataset.editing = "true";
-    node.classList.add("editing");
+  const handleEditableClick = useCallback(
+    (field, node) => {
+      const charLimit =
+        parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
+      node.contentEditable = "true";
+      node.dataset.editing = "true";
+      node.classList.add("editing");
 
-   
-    
-const placeholder = PLACEHOLDERS[field] || "";
+      const placeholder = PLACEHOLDERS[field] || "";
 
-const isPlaceholder = node.innerText.trim() === placeholder;
-const isEmpty = !node.innerText.trim();
+      const isPlaceholder = node.innerText.trim() === placeholder;
+      const isEmpty = !node.innerText.trim();
 
-// 🔥 click pe placeholder clear
-if (isEmpty || isPlaceholder) {
-  node.innerText = "";
-  setCaretAtEnd(node);
-}
+      // 🔥 click pe placeholder clear
+      if (isEmpty || isPlaceholder) {
+        node.innerText = "";
+        setCaretAtEnd(node);
+      }
 
-  
+      node.focus();
 
-    node.focus();
+      const onKeyDown = (ev) => {
+        const printable =
+          ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
+        if (printable && node.innerText.length >= charLimit) {
+          const allowed = [
+            "Backspace",
+            "Delete",
+            "ArrowLeft",
+            "ArrowRight",
+            "ArrowUp",
+            "ArrowDown",
+            "Home",
+            "End",
+            "Tab",
+          ];
+          if (!allowed.includes(ev.key)) {
+            ev.preventDefault();
+            setFormErrors((prev) => ({
+              ...prev,
+              [field]: `Character limit of ${charLimit} reached`,
+            }));
+            return;
+          }
+        } else {
+          setFormErrors((prev) => ({ ...prev, [field]: "" }));
+        }
 
-    const onKeyDown = (ev) => {
-      const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
-      if (printable && node.innerText.length >= charLimit) {
-        const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "Tab"];
-        if (!allowed.includes(ev.key)) {
+        if (ev.key === "Enter") {
           ev.preventDefault();
-          setFormErrors((prev) => ({ ...prev, [field]: `Character limit of ${charLimit} reached` }));
+          node.blur();
+        } else if (ev.key === "Escape") {
+          node.innerText = formData[field] || "";
+          node.blur();
+        }
+      };
+
+      const onInput = (ev) => {
+        const el = ev.target;
+        const field = el.getAttribute("data-field");
+        let text = el.innerText;
+
+        if (text.length > charLimit) {
+          const trimmed = text.slice(0, charLimit);
+          const caret = saveCaretPosition(el);
+          el.innerText = trimmed;
+          restoreCaretPosition(el, caret);
           return;
         }
-      } else {
-        setFormErrors((prev) => ({ ...prev, [field]: "" }));
-      }
 
-      if (ev.key === "Enter") {
+        if (field !== "time") {
+          const formattedValue = applyCase(
+            text,
+            templateMeta?.[field + "Case"],
+          );
+          if (formattedValue !== text) {
+            const caret = saveCaretPosition(el);
+            el.innerText = formattedValue;
+            restoreCaretPosition(el, caret);
+          }
+        }
+
+        setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
+      };
+
+      const onPaste = (ev) => {
         ev.preventDefault();
-        node.blur();
-      } else if (ev.key === "Escape") {
-        node.innerText = formData[field] || "";
-        node.blur();
-      }
-    };
+        const pasted = (ev.clipboardData || window.clipboardData).getData(
+          "text",
+        );
+        const allowed = Math.max(0, charLimit - node.innerText.length);
+        document.execCommand("insertText", false, pasted.slice(0, allowed));
+      };
 
-    const onInput = (ev) => {
-      const el = ev.target;
-      const field = el.getAttribute("data-field");
-      let text = el.innerText;
+      const onBlur = (ev) => {
+        const el = ev.target;
+        let value = el.innerText.trim();
 
-      if (text.length > charLimit) {
-        const trimmed = text.slice(0, charLimit);
-        const caret = saveCaretPosition(el);
-        el.innerText = trimmed;
-        restoreCaretPosition(el, caret);
-        return;
-      }
-
-      if (field !== "time") {
-        const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
-        if (formattedValue !== text) {
-          const caret = saveCaretPosition(el);
-          el.innerText = formattedValue;
-          restoreCaretPosition(el, caret);
-        }
-      }
-
-      setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
-    };
-
-    const onPaste = (ev) => {
-      ev.preventDefault();
-      const pasted = (ev.clipboardData || window.clipboardData).getData("text");
-      const allowed = Math.max(0, charLimit - node.innerText.length);
-      document.execCommand("insertText", false, pasted.slice(0, allowed));
-    };
-
-    const onBlur = (ev) => {
-      const el = ev.target;
-      let value = el.innerText.trim();
-
-      if (field === "time") {
-        if (!value) {
-          value = new Date().toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-        }
-      } else {
+        if (field === "time") {
+          if (!value) {
+            value = new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          }
+        } else {
           if (value.length > charLimit) value = value.slice(0, charLimit);
-      }
+        }
 
-      setFormData((prev) => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
 
-      el.contentEditable = "false";
-      el.removeAttribute("data-editing");
-      el.classList.remove("editing");
+        el.contentEditable = "false";
+        el.removeAttribute("data-editing");
+        el.classList.remove("editing");
 
-      el.removeEventListener("keydown", onKeyDown);
-      el.removeEventListener("input", onInput);
-      el.removeEventListener("paste", onPaste);
-      el.removeEventListener("blur", onBlur);
-    };
+        el.removeEventListener("keydown", onKeyDown);
+        el.removeEventListener("input", onInput);
+        el.removeEventListener("paste", onPaste);
+        el.removeEventListener("blur", onBlur);
+      };
 
-    node.addEventListener("keydown", onKeyDown);
-    node.addEventListener("input", onInput);
-    node.addEventListener("paste", onPaste);
-    node.addEventListener("blur", onBlur);
-  },
-  [formData, templateMeta?.charLimits]
-);
+      node.addEventListener("keydown", onKeyDown);
+      node.addEventListener("input", onInput);
+      node.addEventListener("paste", onPaste);
+      node.addEventListener("blur", onBlur);
+    },
+    [formData, templateMeta?.charLimits],
+  );
 
   useEffect(() => {
     const container = templateRef.current;
@@ -510,71 +604,64 @@ if (isEmpty || isPlaceholder) {
     return () => container.removeEventListener("click", handleClick);
   }, [handleEditableClick]);
 
-
-
-  useHeroImageTransform(
-    heroTransform,
-    setHeroTransform,
-    fileInputRef,
-    [renderedHTML]
-  );
-
-const handleDownload = async () => {
-  if (!templateRef.current) return;
-
-  setSaving(true);
-
-  const blob = await captureElementAsImage(templateRef.current, [
-    ".hide-in-download",
+  useHeroImageTransform(heroTransform, setHeroTransform, fileInputRef, [
+    renderedHTML,
   ]);
 
-  if (!blob) {
-    setSaving(false);
-    return;
-  }
+  const handleDownload = async () => {
+    if (!templateRef.current) return;
 
-  // 🧾 Convert blob → file
-  const file = new File(
-    [blob],
-    `invite_${templateMeta?.bgImageName || "image"}.png`,
-    {
-      type: "image/png",
-      lastModified: Date.now(),
+    setSaving(true);
+
+    const blob = await captureElementAsImage(templateRef.current, [
+      ".hide-in-download",
+    ]);
+
+    if (!blob) {
+      setSaving(false);
+      return;
     }
-  );
 
+    // 🧾 Convert blob → file
+    const file = new File(
+      [blob],
+      `invite_${templateMeta?.bgImageName || "image"}.png`,
+      {
+        type: "image/png",
+        lastModified: Date.now(),
+      },
+    );
 
-  const reader = new FileReader();
-  reader.onloadend = async () => {
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        await saveTemplate(`template_${eventId}`, reader.result);
+        router.replace(`/wonderland/invite?eventid=${eventId}`);
+      } catch (err) {
+        console.error("Failed to save template in IndexedDB:", err);
+      }
+    };
+    reader.readAsDataURL(blob);
+
+    const form = new FormData();
+    form.append("image", file);
+    form.append("userId", userId);
+
     try {
-     
-      await saveTemplate(`template_${eventId}`, reader.result);
-      router.replace(`/wonderland/invite?eventid=${eventId}`);
+      await fetch(
+        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+        {
+          method: "PUT",
+          headers: { Authorization: token || "" },
+          body: form,
+        },
+      );
     } catch (err) {
-      console.error("Failed to save template in IndexedDB:", err);
+      console.error("Upload failed:", err);
+    } finally {
+      setSaving(false);
     }
   };
-  reader.readAsDataURL(blob);
-
-  const form = new FormData();
-  form.append("image", file);
-  form.append("userId", userId);
-
-  try {
-    await fetch(
-      `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
-      {
-        method: "PUT",
-        headers: { Authorization: token || "" },
-        body: form,
-      }
-    );
-  } catch (err) {
-    console.error("Upload failed:", err);
-  } finally {
-    setSaving(false);
-  }
-};
 
   const handleSave = async () => {
     if (!userId) {
@@ -590,21 +677,19 @@ const handleDownload = async () => {
       errors.push("Name is required");
     }
 
-const addressExistsInTemplate =
-  renderedHTML.includes("address") ||
-  renderedHTML.includes("{{address}}") ||
-  renderedHTML.includes("Type your address");
+    const addressExistsInTemplate =
+      renderedHTML.includes("address") ||
+      renderedHTML.includes("{{address}}") ||
+      renderedHTML.includes("Type your address");
 
-
-if (addressExistsInTemplate) {
-  if (
-    !formData.address?.trim() ||
-    formData.address === "Type your address"
-  ) {
-    errors.push("Address is required");
-  }
-}
-
+    if (addressExistsInTemplate) {
+      if (
+        !formData.address?.trim() ||
+        formData.address === "Type your address"
+      ) {
+        errors.push("Address is required");
+      }
+    }
 
     if (errors.length > 0) {
       setErrorModal({
@@ -644,7 +729,7 @@ if (addressExistsInTemplate) {
             eventTime: finalTime,
             location: formData.address,
           }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -683,7 +768,8 @@ if (addressExistsInTemplate) {
       let node = el;
 
       if (el.childNodes.length > 0) {
-        node = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE) || el;
+        node =
+          [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
       }
 
       const textLength = node.textContent?.length ?? 0;
@@ -702,125 +788,160 @@ if (addressExistsInTemplate) {
     if (!templateMeta?.borderColor) return;
     document.documentElement.style.setProperty(
       "--borderColor",
-      templateMeta.borderColor
+      templateMeta.borderColor,
     );
   }, [templateMeta?.borderColor]);
 
- return (
-  <div
-    className="d-flex justify-content-center"style={{ maxWidth: "480px", margin: "0 auto" }} >
-    <div style={{ padding: "8px", maxWidth: "480px",width: "100%" }}>
+  const handleBackgroundRemoval = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
 
-      {/*  SKELETON – OUTSIDE TEMPLATE (design safe) */}
-      {loading && (
-        <div style={{ padding: "8px" }}>
-          <TemplatecardSkeleton />
+    try {
+      const response = await axios.post(
+        `${BG_REMOVER_URL}`,
+        formData,
+        {
+          responseType: "blob",
+        },
+      );
+
+      const imageUrl = URL.createObjectURL(response.data);
+      setUploadedImage(imageUrl);
+      setOriginalImage(imageUrl);
+    } catch (error) {
+      console.error("Background removal error:", error);
+      alert(
+        "error to connect to the server. Make sure your Python backend is running on port 8000.",
+      );
+    }
+  };
+
+  const handleImageUploadClick = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (templateMeta?.isBgRemove) {
+      await handleBackgroundRemoval(file);
+    } else {
+      const url = URL.createObjectURL(file);
+      setUploadedImage(url);
+      setOriginalImage(url);
+    }
+  };
+
+  return (
+    <div
+      className="d-flex justify-content-center"
+      style={{ maxWidth: "480px", margin: "0 auto" }}
+    >
+      <div style={{ padding: "8px", maxWidth: "480px", width: "100%" }}>
+        {/*  SKELETON – OUTSIDE TEMPLATE (design safe) */}
+        {loading && (
+          <div style={{ padding: "8px" }}>
+            <TemplatecardSkeleton />
+          </div>
+        )}
+
+        {/*  TEMPLATE CONTAINER – ALWAYS PRESENT */}
+        <div
+          ref={templateRef}
+          className="template-container"
+          style={{
+            position: "relative",
+            visibility: loading ? "hidden" : "visible",
+          }}
+        >
+          {templateMeta && (
+            <img
+              ref={imgRef}
+              src={`/assets/templates/${templateMeta.bgImageName}`}
+              alt="bg"
+              onLoad={handleImageLoad}
+              onError={() => setImageLoaded(true)}
+              style={{
+                width: "100%",
+                visibility: imageLoaded ? "visible" : "hidden",
+              }}
+            />
+          )}
+
+          {/* 🔹 Fonts */}
+          {templateMeta?.fontUrls?.map((url, idx) => (
+            <link key={idx} href={url} rel="stylesheet" />
+          ))}
+
+          {/* 🔹 CSS */}
+          {templateMeta?.cssCode && (
+            <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
+          )}
+
+          {/* 🔹 Template HTML */}
+          {!loading && renderedHTML && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 2,
+                cursor: "text",
+              }}
+              dangerouslySetInnerHTML={{ __html: renderedHTML }}
+            />
+          )}
         </div>
-      )}
 
-      {/*  TEMPLATE CONTAINER – ALWAYS PRESENT */}
-      <div
-        ref={templateRef}
-        className="template-container"
-        style={{
-          position: "relative",
-          visibility: loading ? "hidden" : "visible",
-        }}
-      >
-            {templateMeta && (
-          <img
-            ref={imgRef}
-            src={`/assets/templates/${templateMeta.bgImageName}`}
-            alt="bg"
-            onLoad={handleImageLoad}
-            onError={() => setImageLoaded(true)}
-            style={{
-              width: "100%",
-              visibility: imageLoaded ? "visible" : "hidden",
-            }}
-          />
-        )}
+        {/* 🔹 File Upload */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          hidden
+          // onChange={(e) => {
+          //   const file = e.target.files?.[0];
+          //   if (!file) return;
+          //   const url = URL.createObjectURL(file);
+          //   setUploadedImage(url);
+          //   setOriginalImage(url);
+          // }}
 
-        {/* 🔹 Fonts */}
-        {templateMeta?.fontUrls?.map((url, idx) => (
-          <link key={idx} href={url} rel="stylesheet" />
-        ))}
+          onChange={handleImageUploadClick}
+        />
 
-        {/* 🔹 CSS */}
-        {templateMeta?.cssCode && (
-          <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
-        )}
-
-        {/* 🔹 Template HTML */}
-        {!loading && renderedHTML && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 2,
-              cursor: "text",
-            }}
-            dangerouslySetInnerHTML={{ __html: renderedHTML }}
-          />
-        )}
+        {/* 🔹 Submit */}
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <CustomButton title="Submit" onClick={handleSave} />
+        </div>
       </div>
 
-      {/* 🔹 File Upload */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-          const url = URL.createObjectURL(file);
-          setUploadedImage(url);
-          setOriginalImage(url);
+      {/* 🔹 Modals */}
+      <CalendarModal
+        show={modal.calendar}
+        onClose={() => setModal((p) => ({ ...p, calendar: false }))}
+        selectedDate={selectedDate}
+        setSelectedDate={(d) => {
+          setSelectedDate(d);
+          setFormData((p) => ({ ...p, date: d }));
         }}
       />
 
-      {/* 🔹 Submit */}
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <CustomButton title="Submit" onClick={handleSave} />
-      </div>
+      <TimeModal
+        show={modal.time}
+        onClose={() => setModal((p) => ({ ...p, time: false }))}
+        selectedTime={selectedTime}
+        setSelectedTime={(t) => {
+          setSelectedTime(t);
+          setFormData((p) => ({ ...p, time: t }));
+        }}
+      />
+
+      <ErrorPopup
+        isOpen={errorModal.open}
+        onClose={() => setErrorModal({ open: false, message: "" })}
+        heading="Missing information"
+        message={errorModal.message}
+        buttonLabel="OK"
+        icon={AlertIcon}
+      />
     </div>
-
-    {/* 🔹 Modals */}
-    <CalendarModal
-      show={modal.calendar}
-      onClose={() => setModal((p) => ({ ...p, calendar: false }))}
-      selectedDate={selectedDate}
-      setSelectedDate={(d) => {
-        setSelectedDate(d);
-        setFormData((p) => ({ ...p, date: d }));
-      }}
-    />
-
-    <TimeModal
-      show={modal.time}
-      onClose={() => setModal((p) => ({ ...p, time: false }))}
-      selectedTime={selectedTime}
-      setSelectedTime={(t) => {
-        setSelectedTime(t);
-        setFormData((p) => ({ ...p, time: t }));
-      }}
-    />
-
-    <ErrorPopup
-      isOpen={errorModal.open}
-      onClose={() => setErrorModal({ open: false, message: "" })}
-      heading="Missing information"
-      message={errorModal.message}
-      buttonLabel="OK"
-      icon={AlertIcon}
-    />
-  </div>
-);
-
+  );
 };
 
 export default DynamicTemplateRenderer;
-
-
-

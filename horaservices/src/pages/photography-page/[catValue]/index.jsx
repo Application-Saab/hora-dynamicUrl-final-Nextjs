@@ -9,7 +9,7 @@ import CardSkeleton from "@/components/CardSkeleton";
 import Engagement from "@/assets/photographyCategories/photography9.webp";
 import Wedding from "@/assets/photographyCategories/photography10.webp";
 import Anniversary from "@/assets/photographyCategories/photography5.webp";
-import Birthday from "@/assets/photographyCategories/photography3.webp";
+import Birthday from "@/assets/photographyCategories/birthdaybackground.webp";
 import HouseWarming from "@/assets/photographyCategories/photography6.webp";
 import NamingCeremony from "@/assets/photographyCategories/photography4.webp";
 import BabyShower from "@/assets/photographyCategories/photography8.webp";
@@ -26,7 +26,7 @@ import ProductGrid from "@/components/productGrid";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoCategory } from "@/utils/photoGraphyHead";
 import SkeletonGrid from "@/components/SkeletonGrid";
-
+import { seoData } from "@/utils/photoCategories";
 
 
 const getDiscountedPrice = (price = 0) => {
@@ -41,7 +41,7 @@ const getDiscountedPrice = (price = 0) => {
 };
 
 
-  const categoryBannerMap = {
+  export const categoryBannerMap = {
     "Engagement-Photography": Engagement,
     "Wedding-Photography": Wedding,
     "Anniversary-Photography": Anniversary,
@@ -53,7 +53,16 @@ const getDiscountedPrice = (price = 0) => {
     "Maternity-Photography": Maternity,
     "New-Born-Baby-Photography": NewBorn,
   };
+ export const normalizeCatValue = (val) => {
+    if (!val) return "";
 
+    // Check if exact match (case-sensitive) exists in the map
+    const exactMatch = Object.keys(categoryBannerMap).find(
+      (key) => key.toLowerCase() === val.toLowerCase()
+    );
+
+    return exactMatch || val.toLowerCase().replace(/ /g, "-");
+  };
 const categoryToGallery = {
   "Engagement-Photography": {
     folderName: "engagement weblink",
@@ -110,6 +119,12 @@ export default function CatValuePage() {
   const scriptTag = JSON.stringify(schemaOrg);
   let { city } = router.query;
   let { locality } = router.query;
+  const [open, setOpen] = useState(false);
+  const content = seoData?.[catValue] || {};
+
+const title = content.h1 || catValue?.replace(/-/g, " ");
+const intro = content.description || "";
+  const preview = intro?.slice(0, 60) + "...";
   const getSubCatId = useCallback(async (subCategory) => {
     try {
       const response = await axios.get(
@@ -181,23 +196,18 @@ export default function CatValuePage() {
       query: { id: work._id },
     });
   };
- const normalizeCatValue = (val) => {
-    if (!val) return "";
 
-    // Check if exact match (case-sensitive) exists in the map
-    const exactMatch = Object.keys(categoryBannerMap).find(
-      (key) => key.toLowerCase() === val.toLowerCase()
-    );
-
-    return exactMatch || val.toLowerCase().replace(/ /g, "-");
-  };
+ 
+  
  const normalizedCat = normalizeCatValue(catValue);
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
 
-
+const words = intro.split(' ');
+const firstLine = words.slice(0, 8).join(' ');         // ~1 line
+const restText = words.slice(8).join(' ');  
   return (
     <div className="featured-photo-works">
-         <SeoCategory city={city} catValue={catValue} scriptTag={scriptTag} />
+         <SeoCategory city={city} catValue={catValue} scriptTag={scriptTag} seoData={seoData} />
       {loading ? (
        
          <SkeletonGrid count={6} />
@@ -206,16 +216,67 @@ export default function CatValuePage() {
       ) : (
         <>
   
-  <section className="decorationBanner">
-                <Image
-                  src={bannerToShow}
-                  alt="Decoration Banner"
-                  width={1200}
-                  height={400}
-                  className="decorationBanner-image"
-                  priority
-                />
-              </section>
+  <div style={{padding:"10px"}}>
+               <section className="cc-banner" >
+        <Image
+          src={bannerToShow}
+          alt={title}
+          fill
+          className="cc-banner-img"
+          priority
+        />
+        <div className="cc-banner-overlay" />
+        <h1 className="cc-banner-title"   style={{ color: content?.color || "#fff" }}>{title}</h1>
+      </section>
+
+      {/* Stats */}
+     <div className="cc-stats">
+        <div className="cc-stat">
+          <div className="cc-stat-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div className="cc-stat-info">
+            <h2>1000+</h2>
+            <p>Verified photographers</p>
+          </div>
+        </div>
+
+        <div className="cc-stat">
+          <div className="cc-stat-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+          </div>
+          <div className="cc-stat-info">
+            <h2>Pan India</h2>
+            <p>coverage available</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Accordion */}
+      <div className="cc-accordion">
+    <button className={`cc-acc-btn ${open ? "open" : ""}`} onClick={() => setOpen(!open)}>
+    <span className="cc-acc-preview">
+      {firstLine}{!open && '…'}
+    </span>
+    <span className={`cc-acc-icon ${open ? "open" : ""}`}>
+      <svg viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </span>
+  </button>
+  <div className={`cc-acc-body ${open ? "open" : ""}`}>
+    <p className="cc-acc-text">{restText}</p>
+  </div>
+</div>
+       </div>
           {products.length > 0 ? (
             <ProductGrid
               data={products}

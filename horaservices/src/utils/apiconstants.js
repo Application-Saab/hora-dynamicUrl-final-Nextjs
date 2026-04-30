@@ -1,7 +1,7 @@
 export const BASE_URL = "http://localhost:5000";
 export const MEDIA_WORKER_URL = "http://localhost:4000";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
-
+export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const COMPRESSED_WEBP_IMG_URL =
