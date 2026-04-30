@@ -1,10 +1,23 @@
 import { BASE_URL } from "../utils/apiconstants"
 import { MEDIA_WORKER_URL } from "../utils/apiconstants";
+import axios from "axios";
 
 // get images api function 
-export const getImagesbyFolderName = async ({ folderName, customerId }) => {
+export const getImagesbyFolderName = async ({ folderName, customerId, subFolderId, page = 1, limit = 10, }) => {
   try {
-    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`;
+
+    const params = new URLSearchParams({
+      folderName,
+      customerId,
+      page,
+      limit,
+    });
+
+    if (subFolderId) {
+      params.append("subFolderId", subFolderId);
+    }
+
+    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?${params.toString()}`;
 
     const response = await fetch(url);
 
@@ -84,4 +97,12 @@ export const assignToSubfolder = async ({
     console.error("assignToSubfolder error:", error);
     throw error;
   }
+};
+
+// based on sub folder id images will get 
+export const getSubFolders = async ({ folderName }) => {
+  const res = await axios.get(`${BASE_URL}/api/internal/getSubFolders`, {
+    params: { folderName },
+  });
+  return res.data;
 };

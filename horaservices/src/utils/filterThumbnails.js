@@ -25,10 +25,6 @@
       });
     }
 
-    if (activeSubFolderId) {
-      return allThumbnails.filter(img => img.folderIds?.includes(activeSubFolderId));
-    }
-
     return allThumbnails;
 
 };
