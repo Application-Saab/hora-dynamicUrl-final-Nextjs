@@ -16,7 +16,7 @@ import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
 
-const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false }) => {
+const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false, extraVerifyData = {} }) => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const pathname = usePathname();
@@ -187,6 +187,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
           phone: mobileNumber,
           role: "customer",
           otp: otp.join(""),
+          ...extraVerifyData,
         },
         { headers: { "Content-Type": "application/json" } },
       );
