@@ -27,6 +27,7 @@ import { assignToSubfolder, getImagesbyFolderName } from "@/services/weblinkServ
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
+import LazyGridItem from "./LazyGridItem";
 
 
 const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
@@ -813,91 +814,64 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
           {/* ================= MAIN IMAGE GRID ================= */}
           {!loading && finalThumbnails.length > 0 && (
-            <div className="event-image-grid">
-              {finalThumbnails.map((thumbnail, indexOnPage) => {
-                const type = getBlockType(indexOnPage);
-                const hasAnyLike = (thumbnail.likedBy?.length || 0) > 0;
-                return (
-                  <div
-                    key={thumbnail.stableKey || indexOnPage}
-                    className={`grid-item ${type}`}
-                    style={{
-                      cursor: "pointer",
-                      position: "relative",
-                      backgroundColor: "transparent",
-                      display: "grid",
-                    }}
-                    onClick={() => {
-                      if (isEditing) {
-                        handleSelectImage(thumbnail._id);
-                      } else {
-                        handleImageClick(indexOnPage);
-                      }
-                    }}
-                  >
-                    <div className="image-wrapper" style={{ position: "relative" }}>
-                      {!isEditing && hasAnyLike && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "5px",
-                            left: "8px",
-                            zIndex: 10,
-                          }}
-                        >
-                          <Image
-                            src={LikeFill}
-                            alt="liked"
-                            width={16}
-                            height={16}
-                          />
-                        </div>
-                      )}
+  <div className="event-image-grid" style={{ display: 'grid', gridAutoFlow: 'dense' }}>
+    {finalThumbnails.map((thumbnail, indexOnPage) => {
+      const type = getBlockType(indexOnPage);
+      const hasAnyLike = (thumbnail.likedBy?.length || 0) > 0;
 
-                      {isEditing &&
-                        !isSearchMode &&
-                        activeSubFolderId &&
-                        !isActualMyPhotos && (
-                          <input
-                            type="checkbox"
-                            className="image-checkbox"
-                            checked={selectedImages.includes(thumbnail._id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedImages((prev) => [...prev, thumbnail._id]);
-                              } else {
-                                setSelectedImages((prev) =>
-                                  prev.filter((id) => id !== thumbnail._id)
-                                );
-                              }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        )}
+      return (
+        <LazyGridItem
+          key={thumbnail.stableKey || indexOnPage}
+          className={`grid-item ${type}`}
+          onClick={() => {
+            if (isEditing) handleSelectImage(thumbnail._id);
+            else handleImageClick(indexOnPage);
+          }}
+          style={{
+            cursor: "pointer",
+            position: "relative",
+            display: "grid",
+          }}
+        >
+          {/* Content tabhi render hoga jab LazyGridItem screen par hoga */}
+          <div className="image-wrapper" style={{ position: "relative" }}>
+            {!isEditing && hasAnyLike && (
+              <div style={{ position: "absolute", top: "5px", left: "8px", zIndex: 10 }}>
+                <Image src={LikeFill} alt="liked" width={16} height={16} />
+              </div>
+            )}
 
-                      <EventwallGalleryItem
-                        isVideo={thumbnail.type === "video"}
-                        indexOnPage={indexOnPage}
-                        isLoading={thumbnail.isTemp && thumbnail.uploading}
-                        id={thumbnail._id}
-                        imageUrl={
-                          thumbnail.type === "image"
-                            ? thumbnail.thumbnailImageUrl || thumbnail.originalUrl
-                            : null
-                        }
-                        previewSrc={
-                          thumbnail.type === "video" ? thumbnail.videoClipUrl : null
-                        }
-                        fullVideoSrc={
-                          thumbnail.type === "video" ? thumbnail.originalUrl : null
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+            {isEditing && !isSearchMode && activeSubFolderId && !isActualMyPhotos && (
+              <input
+                type="checkbox"
+                className="image-checkbox"
+                checked={selectedImages.includes(thumbnail._id)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setSelectedImages(prev => checked 
+                    ? [...prev, thumbnail._id] 
+                    : prev.filter(id => id !== thumbnail._id)
+                  );
+                }}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+
+            <EventwallGalleryItem
+              isVideo={thumbnail.type === "video"}
+              indexOnPage={indexOnPage}
+              isLoading={thumbnail.isTemp && thumbnail.uploading}
+              id={thumbnail._id}
+              imageUrl={thumbnail.type === "image" ? (thumbnail.thumbnailImageUrl || thumbnail.originalUrl) : null}
+              previewSrc={thumbnail.type === "video" ? thumbnail.videoClipUrl : null}
+              fullVideoSrc={thumbnail.type === "video" ? thumbnail.originalUrl : null}
+            />
+          </div>
+        </LazyGridItem>
+      );
+    })}
+  </div>
+)}
         </div>
 
       </div>
