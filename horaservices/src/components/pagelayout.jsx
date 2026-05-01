@@ -24,7 +24,7 @@ const PageLayout = ({ children }) => {
     pathname === "/wonderland" ||
     pathname === "/wonderland/create-invite-template" ||
     pathname === "/templates" ||
-    pathname?.startsWith("/chat") || // covers /chat?id=123 also
+    (pathname?.startsWith("/chat") && !pathname?.startsWith("/chat/room")) || // covers /chat list but NOT /chat/room (full-screen layout)
     pathname === "/about" || pathname === '/accounts' || pathname === "/services" || pathname === '/wonderland/invite';
 
   const isWonderlandPath = pathname?.startsWith("/wonderland");

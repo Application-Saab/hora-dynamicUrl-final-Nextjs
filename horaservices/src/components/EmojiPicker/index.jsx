@@ -26,16 +26,6 @@ export default function EmojiPickerButton({
   const blockKeyboard = useRef(false);
   const keyboardLockedRef = useRef(false);
 
-  const freezeKeyboardHeight = () => {
-    if (!window.visualViewport) return;
-
-    const height = window.innerHeight - window.visualViewport.height;
-    if (height > 100) {
-      keyboardLockedRef.current = true; // 🔒 LOCK
-      setKeyboardHeight(height);
-    }
-  };
-
   useEffect(() => {
     if (!window.visualViewport) return;
 
@@ -102,13 +92,11 @@ export default function EmojiPickerButton({
       setForceOpen(false);
       // Keyboard icon clicked
       if (isPickerOpen) {
+        if (textareaRef?.current) {
+          textareaRef.current.removeAttribute("inputmode");
+          textareaRef.current.focus({ preventScroll: true });
+        }
         setIsPickerOpen(false);
-        setTimeout(() => {
-          if (lastFocusedRef.current) {
-            lastFocusedRef.current.focus();
-          }
-          textareaRef.current.focus();
-        }, 150);
         return;
       }
 
@@ -237,6 +225,10 @@ export default function EmojiPickerButton({
   useEffect(() => {
     if (!isPickerOpen) {
       keyboardLockedRef.current = false;
+      // Restore inputmode so native keyboard works after picker closes
+      if (simple && textareaRef?.current) {
+        textareaRef.current.removeAttribute("inputmode");
+      }
     }
   }, [isPickerOpen]);
 

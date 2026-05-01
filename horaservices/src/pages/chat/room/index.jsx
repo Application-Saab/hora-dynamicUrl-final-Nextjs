@@ -45,7 +45,10 @@ const ChatPage = () => {
   const router = useRouter();
   const { groupId } = router.query;
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem("userID") ||
+        new URLSearchParams(window.location.search).get("id")
+      : null;
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
     useChatStore();
   const { makeRequest: fetchUserRequest } = useApi();
@@ -206,6 +209,8 @@ const ChatPage = () => {
         document.body.style.width = "100vw";
         const chatLayout = document.querySelector(".chat-layout");
         if (chatLayout) {
+          chatLayout.style.top = `${vv.offsetTop}px`;
+          chatLayout.style.paddingBottom = ""; // clear emoji-picker padding — keyboard and picker can't coexist
           chatLayout.addEventListener("touchmove", allowChatMessagesScroll, {
             passive: false,
           });
@@ -220,6 +225,7 @@ const ChatPage = () => {
         document.body.style.width = "";
         const chatLayout = document.querySelector(".chat-layout");
         if (chatLayout) {
+          chatLayout.style.top = "";
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
         }
@@ -272,9 +278,6 @@ const ChatPage = () => {
 
     textareaRef.current.setAttribute("inputmode", "none");
     textareaRef.current.focus({ preventScroll: true });
-    setTimeout(() => {
-      textareaRef.current.removeAttribute("inputmode");
-    }, 50);
 
     let sel = window.getSelection();
     let range;

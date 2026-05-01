@@ -171,7 +171,7 @@
   -webkit-overflow-scrolling: touch;
   top: 0;
   left: 0;
-  padding-bottom: 5px;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 5px);
   transition: padding-bottom 0.12s linear;
 }
 :root {
@@ -263,10 +263,7 @@
 }
 
 .chat-input-container {
-  position: sticky;
-  bottom: env(safe-area-inset-bottom, 0px);
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   background: #ffffff;

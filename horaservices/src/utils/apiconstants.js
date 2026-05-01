@@ -1,3 +1,4 @@
+// export const BASE_URL = "https://horaservices.com";
 export const BASE_URL = "https://horaservices.com";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
