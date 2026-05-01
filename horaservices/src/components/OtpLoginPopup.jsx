@@ -89,6 +89,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         BASE_URL + OTP_GENERATE_END_POINT,
         {
           phone: mobileNumber,
+          ...extraVerifyData,
           role: "customer",
         },
         { headers: { "Content-Type": "application/json" } },
@@ -175,7 +176,6 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
           phone: mobileNumber,
           role: "customer",
           otp: otp.join(""),
-          ...extraVerifyData,
         },
         { headers: { "Content-Type": "application/json" } },
       );

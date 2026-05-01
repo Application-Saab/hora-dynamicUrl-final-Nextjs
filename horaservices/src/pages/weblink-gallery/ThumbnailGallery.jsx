@@ -72,7 +72,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
   const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
-
+const [viewedBy, setViewedBy] = useState([]);
 
 
 
@@ -254,11 +254,12 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           folderName,
           customerId,
         });
-        setSubFolders(data.folders[0]?.subFolders || []);
+        setSubFolders(data?.folders[0]?.subFolders || []);
         setMainFolderId(data?.folders[0]?._id || null)
+        setViewedBy(data?.folders[0]?.viewedBy || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
-          .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
+          .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
         setAllThumbnails(fetchedThumbnails);
       } catch (fetchError) {
         console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
@@ -288,20 +289,18 @@ const handleLoginChange = () => {
 
 
 useEffect(() => {
-  const wasOpen = prevLoginOpenRef.current;
+  if (!mainFolderId || !localUserId) return;
 
-  if (
-    wasOpen === true &&
-    isLoginOpen === false &&
-    isLogin &&
-    mainFolderId &&
-    localUserId
-  ) {
+  const isAlreadyViewed = viewedBy.some(
+    (id) => String(id) === String(localUserId)
+  );
+
+  const isHost = String(localUserId) === String(customerId);
+
+  if (!isAlreadyViewed && !isHost) {
     trackGalleryView(localUserId, mainFolderId);
   }
-
-  prevLoginOpenRef.current = isLoginOpen;
-}, [isLoginOpen, isLogin, mainFolderId, localUserId]);
+}, [mainFolderId, localUserId, viewedBy, customerId]);
 
 useEffect(() => {
   const logClick = async () => {
@@ -1169,7 +1168,7 @@ useEffect(() => {
         }}
       />
 
-      {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} extraVerifyData={{ fromCapsule: true }}  />}
+      {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true}  extraVerifyData={{ fromCapsule: true }}  />}
 
     </div>
   );
