@@ -31,6 +31,11 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
+import LikeFill from '../../assets/LikedFill.svg';
+import { assignToSubfolder, getImagesbyFolderName,trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
+import { downloadFile } from "@/utils/downloadFile";
+import emptyFolder from '../../assets/emptyFolder.svg';
+import { filterThumbnails } from "@/utils/filterThumbnails";
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -70,6 +75,7 @@ const ThumbnailGallery = ({
   const [authChecked, setAuthChecked] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const prevLoginOpenRef = useRef(isLoginOpen);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [number, setNumber] = useState("");
   const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
@@ -130,7 +136,8 @@ const ThumbnailGallery = ({
     }
   }, [matchedKeys, myPhotosFolder]);
 
-  const handleImageShare = async (imageUrl) => {
+
+  const handleImageShare = async (imageUrl,id) => {
     if (!imageUrl) return;
 
     if (navigator.share) {
@@ -140,6 +147,7 @@ const ThumbnailGallery = ({
           text: "Check out this photo!",
           url: imageUrl,
         });
+        trackActivity(id, "share");
       } catch (error) {
         console.error("Error sharing image:", error);
       }
@@ -345,6 +353,64 @@ const ThumbnailGallery = ({
     };
     fetchThumbnails();
   }, [folderName, customerId]);
+
+useEffect(() => {
+const handleLoginChange = () => {
+  const loggedIn = localStorage.getItem("isLoggedIn");
+  const userId = localStorage.getItem("userID");
+
+  if (loggedIn === "true" && userId) {
+    setIsLogin(true);
+    setLocalUserId(userId);
+    setIsLoginOpen(false);
+  }
+};
+
+  window.addEventListener("loginStateChange", handleLoginChange);
+
+  return () => {
+    window.removeEventListener("loginStateChange", handleLoginChange);
+  };
+}, []);
+
+
+useEffect(() => {
+  const wasOpen = prevLoginOpenRef.current;
+
+  if (
+    wasOpen === true &&
+    isLoginOpen === false &&
+    isLogin &&
+    mainFolderId &&
+    localUserId
+  ) {
+    trackGalleryView(localUserId, mainFolderId);
+  }
+
+  prevLoginOpenRef.current = isLoginOpen;
+}, [isLoginOpen, isLogin, mainFolderId, localUserId]);
+
+useEffect(() => {
+  const logClick = async () => {
+    const sessionKey = `tracked_folder_${mainFolderId}`;
+    const alreadyTracked = sessionStorage.getItem(sessionKey);
+
+    if (!alreadyTracked && mainFolderId) {
+      try {
+        await trackFolderClick(mainFolderId);
+
+        sessionStorage.setItem(sessionKey, "true");
+        
+        console.log("Click tracked and session flag set!");
+      } catch (err) {
+        console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
+      }
+    }
+  };
+
+  logClick();
+}, [mainFolderId]);
+
 
   useEffect(() => {
     if (!localUserId || allThumbnails.length === 0) return;
@@ -1036,7 +1102,7 @@ const ThumbnailGallery = ({
             )}
 
           {/* ================= NO SEARCH RESULT ================= */}
-          {(visibleThumbnails.length === 0 && activeSubFolderId) && (
+          {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
             <div className="weblink-emptyFolder-container">
               <Image
                 src={emptyFolder}
@@ -1119,7 +1185,8 @@ const ThumbnailGallery = ({
                         className="action-item flex"
                         onClick={() => {
                           const current = popupImages[selectedIndex];
-                          downloadFile(current.originalUrl);
+                          downloadFile(current?.originalUrl);
+                          trackActivity(current?._id, "download");
                           setShowActionMenu(false);
                         }}
                       >
@@ -1132,7 +1199,7 @@ const ThumbnailGallery = ({
                       onClick={() => {
                         const current = popupImages[selectedIndex];
                         if (!current) return;
-                        handleImageShare(current?.originalUrl);
+                        handleImageShare(current?.originalUrl, current?._id);
                         setShowActionMenu(false);
                       }}
                       className="action-item flex gallery-share-icon"
@@ -1225,7 +1292,7 @@ const ThumbnailGallery = ({
                   style={{ filter: "none", cursor: "pointer" }}
                   onClick={() => {
                     if (!currentImage) return;
-                    handleImageShare(currentImage?.originalUrl);
+                    handleImageShare(currentImage?.originalUrl, currentImage?._id);
                   }}
                 />
               </div>
@@ -1234,9 +1301,8 @@ const ThumbnailGallery = ({
         }}
       />
 
-      {!isLogin && isLoginOpen && (
-        <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} />
-      )}
+      {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} extraVerifyData={{ fromCapsule: true }}  />}
+
     </div>
   );
 };
