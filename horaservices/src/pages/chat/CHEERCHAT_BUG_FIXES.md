@@ -127,7 +127,7 @@ When emoji picker was open (simple mode) and the user selected an emoji, `insert
 
 ---
 
-## Files Changed
+## Files Changed (Safari/iOS Session)
 
 | File | Change |
 |------|--------|
@@ -138,6 +138,121 @@ When emoji picker was open (simple mode) and the user selected an emoji, `insert
 | `src/hooks/ChatProvider.jsx` | `userID` URL fallback — enables socket connection on Safari fresh load |
 | `src/pages/chat/index.jsx` | `userId` URL fallback — fixes room navigation from chat list |
 | `src/components/pagelayout.jsx` | Bottom nav hidden on `/chat/room` — chat room is full-screen, nav doesn't belong there |
+
+---
+
+# CheerChat Bug Fixes — Android / Physical Device Session
+
+## Bug 8: `crypto.randomUUID is not a function` on older Android browsers
+
+**Root Cause:**
+`analytics.js` called `crypto.randomUUID()` directly. This API is not available on Android browsers older than Chrome 92 (e.g. Samsung Internet, older WebViews).
+
+**Fix — `src/utils/analytics.js`:**
+Added a `generateUUID()` fallback that uses `Math.random()` when `crypto.randomUUID` is unavailable:
+
+```js
+function generateUUID() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+```
+
+---
+
+## Bug 9: Real-time messages not appearing on receiving device (live chat broken)
+
+**Root Cause:**
+The socket server only broadcasts `message:new` to clients that have explicitly joined a room via `socket.emit("joinRoom", { groupId })`. The chat room page never emitted `joinRoom` when opening an existing room — only when *creating* a new direct room. So the receiving device's socket was not subscribed and never received incoming messages.
+
+**Fix — `src/pages/chat/room/index.jsx`:**
+Added a `useEffect` that emits `joinRoom` whenever `selectedGroup` is set:
+
+```js
+useEffect(() => {
+  if (!socket || !selectedGroup) return;
+  const gid = selectedGroup._id || selectedGroup.id;
+  const join = () => socket.emit("joinRoom", { groupId: gid });
+  if (socket.connected) {
+    join();
+  } else {
+    window.addEventListener("socket:connected", join, { once: true });
+    return () => window.removeEventListener("socket:connected", join);
+  }
+}, [selectedGroup]);
+```
+
+---
+
+## Bug 10: Emoji picker auto-switching back to keyboard after emoji selection
+
+**Root Cause:**
+`insertEmoji` called `textareaRef.current.focus()` to place the cursor for insertion. This triggered the `onFocus` handler on the contentEditable div, which called `setShowEmojiPicker(false)` — closing the picker. The `queueMicrotask` in `EmojiPickerButton` then tried to reopen it, causing a visible flicker and unreliable state.
+
+**Fix — `src/pages/chat/room/index.jsx`:**
+Added `isEmojiInsertRef` to mark programmatic focus events from emoji insertion:
+- Set `isEmojiInsertRef.current = true` at the start of `insertEmoji`, reset via `requestAnimationFrame` after insertion.
+- `onFocus` and `onClick` on the contentEditable div now check `!isEmojiInsertRef.current` before closing the picker.
+
+---
+
+## Bug 11: Input box and send button hidden behind emoji picker
+
+**Root Cause:**
+`.emoji-picker-container` had `position: fixed; z-index: 99999`. `.chat-input-container` had `z-index: 999`. Since both are inside `.chat-layout` (a stacking context), the picker covered the input bar entirely when open.
+
+**Fix — `src/pages/chat/GroupsList.css`:**
+Raised `.chat-input-container` z-index from `999` to `100000` so it always renders above the picker.
+
+---
+
+## Bug 12: Flicker when switching between emoji picker and keyboard
+
+**Root Cause:**
+Two separate causes:
+1. `.emoji-picker-container` used `transform: translateY(100%)` with a `0.25s` CSS transition — the slide-down animation created a visible gap during switch.
+2. `{isPickerOpen && <EmojiPicker />}` caused React to unmount/remount the heavy component on every toggle, adding a render-frame delay.
+
+**Fix — `src/components/EmojiPicker/emoji.css`:**
+Replaced `transform/opacity/transition` with `visibility: hidden/visible` — toggle is instant, no animation gap.
+
+**Fix — `src/components/EmojiPicker/index.jsx`:**
+Added `hasOpened` state. Once the picker opens for the first time it stays mounted in the DOM (`{hasOpened && ...}`). Subsequent toggles only change the CSS class — no React mount/unmount cost.
+
+---
+
+## Bug 13: Layout jumping up/down when switching keyboard ↔ emoji picker
+
+**Root Cause:**
+Three compounding issues:
+1. `document.body.style.position = "fixed"` — applied when keyboard opened, caused a scroll-to-top visual jump on Android (body scroll reset).
+2. `chatLayout.style.paddingBottom = ""` — the emoji picker's reserved space (≈ keyboardHeight px) was cleared all at once on the **first** `visualViewport resize` event, even though the keyboard had only opened a few pixels. This caused the visible content area to expand suddenly.
+3. When emoji picker opened while keyboard was closing, `setVvh` incorrectly cleared the emoji padding.
+
+**Fix — `src/pages/chat/room/index.jsx` (`setVvh`):**
+- Removed `body.style.position = "fixed"` and `body.style.width = "100vw"` — unnecessary since `.chat-layout` is already `position: fixed`.
+- Added `isKeyboardVisibleRef` + `emojiPaddingAtKeyboardStartRef`: on the first keyboard event, capture the current emoji padding. Each subsequent frame, reduce padding by the same amount the keyboard grew — keeping visible content area exactly constant.
+- Added `showEmojiPickerRef` (synced via `useEffect`): when emoji is open during keyboard close, `setVvh` skips padding changes entirely and lets the emoji picker manage it.
+
+**Fix — `src/components/EmojiPicker/index.jsx`:**
+Added `keepPaddingRef`: when user taps the keyboard icon or taps the input directly, set `keepPaddingRef.current = true` before calling `setIsPickerOpen(false)`. The `isPickerOpen` useEffect cleanup checks this ref and skips resetting `paddingBottom` — letting `setVvh` clear it proportionally once the keyboard is actually open.
+
+---
+
+## Files Changed (Android Session)
+
+| File | Change |
+|------|--------|
+| `src/utils/analytics.js` | `crypto.randomUUID` → fallback `generateUUID()` for older Android |
+| `src/pages/chat/room/index.jsx` | `joinRoom` emit on room open; `isEmojiInsertRef` for onFocus/onClick guards; `setVvh` proportional padding + removed body position hack; `showEmojiPickerRef` sync |
+| `src/components/EmojiPicker/index.jsx` | `hasOpened` DOM persistence; `keepPaddingRef` for stable padding during keyboard transition |
+| `src/components/EmojiPicker/emoji.css` | `transform/opacity/transition` → `visibility: hidden/visible` (instant, no animation) |
+| `src/pages/chat/GroupsList.css` | `.chat-input-container` z-index `999` → `100000` |
 
 ## Checked — Confirmed Not an Issue
 

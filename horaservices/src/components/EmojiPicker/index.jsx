@@ -12,6 +12,7 @@ if (typeof window !== "undefined") import("emoji-picker-react");
 
 export default function EmojiPickerButton({
   onEmojiSelect,
+  onBackspace,
   isPickerOpen,
   setIsPickerOpen,
   simple = false,
@@ -22,9 +23,10 @@ export default function EmojiPickerButton({
 }) {
   const [forceOpen, setForceOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(260);
+  const [hasOpened, setHasOpened] = useState(false);
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false);
-  const keyboardLockedRef = useRef(false);
+  const keepPaddingRef = useRef(false);
 
   useEffect(() => {
     if (!window.visualViewport) return;
@@ -65,13 +67,16 @@ export default function EmojiPickerButton({
           return;
         }
 
-        // real user tap close picker
-        setIsPickerOpen(false);
+        // In simple mode, if picker is already open, user tapped text to reposition cursor.
+        // Keep picker open, keep inputmode=none so keyboard doesn't appear.
+        if (simple && isPickerOpen) {
+          e.target.setAttribute("inputmode", "none");
+          return;
+        }
 
-        const elements = document.querySelectorAll(".chat-layout");
-        elements.forEach((el) => {
-          el.style.paddingBottom = "5px";
-        });
+        // real user tap — keep padding so layout doesn't jump while keyboard opens
+        keepPaddingRef.current = true;
+        setIsPickerOpen(false);
       }
     };
 
@@ -92,6 +97,8 @@ export default function EmojiPickerButton({
       setForceOpen(false);
       // Keyboard icon clicked
       if (isPickerOpen) {
+        // Keep padding so layout stays stable while keyboard slides in
+        keepPaddingRef.current = true;
         if (textareaRef?.current) {
           textareaRef.current.removeAttribute("inputmode");
           textareaRef.current.focus({ preventScroll: true });
@@ -100,16 +107,12 @@ export default function EmojiPickerButton({
         return;
       }
 
-      const active = document.activeElement;
-      if (
-        active &&
-        (active.tagName === "TEXTAREA" || active.isContentEditable)
-      ) {
-        active.blur();
+      if (textareaRef?.current) {
+        textareaRef.current.setAttribute("inputmode", "none");
+        textareaRef.current.blur();
       }
-      setTimeout(() => {
-        setIsPickerOpen(true);
-      }, 150);
+      setHasOpened(true);
+      setIsPickerOpen(true);
       return;
     }
 
@@ -140,6 +143,7 @@ export default function EmojiPickerButton({
     }
 
     blockKeyboard.current = true;
+    setHasOpened(true);
     setIsPickerOpen(true);
   };
 
@@ -152,6 +156,10 @@ export default function EmojiPickerButton({
     });
 
     return () => {
+      if (keepPaddingRef.current) {
+        keepPaddingRef.current = false;
+        return; // visualViewport will clear padding when keyboard opens
+      }
       elements.forEach((el) => {
         el.style.paddingBottom = "5px";
       });
@@ -224,7 +232,6 @@ export default function EmojiPickerButton({
 
   useEffect(() => {
     if (!isPickerOpen) {
-      keyboardLockedRef.current = false;
       // Restore inputmode so native keyboard works after picker closes
       if (simple && textareaRef?.current) {
         textareaRef.current.removeAttribute("inputmode");
@@ -257,9 +264,19 @@ export default function EmojiPickerButton({
         />
       </div>
 
-      {/* PICKER */}
-      {isPickerOpen && (
-        <div className="emoji-picker-container open">
+      {/* PICKER — stays in DOM after first open, visibility toggled instantly via CSS */}
+      {hasOpened && (
+        <div className={`emoji-picker-container${isPickerOpen ? " open" : ""}`}>
+          {onBackspace && (
+            <div className="emoji-picker-toolbar">
+              <button
+                className="emoji-backspace-btn"
+                onMouseDown={(e) => { e.preventDefault(); onBackspace(); }}
+              >
+                ⌫
+              </button>
+            </div>
+          )}
           <div
             onClick={(e) => {
               if (simple) {
@@ -271,7 +288,7 @@ export default function EmojiPickerButton({
             <EmojiPicker
               onEmojiClick={(emojiObject) => handleEmojiClick(emojiObject)}
               width="100%"
-              height={keyboardHeight}
+              height={onBackspace ? keyboardHeight - 44 : keyboardHeight}
               searchDisabled
               previewConfig={{ showPreview: false }}
               lazyLoadEmojis

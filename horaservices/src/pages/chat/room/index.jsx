@@ -63,16 +63,24 @@ const ChatPage = () => {
   const [userData, setUserData] = useState({});
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
-  const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
   const ignoreNextFocusRef = useRef(false);
+  const isEmojiInsertRef = useRef(false);
   const initialScrollDoneRef = useRef(false); // 🔥 NEW
+  const showEmojiPickerRef = useRef(false);
+  const emojiPaddingAtKeyboardStartRef = useRef(0);
+  const isKeyboardVisibleRef = useRef(false);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (smooth = false) => {
     if (!chatBodyRef.current) return;
-    setTimeout(() => {
-      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-    }, 150);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = chatBodyRef.current;
+        if (!el) return;
+        el.style.scrollBehavior = smooth ? "smooth" : "auto";
+        el.scrollTop = el.scrollHeight;
+      });
+    });
   };
 
   // Mark read on mount if selected
@@ -98,9 +106,21 @@ const ChatPage = () => {
     if (chatBodyRef.current) {
       chatBodyRef.current.classList.remove("ready");
     }
-    hasScrolledToUnreadRef.current = false;
     initialScrollDoneRef.current = false;
   }, [groupId]);
+
+  // Join socket room when chat opens so server sends message:new events here
+  useEffect(() => {
+    if (!socket || !selectedGroup) return;
+    const gid = selectedGroup._id || selectedGroup.id;
+    const join = () => socket.emit("joinRoom", { groupId: gid });
+    if (socket.connected) {
+      join();
+    } else {
+      window.addEventListener("socket:connected", join, { once: true });
+      return () => window.removeEventListener("socket:connected", join);
+    }
+  }, [selectedGroup]);
 
   // Local message listener
   useEffect(() => {
@@ -119,7 +139,7 @@ const ChatPage = () => {
         return [...prev, { ...msg, id: msg._id }];
       });
       setTimeout(() => markRoomRead(gid, userId), 50);
-      scrollToBottom();
+      scrollToBottom(true);
     };
     socket.on("message:new", onMessageNewLocal);
     return () => socket.off("message:new", onMessageNewLocal);
@@ -184,7 +204,6 @@ const ChatPage = () => {
     }
 
     initialScrollDoneRef.current = true;
-    hasScrolledToUnreadRef.current = true;
 
     // Show container AFTER scroll set
     container.classList.add("ready");
@@ -195,39 +214,57 @@ const ChatPage = () => {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
     const docEl = document.documentElement;
+
     const setVvh = () => {
       const vv = window.visualViewport;
-      if (vv && vv.height < window.innerHeight) {
+      if (!vv) return;
+      const chatLayout = document.querySelector(".chat-layout");
+
+      if (vv.height < window.innerHeight) {
+        const keyboardH = window.innerHeight - vv.height;
         docEl.style.setProperty("--vvh", `${vv.height}px`);
-        setTimeout(() => {
-          const input = document.querySelector(".chat-input-container");
-          if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
-        }, 100);
-        setTimeout(scrollToBottom, 150);
         document.body.style.overflow = "hidden";
-        document.body.style.position = "fixed";
-        document.body.style.width = "100vw";
-        const chatLayout = document.querySelector(".chat-layout");
+
         if (chatLayout) {
           chatLayout.style.top = `${vv.offsetTop}px`;
-          chatLayout.style.paddingBottom = ""; // clear emoji-picker padding — keyboard and picker can't coexist
-          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, {
-            passive: false,
-          });
-          chatLayout.addEventListener("wheel", allowChatMessagesScroll, {
-            passive: false,
-          });
+          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
+          chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
+
+          if (showEmojiPickerRef.current) {
+            // Keyboard closing while emoji is open — emoji picker manages padding, leave it
+          } else {
+            // Keyboard opening: on first event capture the emoji padding,
+            // then reduce it proportionally each frame so content area stays constant.
+            if (!isKeyboardVisibleRef.current) {
+              isKeyboardVisibleRef.current = true;
+              emojiPaddingAtKeyboardStartRef.current =
+                parseFloat(chatLayout.style.paddingBottom) || 0;
+            }
+            const originalPadding = emojiPaddingAtKeyboardStartRef.current;
+            if (originalPadding > 5) {
+              const remaining = Math.max(0, originalPadding - keyboardH);
+              chatLayout.style.paddingBottom = remaining > 5 ? `${remaining}px` : "";
+            } else {
+              chatLayout.style.paddingBottom = "";
+            }
+          }
         }
+
+        requestAnimationFrame(() => scrollToBottom());
       } else {
+        // Keyboard fully closed
+        isKeyboardVisibleRef.current = false;
+        emojiPaddingAtKeyboardStartRef.current = 0;
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
         document.body.style.overflow = "";
-        document.body.style.position = "";
-        document.body.style.width = "";
-        const chatLayout = document.querySelector(".chat-layout");
+
         if (chatLayout) {
           chatLayout.style.top = "";
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
+          if (!showEmojiPickerRef.current) {
+            chatLayout.style.paddingBottom = "";
+          }
         }
       }
     };
@@ -253,8 +290,6 @@ const ChatPage = () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", setVvh);
       document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
       const chatLayout = document.querySelector(".chat-layout");
       if (chatLayout) {
         chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
@@ -263,32 +298,52 @@ const ChatPage = () => {
     };
   }, []);
 
-  // Cursor memory for emoji insertion
-  const saveCursor = () => {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      lastRangeRef.current = sel.getRangeAt(0).cloneRange();
-    }
-  };
+  // Keep emoji ref in sync so setVvh closure can read it
+  useEffect(() => {
+    showEmojiPickerRef.current = showEmojiPicker;
+  }, [showEmojiPicker]);
+
+  // Track cursor position whenever selection changes inside the input
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      if (!textareaRef.current) return;
+      const sel = window.getSelection();
+      if (
+        sel &&
+        sel.rangeCount > 0 &&
+        textareaRef.current.contains(sel.anchorNode)
+      ) {
+        lastRangeRef.current = sel.getRangeAt(0).cloneRange();
+      }
+    };
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () =>
+      document.removeEventListener("selectionchange", handleSelectionChange);
+  }, []);
 
   const insertEmoji = (emojiObject) => {
     const emojiUrl = emojiObject?.imageUrl;
     if (!textareaRef.current) return;
     ignoreNextFocusRef.current = true;
+    isEmojiInsertRef.current = true;
 
-    textareaRef.current.setAttribute("inputmode", "none");
-    textareaRef.current.focus({ preventScroll: true });
+    const el = textareaRef.current;
+    // Capture scroll BEFORE focus() so mobile browser scroll side-effects don't corrupt it
+    const savedScrollTop = el.scrollTop;
+
+    el.setAttribute("inputmode", "none");
+    el.focus({ preventScroll: true });
 
     let sel = window.getSelection();
     let range;
     if (
       lastRangeRef.current &&
-      textareaRef.current.contains(lastRangeRef.current.startContainer)
+      el.contains(lastRangeRef.current.startContainer)
     ) {
       range = lastRangeRef.current;
     } else {
       range = document.createRange();
-      range.selectNodeContents(textareaRef.current);
+      range.selectNodeContents(el);
       range.collapse(false);
     }
 
@@ -312,7 +367,46 @@ const ChatPage = () => {
     sel.removeAllRanges();
     sel.addRange(newRange);
     lastRangeRef.current = newRange;
-    resizeTextarea();
+
+    requestAnimationFrame(() => {
+      if (!el) return;
+
+      // Resize height (may reset scrollTop on mobile)
+      el.style.height = "auto";
+      const newHeight = Math.min(el.scrollHeight, 120);
+      el.style.height = `${newHeight}px`;
+
+      // Restore to the scroll position the user had before selecting the emoji
+      el.scrollTop = savedScrollTop;
+
+      // Only nudge scroll if cursor is genuinely outside the visible area
+      if (el.scrollHeight > el.clientHeight) {
+        const s = window.getSelection();
+        if (s && s.rangeCount > 0) {
+          const rng = s.getRangeAt(0).cloneRange();
+          rng.collapse(true);
+          const rect = rng.getBoundingClientRect();
+          // getBoundingClientRect returns a zero rect on mobile Chrome when cursor is
+          // after an <img> node and not yet painted — skip correction to preserve savedScrollTop
+          if (rect.width !== 0 || rect.height !== 0 || rect.top !== 0) {
+            const elRect = el.getBoundingClientRect();
+            const relTop = rect.top - elRect.top + el.scrollTop;
+            if (relTop < el.scrollTop) {
+              el.scrollTop = relTop;
+            } else if (relTop + rect.height > el.scrollTop + el.clientHeight) {
+              el.scrollTop = relTop + rect.height - el.clientHeight;
+            }
+          }
+        }
+      }
+
+      // Clear flag in a second RAF so any async onInput fired by insertNode
+      // (Chrome fires input events on contentEditable for programmatic mutations)
+      // still sees isEmojiInsertRef = true and does not scroll-to-bottom
+      requestAnimationFrame(() => {
+        isEmojiInsertRef.current = false;
+      });
+    });
   };
 
   const markRoomRead = async (groupId, userId) => {
@@ -467,7 +561,7 @@ const ChatPage = () => {
 
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
-    scrollToBottom();
+    scrollToBottom(true);
 
     if (!showEmojiPicker) {
       requestAnimationFrame(() => {
@@ -476,16 +570,92 @@ const ChatPage = () => {
     }
   };
 
+  const handleBackspace = () => {
+    if (!textareaRef.current) return;
+    const sel = window.getSelection();
+    if (!sel) return;
+
+    // Restore saved cursor position
+    if (lastRangeRef.current && textareaRef.current.contains(lastRangeRef.current.startContainer)) {
+      sel.removeAllRanges();
+      sel.addRange(lastRangeRef.current.cloneRange());
+    }
+    if (!sel.rangeCount) return;
+
+    const range = sel.getRangeAt(0);
+    if (!range.collapsed) {
+      range.deleteContents();
+    } else {
+      const { startContainer: node, startOffset: offset } = range;
+      if (node.nodeType === Node.TEXT_NODE && offset > 0) {
+        range.setStart(node, offset - 1);
+        range.deleteContents();
+      } else {
+        const target =
+          node.nodeType === Node.ELEMENT_NODE && offset > 0
+            ? node.childNodes[offset - 1]
+            : node.nodeType === Node.TEXT_NODE
+              ? node.previousSibling
+              : null;
+        if (target) {
+          if (target.nodeType === Node.TEXT_NODE && target.length > 0) {
+            target.deleteData(target.length - 1, 1);
+            const r = document.createRange();
+            r.setStart(target, target.length);
+            r.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(r);
+          } else if (target.nodeType === Node.ELEMENT_NODE) {
+            const parent = target.parentNode;
+            const idx = [...parent.childNodes].indexOf(target);
+            target.remove();
+            const r = document.createRange();
+            r.setStart(parent, idx);
+            r.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(r);
+          }
+        }
+      }
+    }
+
+    const updated = window.getSelection();
+    if (updated?.rangeCount > 0) lastRangeRef.current = updated.getRangeAt(0).cloneRange();
+    resizeTextarea();
+  };
+
   const resizeTextarea = () => {
     const el = textareaRef.current;
     if (!el) return;
 
+    const prevScrollTop = el.scrollTop;
     el.style.height = "auto";
     const newHeight = Math.min(el.scrollHeight, 120);
     el.style.height = `${newHeight}px`;
 
+    // Always restore first — height:auto resets scrollTop to 0 on mobile
+    el.scrollTop = prevScrollTop;
+
+    // During emoji insert, the RAF handles final scroll — don't interfere
+    if (isEmojiInsertRef.current) return;
+
+    // For keyboard typing: scroll just enough to keep cursor visible
     if (newHeight >= 120) {
-      el.scrollTop = el.scrollHeight;
+      const s = window.getSelection();
+      if (s && s.rangeCount > 0 && el.contains(s.anchorNode)) {
+        const rng = s.getRangeAt(0).cloneRange();
+        rng.collapse(true);
+        const rect = rng.getBoundingClientRect();
+        if (rect.height !== 0) {
+          const elRect = el.getBoundingClientRect();
+          const relTop = rect.top - elRect.top + el.scrollTop;
+          if (relTop < el.scrollTop) {
+            el.scrollTop = relTop;
+          } else if (relTop + rect.height > el.scrollTop + el.clientHeight) {
+            el.scrollTop = relTop + rect.height - el.clientHeight;
+          }
+        }
+      }
     }
   };
 
@@ -785,6 +955,7 @@ const ChatPage = () => {
           keyboardIcon={keyboardIcon}
           textareaRef={textareaRef}
           ignoreNextFocusRef={ignoreNextFocusRef}
+          onBackspace={handleBackspace}
         />
         <div
           ref={textareaRef}
@@ -793,22 +964,19 @@ const ChatPage = () => {
           suppressContentEditableWarning={true}
           onFocus={() => {
             if (showEmojiPicker) {
-              setShowEmojiPicker(false);
+              // Picker open: user tapped text to reposition cursor — keep picker, suppress keyboard
+              textareaRef.current?.setAttribute("inputmode", "none");
+              return;
             }
-            const el = textareaRef.current;
-            if (!el) return;
-            el.addEventListener("keyup", saveCursor);
-            el.addEventListener("mouseup", saveCursor);
-            el.addEventListener("focus", saveCursor);
           }}
-          onInput={(e) => {
+          onInput={() => {
             resizeTextarea();
-            if (textareaRef.current.scrollHeight > 120) {
-              textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-            }
           }}
           onClick={() => {
-            setShowEmojiPicker(false);
+            if (showEmojiPicker) {
+              // Picker open: tap = cursor reposition only, keep inputmode=none
+              textareaRef.current?.setAttribute("inputmode", "none");
+            }
           }}
           className="chat-input"
           data-placeholder="Type message here..."

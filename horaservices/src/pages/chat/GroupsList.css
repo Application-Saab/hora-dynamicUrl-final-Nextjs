@@ -277,7 +277,7 @@
   margin: clamp(5px, calc((10 / 393) * 100vw), 12px);
   max-width: 480px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  z-index: 999;
+  z-index: 100000;
   touch-action: auto;
 }
 
@@ -401,14 +401,12 @@
   );
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  scroll-behavior: smooth;
 
   padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
   background: transparent;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.1s ease-out;
-  scroll-behavior: auto !important;
   overflow: hidden;
 }
 .chat-messages.loaded {

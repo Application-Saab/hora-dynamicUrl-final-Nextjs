@@ -1,11 +1,8 @@
 
 .emoji-open {
-  padding-bottom: 350px; 
+  padding-bottom: 350px;
 }
 
-.emoji-picker-container.open {
-  bottom: 0 !important;
-}
 .emojisec {
     position: relative;
     width: 100%;
@@ -26,22 +23,42 @@
   background: #fff;
   z-index: 99999;
     border-radius: 0;
- 
-  transform: translateY(100%);
-  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-              opacity 0.2s ease;
 }
 
-
-
-
-
 .emoji-picker-container.open {
-  transform: translateY(0);
-  opacity: 1;
+  visibility: visible;
   pointer-events: auto;
+}
+
+.emoji-picker-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 44px;
+  padding: 0 12px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.emoji-backspace-btn {
+  background: #f2f2f2;
+  border: none;
+  border-radius: 8px;
+  width: 44px;
+  height: 34px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.emoji-backspace-btn:active {
+  background: #e0e0e0;
 }
 
 .emoji-real-component {
