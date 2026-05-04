@@ -1,4 +1,4 @@
-.upload-banner {
+/* .upload-banner {
   position: relative;
   border-radius: 10px;
   padding: clamp(2px, 1vw, 6px);
@@ -91,6 +91,134 @@
 }
 .crop-footer .common-custom-button.primary {
      background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  color: #fff;
+  font-weight: 600;
+} */
+
+
+
+
+
+/* ── Upload Banner ── */
+.upload-banner {
+  position: relative;
+  border-radius: 10px;
+  padding: clamp(2px, 1vw, 6px);
+  margin: 8px 0;
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.upload-banner p {
+  margin-top: clamp(8px, 2vw, 14px);
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: 600;
+  letter-spacing: clamp(0.2px, 0.4vw, 0.5px);
+}
+
+.upload-icon-wrapper {
+  width: clamp(36px, 12vw, 48px);
+  height: clamp(36px, 12vw, 48px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  margin: clamp(8px, 2vw, 12px) auto;
+  display: grid;
+  place-items: center;
+  background-color: #fff;
+}
+
+.upload-plus {
+  font-size: clamp(24px, 7vw, 34px);
+  font-weight: 700;
+  line-height: 1;
+  color: #969696;
+}
+
+/* ── Crop Modal ── */
+.crop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.92);
+}
+
+.crop-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px);
+  transform: scale(1.4);
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.crop-spacer {
+  flex: 1;
+  z-index: 1;
+}
+
+/*
+  crop-area-wrapper:
+  - Full width minus 10px each side = calc(100vw - 20px)
+  - Height derived from aspect ratio 377/416
+  - position: relative is REQUIRED for react-easy-crop
+*/
+.crop-area-wrapper {
+  position: relative;
+  width: calc(100vw - 20px);
+  /* height = width × (416/377) */
+  aspect-ratio: 377 / 416;
+  z-index: 2;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.image-preview-wrapper {
+  width: calc(100vw - 10px); /* 5px padding each side */
+  margin: 0 5px;
+  z-index: 2;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto; /* full height visible */
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
+}
+
+/* ── Footer ── */
+.crop-footer {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.crop-footer .common-custom-button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.crop-footer .common-custom-button.outline {
+  background: #fff;
+  color: #000;
+}
+
+.crop-footer .common-custom-button.primary {
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
   color: #fff;
   font-weight: 600;
 }
