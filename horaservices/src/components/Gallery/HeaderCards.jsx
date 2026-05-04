@@ -191,6 +191,7 @@ const HeaderCards = ({
           const payload = JSON.parse(event.replace("data:", ""));
           if (payload.type === "match") {
             matches.push(payload);
+            console.log('%c [ matches ]-197', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
             onSearchResults([...matches]);
           }
           if (payload.type === "complete") {
