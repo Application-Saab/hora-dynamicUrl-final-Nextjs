@@ -4,7 +4,7 @@ import Image from "next/image";
 import CommonPopup from "@/components/CommonPop";
 import "@/components/Gallery/headerCards.css";
 import allPhotos from "@/assets/allPhotos.svg";
-import myPhoto from "@/assets/myPhotos.jpg";
+import myPhoto from "../../../assets/myPhotos.svg";
 import user2 from "@/assets/user2.svg";
 import userIcon from "@/assets/userIcon.svg";
 import imagePicker from "@/assets/imagePicker.svg";

@@ -195,9 +195,9 @@ const ThumbnailGallery = ({
       setShowAddToFolderPopup(false);
       setIsEditing(false);
 
-    } catch (error) {
+    }).catch((error) => {
       console.error(error);
-    }
+    });
 
   };
 
@@ -453,7 +453,7 @@ useEffect(() => {
     setMatchedKeys(keys);
     setIsSearching(true);
     setMyPhotoSearchResults(keys);
-  }, []);
+  };
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
