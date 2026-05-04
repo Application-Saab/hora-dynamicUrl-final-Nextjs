@@ -1,3 +1,10 @@
+import {
+  deleteFromOPFS as deleteFromOPFSGeneric,
+  getFileFromOPFS as getFileFromOPFSGeneric,
+  getPreviewFromOPFS as getPreviewFromOPFSGeneric,
+  saveFileToOPFS as saveFileToOPFSGeneric,
+} from "./opfsUploadStore";
+
 // Measure height of thumbnail/local image
 function measureImageHeight(url) {
   return new Promise((resolve) => {
@@ -75,56 +82,32 @@ export async function processImagesWithHeight(list) {
 const OPFS_ROOT_DIR = "eventwall-temp-uploads";
 
 export async function saveFileToOPFS(file, eventId, uniqueId) {
-  try {
-    const root = await navigator.storage.getDirectory();
-    const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: true });
-    const ext = file.name.split(".").pop();
-
-    const fileHandle = await dir.getFileHandle(
-      `${eventId}__${uniqueId}.${ext}`,
-      { create: true },
-    );
-
-    const writable = await fileHandle.createWritable();
-    await writable.write(file);
-    await writable.close();
-
-    return true;
-  } catch (err) {
-    console.error("OPFS save failed:", err);
-    return false;
-  }
+  const res = await saveFileToOPFSGeneric({
+    rootDir: OPFS_ROOT_DIR,
+    prefix: eventId,
+    id: uniqueId,
+    file,
+  });
+  return res.ok;
 }
 
 export async function getFileFromOPFS(eventId, uniqueId, mimeType, fileName) {
-  const root = await navigator.storage.getDirectory();
-  const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: false });
-
-  const ext = fileName.split(".").pop();
-
-  const fileHandle = await dir.getFileHandle(`${eventId}__${uniqueId}.${ext}`, {
-    create: false,
+  return getFileFromOPFSGeneric({
+    rootDir: OPFS_ROOT_DIR,
+    key: `${eventId}__${uniqueId}.${fileName.split(".").pop()}`,
+    mimeType,
+    fileName,
   });
-
-  const blob = await fileHandle.getFile();
-
-  return new File([blob], fileName, { type: mimeType });
 }
 
-export async function deleteFromOPFS(eventId, uniqueId) {
-  try {
-    const root = await navigator.storage.getDirectory();
-    const dir = await root.getDirectoryHandle(OPFS_ROOT_DIR, { create: false });
-    await dir.removeEntry(`${eventId}__${uniqueId}`);
-  } catch {}
+export async function deleteFromOPFS(eventId, uniqueId, fileName = "") {
+  const ext = fileName ? fileName.split(".").pop() : "";
+  const key = ext ? `${eventId}__${uniqueId}.${ext}` : `${eventId}__${uniqueId}`;
+  return deleteFromOPFSGeneric({ rootDir: OPFS_ROOT_DIR, key });
 }
 
 export async function getPreviewFromOPFS(eventId, id, fileName) {
-  try {
-    const file = await getFileFromOPFS(eventId, id, "", fileName);
-    return URL.createObjectURL(file);
-  } catch (err) {
-    console.error("Preview load failed", err);
-    return null;
-  }
+  const ext = fileName ? fileName.split(".").pop() : "";
+  const key = ext ? `${eventId}__${id}.${ext}` : `${eventId}__${id}`;
+  return getPreviewFromOPFSGeneric({ rootDir: OPFS_ROOT_DIR, key, fileName });
 }

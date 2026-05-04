@@ -5,7 +5,7 @@ import ArrowImg from "../../assets/arrow.svg";
 import nextIcon from "../../assets/nextIcon.svg";
 import Image from "next/image";
 import Crossicon from "../../assets/Crossicon.svg";
-import './commonPopup.css'
+import "./commonPopup.css";
 
 const PrevArrow = ({ className, onClick }) => (
   <div className={`${className} custom-arrow prev-arrow`} onClick={onClick}>
@@ -20,7 +20,7 @@ const NextArrow = ({ className, onClick }) => (
 );
 
 const pauseAllVideos = () => {
-  const videos = document.querySelectorAll('.popupContent video');
+  const videos = document.querySelectorAll(".popupContent video");
   videos.forEach((video) => {
     video.pause();
     video.currentTime = 0;
@@ -33,9 +33,9 @@ const CommonImagePopup = ({
   setSelectedIndex,
   renderActions,
   onClose,
-  renderFooter
+  renderFooter,
+  isEventWall = false,
 }) => {
-
   const sliderSettings = {
     dots: false,
     infinite: images.length > 1,
@@ -62,7 +62,7 @@ const CommonImagePopup = ({
   }, [selectedIndex]);
 
   const playActiveVideo = () => {
-    const activeVideo = document.querySelector('.slick-current video');
+    const activeVideo = document.querySelector(".slick-current video");
     if (!activeVideo) return;
 
     activeVideo.currentTime = 0;
@@ -74,7 +74,7 @@ const CommonImagePopup = ({
     if (activeVideo.readyState >= 2) {
       playWhenReady();
     } else {
-      activeVideo.addEventListener('loadeddata', playWhenReady, { once: true });
+      activeVideo.addEventListener("loadeddata", playWhenReady, { once: true });
     }
   };
 
@@ -110,7 +110,7 @@ const CommonImagePopup = ({
 
       if (isActive) {
         video.muted = false;
-        video.play().catch(() => { });
+        video.play().catch(() => {});
       } else {
         video.pause();
         video.currentTime = 0;
@@ -139,11 +139,7 @@ const CommonImagePopup = ({
       aria-modal="true"
       style={{ zIndex: 9999 }}
     >
-      <div
-        className="popupContent"
-        onClick={(e) => e.stopPropagation()}
-      >
-
+      <div className="popupContent" onClick={(e) => e.stopPropagation()}>
         <div className="popupHeader">
           <div className="popupHeader-left">
             <button className="closeButton" onClick={onClose}>
@@ -165,8 +161,7 @@ const CommonImagePopup = ({
             key="eventwall-slider"
           >
             {images.map((item, idx) => {
-              const isVisible =
-                Math.abs(idx - selectedIndex) <= 1;
+              const isVisible = Math.abs(idx - selectedIndex) <= 1;
 
               if (!isVisible) {
                 return <div key={idx} />;
@@ -178,7 +173,7 @@ const CommonImagePopup = ({
                 <div key={item._id || idx} className="slick-slide-item">
                   {isVideo ? (
                     <video
-                      src={item.originalUrl}
+                      src={ isEventWall ? item?.postUrl : item.originalUrl}
                       controls
                       playsInline
                       muted={false}
@@ -192,7 +187,11 @@ const CommonImagePopup = ({
                     />
                   ) : (
                     <img
-                      src={item.thumbnailImageUrl || item.originalUrl}
+                      src={
+                        isEventWall
+                          ? item?.postWebpUrl || item?.postUrl
+                          : item.thumbnailImageUrl || item.originalUrl
+                      }
                       loading="lazy"
                       alt={`Media ${idx + 1}`}
                       style={{
@@ -211,7 +210,6 @@ const CommonImagePopup = ({
           {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
         </div>
       </div>
-
     </div>
   );
 };

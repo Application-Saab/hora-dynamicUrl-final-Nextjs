@@ -1,4 +1,7 @@
 export const BASE_URL = "https://horaservices.com";
+export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
+export const FACE_FINDER_URL = "https://horaservices.com/face-api";
+export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
 export const OTP_GENERATE_END_POINT = "/api/user/otp_generate";
 export const API_SUCCESS_CODE = 200;
 export const COMPRESSED_WEBP_IMG_URL =
@@ -41,6 +44,8 @@ export const CREATE_GUEST_BY_EVENTID = "/api/customer/event/event-guest";
 export const UPDATE_RSVP_STATUS = "/api/customer/event/event-guest";
 export const GET_ALL_TEMPLATES = "/api/photo/templates";
 export const GET_TEMPLATES_BY_ID = "/api/photo/templates";
+export const EVENT_POST_LIKE_UNLIKE = '/api/customer/event';
+export const LIKED_POST_BY_EVENT_AND_USERID = "/api/customer/event/liked-posts"
 
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
 export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
@@ -48,6 +53,9 @@ export const UPLOAD_THANKYOU_NOTE = "/api/customer/event/event-images";
 export const CREATE_NEW_POST = "/api/customer/event/event-posts";
 export const GET_ALL_POSTS = "/api/customer/event/event-posts";
 export const GET_PRESIGNED_POST_URL = "/api/customer/event/get-presigned-url";
+export const CREATE_EVENT_SUBFOLDER = "/api/customer/event/create-event-subfolder";
+export const ASSIGN_TO_EVENT_SUBFOLDER = "/api/customer/event/assign-to-subfolder";
+export const DELETE_EVENT_POST = "/api/customer/event/delete-post";
 export const GET_GUEST_DETTAILS = "/api/customer/event/event-guest";
 export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/all";
 export const GET_USER_BY_ID = "/api/user/user-details";
@@ -65,5 +73,3 @@ export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
 
-export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
-export const FACE_FINDER_URL = "https://horaservices.com/face-api";
