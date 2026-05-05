@@ -200,6 +200,10 @@ const InvitesPage = () => {
       <CreateInviteModal
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}
+        getRedirectRoute={(data) => ({
+    pathname: "/wonderland/invite",
+    query: { eventid: data._id },
+  })}
       />
       <LoginModal
         isOpen={showGuestLoginModal}

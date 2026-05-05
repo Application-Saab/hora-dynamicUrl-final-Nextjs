@@ -7,7 +7,7 @@ import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
 import { useChatStore } from "@/hooks/ChatContext";
 
-const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
+const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage ,  getRedirectRoute }) => {
   if (!isOpen) return null;
   const router = useRouter();
   const [occasion, setOccasion] = useState("");
@@ -24,10 +24,14 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
     try {
       let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);
       if (resp?.data) {
-        router.replace({
-          pathname: "/wonderland/invite",
-          query: { eventid: resp?.data._id },
-        });
+        // router.replace({
+        //   pathname: "/wonderland/invite",
+        //   query: { eventid: resp?.data._id },
+        // });
+         const route = getRedirectRoute(resp?.data);
+
+  router.replace(route);
+
         setOccasion("");
         onClose();
         refetchChatRooms();

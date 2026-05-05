@@ -38,7 +38,7 @@ const WonderlandMainPage = () => {
       setShowHostLoginModal(true);
       return;
     } else {
-      router.replace(`/partyhalls/invite`);
+      router.replace(`/partyhalls/venue`);
     }
   };
 
@@ -73,7 +73,7 @@ const WonderlandMainPage = () => {
             className="create-invite-btn-landing"
             onClick={createInviteClick}
           >
-            <span>CREATE INVITE</span>
+            <span>CREATE VENUE</span>
           </button>
         </div>
         {isUserLoggedIn && loggedinUserId && (
@@ -123,7 +123,7 @@ const WonderlandMainPage = () => {
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace('/partyhalls/invite')
+          router.replace('/partyhalls/venue')
         }}
       />
     </>
