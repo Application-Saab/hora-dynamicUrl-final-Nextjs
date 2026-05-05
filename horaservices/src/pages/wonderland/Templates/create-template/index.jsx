@@ -18,6 +18,7 @@ import { saveTemplate } from "@/utils/indexedDB";
 import axios from "axios";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
+
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) =>
   toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -111,12 +112,13 @@ const DynamicTemplateRenderer = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const templateRef = useRef(null);
-  const imgRef = useRef(null);
+  const templateRef  = useRef(null);
+  const imgRef       = useRef(null);
+  const videoRef     = useRef(null);        // ── NEW
   const fileInputRef = useRef(null);
 
   const templateId = searchParams.get("templateId") || "";
-  const eventId = searchParams.get("id");
+  const eventId    = searchParams.get("id");
 
   const loadUserId = () =>
     typeof window !== "undefined" ? localStorage.getItem("userID") : null;
@@ -124,19 +126,16 @@ const DynamicTemplateRenderer = () => {
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const userId = loadUserId();
-  const token = loadToken();
+  const token  = loadToken();
 
   const [templateLoading, setTemplateLoading] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded,     setImageLoaded]     = useState(false);
 
   const loading = templateLoading || !imageLoaded;
 
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [errorModal, setErrorModal] = useState({
-    open: false,
-    message: "",
-  });
+  const [saving,     setSaving]     = useState(false);
+  const [error,      setError]      = useState(null);
+  const [errorModal, setErrorModal] = useState({ open: false, message: "" });
 
   const [formData, setFormData] = useState({
     eventType: "",
@@ -147,12 +146,17 @@ const DynamicTemplateRenderer = () => {
     templateId,
   });
 
-  const [templateMeta, setTemplateMeta] = useState(null);
-  const [renderedHTML, setRenderedHTML] = useState("");
-  const [scaledData, setScaledData] = useState(null);
+  const [templateMeta,  setTemplateMeta]  = useState(null);
+  const [renderedHTML,  setRenderedHTML]  = useState("");
+  const [scaledData,    setScaledData]    = useState(null);
 
   const [uploadedImage, setUploadedImage] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
+
+  // ── NEW: video states ──
+  const [isVideo,       setIsVideo]       = useState(false);
+  const [uploadedVideo, setUploadedVideo] = useState(null);
+
   const [charCounts, setCharCounts] = useState({
     eventType: 0,
     name: 0,
@@ -163,11 +167,12 @@ const DynamicTemplateRenderer = () => {
     name: "",
     address: "",
   });
-  const [isSaved, setIsSaved] = useState(false);
-  const [modal, setModal] = useState({ calendar: false, time: false });
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [isSaved,       setIsSaved]       = useState(false);
+  const [modal,         setModal]         = useState({ calendar: false, time: false });
+  const [selectedDate,  setSelectedDate]  = useState("");
+  const [selectedTime,  setSelectedTime]  = useState("");
   const [heroTransform, setHeroTransform] = useState({ x: 0, y: 0, scale: 1 });
+
   const templatePayload = useMemo(() => {
     const today = new Date();
     const fallback = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
@@ -180,29 +185,24 @@ const DynamicTemplateRenderer = () => {
     );
 
     const finalTime = formData.time?.trim()
-      ? formData.time // DB time present → Use it
-      : getCurrentTimeAMPM(); // No DB time → current time
+      ? formData.time
+      : getCurrentTimeAMPM();
 
     return {
-      eventType: formData.eventType,
-      name: applyCase(formData.name || "", templateMeta?.nameCase),
-      date: applyCase(
-        formatted?.full || "",
-        templateMeta?.dateCase || "default",
-      ),
-      day: formatted?.day || "",
-      //  month: formatted?.month || "",
-      month: applyCase(
-        formatted?.month || "",
-        templateMeta?.monthCase || "default",
-      ),
-      year: formatted?.year || "",
-      time: finalTime,
+      eventType:   formData.eventType,
+      name:        applyCase(formData.name || "", templateMeta?.nameCase),
+      date:        applyCase(formatted?.full || "", templateMeta?.dateCase || "default"),
+      day:         formatted?.day || "",
+      month:       applyCase(formatted?.month || "", templateMeta?.monthCase || "default"),
+      year:        formatted?.year || "",
+      time:        finalTime,
       borderColor: templateMeta?.borderColor,
-
-      address: applyCase(formData.address || "", templateMeta?.addressCase),
+      address:     applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
-      image: uploadedImage || originalImage || DefaultImageBgCircle.src,
+      // ── NEW: video mode mein hero circle ke liye originalImage ──
+      image: isVideo
+        ? (originalImage || DefaultImageBgCircle.src)
+        : (uploadedImage || originalImage || DefaultImageBgCircle.src),
     };
   }, [
     formData,
@@ -210,6 +210,7 @@ const DynamicTemplateRenderer = () => {
     templateId,
     uploadedImage,
     originalImage,
+    isVideo,                              // ── NEW
     templateMeta?.configs?.nameCase,
     templateMeta?.configs?.addressCase,
     templateMeta?.configs?.monthCase,
@@ -264,7 +265,6 @@ const DynamicTemplateRenderer = () => {
     const fetchTemplate = async () => {
       if (!templateId) {
         setTemplateLoading(false);
-
         return;
       }
       try {
@@ -292,40 +292,28 @@ const DynamicTemplateRenderer = () => {
         }
 
         const heroConfig = template.configs?.heroImageConfig || {};
-        const cropShape = heroConfig.cropShape === "round" ? "round" : "rect";
-        console.log(
-          "%c [ cropShape ]-242",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          cropShape,
-        );
+        const cropShape  = heroConfig.cropShape === "round" ? "round" : "rect";
+        console.log("%c [ cropShape ]-242", "font-size:13px; background:pink; color:#bf2c9f;", cropShape);
         const ratioW = parseInt(heroConfig?.cropRatio?.width, 10) || 4;
-        console.log(
-          "%c [ ratioW ]-244",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          ratioW,
-        );
+        console.log("%c [ ratioW ]-244", "font-size:13px; background:pink; color:#bf2c9f;", ratioW);
         const ratioH = parseInt(heroConfig?.cropRatio?.height, 10) || 3;
-        console.log(
-          "%c [ ratioH ]-246",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          ratioH,
-        );
+        console.log("%c [ ratioH ]-246", "font-size:13px; background:pink; color:#bf2c9f;", ratioH);
 
         setTemplateMeta({
-          cssCode: cssCode || "",
-          jsCode: jsCode || "",
-          fontUrls: fontUrls ? JSON.parse(fontUrls) : [],
-          bgImageName: template.configs?.bgImageName || "",
-          charLimits: template.configs?.charLimits || {},
+          cssCode:        cssCode || "",
+          jsCode:         jsCode || "",
+          fontUrls:       fontUrls ? JSON.parse(fontUrls) : [],
+          bgImageName:    template.configs?.bgImageName || "",
+          charLimits:     template.configs?.charLimits || {},
           dateFormatCase: template.configs?.dateFormatCase || "1",
-          templateInfo: template.configs?.templateinfo || {},
+          templateInfo:   template.configs?.templateinfo || {},
           cropShape,
-          nameCase: template.configs?.nameCase || "default",
-          addressCase: template.configs?.addressCase || "default",
-          monthCase: template.configs?.monthCase || "default",
-          aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
-          borderColor: template.configs?.borderColor,
-          isBgRemove: template.configs?.isBgRemove || false,
+          nameCase:       template.configs?.nameCase || "default",
+          addressCase:    template.configs?.addressCase || "default",
+          monthCase:      template.configs?.monthCase || "default",
+          aspectRatio:    cropShape === "round" ? 1 : ratioW / ratioH,
+          borderColor:    template.configs?.borderColor,
+          isBgRemove:     template.configs?.isBgRemove || false,
         });
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
@@ -335,11 +323,10 @@ const DynamicTemplateRenderer = () => {
     };
 
     fetchTemplate();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [templateId]);
 
+  /* --- fetch existing event data --- */
   useEffect(() => {
     if (!eventId) return;
     let active = true;
@@ -361,26 +348,24 @@ const DynamicTemplateRenderer = () => {
           ? new Date(data.eventDate).toISOString().split("T")[0]
           : "";
         const formattedTime = data.eventTime
-          ? formatToAMPM(data.eventTime) // DB time exists → Convert & use
+          ? formatToAMPM(data.eventTime)
           : "";
 
         setFormData((prev) => ({
           ...prev,
-          name: applyCase(data.hostName || "", templateMeta?.nameCase),
-          eventType: applyCase(
-            data.eventType || "",
-            templateMeta?.eventTypeCase,
-          ),
-          address: applyCase(data.location || "", templateMeta?.addressCase),
-          date: formattedDate,
-          time: formattedTime,
+          name:      applyCase(data.hostName || "", templateMeta?.nameCase),
+          eventType: applyCase(data.eventType || "", templateMeta?.eventTypeCase),
+          address:   applyCase(data.location || "", templateMeta?.addressCase),
+          date:      formattedDate,
+          time:      formattedTime,
         }));
 
         setCharCounts({
           eventType: data.eventType?.length || 0,
-          name: data.hostName?.length || 0,
-          address: data.location?.length || 0,
+          name:      data.hostName?.length || 0,
+          address:   data.location?.length || 0,
         });
+
         if (data.imageUrl) {
           setUploadedImage(data.imageUrl);
           setOriginalImage(data.imageUrl);
@@ -391,18 +376,17 @@ const DynamicTemplateRenderer = () => {
     };
 
     fetchOrder();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [eventId, token]);
 
+  /* --- render HTML template --- */
   useEffect(() => {
     if (!templateMeta?.jsCode) return;
 
     const payloadWithPlaceholder = {
       ...templatePayload,
       ...scaledData,
-      name: formData.name || "Type your name",
+      name:    formData.name    || "Type your name",
       address: formData.address || "Type your address",
     };
 
@@ -411,42 +395,66 @@ const DynamicTemplateRenderer = () => {
     );
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
+  /* --- image load → scale compute --- */
   const handleImageLoad = useCallback(() => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
     if (!info.templateWidth || !info.templateHeight) return;
 
-    // const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
-    // const scale = 1 - ratio;
+    const effectiveWidth = Math.min(window.innerWidth, 480);
+    const scale = effectiveWidth / info.templateWidth;
+
+    setScaledData({
+      imgHeight:          scale * info.templateHeight,
+      nameFontSize:       scale * info.templateNameSize,
+      nameLineHeight:     scale * info.templateNameSize + info.templateNamelineHeight,
+      namePosition:       scale * info.templateNamePosition,
+      dateTimeFontSize:   scale * info.templateDateTimeSize,
+      dateTimeLineHeight: scale * info.templateDateTimeSize + info.templateDatetimelineHeight,
+      dateTimePosition:   scale * info.templateDateTimePosition,
+      addressFontSize:    scale * info.templateAddressSize,
+      addressLineHeight:  scale * info.templateAddressSize * info.templateAddresslineHeight,
+      addressPosition:    scale * info.templateAddressPosition,
+      imgCirclePosition:  scale * info.templateCirclePosition,
+      imgCircleHeight:    scale * info.templateCircleHeight,
+      imgCircleWidth:     scale * info.templateCircleWidth,
+      dayFontSize:        scale * info.templatedayfontSize,
+      dayPosition:        scale * info.templatedayposition,
+    });
+    setImageLoaded(true);
+  }, [templateMeta?.templateInfo]);
+
+  // ── NEW: video load → scale compute (bilkul handleImageLoad jaisa) ──
+  const handleVideoLoad = useCallback(() => {
+    if (!videoRef.current || !templateMeta?.templateInfo) return;
+    const info = templateMeta.templateInfo;
+    if (!info.templateWidth || !info.templateHeight) return;
 
     const effectiveWidth = Math.min(window.innerWidth, 480);
     const scale = effectiveWidth / info.templateWidth;
 
     setScaledData({
-      imgHeight: scale * info.templateHeight,
-      nameFontSize: scale * info.templateNameSize,
-      nameLineHeight:
-        scale * info.templateNameSize + info.templateNamelineHeight,
-      namePosition: scale * info.templateNamePosition,
-      dateTimeFontSize: scale * info.templateDateTimeSize,
-      dateTimeLineHeight:
-        scale * info.templateDateTimeSize + info.templateDatetimelineHeight,
-      dateTimePosition: scale * info.templateDateTimePosition,
-      addressFontSize: scale * info.templateAddressSize,
-      addressLineHeight:
-        scale * info.templateAddressSize * info.templateAddresslineHeight,
-      addressPosition: scale * info.templateAddressPosition,
-      imgCirclePosition: scale * info.templateCirclePosition,
-      imgCircleHeight: scale * info.templateCircleHeight,
-      imgCircleWidth: scale * info.templateCircleWidth,
-      dayFontSize: scale * info.templatedayfontSize,
-      dayPosition: scale * info.templatedayposition,
+      imgHeight:          scale * info.templateHeight,
+      nameFontSize:       scale * info.templateNameSize,
+      nameLineHeight:     scale * info.templateNameSize + info.templateNamelineHeight,
+      namePosition:       scale * info.templateNamePosition,
+      dateTimeFontSize:   scale * info.templateDateTimeSize,
+      dateTimeLineHeight: scale * info.templateDateTimeSize + info.templateDatetimelineHeight,
+      dateTimePosition:   scale * info.templateDateTimePosition,
+      addressFontSize:    scale * info.templateAddressSize,
+      addressLineHeight:  scale * info.templateAddressSize * info.templateAddresslineHeight,
+      addressPosition:    scale * info.templateAddressPosition,
+      imgCirclePosition:  scale * info.templateCirclePosition,
+      imgCircleHeight:    scale * info.templateCircleHeight,
+      imgCircleWidth:     scale * info.templateCircleWidth,
+      dayFontSize:        scale * info.templatedayfontSize,
+      dayPosition:        scale * info.templatedayposition,
     });
     setImageLoaded(true);
   }, [templateMeta?.templateInfo]);
 
   const PLACEHOLDERS = {
-    name: "Type your name",
+    name:    "Type your name",
     address: "Type your address",
   };
 
@@ -458,12 +466,10 @@ const DynamicTemplateRenderer = () => {
       node.dataset.editing = "true";
       node.classList.add("editing");
 
-      const placeholder = PLACEHOLDERS[field] || "";
-
+      const placeholder   = PLACEHOLDERS[field] || "";
       const isPlaceholder = node.innerText.trim() === placeholder;
-      const isEmpty = !node.innerText.trim();
+      const isEmpty       = !node.innerText.trim();
 
-      // 🔥 click pe placeholder clear
       if (isEmpty || isPlaceholder) {
         node.innerText = "";
         setCaretAtEnd(node);
@@ -476,15 +482,8 @@ const DynamicTemplateRenderer = () => {
           ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
         if (printable && node.innerText.length >= charLimit) {
           const allowed = [
-            "Backspace",
-            "Delete",
-            "ArrowLeft",
-            "ArrowRight",
-            "ArrowUp",
-            "ArrowDown",
-            "Home",
-            "End",
-            "Tab",
+            "Backspace","Delete","ArrowLeft","ArrowRight",
+            "ArrowUp","ArrowDown","Home","End","Tab",
           ];
           if (!allowed.includes(ev.key)) {
             ev.preventDefault();
@@ -508,25 +507,22 @@ const DynamicTemplateRenderer = () => {
       };
 
       const onInput = (ev) => {
-        const el = ev.target;
+        const el    = ev.target;
         const field = el.getAttribute("data-field");
-        let text = el.innerText;
+        let text    = el.innerText;
 
         if (text.length > charLimit) {
           const trimmed = text.slice(0, charLimit);
-          const caret = saveCaretPosition(el);
-          el.innerText = trimmed;
+          const caret   = saveCaretPosition(el);
+          el.innerText  = trimmed;
           restoreCaretPosition(el, caret);
           return;
         }
 
         if (field !== "time") {
-          const formattedValue = applyCase(
-            text,
-            templateMeta?.[field + "Case"],
-          );
+          const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
           if (formattedValue !== text) {
-            const caret = saveCaretPosition(el);
+            const caret  = saveCaretPosition(el);
             el.innerText = formattedValue;
             restoreCaretPosition(el, caret);
           }
@@ -537,15 +533,13 @@ const DynamicTemplateRenderer = () => {
 
       const onPaste = (ev) => {
         ev.preventDefault();
-        const pasted = (ev.clipboardData || window.clipboardData).getData(
-          "text",
-        );
+        const pasted  = (ev.clipboardData || window.clipboardData).getData("text");
         const allowed = Math.max(0, charLimit - node.innerText.length);
         document.execCommand("insertText", false, pasted.slice(0, allowed));
       };
 
       const onBlur = (ev) => {
-        const el = ev.target;
+        const el  = ev.target;
         let value = el.innerText.trim();
 
         if (field === "time") {
@@ -560,21 +554,19 @@ const DynamicTemplateRenderer = () => {
         }
 
         setFormData((prev) => ({ ...prev, [field]: value }));
-
         el.contentEditable = "false";
         el.removeAttribute("data-editing");
         el.classList.remove("editing");
-
         el.removeEventListener("keydown", onKeyDown);
-        el.removeEventListener("input", onInput);
-        el.removeEventListener("paste", onPaste);
-        el.removeEventListener("blur", onBlur);
+        el.removeEventListener("input",   onInput);
+        el.removeEventListener("paste",   onPaste);
+        el.removeEventListener("blur",    onBlur);
       };
 
       node.addEventListener("keydown", onKeyDown);
-      node.addEventListener("input", onInput);
-      node.addEventListener("paste", onPaste);
-      node.addEventListener("blur", onBlur);
+      node.addEventListener("input",   onInput);
+      node.addEventListener("paste",   onPaste);
+      node.addEventListener("blur",    onBlur);
     },
     [formData, templateMeta?.charLimits],
   );
@@ -610,7 +602,6 @@ const DynamicTemplateRenderer = () => {
 
   const handleDownload = async () => {
     if (!templateRef.current) return;
-
     setSaving(true);
 
     const blob = await captureElementAsImage(templateRef.current, [
@@ -622,14 +613,10 @@ const DynamicTemplateRenderer = () => {
       return;
     }
 
-    // 🧾 Convert blob → file
     const file = new File(
       [blob],
       `invite_${templateMeta?.bgImageName || "image"}.png`,
-      {
-        type: "image/png",
-        lastModified: Date.now(),
-      },
+      { type: "image/png", lastModified: Date.now() },
     );
 
     const reader = new FileReader();
@@ -665,12 +652,10 @@ const DynamicTemplateRenderer = () => {
 
   const handleSave = async () => {
     if (!userId) {
-      setErrorModal({
-        open: true,
-        message: "User not logged in or UserId missing.",
-      });
+      setErrorModal({ open: true, message: "User not logged in or UserId missing." });
       return;
     }
+
     const errors = [];
 
     if (!formData.name?.trim() || formData.name === "Type your name") {
@@ -692,10 +677,7 @@ const DynamicTemplateRenderer = () => {
     }
 
     if (errors.length > 0) {
-      setErrorModal({
-        open: true,
-        message: errors.join("\n"),
-      });
+      setErrorModal({ open: true, message: errors.join("\n") });
       return;
     }
 
@@ -720,14 +702,13 @@ const DynamicTemplateRenderer = () => {
             "Content-Type": "application/json",
             Authorization: token || "",
           },
-
           body: JSON.stringify({
             userId,
             eventType: formData.eventType,
-            hostName: formData.name,
+            hostName:  formData.name,
             eventDate: finalDate,
             eventTime: finalTime,
-            location: formData.address,
+            location:  formData.address,
           }),
         },
       );
@@ -739,11 +720,7 @@ const DynamicTemplateRenderer = () => {
 
       await handleDownload();
     } catch (err) {
-      setErrorModal({
-        open: true,
-        message: err.message || "Something went wrong",
-      });
-
+      setErrorModal({ open: true, message: err.message || "Something went wrong" });
       setSaving(false);
       setIsSaved(false);
       document.body.classList.remove("saved-mode");
@@ -755,7 +732,6 @@ const DynamicTemplateRenderer = () => {
   const saveCaretPosition = (el) => {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return 0;
-
     const range = selection.getRangeAt(0);
     return range.startOffset;
   };
@@ -763,27 +739,23 @@ const DynamicTemplateRenderer = () => {
   const restoreCaretPosition = (el, offset) => {
     try {
       const selection = window.getSelection();
-      const range = document.createRange();
-
+      const range     = document.createRange();
       let node = el;
-
       if (el.childNodes.length > 0) {
         node =
           [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
       }
-
       const textLength = node.textContent?.length ?? 0;
       const safeOffset = Math.min(offset, textLength);
-
       range.setStart(node, safeOffset);
       range.collapse(true);
-
       selection.removeAllRanges();
       selection.addRange(range);
     } catch (err) {
       console.warn("restoreCaretPosition failed on device:", err);
     }
   };
+
   useEffect(() => {
     if (!templateMeta?.borderColor) return;
     document.documentElement.style.setProperty(
@@ -793,38 +765,46 @@ const DynamicTemplateRenderer = () => {
   }, [templateMeta?.borderColor]);
 
   const handleBackgroundRemoval = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
+    const fd = new FormData();
+    fd.append("file", file);
     try {
-      const response = await axios.post(
-        `${BG_REMOVER_URL}`,
-        formData,
-        {
-          responseType: "blob",
-        },
-      );
-
+      const response = await axios.post(`${BG_REMOVER_URL}`, fd, {
+        responseType: "blob",
+      });
       const imageUrl = URL.createObjectURL(response.data);
       setUploadedImage(imageUrl);
       setOriginalImage(imageUrl);
     } catch (error) {
       console.error("Background removal error:", error);
       alert(
-        "error to connect to the server. Make sure your Python backend is running on port 8000.",
+        "Error connecting to the server. Make sure your Python backend is running on port 8000.",
       );
     }
   };
 
+  // ── NEW: image aur video dono handle karo ──
   const handleImageUploadClick = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (templateMeta?.isBgRemove) {
-      await handleBackgroundRemoval(file);
-    } else {
+
+    if (file.type.startsWith("video/")) {
+      // ── VIDEO selected ──
       const url = URL.createObjectURL(file);
-      setUploadedImage(url);
-      setOriginalImage(url);
+      setUploadedVideo(url);
+      setIsVideo(true);
+      setUploadedImage(null);  // image clear karo
+      setImageLoaded(false);   // video load hone pe true hoga
+    } else {
+      // ── IMAGE selected (original flow unchanged) ──
+      setIsVideo(false);
+      setUploadedVideo(null);
+      if (templateMeta?.isBgRemove) {
+        await handleBackgroundRemoval(file);
+      } else {
+        const url = URL.createObjectURL(file);
+        setUploadedImage(url);
+        setOriginalImage(url);
+      }
     }
   };
 
@@ -834,14 +814,15 @@ const DynamicTemplateRenderer = () => {
       style={{ maxWidth: "480px", margin: "0 auto" }}
     >
       <div style={{ padding: "8px", maxWidth: "480px", width: "100%" }}>
-        {/*  SKELETON – OUTSIDE TEMPLATE (design safe) */}
+
+        {/* SKELETON */}
         {loading && (
           <div style={{ padding: "8px" }}>
             <TemplatecardSkeleton />
           </div>
         )}
 
-        {/*  TEMPLATE CONTAINER – ALWAYS PRESENT */}
+        {/* TEMPLATE CONTAINER */}
         <div
           ref={templateRef}
           className="template-container"
@@ -850,7 +831,8 @@ const DynamicTemplateRenderer = () => {
             visibility: loading ? "hidden" : "visible",
           }}
         >
-          {templateMeta && (
+          {/* ── IMAGE background — sirf tab jab video mode nahi ── */}
+          {templateMeta && !isVideo && templateMeta.bgImageName && (
             <img
               ref={imgRef}
               src={`/assets/templates/${templateMeta.bgImageName}`}
@@ -864,17 +846,36 @@ const DynamicTemplateRenderer = () => {
             />
           )}
 
-          {/* 🔹 Fonts */}
+          {/* ── NEW: VIDEO background ── */}
+          {isVideo && uploadedVideo && (
+            <video
+              ref={videoRef}
+              src={uploadedVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+              onLoadedMetadata={handleVideoLoad}
+              onCanPlay={() => { if (scaledData) setImageLoaded(true); }}
+              style={{
+                width: "100%",
+                display: "block",
+                objectFit: "cover",
+              }}
+            />
+          )}
+
+          {/* Fonts */}
           {templateMeta?.fontUrls?.map((url, idx) => (
             <link key={idx} href={url} rel="stylesheet" />
           ))}
 
-          {/* 🔹 CSS */}
+          {/* CSS */}
           {templateMeta?.cssCode && (
             <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
           )}
 
-          {/* 🔹 Template HTML */}
+          {/* Template HTML overlay — image aur video dono mein same */}
           {!loading && renderedHTML && (
             <div
               style={{
@@ -888,30 +889,22 @@ const DynamicTemplateRenderer = () => {
           )}
         </div>
 
-        {/* 🔹 File Upload */}
+        {/* ── NEW: video/* bhi accept karo ── */}
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           hidden
-          // onChange={(e) => {
-          //   const file = e.target.files?.[0];
-          //   if (!file) return;
-          //   const url = URL.createObjectURL(file);
-          //   setUploadedImage(url);
-          //   setOriginalImage(url);
-          // }}
-
           onChange={handleImageUploadClick}
         />
 
-        {/* 🔹 Submit */}
+        {/* Submit */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton title="Submit" onClick={handleSave} />
         </div>
       </div>
 
-      {/* 🔹 Modals */}
+      {/* Modals */}
       <CalendarModal
         show={modal.calendar}
         onClose={() => setModal((p) => ({ ...p, calendar: false }))}
