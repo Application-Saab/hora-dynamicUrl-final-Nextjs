@@ -31,7 +31,6 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import LikeFill from '../../assets/LikedFill.svg';
 import { assignToSubfolder, getImagesbyFolderName,trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
@@ -47,7 +46,7 @@ const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
   dbName: "WeblinkGalleryUploads",
   storeName: "pending",
-  version: 1,
+  version: 1, 
   indexes: [
     { name: "galleryKey", keyPath: "galleryKey" },
     { name: "status", keyPath: "status" },
@@ -105,6 +104,9 @@ const ThumbnailGallery = ({
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
+  const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
+  const [viewedBy, setViewedBy] = useState([]);
+
   const uploadingRef = useRef(false);
   const galleryKey = useMemo(
     () => `${folderName || ""}__${customerId || ""}`,
@@ -315,41 +317,24 @@ const ThumbnailGallery = ({
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]);
-        setLoading(false);
-        setError("Folder name or customer ID is missing.");
-        return;
+        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
       }
-      setLoading(true);
-      setError(null);
+      setLoading(true); setError(null);
       try {
-        const response = await fetch(
-          `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`,
-        );
-        if (!response.ok) {
-          const errorData = await response.text();
-          throw new Error(`API Error: ${response.status} - ${errorData}`);
-        }
-        const data = await response.json();
-        setSubFolders(data.folders[0]?.subFolders || []);
-        setMainFolderId(data?.folders[0]?._id || null);
-        const fetchedThumbnails = (data.thumbnails || []).map(
-          (thumb, index) => ({
-            ...thumb,
-            stableKey:
-              thumb.id ||
-              thumb.uniqueKey ||
-              thumb.url ||
-              `thumb-gallery-${index}-${Date.now()}`,
-          }),
-        );
+        const data = await getImagesbyFolderName({
+          folderName,
+          customerId,
+        });
+        setSubFolders(data?.folders[0]?.subFolders || []);
+        setMainFolderId(data?.folders[0]?._id || null)
+        setViewedBy(data?.folders[0]?.viewedBy || []);
+        const fetchedThumbnails = (data.thumbnails || [])
+
+          .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
         setAllThumbnails(fetchedThumbnails);
       } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError);
-        setError(fetchError.message);
-      } finally {
-        setLoading(false);
-      }
+        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
+      } finally { setLoading(false); }
     };
     fetchThumbnails();
   }, [folderName, customerId]);
@@ -375,20 +360,18 @@ const handleLoginChange = () => {
 
 
 useEffect(() => {
-  const wasOpen = prevLoginOpenRef.current;
+  if (!mainFolderId || !localUserId) return;
 
-  if (
-    wasOpen === true &&
-    isLoginOpen === false &&
-    isLogin &&
-    mainFolderId &&
-    localUserId
-  ) {
+  const isAlreadyViewed = viewedBy.some(
+    (id) => String(id) === String(localUserId)
+  );
+
+  const isHost = String(localUserId) === String(customerId);
+
+  if (!isAlreadyViewed && !isHost) {
     trackGalleryView(localUserId, mainFolderId);
   }
-
-  prevLoginOpenRef.current = isLoginOpen;
-}, [isLoginOpen, isLogin, mainFolderId, localUserId]);
+}, [mainFolderId, localUserId, viewedBy, customerId]);
 
 useEffect(() => {
   const logClick = async () => {
@@ -1127,6 +1110,7 @@ useEffect(() => {
             activeSubFolderId={activeSubFolderId}
             isActualMyPhotos={isActualMyPhotos}
             selectedImages={selectedImages}
+            setSelectedImages={setSelectedImages}
           />
         </div>
       </div>

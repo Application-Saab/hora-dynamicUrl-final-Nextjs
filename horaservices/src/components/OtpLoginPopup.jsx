@@ -101,6 +101,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         phone: mobileNumber,
         role: "customer",
         fromWonderland: isWonderlandPath ? true : false,
+        ...extraVerifyData,
       };
       const res = await axios.post(BASE_URL + OTP_GENERATE_END_POINT, payload, {
         headers: { "Content-Type": "application/json" },
@@ -187,7 +188,6 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
           phone: mobileNumber,
           role: "customer",
           otp: otp.join(""),
-          ...extraVerifyData,
         },
         { headers: { "Content-Type": "application/json" } },
       );
