@@ -371,6 +371,7 @@ export default function EventWallHeaderTabs({
             <span>{isLoading ? "Creating" : "Create"}</span>
           </div>
         }
+        style={{ zIndex: 100001 }}
       >
         <div className="picker-container">
           <div className="image-picker" onClick={() => fileInputRef.current?.click()}>
