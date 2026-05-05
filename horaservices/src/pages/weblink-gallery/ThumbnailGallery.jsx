@@ -1,40 +1,71 @@
 // ThumbnailGallery.js
 "use client";
-import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import Image from 'next/image';
-import './gallery.css'; // Ensure this path is correct
-import EventwallGalleryItem from "@/components/wonderland/event-wall/EventwallGalleryItem";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
+import Image from "next/image";
+import axios from "axios";
+import "./gallery.css"; // Ensure this path is correct
+import { BASE_URL } from "@/utils/apiconstants";
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import OtpLogin from "@/components/OtpLoginPopup";
-import share from '../../assets/share.svg'
-import multiGroup from '../../assets/multiGroup.svg'
-import plusVector from '../../assets/plusVector.svg'
-import downloadVector from '../../assets/downloadVector.svg'
-import shareVector from '../../assets/shareVector.svg'
-import deleteVector from '../../assets/DeleteVector.svg'
-import CommonPopup from "@/components/CommonPop";
+import share from "../../assets/share.svg";
+import multiGroup from "../../assets/multiGroup.svg";
+import plusVector from "../../assets/plusVector.svg";
+import downloadVector from "../../assets/downloadVector.svg";
+import shareVector from "../../assets/shareVector.svg";
+import deleteVector from "../../assets/DeleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
-import refreshIcon from '../../assets/refreshIcon.svg';
-import checkWithBoard from '../../assets/checkWithBoard.svg';
-import unLike from '../../assets/unLike.svg';
-import whiteShareIcon from '../../assets/whiteShareIcon.svg';
+import refreshIcon from "../../assets/refreshIcon.svg";
+import checkWithBoard from "../../assets/checkWithBoard.svg";
+import unLike from "../../assets/unLike.svg";
+import whiteShareIcon from "../../assets/whiteShareIcon.svg";
+import like from "../../assets/like.svg";
+import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
+import ImageGrid from "@/components/image-galleries/ImageGrid";
+import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import LikeFill from '../../assets/LikedFill.svg';
-import like from '../../assets/like.svg'
-import { assignToSubfolder, getImagesbyFolderName } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName,trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
+import {
+  deleteFromOPFS,
+  getFileFromOPFS,
+  getPreviewFromOPFS,
+  saveFileToOPFS,
+} from "@/utils/opfsUploadStore";
 
+const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
+const weblinkUploadsDb = createPendingUploadsDb({
+  dbName: "WeblinkGalleryUploads",
+  storeName: "pending",
+  version: 1,
+  indexes: [
+    { name: "galleryKey", keyPath: "galleryKey" },
+    { name: "status", keyPath: "status" },
+  ],
+});
 
-const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
+const ThumbnailGallery = ({
+  folderName,
+  customerId,
+  showInternalTitle = true,
+  handleShareicon,
+}) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
+  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [isSearching, setIsSearching] = useState(false)
+  const [isSearching, setIsSearching] = useState(false);
   const [subFolders, setSubFolders] = useState([]);
   const [activeSubFolderId, setActiveSubFolderId] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -44,6 +75,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [authChecked, setAuthChecked] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const prevLoginOpenRef = useRef(isLoginOpen);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [number, setNumber] = useState("");
   const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
@@ -55,12 +87,15 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [localUserId, setLocalUserId] = useState("");
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
-  const isMyPhotosTab = subFolders.find(sf => sf._id === activeTab)?.type === "my_photos";
-  const isSearchMode = isSearching;
+  const isMyPhotosTab =
+    subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
+  const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
-  const myPhotosFolder = subFolders.find(sf => sf.type === "my_photos");
-  const isMyPhotosTabActive = activeTab === (myPhotosFolder?._id || "my-photos");
-  const isSearchActive = isSearching;
+  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
+  const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const isMyPhotosTabActive =
+    activeTab === (myPhotosFolder?._id || "my-photos");
+  const isSearchActive = isMyPhotosTabActive && isSearching;
   const [isStreamSearching, setIsStremSearching] = useState(false);
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const actionMenuRef = useRef(null);
@@ -70,10 +105,11 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
-  const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
-
-
-
+  const uploadingRef = useRef(false);
+  const galleryKey = useMemo(
+    () => `${folderName || ""}__${customerId || ""}`,
+    [folderName, customerId],
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -101,7 +137,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }, [matchedKeys, myPhotosFolder]);
 
 
-  const handleImageShare = async (imageUrl) => {
+  const handleImageShare = async (imageUrl,id) => {
     if (!imageUrl) return;
 
     if (navigator.share) {
@@ -111,6 +147,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           text: "Check out this photo!",
           url: imageUrl,
         });
+        trackActivity(id, "share");
       } catch (error) {
         console.error("Error sharing image:", error);
       }
@@ -131,29 +168,36 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
     if (!currentImage?._id) return;
 
-    const toAdd = folderSelection.filter(id => !initialPopupFolders.includes(id));
-    const toRemove = initialPopupFolders.filter(id => !folderSelection.includes(id));
-    try {
-      await assignToSubfolder({
+    const toAdd = folderSelection.filter(
+      (id) => !initialPopupFolders.includes(id),
+    );
+    const toRemove = initialPopupFolders.filter(
+      (id) => !folderSelection.includes(id),
+    );
+
+    fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         subFolderId: folderSelection,
         addImageIds: toAdd.length ? [currentImage._id] : [],
         removeImageIds: toRemove.length ? [currentImage._id] : [],
-      });
-
-      setAllThumbnails(prev =>
-        prev.map(img =>
+      }),
+    }).then(() => {
+      setAllThumbnails((prev) =>
+        prev.map((img) =>
           img._id === currentImage._id
             ? { ...img, folderIds: folderSelection }
-            : img
-        )
+            : img,
+        ),
       );
 
       setShowAddToFolderPopup(false);
       setIsEditing(false);
 
-    } catch (error) {
+    }).catch((error) => {
       console.error(error);
-    }
+    });
 
   };
 
@@ -172,16 +216,16 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   useEffect(() => {
     const mobileNumber = localStorage.getItem("mobileNumber");
-    const userId = localStorage.getItem("userID")
-    setLocalPhoneNumber(mobileNumber)
-    setLocalUserId(userId)
+    const userId = localStorage.getItem("userID");
+    setLocalPhoneNumber(mobileNumber);
+    setLocalUserId(userId);
   }, []);
 
   const handleSelectImage = (id) => {
     if (selectedImages.includes(id)) {
-      setSelectedImages(prev => prev.filter(item => item !== id));
+      setSelectedImages((prev) => prev.filter((item) => item !== id));
     } else {
-      setSelectedImages(prev => [...prev, id]);
+      setSelectedImages((prev) => [...prev, id]);
     }
   };
 
@@ -199,42 +243,69 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   const popupImages = useMemo(() => {
     if (!activeSubFolderId) return allThumbnails;
 
-    return allThumbnails.filter(img =>
-      img.folderIds?.includes(activeSubFolderId)
+    return allThumbnails.filter((img) =>
+      img.folderIds?.includes(activeSubFolderId),
     );
   }, [allThumbnails, activeSubFolderId]);
 
-
-  const currentImage = selectedIndex !== null
-    ? popupImages[selectedIndex]
-    : null;
+  const currentImage =
+    selectedIndex !== null ? popupImages[selectedIndex] : null;
 
   const visibleThumbnails = useMemo(() => {
-    return filterThumbnails({
-      allThumbnails,
-      matchedKeys,
-      isMyPhotosTabActive,
-      isSearchActive,
-      activeSubFolderId,
-      isEditing,
-      isActualMyPhotos,
-    });
-  }, [allThumbnails, matchedKeys, activeTab, isMyPhotosTabActive, isSearchActive, isActualMyPhotos, activeSubFolderId, isEditing]);
+    const normalize = (val) => (val || "").trim().toLowerCase();
+    
+    if (!isActualMyPhotos) {
+      if (isEditing) {
+        return allThumbnails;
+      }
+    }
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+      const normalizedKeys = matchedKeys.map(normalize);
 
-  const finalThumbnails =
-    isActualMyPhotos && myPhotoSearchResults.length > 0
-      ? allThumbnails.filter(img =>
-        myPhotoSearchResults.includes(img.thumbnailKey)
-      )
-      : visibleThumbnails;
+      return allThumbnails.filter((img) => {
+        if (img.type !== "image") return false;
 
-  const usableFolders = subFolders.filter(sf => sf.type !== "my_photos");
+        return normalizedKeys.includes(normalize(img.thumbnailKey));
+      });
+    }
+
+    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
+      return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
+    }
+
+    if (isMyPhotosTabActive && myPhotosFolder) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(myPhotosFolder._id),
+      );
+    }
+    
+    if (activeSubFolderId) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(activeSubFolderId),
+    );
+  }
+  
+  return allThumbnails;
+}, [
+  allThumbnails,
+    matchedKeys,
+    activeTab,
+    isMyPhotosTabActive,
+    isSearchActive,
+    myPhotosFolder,
+    activeSubFolderId,
+    isEditing,
+  ]);
+  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
+  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
+
+  const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
   useEffect(() => {
     if (activeSubFolderId) {
       const ids = allThumbnails
-        .filter(img => img.folderIds?.includes(activeSubFolderId))
-        .map(img => img._id);
+        .filter((img) => img.folderIds?.includes(activeSubFolderId))
+        .map((img) => img._id);
 
       setSelectedImages(ids);
       setInitialSubfolderImages(ids);
@@ -244,26 +315,101 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
+        setAllThumbnails([]);
+        setLoading(false);
+        setError("Folder name or customer ID is missing.");
+        return;
       }
-      setLoading(true); setError(null);
+      setLoading(true);
+      setError(null);
       try {
-        const data = await getImagesbyFolderName({
-          folderName,
-          customerId,
-        });
+        const response = await fetch(
+          `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`,
+        );
+        if (!response.ok) {
+          const errorData = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorData}`);
+        }
+        const data = await response.json();
         setSubFolders(data.folders[0]?.subFolders || []);
-        setMainFolderId(data?.folders[0]?._id || null)
-        const fetchedThumbnails = (data.thumbnails || [])
-
-          .map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
+        setMainFolderId(data?.folders[0]?._id || null);
+        const fetchedThumbnails = (data.thumbnails || []).map(
+          (thumb, index) => ({
+            ...thumb,
+            stableKey:
+              thumb.id ||
+              thumb.uniqueKey ||
+              thumb.url ||
+              `thumb-gallery-${index}-${Date.now()}`,
+          }),
+        );
         setAllThumbnails(fetchedThumbnails);
       } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
-      } finally { setLoading(false); }
+        console.error("Fetch thumbnails error:", fetchError);
+        setError(fetchError.message);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchThumbnails();
   }, [folderName, customerId]);
+
+useEffect(() => {
+const handleLoginChange = () => {
+  const loggedIn = localStorage.getItem("isLoggedIn");
+  const userId = localStorage.getItem("userID");
+
+  if (loggedIn === "true" && userId) {
+    setIsLogin(true);
+    setLocalUserId(userId);
+    setIsLoginOpen(false);
+  }
+};
+
+  window.addEventListener("loginStateChange", handleLoginChange);
+
+  return () => {
+    window.removeEventListener("loginStateChange", handleLoginChange);
+  };
+}, []);
+
+
+useEffect(() => {
+  const wasOpen = prevLoginOpenRef.current;
+
+  if (
+    wasOpen === true &&
+    isLoginOpen === false &&
+    isLogin &&
+    mainFolderId &&
+    localUserId
+  ) {
+    trackGalleryView(localUserId, mainFolderId);
+  }
+
+  prevLoginOpenRef.current = isLoginOpen;
+}, [isLoginOpen, isLogin, mainFolderId, localUserId]);
+
+useEffect(() => {
+  const logClick = async () => {
+    const sessionKey = `tracked_folder_${mainFolderId}`;
+    const alreadyTracked = sessionStorage.getItem(sessionKey);
+
+    if (!alreadyTracked && mainFolderId) {
+      try {
+        await trackFolderClick(mainFolderId);
+
+        sessionStorage.setItem(sessionKey, "true");
+        
+        console.log("Click tracked and session flag set!");
+      } catch (err) {
+        console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
+      }
+    }
+  };
+
+  logClick();
+}, [mainFolderId]);
 
 
   useEffect(() => {
@@ -271,17 +417,17 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
     const initialLikes = {};
 
-    allThumbnails.forEach(img => {
-      initialLikes[img._id] = img.likedBy?.some(id => String(id) === String(localUserId));
+    allThumbnails.forEach((img) => {
+      initialLikes[img._id] = img.likedBy?.some(
+        (id) => String(id) === String(localUserId),
+      );
     });
 
     setLikedImages(initialLikes);
   }, [allThumbnails, localUserId]);
 
-
-
   const handleSubFolderCreated = (newSubFolder) => {
-    setSubFolders(prev => [...prev, newSubFolder]);
+    setSubFolders((prev) => [...prev, newSubFolder]);
   };
   const activateNewSubFolderEditMode = (folderId) => {
     setActiveSubFolderId(folderId);
@@ -296,17 +442,18 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     setSelectedIndex(indexInDisplayedList);
   }, []);
 
-
   const closePopup = useCallback(() => {
     setSelectedIndex(null);
   }, []);
 
-  const handleSearchResults = useCallback((matches) => {
-    const keys = matches.map(m => m?.file);
+  const handleSearchResults = (matches) => {
+    console.log('%c [ matches ]-402', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
+    if (!Array.isArray(matches)) return;
+    const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
     setMyPhotoSearchResults(keys);
-  }, []);
+  };
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
@@ -323,14 +470,13 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     return false;
   }, [selectedImages, initialSubfolderImages, activeSubFolderId]);
 
-
   const handleSave = async () => {
     const toAdd = selectedImages.filter(
-      id => !initialSubfolderImages.includes(id)
+      (id) => !initialSubfolderImages.includes(id),
     );
 
     const toRemove = initialSubfolderImages.filter(
-      id => !selectedImages.includes(id)
+      (id) => !selectedImages.includes(id),
     );
 
     try {
@@ -340,27 +486,27 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         removeImageIds: toRemove,
       });
 
-      setAllThumbnails(prev =>
-        prev.map(img => {
-          if (toAdd.includes(img._id)) {
-            return {
-              ...img,
-              folderIds: [...(img.folderIds || []), activeSubFolderId],
-            };
-          }
+    setAllThumbnails((prev) =>
+      prev.map((img) => {
+        if (toAdd.includes(img._id)) {
+          return {
+            ...img,
+            folderIds: [...(img.folderIds || []), activeSubFolderId],
+          };
+        }
 
-          if (toRemove.includes(img._id)) {
-            return {
-              ...img,
-              folderIds: (img.folderIds || []).filter(
-                id => id !== activeSubFolderId
-              ),
-            };
-          }
+        if (toRemove.includes(img._id)) {
+          return {
+            ...img,
+            folderIds: (img.folderIds || []).filter(
+              (id) => id !== activeSubFolderId,
+            ),
+          };
+        }
 
-          return img;
-        })
-      );
+        return img;
+      }),
+    );
 
       setInitialSubfolderImages(selectedImages);
       setIsEditing(false);
@@ -382,12 +528,10 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
   useEffect(() => {
     if (selectedIndex !== null && popupImages[selectedIndex]) {
-      setRawPhoneNumber(popupImages[selectedIndex]?.orderByName)
+      setRawPhoneNumber(popupImages[selectedIndex]?.orderByName);
       setNumber(formatPhoneNumber(popupImages[selectedIndex]?.orderByName));
     }
   }, [selectedIndex, popupImages]);
-
-
 
   function getBlockType(index) {
     const pos = index % 6;
@@ -398,11 +542,217 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     if (pos === 5) return "small-right-bottom";
   }
 
+  const mapUploadResponseToThumb = useCallback(
+    (doc) => {
+      if (!doc) return null;
+
+      const id = String(doc._id || doc.imageId || doc.id || "");
+      const type =
+        doc.type ||
+        (doc.videoUrl || doc.videoClipUrl || doc.clipUrl ? "video" : "image");
+
+      const originalUrl = doc.originalUrl || doc.imageUrl || doc.videoUrl || "";
+      const thumbnailImageUrl =
+        doc.thumbnailImageUrl || doc.thumbnailUrl || doc.postWebpUrl || null;
+      const videoClipUrl = doc.videoClipUrl || doc.clipUrl || null;
+
+      if (!id || !originalUrl) return null;
+
+      return {
+        _id: id,
+        type,
+        originalUrl,
+        thumbnailImageUrl,
+        videoClipUrl,
+        isTemp: false,
+        uploading: false,
+        uploaded: true,
+        orderByName: localPhoneNumber,
+      };
+    },
+    [localPhoneNumber],
+  );
+
+  const upsertPendingUploadsIntoUI = useCallback(async () => {
+    if (!folderName || !customerId) return;
+
+    const pending = await weblinkUploadsDb.getAllFromIndex(
+      "galleryKey",
+      galleryKey,
+    );
+    if (!pending?.length) return;
+
+    const tempItems = await Promise.all(
+      pending.map(async (p) => {
+        const preview = await getPreviewFromOPFS({
+          rootDir: WEBLINK_OPFS_ROOT_DIR,
+          key: p.opfsKey,
+          fileName: p.fileName,
+        });
+
+        return {
+          _id: p.id,
+          type: p.isVideo ? "video" : "image",
+          originalUrl: preview,
+          thumbnailImageUrl: p.isVideo ? null : preview,
+          videoClipUrl: p.isVideo ? preview : null,
+          isTemp: true,
+          uploading: p.status === "uploading" || p.status === "queued",
+          uploaded: false,
+          orderByName: localPhoneNumber,
+          progress: p.progress || 0,
+        };
+      }),
+    );
+
+    setAllThumbnails((prev) => {
+      const existing = new Set(prev.map((t) => String(t._id)));
+      const toAdd = tempItems.filter(
+        (t) => t._id && !existing.has(String(t._id)),
+      );
+      return toAdd.length ? [...toAdd, ...prev] : prev;
+    });
+  }, [customerId, folderName, galleryKey, localPhoneNumber]);
+
+  const processWeblinkUploadQueue = useCallback(async () => {
+    if (!folderName || !customerId) return;
+    if (uploadingRef.current) return;
+
+    uploadingRef.current = true;
+    try {
+      let pending = await weblinkUploadsDb.getAllFromIndex(
+        "galleryKey",
+        galleryKey,
+      );
+
+      for (const item of pending) {
+        if (item.status === "uploading") {
+          await weblinkUploadsDb.update(item.id, { status: "queued" });
+        }
+      }
+
+      pending = await weblinkUploadsDb.getAllFromIndex(
+        "galleryKey",
+        galleryKey,
+      );
+
+      for (const item of pending) {
+        if (item.status === "done") continue;
+
+        try {
+          await weblinkUploadsDb.update(item.id, { status: "uploading" });
+          setAllThumbnails((prev) =>
+            prev.map((t) =>
+              String(t._id) === String(item.id)
+                ? { ...t, uploading: true, progress: 0 }
+                : t,
+            ),
+          );
+
+          const file = await getFileFromOPFS({
+            rootDir: WEBLINK_OPFS_ROOT_DIR,
+            key: item.opfsKey,
+            mimeType: item.mimeType,
+            fileName: item.fileName,
+          });
+
+          const formData = new FormData();
+          formData.append("files", file);
+          formData.append("folderName", folderName);
+          formData.append("customerId", localUserId || customerId);
+          formData.append("phoneNo", localPhoneNumber || "");
+          formData.append("isWeblink", "true");
+          formData.append("fileId", item.id);
+
+          const res = await axios.post(`${MEDIA_WORKER_URL}/upload`, formData, {
+            onUploadProgress: (p) => {
+              const percent = p.total
+                ? Math.round((p.loaded * 100) / p.total)
+                : 0;
+              setAllThumbnails((prev) =>
+                prev.map((t) =>
+                  String(t._id) === String(item.id)
+                    ? { ...t, progress: percent }
+                    : t,
+                ),
+              );
+              weblinkUploadsDb.update(item.id, { progress: percent });
+            },
+          });
+
+          const uploadedDoc = Array.isArray(res?.data?.files)
+            ? res.data.files[0]
+            : res?.data?.files?.[0] || res?.data?.files;
+
+          const mapped = mapUploadResponseToThumb(uploadedDoc);
+          if (!mapped) throw new Error("Unexpected upload response");
+
+          setAllThumbnails((prev) =>
+            prev.map((t) => {
+              if (String(t._id) !== String(item.id)) return t;
+              return { ...mapped, folderIds: t.folderIds || [] };
+            }),
+          );
+
+          await weblinkUploadsDb.remove(item.id);
+          await deleteFromOPFS({
+            rootDir: WEBLINK_OPFS_ROOT_DIR,
+            key: item.opfsKey,
+          });
+        } catch (err) {
+          const newRetry = (item.retryCount || 0) + 1;
+          const status = newRetry > 5 ? "failed" : "queued";
+
+          await weblinkUploadsDb.update(item.id, {
+            status,
+            retryCount: newRetry,
+            progress: 0,
+          });
+
+          setAllThumbnails((prev) =>
+            prev.map((t) =>
+              String(t._id) === String(item.id)
+                ? { ...t, uploading: false, progress: 0 }
+                : t,
+            ),
+          );
+        }
+      }
+    } finally {
+      uploadingRef.current = false;
+    }
+  }, [
+    customerId,
+    folderName,
+    galleryKey,
+    localPhoneNumber,
+    localUserId,
+    mapUploadResponseToThumb,
+  ]);
+  useEffect(() => {
+    if (!folderName || !customerId) return;
+    upsertPendingUploadsIntoUI().finally(() => processWeblinkUploadQueue());
+  }, [
+    customerId,
+    folderName,
+    galleryKey,
+    upsertPendingUploadsIntoUI,
+    processWeblinkUploadQueue,
+  ]);
+
   if (error) {
-    return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
+    return (
+      <div className="thumbnail-gallery-status text-red-500" role="alert">
+        Error: {error}
+      </div>
+    );
   }
   if (allThumbnails.length === 0 && !loading) {
-    return <div className="thumbnail-gallery-status">No photos found in this gallery.</div>;
+    return (
+      <div className="thumbnail-gallery-status">
+        No photos found in this gallery.
+      </div>
+    );
   }
   if (!authChecked) {
     return null;
@@ -426,19 +776,19 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
 
     const isCurrentlyLiked = likedImages[imageId];
 
-    setLikedImages(prev => ({
+    setLikedImages((prev) => ({
       ...prev,
       [imageId]: !isCurrentlyLiked,
     }));
 
-    setAllThumbnails(prev =>
-      prev.map(img => {
+    setAllThumbnails((prev) =>
+      prev.map((img) => {
         if (img._id === imageId) {
           let updatedLikedBy = [...(img.likedBy || [])];
 
           if (isCurrentlyLiked) {
             updatedLikedBy = updatedLikedBy.filter(
-              id => String(id) !== String(userId)
+              (id) => String(id) !== String(userId),
             );
           } else {
             updatedLikedBy = [...updatedLikedBy, userId];
@@ -450,7 +800,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           };
         }
         return img;
-      })
+      }),
     );
 
     try {
@@ -467,19 +817,19 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     } catch (error) {
       console.error(error);
 
-      setLikedImages(prev => ({
+      setLikedImages((prev) => ({
         ...prev,
         [imageId]: isCurrentlyLiked,
       }));
 
-      setAllThumbnails(prev =>
-        prev.map(img => {
+      setAllThumbnails((prev) =>
+        prev.map((img) => {
           if (img._id === imageId) {
             let updatedLikedBy = [...(img.likedBy || [])];
 
             if (!isCurrentlyLiked) {
               updatedLikedBy = updatedLikedBy.filter(
-                id => String(id) !== String(userId)
+                (id) => String(id) !== String(userId),
               );
             } else {
               updatedLikedBy = [...updatedLikedBy, userId];
@@ -491,7 +841,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             };
           }
           return img;
-        })
+        }),
       );
     }
   };
@@ -499,9 +849,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   return (
     <div className="thumbnail-gallery">
       <div>
-        {loading ?
+        {loading ? (
           <HeaderCardsFlashLoader />
-          :
+        ) : (
           <HeaderCards
             folderName={folderName}
             customerId={customerId}
@@ -511,39 +861,31 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             onSelectSubFolder={handleSubFolderSelect}
             onSubFolderCreated={handleSubFolderCreated}
             onNewFolderActivate={activateNewSubFolderEditMode}
-
             showCreateFolderPopup={showCreateFolderPopup}
             setShowCreateFolderPopup={setShowCreateFolderPopup}
-
             pendingAssignImageId={pendingAssignImageId}
             setPendingAssignImageId={setPendingAssignImageId}
             setAllThumbnails={setAllThumbnails}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             isSearching={isSearching}
-
             setIsActualMyPhotos={setIsActualMyPhotos}
             setIsStremSearching={setIsStremSearching}
-
             mainFolderId={mainFolderId}
-
             setSubFolders={setSubFolders}
             setIsRefreshShow={setIsRefreshShow}
             isEditingDP={isEditingDP}
             setIsEditingDP={setIsEditingDP}
-
             showCameraPopup={showCameraPopup}
             setShowCameraPopup={setShowCameraPopup}
-
             capturedImage={capturedImage}
             setCapturedImage={setCapturedImage}
             matchedKeys={matchedKeys}
           />
-        }
+        )}
         <div>
-
           <div>
-            {activeTab !== "my-photos" &&
+            {activeTab !== "my-photos" && (
               <div>
                 {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                   <div className="buttons-container">
@@ -582,10 +924,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                   </button>
                 )}
               </div>
-            }
+            )}
           </div>
-
-
 
           {!loading && activeTab === "all" && (
             <div className="buttons-container">
@@ -596,22 +936,15 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 <span className="add-icon">+</span>
                 <span>Add New Photos</span>
               </button>
-              <button
-                className="share-capsule-btn"
-                onClick={handleShareicon}
-              >
+              <button className="share-capsule-btn" onClick={handleShareicon}>
                 <span className="">
-                  {typeof handleShareicon === 'function' && (
-                    <Image
-                      src={share}
-                      alt="share"
-                    />
+                  {typeof handleShareicon === "function" && (
+                    <Image src={share} alt="share" />
                   )}
                 </span>
                 <span>Share Event Capsule</span>
               </button>
             </div>
-
           )}
 
           {isRefreshShow && (
@@ -631,7 +964,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 }}
               >
                 <span className="refresh-icon">
-                  {typeof handleShareicon === 'function' && (
+                  {typeof handleShareicon === "function" && (
                     <Image
                       src={refreshIcon}
                       alt="share"
@@ -654,110 +987,73 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           accept="image/*,video/*"
           style={{ display: "none" }}
           onChange={async (e) => {
-            const files = Array.from(e.target.files);
+            const files = Array.from(e.target.files || []);
             if (!files.length) return;
 
-            const timestamp = Date.now();
-            const tempThumbnails = files.map((file, index) => {
-              const objectUrl = URL.createObjectURL(file);
+            if (!folderName || !customerId) {
+              alert("Missing folderName/customerId");
+              return;
+            }
 
-              return {
-                _id: `temp-${timestamp}-${index}`,
+            const now = Date.now();
+
+            const optimistic = [];
+
+            for (const file of files) {
+              const id = crypto.randomUUID();
+              const isVideo = file.type.startsWith("video/");
+              const localPreview = URL.createObjectURL(file);
+
+              const saved = await saveFileToOPFS({
+                rootDir: WEBLINK_OPFS_ROOT_DIR,
+                prefix: galleryKey,
+                id,
                 file,
-                type: file.type.startsWith("video") ? "video" : "image",
-                originalUrl: objectUrl,
-                thumbnailImageUrl: file.type.startsWith("image") ? objectUrl : null,
-                videoClipUrl: file.type.startsWith("video") ? objectUrl : null,
+              });
+
+              if (!saved.ok || !saved.key) {
+                URL.revokeObjectURL(localPreview);
+                continue;
+              }
+
+              await weblinkUploadsDb.add({
+                id,
+                galleryKey,
+                folderName,
+                customerId,
+                phoneNo: localPhoneNumber || "",
+                fileName: file.name,
+                mimeType: file.type,
+                isVideo,
+                status: "queued",
+                progress: 0,
+                retryCount: 0,
+                createdAt: now,
+                opfsKey: saved.key,
+              });
+
+              optimistic.push({
+                _id: id,
+                type: isVideo ? "video" : "image",
+                originalUrl: localPreview,
+                thumbnailImageUrl: isVideo ? null : localPreview,
+                videoClipUrl: isVideo ? localPreview : null,
                 isTemp: true,
                 uploading: true,
                 uploaded: false,
                 orderByName: localPhoneNumber,
-              };
-            });
-            setAllThumbnails(prev => [...tempThumbnails, ...prev]);
+                progress: 0,
+              });
+            }
 
-            await Promise.all(
-              tempThumbnails.map(async (temp) => {
-                const formData = new FormData();
-
-                files.forEach((file) => {
-                  formData.append("files", file);
-                });
-
-                formData.append("folderName", folderName);
-                formData.append("customerId", localUserId);
-                formData.append("phoneNo", localPhoneNumber);
-
-                try {
-                  const res = await fetch(
-                    `${MEDIA_WORKER_URL}/upload`,
-                    {
-                      method: "POST",
-                      body: formData,
-                    }
-                  );
-
-                  const data = await res.json();
-
-                  const img = data?.files?.[0];
-
-                  if (img) {
-                    const newThumb = {
-                      _id: img._id,
-                      type: img.videoUrl ? "video" : "image",
-                      originalUrl: img.imageUrl || img.videoUrl,
-                      thumbnailImageUrl: img.thumbnailUrl || null,
-                      videoClipUrl: img.clipUrl || null,
-                      isTemp: true,
-                      uploading: false,
-                      uploaded: true,
-                      orderByName: localPhoneNumber,
-                    };
-                    setAllThumbnails(prev =>
-                      prev.map(item => {
-                        if (item._id === temp._id) {
-                          return {
-                            ...newThumb,
-                            folderIds: item.folderIds || [],
-                          };
-                        }
-                        return item;
-                      })
-                    );
-
-                    setSelectedIndex(prevIndex => {
-                      if (prevIndex === null) return prevIndex;
-                      return prevIndex;
-                    });
-
-                    setTimeout(() => {
-                      setAllThumbnails(prev =>
-                        prev.map(item =>
-                          item._id === newThumb._id
-                            ? { ...item, isTemp: false }
-                            : item
-                        )
-                      );
-                    }, 2000);
-
-                  }
-
-                  URL.revokeObjectURL(temp.originalUrl);
-
-                } catch (err) {
-                  console.error("Upload failed:", err);
-                  alert("Image upload failed");
-                  setAllThumbnails(prev =>
-                    prev.filter(item => item._id !== temp._id)
-                  );
-                }
-              })
-            );
+            if (optimistic.length) {
+              setAllThumbnails((prev) => [...optimistic, ...prev]);
+              processWeblinkUploadQueue();
+            }
 
             e.target.value = "";
           }}
         />
-
 
         <div>
           {/* ================= LOADING SKELETON ================= */}
@@ -779,28 +1075,34 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           )}
 
           {/* ================= SEARCHING STATE ================= */}
-          {!loading && isStreamSearching && isSearching && isActualMyPhotos && matchedKeys.length === 0 && (
-            <>
-              <div className="thumbnail-gallery-status">Searching Photos.... </div>
-              <div className="gallery-image-grid">
-                {[...Array(6)].map((_, index) => {
-                  const type = getBlockType(index);
-                  return (
-                    <div key={index} className={`grid-item ${type}`}>
-                      <div className="event-masonry-item">
-                        <div className="event-lazy-image-spinner-container placeholder-glow">
-                          <div className="placeholder w-100 h-100"></div>
+          {!loading &&
+            isStreamSearching &&
+            isSearching &&
+            isActualMyPhotos &&
+            matchedKeys.length === 0 && (
+              <>
+                <div className="thumbnail-gallery-status">
+                  Searching Photos....{" "}
+                </div>
+                <div className="gallery-image-grid">
+                  {[...Array(6)].map((_, index) => {
+                    const type = getBlockType(index);
+                    return (
+                      <div key={index} className={`grid-item ${type}`}>
+                        <div className="event-masonry-item">
+                          <div className="event-lazy-image-spinner-container placeholder-glow">
+                            <div className="placeholder w-100 h-100"></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
           {/* ================= NO SEARCH RESULT ================= */}
-          {(visibleThumbnails.length === 0 && activeSubFolderId) && (
+          {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
             <div className="weblink-emptyFolder-container">
               <Image
                 src={emptyFolder}
@@ -811,155 +1113,35 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
             </div>
           )}
 
+            {console.log("visibleThumbnails inside returned code", visibleThumbnails )}
+
           {/* ================= MAIN IMAGE GRID ================= */}
-          {!loading && finalThumbnails.length > 0 && (
-            <div className="event-image-grid">
-              {finalThumbnails.map((thumbnail, indexOnPage) => {
-                const type = getBlockType(indexOnPage);
-                const hasAnyLike = (thumbnail.likedBy?.length || 0) > 0;
-                return (
-                  <div
-                    key={thumbnail.stableKey || indexOnPage}
-                    className={`grid-item ${type}`}
-                    style={{
-                      cursor: "pointer",
-                      position: "relative",
-                      backgroundColor: "transparent",
-                      display: "grid",
-                    }}
-                    onClick={() => {
-                      if (isEditing) {
-                        handleSelectImage(thumbnail._id);
-                      } else {
-                        handleImageClick(indexOnPage);
-                      }
-                    }}
-                  >
-                    <div className="image-wrapper" style={{ position: "relative" }}>
-                      {!isEditing && hasAnyLike && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "5px",
-                            left: "8px",
-                            zIndex: 10,
-                          }}
-                        >
-                          <Image
-                            src={LikeFill}
-                            alt="liked"
-                            width={16}
-                            height={16}
-                          />
-                        </div>
-                      )}
-
-                      {isEditing &&
-                        !isSearchMode &&
-                        activeSubFolderId &&
-                        !isActualMyPhotos && (
-                          <input
-                            type="checkbox"
-                            className="image-checkbox"
-                            checked={selectedImages.includes(thumbnail._id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedImages((prev) => [...prev, thumbnail._id]);
-                              } else {
-                                setSelectedImages((prev) =>
-                                  prev.filter((id) => id !== thumbnail._id)
-                                );
-                              }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        )}
-
-                      <EventwallGalleryItem
-                        isVideo={thumbnail.type === "video"}
-                        indexOnPage={indexOnPage}
-                        isLoading={thumbnail.isTemp && thumbnail.uploading}
-                        id={thumbnail._id}
-                        imageUrl={
-                          thumbnail.type === "image"
-                            ? thumbnail.thumbnailImageUrl || thumbnail.originalUrl
-                            : null
-                        }
-                        previewSrc={
-                          thumbnail.type === "video" ? thumbnail.videoClipUrl : null
-                        }
-                        fullVideoSrc={
-                          thumbnail.type === "video" ? thumbnail.originalUrl : null
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <ImageGrid
+            data={visibleThumbnails}
+            loading={loading}
+            isEventWall={false}
+            handleSelectImage={handleSelectImage}
+            handleImageClick={handleImageClick}
+            isEditing={isEditing}
+            isSearchMode={isSearchMode}
+            activeSubFolderId={activeSubFolderId}
+            isActualMyPhotos={isActualMyPhotos}
+            selectedImages={selectedImages}
+          />
         </div>
-
       </div>
 
-      <CommonPopup
+      <AddToFolderPopup
         isOpen={showAddToFolderPopup}
-        onClose={() => {
-          setShowAddToFolderPopup(false);
-        }}
-        popupHeight={usableFolders.length === 0 ? "269" : "435"}
-        title="Add to Folder"
-        titleFontSize="22px"
-        buttonContent={usableFolders.length === 0 ? null : "Add Now"}
-        disabled={JSON.stringify(folderSelection) === JSON.stringify(initialPopupFolders)}
+        onClose={() => setShowAddToFolderPopup(false)}
+        folders={usableFolders}
+        folderSelection={folderSelection}
+        setFolderSelection={setFolderSelection}
+        initialSelection={initialPopupFolders}
         onSubmit={handleAddToFolderSubmit}
-        containerClass=""
-      >
-        <div
-          className="add-folder-list" style={{ maxHeight: "300px", overflowY: "auto" }}>
-          {usableFolders.length > 0 ? (
-            usableFolders?.map(sf => {
-              return (
-                <label key={sf._id} className="folder-checkbox-row">
-                  <div className="folder-info">
-                    <div className={`${sf.folderDp?.thumbnailUrl ? 'folder-dp' : 'default-folder-dp'}`}>
-                      <img src={sf?.folderDp?.thumbnailUrl || user2?.src} alt={sf.folderName} />
-                    </div>
-                    <span className="folder-name">{sf.folderName}</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="popup-checkbox"
-                    checked={folderSelection.includes(sf._id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setFolderSelection(prev => [...prev, sf._id]);
-                      } else {
-                        setFolderSelection(prev =>
-                          prev.filter(id => id !== sf._id)
-                        );
-                      }
-                    }}
-                  />
-                </label>
-              );
-            })
-          ) : (
-            <div className="emptyFolder-container">
-              <div className="no-subfolder-text">No Folders Found</div>
-              <div className="sub-text-empty">You don’t have any folder yet.</div>
-              <div className="pop-btn-container">
-                <button
-                  className="popup-btn emptyFolder-popup-btn"
-                  onClick={handleAddToFolderSubmit}
-                >
-                  Create Folder
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </CommonPopup>
+        onCreateFolder={handleAddToFolderSubmit}
+        style={{ zIndex: 100001 }}
+      />
 
       <CommonImagePopup
         images={popupImages}
@@ -974,7 +1156,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 alt="More"
                 width={25}
                 height={25}
-                onClick={() => setShowActionMenu(prev => !prev)}
+                onClick={() => setShowActionMenu((prev) => !prev)}
               />
 
               {showActionMenu && (
@@ -1003,7 +1185,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                         className="action-item flex"
                         onClick={() => {
                           const current = popupImages[selectedIndex];
-                          downloadFile(current.originalUrl);
+                          downloadFile(current?.originalUrl);
+                          trackActivity(current?._id, "download");
                           setShowActionMenu(false);
                         }}
                       >
@@ -1016,34 +1199,45 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                       onClick={() => {
                         const current = popupImages[selectedIndex];
                         if (!current) return;
-                        handleImageShare(current?.originalUrl);
+                        handleImageShare(current?.originalUrl, current?._id);
                         setShowActionMenu(false);
-                      }} className="action-item flex gallery-share-icon">
-                      <Image
-                        src={shareVector} width={13} height={14} />
+                      }}
+                      className="action-item flex gallery-share-icon"
+                    >
+                      <Image src={shareVector} width={13} height={14} />
                       <span>Share</span>
                     </div>
-                    {String(rawPhoneNumber) === String(localPhoneNumber) &&
+                    {String(rawPhoneNumber) === String(localPhoneNumber) && (
                       <div
                         className="action-item flex"
                         onClick={async () => {
                           const currentImage = popupImages[selectedIndex];
                           if (!currentImage?._id) return;
 
-                          if (!window.confirm("Are you sure you want to delete this image?")) return;
+                          if (
+                            !window.confirm(
+                              "Are you sure you want to delete this image?",
+                            )
+                          )
+                            return;
 
                           try {
-                            const res = await fetch(`${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`, {
-                              method: "DELETE",
-                            });
+                            const res = await fetch(
+                              `${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`,
+                              {
+                                method: "DELETE",
+                              },
+                            );
 
                             if (!res.ok) {
                               const err = await res.text();
                               throw new Error(err);
                             }
 
-                            setAllThumbnails(prev => {
-                              const newList = prev.filter(img => img._id !== currentImage._id);
+                            setAllThumbnails((prev) => {
+                              const newList = prev.filter(
+                                (img) => img._id !== currentImage._id,
+                              );
                               if (newList.length === 0) {
                                 setSelectedIndex(null);
                               } else if (selectedIndex >= newList.length) {
@@ -1055,7 +1249,6 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                             });
 
                             setShowActionMenu(false);
-
                           } catch (err) {
                             console.error("Delete failed:", err);
                             alert("Failed to delete image");
@@ -1065,9 +1258,8 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                         <Image src={deleteVector} width={13} height={17} />
                         <span>Delete</span>
                       </div>
-                    }
+                    )}
                   </div>
-
                 </div>
               )}
             </div>
@@ -1100,7 +1292,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                   style={{ filter: "none", cursor: "pointer" }}
                   onClick={() => {
                     if (!currentImage) return;
-                    handleImageShare(currentImage?.originalUrl);
+                    handleImageShare(currentImage?.originalUrl, currentImage?._id);
                   }}
                 />
               </div>
@@ -1109,7 +1301,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
         }}
       />
 
-      {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} />}
+      {!isLogin && isLoginOpen && <OtpLogin setIsModalOpen={setIsLoginOpen} backIconHidden={true} extraVerifyData={{ fromCapsule: true }}  />}
 
     </div>
   );

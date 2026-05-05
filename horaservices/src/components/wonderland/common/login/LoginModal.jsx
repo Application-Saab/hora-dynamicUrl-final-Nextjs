@@ -156,6 +156,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         phone,
         name,
         role: "customer",
+        fromWonderland: true
       });
 
       if (response.status === 200) {
