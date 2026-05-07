@@ -9,6 +9,11 @@ import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
+import CelebrationSection from "@/components/wonderlandBanner1";
+import HowItWorks from "@/components/HowItWorks";
+import CheerChatBanner from "@/components/CheerChatBanner";
+import GuestListBanner from "@/components/GuestListBanner";
+import InviteSlider from "@/components/InviteSlider";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
@@ -79,14 +84,12 @@ const WonderlandMainPage = () => {
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}
-
-        <div className="invite-banner">
-          <Image
-            src={howitworks}
-            alt="Invite Banner"
-            className="banner-image"
-          />
-        </div>
+      
+<InviteSlider onCreateInvite={createInviteClick} />
+<GuestListBanner onCreateInvite={createInviteClick} />
+<HowItWorks />
+<CelebrationSection onCreateInvite={createInviteClick} />
+<CheerChatBanner onCreateInvite={createInviteClick} />
         <div
           style={{
             fontFamily: "Inter, sans-serif",

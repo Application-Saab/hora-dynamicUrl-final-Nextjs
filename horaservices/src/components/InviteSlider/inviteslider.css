@@ -1,0 +1,97 @@
+/* Wrapper */
+.slider-wrapper {
+  width: clamp(320px, 101vw, 397px);
+  border-radius: clamp(6px, 2.4vw, 9.5px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 3.8vw, 15.2px);
+ /* top & bottom */
+padding-top: clamp(14px, 4.72vw, 22px);
+padding-bottom: clamp(14px, 4.72vw, 22px);
+
+padding-left: clamp(6px, 2.03vw, 10px);
+}
+
+/* Heading */
+.heading {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(14px, 4.8vw, 19px);
+  line-height: 100%;
+  margin: 0;
+  color:#000000;
+}
+
+/* Slider */
+.slider {
+  display: flex;
+  gap: clamp(10px, 3.8vw, 15.2px);
+  overflow-x: auto;
+}
+
+.slider::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card */
+.card {
+  width: clamp(80px, 25.7vw, 101px);
+  height: clamp(110px, 35.6vw, 140px);
+  flex-shrink: 0;
+  border-radius: clamp(6px, 2.5vw, 10px);
+  background: #fff;
+  box-shadow: 0px 3px 15px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Image */
+.card img {
+  width: clamp(80px, 25.7vw, 101px);
+  height: clamp(90px, 28.7vw, 113px);
+  border-radius: clamp(5px, 1.9vw, 7.5px);
+  object-fit: cover;
+}
+
+/* Text */
+.card p {
+  font-family: "Rubik", sans-serif;
+  font-weight: 600;
+  font-size: clamp(9px, 2.9vw, 11.5px);
+  line-height: 100%;
+margin-top: clamp(5px, 1.8vw, 7px);
+  margin-bottom:0px;
+ background: linear-gradient(90deg, #572381 0%, #C9266D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Button */
+.create-btn {
+  width: clamp(130px, 42vw, 165.3px);
+  height: clamp(26px, 8vw, 31.35px);
+  border-radius: clamp(6px, 2vw, 7.83px);
+  border: none;
+  background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 auto;
+}
+.arrow-img {
+  display: inline-block;
+  animation: arrowMove 1s infinite ease-in-out;
+}
+
+@keyframes arrowMove {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

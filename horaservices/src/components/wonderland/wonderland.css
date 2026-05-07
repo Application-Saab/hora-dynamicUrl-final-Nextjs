@@ -31,7 +31,7 @@
     position: absolute;
     bottom: 25px;
     left: 5%;
-    background: #97538c;
+    background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
      font-family: "Roboto", sans-serif;
     color: white;
     border: none;
