@@ -1077,6 +1077,7 @@ const EventwallSection = ({
                 activeSubFolderId={activeSubFolderId}
                 isActualMyPhotos={isActualMyPhotos}
                 selectedImages={selectedImages}
+                setSelectedImages={setSelectedImages}
               />
 
               <CommonImagePopup
