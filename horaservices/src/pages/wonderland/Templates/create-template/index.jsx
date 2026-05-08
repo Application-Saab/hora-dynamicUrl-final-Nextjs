@@ -18,6 +18,11 @@ import { saveTemplate } from "@/utils/indexedDB";
 import axios from "axios";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
+
+/* ── ONLY CHANGE: API base URL for template background images ── */
+const TEMPLATE_ASSETS_BASE =
+  "https://horaservices.com/api/template-assets/templates";
+
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) =>
   toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -850,10 +855,11 @@ const DynamicTemplateRenderer = () => {
             visibility: loading ? "hidden" : "visible",
           }}
         >
+          {/* ── ONLY CHANGE: src now uses TEMPLATE_ASSETS_BASE from API ── */}
           {templateMeta && (
             <img
               ref={imgRef}
-              src={`/assets/templates/${templateMeta.bgImageName}`}
+              src={`${TEMPLATE_ASSETS_BASE}/${templateMeta.bgImageName}`}
               alt="bg"
               onLoad={handleImageLoad}
               onError={() => setImageLoaded(true)}
