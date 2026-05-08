@@ -23,7 +23,7 @@
   width: 100%;
   height: auto;
   display: block;
-  margin: 5px 0px 5px 0px;
+  margin: 0px 0px 5px 0px;
   max-width: 600px;
 }
 
@@ -153,7 +153,7 @@
 }
 
 .view-btn {
-  background-color: #97538C;
+ background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
   color: white;
   border: none;
   border-radius: 8px;

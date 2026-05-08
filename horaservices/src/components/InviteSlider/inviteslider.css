@@ -8,8 +8,7 @@
  /* top & bottom */
 padding-top: clamp(14px, 4.72vw, 22px);
 padding-bottom: clamp(14px, 4.72vw, 22px);
-
-padding-left: clamp(6px, 2.03vw, 10px);
+padding-left: clamp(8px, calc(11 * 100vw / 393), 11px);
 }
 
 /* Heading */
@@ -25,7 +24,7 @@ padding-left: clamp(6px, 2.03vw, 10px);
 /* Slider */
 .slider {
   display: flex;
-  gap: clamp(10px, 3.8vw, 15.2px);
+ gap: clamp(5px, calc(3px + 1vw), 7px);
   overflow-x: auto;
 }
 
@@ -69,15 +68,28 @@ margin-top: clamp(5px, 1.8vw, 7px);
 
 /* Button */
 .create-btn {
-  width: clamp(130px, 42vw, 165.3px);
-  height: clamp(26px, 8vw, 31.35px);
-  border-radius: clamp(6px, 2vw, 7.83px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: clamp(140px, calc(165.3 * 100vw / 393), 165.3px);
+  height: clamp(28px, calc(31.35 * 100vw / 393), 31.35px);
+
+  padding:
+    clamp(9px, calc(11.74 * 100vw / 393), 11.74px)
+    clamp(6px, calc(7.83 * 100vw / 393), 7.83px);
+
+  gap: clamp(5px, calc(7.83 * 100vw / 393), 7.83px);
+  font-family: 'Inter', sans-serif;
   border: none;
+  border-radius: clamp(6px, calc(7.83 * 100vw / 393), 7.83px);
+
   background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
+
   color: #fff;
   font-weight: 600;
   cursor: pointer;
-  margin: 0 auto;
+  opacity: 1;
 }
 .arrow-img {
   display: inline-block;

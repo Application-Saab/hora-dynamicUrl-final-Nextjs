@@ -100,7 +100,7 @@ const WonderlandMainPage = () => {
             letterSpacing: "0%",
             textAlign: "center",
             verticalAlign: "middle",
-            margin: "10px",
+           margin: "10px 10px 0px",
           }}
         >
           Host & Guest Features

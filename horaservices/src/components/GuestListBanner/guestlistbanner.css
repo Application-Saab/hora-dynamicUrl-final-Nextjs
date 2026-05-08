@@ -94,7 +94,7 @@
     calc((5.66 / 393) * 100vw),
     7px
   );
-
+  font-family: 'Inter', sans-serif;
   background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
   color: #fff;
   border: none;

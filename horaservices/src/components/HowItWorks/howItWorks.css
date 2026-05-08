@@ -9,7 +9,7 @@
 /* TITLE */
 .how-title {
   font-family: 'Inter', sans-serif;
-  font-weight: 800;
+  font-weight: 600;
 
   font-size: clamp(16px, calc((20 / 393) * 100vw), 24px);
   margin-bottom: clamp(10px, calc((12 / 393) * 100vw), 16px);
