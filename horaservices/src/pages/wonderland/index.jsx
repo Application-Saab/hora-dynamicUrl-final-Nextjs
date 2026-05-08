@@ -38,16 +38,47 @@ const WonderlandMainPage = () => {
     return () => clearTimeout(timer);
   }, [loggedinUserId, isUserLoggedIn]);
 
-  const createInviteClick = () => {
-    if (!isUserLoggedIn) {
-      setShowHostLoginModal(true);
-      return;
-    } else {
-      router.replace(`/wonderland/invite`);
-    }
-  };
+const createInviteClick = () => {
+  const userId = localStorage.getItem("userID") || "";
+  const mobileNumber = localStorage.getItem("mobileNumber") || "";
+  const isLoggedIn = localStorage.getItem("isLoggedIn") || "false";
 
-  // Listen local storage changes for login state
+  let userName = "";
+
+  try {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      userName = payload?.name || "";
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push({
+    event: "create_invite_click",
+
+    page: "wonderland_main_page",
+    button_name: "CREATE INVITE",
+
+    user_id: userId,
+    mobile_number: mobileNumber,
+    user_name: userName,
+    is_logged_in: isLoggedIn,
+
+    timestamp: new Date().toISOString()
+  });
+
+  if (!isUserLoggedIn) {
+    setShowHostLoginModal(true);
+    return;
+  }
+
+  router.replace("/wonderland/invite");
+};
   useEffect(() => {
     const syncLoginState = () => {
       setIsUserLoggedIn(localStorage.getItem("isLoggedIn") === "true");
