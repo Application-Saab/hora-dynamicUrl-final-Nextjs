@@ -1,15 +1,15 @@
+/* ── Upload Banner ── */
 .upload-banner {
   position: relative;
   border-radius: 10px;
   padding: clamp(2px, 1vw, 6px);
   margin: 8px 0;
-  background: linear-gradient(90deg, #572381 0%, #C9266D 100%);
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
   color: #fff;
   text-align: center;
   cursor: pointer;
   overflow: hidden;
 }
-
 
 .upload-banner p {
   margin-top: clamp(8px, 2vw, 14px);
@@ -21,7 +21,6 @@
 .upload-icon-wrapper {
   width: clamp(36px, 12vw, 48px);
   height: clamp(36px, 12vw, 48px);
-
   border: 2px solid rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   margin: clamp(8px, 2vw, 12px) auto;
@@ -37,15 +36,16 @@
   color: #969696;
 }
 
+/* ── Crop Modal ── */
 .crop-modal {
   position: fixed;
   inset: 0;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  background: #000;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.92);
 }
-
 
 .crop-bg {
   position: absolute;
@@ -54,28 +54,39 @@
   background-position: center;
   filter: blur(24px);
   transform: scale(1.4);
+  opacity: 0.4;
+  z-index: 0;
 }
 
-.crop-box {
-  position: relative;
-  margin: auto;
-  width: calc(100vw - 16px);
-  max-width: 393px;
-  aspect-ratio: 377 / 416;
-  border-radius: 16px;
-  overflow: hidden;
+.crop-spacer {
+  flex: 1;
+  z-index: 1;
+}
+
+.image-preview-wrapper {
+  width: calc(100vw - 10px);
+  margin: 0 5px;
   z-index: 2;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.crop-box > div {
-  border-radius: 16px;
+.preview-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
 }
 
+/* ── Footer ── */
 .crop-footer {
   display: flex;
   gap: 12px;
   padding: 14px;
   z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .crop-footer .common-custom-button {
@@ -89,8 +100,9 @@
   background: #fff;
   color: #000;
 }
+
 .crop-footer .common-custom-button.primary {
-     background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
+  background: linear-gradient(90deg, #572381 0%, #c9266d 100%);
   color: #fff;
   font-weight: 600;
 }
