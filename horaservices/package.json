@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -16,9 +18,11 @@
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "browser-image-compression": "^2.0.2",
+    "canvas-record": "^5.5.1",
     "emoji-picker-react": "^4.13.2",
     "file-loader": "^6.2.0",
     "firebase": "^12.1.0",
+    "gifuct-js": "^2.1.2",
     "html2canvas": "^1.4.1",
     "idb": "^8.0.3",
     "lucide-react": "^0.445.0",

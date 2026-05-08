@@ -11,83 +11,82 @@ import InvitePageFlashLoader from "@/components/wonderland/common/InvitePageFlas
 import InviteAddressSection from "@/components/wonderland/common/InviteAddressSection";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TemplateRenderer from "@/components/wonderland/common/TemplateRenderer";
-import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 
 const InvitesPage = () => {
   const router = useRouter();
   const { eventid: queryEventId } = router.query;
+
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || "",
+    localStorage.getItem("userID") || ""
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
   const [showHostActionSection, setShowHostActionSection] = useState(false);
-  const { rsvpSubmitted } = useRsvpStatus(
-    queryEventId,
-    skipRsvpCheck,
-    rsvpRefetch,
-  );
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
+
+  const { rsvpSubmitted } = useRsvpStatus(queryEventId, skipRsvpCheck, rsvpRefetch);
+
   const {
     data: eventData,
     loading: fetchEventLoading,
     makeRequest: fetchEventInvite,
     refetch: refetchEventInvite,
   } = useApi();
+
   const { makeRequest: fetchUserData } = useApi();
 
+  const isHost = eventDetails?.userId === loggedinUserId;
+
+  // ─── Router ready + auth redirect ─────────────────────────────────────────
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!router.isReady) return;
-
-      if (!queryEventId && loggedinUserId) {
-        setOpenCreateInviteModal(true);
-      }
-      if (queryEventId && !loggedinUserId) {
-        setShowGuestLoginModal(true);
-      }
+      if (!queryEventId && loggedinUserId) setOpenCreateInviteModal(true);
+      if (queryEventId && !loggedinUserId) setShowGuestLoginModal(true);
       setFullPageLoader(false);
     }, 600);
 
     return () => clearTimeout(timer);
   }, [router.isReady, queryEventId, loggedinUserId]);
 
+  // ─── Fetch event details ───────────────────────────────────────────────────
   useLayoutEffect(() => {
+    if (!queryEventId || !loggedinUserId) return;
+
     const fetchEventDetails = async () => {
-      if (queryEventId && loggedinUserId) {
-        try {
-          await fetchEventInvite(`${GET_EVENT_BY_ID}/${queryEventId}`, "GET");
-        } catch (err) {
-          console.error("Error fetching event details:", err);
-        }
+      try {
+        await fetchEventInvite(`${GET_EVENT_BY_ID}/${queryEventId}`, "GET");
+      } catch (err) {
+        console.error("Error fetching event details:", err);
       }
     };
+
     fetchEventDetails();
   }, [queryEventId, loggedinUserId]);
 
+  // ─── Fetch user details ────────────────────────────────────────────────────
   useLayoutEffect(() => {
+    if (!queryEventId || !loggedinUserId) return;
+
     const fetchUserDetails = async () => {
-      if (queryEventId && loggedinUserId) {
-        try {
-          let resp = await fetchUserData(
-            `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET",
-          );
-          setUserData(resp?.data);
-        } catch (err) {
-          console.error("Error fetching user details:", err);
-        }
+      try {
+        const resp = await fetchUserData(`${GET_USER_BY_ID}/${loggedinUserId}`, "GET");
+        setUserData(resp?.data);
+      } catch (err) {
+        console.error("Error fetching user details:", err);
       }
     };
+
     fetchUserDetails();
   }, [queryEventId, loggedinUserId]);
 
+  // ─── Set event details from API response ──────────────────────────────────
   useLayoutEffect(() => {
     if (eventData?.data) {
       setEventDetails(eventData.data);
@@ -95,25 +94,19 @@ const InvitesPage = () => {
     }
   }, [eventData]);
 
+  // ─── RSVP check skip logic ─────────────────────────────────────────────────
   useLayoutEffect(() => {
-    if (eventDetails && loggedinUserId) {
-      if (eventDetails?.userId === loggedinUserId) {
-        setSkipRsvpCheck(true);
-      } else {
-        setSkipRsvpCheck(false);
-      }
-    }
+    if (!eventDetails || !loggedinUserId) return;
+    setSkipRsvpCheck(eventDetails.userId === loggedinUserId);
   }, [eventDetails, loggedinUserId]);
 
-  // Listen local storage changes for login state
+  // ─── Listen for login state changes (cross-tab + same-tab) ────────────────
   useEffect(() => {
     const syncLoginState = () => {
       setLoggedinUserId(localStorage.getItem("userID") || "");
     };
 
     window.addEventListener("storage", syncLoginState);
-
-    // Sync on same tab login without change page
     window.addEventListener("loginStateChange", syncLoginState);
 
     return () => {
@@ -122,48 +115,46 @@ const InvitesPage = () => {
     };
   }, []);
 
+  // ─── Host action section visibility ───────────────────────────────────────
   useEffect(() => {
-    setTimeout(() => {
-      if (eventDetails && eventDetails.userId === loggedinUserId) {
-        setShowHostActionSection(true);
-      } else {
-        setShowHostActionSection(false);
-      }
+    const timer = setTimeout(() => {
+      setShowHostActionSection(isHost);
     }, 1000);
-  }, [eventDetails, loggedinUserId]);
+
+    return () => clearTimeout(timer);
+  }, [isHost]);
 
   if (fullPageLoader) return <InvitePageFlashLoader />;
+
+  const hasAddressInfo =
+    eventDetails?.eventDate ||
+    eventData?.location ||
+    eventData?.googleMapLink ||
+    eventData?.eventTime;
 
   return (
     <>
       <div className="invite-page">
         <div className="invite-page-container">
+
+          {/* ── Template (image or video) ── */}
           <div className="invite-template-shell">
-            {fetchEventLoading ? (
-              <TemplatecardSkeleton
-                width="100%"
-                height="200px"
-                borderRadius="10px"
-              />
-            ) : (
-              <TemplateRenderer
-                fetchEventLoading={fetchEventLoading}
-                eventDetails={eventDetails}
-                orderDetails={eventDetails}
-                isHost={eventDetails?.userId === loggedinUserId}
-              />
-            )}
+            <TemplateRenderer
+              fetchEventLoading={fetchEventLoading}
+              eventDetails={eventDetails}
+              orderDetails={eventDetails}
+              isHost={isHost}
+            />
           </div>
 
-          {((eventDetails && eventDetails?.eventDate) ||
-            eventData?.location ||
-            eventData?.googleMapLink ||
-            eventData?.eventTime) && (
+          {/* ── Address / Location ── */}
+          {hasAddressInfo && (
             <div className="invite-address-section">
               <InviteAddressSection eventData={eventDetails} />
             </div>
           )}
 
+          {/* ── Host Actions ── */}
           {showHostActionSection && (
             <div className="invite-action-container">
               <InviteActions
@@ -172,12 +163,14 @@ const InvitesPage = () => {
               />
             </div>
           )}
+
+          {/* ── Who's Joining ── */}
           <div
             className="whos-joining-container"
             style={{ marginTop: !showHostActionSection ? "10px" : "0px" }}
           >
             <WhosJoining
-              isHost={eventDetails?.userId === loggedinUserId}
+              isHost={isHost}
               userData={userData}
               loggedinUserId={loggedinUserId}
               rsvpSubmitted={rsvpSubmitted}
@@ -186,17 +179,21 @@ const InvitesPage = () => {
               onRsvpUpdate={() => setRsvpRefetch((prev) => prev + 1)}
             />
           </div>
+
+          {/* ── Celebration Wall ── */}
           <div className="event-wall-container">
             <p className="wall-heading text-center m-0 p-0">Celebration Wall</p>
             <EventwallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={rsvpSubmitted}
-              isHost={eventDetails?.userId === loggedinUserId}
+              isHost={isHost}
             />
           </div>
+
         </div>
       </div>
+
       <CreateInviteModal
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}

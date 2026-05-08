@@ -10,25 +10,26 @@ import TimeModal from "@/components/wonderland/create-invite/TimeModal";
 import CustomButton from "@/components/wonderland/common/CustomButton";
 import TemplatecardSkeleton from "@/components/wonderland/TemplateSkeleton/templatecardSkeleton";
 import { applyCase } from "@/components/wonderland/fontsizeformat";
-import { captureElementAsImage } from "@/utils/captureElementAsImage";
+import { captureElementAsImage,  } from "@/utils/captureElementAsImage";
 import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
 import ErrorPopup from "@/components/common/ErrorPopup";
 import { getCurrentTimeAMPM, formatToAMPM } from "@/utils/timeFormatters";
 import { saveTemplate } from "@/utils/indexedDB";
 import axios from "axios";
-
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
+import { recordVideoWithOverlay } from "@/utils/Recordvideowithoverlay";
 
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) =>
   toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const isVideoFileName = (name = "") => /\.(mp4|webm|ogg|mov)$/i.test(name);
 
 const wrapEditable = (html = "", formData = {}) => {
   let rendered = html.replace(
     /<span class="editable"[^>]*>([\s\S]*?)<\/span>/g,
     "$1",
   );
-
   ["name", "eventType"].forEach((field) => {
     const value = toText(formData[field]);
     if (!value) return;
@@ -37,16 +38,12 @@ const wrapEditable = (html = "", formData = {}) => {
       `<span class="editable" data-field="${field}">${value}</span>`,
     );
   });
-
   const wrapBlock = (cls, key) =>
     rendered.replace(
       new RegExp(`<div class="${cls}"([^>]*)>([\\s\\S]*?)</div>`, "g"),
       (_m, attrs, content) =>
-        `<div class="${cls}"${attrs}>
-          <span class="editable" data-field="${key}">${content.trim()}</span>
-        </div>`,
+        `<div class="${cls}"${attrs}><span class="editable" data-field="${key}">${content.trim()}</span></div>`,
     );
-
   rendered = wrapBlock("address", "address");
   rendered = wrapBlock("date", "date");
   rendered = wrapBlock("time", "time");
@@ -59,40 +56,24 @@ const renderTemplate = (templateHtml = "", rawData = {}, formData) => {
     (_, key, inner) => {
       const value = rawData[key.trim()];
       if (!value) return "";
-      return inner.replace(
-        /{{(.*?)}}/g,
-        (_, innerKey) => rawData[innerKey.trim()] || "",
-      );
+      return inner.replace(/{{(.*?)}}/g, (_, innerKey) => rawData[innerKey.trim()] || "");
     },
   );
-
   let rendered = withConditionals.replace(/{{(.*?)}}/g, (_, key) => {
     try {
-      return (
-        key
-          .trim()
-          .split(".")
-          .reduce(
-            (acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""),
-            rawData,
-          ) ?? ""
-      );
-    } catch {
-      return "";
-    }
+      return key.trim().split(".").reduce(
+        (acc, part) => (acc && acc[part] !== undefined ? acc[part] : ""), rawData,
+      ) ?? "";
+    } catch { return ""; }
   });
-
-  ["name", "eventType", "address", "time", "day", "month", "year"].forEach(
-    (field) => {
-      const value = toText(rawData[field]);
-      if (!value) return;
-      rendered = rendered.replace(
-        new RegExp(escapeRegex(value)),
-        `<span class="editable" data-field="${field}">${value}</span>`,
-      );
-    },
-  );
-
+  ["name", "eventType", "address", "time", "day", "month", "year"].forEach((field) => {
+    const value = toText(rawData[field]);
+    if (!value) return;
+    rendered = rendered.replace(
+      new RegExp(escapeRegex(value)),
+      `<span class="editable" data-field="${field}">${value}</span>`,
+    );
+  });
   return wrapEditable(rendered, formData);
 };
 
@@ -114,23 +95,20 @@ const DynamicTemplateRenderer = () => {
 
   const templateRef  = useRef(null);
   const imgRef       = useRef(null);
-  const videoRef     = useRef(null);        // ── NEW
+  const videoRef     = useRef(null);
   const fileInputRef = useRef(null);
+  const overlayRef   = useRef(null);
 
   const templateId = searchParams.get("templateId") || "";
   const eventId    = searchParams.get("id");
 
-  const loadUserId = () =>
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
-  const loadToken = () =>
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
+  const loadUserId = () => typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  const loadToken  = () => typeof window !== "undefined" ? localStorage.getItem("token")  : null;
   const userId = loadUserId();
   const token  = loadToken();
 
   const [templateLoading, setTemplateLoading] = useState(true);
   const [imageLoaded,     setImageLoaded]     = useState(false);
-
   const loading = templateLoading || !imageLoaded;
 
   const [saving,     setSaving]     = useState(false);
@@ -138,154 +116,137 @@ const DynamicTemplateRenderer = () => {
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
 
   const [formData, setFormData] = useState({
-    eventType: "",
-    name: "",
-    date: "",
-    time: "",
-    address: "",
-    templateId,
+    eventType: "", name: "", date: "", time: "", address: "", templateId,
   });
 
-  const [templateMeta,  setTemplateMeta]  = useState(null);
-  const [renderedHTML,  setRenderedHTML]  = useState("");
-  const [scaledData,    setScaledData]    = useState(null);
+  const [templateMeta, setTemplateMeta] = useState(null);
+  const [renderedHTML, setRenderedHTML] = useState("");
+  const [scaledData,   setScaledData]   = useState(null);
 
-  const [uploadedImage, setUploadedImage] = useState(null);
-  const [originalImage, setOriginalImage] = useState(null);
+  const [uploadedImage,     setUploadedImage]     = useState(null);
+  const [originalImage,     setOriginalImage]     = useState(null);
+  const [userUploadedVideo, setUserUploadedVideo] = useState(null);
 
-  // ── NEW: video states ──
-  const [isVideo,       setIsVideo]       = useState(false);
-  const [uploadedVideo, setUploadedVideo] = useState(null);
+  /* ── KEY: S3 video ka blob URL — CORS-safe capture ke liye ──
+     Jab template ka bgVideo (S3 link) load hota hai, hum usse
+     fetch() se blob mein convert karke store karte hain.
+     Yahi blob URL videoRef pe set hogi taaki drawImage taint-free ho. */
+  const [videoBlobUrl, setVideoBlobUrl] = useState(null);
 
-  const [charCounts, setCharCounts] = useState({
-    eventType: 0,
-    name: 0,
-    address: 0,
-  });
-  const [formErrors, setFormErrors] = useState({
-    eventType: "",
-    name: "",
-    address: "",
-  });
-  const [isSaved,       setIsSaved]       = useState(false);
-  const [modal,         setModal]         = useState({ calendar: false, time: false });
-  const [selectedDate,  setSelectedDate]  = useState("");
-  const [selectedTime,  setSelectedTime]  = useState("");
+  const [charCounts,    setCharCounts]   = useState({ eventType: 0, name: 0, address: 0 });
+  const [formErrors,    setFormErrors]   = useState({ eventType: "", name: "", address: "" });
+  const [isSaved,       setIsSaved]      = useState(false);
+  const [modal,         setModal]        = useState({ calendar: false, time: false });
+  const [selectedDate,  setSelectedDate] = useState("");
+  const [selectedTime,  setSelectedTime] = useState("");
   const [heroTransform, setHeroTransform] = useState({ x: 0, y: 0, scale: 1 });
+
+  const TEMPLATE_ASSETS_BASE = "https://horaservices.com/api/template-assets/templates";
+
+  const isBgVideo   = isVideoFileName(templateMeta?.bgImageName || "");
+  const isVideoActive = isBgVideo || !!userUploadedVideo;
+
+  const bgSrc = useMemo(() => {
+    if (!templateMeta?.bgImageName) return "";
+    return `${TEMPLATE_ASSETS_BASE}/${templateMeta.bgImageName}`;
+  }, [templateMeta?.bgImageName]);
+
+  /* ── S3 video ko blob mein convert karo jab bgSrc ready ho ──
+     Yeh sirf isBgVideo ke liye hai (template video).
+     userUploadedVideo pehle se hi blob URL hoti hai. */
+  useEffect(() => {
+    if (!isBgVideo || !bgSrc) return;
+    let revoked = false;
+
+    const fetchVideoBlob = async () => {
+      try {
+        const resp = await fetch(bgSrc, { mode: "cors" });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob    = await resp.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        if (!revoked) setVideoBlobUrl(blobUrl);
+      } catch (err) {
+        console.warn("Video blob fetch failed, using original src:", err);
+        // Fallback: original URL hi use karo (capture mein fallback handle hai)
+        if (!revoked) setVideoBlobUrl(bgSrc);
+      }
+    };
+
+    fetchVideoBlob();
+
+    return () => {
+      revoked = true;
+      // Cleanup: purani blob URL revoke karo
+      setVideoBlobUrl((prev) => {
+        if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+        return null;
+      });
+    };
+  }, [isBgVideo, bgSrc]);
 
   const templatePayload = useMemo(() => {
     const today = new Date();
-    const fallback = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
-      today.getDate(),
-    ).padStart(2, "0")}`;
-
-    const formatted = dateFormatter(
-      formData.date || fallback,
-      templateMeta?.dateFormatCase || "1",
-    );
-
-    const finalTime = formData.time?.trim()
-      ? formData.time
-      : getCurrentTimeAMPM();
+    const fallback = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const formatted = dateFormatter(formData.date || fallback, templateMeta?.dateFormatCase || "1");
+    const finalTime = formData.time?.trim() ? formData.time : getCurrentTimeAMPM();
 
     return {
       eventType:   formData.eventType,
-      name:        applyCase(formData.name || "", templateMeta?.nameCase),
-      date:        applyCase(formatted?.full || "", templateMeta?.dateCase || "default"),
-      day:         formatted?.day || "",
-      month:       applyCase(formatted?.month || "", templateMeta?.monthCase || "default"),
+      name:        applyCase(formData.name    || "", templateMeta?.nameCase),
+      date:        applyCase(formatted?.full  || "", templateMeta?.dateCase    || "default"),
+      day:         formatted?.day  || "",
+      month:       applyCase(formatted?.month || "", templateMeta?.monthCase   || "default"),
       year:        formatted?.year || "",
       time:        finalTime,
       borderColor: templateMeta?.borderColor,
       address:     applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
-      // ── NEW: video mode mein hero circle ke liye originalImage ──
-      image: isVideo
+      image: isVideoActive
         ? (originalImage || DefaultImageBgCircle.src)
         : (uploadedImage || originalImage || DefaultImageBgCircle.src),
     };
-  }, [
-    formData,
-    templateMeta?.dateFormatCase,
-    templateId,
-    uploadedImage,
-    originalImage,
-    isVideo,                              // ── NEW
-    templateMeta?.configs?.nameCase,
-    templateMeta?.configs?.addressCase,
-    templateMeta?.configs?.monthCase,
-  ]);
+  }, [formData, templateMeta, templateId, uploadedImage, originalImage, isVideoActive]);
 
-  /* --- enforce char limits on pre-filled data --- */
+  /* --- char limits --- */
   useEffect(() => {
     if (!templateMeta?.charLimits) return;
-
     const fields = ["eventType", "name", "address"];
-    const updates = {};
-    const nextCounts = {};
-    let needsUpdate = false;
-
+    const updates = {}; const nextCounts = {}; let needsUpdate = false;
     fields.forEach((field) => {
       const limit = parseInt(templateMeta.charLimits[field], 10);
       const value = formData[field] || "";
       if (Number.isFinite(limit) && limit > 0 && value.length > limit) {
-        const trimmed = value.slice(0, limit);
-        updates[field] = trimmed;
-        nextCounts[field] = trimmed.length;
-        needsUpdate = true;
-      } else {
-        nextCounts[field] = value.length;
-      }
+        updates[field] = value.slice(0, limit); nextCounts[field] = updates[field].length; needsUpdate = true;
+      } else { nextCounts[field] = value.length; }
     });
-
-    if (needsUpdate) {
-      setFormData((prev) => ({ ...prev, ...updates }));
-    }
-
+    if (needsUpdate) setFormData((prev) => ({ ...prev, ...updates }));
     setCharCounts((prev) => {
-      if (
-        prev.eventType === nextCounts.eventType &&
-        prev.name === nextCounts.name &&
-        prev.address === nextCounts.address
-      ) {
-        return prev;
-      }
+      if (prev.eventType === nextCounts.eventType && prev.name === nextCounts.name && prev.address === nextCounts.address) return prev;
       return { ...prev, ...nextCounts };
     });
-  }, [
-    formData.eventType,
-    formData.name,
-    formData.address,
-    templateMeta?.charLimits,
-  ]);
+  }, [formData.eventType, formData.name, formData.address, templateMeta?.charLimits]);
 
   /* --- fetch template --- */
   useEffect(() => {
     let active = true;
     const fetchTemplate = async () => {
-      if (!templateId) {
-        setTemplateLoading(false);
-        return;
-      }
+      if (!templateId) { setTemplateLoading(false); return; }
       try {
-        const res = await fetch(
-          `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
-        );
+        const res = await fetch(`${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`);
         const { template, error: apiError, message } = await res.json();
-        console.log(
-          "%c [ template ]-228",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          template,
-        );
         if (!active) return;
-        if (apiError || !template) {
-          setError(message || "Failed to fetch template");
-          return;
-        }
+        if (apiError || !template) { setError(message || "Failed to fetch template"); return; }
 
-        let { cssCode, jsCode, fontUrls } = template.configs;
-        if (template.backgroundUrl) {
-          cssCode = cssCode?.replace(
+        let { cssCode, jsCode, fontUrls } = template.configs || {};
+        const bgName    = template.configs?.bgImageName || "";
+        const bgIsVideo = isVideoFileName(bgName);
+
+        if (bgIsVideo) {
+          cssCode = (cssCode || "")
+            .replace(/background-image\s*:[^;]+;/gi, "")
+            .replace(/background\s*:[^;]*url\([^)]*\)[^;]*;/gi, "");
+        } else if (template.backgroundUrl) {
+          cssCode = (cssCode || "").replace(
             /url\((['"]?).*?\1\)/g,
             `url('${template.backgroundUrl}')`,
           );
@@ -293,24 +254,23 @@ const DynamicTemplateRenderer = () => {
 
         const heroConfig = template.configs?.heroImageConfig || {};
         const cropShape  = heroConfig.cropShape === "round" ? "round" : "rect";
-        console.log("%c [ cropShape ]-242", "font-size:13px; background:pink; color:#bf2c9f;", cropShape);
-        const ratioW = parseInt(heroConfig?.cropRatio?.width, 10) || 4;
-        console.log("%c [ ratioW ]-244", "font-size:13px; background:pink; color:#bf2c9f;", ratioW);
-        const ratioH = parseInt(heroConfig?.cropRatio?.height, 10) || 3;
-        console.log("%c [ ratioH ]-246", "font-size:13px; background:pink; color:#bf2c9f;", ratioH);
+        const ratioW     = parseInt(heroConfig?.cropRatio?.width,  10) || 4;
+        const ratioH     = parseInt(heroConfig?.cropRatio?.height, 10) || 3;
 
         setTemplateMeta({
           cssCode:        cssCode || "",
-          jsCode:         jsCode || "",
+          jsCode:         jsCode  || "",
           fontUrls:       fontUrls ? JSON.parse(fontUrls) : [],
-          bgImageName:    template.configs?.bgImageName || "",
-          charLimits:     template.configs?.charLimits || {},
+          bgImageName:    bgName,
+          webpUrl:        template.webpUrl        || "",
+          backgroundUrl:  template.backgroundUrl  || "",
+          charLimits:     template.configs?.charLimits    || {},
           dateFormatCase: template.configs?.dateFormatCase || "1",
-          templateInfo:   template.configs?.templateinfo || {},
+          templateInfo:   template.configs?.templateinfo   || {},
           cropShape,
-          nameCase:       template.configs?.nameCase || "default",
+          nameCase:       template.configs?.nameCase    || "default",
           addressCase:    template.configs?.addressCase || "default",
-          monthCase:      template.configs?.monthCase || "default",
+          monthCase:      template.configs?.monthCase   || "default",
           aspectRatio:    cropShape === "round" ? 1 : ratioW / ratioH,
           borderColor:    template.configs?.borderColor,
           isBgRemove:     template.configs?.isBgRemove || false,
@@ -321,89 +281,62 @@ const DynamicTemplateRenderer = () => {
         if (active) setTemplateLoading(false);
       }
     };
-
     fetchTemplate();
     return () => { active = false; };
   }, [templateId]);
 
-  /* --- fetch existing event data --- */
+  useEffect(() => {
+    if (!templateMeta) return;
+    const hasTemplateInfo = !!(
+      templateMeta.templateInfo?.templateWidth &&
+      templateMeta.templateInfo?.templateHeight
+    );
+    if (isBgVideo && !hasTemplateInfo) setImageLoaded(true);
+  }, [templateMeta, isBgVideo]);
+
+  /* --- fetch existing event --- */
   useEffect(() => {
     if (!eventId) return;
     let active = true;
     const fetchOrder = async () => {
       try {
-        const res = await fetch(
-          `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token || "",
-            },
-          },
-        );
+        const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId}`, {
+          headers: { "Content-Type": "application/json", Authorization: token || "" },
+        });
         const { data } = await res.json();
         if (!active || res.status !== 200 || !data) return;
-
-        const formattedDate = data.eventDate
-          ? new Date(data.eventDate).toISOString().split("T")[0]
-          : "";
-        const formattedTime = data.eventTime
-          ? formatToAMPM(data.eventTime)
-          : "";
-
+        const formattedDate = data.eventDate ? new Date(data.eventDate).toISOString().split("T")[0] : "";
+        const formattedTime = data.eventTime ? formatToAMPM(data.eventTime) : "";
         setFormData((prev) => ({
           ...prev,
-          name:      applyCase(data.hostName || "", templateMeta?.nameCase),
+          name:      applyCase(data.hostName  || "", templateMeta?.nameCase),
           eventType: applyCase(data.eventType || "", templateMeta?.eventTypeCase),
-          address:   applyCase(data.location || "", templateMeta?.addressCase),
+          address:   applyCase(data.location  || "", templateMeta?.addressCase),
           date:      formattedDate,
           time:      formattedTime,
         }));
-
-        setCharCounts({
-          eventType: data.eventType?.length || 0,
-          name:      data.hostName?.length || 0,
-          address:   data.location?.length || 0,
-        });
-
-        if (data.imageUrl) {
-          setUploadedImage(data.imageUrl);
-          setOriginalImage(data.imageUrl);
-        }
-      } catch (err) {
-        console.error("Fetch order failed:", err);
-      }
+        setCharCounts({ eventType: data.eventType?.length || 0, name: data.hostName?.length || 0, address: data.location?.length || 0 });
+        if (data.imageUrl) { setUploadedImage(data.imageUrl); setOriginalImage(data.imageUrl); }
+      } catch (err) { console.error("Fetch order failed:", err); }
     };
-
     fetchOrder();
     return () => { active = false; };
   }, [eventId, token]);
 
-  /* --- render HTML template --- */
   useEffect(() => {
-    if (!templateMeta?.jsCode) return;
-
-    const payloadWithPlaceholder = {
-      ...templatePayload,
-      ...scaledData,
+    if (!templateMeta) return;
+    if (!templateMeta.jsCode) { setRenderedHTML(""); setImageLoaded(true); return; }
+    setRenderedHTML(renderTemplate(templateMeta.jsCode, {
+      ...templatePayload, ...scaledData,
       name:    formData.name    || "Type your name",
       address: formData.address || "Type your address",
-    };
+    }, formData));
+  }, [templateMeta, templatePayload, scaledData, formData]);
 
-    setRenderedHTML(
-      renderTemplate(templateMeta.jsCode, payloadWithPlaceholder, formData),
-    );
-  }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
-
-  /* --- image load → scale compute --- */
-  const handleImageLoad = useCallback(() => {
-    if (!imgRef.current || !templateMeta?.templateInfo) return;
-    const info = templateMeta.templateInfo;
-    if (!info.templateWidth || !info.templateHeight) return;
-
-    const effectiveWidth = Math.min(window.innerWidth, 480);
-    const scale = effectiveWidth / info.templateWidth;
-
+  const computeScaledData = useCallback(() => {
+    const info = templateMeta?.templateInfo;
+    if (!info?.templateWidth || !info?.templateHeight) { setImageLoaded(true); return; }
+    const scale = Math.min(window.innerWidth, 480) / info.templateWidth;
     setScaledData({
       imgHeight:          scale * info.templateHeight,
       nameFontSize:       scale * info.templateNameSize,
@@ -424,444 +357,360 @@ const DynamicTemplateRenderer = () => {
     setImageLoaded(true);
   }, [templateMeta?.templateInfo]);
 
-  // ── NEW: video load → scale compute (bilkul handleImageLoad jaisa) ──
-  const handleVideoLoad = useCallback(() => {
-    if (!videoRef.current || !templateMeta?.templateInfo) return;
-    const info = templateMeta.templateInfo;
-    if (!info.templateWidth || !info.templateHeight) return;
+  const handleImageLoad = useCallback(() => computeScaledData(), [computeScaledData]);
+  const handleVideoLoad = useCallback(() => computeScaledData(), [computeScaledData]);
 
-    const effectiveWidth = Math.min(window.innerWidth, 480);
-    const scale = effectiveWidth / info.templateWidth;
+  /* --- editable fields --- */
+  const PLACEHOLDERS = { name: "Type your name", address: "Type your address" };
 
-    setScaledData({
-      imgHeight:          scale * info.templateHeight,
-      nameFontSize:       scale * info.templateNameSize,
-      nameLineHeight:     scale * info.templateNameSize + info.templateNamelineHeight,
-      namePosition:       scale * info.templateNamePosition,
-      dateTimeFontSize:   scale * info.templateDateTimeSize,
-      dateTimeLineHeight: scale * info.templateDateTimeSize + info.templateDatetimelineHeight,
-      dateTimePosition:   scale * info.templateDateTimePosition,
-      addressFontSize:    scale * info.templateAddressSize,
-      addressLineHeight:  scale * info.templateAddressSize * info.templateAddresslineHeight,
-      addressPosition:    scale * info.templateAddressPosition,
-      imgCirclePosition:  scale * info.templateCirclePosition,
-      imgCircleHeight:    scale * info.templateCircleHeight,
-      imgCircleWidth:     scale * info.templateCircleWidth,
-      dayFontSize:        scale * info.templatedayfontSize,
-      dayPosition:        scale * info.templatedayposition,
-    });
-    setImageLoaded(true);
-  }, [templateMeta?.templateInfo]);
+  const handleEditableClick = useCallback((field, node) => {
+    const charLimit = parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
+    node.contentEditable = "true"; node.dataset.editing = "true"; node.classList.add("editing");
+    const isPlaceholder = node.innerText.trim() === (PLACEHOLDERS[field] || "");
+    if (!node.innerText.trim() || isPlaceholder) { node.innerText = ""; setCaretAtEnd(node); }
+    node.focus();
 
-  const PLACEHOLDERS = {
-    name:    "Type your name",
-    address: "Type your address",
-  };
-
-  const handleEditableClick = useCallback(
-    (field, node) => {
-      const charLimit =
-        parseInt(templateMeta?.charLimits?.[field], 10) || Infinity;
-      node.contentEditable = "true";
-      node.dataset.editing = "true";
-      node.classList.add("editing");
-
-      const placeholder   = PLACEHOLDERS[field] || "";
-      const isPlaceholder = node.innerText.trim() === placeholder;
-      const isEmpty       = !node.innerText.trim();
-
-      if (isEmpty || isPlaceholder) {
-        node.innerText = "";
-        setCaretAtEnd(node);
-      }
-
-      node.focus();
-
-      const onKeyDown = (ev) => {
-        const printable =
-          ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
-        if (printable && node.innerText.length >= charLimit) {
-          const allowed = [
-            "Backspace","Delete","ArrowLeft","ArrowRight",
-            "ArrowUp","ArrowDown","Home","End","Tab",
-          ];
-          if (!allowed.includes(ev.key)) {
-            ev.preventDefault();
-            setFormErrors((prev) => ({
-              ...prev,
-              [field]: `Character limit of ${charLimit} reached`,
-            }));
-            return;
-          }
-        } else {
-          setFormErrors((prev) => ({ ...prev, [field]: "" }));
-        }
-
-        if (ev.key === "Enter") {
-          ev.preventDefault();
-          node.blur();
-        } else if (ev.key === "Escape") {
-          node.innerText = formData[field] || "";
-          node.blur();
-        }
-      };
-
-      const onInput = (ev) => {
-        const el    = ev.target;
-        const field = el.getAttribute("data-field");
-        let text    = el.innerText;
-
-        if (text.length > charLimit) {
-          const trimmed = text.slice(0, charLimit);
-          const caret   = saveCaretPosition(el);
-          el.innerText  = trimmed;
-          restoreCaretPosition(el, caret);
-          return;
-        }
-
-        if (field !== "time") {
-          const formattedValue = applyCase(text, templateMeta?.[field + "Case"]);
-          if (formattedValue !== text) {
-            const caret  = saveCaretPosition(el);
-            el.innerText = formattedValue;
-            restoreCaretPosition(el, caret);
-          }
-        }
-
-        setCharCounts((prev) => ({ ...prev, [field]: el.innerText.length }));
-      };
-
-      const onPaste = (ev) => {
+    const onKeyDown = (ev) => {
+      const printable = ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
+      if (printable && node.innerText.length >= charLimit) {
         ev.preventDefault();
-        const pasted  = (ev.clipboardData || window.clipboardData).getData("text");
-        const allowed = Math.max(0, charLimit - node.innerText.length);
-        document.execCommand("insertText", false, pasted.slice(0, allowed));
-      };
-
-      const onBlur = (ev) => {
-        const el  = ev.target;
-        let value = el.innerText.trim();
-
-        if (field === "time") {
-          if (!value) {
-            value = new Date().toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
-          }
-        } else {
-          if (value.length > charLimit) value = value.slice(0, charLimit);
-        }
-
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        el.contentEditable = "false";
-        el.removeAttribute("data-editing");
-        el.classList.remove("editing");
-        el.removeEventListener("keydown", onKeyDown);
-        el.removeEventListener("input",   onInput);
-        el.removeEventListener("paste",   onPaste);
-        el.removeEventListener("blur",    onBlur);
-      };
-
-      node.addEventListener("keydown", onKeyDown);
-      node.addEventListener("input",   onInput);
-      node.addEventListener("paste",   onPaste);
-      node.addEventListener("blur",    onBlur);
-    },
-    [formData, templateMeta?.charLimits],
-  );
+        setFormErrors((prev) => ({ ...prev, [field]: `Character limit of ${charLimit} reached` }));
+        return;
+      }
+      setFormErrors((prev) => ({ ...prev, [field]: "" }));
+      if (ev.key === "Enter") { ev.preventDefault(); node.blur(); }
+      else if (ev.key === "Escape") { node.innerText = formData[field] || ""; node.blur(); }
+    };
+    const onInput = (ev) => {
+      const el = ev.target; const f = el.getAttribute("data-field"); let text = el.innerText;
+      if (text.length > charLimit) {
+        const caret = saveCaretPosition(el); el.innerText = text.slice(0, charLimit); restoreCaretPosition(el, caret); return;
+      }
+      if (f !== "time") {
+        const fv = applyCase(text, templateMeta?.[f + "Case"]);
+        if (fv !== text) { const caret = saveCaretPosition(el); el.innerText = fv; restoreCaretPosition(el, caret); }
+      }
+      setCharCounts((prev) => ({ ...prev, [f]: el.innerText.length }));
+    };
+    const onPaste = (ev) => {
+      ev.preventDefault();
+      const pasted = (ev.clipboardData || window.clipboardData).getData("text");
+      document.execCommand("insertText", false, pasted.slice(0, Math.max(0, charLimit - node.innerText.length)));
+    };
+    const onBlur = (ev) => {
+      const el = ev.target; let value = el.innerText.trim();
+      if (field === "time") {
+        if (!value) value = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      } else { if (value.length > charLimit) value = value.slice(0, charLimit); }
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      el.contentEditable = "false"; el.removeAttribute("data-editing"); el.classList.remove("editing");
+      el.removeEventListener("keydown", onKeyDown); el.removeEventListener("input",   onInput);
+      el.removeEventListener("paste",   onPaste);   el.removeEventListener("blur",    onBlur);
+    };
+    node.addEventListener("keydown", onKeyDown); node.addEventListener("input",   onInput);
+    node.addEventListener("paste",   onPaste);   node.addEventListener("blur",    onBlur);
+  }, [formData, templateMeta?.charLimits]);
 
   useEffect(() => {
     const container = templateRef.current;
     if (!container) return;
-
     const handleClick = (e) => {
       const editable = e.target.closest?.(".editable");
       if (!editable) return;
       const field = editable.dataset.field;
       if (!field) return;
-
-      if (["date", "day", "month", "year"].includes(field)) {
-        setModal((prev) => ({ ...prev, calendar: true }));
-        return;
-      }
-      if (field === "time") {
-        setModal((prev) => ({ ...prev, time: true }));
-        return;
-      }
+      if (["date", "day", "month", "year"].includes(field)) { setModal((p) => ({ ...p, calendar: true })); return; }
+      if (field === "time") { setModal((p) => ({ ...p, time: true })); return; }
       handleEditableClick(field, editable);
     };
-
     container.addEventListener("click", handleClick);
     return () => container.removeEventListener("click", handleClick);
   }, [handleEditableClick]);
 
-  useHeroImageTransform(heroTransform, setHeroTransform, fileInputRef, [
-    renderedHTML,
-  ]);
+  useHeroImageTransform(heroTransform, setHeroTransform, fileInputRef, [renderedHTML]);
 
-  const handleDownload = async () => {
-    if (!templateRef.current) return;
-    setSaving(true);
+  /* ══════════════════════════════════════════════════════════
+     handleDownload
+     VIDEO: captureVideoWithOverlay (blob URL → taint-free)
+     IMAGE: captureElementAsImage
+  ══════════════════════════════════════════════════════════ */
+const handleDownload = async () => {
+  if (!templateRef.current) return;
 
-    const blob = await captureElementAsImage(templateRef.current, [
-      ".hide-in-download",
-    ]);
+  setSaving(true);
 
-    if (!blob) {
-      setSaving(false);
-      return;
+  try {
+    let uploadFile = null;
+
+    /* ======================================================
+       VIDEO TEMPLATE
+    ====================================================== */
+    if (isVideoActive) {
+      const recorded = await recordVideoWithOverlay(
+        videoRef.current,
+        overlayRef.current,
+        {
+          fps: 30,
+
+          onProgress: (p) => {
+            console.log("Recording Progress:", p);
+          },
+        }
+      );
+
+      if (!recorded?.file) {
+        throw new Error("Video recording failed");
+      }
+
+      /**
+       * IMPORTANT
+       * VIDEO FILE
+       */
+
+      uploadFile = recorded.file;
     }
 
-    const file = new File(
-      [blob],
-      `invite_${templateMeta?.bgImageName || "image"}.png`,
-      { type: "image/png", lastModified: Date.now() },
-    );
+    /* ======================================================
+       IMAGE TEMPLATE
+    ====================================================== */
+    else {
+      const imageBlob = await captureElementAsImage(
+        templateRef.current
+      );
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      try {
-        await saveTemplate(`template_${eventId}`, reader.result);
-        router.replace(`/wonderland/invite?eventid=${eventId}`);
-      } catch (err) {
-        console.error("Failed to save template in IndexedDB:", err);
+      if (!imageBlob) {
+        throw new Error("Image capture failed");
       }
-    };
-    reader.readAsDataURL(blob);
+
+      uploadFile = new File(
+        [imageBlob],
+        "invite_thumbnail.png",
+        {
+          type: "image/png",
+          lastModified: Date.now(),
+        }
+      );
+
+      /**
+       * SAVE IMAGE IN INDEXED DB
+       */
+
+      const reader = new FileReader();
+
+      reader.onloadend = async () => {
+        try {
+          await saveTemplate(
+            `template_${eventId}`,
+            reader.result
+          );
+        } catch (err) {
+          console.error(
+            "Failed to save template:",
+            err
+          );
+        }
+      };
+
+      reader.readAsDataURL(imageBlob);
+    }
+
+    /* ======================================================
+       FORM DATA
+    ====================================================== */
 
     const form = new FormData();
-    form.append("image", file);
+
+    /**
+     * IMPORTANT
+     * ALWAYS USE image FIELD
+     */
+
+    form.append("image", uploadFile);
+
     form.append("userId", userId);
 
-    try {
-      await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
-        {
-          method: "PUT",
-          headers: { Authorization: token || "" },
-          body: form,
-        },
-      );
-    } catch (err) {
-      console.error("Upload failed:", err);
-    } finally {
-      setSaving(false);
-    }
-  };
+    /**
+     * DEBUG
+     */
 
+    for (let pair of form.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    /* ======================================================
+       API CALL
+    ====================================================== */
+
+    const response = await fetch(
+      `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
+      {
+        method: "PUT",
+
+        headers: {
+          Authorization: token || "",
+        },
+
+        body: form,
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("UPLOAD RESPONSE:", data);
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Upload failed"
+      );
+    }
+
+    /**
+     * OPTIONAL
+     * SAVE FINAL URL
+     */
+
+    const finalUrl =
+      data?.data?.image ||
+      data?.data?.url ||
+      data?.image ||
+      "";
+
+    console.log("FINAL URL:", finalUrl);
+
+    router.replace(
+      `/wonderland/invite?eventid=${eventId}`
+    );
+  } catch (err) {
+    console.error(
+      "Download/Upload failed:",
+      err
+    );
+
+    setErrorModal({
+      open: true,
+      message:
+        err.message || "Something went wrong",
+    });
+  } finally {
+    setSaving(false);
+  }
+};
   const handleSave = async () => {
-    if (!userId) {
-      setErrorModal({ open: true, message: "User not logged in or UserId missing." });
-      return;
-    }
-
+    if (!userId) { setErrorModal({ open: true, message: "User not logged in or UserId missing." }); return; }
     const errors = [];
-
-    if (!formData.name?.trim() || formData.name === "Type your name") {
-      errors.push("Name is required");
-    }
-
-    const addressExistsInTemplate =
-      renderedHTML.includes("address") ||
-      renderedHTML.includes("{{address}}") ||
-      renderedHTML.includes("Type your address");
-
-    if (addressExistsInTemplate) {
-      if (
-        !formData.address?.trim() ||
-        formData.address === "Type your address"
-      ) {
-        errors.push("Address is required");
-      }
-    }
-
-    if (errors.length > 0) {
-      setErrorModal({ open: true, message: errors.join("\n") });
-      return;
-    }
-
-    setSaving(true);
-    setIsSaved(true);
-    document.body.classList.add("saved-mode");
-
-    const finalDate = formData.date
-      ? new Date(formData.date).toISOString()
-      : new Date().toISOString();
-
-    const finalTime = formData.time
-      ? formatToAMPM(formData.time)
-      : formatToAMPM(new Date().toLocaleTimeString());
-
+    if (!formData.name?.trim() || formData.name === "Type your name") errors.push("Name is required");
+    const addressExistsInTemplate = renderedHTML.includes("address") || renderedHTML.includes("{{address}}") || renderedHTML.includes("Type your address");
+    if (addressExistsInTemplate && (!formData.address?.trim() || formData.address === "Type your address")) errors.push("Address is required");
+    if (errors.length > 0) { setErrorModal({ open: true, message: errors.join("\n") }); return; }
+    setSaving(true); setIsSaved(true); document.body.classList.add("saved-mode");
+    const finalDate = formData.date ? new Date(formData.date).toISOString() : new Date().toISOString();
+    const finalTime = formData.time ? formatToAMPM(formData.time) : formatToAMPM(new Date().toLocaleTimeString());
     try {
-      const res = await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token || "",
-          },
-          body: JSON.stringify({
-            userId,
-            eventType: formData.eventType,
-            hostName:  formData.name,
-            eventDate: finalDate,
-            eventTime: finalTime,
-            location:  formData.address,
-          }),
-        },
-      );
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || "Unknown error");
-      }
-
+      const res = await fetch(`${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`, {
+        method:  "PUT",
+        headers: { "Content-Type": "application/json", Authorization: token || "" },
+        body:    JSON.stringify({ userId, eventType: formData.eventType, hostName: formData.name, eventDate: finalDate, eventTime: finalTime, location: formData.address }),
+      });
+      if (!res.ok) { const errData = await res.json(); throw new Error(errData.message || "Unknown error"); }
       await handleDownload();
     } catch (err) {
       setErrorModal({ open: true, message: err.message || "Something went wrong" });
-      setSaving(false);
-      setIsSaved(false);
-      document.body.classList.remove("saved-mode");
-    } finally {
-      document.body.classList.remove("saved-mode");
-    }
+      setSaving(false); setIsSaved(false); document.body.classList.remove("saved-mode");
+    } finally { document.body.classList.remove("saved-mode"); }
   };
 
   const saveCaretPosition = (el) => {
-    const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return 0;
-    const range = selection.getRangeAt(0);
-    return range.startOffset;
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return 0;
+    return sel.getRangeAt(0).startOffset;
   };
-
   const restoreCaretPosition = (el, offset) => {
     try {
-      const selection = window.getSelection();
-      const range     = document.createRange();
+      const sel = window.getSelection(); const range = document.createRange();
       let node = el;
-      if (el.childNodes.length > 0) {
-        node =
-          [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
-      }
-      const textLength = node.textContent?.length ?? 0;
-      const safeOffset = Math.min(offset, textLength);
-      range.setStart(node, safeOffset);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    } catch (err) {
-      console.warn("restoreCaretPosition failed on device:", err);
-    }
+      if (el.childNodes.length > 0) node = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
+      range.setStart(node, Math.min(offset, node.textContent?.length ?? 0));
+      range.collapse(true); sel.removeAllRanges(); sel.addRange(range);
+    } catch (err) { console.warn("restoreCaretPosition failed:", err); }
   };
 
   useEffect(() => {
     if (!templateMeta?.borderColor) return;
-    document.documentElement.style.setProperty(
-      "--borderColor",
-      templateMeta.borderColor,
-    );
+    document.documentElement.style.setProperty("--borderColor", templateMeta.borderColor);
   }, [templateMeta?.borderColor]);
 
   const handleBackgroundRemoval = async (file) => {
-    const fd = new FormData();
-    fd.append("file", file);
+    const fd = new FormData(); fd.append("file", file);
     try {
-      const response = await axios.post(`${BG_REMOVER_URL}`, fd, {
-        responseType: "blob",
-      });
+      const response = await axios.post(`${BG_REMOVER_URL}`, fd, { responseType: "blob" });
       const imageUrl = URL.createObjectURL(response.data);
-      setUploadedImage(imageUrl);
-      setOriginalImage(imageUrl);
-    } catch (error) {
-      console.error("Background removal error:", error);
-      alert(
-        "Error connecting to the server. Make sure your Python backend is running on port 8000.",
-      );
-    }
+      setUploadedImage(imageUrl); setOriginalImage(imageUrl);
+    } catch (error) { console.error("Background removal error:", error); alert("Error connecting to the server."); }
   };
 
-  // ── NEW: image aur video dono handle karo ──
   const handleImageUploadClick = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (file.type.startsWith("video/")) {
-      // ── VIDEO selected ──
-      const url = URL.createObjectURL(file);
-      setUploadedVideo(url);
-      setIsVideo(true);
-      setUploadedImage(null);  // image clear karo
-      setImageLoaded(false);   // video load hone pe true hoga
+      setUserUploadedVideo(URL.createObjectURL(file));
+      setUploadedImage(null);
+      setImageLoaded(false);
     } else {
-      // ── IMAGE selected (original flow unchanged) ──
-      setIsVideo(false);
-      setUploadedVideo(null);
-      if (templateMeta?.isBgRemove) {
-        await handleBackgroundRemoval(file);
-      } else {
-        const url = URL.createObjectURL(file);
-        setUploadedImage(url);
-        setOriginalImage(url);
-      }
+      setUserUploadedVideo(null);
+      if (templateMeta?.isBgRemove) { await handleBackgroundRemoval(file); }
+      else { const url = URL.createObjectURL(file); setUploadedImage(url); setOriginalImage(url); }
     }
   };
 
+  /* ════════════════════════════════════════════════════════
+     RENDER
+  ════════════════════════════════════════════════════════ */
   return (
-    <div
-      className="d-flex justify-content-center"
-      style={{ maxWidth: "480px", margin: "0 auto" }}
-    >
+    <div className="d-flex justify-content-center" style={{ maxWidth: "480px", margin: "0 auto" }}>
       <div style={{ padding: "8px", maxWidth: "480px", width: "100%" }}>
 
-        {/* SKELETON */}
-        {loading && (
-          <div style={{ padding: "8px" }}>
-            <TemplatecardSkeleton />
-          </div>
-        )}
+        {loading && <div style={{ padding: "8px" }}><TemplatecardSkeleton /></div>}
 
-        {/* TEMPLATE CONTAINER */}
         <div
           ref={templateRef}
           className="template-container"
-          style={{
-            position: "relative",
-            visibility: loading ? "hidden" : "visible",
-          }}
+          style={{ position: "relative", visibility: loading ? "hidden" : "visible" }}
         >
-          {/* ── IMAGE background — sirf tab jab video mode nahi ── */}
-          {templateMeta && !isVideo && templateMeta.bgImageName && (
-            <img
-              ref={imgRef}
-              src={`/assets/templates/${templateMeta.bgImageName}`}
-              alt="bg"
-              onLoad={handleImageLoad}
-              onError={() => setImageLoaded(true)}
-              style={{
-                width: "100%",
-                visibility: imageLoaded ? "visible" : "hidden",
-              }}
+          {/* ══ CASE 1 — User uploaded video ══ */}
+          {userUploadedVideo && (
+            <video
+              ref={videoRef}
+              src={userUploadedVideo}
+              autoPlay loop muted playsInline
+              onLoadedMetadata={handleVideoLoad}
+              onCanPlay={() => setImageLoaded(true)}
+              style={{ width: "100%", display: "block", objectFit: "cover" }}
             />
           )}
 
-          {/* ── NEW: VIDEO background ── */}
-          {isVideo && uploadedVideo && (
+          {/* ══ CASE 2 — Template background video ══
+              src = videoBlobUrl (blob:// → taint-free) agar fetch success ho
+              fallback: bgSrc (original S3 URL, captureVideoWithOverlay handle karega) */}
+          {!userUploadedVideo && isBgVideo && (videoBlobUrl || bgSrc) && (
             <video
               ref={videoRef}
-              src={uploadedVideo}
-              autoPlay
-              loop
-              muted
-              playsInline
+              src={videoBlobUrl || bgSrc}
+              autoPlay loop muted playsInline
               onLoadedMetadata={handleVideoLoad}
-              onCanPlay={() => { if (scaledData) setImageLoaded(true); }}
-              style={{
-                width: "100%",
-                display: "block",
-                objectFit: "cover",
-              }}
+              onCanPlay={() => setImageLoaded(true)}
+              style={{ width: "100%", display: "block", objectFit: "cover" }}
+            />
+          )}
+
+          {/* ══ CASE 3 — Template background image ══ */}
+          {!userUploadedVideo && !isBgVideo && bgSrc && (
+            <img
+              ref={imgRef}
+              src={bgSrc}
+              alt="bg"
+              onLoad={handleImageLoad}
+              onError={() => setImageLoaded(true)}
+              style={{ width: "100%", visibility: imageLoaded ? "visible" : "hidden" }}
             />
           )}
 
@@ -875,21 +724,16 @@ const DynamicTemplateRenderer = () => {
             <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
           )}
 
-          {/* Template HTML overlay — image aur video dono mein same */}
+          {/* ══ Overlay (text, editable spans) — overlayRef se capture hoga ══ */}
           {!loading && renderedHTML && (
             <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                zIndex: 2,
-                cursor: "text",
-              }}
+              ref={overlayRef}
+              style={{ position: "absolute", inset: 0, zIndex: 2, cursor: "text" }}
               dangerouslySetInnerHTML={{ __html: renderedHTML }}
             />
           )}
         </div>
 
-        {/* ── NEW: video/* bhi accept karo ── */}
         <input
           ref={fileInputRef}
           type="file"
@@ -898,33 +742,23 @@ const DynamicTemplateRenderer = () => {
           onChange={handleImageUploadClick}
         />
 
-        {/* Submit */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton title="Submit" onClick={handleSave} />
         </div>
       </div>
 
-      {/* Modals */}
       <CalendarModal
         show={modal.calendar}
         onClose={() => setModal((p) => ({ ...p, calendar: false }))}
         selectedDate={selectedDate}
-        setSelectedDate={(d) => {
-          setSelectedDate(d);
-          setFormData((p) => ({ ...p, date: d }));
-        }}
+        setSelectedDate={(d) => { setSelectedDate(d); setFormData((p) => ({ ...p, date: d })); }}
       />
-
       <TimeModal
         show={modal.time}
         onClose={() => setModal((p) => ({ ...p, time: false }))}
         selectedTime={selectedTime}
-        setSelectedTime={(t) => {
-          setSelectedTime(t);
-          setFormData((p) => ({ ...p, time: t }));
-        }}
+        setSelectedTime={(t) => { setSelectedTime(t); setFormData((p) => ({ ...p, time: t })); }}
       />
-
       <ErrorPopup
         isOpen={errorModal.open}
         onClose={() => setErrorModal({ open: false, message: "" })}
