@@ -408,7 +408,7 @@ const ChatPage = () => {
   }, []);
 
   const handleBack = () => {
-    const basePath = "/wonderinternational/chat";
+    const basePath = "/wonderlandinternational/chat";
     if (userId) {
       router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
     } else {
@@ -519,7 +519,7 @@ const ChatPage = () => {
         }
       }
       if (newGroupId) {
-        router.push(`/wonderinternational/chat/room?groupId=${newGroupId}&id=${userId}`);
+        router.push(`/wonderlandinternational/chat/room?groupId=${newGroupId}&id=${userId}`);
       }
     } catch (err) {
       console.log("Error:", err);
@@ -528,7 +528,7 @@ const ChatPage = () => {
 
   const handleClickGroupName = () => {
     if (selectedGroup?.roomType !== "direct" && selectedGroup?.eventId) {
-      router.push(`/wonderinternational/invite?eventid=${selectedGroup?.eventId}`);
+      router.push(`/wonderlandinternational/invite?eventid=${selectedGroup?.eventId}`);
     }
   };
 

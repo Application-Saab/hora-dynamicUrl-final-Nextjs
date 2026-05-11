@@ -23,7 +23,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   if (!isOpen) return null;
   const pathname = usePathname();
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
   // Direct share platforms
@@ -81,7 +81,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
     if (!orderDetails) return "";
 
     const inviteURL = `https://horaservices.com/${
-      isWonderlandInternational ? "wonderinternational" : "wonderland"
+      isWonderlandInternational ? "wonderlandinternational" : "wonderland"
     }/invite?eventid=${orderDetails?._id}`;
 
     return `You're invited to ${orderDetails?.hostName}! 🎉

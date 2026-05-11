@@ -100,7 +100,7 @@ const TemplatesPage = () => {
       return;
     }
     router.push(
-      `/wonderinternational/templates/create-template?id=${eventId}&templateId=${templateId}`,
+      `/wonderlandinternational/templates/create-template?id=${eventId}&templateId=${templateId}`,
     );
   };
 

@@ -44,7 +44,7 @@ const Header = () => {
   const isHomeLikePage = homeLikeRoutes.includes(pathname) || isCityPage;
   const isInnerPage = !isHomeLikePage;
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
   /** -----------------------
@@ -89,7 +89,7 @@ const Header = () => {
       <header className="sec-header">
         <div className="pageWidth header-wrapper">
           {/* LOGO */}
-          <Link href={isWonderlandInternational ? "/wonderinternational" : "/"}>
+          <Link href={isWonderlandInternational ? "/wonderlandinternational" : "/"}>
             <Image src={logo} alt="Logo" className="header-logo" />
           </Link>
 

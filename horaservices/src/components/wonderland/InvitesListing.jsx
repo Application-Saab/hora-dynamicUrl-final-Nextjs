@@ -11,7 +11,7 @@ const InvitesListing = ({ userId }) => {
     "get"
   );
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
 
@@ -30,7 +30,7 @@ const InvitesListing = ({ userId }) => {
 
   const handleClickViewEvent = (eventData) => {
     if (isWonderlandInternational) {
-      router.push(`/wonderinternational/invite?eventid=${eventData._id}`);
+      router.push(`/wonderlandinternational/invite?eventid=${eventData._id}`);
     } else {
       router.push(`/wonderland/invite?eventid=${eventData._id}`);
     }

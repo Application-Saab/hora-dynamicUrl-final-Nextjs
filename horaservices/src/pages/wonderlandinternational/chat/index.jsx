@@ -55,7 +55,7 @@ const GroupsList = () => {
   const handleOpenMessages = async (group) => {
     const groupId = group._id || group.id;
     markRoomRead(groupId, userId);
-    router.push(`/wonderinternational/chat/room?groupId=${groupId}&id=${userId}`);
+    router.push(`/wonderlandinternational/chat/room?groupId=${groupId}&id=${userId}`);
   };
 
   return (

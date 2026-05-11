@@ -40,7 +40,7 @@ const AccountPage = () => {
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    window.location.href = "/wonderinternational/accounts";
+    window.location.href = "/wonderlandinternational/accounts";
   };
 
   const handleLogin = () => {

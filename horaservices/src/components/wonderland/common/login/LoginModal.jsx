@@ -40,7 +40,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const inputsRef = useRef([]);
 
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
   // Close modal on outside click
@@ -56,159 +56,108 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   // Validate phone input
   const handleChangePhone = (e) => {
-  let value = e.target.value;
+    let value = e.target.value;
 
-  // Remove spaces
-  value = value.replace(/\s/g, "");
+    // Remove spaces
+    value = value.replace(/\s/g, "");
+    if (isWonderlandInternational) {
+      if (/^\d*$/.test(value)) {
+        setPhone(value);
 
-  // INTERNATIONAL FLOW
-  if (isWonderlandInternational) {
+        setError((prev) => ({
+          ...prev,
+          phone: value.length > 0 ? "" : "Mobile number is required",
+        }));
+      }
 
-    // Allow digits only
-    if (/^\d*$/.test(value)) {
+      return;
+    }
+
+    if (/^\d{0,10}$/.test(value)) {
       setPhone(value);
 
       setError((prev) => ({
         ...prev,
-        phone: value.length > 0 ? "" : "Mobile number is required",
+        phone:
+          value.length === 10
+            ? ""
+            : "Please enter a valid 10-digit mobile number",
       }));
     }
-
-    return;
-  }
-
-  // NORMAL FLOW
-  if (/^\d{0,10}$/.test(value)) {
-    setPhone(value);
-
-    setError((prev) => ({
-      ...prev,
-      phone:
-        value.length === 10
-          ? ""
-          : "Please enter a valid 10-digit mobile number",
-    }));
-  }
-};
+  };
 
   useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (isWonderlandInternational) {
+        if (phone.length >= 4 && !isOtpSent && phone !== lastCheckedPhone) {
+          setLastCheckedPhone(phone);
 
-  const delayDebounce = setTimeout(async () => {
+          try {
+            let resp = await fetchUserData(
+              `${GET_USER_BY_PHONE}/${phone}?isWonderlandInternational=${isWonderlandInternational}`,
+              "GET",
+            );
 
-    // =========================================
-    // INTERNATIONAL FLOW
-    // =========================================
-    if (isWonderlandInternational) {
+            setUserData(resp?.data || {});
+            setName(resp?.data?.name || "");
+          } catch (err) {
+            console.error("Error fetching user details:", err);
+          }
+        }
 
-      // Minimum 4 digits required
-      if (
-        phone.length >= 4 &&
-        !isOtpSent &&
-        phone !== lastCheckedPhone
-      ) {
+        return;
+      }
 
+      if (phone.length === 10 && !isOtpSent && phone !== lastCheckedPhone) {
         setLastCheckedPhone(phone);
 
         try {
-
           let resp = await fetchUserData(
-            `${GET_USER_BY_PHONE}/${phone}?isWonderlandInternational=${isWonderlandInternational}`,
-            "GET"
+            `${GET_USER_BY_PHONE}/${phone}`,
+            "GET",
           );
 
-          setUserData(resp?.data || {});
+          setUserData(resp?.data);
           setName(resp?.data?.name || "");
-
         } catch (err) {
           console.error("Error fetching user details:", err);
         }
       }
+    }, 200);
 
-      return;
-    }
-
-    // =========================================
-    // NORMAL FLOW
-    // =========================================
-    if (
-      phone.length === 10 &&
-      !isOtpSent &&
-      phone !== lastCheckedPhone
-    ) {
-
-      setLastCheckedPhone(phone);
-
-      try {
-
-        let resp = await fetchUserData(
-          `${GET_USER_BY_PHONE}/${phone}`,
-          "GET"
-        );
-
-        setUserData(resp?.data);
-        setName(resp?.data?.name || "");
-
-      } catch (err) {
-        console.error("Error fetching user details:", err);
-      }
-    }
-
-  }, 200); // debounce
-
-  return () => clearTimeout(delayDebounce);
-
-}, [phone]);
+    return () => clearTimeout(delayDebounce);
+  }, [phone]);
 
   useEffect(() => {
+    if (isWonderlandInternational) {
+      if (phone.length < 4) {
+        setShowNameField(false);
+        return;
+      }
 
-  // =========================================
-  // INTERNATIONAL FLOW
-  // =========================================
-  if (isWonderlandInternational) {
+      setTimeout(() => {
+        setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
+      }, 150);
 
-    if (phone.length < 4) {
-      setShowNameField(false);
       return;
     }
 
-    setTimeout(() => {
-      setShowNameField(
-        !userData?.name &&
-        !fetchUserDataLoading &&
-        isFetched
-      );
-    }, 150);
+    if (phone.length < 10) {
+      setShowNameField(false);
+    }
 
-    return;
-  }
-
-  // =========================================
-  // NORMAL FLOW
-  // =========================================
-  if (phone.length < 10) {
-    setShowNameField(false);
-  }
-
-  if (phone.length === 10) {
-
-    setTimeout(() => {
-
-      setShowNameField(
-        !userData?.name &&
-        !fetchUserDataLoading &&
-        isFetched
-      );
-
-    }, 150);
-  }
-
-}, [
-  phone,
-  userData,
-  fetchUserDataLoading,
-  isFetched,
-  isWonderlandInternational,
-]);
+    if (phone.length === 10) {
+      setTimeout(() => {
+        setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
+      }, 150);
+    }
+  }, [
+    phone,
+    userData,
+    fetchUserDataLoading,
+    isFetched,
+    isWonderlandInternational,
+  ]);
 
   // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
@@ -263,11 +212,7 @@ const LoginModal = ({ isOpen, onClose }) => {
     if (!name.trim()) newError.name = "Name is required";
     if (!phone) newError.phone = "Mobile number is required";
 
-   if (
-  !isWonderlandInternational &&
-  phone &&
-  phone.length !== 10
-) {
+    if (!isWonderlandInternational && phone && phone.length !== 10) {
       newError.phone = "Please enter a valid 10-digit number";
     }
 
@@ -285,11 +230,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         fromWonderlandInternational: isWonderlandInternational,
       });
 
-      // =========================================
-      // INTERNATIONAL FLOW
-      // =========================================
       if (response.status === 200 && isWonderlandInternational) {
-        // Keep loading state running silently
         const generatedOtp = response?.otp?.toString();
 
         if (!generatedOtp) {
@@ -301,7 +242,6 @@ const LoginModal = ({ isOpen, onClose }) => {
         }
 
         try {
-          // Direct silent verify
           const verifyResponse = await makeVerifyRequest(
             OTP_VERIFY_ENDPOINT,
             "POST",
@@ -342,10 +282,6 @@ const LoginModal = ({ isOpen, onClose }) => {
 
         return;
       }
-
-      // =========================================
-      // NORMAL FLOW
-      // =========================================
       if (response.status === 200) {
         setIsOtpSent(true);
 
@@ -633,7 +569,6 @@ const LoginModal = ({ isOpen, onClose }) => {
 
           <div style={{ marginBlock: "37px" }}>
             <CustomButton
-              // title={!isOtpSent ? "Get OTP" : "Verify"}
               title={
                 isWonderlandInternational
                   ? "Continue"
@@ -644,12 +579,12 @@ const LoginModal = ({ isOpen, onClose }) => {
               buttonClass="login-modal-btn"
               onClick={handleClick}
               disabled={
-  sendOtpLoading ||
-  verifyOtpLoading ||
-  (!isWonderlandInternational &&
-    isOtpSent &&
-    otp.join("").length !== 4)
-}
+                sendOtpLoading ||
+                verifyOtpLoading ||
+                (!isWonderlandInternational &&
+                  isOtpSent &&
+                  otp.join("").length !== 4)
+              }
               loading={sendOtpLoading || verifyOtpLoading}
             />
           </div>

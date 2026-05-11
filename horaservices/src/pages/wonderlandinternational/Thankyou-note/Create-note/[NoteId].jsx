@@ -186,7 +186,7 @@ export default function NoteDetails() {
 
     localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
 
-    router.push(`/wonderinternational/invite?eventid=${eventid}`);
+    router.push(`/wonderlandinternational/invite?eventid=${eventid}`);
 
     uploadInBackground(blob, eventid);
 

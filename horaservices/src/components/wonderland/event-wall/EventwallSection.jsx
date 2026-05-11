@@ -103,7 +103,7 @@ const EventwallSection = ({
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
   const actionMenuRef = useRef(null);
@@ -564,7 +564,7 @@ const EventwallSection = ({
       label: "Notes",
       icon: NotesButtonIcon.src,
       onClick: () =>
-        router.push(`${isWonderlandInternational ? "/wonderinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`),
+        router.push(`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`),
     },
     {
       label: "Post Badge",

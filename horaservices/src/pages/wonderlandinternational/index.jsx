@@ -31,7 +31,7 @@ const WonderlandMainPage = () => {
     if (isUserLoggedIn && loggedinUserId 
     ) {
       timer = setTimeout(() => {
-        router.push(`/wonderinternational`);
+        router.push(`/wonderlandinternational`);
       }, 2500);
     }
 
@@ -77,7 +77,7 @@ const createInviteClick = () => {
     return;
   }
 
-  router.replace("/wonderinternational/invite");
+  router.replace("/wonderlandinternational/invite");
 };
   useEffect(() => {
     const syncLoginState = () => {
@@ -157,7 +157,7 @@ const createInviteClick = () => {
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace('/wonderinternational/invite')
+          router.replace('/wonderlandinternational/invite')
         }}
       />
     </>

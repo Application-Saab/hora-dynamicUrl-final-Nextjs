@@ -10,7 +10,7 @@ const EventNotes = () => {
   const router = useRouter();
   const { eventid } = router.query;
   const handleNoteClick = (noteId) => {
-    router.push(`/wonderinternational/Thankyou-note/Create-note/${noteId}?eventid=${eventid}`);
+    router.push(`/wonderlandinternational/Thankyou-note/Create-note/${noteId}?eventid=${eventid}`);
   };
   return (
     <>

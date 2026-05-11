@@ -17,7 +17,7 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
   const { refetchChatRooms } = useChatStore();
   const pathname = usePathname();
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
   const handleSubmit = async () => {
@@ -31,7 +31,7 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
       if (resp?.data) {
         router.replace({
           pathname: `${
-            isWonderlandInternational ? "/wonderinternational" : "/wonderland"
+            isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"
           }/invite`,
           query: { eventid: resp?.data._id },
         });
@@ -58,7 +58,7 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
       onClose={() => {
         onClose();
         router.push(
-          isWonderlandInternational ? "/wonderinternational" : "/wonderland"
+          isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"
         );
       }}
       title="Create Invitation"

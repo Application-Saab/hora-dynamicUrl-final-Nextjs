@@ -52,7 +52,7 @@ export default function BottomNav() {
       isChat: currentPath.includes("chat"),
       isServices: currentPath.includes("services"),
       isAccount: currentPath.includes("accounts"),
-      isWonderlandInternational: currentPath.includes("wonderinternational"),
+      isWonderlandInternational: currentPath.includes("wonderlandinternational"),
     };
   }, [currentPath]);
 
@@ -169,7 +169,7 @@ export default function BottomNav() {
                   title={"Go to Invites"}
                   onClick={() => {
                     setShowPopup(false);
-                    router.push(`${isWonderlandInternational ? "/wonderinternational" : "/wonderland"}`);
+                    router.push(`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}`);
                   }}
                   buttonClass={"chat-instruction-popup-btn"}
                 />
@@ -181,7 +181,7 @@ export default function BottomNav() {
 
       <div className="bottom-nav">
         <NavItem
-          href={`${isWonderlandInternational ? "/wonderinternational" : "/wonderland"}`}
+          href={`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}`}
           isActive={isEvents}
           icon={eventIcon}
           iconFilled={eventsIconFill}
@@ -189,7 +189,7 @@ export default function BottomNav() {
         />
 
         <NavItem
-          href={`${isWonderlandInternational ? "/wonderinternational/chat" : "/chat"}`}
+          href={`${isWonderlandInternational ? "/wonderlandinternational/chat" : "/chat"}`}
           isActive={isChat}
           icon={CheerChatIcon}
           iconFilled={CheerChatIconFilled}
@@ -208,7 +208,7 @@ export default function BottomNav() {
         />}
 
         <NavItem
-          href={`${isWonderlandInternational ? "/wonderinternational/accounts" : "/accounts"}`}
+          href={`${isWonderlandInternational ? "/wonderlandinternational/accounts" : "/accounts"}`}
           isActive={isAccount}
           icon={accountIcon}
           iconFilled={accountIconFill}

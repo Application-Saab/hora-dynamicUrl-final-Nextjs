@@ -19,7 +19,7 @@ const UploadCustomTemplate = ({
   const [uploading, setUploading] = useState(false);
   const pathname = usePathname();
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
 
@@ -55,7 +55,7 @@ const UploadCustomTemplate = ({
 
       await saveTemplate(`template_${eventId}`, imageSrc);
 
-      router.replace(`${isWonderlandInternational ? "/wonderinternational" : "/wonderland"}/invite?eventid=${eventId}`);
+      router.replace(`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/invite?eventid=${eventId}`);
     } catch (err) {
       console.error(err);
     } finally {

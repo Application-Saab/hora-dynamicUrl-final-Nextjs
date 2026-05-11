@@ -22,22 +22,22 @@ const PageLayout = ({ children }) => {
   // Show BottomNav only on these paths
   const showBottomNav =
     pathname === "/wonderland" ||
-    pathname === "/wonderinternational" ||
+    pathname === "/wonderlandinternational" ||
     pathname === "/wonderland/create-invite-template" ||
-    pathname === "/wonderinternational/create-invite-template" ||
+    pathname === "/wonderlandinternational/create-invite-template" ||
     pathname === "/templates" ||
     pathname?.startsWith("/chat") ||
-    pathname?.startsWith("/wonderinternational/chat") ||
+    pathname?.startsWith("/wonderlandinternational/chat") ||
     pathname === "/about" ||
     pathname === "/accounts" ||
-    pathname === "/wonderinternational/accounts" ||
+    pathname === "/wonderlandinternational/accounts" ||
     pathname === "/services" ||
     pathname === "/wonderland/invite" ||
-    pathname === "/wonderinternational/invite";
+    pathname === "/wonderlandinternational/invite";
 
   const isWonderlandPath =
     pathname?.startsWith("/wonderland") ||
-    pathname?.startsWith("/wonderinternational");
+    pathname?.startsWith("/wonderlandinternational");
 
   return (
     <div className="page-container container-fluid p-0">

@@ -641,7 +641,7 @@ const DynamicTemplateRenderer = () => {
     reader.onloadend = async () => {
       try {
         await saveTemplate(`template_${eventId}`, reader.result);
-        router.replace(`/wonderinternational/invite?eventid=${eventId}`);
+        router.replace(`/wonderlandinternational/invite?eventid=${eventId}`);
       } catch (err) {
         console.error("Failed to save template in IndexedDB:", err);
       }

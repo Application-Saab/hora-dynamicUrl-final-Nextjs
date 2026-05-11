@@ -32,14 +32,14 @@ const InviteActions = ({ eventData, refetchInvite }) => {
   const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
   const [openShareInviteModal, setOpenShareInviteModal] = useState(false);
   const isWonderlandInternational = pathname?.startsWith(
-    "/wonderinternational",
+    "/wonderlandinternational",
   );
 
   const handleClick = (actionId) => {
  if (actionId === 1) {
 
   if (isWonderlandInternational) {
-    router.push(`/wonderinternational/templates?eventid=${eventid}`);
+    router.push(`/wonderlandinternational/templates?eventid=${eventid}`);
   } else {
     router.push(`/wonderland/templates?eventid=${eventid}`);
   }
