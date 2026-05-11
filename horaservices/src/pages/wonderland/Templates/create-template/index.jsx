@@ -19,7 +19,6 @@ import axios from "axios";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 
-/* ── ONLY CHANGE: API base URL for template background images ── */
 const TEMPLATE_ASSETS_BASE =
   "https://horaservices.com/api/template-assets/templates";
 
@@ -173,6 +172,7 @@ const DynamicTemplateRenderer = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [heroTransform, setHeroTransform] = useState({ x: 0, y: 0, scale: 1 });
+
   const templatePayload = useMemo(() => {
     const today = new Date();
     const fallback = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
@@ -185,8 +185,8 @@ const DynamicTemplateRenderer = () => {
     );
 
     const finalTime = formData.time?.trim()
-      ? formData.time // DB time present → Use it
-      : getCurrentTimeAMPM(); // No DB time → current time
+      ? formData.time
+      : getCurrentTimeAMPM();
 
     return {
       eventType: formData.eventType,
@@ -196,7 +196,6 @@ const DynamicTemplateRenderer = () => {
         templateMeta?.dateCase || "default",
       ),
       day: formatted?.day || "",
-      //  month: formatted?.month || "",
       month: applyCase(
         formatted?.month || "",
         templateMeta?.monthCase || "default",
@@ -204,7 +203,6 @@ const DynamicTemplateRenderer = () => {
       year: formatted?.year || "",
       time: finalTime,
       borderColor: templateMeta?.borderColor,
-
       address: applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
       image: uploadedImage || originalImage || DefaultImageBgCircle.src,
@@ -266,10 +264,10 @@ const DynamicTemplateRenderer = () => {
   /* --- fetch template --- */
   useEffect(() => {
     let active = true;
+
     const fetchTemplate = async () => {
       if (!templateId) {
         setTemplateLoading(false);
-
         return;
       }
       try {
@@ -277,15 +275,22 @@ const DynamicTemplateRenderer = () => {
           `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
         );
         const { template, error: apiError, message } = await res.json();
-        console.log(
-          "%c [ template ]-228",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          template,
-        );
+
         if (!active) return;
         if (apiError || !template) {
           setError(message || "Failed to fetch template");
           return;
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // FIX: Preload background image as soon as we know its name.
+        // This starts the browser download in parallel with the rest
+        // of the JS work below, so by the time <img> renders the image
+        // is already (or nearly) cached — skeleton disappears much faster.
+        // ─────────────────────────────────────────────────────────────
+        if (template.configs?.bgImageName) {
+          const preloadImg = new window.Image();
+          preloadImg.src = `${TEMPLATE_ASSETS_BASE}/${template.configs.bgImageName}`;
         }
 
         let { cssCode, jsCode, fontUrls } = template.configs;
@@ -298,23 +303,8 @@ const DynamicTemplateRenderer = () => {
 
         const heroConfig = template.configs?.heroImageConfig || {};
         const cropShape = heroConfig.cropShape === "round" ? "round" : "rect";
-        console.log(
-          "%c [ cropShape ]-242",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          cropShape,
-        );
         const ratioW = parseInt(heroConfig?.cropRatio?.width, 10) || 4;
-        console.log(
-          "%c [ ratioW ]-244",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          ratioW,
-        );
         const ratioH = parseInt(heroConfig?.cropRatio?.height, 10) || 3;
-        console.log(
-          "%c [ ratioH ]-246",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          ratioH,
-        );
 
         setTemplateMeta({
           cssCode: cssCode || "",
@@ -366,7 +356,7 @@ const DynamicTemplateRenderer = () => {
           ? new Date(data.eventDate).toISOString().split("T")[0]
           : "";
         const formattedTime = data.eventTime
-          ? formatToAMPM(data.eventTime) // DB time exists → Convert & use
+          ? formatToAMPM(data.eventTime)
           : "";
 
         setFormData((prev) => ({
@@ -421,9 +411,6 @@ const DynamicTemplateRenderer = () => {
     const info = templateMeta.templateInfo;
     if (!info.templateWidth || !info.templateHeight) return;
 
-    // const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
-    // const scale = 1 - ratio;
-
     const effectiveWidth = Math.min(window.innerWidth, 480);
     const scale = effectiveWidth / info.templateWidth;
 
@@ -464,11 +451,9 @@ const DynamicTemplateRenderer = () => {
       node.classList.add("editing");
 
       const placeholder = PLACEHOLDERS[field] || "";
-
       const isPlaceholder = node.innerText.trim() === placeholder;
       const isEmpty = !node.innerText.trim();
 
-      // 🔥 click pe placeholder clear
       if (isEmpty || isPlaceholder) {
         node.innerText = "";
         setCaretAtEnd(node);
@@ -627,7 +612,6 @@ const DynamicTemplateRenderer = () => {
       return;
     }
 
-    // 🧾 Convert blob → file
     const file = new File(
       [blob],
       `invite_${templateMeta?.bgImageName || "image"}.png`,
@@ -725,7 +709,6 @@ const DynamicTemplateRenderer = () => {
             "Content-Type": "application/json",
             Authorization: token || "",
           },
-
           body: JSON.stringify({
             userId,
             eventType: formData.eventType,
@@ -760,7 +743,6 @@ const DynamicTemplateRenderer = () => {
   const saveCaretPosition = (el) => {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return 0;
-
     const range = selection.getRangeAt(0);
     return range.startOffset;
   };
@@ -771,7 +753,6 @@ const DynamicTemplateRenderer = () => {
       const range = document.createRange();
 
       let node = el;
-
       if (el.childNodes.length > 0) {
         node =
           [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
@@ -789,6 +770,7 @@ const DynamicTemplateRenderer = () => {
       console.warn("restoreCaretPosition failed on device:", err);
     }
   };
+
   useEffect(() => {
     if (!templateMeta?.borderColor) return;
     document.documentElement.style.setProperty(
@@ -802,13 +784,9 @@ const DynamicTemplateRenderer = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        `${BG_REMOVER_URL}`,
-        formData,
-        {
-          responseType: "blob",
-        },
-      );
+      const response = await axios.post(`${BG_REMOVER_URL}`, formData, {
+        responseType: "blob",
+      });
 
       const imageUrl = URL.createObjectURL(response.data);
       setUploadedImage(imageUrl);
@@ -839,14 +817,12 @@ const DynamicTemplateRenderer = () => {
       style={{ maxWidth: "480px", margin: "0 auto" }}
     >
       <div style={{ padding: "8px", maxWidth: "480px", width: "100%" }}>
-        {/*  SKELETON – OUTSIDE TEMPLATE (design safe) */}
         {loading && (
           <div style={{ padding: "8px" }}>
             <TemplatecardSkeleton />
           </div>
         )}
 
-        {/*  TEMPLATE CONTAINER – ALWAYS PRESENT */}
         <div
           ref={templateRef}
           className="template-container"
@@ -855,7 +831,6 @@ const DynamicTemplateRenderer = () => {
             visibility: loading ? "hidden" : "visible",
           }}
         >
-          {/* ── ONLY CHANGE: src now uses TEMPLATE_ASSETS_BASE from API ── */}
           {templateMeta && (
             <img
               ref={imgRef}
@@ -870,17 +845,14 @@ const DynamicTemplateRenderer = () => {
             />
           )}
 
-          {/* 🔹 Fonts */}
           {templateMeta?.fontUrls?.map((url, idx) => (
             <link key={idx} href={url} rel="stylesheet" />
           ))}
 
-          {/* 🔹 CSS */}
           {templateMeta?.cssCode && (
             <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
           )}
 
-          {/* 🔹 Template HTML */}
           {!loading && renderedHTML && (
             <div
               style={{
@@ -894,30 +866,19 @@ const DynamicTemplateRenderer = () => {
           )}
         </div>
 
-        {/* 🔹 File Upload */}
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           hidden
-          // onChange={(e) => {
-          //   const file = e.target.files?.[0];
-          //   if (!file) return;
-          //   const url = URL.createObjectURL(file);
-          //   setUploadedImage(url);
-          //   setOriginalImage(url);
-          // }}
-
           onChange={handleImageUploadClick}
         />
 
-        {/* 🔹 Submit */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton title="Submit" onClick={handleSave} />
         </div>
       </div>
 
-      {/* 🔹 Modals */}
       <CalendarModal
         show={modal.calendar}
         onClose={() => setModal((p) => ({ ...p, calendar: false }))}

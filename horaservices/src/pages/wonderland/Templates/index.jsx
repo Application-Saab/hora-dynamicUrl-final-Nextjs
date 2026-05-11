@@ -158,7 +158,7 @@ useEffect(() => {
       "BabyShower",
       "Annaprashan",
       "WelcomeBaby",
-    
+       "Baptism",
     ]}
     selectedCategory={activeCategory}
     onSelectCategory={setActiveCategory}
