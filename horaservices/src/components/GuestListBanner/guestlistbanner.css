@@ -1,5 +1,5 @@
 .gl-wrapper {
-  width: clamp(320px, 100vw, 480px);
+ max-width: 600px;
   border: 1px solid #0000000D;
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@
   background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
   color: #fff;
   border: none;
-
+  font-weight: 700;
   font-size: clamp(8px, calc((10 / 393) * 100vw), 12px);
 
   display: flex;

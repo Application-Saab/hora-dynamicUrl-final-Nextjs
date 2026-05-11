@@ -1,6 +1,10 @@
 /* Wrapper */
-.slider-wrapper {
-  width: clamp(320px, 101vw, 397px);
+.slider-container {
+  width: clamp(
+    320px,
+    calc(390 * 100vw / 393),
+    480px
+  );
   border-radius: clamp(6px, 2.4vw, 9.5px);
   display: flex;
   flex-direction: column;
@@ -9,6 +13,7 @@
 padding-top: clamp(14px, 4.72vw, 22px);
 padding-bottom: clamp(14px, 4.72vw, 22px);
 padding-left: clamp(8px, calc(11 * 100vw / 393), 11px);
+max-width: 600px;
 }
 
 /* Heading */
@@ -24,8 +29,27 @@ padding-left: clamp(8px, calc(11 * 100vw / 393), 11px);
 /* Slider */
 .slider {
   display: flex;
- gap: clamp(5px, calc(3px + 1vw), 7px);
+  gap: clamp(5px, calc(3px + 1vw), 7px);
+
   overflow-x: auto;
+  overflow-y: hidden;
+
+  width: 100%;
+  max-width: 100%;
+
+  box-sizing: border-box;
+
+  scroll-behavior: smooth;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.slider::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 auto;
 }
 
 .slider::-webkit-scrollbar {
@@ -39,7 +63,7 @@ padding-left: clamp(8px, calc(11 * 100vw / 393), 11px);
   flex-shrink: 0;
   border-radius: clamp(6px, 2.5vw, 10px);
   background: #fff;
-  box-shadow: 0px 3px 15px rgba(0,0,0,0.08);
+  box-shadow: 0px 3px 15px 0px rgba(255, 255, 255, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -74,7 +98,7 @@ margin-top: clamp(5px, 1.8vw, 7px);
   margin: 0 auto;
   width: clamp(140px, calc(165.3 * 100vw / 393), 165.3px);
   height: clamp(28px, calc(31.35 * 100vw / 393), 31.35px);
-
+  font-weight: 700;
   padding:
     clamp(9px, calc(11.74 * 100vw / 393), 11.74px)
     clamp(6px, calc(7.83 * 100vw / 393), 7.83px);
