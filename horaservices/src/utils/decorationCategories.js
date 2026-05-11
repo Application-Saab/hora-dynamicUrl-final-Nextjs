@@ -67,6 +67,16 @@ export const decCat = [
     imgAlt:
       "Immerse yourself in a world of romance with our mesmerizing anniversary decorations.",
   },
+    {
+    id: "8",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Anniversary.webp",
+    name: "House Warming",
+    subCategory: "HouseWarming",
+    catValue: "house-warming-decoration",
+    imgAlt:
+      "Create a warm and memorable welcome with our elegant house warming decoration setups.",
+  },
   {
     id: "9",
     image:
