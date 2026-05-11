@@ -5,6 +5,7 @@ import ShareInviteIcon from "@/assets/wonderland/ShareInviteIcon.svg";
 import AddDetailsIcon from "@/assets/wonderland/AddDetailsIcon.svg";
 import AddDetailsModal from "../create-invite/AddDetailsModal";
 import ShareInviteModal from "./ShareInviteModal";
+import { usePathname } from "next/navigation";
 
 const actions = [
   {
@@ -26,14 +27,22 @@ const actions = [
 
 const InviteActions = ({ eventData, refetchInvite }) => {
   const router = useRouter();
+  const pathname = usePathname();
     const { eventid } = router.query;
   const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
   const [openShareInviteModal, setOpenShareInviteModal] = useState(false);
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderinternational",
+  );
 
   const handleClick = (actionId) => {
  if (actionId === 1) {
 
-  router.push(`/wonderland/templates?eventid=${eventid}`);
+  if (isWonderlandInternational) {
+    router.push(`/wonderinternational/templates?eventid=${eventid}`);
+  } else {
+    router.push(`/wonderland/templates?eventid=${eventid}`);
+  }
   return;
 }
 

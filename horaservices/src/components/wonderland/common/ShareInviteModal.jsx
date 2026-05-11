@@ -16,10 +16,15 @@ import "./ShareInviteModal.css";
 import { formateDateInDMDFormat } from "@/utils/dateFormatters";
 import CustomModal from "./CustomModal";
 import TemplateRenderer from "./TemplateRenderer";
+import { usePathname } from "next/navigation";
 
 const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   const [copyStatus, setCopyStatus] = useState(false);
   if (!isOpen) return null;
+  const pathname = usePathname();
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderinternational",
+  );
 
   // Direct share platforms
   const directSharePlatforms = {
@@ -75,7 +80,9 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   const createShareText = (orderDetails) => {
     if (!orderDetails) return "";
 
-    const inviteURL = `https://horaservices.com/wonderland/invite?eventid=${orderDetails?._id}`;
+    const inviteURL = `https://horaservices.com/${
+      isWonderlandInternational ? "wonderinternational" : "wonderland"
+    }/invite?eventid=${orderDetails?._id}`;
 
     return `You're invited to ${orderDetails?.hostName}! 🎉
 📅 ${

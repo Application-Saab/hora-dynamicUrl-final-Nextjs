@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BASE_URL } from "@/utils/apiconstants";
 import { saveTemplate } from "@/utils/indexedDB";
 import CustomButton from "@/components/wonderland/common/CustomButton";
@@ -17,6 +17,11 @@ const UploadCustomTemplate = ({
 
   const [imageSrc, setImageSrc] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const pathname = usePathname();
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderinternational",
+  );
+
 
   const onSelectFile = (e) => {
     const file = e.target.files?.[0];
@@ -50,7 +55,7 @@ const UploadCustomTemplate = ({
 
       await saveTemplate(`template_${eventId}`, imageSrc);
 
-      router.replace(`/wonderland/invite?eventid=${eventId}`);
+      router.replace(`${isWonderlandInternational ? "/wonderinternational" : "/wonderland"}/invite?eventid=${eventId}`);
     } catch (err) {
       console.error(err);
     } finally {

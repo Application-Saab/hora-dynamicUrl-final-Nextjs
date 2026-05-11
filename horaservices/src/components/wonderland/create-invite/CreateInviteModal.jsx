@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
 import { useChatStore } from "@/hooks/ChatContext";
+import { usePathname } from "next/navigation";
 
 const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
   if (!isOpen) return null;
@@ -14,6 +15,10 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
   const { loading, makeRequest } = useApi();
   const userId = localStorage.getItem("userID");
   const { refetchChatRooms } = useChatStore();
+  const pathname = usePathname();
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderinternational",
+  );
 
   const handleSubmit = async () => {
     if (!userId) return;
@@ -25,7 +30,9 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
       let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);
       if (resp?.data) {
         router.replace({
-          pathname: "/wonderland/invite",
+          pathname: `${
+            isWonderlandInternational ? "/wonderinternational" : "/wonderland"
+          }/invite`,
           query: { eventid: resp?.data._id },
         });
         setOccasion("");
@@ -50,7 +57,9 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
       isOpen={isOpen}
       onClose={() => {
         onClose();
-        router.push("/wonderland");
+        router.push(
+          isWonderlandInternational ? "/wonderinternational" : "/wonderland"
+        );
       }}
       title="Create Invitation"
       titleClass="my-title-class"
