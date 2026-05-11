@@ -56,48 +56,159 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   // Validate phone input
   const handleChangePhone = (e) => {
-    const value = e.target.value;
-    if (/^\d{0,10}$/.test(value)) {
+  let value = e.target.value;
+
+  // Remove spaces
+  value = value.replace(/\s/g, "");
+
+  // INTERNATIONAL FLOW
+  if (isWonderlandInternational) {
+
+    // Allow digits only
+    if (/^\d*$/.test(value)) {
       setPhone(value);
+
       setError((prev) => ({
         ...prev,
-        phone:
-          value.length === 10
-            ? ""
-            : "Please enter a valid 10-digit mobile number",
+        phone: value.length > 0 ? "" : "Mobile number is required",
       }));
     }
-  };
+
+    return;
+  }
+
+  // NORMAL FLOW
+  if (/^\d{0,10}$/.test(value)) {
+    setPhone(value);
+
+    setError((prev) => ({
+      ...prev,
+      phone:
+        value.length === 10
+          ? ""
+          : "Please enter a valid 10-digit mobile number",
+    }));
+  }
+};
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      if (phone.length === 10 && !isOtpSent && phone !== lastCheckedPhone) {
+
+  const delayDebounce = setTimeout(async () => {
+
+    // =========================================
+    // INTERNATIONAL FLOW
+    // =========================================
+    if (isWonderlandInternational) {
+
+      // Minimum 4 digits required
+      if (
+        phone.length >= 4 &&
+        !isOtpSent &&
+        phone !== lastCheckedPhone
+      ) {
+
         setLastCheckedPhone(phone);
+
         try {
+
           let resp = await fetchUserData(
-            `${GET_USER_BY_PHONE}/${phone}`,
-            "GET",
+            `${GET_USER_BY_PHONE}/${phone}?isWonderlandInternational=${isWonderlandInternational}`,
+            "GET"
           );
-          setUserData(resp?.data);
+
+          setUserData(resp?.data || {});
           setName(resp?.data?.name || "");
+
         } catch (err) {
           console.error("Error fetching user details:", err);
         }
       }
-    };
-    fetchUserDetails();
-  }, [phone]);
+
+      return;
+    }
+
+    // =========================================
+    // NORMAL FLOW
+    // =========================================
+    if (
+      phone.length === 10 &&
+      !isOtpSent &&
+      phone !== lastCheckedPhone
+    ) {
+
+      setLastCheckedPhone(phone);
+
+      try {
+
+        let resp = await fetchUserData(
+          `${GET_USER_BY_PHONE}/${phone}`,
+          "GET"
+        );
+
+        setUserData(resp?.data);
+        setName(resp?.data?.name || "");
+
+      } catch (err) {
+        console.error("Error fetching user details:", err);
+      }
+    }
+
+  }, 200); // debounce
+
+  return () => clearTimeout(delayDebounce);
+
+}, [phone]);
 
   useEffect(() => {
-    if (phone.length < 10) {
+
+  // =========================================
+  // INTERNATIONAL FLOW
+  // =========================================
+  if (isWonderlandInternational) {
+
+    if (phone.length < 4) {
       setShowNameField(false);
+      return;
     }
-    if (phone.length === 10) {
-      setTimeout(() => {
-        setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
-      }, 150);
-    }
-  }, [phone, userData, fetchUserDataLoading, isFetched]);
+
+    setTimeout(() => {
+      setShowNameField(
+        !userData?.name &&
+        !fetchUserDataLoading &&
+        isFetched
+      );
+    }, 150);
+
+    return;
+  }
+
+  // =========================================
+  // NORMAL FLOW
+  // =========================================
+  if (phone.length < 10) {
+    setShowNameField(false);
+  }
+
+  if (phone.length === 10) {
+
+    setTimeout(() => {
+
+      setShowNameField(
+        !userData?.name &&
+        !fetchUserDataLoading &&
+        isFetched
+      );
+
+    }, 150);
+  }
+
+}, [
+  phone,
+  userData,
+  fetchUserDataLoading,
+  isFetched,
+  isWonderlandInternational,
+]);
 
   // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
@@ -146,48 +257,17 @@ const LoginModal = ({ isOpen, onClose }) => {
   };
 
   // Send OTP
-  // const sendOtp = async () => {
-  //   let newError = { name: "", phone: "" };
-  //   if (!name.trim()) newError.name = "Name is required";
-  //   if (!phone) newError.phone = "Mobile number is required";
-  //   if (phone && phone.length !== 10)
-  //     newError.phone = "Please enter a valid 10-digit number";
-
-  //   if (newError.name || newError.phone) {
-  //     setError(newError);
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await makeRequest(OTP_GENERATE_END_POINT, "POST", {
-  //       phone,
-  //       name,
-  //       role: "customer",
-  //       fromWonderland: true,
-  //     });
-
-  //     if (response.status === 200) {
-  //       setIsOtpSent(true);
-  //       resetTimer();
-  //       setError({ name: "", phone: "" });
-  //       setOtp(["", "", "", ""]);
-  //       setOtpError("");
-  //       setTimeout(() => inputsRef.current[0]?.focus(), 300);
-  //     } else {
-  //       setError({ ...newError, phone: "Failed to send OTP. Try again." });
-  //     }
-  //   } catch (err) {
-  //     setError({ ...newError, phone: "Error sending OTP. Please retry." });
-  //   }
-  // };
-
   const sendOtp = async () => {
     let newError = { name: "", phone: "" };
 
     if (!name.trim()) newError.name = "Name is required";
     if (!phone) newError.phone = "Mobile number is required";
 
-    if (phone && phone.length !== 10) {
+   if (
+  !isWonderlandInternational &&
+  phone &&
+  phone.length !== 10
+) {
       newError.phone = "Please enter a valid 10-digit number";
     }
 
@@ -564,10 +644,12 @@ const LoginModal = ({ isOpen, onClose }) => {
               buttonClass="login-modal-btn"
               onClick={handleClick}
               disabled={
-                sendOtpLoading ||
-                verifyOtpLoading ||
-                (isOtpSent && otp.join("").length !== 4)
-              }
+  sendOtpLoading ||
+  verifyOtpLoading ||
+  (!isWonderlandInternational &&
+    isOtpSent &&
+    otp.join("").length !== 4)
+}
               loading={sendOtpLoading || verifyOtpLoading}
             />
           </div>

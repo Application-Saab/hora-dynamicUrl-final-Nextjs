@@ -746,7 +746,7 @@ const ChatPage = () => {
                   >
                     {senderName
                       ? senderName
-                      : `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
+                      : `${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
                   </div>
                 )}
                 <div

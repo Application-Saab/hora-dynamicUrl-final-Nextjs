@@ -202,7 +202,7 @@ const AccountPage = () => {
                   {userDetails
                     ? userDetails?.phone?.includes(91)
                       ? userDetails?.phone
-                      : `+91${userDetails?.phone}`
+                      : `${userDetails?.phone}`
                     : ""}
                 </p>
               </div>

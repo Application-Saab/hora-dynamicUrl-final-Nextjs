@@ -1,4 +1,4 @@
-export const BASE_URL = "https://horaservices.com";
+export const BASE_URL = "http://localhost:5000";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
