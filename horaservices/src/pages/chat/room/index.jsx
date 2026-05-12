@@ -68,8 +68,6 @@ const ChatPage = () => {
   const isEmojiInsertRef = useRef(false);
   const initialScrollDoneRef = useRef(false); // 🔥 NEW
   const showEmojiPickerRef = useRef(false);
-  const emojiPaddingAtKeyboardStartRef = useRef(0);
-  const isKeyboardVisibleRef = useRef(false);
 
   const scrollToBottom = (smooth = false) => {
     if (!chatBodyRef.current) return;
@@ -177,7 +175,7 @@ const ChatPage = () => {
         }
       }
 
-      if (firstUnreadIndex !== -1) {
+      if (firstUnreadIndex > 0) {
         // Scroll to element using direct scrollTop calculation
         const messageElements = container.querySelectorAll(".chat-message");
         const targetElement = messageElements[firstUnreadIndex];
@@ -226,43 +224,31 @@ const ChatPage = () => {
         document.body.style.overflow = "hidden";
 
         if (chatLayout) {
-          chatLayout.style.top = `${vv.offsetTop}px`;
           chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
           chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
 
-          if (showEmojiPickerRef.current) {
-            // Keyboard closing while emoji is open — emoji picker manages padding, leave it
-          } else {
-            // Keyboard opening: on first event capture the emoji padding,
-            // then reduce it proportionally each frame so content area stays constant.
-            if (!isKeyboardVisibleRef.current) {
-              isKeyboardVisibleRef.current = true;
-              emojiPaddingAtKeyboardStartRef.current =
-                parseFloat(chatLayout.style.paddingBottom) || 0;
-            }
-            const originalPadding = emojiPaddingAtKeyboardStartRef.current;
-            if (originalPadding > 5) {
-              const remaining = Math.max(0, originalPadding - keyboardH);
-              chatLayout.style.paddingBottom = remaining > 5 ? `${remaining}px` : "";
-            } else {
-              chatLayout.style.paddingBottom = "";
-            }
+          if (!showEmojiPickerRef.current) {
+            // iOS 15+ Safari: vv.height === window.innerHeight always, so this branch
+            // never fires — browser handles bottom:0 above keyboard automatically.
+            // Older iOS / Android / iPad Chrome: branch fires, paddingBottom pushes
+            // content above the keyboard without hiding the input.
+            chatLayout.style.paddingBottom = `${keyboardH}px`;
           }
         }
 
         requestAnimationFrame(() => scrollToBottom());
       } else {
         // Keyboard fully closed
-        isKeyboardVisibleRef.current = false;
-        emojiPaddingAtKeyboardStartRef.current = 0;
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
         document.body.style.overflow = "";
 
         if (chatLayout) {
-          chatLayout.style.top = "";
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
-          if (!showEmojiPickerRef.current) {
+          if (showEmojiPickerRef.current) {
+            const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+            chatLayout.style.paddingBottom = `${kbh + 5}px`;
+          } else {
             chatLayout.style.paddingBottom = "";
           }
         }
@@ -299,8 +285,10 @@ const ChatPage = () => {
   }, []);
 
   // Keep emoji ref in sync so setVvh closure can read it
+  // Also scroll to bottom so last message stays visible after layout reflow
   useEffect(() => {
     showEmojiPickerRef.current = showEmojiPicker;
+    setTimeout(() => scrollToBottom(true), 80);
   }, [showEmojiPicker]);
 
   // Track cursor position whenever selection changes inside the input
@@ -386,8 +374,6 @@ const ChatPage = () => {
           const rng = s.getRangeAt(0).cloneRange();
           rng.collapse(true);
           const rect = rng.getBoundingClientRect();
-          // getBoundingClientRect returns a zero rect on mobile Chrome when cursor is
-          // after an <img> node and not yet painted — skip correction to preserve savedScrollTop
           if (rect.width !== 0 || rect.height !== 0 || rect.top !== 0) {
             const elRect = el.getBoundingClientRect();
             const relTop = rect.top - elRect.top + el.scrollTop;
@@ -396,6 +382,9 @@ const ChatPage = () => {
             } else if (relTop + rect.height > el.scrollTop + el.clientHeight) {
               el.scrollTop = relTop + rect.height - el.clientHeight;
             }
+          } else {
+            // mobile Chrome: cursor rect is zero after img node — scroll to end to show latest emoji
+            el.scrollTop = el.scrollHeight;
           }
         }
       }
@@ -956,28 +945,23 @@ const ChatPage = () => {
           textareaRef={textareaRef}
           ignoreNextFocusRef={ignoreNextFocusRef}
           onBackspace={handleBackspace}
+          showEmojiPickerRef={showEmojiPickerRef}
         />
         <div
           ref={textareaRef}
           contentEditable
           inputMode="text"
           suppressContentEditableWarning={true}
-          onFocus={() => {
-            if (showEmojiPicker) {
-              // Picker open: user tapped text to reposition cursor — keep picker, suppress keyboard
-              textareaRef.current?.setAttribute("inputmode", "none");
-              return;
+          onTouchStart={() => {
+            if (showEmojiPicker && textareaRef.current) {
+              // Instantly remove .open from DOM so picker hides before React re-renders
+              document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
+              textareaRef.current.removeAttribute("inputmode");
+              showEmojiPickerRef.current = false;
+              setShowEmojiPicker(false);
             }
           }}
-          onInput={() => {
-            resizeTextarea();
-          }}
-          onClick={() => {
-            if (showEmojiPicker) {
-              // Picker open: tap = cursor reposition only, keep inputmode=none
-              textareaRef.current?.setAttribute("inputmode", "none");
-            }
-          }}
+          onInput={resizeTextarea}
           className="chat-input"
           data-placeholder="Type message here..."
         />

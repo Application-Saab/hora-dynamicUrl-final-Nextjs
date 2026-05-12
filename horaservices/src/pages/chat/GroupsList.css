@@ -160,35 +160,30 @@
 
 /*=========================== chat Header================================== */
 .chat-layout {
-  height: var(--vvh, 100vh);
-  min-height: var(--vvh, 100vh);
-  max-height: var(--vvh, 100vh);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* iOS Safari: fixed bottom:0 automatically stays above keyboard; Android: JS adds paddingBottom */
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  width: 100vw;
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
-  top: 0;
-  left: 0;
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 5px);
-  transition: padding-bottom 0.12s linear;
 }
 :root {
   --sat: env(safe-area-inset-top);
 }
 
 .chat-header-wrapper {
-  position: fixed;
-  top: clamp(6px, calc((8 / 393) * 100vw), 14px);
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   z-index: 9999;
-  transform: translateZ(0);
-  will-change: transform;
+  padding-top: calc(clamp(6px, calc((8 / 393) * 100vw), 14px) + env(safe-area-inset-top, 0px));
+  padding-bottom: 4px;
 }
 
 /* MAIN HEADER BAR */
@@ -267,14 +262,14 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  min-height: clamp(40px, calc((50 / 393) * 100vw), 60px);
+  min-height: clamp(36px, calc((44 / 393) * 100vw), 54px);
   height: auto;
   padding: 0 clamp(4px, calc((7 / 393) * 100vw), 9px) 0
     clamp(4px, calc((7 / 393) * 100vw), 9px);
 
   border-radius: clamp(30px, calc((48.35 / 393) * 100vw), 55px);
   border: 1px solid #ddd;
-  margin: clamp(5px, calc((10 / 393) * 100vw), 12px);
+  margin: clamp(3px, calc((5 / 393) * 100vw), 7px) clamp(5px, calc((10 / 393) * 100vw), 12px);
   max-width: 480px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   z-index: 100000;
@@ -312,7 +307,7 @@
 .chat-input {
   flex: 1;
   outline: none;
-  padding: 12px 8px;
+  padding: 8px;
   font-size: 16px;
   line-height: 1.4;
   min-height: 20px;
@@ -390,15 +385,9 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 15px 20px 10px; /* Extra bottom padding for sticky input */
+  padding: 16px 15px 20px 10px;
   display: flex;
   flex-direction: column;
-
-  /* Account for fixed header - start below header area */
-  margin-top: calc(
-    clamp(20px, calc((41 / 393) * 100vw), 59px) +
-      clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px
-  );
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 

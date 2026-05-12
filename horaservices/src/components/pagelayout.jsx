@@ -45,7 +45,7 @@ const PageLayout = ({ children }) => {
       </main>
 
       {/*  Show BottomNav on selected pages, passing userId */}
-      {showBottomNav ? <BottomNav id={userId} /> : !isWonderlandPath && <Footer />}
+      {showBottomNav ? <BottomNav id={userId} /> : !isWonderlandPath && !pathname?.startsWith("/chat/room") && <Footer />}
     </div>
   );
 };
