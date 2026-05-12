@@ -52,6 +52,7 @@ import ImageGrid from "@/components/image-galleries/ImageGrid";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 const EventwallSection = ({
   userData,
   rsvpSubmitted,
@@ -59,6 +60,7 @@ const EventwallSection = ({
   isHost,
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { eventid } = router.query;
   const { makeRequest: getAllPosts } = useApi();
   const { makeRequest: getAllLikes } = useApi();
@@ -100,6 +102,9 @@ const EventwallSection = ({
   );
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderlandinternational",
+  );
 
   const actionMenuRef = useRef(null);
 
@@ -559,7 +564,7 @@ const EventwallSection = ({
       label: "Notes",
       icon: NotesButtonIcon.src,
       onClick: () =>
-        router.push(`/wonderland/Thankyou-note?eventid=${eventid}`),
+        router.push(`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`),
     },
     {
       label: "Post Badge",

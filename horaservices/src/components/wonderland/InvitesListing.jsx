@@ -1,13 +1,19 @@
 import useApi from "@/hooks/useApi";
 import { GET_ALL_EVENTS_BY_USERID } from "@/utils/apiconstants";
+import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 
 const InvitesListing = ({ userId }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { data, loading } = useApi(
     `${GET_ALL_EVENTS_BY_USERID}/${userId}`,
     "get"
   );
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderlandinternational",
+  );
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "Event Date";
@@ -23,7 +29,11 @@ const InvitesListing = ({ userId }) => {
   };
 
   const handleClickViewEvent = (eventData) => {
-    router.push(`/wonderland/invite?eventid=${eventData._id}`);
+    if (isWonderlandInternational) {
+      router.push(`/wonderlandinternational/invite?eventid=${eventData._id}`);
+    } else {
+      router.push(`/wonderland/invite?eventid=${eventData._id}`);
+    }
   };
 
   return loading ? (
