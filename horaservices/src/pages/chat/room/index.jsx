@@ -19,6 +19,12 @@ import { getRoomDetails } from "@/utils/setGroupDetails";
 import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
 import { sortRooms } from "@/hooks/ChatProvider";
+import {
+  getCachedMessages,
+  setCachedMessages,
+  getCachedRoomDetails,
+  setCachedRoomDetails,
+} from "@/utils/messagesCache";
 
 const getAvatarColor = (name) => {
   const colors = [
@@ -43,7 +49,13 @@ const getAvatarColor = (name) => {
 
 const ChatPage = () => {
   const router = useRouter();
-  const { groupId } = router.query;
+  // router.query is empty on first render in Next.js (hydration delay).
+  // Read directly from the URL as fallback so effects fire immediately.
+  const groupId =
+    router.query.groupId ||
+    (typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("groupId")
+      : null);
   const userId =
     typeof window !== "undefined"
       ? localStorage.getItem("userID") ||
@@ -56,41 +68,100 @@ const ChatPage = () => {
   const { makeRequest: markReadRequest } = useApi();
   const { makeRequest: createDirectChatRequest } = useApi();
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
-  const [messages, setMessages] = useState([]);
+  const [roomDisplayDetails, setRoomDisplayDetails] = useState(() => {
+    if (typeof window === "undefined") return {};
+    const gid = new URLSearchParams(window.location.search).get("groupId");
+    return gid ? (getCachedRoomDetails(gid) || {}) : {};
+  });
+
+  // Synchronous lazy init — reads localStorage cache before first render.
+  // If cache exists, chat shows on the very first paint with zero extra render cycles.
+  const [messages, setMessages] = useState(() => {
+    if (typeof window === "undefined") return [];
+    const gid = new URLSearchParams(window.location.search).get("groupId");
+    return gid ? (getCachedMessages(gid) || []) : [];
+  });
+  const [messagesLoading, setMessagesLoading] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const gid = new URLSearchParams(window.location.search).get("groupId");
+    if (!gid) return true;
+    const cached = getCachedMessages(gid);
+    return !cached || cached.length === 0;
+  });
+
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [chatBg, setChatBg] = useState(null);
+  const [chatBg] = useState(() => {
+    if (typeof window === "undefined") return chatBgImage.src;
+    const saved = localStorage.getItem("chatBgImage");
+    if (saved) return saved;
+    try { localStorage.setItem("chatBgImage", chatBgImage.src); } catch {}
+    return chatBgImage.src;
+  });
   const [userData, setUserData] = useState({});
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
   const lastRangeRef = useRef(null);
   const ignoreNextFocusRef = useRef(false);
   const isEmojiInsertRef = useRef(false);
-  const initialScrollDoneRef = useRef(false); // 🔥 NEW
+  const isComposingRef = useRef(false);
+  const initialScrollDoneRef = useRef(false);
   const showEmojiPickerRef = useRef(false);
+  const inputTouchStartYRef = useRef(0);
+  // Tracks which groupId is currently rendered — used to detect room switches
+  const activeGroupIdRef = useRef(
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("groupId")
+      : null
+  );
 
   const scrollToBottom = (smooth = false) => {
     if (!chatBodyRef.current) return;
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const el = chatBodyRef.current;
-        if (!el) return;
-        el.style.scrollBehavior = smooth ? "smooth" : "auto";
-        el.scrollTop = el.scrollHeight;
-      });
+      const el = chatBodyRef.current;
+      if (!el) return;
+      el.style.scrollBehavior = smooth ? "smooth" : "auto";
+      el.scrollTop = el.scrollHeight;
     });
   };
 
-  // Mark read on mount if selected
+  // Load messages on mount/room-switch — serve from cache, always refresh in background
   useEffect(() => {
-    if (selectedGroup && userId) {
-      const gid = selectedGroup._id || selectedGroup.id;
-      markRoomRead(gid, userId);
-      fetchMessagesForRoom(gid);
-    }
-  }, [selectedGroup, userId]);
+    if (!groupId || !userId) return;
 
-  // Set selected from groupId
+    const isRoomSwitch = activeGroupIdRef.current !== groupId;
+    activeGroupIdRef.current = groupId;
+
+    if (isRoomSwitch) {
+      // Navigating to a different room — reset scroll/visibility and load that room
+      initialScrollDoneRef.current = false;
+      if (chatBodyRef.current) chatBodyRef.current.classList.remove("ready");
+
+      const cached = getCachedMessages(groupId);
+      if (cached && cached.length > 0) {
+        setMessages(cached);
+        setMessagesLoading(false);
+        fetchMessagesForRoom(groupId, true);
+      } else {
+        setMessages([]);
+        setMessagesLoading(true);
+        fetchMessagesForRoom(groupId, false);
+      }
+    } else {
+      // Initial mount — messages already loaded from cache via lazy useState.
+      // Just background-refresh so new messages appear without any spinner.
+      const cached = getCachedMessages(groupId);
+      if (cached && cached.length > 0) {
+        fetchMessagesForRoom(groupId, true);
+      } else {
+        // No cache at all — fetch normally
+        fetchMessagesForRoom(groupId, false);
+      }
+    }
+
+    markRoomRead(groupId, userId);
+  }, [groupId, userId]);
+
+  // Set selectedGroup from chatRooms (for header display and room details)
   useEffect(() => {
     if (!groupId || !chatRooms.length) return;
     const selected = chatRooms.find(
@@ -98,14 +169,6 @@ const ChatPage = () => {
     );
     if (selected) setSelectedGroup(selected);
   }, [groupId, chatRooms]);
-
-  // Reset on room change
-  useEffect(() => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.classList.remove("ready");
-    }
-    initialScrollDoneRef.current = false;
-  }, [groupId]);
 
   // Join socket room when chat opens so server sends message:new events here
   useEffect(() => {
@@ -127,14 +190,18 @@ const ChatPage = () => {
     const onMessageNewLocal = (msg) => {
       if (String(msg.groupId) !== String(gid)) return;
       setMessages((prev) => {
+        let updated;
         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
-          return prev.map((m) =>
+          updated = prev.map((m) =>
             m.tempId === msg.tempId ? { ...msg, id: msg._id } : m,
           );
-        }
-        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+        } else if (prev.some((m) => String(m._id || m.id) === String(msg._id))) {
           return prev;
-        return [...prev, { ...msg, id: msg._id }];
+        } else {
+          updated = [...prev, { ...msg, id: msg._id }];
+        }
+        setCachedMessages(gid, updated);
+        return updated;
       });
       setTimeout(() => markRoomRead(gid, userId), 50);
       scrollToBottom(true);
@@ -143,17 +210,20 @@ const ChatPage = () => {
     return () => socket.off("message:new", onMessageNewLocal);
   }, [selectedGroup, userId]);
 
-  // First scroll BEFORE paint (synchronous)
+  // First scroll BEFORE paint (synchronous) — runs as soon as messages are ready
   useLayoutEffect(() => {
-    if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+    if (!messages.length || !chatBodyRef.current) return;
     if (initialScrollDoneRef.current) return;
 
     const container = chatBodyRef.current;
-    const gid = selectedGroup._id || selectedGroup.id;
+    // Always reset to instant scroll — prevents stale `smooth` from animating this jump
+    container.style.scrollBehavior = "auto";
+
+    const gid = selectedGroup?._id || selectedGroup?.id || groupId;
     const unreadCount = unreadCounts[gid] || 0;
 
-    // FORCE scroll IMMEDIATELY (before ANY paint)
-    if (unreadCount > 0) {
+    // Only attempt unread-scroll when chatRooms is loaded so lastReadAt is available
+    if (unreadCount > 0 && chatRooms.length > 0) {
       const roomObj = chatRooms.find(
         (r) => String(r._id || r.id) === String(gid),
       );
@@ -176,34 +246,22 @@ const ChatPage = () => {
       }
 
       if (firstUnreadIndex > 0) {
-        // Scroll to element using direct scrollTop calculation
         const messageElements = container.querySelectorAll(".chat-message");
         const targetElement = messageElements[firstUnreadIndex];
         if (targetElement) {
-          // Calculate exact scroll position
           const containerTop = container.getBoundingClientRect().top;
           const targetTop = targetElement.getBoundingClientRect().top;
-          const scrollOffset = targetTop - containerTop;
-
-          // Set scroll INSTANTLY
-          container.scrollTop = container.scrollTop + scrollOffset;
-
-          // Blink effect
-          setTimeout(() => {
-            targetElement.style.backgroundColor = "";
-          }, 2000);
+          container.scrollTop = container.scrollTop + (targetTop - containerTop);
         }
       } else {
         container.scrollTop = container.scrollHeight;
       }
     } else {
-      // No unread - bottom
+      // chatRooms not yet loaded or no unread — default to bottom
       container.scrollTop = container.scrollHeight;
     }
 
     initialScrollDoneRef.current = true;
-
-    // Show container AFTER scroll set
     container.classList.add("ready");
   }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
 
@@ -219,6 +277,10 @@ const ChatPage = () => {
       const chatLayout = document.querySelector(".chat-layout");
 
       if (vv.height < window.innerHeight) {
+        // Emoji picker is managing layout — skip entirely to avoid flicker during
+        // the keyboard-close animation that plays while transitioning keyboard→emoji.
+        if (showEmojiPickerRef.current) return;
+
         const keyboardH = window.innerHeight - vv.height;
         docEl.style.setProperty("--vvh", `${vv.height}px`);
         document.body.style.overflow = "hidden";
@@ -227,13 +289,14 @@ const ChatPage = () => {
           chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
           chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
 
-          if (!showEmojiPickerRef.current) {
-            // iOS 15+ Safari: vv.height === window.innerHeight always, so this branch
-            // never fires — browser handles bottom:0 above keyboard automatically.
-            // Older iOS / Android / iPad Chrome: branch fires, paddingBottom pushes
-            // content above the keyboard without hiding the input.
-            chatLayout.style.paddingBottom = `${keyboardH}px`;
-          }
+          // iOS 15+ Safari: vv.height === window.innerHeight always, so this branch
+          // never fires — browser handles bottom:0 above keyboard automatically.
+          // Older iOS / Android / iPad Chrome: branch fires, paddingBottom pushes
+          // content above the keyboard without hiding the input.
+          // Math.max prevents padding from temporarily dropping during emoji→keyboard
+          // transition (keyboard opens gradually, keyboardH starts small).
+          const currentPadding = parseFloat(chatLayout.style.paddingBottom) || 0;
+          chatLayout.style.paddingBottom = `${Math.max(keyboardH, currentPadding)}px`;
         }
 
         requestAnimationFrame(() => scrollToBottom());
@@ -247,7 +310,7 @@ const ChatPage = () => {
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
           if (showEmojiPickerRef.current) {
             const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
-            chatLayout.style.paddingBottom = `${kbh + 5}px`;
+            chatLayout.style.paddingBottom = `${kbh}px`;
           } else {
             chatLayout.style.paddingBottom = "";
           }
@@ -284,10 +347,15 @@ const ChatPage = () => {
     };
   }, []);
 
+  const emojiEffectMountedRef = useRef(false);
   // Keep emoji ref in sync so setVvh closure can read it
-  // Also scroll to bottom so last message stays visible after layout reflow
+  // Scroll to bottom after layout reflow — skip on initial mount to avoid visible animation
   useEffect(() => {
     showEmojiPickerRef.current = showEmojiPicker;
+    if (!emojiEffectMountedRef.current) {
+      emojiEffectMountedRef.current = true;
+      return;
+    }
     setTimeout(() => scrollToBottom(true), 80);
   }, [showEmojiPicker]);
 
@@ -378,8 +446,21 @@ const ChatPage = () => {
               el.scrollTop = relTop + rect.height - el.clientHeight;
             }
           } else {
-            // mobile Chrome: cursor rect is zero after img node — scroll to end to show latest emoji
-            el.scrollTop = el.scrollHeight;
+            // mobile Chrome: cursor rect is zero after img node.
+            // Use the inserted img's own rect to scroll just enough to keep it visible —
+            // avoids jumping to end when emoji was inserted in the middle of a message.
+            const imgRect = img.getBoundingClientRect();
+            if (imgRect.height !== 0) {
+              const elRect = el.getBoundingClientRect();
+              const relTop = imgRect.top - elRect.top + el.scrollTop;
+              if (relTop < el.scrollTop) {
+                el.scrollTop = relTop;
+              } else if (relTop + imgRect.height > el.scrollTop + el.clientHeight) {
+                el.scrollTop = relTop + imgRect.height - el.clientHeight;
+              }
+              // else: emoji is already visible — keep savedScrollTop as-is
+            }
+            // if imgRect is also zero, savedScrollTop is already restored above — do nothing
           }
         }
       }
@@ -420,23 +501,40 @@ const ChatPage = () => {
     }
   };
 
-  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
-    if (!groupId) return;
+  const fetchMessagesForRoom = async (targetGroupId, isBackgroundRefresh = false, page = 1, limit = 1000) => {
+    if (!targetGroupId) return;
+    let stale = false;
     try {
       const resp = await fetchMessagesRequest(
-        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+        `${GET_CHAT_MESSAGES}/${targetGroupId}?page=${page}&limit=${limit}`,
         "GET",
       );
       if (!resp.error && resp.data) {
-        setMessages(resp?.data || []);
+        // Discard results if user navigated to a different room while fetch was in flight
+        if (activeGroupIdRef.current !== targetGroupId) { stale = true; return; }
+
+        const fetched = resp.data || [];
+
+        // Merge instead of overwrite: preserve any messages in current state that are
+        // NOT in the server response — covers:
+        //  • Optimistic messages sent but not yet confirmed by socket
+        //  • Socket-received messages that arrived after this fetch was dispatched
+        setMessages((prev) => {
+          if (!prev.length) return fetched;
+          const fetchedIdSet = new Set(fetched.map((m) => String(m._id || m.id)));
+          const extra = prev.filter((m) => !fetchedIdSet.has(String(m._id || m.id)));
+          return extra.length > 0 ? [...fetched, ...extra] : fetched;
+        });
+
+        setCachedMessages(targetGroupId, fetched);
         const roomObj = chatRooms.find(
-          (r) => String(r._id || r.id) === String(groupId),
+          (r) => String(r._id || r.id) === String(targetGroupId),
         );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
         const lastReadForMe = lastReadMap[userId]
           ? new Date(lastReadMap[userId])
           : null;
-        const unread = (resp.data || []).filter((m) => {
+        const unread = fetched.filter((m) => {
           const created = m.createdAt
             ? new Date(m.createdAt)
             : m.sentAt
@@ -445,12 +543,14 @@ const ChatPage = () => {
           if (!created || String(m.senderId) === String(userId)) return false;
           return lastReadForMe ? created > lastReadForMe : true;
         }).length;
-        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+        setUnreadCountsContext((prev) => ({ ...prev, [targetGroupId]: unread }));
       } else {
         console.warn("Failed fetch messages", resp);
       }
     } catch (err) {
       console.error("Fetch messages failed", err);
+    } finally {
+      if (!stale && !isBackgroundRefresh) setMessagesLoading(false);
     }
   };
 
@@ -473,28 +573,8 @@ const ChatPage = () => {
     fetchUserDetails();
   }, [userId]);
 
-  useEffect(() => {
-    const saved =
-      typeof window !== "undefined"
-        ? localStorage.getItem("chatBgImage")
-        : null;
-    if (saved) {
-      setChatBg(saved);
-    } else {
-      setChatBg(chatBgImage.src);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("chatBgImage", chatBgImage.src);
-      }
-    }
-  }, []);
-
   const handleBack = () => {
-    const basePath = "/chat";
-    if (userId) {
-      router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
-    } else {
-      router.push(basePath);
-    }
+    router.back();
   };
 
   const sendMessage = async () => {
@@ -550,6 +630,7 @@ const ChatPage = () => {
 
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
+    textareaRef.current.parentElement?.classList.remove("multi-line");
     scrollToBottom(true);
 
     if (!showEmojiPicker) {
@@ -695,6 +776,12 @@ const ChatPage = () => {
     const newHeight = Math.min(el.scrollHeight, 120);
     el.style.height = `${newHeight}px`;
 
+    // Reduce border-radius when input grows beyond a single line (~44px)
+    const container = el.parentElement;
+    if (container) {
+      container.classList.toggle("multi-line", newHeight > 44);
+    }
+
     // Always restore first — height:auto resets scrollTop to 0 on mobile
     el.scrollTop = prevScrollTop;
 
@@ -769,7 +856,10 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (selectedGroup) {
-      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+      const gid = selectedGroup._id || selectedGroup.id;
+      const details = getRoomDetails(selectedGroup, userId);
+      setRoomDisplayDetails(details);
+      setCachedRoomDetails(gid, details);
     }
   }, [selectedGroup]);
 
@@ -980,7 +1070,13 @@ const ChatPage = () => {
         </div>
       </div>
 
-      <div className="chat-messages" ref={chatBodyRef}>
+      {messagesLoading && (
+        <div className="chat-loading-overlay">
+          <div className="chat-loading-spinner" />
+        </div>
+      )}
+
+      <div className="chat-messages" ref={chatBodyRef} style={{ display: messagesLoading ? "none" : undefined }}>
         {messages.map((msg, index) => {
           const isMe = msg.senderId === userId;
           const senderName = msg.senderName;
@@ -1064,7 +1160,7 @@ const ChatPage = () => {
               key={msg._id}
             >
               <p className="info-chat-message-box">
-                {renderInfoMessage(msg, membersProfileMap)}
+                {renderInfoMessage(msg, membersProfileMap || {})}
               </p>
             </div>
           );
@@ -1089,14 +1185,18 @@ const ChatPage = () => {
           contentEditable
           inputMode="text"
           suppressContentEditableWarning={true}
-          onTouchStart={() => {
-            if (showEmojiPicker && textareaRef.current) {
-              // Instantly remove .open from DOM so picker hides before React re-renders
-              document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
-              textareaRef.current.removeAttribute("inputmode");
-              showEmojiPickerRef.current = false;
-              setShowEmojiPicker(false);
-            }
+          onTouchStart={(e) => {
+            inputTouchStartYRef.current = e.touches[0]?.clientY ?? 0;
+          }}
+          onTouchEnd={(e) => {
+            if (!showEmojiPicker || !textareaRef.current) return;
+            const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
+            if (dy > 10) return; // swipe — keep picker open
+            // Tap: remove inputmode so the focusin handler in EmojiPicker knows
+            // this is a deliberate tap and can close the picker + open the keyboard.
+            // Also instantly hide picker DOM for visual responsiveness.
+            textareaRef.current.removeAttribute("inputmode");
+            document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
           }}
           onCompositionStart={() => { isComposingRef.current = true; }}
           onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}

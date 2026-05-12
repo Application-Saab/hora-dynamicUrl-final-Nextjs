@@ -274,6 +274,11 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   z-index: 100000;
   touch-action: auto;
+  transition: border-radius 0.2s ease;
+}
+
+.chat-input-container.multi-line {
+  border-radius: clamp(14px, calc((20 / 393) * 100vw), 24px);
 }
 
 /* EMOJI BUTTON */
@@ -379,6 +384,28 @@
   width: clamp(14px, calc((19.63 / 393) * 100vw), 20px);
   height: clamp(14px, calc((19.63 / 393) * 100vw), 20px);
   object-fit: contain;
+}
+
+/* ----------------------------------------------------------------------------------------------------------------- */
+/* Chat loading overlay — shown while messages are being fetched */
+.chat-loading-overlay {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: chat-spin 0.75s linear infinite;
+}
+
+@keyframes chat-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ----------------------------------------------------------------------------------------------------------------- */

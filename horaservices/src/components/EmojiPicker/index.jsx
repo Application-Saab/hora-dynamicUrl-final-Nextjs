@@ -22,12 +22,14 @@ export default function EmojiPickerButton({
   textareaRef,
   showEmojiPickerRef,
 }) {
-  const [forceOpen, setForceOpen] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(260);
+  const [safeAreaBottom, setSafeAreaBottom] = useState(0);
   const [hasOpened, setHasOpened] = useState(false);
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false);
   const keepPaddingRef = useRef(false);
+  // Tracks when cleanup itself calls history.back() so onPopState can ignore that event
+  const pendingGoBackRef = useRef(false);
 
   // Synchronously marks ref false so setVvh sees the correct state immediately
   const markPickerClosed = () => {
@@ -35,26 +37,30 @@ export default function EmojiPickerButton({
   };
 
   useEffect(() => {
+    // Measure env(safe-area-inset-bottom) once via a temporary DOM element.
+    // This is the only reliable cross-browser way to read CSS env() values in JS.
+    const el = document.createElement("div");
+    el.style.cssText =
+      "position:fixed;bottom:0;left:0;width:0;height:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none";
+    document.body.appendChild(el);
+    const sab = el.getBoundingClientRect().height || 0;
+    document.body.removeChild(el);
+    setSafeAreaBottom(sab);
+
     if (!window.visualViewport) return;
 
     const handleResize = () => {
       const height = window.innerHeight - window.visualViewport.height;
-
-      // ignore tiny changes
       if (height > 100) {
         setKeyboardHeight(height);
         localStorage.setItem("keyboardHeight", height);
       }
     };
 
-    // restore cached value
     const cached = localStorage.getItem("keyboardHeight");
-    if (cached) {
-      setKeyboardHeight(parseInt(cached));
-    }
+    if (cached) setKeyboardHeight(parseInt(cached));
 
     window.visualViewport.addEventListener("resize", handleResize);
-
     return () =>
       window.visualViewport.removeEventListener("resize", handleResize);
   }, []);
@@ -70,6 +76,13 @@ export default function EmojiPickerButton({
         // if focus came from emoji insert DO NOTHING
         if (ignoreNextFocusRef.current) {
           ignoreNextFocusRef.current = false;
+          return;
+        }
+
+        // In simple mode, if the input still has inputmode="none" it means the picker
+        // is open and this focus came from a swipe gesture (not a deliberate tap to type).
+        // Keep inputmode so keyboard stays closed and picker stays visible.
+        if (simple && isPickerOpen && e.target.getAttribute("inputmode") === "none") {
           return;
         }
 
@@ -95,7 +108,6 @@ export default function EmojiPickerButton({
     e.preventDefault();
     /* ================= SIMPLE MODE ================= */
     if (simple) {
-      setForceOpen(false);
       // Keyboard icon clicked
       if (isPickerOpen) {
         // Hide picker DOM immediately so it disappears this frame before React re-renders
@@ -127,14 +139,14 @@ export default function EmojiPickerButton({
       const openPicker = () => {
         const chatLayouts = document.querySelectorAll(".chat-layout");
         chatLayouts.forEach((el) => {
-          el.style.paddingBottom = `${keyboardHeight + 5}px`;
+          el.style.paddingBottom = `${keyboardHeight}px`;
         });
         setIsPickerOpen(true);
         // RAF safety net: if setVvh fires one final time after this and clears
         // padding, restore it immediately in the next frame
         requestAnimationFrame(() => {
           chatLayouts.forEach((el) => {
-            el.style.paddingBottom = `${keyboardHeight + 5}px`;
+            el.style.paddingBottom = `${keyboardHeight}px`;
           });
         });
       };
@@ -182,7 +194,7 @@ export default function EmojiPickerButton({
 
     const elements = document.querySelectorAll(".chat-layout");
     elements.forEach((el) => {
-      el.style.paddingBottom = `${keyboardHeight + 5}px`;
+      el.style.paddingBottom = `${keyboardHeight}px`;
     });
 
     return () => {
@@ -238,11 +250,44 @@ export default function EmojiPickerButton({
     return () => window.removeEventListener("popstate", back);
   }, [isPickerOpen, simple]);
 
+  // Simple mode: push a history entry when picker opens so the Android back button
+  // closes the picker first instead of navigating away from the page.
+  useEffect(() => {
+    if (!simple || !isPickerOpen) return;
+
+    window.history.pushState({ emojiPickerSimple: true }, "");
+
+    const onPopState = () => {
+      // Ignore popstate events triggered by our own cleanup's history.back() call.
+      // Without this guard, rapid open→close→open cycles cause the async history.back()
+      // from the previous close to fire the new listener and unexpectedly close the picker.
+      if (pendingGoBackRef.current) {
+        pendingGoBackRef.current = false;
+        return;
+      }
+      // Ensure padding is cleared when back button closes the picker (safety reset).
+      keepPaddingRef.current = false;
+      markPickerClosed();
+      setIsPickerOpen(false);
+    };
+    window.addEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      // If the picker was closed by something other than the back button (keyboard icon,
+      // outside tap, etc.), pop our injected history entry so the user doesn't need an
+      // extra back press to leave chat.
+      if (window.history.state?.emojiPickerSimple) {
+        pendingGoBackRef.current = true;
+        window.history.back();
+      }
+    };
+  }, [isPickerOpen, simple]);
+
   useEffect(() => {
     const handler = (e) => {
       if (
         isPickerOpen &&
-        !forceOpen &&
         !e.target.closest(".emoji-picker-container") &&
         !e.target.closest(".emoji-btn") &&
         !e.target.closest(".chat-input-container")
@@ -257,7 +302,6 @@ export default function EmojiPickerButton({
         markPickerClosed();
         setIsPickerOpen(false);
         if (!simple) {
-          setForceOpen(false);
           blockKeyboard.current = false;
         }
       }
@@ -265,7 +309,7 @@ export default function EmojiPickerButton({
 
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
-  }, [isPickerOpen, simple, forceOpen]);
+  }, [isPickerOpen, simple]);
 
   useEffect(() => {
     if (!isPickerOpen) {
@@ -315,7 +359,7 @@ export default function EmojiPickerButton({
             <EmojiPicker
               onEmojiClick={(emojiObject) => handleEmojiClick(emojiObject)}
               width="100%"
-              height={keyboardHeight}
+              height={Math.max(keyboardHeight - safeAreaBottom, 180)}
               searchDisabled
               previewConfig={{ showPreview: false }}
               lazyLoadEmojis
