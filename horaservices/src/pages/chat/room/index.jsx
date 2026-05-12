@@ -341,11 +341,6 @@ const ChatPage = () => {
     const img = document.createElement("img");
     img.src = emojiUrl;
     img.className = "emoji-inline";
-    img.style.width = "24px";
-    img.style.height = "24px";
-    img.style.verticalAlign = "middle";
-    img.style.display = "inline-block";
-    img.style.margin = "0 2px";
 
     range.insertNode(img);
 
@@ -504,17 +499,22 @@ const ChatPage = () => {
 
   const sendMessage = async () => {
     if (!textareaRef.current) return;
-    const messageHTML = textareaRef.current.innerHTML.trim();
+    const rawHTML = textareaRef.current.innerHTML.trim();
     const messageText = textareaRef.current.textContent.trim();
     if (
       !messageText &&
-      (!messageHTML ||
-        messageHTML === "<br>" ||
-        messageHTML === "<div><br></div>")
+      (!rawHTML ||
+        rawHTML === "<br>" ||
+        rawHTML === "<div><br></div>")
     ) {
       return;
     }
     if (!selectedGroup?.eventId || !userId) return;
+
+    // Convert any keyboard Unicode emoji → <img class="emoji-inline"> so all emoji
+    // are stored as images, matching the emoji picker's output
+    const messageHTML = processEmojiInHtml(rawHTML);
+
     const groupId = selectedGroup?._id;
     const tempId = `temp_${Date.now()}_${Math.random()
       .toString(36)
@@ -611,6 +611,79 @@ const ChatPage = () => {
     const updated = window.getSelection();
     if (updated?.rangeCount > 0) lastRangeRef.current = updated.getRangeAt(0).cloneRange();
     resizeTextarea();
+  };
+
+  const convertEmojiInInput = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const EMOJI_RE =
+      /(?:[\u{1F1E0}-\u{1F1FF}]{2}|[#*0-9]️⃣|\p{Extended_Pictographic}\p{Emoji_Modifier}?️?(?:‍\p{Extended_Pictographic}\p{Emoji_Modifier}?️?)*)/gu;
+
+    const sel = window.getSelection();
+    const anchorNode = sel?.rangeCount ? sel.getRangeAt(0).startContainer : null;
+    const anchorOffset = sel?.rangeCount ? sel.getRangeAt(0).startOffset : 0;
+
+    let anyConverted = false;
+    let cursorImg = null;
+    let lastAnyImg = null;
+
+    const walk = (node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === "IMG") return;
+        [...node.childNodes].forEach(walk);
+        return;
+      }
+      if (node.nodeType !== Node.TEXT_NODE) return;
+
+      const text = node.nodeValue;
+      EMOJI_RE.lastIndex = 0;
+      if (!EMOJI_RE.test(text)) return;
+      EMOJI_RE.lastIndex = 0;
+
+      const isCursor = node === anchorNode;
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      let m;
+
+      while ((m = EMOJI_RE.exec(text)) !== null) {
+        if (m.index > last)
+          frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+
+        const img = document.createElement("img");
+        img.src = getEmojiImageUrl(m[0]);
+        img.className = "emoji-inline";
+        img.alt = m[0];
+        img.setAttribute(
+          "onerror",
+          "if(!this.dataset.r){this.dataset.r='1';this.src=this.src.replace('.png','-fe0f.png');}else{this.alt='';this.style.display='none';}"
+        );
+        frag.appendChild(img);
+        lastAnyImg = img;
+        if (isCursor && m.index + m[0].length <= anchorOffset) cursorImg = img;
+        last = m.index + m[0].length;
+        anyConverted = true;
+      }
+
+      if (last < text.length)
+        frag.appendChild(document.createTextNode(text.slice(last)));
+
+      node.parentNode.replaceChild(frag, node);
+    };
+
+    [...el.childNodes].forEach(walk);
+
+    if (!anyConverted) return;
+
+    const target = cursorImg || lastAnyImg;
+    if (target && sel) {
+      const range = document.createRange();
+      range.setStartAfter(target);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      lastRangeRef.current = range.cloneRange();
+    }
   };
 
   const resizeTextarea = () => {
@@ -752,6 +825,70 @@ const ChatPage = () => {
     };
   }, []);
 
+  const getEmojiImageUrl = (emojiStr) => {
+    const chars = [...emojiStr].map((c) => c.codePointAt(0));
+    const codepoints = [];
+    for (let i = 0; i < chars.length; i++) {
+      const cp = chars[i];
+      // Strip FE0F except inside keycap sequences (char + FE0F + 20E3).
+      // Symbols that need FE0F in their filename (❤️ → 2764-fe0f.png) are
+      // recovered by the onerror retry that appends -fe0f before .png.
+      if (cp === 0xfe0f && chars[i + 1] !== 0x20e3) continue;
+      codepoints.push(cp.toString(16).toLowerCase().padStart(4, "0"));
+    }
+    return `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${codepoints.join("-")}.png`;
+  };
+
+  const processEmojiInHtml = (html) => {
+    if (!html || typeof document === "undefined") return html;
+
+    // Covers: flags (🇮🇳 🇺🇸), keycaps (#️⃣ 1️⃣), standard emoji, skin-tone variants, ZWJ sequences
+    const EMOJI_RE =
+      /(?:[\u{1F1E0}-\u{1F1FF}]{2}|[#*0-9]️⃣|\p{Extended_Pictographic}\p{Emoji_Modifier}?️?(?:‍\p{Extended_Pictographic}\p{Emoji_Modifier}?️?)*)/gu;
+
+    const container = document.createElement("div");
+    container.innerHTML = html;
+
+    const walk = (node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.nodeValue;
+        EMOJI_RE.lastIndex = 0;
+        if (!EMOJI_RE.test(text)) return;
+
+        EMOJI_RE.lastIndex = 0;
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        let m;
+
+        while ((m = EMOJI_RE.exec(text)) !== null) {
+          if (m.index > last)
+            frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+          const img = document.createElement("img");
+          img.src = getEmojiImageUrl(m[0]);
+          img.className = "emoji-inline";
+          img.alt = m[0];
+          img.setAttribute("onerror", "if(!this.dataset.r){this.dataset.r='1';this.src=this.src.replace('.png','-fe0f.png');}else{this.alt='';this.style.display='none';}");
+          frag.appendChild(img);
+          last = m.index + m[0].length;
+        }
+
+        if (last < text.length)
+          frag.appendChild(document.createTextNode(text.slice(last)));
+
+        node.parentNode.replaceChild(frag, node);
+        return;
+      }
+
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === "IMG" || node.tagName === "A") return;
+        [...node.childNodes].forEach(walk);
+      }
+    };
+
+    [...container.childNodes].forEach(walk);
+    return container.innerHTML;
+  };
+
   const linkifyHtml = (html) => {
     if (!html) return html;
 
@@ -768,8 +905,8 @@ const ChatPage = () => {
         span.innerHTML = node.nodeValue.replace(urlRegex, (url) => {
           const href = url.startsWith("http") ? url : `https://${url}`;
 
-          return `<a 
-  href="${href}" 
+          return `<a
+  href="${href}"
   data-url="${href}"
   class="chat-link"
   target="_blank"
@@ -914,7 +1051,7 @@ const ChatPage = () => {
                 <div
                   className="chat-text"
                   dangerouslySetInnerHTML={{
-                    __html: linkifyHtml(msg.html || msg.message),
+                    __html: processEmojiInHtml(linkifyHtml(msg.html || msg.message)),
                   }}
                 />
                 <div className="chat-time">{formatTime(msg.createdAt)}</div>
@@ -961,7 +1098,9 @@ const ChatPage = () => {
               setShowEmojiPicker(false);
             }
           }}
-          onInput={resizeTextarea}
+          onCompositionStart={() => { isComposingRef.current = true; }}
+          onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}
+          onInput={() => { resizeTextarea(); if (!isComposingRef.current) convertEmojiInInput(); }}
           className="chat-input"
           data-placeholder="Type message here..."
         />
