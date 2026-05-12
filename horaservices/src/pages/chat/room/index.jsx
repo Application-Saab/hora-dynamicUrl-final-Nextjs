@@ -349,15 +349,38 @@ const ChatPage = () => {
 
   const emojiEffectMountedRef = useRef(false);
   // Keep emoji ref in sync so setVvh closure can read it
-  // Scroll to bottom after layout reflow — skip on initial mount to avoid visible animation
+  // Scroll to bottom after layout reflow — skip on initial mount to avoid visible animation.
+  // Double RAF waits for React commit + browser layout so .chat-messages height is settled
+  // before scrollHeight is read. The ResizeObserver below handles any later settling.
   useEffect(() => {
     showEmojiPickerRef.current = showEmojiPicker;
     if (!emojiEffectMountedRef.current) {
       emojiEffectMountedRef.current = true;
       return;
     }
-    setTimeout(() => scrollToBottom(true), 80);
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom(true)));
   }, [showEmojiPicker]);
+
+  // Re-pin to bottom whenever the messages-area height changes (picker open/close,
+  // keyboard show/hide, input grows multi-line) — but only when the user was already
+  // at-or-near the bottom, so reading older messages isn't disrupted.
+  useEffect(() => {
+    const el = chatBodyRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let prevHeight = el.clientHeight;
+    const NEAR_BOTTOM_PX = 80;
+    const obs = new ResizeObserver(() => {
+      if (isEmojiInsertRef.current) return; // emoji-insert manages its own scroll
+      const h = el.clientHeight;
+      if (h === prevHeight) return;
+      const wasNearBottom =
+        el.scrollTop + prevHeight >= el.scrollHeight - NEAR_BOTTOM_PX;
+      prevHeight = h;
+      if (wasNearBottom) scrollToBottom(true);
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // Track cursor position whenever selection changes inside the input
   useEffect(() => {
@@ -1179,6 +1202,7 @@ const ChatPage = () => {
           ignoreNextFocusRef={ignoreNextFocusRef}
           onBackspace={handleBackspace}
           showEmojiPickerRef={showEmojiPickerRef}
+          lastRangeRef={lastRangeRef}
         />
         <div
           ref={textareaRef}
@@ -1192,11 +1216,18 @@ const ChatPage = () => {
             if (!showEmojiPicker || !textareaRef.current) return;
             const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
             if (dy > 10) return; // swipe — keep picker open
-            // Tap: remove inputmode so the focusin handler in EmojiPicker knows
-            // this is a deliberate tap and can close the picker + open the keyboard.
-            // Also instantly hide picker DOM for visual responsiveness.
+            // Tap on input while picker is open: hide picker, reveal keyboard.
+            // Input stays focused throughout the picker session (open path no
+            // longer blurs), so no focus/focusin event fires from this tap —
+            // we must update React state ourselves or the next emoji-btn tap
+            // will hit the close path instead of reopening the picker.
             textareaRef.current.removeAttribute("inputmode");
             document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
+            document.querySelectorAll(".chat-layout").forEach((el) => {
+              el.style.paddingBottom = "";
+            });
+            showEmojiPickerRef.current = false;
+            setShowEmojiPicker(false);
           }}
           onCompositionStart={() => { isComposingRef.current = true; }}
           onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}

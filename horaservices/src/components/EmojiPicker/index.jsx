@@ -21,15 +21,50 @@ export default function EmojiPickerButton({
   ignoreNextFocusRef,
   textareaRef,
   showEmojiPickerRef,
+  lastRangeRef,
 }) {
   const [keyboardHeight, setKeyboardHeight] = useState(260);
   const [safeAreaBottom, setSafeAreaBottom] = useState(0);
   const [hasOpened, setHasOpened] = useState(false);
   const lastFocusedRef = useRef(null);
   const blockKeyboard = useRef(false);
-  const keepPaddingRef = useRef(false);
+  const pickerRef = useRef(null);
   // Tracks when cleanup itself calls history.back() so onPopState can ignore that event
   const pendingGoBackRef = useRef(false);
+
+  // Reserve exactly the picker's rendered height on .chat-layout — independent
+  // of keyboardHeight / safe-area drift (iOS Chrome toolbar can change env()
+  // between mount and picker-open, making the picker taller than expected).
+  const syncChatPadding = () => {
+    const el = pickerRef.current;
+    const measured = el?.offsetHeight || 0;
+    const px = measured > 0 ? measured : keyboardHeight;
+    document.querySelectorAll(".chat-layout").forEach((node) => {
+      node.style.paddingBottom = `${px}px`;
+    });
+  };
+
+  // Restore the caret to where the user last had it before focusing the input.
+  // Without this, focus() on a contentEditable drops the caret at position 0
+  // and the next character is prepended instead of appended.
+  const restoreCaret = () => {
+    const input = textareaRef?.current;
+    if (!input) return;
+    const sel = window.getSelection();
+    if (!sel) return;
+    const saved = lastRangeRef?.current;
+    const range =
+      saved && input.contains(saved.startContainer)
+        ? saved
+        : (() => {
+            const r = document.createRange();
+            r.selectNodeContents(input);
+            r.collapse(false);
+            return r;
+          })();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  };
 
   // Synchronously marks ref false so setVvh sees the correct state immediately
   const markPickerClosed = () => {
@@ -86,9 +121,14 @@ export default function EmojiPickerButton({
           return;
         }
 
-        // real user tap — remove inputmode so keyboard opens, close picker
+        // real user tap — remove inputmode so keyboard opens, close picker.
+        // Clear padding now: the keyboard (mobile) or layout default (desktop)
+        // will define the input's resting position; leftover picker padding
+        // doesn't match the keyboard height and pushes the input under it on iOS.
         e.target.removeAttribute("inputmode");
-        keepPaddingRef.current = true;
+        document.querySelectorAll(".chat-layout").forEach((el) => {
+          el.style.paddingBottom = "";
+        });
         markPickerClosed(); // sync update so setVvh reads correct state immediately
         setIsPickerOpen(false);
       }
@@ -110,21 +150,54 @@ export default function EmojiPickerButton({
     if (simple) {
       // Keyboard icon clicked
       if (isPickerOpen) {
-        // Hide picker DOM immediately so it disappears this frame before React re-renders
-        document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
-        keepPaddingRef.current = true;
-        markPickerClosed();
-        if (textareaRef?.current) {
-          textareaRef.current.removeAttribute("inputmode");
-          textareaRef.current.focus({ preventScroll: true });
+        // Re-summon the soft keyboard inside the user-gesture window.
+        // The flow "type → emoji → pick → keyboard icon" leaves iOS in a
+        // state where neither focus() nor inputmode toggling re-opens the
+        // keyboard (the input is already focused — focus() is a no-op —
+        // and iOS WebKit doesn't always honor a "none → text" inputmode
+        // change after the keyboard was previously dismissed).
+        // The "input tunnel" trick works around this: momentarily focus a
+        // throwaway <input> so iOS resets its keyboard state, then transfer
+        // focus back to the contentEditable. Because the transfer happens
+        // synchronously inside the same gesture handler, iOS keeps the
+        // keyboard open after the focus shift.
+        const input = textareaRef?.current;
+        if (input) {
+          input.removeAttribute("inputmode");
+          const tunnel = document.createElement("input");
+          tunnel.type = "text";
+          tunnel.setAttribute("autocomplete", "off");
+          tunnel.setAttribute("autocorrect", "off");
+          tunnel.setAttribute("autocapitalize", "off");
+          tunnel.style.cssText =
+            "position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;";
+          document.body.appendChild(tunnel);
+          tunnel.focus();
+          input.focus({ preventScroll: true });
+          tunnel.remove();
+          restoreCaret();
         }
-        setIsPickerOpen(false);
+        markPickerClosed();
+        // Defer picker-hide + padding-clear so the focus()/keyboard summon
+        // happens inside the user-gesture window. The browser (iOS WebKit
+        // auto-anchors fixed elements above the keyboard) or setVvh (Android)
+        // positions the input correctly once the keyboard is open.
+        queueMicrotask(() => {
+          document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
+          document.querySelectorAll(".chat-layout").forEach((el) => {
+            el.style.paddingBottom = "";
+          });
+          setIsPickerOpen(false);
+        });
         return;
       }
 
       if (textareaRef?.current) {
+        // inputmode="none" hides the keyboard on iOS WebKit without requiring
+        // a blur(). Keeping focus on the input lets the close path re-show
+        // the keyboard with just an inputmode change — far more reliable on
+        // iOS than blur→focus, which often fails to summon the keyboard.
         textareaRef.current.setAttribute("inputmode", "none");
-        textareaRef.current.blur();
       }
       setHasOpened(true);
       // Set ref NOW so setVvh sees it during the keyboard-close animation
@@ -142,12 +215,12 @@ export default function EmojiPickerButton({
           el.style.paddingBottom = `${keyboardHeight}px`;
         });
         setIsPickerOpen(true);
-        // RAF safety net: if setVvh fires one final time after this and clears
-        // padding, restore it immediately in the next frame
+        // After picker becomes visible, swap to its actual rendered height
+        // so the input is never overlapped on platforms where the picker
+        // ends up taller than keyboardHeight (iOS Chrome safe-area drift).
         requestAnimationFrame(() => {
-          chatLayouts.forEach((el) => {
-            el.style.paddingBottom = `${keyboardHeight}px`;
-          });
+          syncChatPadding();
+          requestAnimationFrame(syncChatPadding);
         });
       };
       if (delay > 0) {
@@ -196,12 +269,18 @@ export default function EmojiPickerButton({
     elements.forEach((el) => {
       el.style.paddingBottom = `${keyboardHeight}px`;
     });
+    // Snap to real rendered picker height once the open class has been applied
+    requestAnimationFrame(syncChatPadding);
+
+    // Re-measure on viewport changes while open — iOS Chrome's toolbar
+    // hide/show resizes the visual viewport and shifts env(safe-area-inset-bottom).
+    const onVvResize = () => syncChatPadding();
+    window.visualViewport?.addEventListener("resize", onVvResize);
 
     return () => {
-      if (keepPaddingRef.current) {
-        keepPaddingRef.current = false;
-        return; // visualViewport will clear padding when keyboard opens
-      }
+      window.visualViewport?.removeEventListener("resize", onVvResize);
+      // The EmojiPicker owns .chat-layout's paddingBottom while open; setVvh in
+      // the room owns it once the keyboard takes over (it gates on showEmojiPickerRef).
       elements.forEach((el) => {
         el.style.paddingBottom = "";
       });
@@ -212,9 +291,11 @@ export default function EmojiPickerButton({
     ignoreNextFocusRef.current = true;
     onEmojiSelect?.(emojiObj);
 
-    // In simple mode, reopen picker immediately after selection
-    if (simple) {
-      // Use queueMicrotask for immediate execution after current task
+    // In simple mode keep the picker open across selections. If onEmojiSelect
+    // refocused the input (which can flip our state), reassert open in a
+    // microtask. Skip the microtask if already open — saves a React commit
+    // on the common rapid-tap path.
+    if (simple && !isPickerOpen) {
       queueMicrotask(() => setIsPickerOpen(true));
     }
   };
@@ -265,8 +346,6 @@ export default function EmojiPickerButton({
         pendingGoBackRef.current = false;
         return;
       }
-      // Ensure padding is cleared when back button closes the picker (safety reset).
-      keepPaddingRef.current = false;
       markPickerClosed();
       setIsPickerOpen(false);
     };
@@ -347,7 +426,10 @@ export default function EmojiPickerButton({
 
       {/* PICKER — stays in DOM after first open, visibility toggled instantly via CSS */}
       {hasOpened && (
-        <div className={`emoji-picker-container${isPickerOpen ? " open" : ""}`}>
+        <div
+          ref={pickerRef}
+          className={`emoji-picker-container${isPickerOpen ? " open" : ""}`}
+        >
           <div
             onClick={(e) => {
               if (simple) {
