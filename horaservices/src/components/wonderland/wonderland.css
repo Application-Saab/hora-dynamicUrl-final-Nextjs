@@ -9,7 +9,7 @@
 .invite-banner {
   position: relative;
   width: 100%;
-  max-width: 600px; 
+  max-width: 480px; 
   margin: 0 auto;
 }
 .banner-image-top {
@@ -24,7 +24,7 @@
   height: auto;
   display: block;
   margin: 0px 0px 5px 0px;
-  max-width: 600px;
+  max-width: 480px;
 }
 
 .create-invite-btn-landing {
@@ -73,7 +73,7 @@
 .event-list-wrapper {
       padding: 10px 15px;
   width: 100%;         
-  max-width: 600px;  
+  max-width: 480px;  
   margin: 0 auto;      
 }
 .section-heading {
