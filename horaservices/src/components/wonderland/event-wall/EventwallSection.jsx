@@ -995,7 +995,7 @@ const EventwallSection = ({
                 margin: "20px auto",
               }}
             >
-              <EventWallHeaderTabs
+              {/* <EventWallHeaderTabs
                 eventId={eventid}
                 subFolders={subFolders}
                 setSubFolders={setSubFolders}
@@ -1009,9 +1009,9 @@ const EventwallSection = ({
                 setIsActualMyPhotos={setIsActualMyPhotos}
                 showCreateFolderPopup={showCreateFolderPopup}
                 setShowCreateFolderPopup={setShowCreateFolderPopup}
-              />
+              /> */}
 
-              {activeTab !== "all" && !isMyPhotosTab && activeSubFolderId && (
+              {/* {activeTab !== "all" && !isMyPhotosTab && activeSubFolderId && (
                 <div className="buttons-container">
                   {!isEditing ? (
                     <button
@@ -1038,7 +1038,7 @@ const EventwallSection = ({
                     </button>
                   )}
                 </div>
-              )}
+              )} */}
 
               {/* <div className="event-image-grid">
                 {currentImages?.map((thumbnail, indexOnPage) => {
@@ -1093,6 +1093,7 @@ const EventwallSection = ({
                 isEventWall={true}
                 renderActions={(currentImage, index) => (
                   <div>
+                    {console.log('%c [ currentImage ]', 'font-size:13px; background:pink; color:#bf2c9f;', currentImage)}
                     <div style={{ position: "relative" }}>
                       <Image
                         src={multiGroup}
@@ -1106,11 +1107,11 @@ const EventwallSection = ({
                         <div className="action-menu" ref={actionMenuRef}>
                           <div className="action-item">
                             <strong>Shared by:</strong>
-                            <p>{number}</p>
+                            <p>{currentImage?.postByName || "Unknown User"}</p>
                           </div>
 
                           <div className="action-inner-container">
-                            <div
+                            {/* <div
                               className="action-item flex"
                               onClick={() => {
                                 if (!currentImage) return;
@@ -1126,7 +1127,7 @@ const EventwallSection = ({
                             >
                               <Image src={plusVector} width={19} height={15} />
                               <span>Add to Folder</span>
-                            </div>
+                            </div> */}
                             {currentImage?.type !== "video" && (
                               <div
                                 className="action-item flex"
