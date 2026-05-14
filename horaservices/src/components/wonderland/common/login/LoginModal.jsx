@@ -13,7 +13,7 @@ import CustomModal from "../CustomModal";
 import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
   const [name, setName] = useState("");
@@ -227,6 +227,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         name,
         role: "customer",
         fromWonderland: true,
+        fromCapsule: fromCapsule
         fromWonderlandInternational: isWonderlandInternational,
       });
 
@@ -427,6 +428,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         localStorage.setItem("mobileNumber", phone);
         localStorage.setItem("token", token);
         localStorage.setItem("userID", data?._id);
+        localStorage.setItem("userName", data?.name);
 
         // sendWelcomeMessage(phone);
 
