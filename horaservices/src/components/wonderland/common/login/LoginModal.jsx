@@ -12,7 +12,7 @@ import {
 import CustomModal from "../CustomModal";
 import "./LoginModal.css";
 
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const modalRef = useRef(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -156,7 +156,8 @@ const LoginModal = ({ isOpen, onClose }) => {
         phone,
         name,
         role: "customer",
-        fromWonderland: true
+        fromWonderland: true,
+        fromCapsule: fromCapsule
       });
 
       if (response.status === 200) {
@@ -287,6 +288,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         localStorage.setItem("mobileNumber", phone);
         localStorage.setItem("token", token);
         localStorage.setItem("userID", data?._id);
+        localStorage.setItem("userName", data?.name);
 
         // sendWelcomeMessage(phone);
 
