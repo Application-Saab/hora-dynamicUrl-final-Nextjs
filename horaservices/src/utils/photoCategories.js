@@ -110,7 +110,7 @@ export const seoData = {
   "Birthday-Photography": {
     title: "Birthday Photoshoot | Birthday Party Photographer | HORA",
     description:
-      "Book a professional birthday photoshoot at home or venue. Birthday party photographers, cake smash, pre-birthday, 1st birthday & 18th birthday shoots. Starting ₹1999. Book HORA.",
+      "Book a professional birthday photoshoot at home or venue. Birthday party photographers, cake smash, pre-birthday, 1st birthday & 18th birthday shoots. Starting ₹3600. Book HORA.",
     h1: "Birthday Photoshoot at Home & Venue",
     color: '#be9be2',
   },
@@ -174,7 +174,7 @@ export const seoData = {
   "New-Born-Baby-Photography": {
     title: "Newborn Baby Photoshoot | Baby Photography | HORA",
     description:
-      "Capture your newborn baby moments with cute themed photoshoots. Safe & professional baby photography. Starting ₹1999.",
+      "Capture your newborn baby moments with cute themed photoshoots. Safe & professional baby photography.",
     h1: "Newborn Baby Photoshoot",
     color: '#92694e',
   },

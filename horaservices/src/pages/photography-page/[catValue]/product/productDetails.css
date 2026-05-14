@@ -364,7 +364,8 @@ flex-shrink: 0;
 }
 .price-share-row {
   display: flex;
-gap: clamp(40px, calc(-135.96px + 63vw), 180px);
+
+gap: clamp(45px, calc(-108.7px + 48.9vw), 145px);
   align-items: center;
 }
 /* Icon */
