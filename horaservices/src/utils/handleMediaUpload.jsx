@@ -221,6 +221,8 @@ export async function uploadMedia(
   eventId,
   onProgress,
   fileId = null,
+  postType = "selfUploaded",
+  folderName = "self-upload",
 ) {
   const formData = new FormData();
   console.log(
@@ -236,8 +238,8 @@ export async function uploadMedia(
   formData.append("fileId", fileId);
   formData.append("postById", userId);
   formData.append("postByName", userName);
-  formData.append("postType", "selfUploaded");
-  formData.append("folder", "self-upload");
+  formData.append("postType", postType);
+  formData.append("folder", folderName);
 
   const token = localStorage.getItem("token");
 
