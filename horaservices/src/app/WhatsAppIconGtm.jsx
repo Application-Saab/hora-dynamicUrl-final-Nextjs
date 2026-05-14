@@ -347,6 +347,7 @@ let message = defaultMessage;
   const shouldShowWhatsAppIcon = () => {
     return (
       !router.asPath.startsWith('/wonderland') &&
+      !router.asPath.startsWith('/wonderlandinternational') &&
       !router.asPath.startsWith('/templates') &&
       !router.asPath.startsWith('/chat') &&
       router.asPath !== '/order-details' &&

@@ -100,22 +100,22 @@ const CategoryTabs = ({
       </div>
     </div>
   ) : (
-    <div className="category-tabs">
+      <div className="ctabs-wrap" role="list">
       {data
         .filter((cat) => cat.image)
-        .slice(0, 9)
+        .slice(0, 10)
         .map((cat) => (
           <button
             key={cat.id}
-            className="category-tabs__button"
+            className="ctabs-btn"
+            role="listitem"
             onClick={() => handleClick(cat)}
           >
             <div
-              className="category-tabs__circle"
+              className="ctabs-circle"
               style={{ backgroundImage: `url(${cat.image})` }}
-            >
-              <span className="category-tabs__circle-label">{cat.name}</span>
-            </div>
+            />
+            <span className="ctabs-label">{cat.name}</span>
           </button>
         ))}
     </div>

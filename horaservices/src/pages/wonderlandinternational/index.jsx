@@ -31,7 +31,7 @@ const WonderlandMainPage = () => {
     if (isUserLoggedIn && loggedinUserId 
     ) {
       timer = setTimeout(() => {
-        router.push(`/wonderland`);
+        router.push(`/wonderlandinternational`);
       }, 2500);
     }
 
@@ -77,7 +77,7 @@ const createInviteClick = () => {
     return;
   }
 
-  router.replace("/wonderland/invite");
+  router.replace("/wonderlandinternational/invite");
 };
   useEffect(() => {
     const syncLoginState = () => {
@@ -97,7 +97,6 @@ const createInviteClick = () => {
   return (
     <>
       <div className="logedin-container">
-       
         <div className="invite-banner">
           <Image
             src={wonderlandBanner}
@@ -116,9 +115,8 @@ const createInviteClick = () => {
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}
-      <div style={{maxWidth:"480px"}}>
+      
 <InviteSlider onCreateInvite={createInviteClick} />
-</div>
 <GuestListBanner onCreateInvite={createInviteClick} />
 <HowItWorks />
 <CelebrationSection onCreateInvite={createInviteClick} />
@@ -153,14 +151,13 @@ const createInviteClick = () => {
             className="banner-image"
           />
         </div>
-        </div>
-  
+      </div>
 
       <LoginModal 
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace('/wonderland/invite')
+          router.replace('/wonderlandinternational/invite')
         }}
       />
     </>

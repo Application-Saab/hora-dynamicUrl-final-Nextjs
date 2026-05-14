@@ -2,7 +2,7 @@ export const decCat = [
   {
     id: "1",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/Birthdaydecoration.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/Birthday.webp",
     name: "Birthday",
     subCategory: "Birthday",
     catValue: "birthday-decoration",
@@ -11,7 +11,7 @@ export const decCat = [
     {
     id: "2",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/KIdsbirthday.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/KIdsBirthday.webp",
     name: "Kids Birthday",
     subCategory: "KidsBirthday",
     catValue: "kids-birthday-decoration",
@@ -31,7 +31,7 @@ export const decCat = [
     {
     id: "4",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/primumdecoration.webp	",
+      "https://horaservices.com/api/uploads/compressed_webp/stagedecoration.webp	",
     name: "Stage Decoration",
     subCategory: "PremiumDecoration",
     catValue: "premium-decoration",
@@ -41,7 +41,7 @@ export const decCat = [
     {
     id: "6",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/welcomeBabydecoration.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/welcomeBaby.webp",
     name: "Welcome Baby",
     subCategory: "WelcomeBaby",
     catValue: "welcome-baby-decoration",
@@ -50,7 +50,7 @@ export const decCat = [
  {
     id: "7",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/namingcermonydecoration.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/NamingCeremony.webp",
     name: "Naming Ceremony",
     subCategory: "NamingCeremony",
     catValue: "naming-ceremony-decoration",
@@ -67,10 +67,20 @@ export const decCat = [
     imgAlt:
       "Immerse yourself in a world of romance with our mesmerizing anniversary decorations.",
   },
+    {
+    id: "8",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/Housewarming.webp",
+    name: "House Warming",
+    subCategory: "HouseWarming",
+    catValue: "house-warming-decoration",
+    imgAlt:
+      "Create a warm and memorable welcome with our elegant house warming decoration setups.",
+  },
   {
     id: "9",
     image:
-      "https://horaservices.com/api/uploads/compressed_webp/Firstnight.webp",
+      "https://horaservices.com/api/uploads/compressed_webp/Fristnight.webp",
     name: "First Night",
     subCategory: "FirstNight",
     catValue: "first-night-decoration",
@@ -78,15 +88,15 @@ export const decCat = [
       "Add extra happiness quotient to your wedding night with our exclusive décor package",
   },
   
- {
-    id: "3",
-    image:
-      "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
-    name: "NationPride",
-    subCategory: "NationPride",
-    catValue: "Nation-Pride-decoration",
-  imgAlt: "Nation Pride patriotic theme decoration"
-  },
+//  {
+//     id: "3",
+//     image:
+//       "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
+//     name: "NationPride",
+//     subCategory: "NationPride",
+//     catValue: "Nation-Pride-decoration",
+//   imgAlt: "Nation Pride patriotic theme decoration"
+//   },
 
   {
     id: "11",

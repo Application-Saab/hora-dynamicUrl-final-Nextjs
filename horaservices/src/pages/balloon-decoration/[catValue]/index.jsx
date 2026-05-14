@@ -44,7 +44,7 @@ import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp";
 import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
 import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.webp";
-
+import HouseWarming from "@/assets/categories/HouseWarming.webp";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
@@ -355,6 +355,7 @@ const DecorationCatPage = ({ locality }) => {
     "bachelorette-decoration": BacheloretteBanner,
     "naming-ceremony-decoration":NamingCeremonyBanner,
     "Nation-Pride-decoration": NationPride,
+    "House-Warming-decoration": HouseWarming,
   };
 
   function trimText(text) {

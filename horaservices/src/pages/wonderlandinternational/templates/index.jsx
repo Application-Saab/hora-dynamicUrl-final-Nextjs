@@ -100,7 +100,7 @@ const TemplatesPage = () => {
       return;
     }
     router.push(
-      `/wonderland/templates/create-template?id=${eventId}&templateId=${templateId}`,
+      `/wonderlandinternational/templates/create-template?id=${eventId}&templateId=${templateId}`,
     );
   };
 
@@ -111,7 +111,7 @@ const TemplatesPage = () => {
       <h2 className="templates-title">Explore Themes</h2>
 
       <CategoryTabs
-        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Baptism", "NamingCermony", "Housewarming" , "Wedding&Engagement"]}
+        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby"]}
         selectedCategory={activeCategory}
         onSelectCategory={setActiveCategory}
       />

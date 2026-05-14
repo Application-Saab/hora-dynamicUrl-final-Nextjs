@@ -718,17 +718,22 @@ const contactUsRedirection = (productName) => {
 
             <span className="policy-title">Cancellation and Order Change Policy</span>
           </div>
-          <ol className="policy-list">
-            <li>
-              If the order is beyond 48 hours: You are eligible for a 100% refund of the advance payment.
-            </li>
-            <li>
-              If the order is cancelled more than 24 hours before the scheduled delivery: You will not receive refund of the advance payment.
-            </li>
-            <li>
-              If the order is cancelled within 24 hours: The full advance amount will be non-refundable, and 100% of the payment for decoration has to be paid by customer.
-            </li>
-          </ol>
+         <ol className="policy-list">
+  <li>
+    If the order is beyond 48 hours: You are eligible for a 100% refund of the advance payment.
+  </li>
+
+  <li>
+    If the order is cancelled more than 24 hours before the scheduled delivery:
+    You will not receive a refund of the advance payment.
+  </li>
+
+  <li>
+    If the order is cancelled within 24 hours:
+    The full advance amount will be non-refundable, and 100% of the payment
+    for photography has to be paid by the customer.
+  </li>
+</ol>
         </div>
 
       </div>

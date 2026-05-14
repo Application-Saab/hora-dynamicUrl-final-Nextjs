@@ -178,7 +178,7 @@ export default function NoteDetails() {
     });
 
     // instant navigation
-    router.push(`/wonderland/invite?eventid=${eventid}`);
+    router.push(`/wonderlandinternational/invite?eventid=${eventid}`);
 
     setUploading(false);
   };

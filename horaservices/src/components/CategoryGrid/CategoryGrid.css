@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: 1.5fr 1fr; /* Desktop default */
   gap: 1rem;
-
+ margin-top:10px
 }
 
 .category-grid__card {

@@ -4,6 +4,7 @@
   clamp(16px, 5.08vw, 24px)   /* top-bottom */
   clamp(3px, 1.16vw, 6px);    /* left-right */
   text-align: center;
+  max-width: 600px;
 }
 
 /* TITLE */
@@ -29,14 +30,7 @@ gap: clamp(5px, calc((6 / 393) * 100vw), 7px);
 padding: clamp(2px, calc((3 / 393) * 100vw), 4px);
   border-radius: clamp(4px, calc((5.35 / 393) * 100vw), 7px);
   border: 1px solid #ddd;
-  box-shadow: 
-  0px 
-  clamp(3px, calc((4 / 393) * 100vw), 5px) 
-  clamp(8px, calc((10 / 393) * 100vw), 12px) 
-  0px 
-  rgba(0, 0, 0, 0.1);
-  background: #f3eefc;
-
+box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.10);
   display: flex;
   flex-direction: column;
   align-items: center;
