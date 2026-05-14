@@ -33,7 +33,7 @@ const data = [
 
 const InviteSlider = ({onCreateInvite}) => {
   return (
-    <div className="slider-wrapper">
+    <div className="slider-container">
       <h2 className="heading">Premium Invitations Designs</h2>
 
       <div className="slider">
