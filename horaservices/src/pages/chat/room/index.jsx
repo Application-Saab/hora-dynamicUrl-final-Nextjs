@@ -276,12 +276,22 @@ const ChatPage = () => {
       if (!vv) return;
       const chatLayout = document.querySelector(".chat-layout");
 
+      // iOS Safari auto-scrolls the page when keyboard opens to bring the focused
+      // input into view. This makes window.scrollY > 0, which shifts the layout
+      // viewport and can hide the header. Reset it immediately.
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
+
       if (vv.height < window.innerHeight) {
         // Emoji picker is managing layout — skip entirely to avoid flicker during
         // the keyboard-close animation that plays while transitioning keyboard→emoji.
         if (showEmojiPickerRef.current) return;
 
         const keyboardH = window.innerHeight - vv.height;
+        // vv.offsetTop > 0 means iOS shifted the visual viewport downward to keep
+        // the focused input visible. In that case pin the chat-layout exactly to
+        // the visual viewport bounds so the header stays at the top and the input
+        // stays at the bottom (above the keyboard) without being hidden.
+        const offsetTop = vv.offsetTop || 0;
         docEl.style.setProperty("--vvh", `${vv.height}px`);
         document.body.style.overflow = "hidden";
 
@@ -289,27 +299,51 @@ const ChatPage = () => {
           chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
           chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
 
-          // iOS 15+ Safari: vv.height === window.innerHeight always, so this branch
-          // never fires — browser handles bottom:0 above keyboard automatically.
-          // Older iOS / Android / iPad Chrome: branch fires, paddingBottom pushes
-          // content above the keyboard without hiding the input.
-          // Math.max prevents padding from temporarily dropping during emoji→keyboard
-          // transition (keyboard opens gradually, keyboardH starts small).
-          const currentPadding = parseFloat(chatLayout.style.paddingBottom) || 0;
-          chatLayout.style.paddingBottom = `${Math.max(keyboardH, currentPadding)}px`;
+          if (offsetTop > 0) {
+            chatLayout.style.top = `${offsetTop}px`;
+            chatLayout.style.height = `${vv.height}px`;
+            chatLayout.style.bottom = "auto";
+            chatLayout.style.paddingBottom = "";
+          } else {
+            // Standard path: full-height layout, paddingBottom reserves space above keyboard.
+            // Math.max prevents padding from temporarily dropping during emoji→keyboard
+            // transition (keyboard opens gradually, keyboardH starts small).
+            chatLayout.style.top = "";
+            chatLayout.style.height = "";
+            chatLayout.style.bottom = "";
+            const currentPadding = parseFloat(chatLayout.style.paddingBottom) || 0;
+            chatLayout.style.paddingBottom = `${Math.max(keyboardH, currentPadding)}px`;
+          }
         }
 
         requestAnimationFrame(() => scrollToBottom());
       } else {
-        // Keyboard fully closed
+        // Keyboard fully closed — OR iOS 15+ where vv.height stays equal to
+        // window.innerHeight even while the keyboard is open (browser no longer
+        // shrinks the visual viewport for the keyboard on newer iOS).
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
         document.body.style.overflow = "";
 
         if (chatLayout) {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
+          // Reset any position overrides that were applied during the keyboard-open phase.
+          chatLayout.style.top = "";
+          chatLayout.style.height = "";
+          chatLayout.style.bottom = "";
+
+          const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
           if (showEmojiPickerRef.current) {
-            const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+            // Emoji picker is open — keep space reserved for it.
+            chatLayout.style.paddingBottom = `${kbh}px`;
+          } else if (
+            textareaRef.current &&
+            document.activeElement === textareaRef.current &&
+            textareaRef.current.getAttribute("inputmode") !== "none"
+          ) {
+            // iOS 15+: keyboard is open but vv.height is unchanged (browser doesn't
+            // report it). Input is focused → keyboard is almost certainly showing.
+            // Add stored keyboard height so the input stays visible above the keyboard.
             chatLayout.style.paddingBottom = `${kbh}px`;
           } else {
             chatLayout.style.paddingBottom = "";
@@ -335,9 +369,20 @@ const ChatPage = () => {
     window.visualViewport?.addEventListener("resize", setVvh);
     window.visualViewport?.addEventListener("scroll", setVvh);
 
+    // iOS 15+: keyboard opening does NOT resize the visual viewport, so the
+    // resize event never fires. Listen to focus/blur on the chat input so we
+    // can apply / remove keyboard padding as soon as focus changes.
+    const inputEl = textareaRef.current;
+    const onInputFocus = () => requestAnimationFrame(setVvh);
+    const onInputBlur = () => requestAnimationFrame(setVvh);
+    inputEl?.addEventListener("focus", onInputFocus);
+    inputEl?.addEventListener("blur", onInputBlur);
+
     return () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", setVvh);
+      inputEl?.removeEventListener("focus", onInputFocus);
+      inputEl?.removeEventListener("blur", onInputBlur);
       document.body.style.overflow = "";
       const chatLayout = document.querySelector(".chat-layout");
       if (chatLayout) {
