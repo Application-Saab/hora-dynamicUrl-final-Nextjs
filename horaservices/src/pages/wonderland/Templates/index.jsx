@@ -111,7 +111,7 @@ const TemplatesPage = () => {
       <h2 className="templates-title">Explore Themes</h2>
 
       <CategoryTabs
-        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Baptism", "NamingCermony",]}
+        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Baptism", "NamingCermony", "Housewarming" , "Wedding&Engagement"]}
         selectedCategory={activeCategory}
         onSelectCategory={setActiveCategory}
       />
