@@ -12,9 +12,10 @@ import {
 } from "@/utils/apiconstants";
 import NoteSkeleton from "@/components/wonderland/NoteSkeleton";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
-import { uploadImage } from "@/utils/handleMediaUpload";
+import { addToQueue, uploadImage } from "@/utils/handleMediaUpload";
 import useApi from "@/hooks/useApi";
 import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
+import { saveFileToOPFS } from "@/utils/eventWallHelpers";
 
 export default function NoteDetails() {
   const router = useRouter();
@@ -131,38 +132,6 @@ export default function NoteDetails() {
     lastRangeRef.current = newRange; // save new cursor
   };
 
-  // ----------- Download/Submit ------------
-  const uploadInBackground = async (blob, eventid) => {
-    try {
-      if (!userId) return;
-
-      const file = new File([blob], "note.png", { type: blob.type });
-
-      const response = await uploadImage(
-        file,
-        userId,
-        eventid,
-        "thankyou-note",
-        () => {},
-        true,
-      );
-
-      if (response?.success) {
-        const postPayload = {
-          postById: userId,
-          postByName: userName || "Guest",
-          postType: "thankYouNote",
-          postUrl: response.originalUrl,
-          postKey: response.originalKey,
-          postWebpUrl: response.thumbnailUrl,
-          postWebpKey: response.thumbnailKey,
-        };
-
-        await createPost(`${CREATE_NEW_POST}/${eventid}`, "POST", postPayload);
-      }
-    } catch (err) {}
-  };
-
   const handleDownload = async () => {
     if (!noteRef.current) return;
 
@@ -170,25 +139,46 @@ export default function NoteDetails() {
     setShowBorders(false);
 
     const { eventid } = router.query;
-    if (!eventid) return;
-    if (!userId) return;
+
+    if (!eventid || !userId) return;
 
     const blob = await captureElementAsImage(noteRef.current, [
       ".emoji-button",
     ]);
+
     if (!blob) return;
 
-    const base64 = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
+    const file = new File([blob], "thankyou-note.png", {
+      type: "image/png",
     });
 
-    localStorage.setItem(`thankyou-note-draft-${eventid}`, base64);
+    const id = crypto.randomUUID();
 
+    // save to OPFS
+    const saved = await saveFileToOPFS(file, eventid, id);
+
+    if (!saved) {
+      alert("Failed to save image");
+      return;
+    }
+
+    // queue item
+    await addToQueue({
+      id,
+      eventId: eventid,
+      fileName: file.name,
+      mimeType: file.type,
+      isVideo: false,
+      status: "queued",
+      progress: 0,
+      retryCount: 0,
+      createdAt: Date.now(),
+      postType: "thankYouNote",
+      folder: "thankyou-note",
+    });
+
+    // instant navigation
     router.push(`/wonderlandinternational/invite?eventid=${eventid}`);
-
-    uploadInBackground(blob, eventid);
 
     setUploading(false);
   };
@@ -208,7 +198,10 @@ export default function NoteDetails() {
         <div
           ref={noteRef}
           className="createNote-container"
-          style={{ background: note.color, justifyContent: NoteId == 6 ? "center" : "flex-start" }}
+          style={{
+            background: note.color,
+            justifyContent: NoteId == 6 ? "center" : "flex-start",
+          }}
         >
           <div className="icon-sec">
             {note.icon && (
@@ -222,21 +215,24 @@ export default function NoteDetails() {
           </div>
 
           {/* -------- Title -------- */}
-          {NoteId != 6 && <div
-            ref={titleRef}
-            contentEditable
-            suppressContentEditableWarning={true}
-            onFocus={() => onFocus("title", titleRef)}
-            className={`textArea-title ${showBorders ? "always-border" : ""}`}
-            style={{
-              minHeight: NoteId == 6 ? "15vh" : "auto",
-              display: NoteId == 6 ? "flex" : "",
-              flexDirection: NoteId == 6 ? "column" : "",
-              alignItems: NoteId == 6 ? "center" : "",
-              justifyContent: NoteId == 6 ? "center" : "",
-            }}
-          ></div>}
-            {NoteId == 6 && <div
+          {NoteId != 6 && (
+            <div
+              ref={titleRef}
+              contentEditable
+              suppressContentEditableWarning={true}
+              onFocus={() => onFocus("title", titleRef)}
+              className={`textArea-title ${showBorders ? "always-border" : ""}`}
+              style={{
+                minHeight: NoteId == 6 ? "15vh" : "auto",
+                display: NoteId == 6 ? "flex" : "",
+                flexDirection: NoteId == 6 ? "column" : "",
+                alignItems: NoteId == 6 ? "center" : "",
+                justifyContent: NoteId == 6 ? "center" : "",
+              }}
+            ></div>
+          )}
+          {NoteId == 6 && (
+            <div
               ref={titleRef}
               contentEditable
               suppressContentEditableWarning={true}
@@ -248,7 +244,8 @@ export default function NoteDetails() {
                 alignItems: NoteId == 6 ? "center" : "",
                 justifyContent: NoteId == 6 ? "center" : "",
               }}
-            ></div>}
+            ></div>
+          )}
 
           {/* -------- Content -------- */}
           {NoteId != 6 && (

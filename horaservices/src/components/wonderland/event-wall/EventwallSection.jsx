@@ -67,7 +67,6 @@ const EventwallSection = ({
   const { makeRequest: getEventInvite } = useApi();
   const userId = localStorage.getItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
-  console.log('%c [ allImages ]-68', 'font-size:13px; background:pink; color:#bf2c9f;', allImages)
   const imagesRef = useRef([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -80,7 +79,6 @@ const EventwallSection = ({
   const [activeSubFolderId, setActiveSubFolderId] = useState(null);
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const isSearchMode = isSearching && matchedKeys.length > 0;
-  const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
   const [imageNumber, setImageNumber] = useState(0);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
@@ -169,11 +167,13 @@ const EventwallSection = ({
     imagesRef.current = allImages;
   }, [allImages]);
 
-  useEffect(() => {
-    if (!userId || allImages.length === 0) return;
+useEffect(() => {
+  if (!userId || !eventid) return;
 
-    const fetchLikes = async () => {
+  const fetchLikes = async () => {
+    try {
       const initialLikes = {};
+
       const resp = await getAllLikes(
         `${LIKED_POST_BY_EVENT_AND_USERID}/${eventid}/${userId}`,
         "GET",
@@ -183,10 +183,17 @@ const EventwallSection = ({
         initialLikes[post._id] = true;
       });
 
-      setLikedImages(initialLikes);
-    };
-    fetchLikes();
-  }, [allImages, userId]);
+      setLikedImages((prev) => ({
+        ...prev,
+        ...initialLikes,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch likes", error);
+    }
+  };
+
+  fetchLikes();
+}, [eventid, userId]);
 
   useEffect(() => {
     if (!eventid) return;
@@ -230,54 +237,12 @@ const EventwallSection = ({
     }
   };
 
-  const sliderSettings = {
-    dots: false,
-    infinite: allImages.length > 1,
-    speed: 300,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    adaptiveHeight: true,
-
-    beforeChange: (_, next) => {
-      pauseAllVideos();
-      setImageNumber(next + 1);
-    },
-
-    afterChange: () => {
-      playActiveVideo();
-    },
-  };
-
   async function loadEventPosts() {
     if (!eventid) return;
-
-    const draftBase64 = localStorage.getItem(`thankyou-note-draft-${eventid}`);
-
-    let draftItem = null;
-
-    if (draftBase64) {
-      draftItem = {
-        id: "draft-temp",
-        file: null,
-        localPreview: draftBase64,
-        isVideo: false,
-        progress: 0,
-        status: "draft",
-        postUrl: null,
-        postWebpUrl: null,
-        postType: "thankYouNote",
-      };
-    }
-
     const resp = await getAllPosts(`${GET_ALL_POSTS}/${eventid}`, "GET");
 
     if (resp?.data?.posts) {
       let fresh = [...resp.data.posts];
-
-      if (draftItem) {
-        fresh = [draftItem, ...fresh];
-      }
-
       const processed = await processImagesWithHeight(fresh);
 
       if (isIOSMobile) {
@@ -361,28 +326,6 @@ const EventwallSection = ({
     init();
   }, [eventid]);
 
-  useEffect(() => {
-    if (!eventid) return;
-
-    const handleRouteChange = (url) => {
-      const nextPathname = new URL(url, window.location.origin).pathname;
-
-      const isCurrentlyInvite = router.pathname.includes("/invite");
-      const isNextInvite = nextPathname.includes("/invite");
-
-      // If leaving the invite page
-      if (isCurrentlyInvite && !isNextInvite) {
-        localStorage.removeItem(`thankyou-note-draft-${eventid}`);
-      }
-    };
-
-    router.events.on("routeChangeStart", handleRouteChange);
-
-    return () => {
-      router.events.off("routeChangeStart", handleRouteChange);
-    };
-  }, [eventid, router.pathname]);
-
   const updateProgress = (id, percent) => {
     setAllImages((prev) =>
       prev.map((item) =>
@@ -397,13 +340,13 @@ const EventwallSection = ({
     );
   };
 
-  const updateUploadedUrls = async (id, postUrl, thumbnailUrl) => {
+  const updateUploadedUrls = async (id, postUrl, thumbnailUrl, imageId) => {
     const current = imagesRef.current;
 
     if (!Array.isArray(current) || current.length === 0) return;
 
     const updatedList = current.map((item) =>
-      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl } : item,
+      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl, _id : imageId } : item,
     );
 
     // UI updates immediately
@@ -419,7 +362,6 @@ const EventwallSection = ({
     if (!eventid) return;
 
     let pending = await getPendingUploads(eventid);
-
     // reset stuck uploads
     for (const item of pending) {
       if (item.status === "uploading") {
@@ -452,11 +394,12 @@ const EventwallSection = ({
             updateQueueItem(item.id, { progress: percent });
           },
           item.id,
+          item.postType,
+          item.folder,
         );
 
         const post = posts[0];
-
-        await updateUploadedUrls(item.id, post.postUrl, post.postWebpUrl);
+        await updateUploadedUrls(item.id, post.postUrl, post.postWebpUrl, post?._id);
         updateStatus(item.id, "done");
 
         await removeFromQueue(item.id);
@@ -506,6 +449,8 @@ const EventwallSection = ({
           progress: 0,
           retryCount: 0,
           createdAt: now,
+          postType: "selfUploaded",
+          folder: "self-upload",
         };
 
         // 1. OPFS save
@@ -526,6 +471,7 @@ const EventwallSection = ({
           progress: 0,
           status: "queued",
           postType: "selfUploaded",
+          folder: "self-upload",
         });
       }
 
@@ -541,30 +487,14 @@ const EventwallSection = ({
     input.click();
   };
 
-  useEffect(() => {
-    const clear = () => {
-      localStorage.removeItem("thankyou-note-draft");
-    };
-
-    window.addEventListener("beforeunload", clear);
-    return () => window.removeEventListener("beforeunload", clear);
-  }, []);
-
-  function getBlockType(index) {
-    const pos = index % 6;
-
-    if (pos === 0 || pos === 1 || pos === 2) return "small";
-    if (pos === 3) return "big";
-    if (pos === 4) return "small-right-top";
-    if (pos === 5) return "small-right-bottom";
-  }
-
   const actionButtons = [
     {
       label: "Notes",
       icon: NotesButtonIcon.src,
       onClick: () =>
-        router.push(`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`),
+        router.push(
+          `${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`,
+        ),
     },
     {
       label: "Post Badge",
@@ -634,11 +564,11 @@ const EventwallSection = ({
         return allImages;
       }
     }
-    
+
     // Use myPhotoSearchResults for real-time search filtering
     if (isActualMyPhotos && myPhotoSearchResults.length > 0) {
       return allImages.filter((img) =>
-        myPhotoSearchResults.includes(img.postWebpKey)
+        myPhotoSearchResults.includes(img.postWebpKey),
       );
     }
 
@@ -652,8 +582,8 @@ const EventwallSection = ({
       });
     }
 
-    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-      return allImages.filter(img => matchedKeys.includes(img.postWebpKey));
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+      return allImages.filter((img) => matchedKeys.includes(img.postWebpKey));
     }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
@@ -866,7 +796,6 @@ const EventwallSection = ({
     } catch (e) {
       console.error(e);
       alert("Failed to delete post");
-      // fallback: reload posts
       loadEventPosts();
     }
   };
@@ -884,6 +813,8 @@ const EventwallSection = ({
         if (img._id === imageId) {
           let updatedLikedBy = [...(img.likedBy || [])];
 
+          const currentCount = parseInt(img?.likeCounts) || 0;
+
           if (isCurrentlyLiked) {
             updatedLikedBy = updatedLikedBy.filter(
               (id) => String(id) !== String(userId),
@@ -895,8 +826,12 @@ const EventwallSection = ({
           return {
             ...img,
             likedBy: updatedLikedBy,
+            likeCounts: isCurrentlyLiked
+              ? Math.max(currentCount - 1, 0)
+              : currentCount + 1,
           };
         }
+
         return img;
       }),
     );
@@ -1040,37 +975,6 @@ const EventwallSection = ({
                 </div>
               )} */}
 
-              {/* <div className="event-image-grid">
-                {currentImages?.map((thumbnail, indexOnPage) => {
-                  const type = getBlockType(indexOnPage);
-                  const isVideo =
-                    thumbnail.postUrl?.match(/\.(mp4|mov|avi|mkv)$/i) ||
-                    thumbnail.isVideo;
-
-                  return (
-                    <div
-                      key={thumbnail._id || indexOnPage}
-                      style={{
-                        cursor: "pointer",
-                        position: "relative",
-                        backgroundColor: "transparent",
-                        display: "grid",
-                      }}
-                      className={`grid-item ${type}`}
-                      onClick={() => {
-                        setSelectedIndex(indexOnPage);
-                      }}
-                    >
-                      <EventwallGalleryItemWonderland
-                        isVideo={isVideo}
-                        thumbnail={thumbnail}
-                        indexOnPage={indexOnPage}
-                      />
-                    </div>
-                  );
-                })}
-              </div> */}
-
               <ImageGrid
                 data={visibleThumbnails}
                 loading={false}
@@ -1093,7 +997,6 @@ const EventwallSection = ({
                 isEventWall={true}
                 renderActions={(currentImage, index) => (
                   <div>
-                    {console.log('%c [ currentImage ]', 'font-size:13px; background:pink; color:#bf2c9f;', currentImage)}
                     <div style={{ position: "relative" }}>
                       <Image
                         src={multiGroup}
@@ -1181,9 +1084,7 @@ const EventwallSection = ({
                 )}
                 renderFooter={(currentImage, index) => {
                   const imageId = currentImage?._id;
-
                   const isLiked = likedImages[imageId];
-
                   return (
                     <div className="imagepopup-footer">
                       <div>
@@ -1236,85 +1137,6 @@ const EventwallSection = ({
                 }}
                 style={{ zIndex: 100001 }}
               />
-
-              {/* {selectedIndex !== null && allImages[selectedIndex] && (
-                <div
-                  className="popupOverlay"
-                  onClick={() => setSelectedIndex(null)}
-                  role="dialog"
-                  aria-modal="true"
-                  style={{ zIndex: 9999 }}
-                >
-                  <div
-                    className="popupContent"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="popupHeader">
-                      <span className="image-index">
-                        {`${imageNumber} / ${allImages.length}`}
-                      </span>
-
-                      <button
-                        className="closeButton"
-                        onClick={() => setSelectedIndex(null)}
-                        aria-label="Close"
-                      >
-                        <IoCloseSharp size={24} color="#fff" />
-                      </button>
-                    </div>
-
-                    <Slider
-                      {...sliderSettings}
-                      initialSlide={selectedIndex}
-                      key={`eventwall-slider-${selectedIndex}`}
-                    >
-                      {allImages.map((item, idx) => {
-                        const isLoading =
-                          !item.postWebpUrl && item.status !== "done";
-                        const mediaUrl = isLoading
-                          ? item.localPreview
-                          : item.postWebpUrl;
-                        const isVideo = item.isVideo || isVideoFile(mediaUrl);
-
-                        return (
-                          <div
-                            key={item._id || idx}
-                            className="slick-slide-item"
-                          >
-                            {isVideo ? (
-                              <video
-                                src={
-                                  isLoading ? item.localPreview : item.postUrl
-                                }
-                                controls
-                                playsInline
-                                muted={false}
-                                preload="auto"
-                                style={{
-                                  maxHeight: "80vh",
-                                  width: "100%",
-                                  objectFit: "contain",
-                                  background: "#000",
-                                }}
-                              />
-                            ) : (
-                              <img
-                                src={mediaUrl}
-                                alt={`Media ${idx + 1}`}
-                                style={{
-                                  maxHeight: "80vh",
-                                  width: "100%",
-                                  objectFit: "contain",
-                                }}
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </Slider>
-                  </div>
-                </div>
-              )} */}
             </div>
           </div>
         )}
