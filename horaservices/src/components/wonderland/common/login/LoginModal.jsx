@@ -227,7 +227,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
         name,
         role: "customer",
         fromWonderland: true,
-        fromCapsule: fromCapsule
+        fromCapsule: fromCapsule,
         fromWonderlandInternational: isWonderlandInternational,
       });
 
