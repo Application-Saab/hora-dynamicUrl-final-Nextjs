@@ -7,8 +7,9 @@ import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
 import { useChatStore } from "@/hooks/ChatContext";
 import { usePathname } from "next/navigation";
+import { matchInviteCategory } from "@/utils/matchInviteCategory";
 
-const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
+const CreateInviteModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   const router = useRouter();
   const [occasion, setOccasion] = useState("");
@@ -29,16 +30,38 @@ const CreateInviteModal = ({ isOpen, onClose, setSubmitTemplateImage }) => {
     try {
       let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);
       if (resp?.data) {
-        router.replace({
-          pathname: `${
-            isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"
-          }/invite`,
-          query: { eventid: resp?.data._id },
-        });
-        setOccasion("");
+        const inviteUrl = `${
+          isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"
+        }/invite?eventid=${resp?.data._id}`;
+
+        window.history.pushState({}, "", inviteUrl);
+        const matchedCategory = matchInviteCategory(occasion);
+        if (matchedCategory) {
+          router.push({
+            pathname: `${
+              isWonderlandInternational
+                ? "/wonderlandinternational"
+                : "/wonderland"
+            }/templates`,
+            query: {
+              eventid: resp?.data._id,
+              category: matchedCategory,
+            },
+          });
+        } else {
+          router.replace({
+            pathname: `${
+              isWonderlandInternational
+                ? "/wonderlandinternational"
+                : "/wonderland"
+            }/invite`,
+            query: {
+              eventid: resp?.data._id,
+            },
+          });
+        }
         onClose();
         refetchChatRooms();
-        setSubmitTemplateImage(true);
       }
     } catch (err) {
       console.error("Error rejecting content:", err);
