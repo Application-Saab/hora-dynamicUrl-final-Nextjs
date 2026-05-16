@@ -1,4 +1,3 @@
-// export const BASE_URL = "https://horaservices.com";
 export const BASE_URL = "https://horaservices.com";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";

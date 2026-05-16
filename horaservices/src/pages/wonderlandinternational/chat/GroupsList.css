@@ -160,35 +160,30 @@
 
 /*=========================== chat Header================================== */
 .chat-layout {
-  height: var(--vvh, 100vh);
-  min-height: var(--vvh, 100vh);
-  max-height: var(--vvh, 100vh);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* iOS Safari: fixed bottom:0 automatically stays above keyboard; Android: JS adds paddingBottom */
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  position: fixed;
-  width: 100vw;
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
-  top: 0;
-  left: 0;
-  padding-bottom: 5px;
-  transition: padding-bottom 0.12s linear;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 5px);
 }
 :root {
   --sat: env(safe-area-inset-top);
 }
 
 .chat-header-wrapper {
-  position: fixed;
-  top: clamp(6px, calc((8 / 393) * 100vw), 14px);
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   width: 100%;
   display: flex;
   justify-content: center;
   z-index: 9999;
-  transform: translateZ(0);
-  will-change: transform;
+  padding-top: calc(clamp(6px, calc((8 / 393) * 100vw), 14px) + env(safe-area-inset-top, 0px));
+  padding-bottom: 4px;
 }
 
 /* MAIN HEADER BAR */
@@ -263,25 +258,27 @@
 }
 
 .chat-input-container {
-  position: sticky;
-  bottom: env(safe-area-inset-bottom, 0px);
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   background: #ffffff;
-  min-height: clamp(40px, calc((50 / 393) * 100vw), 60px);
+  min-height: clamp(36px, calc((44 / 393) * 100vw), 54px);
   height: auto;
   padding: 0 clamp(4px, calc((7 / 393) * 100vw), 9px) 0
     clamp(4px, calc((7 / 393) * 100vw), 9px);
 
   border-radius: clamp(30px, calc((48.35 / 393) * 100vw), 55px);
   border: 1px solid #ddd;
-  margin: clamp(5px, calc((10 / 393) * 100vw), 12px);
+  margin: clamp(3px, calc((5 / 393) * 100vw), 7px) clamp(5px, calc((10 / 393) * 100vw), 12px);
   max-width: 480px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  z-index: 999;
+  z-index: 100000;
   touch-action: auto;
+  transition: border-radius 0.2s ease;
+}
+
+.chat-input-container.multi-line {
+  border-radius: clamp(14px, calc((20 / 393) * 100vw), 24px);
 }
 
 /* EMOJI BUTTON */
@@ -305,17 +302,19 @@
 }
 
 .emoji-inline {
-  width: 13px;
-  height: 13px;
-  vertical-align: middle;
-  display: inline-block;
-  margin: 0 2px;
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 16px;
+  line-height: 1;
+  vertical-align: -5px;
+  display: inline-block !important;
+  margin: 0 1px;
 }
 
 .chat-input {
   flex: 1;
   outline: none;
-  padding: 12px 8px;
+  padding: 8px;
   font-size: 16px;
   line-height: 1.4;
   min-height: 20px;
@@ -388,30 +387,44 @@
 }
 
 /* ----------------------------------------------------------------------------------------------------------------- */
+/* Chat loading overlay — shown while messages are being fetched */
+.chat-loading-overlay {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: chat-spin 0.75s linear infinite;
+}
+
+@keyframes chat-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------------------------------------------------------------------------------- */
 /* Messages list */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 15px 20px 10px; /* Extra bottom padding for sticky input */
+  padding: 16px 15px 20px 10px;
   display: flex;
   flex-direction: column;
-
-  /* Account for fixed header - start below header area */
-  margin-top: calc(
-    clamp(20px, calc((41 / 393) * 100vw), 59px) +
-      clamp(6px, calc((8 / 393) * 100vw), 14px) + 10px
-  );
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  scroll-behavior: smooth;
 
   padding-bottom: max(0px, env(safe-area-inset-bottom, 0px));
   background: transparent;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.1s ease-out;
-  scroll-behavior: auto !important;
   overflow: hidden;
 }
 .chat-messages.loaded {
@@ -529,7 +542,7 @@
 }
 
 .chat-text {
-  font-size: clamp(10px, calc((12.77 / 393) * 100vw), 12.77px);
+  font-size: 13px;
   font-family: "Sora", sans-serif;
   color: #000000;
   display: inline-block;
@@ -576,7 +589,7 @@
 }
 
 .chat-message.receiver .chat-text {
-  font-size: clamp(10px, calc((12.77 / 393) * 100vw), 13px);
+  font-size: 13px;
   display: inline-block;
   color: #363636;
   line-height: 16px;

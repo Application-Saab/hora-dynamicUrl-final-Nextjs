@@ -19,6 +19,12 @@ import { getRoomDetails } from "@/utils/setGroupDetails";
 import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
 import { sortRooms } from "@/hooks/ChatProvider";
+import {
+  getCachedMessages,
+  setCachedMessages,
+  getCachedRoomDetails,
+  setCachedRoomDetails,
+} from "@/utils/messagesCache";
 
 const getAvatarColor = (name) => {
   const colors = [
@@ -43,9 +49,18 @@ const getAvatarColor = (name) => {
 
 const ChatPage = () => {
   const router = useRouter();
-  const { groupId } = router.query;
+  // router.query is empty on first render in Next.js (hydration delay).
+  // Read directly from the URL as fallback so effects fire immediately.
+  const groupId =
+    router.query.groupId ||
+    (typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("groupId")
+      : null);
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem("userID") ||
+        new URLSearchParams(window.location.search).get("id")
+      : null;
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
     useChatStore();
   const { makeRequest: fetchUserRequest } = useApi();
@@ -53,35 +68,100 @@ const ChatPage = () => {
   const { makeRequest: markReadRequest } = useApi();
   const { makeRequest: createDirectChatRequest } = useApi();
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [roomDisplayDetails, setRoomDisplayDetails] = useState({});
-  const [messages, setMessages] = useState([]);
+  const [roomDisplayDetails, setRoomDisplayDetails] = useState(() => {
+    if (typeof window === "undefined") return {};
+    const gid = new URLSearchParams(window.location.search).get("groupId");
+    return gid ? (getCachedRoomDetails(gid) || {}) : {};
+  });
+
+  // Synchronous lazy init — reads localStorage cache before first render.
+  // If cache exists, chat shows on the very first paint with zero extra render cycles.
+  const [messages, setMessages] = useState(() => {
+    if (typeof window === "undefined") return [];
+    const gid = new URLSearchParams(window.location.search).get("groupId");
+    return gid ? (getCachedMessages(gid) || []) : [];
+  });
+  const [messagesLoading, setMessagesLoading] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const gid = new URLSearchParams(window.location.search).get("groupId");
+    if (!gid) return true;
+    const cached = getCachedMessages(gid);
+    return !cached || cached.length === 0;
+  });
+
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [chatBg, setChatBg] = useState(null);
+  const [chatBg] = useState(() => {
+    if (typeof window === "undefined") return chatBgImage.src;
+    const saved = localStorage.getItem("chatBgImage");
+    if (saved) return saved;
+    try { localStorage.setItem("chatBgImage", chatBgImage.src); } catch {}
+    return chatBgImage.src;
+  });
   const [userData, setUserData] = useState({});
   const textareaRef = useRef(null);
   const chatBodyRef = useRef(null);
-  const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
   const ignoreNextFocusRef = useRef(false);
-  const initialScrollDoneRef = useRef(false); // 🔥 NEW
+  const isEmojiInsertRef = useRef(false);
+  const isComposingRef = useRef(false);
+  const initialScrollDoneRef = useRef(false);
+  const showEmojiPickerRef = useRef(false);
+  const inputTouchStartYRef = useRef(0);
+  // Tracks which groupId is currently rendered — used to detect room switches
+  const activeGroupIdRef = useRef(
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("groupId")
+      : null
+  );
 
-  const scrollToBottom = () => {
+  const scrollToBottom = (smooth = false) => {
     if (!chatBodyRef.current) return;
-    setTimeout(() => {
-      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
-    }, 150);
+    requestAnimationFrame(() => {
+      const el = chatBodyRef.current;
+      if (!el) return;
+      el.style.scrollBehavior = smooth ? "smooth" : "auto";
+      el.scrollTop = el.scrollHeight;
+    });
   };
 
-  // Mark read on mount if selected
+  // Load messages on mount/room-switch — serve from cache, always refresh in background
   useEffect(() => {
-    if (selectedGroup && userId) {
-      const gid = selectedGroup._id || selectedGroup.id;
-      markRoomRead(gid, userId);
-      fetchMessagesForRoom(gid);
-    }
-  }, [selectedGroup, userId]);
+    if (!groupId || !userId) return;
 
-  // Set selected from groupId
+    const isRoomSwitch = activeGroupIdRef.current !== groupId;
+    activeGroupIdRef.current = groupId;
+
+    if (isRoomSwitch) {
+      // Navigating to a different room — reset scroll/visibility and load that room
+      initialScrollDoneRef.current = false;
+      if (chatBodyRef.current) chatBodyRef.current.classList.remove("ready");
+
+      const cached = getCachedMessages(groupId);
+      if (cached && cached.length > 0) {
+        setMessages(cached);
+        setMessagesLoading(false);
+        fetchMessagesForRoom(groupId, true);
+      } else {
+        setMessages([]);
+        setMessagesLoading(true);
+        fetchMessagesForRoom(groupId, false);
+      }
+    } else {
+      // Initial mount — messages already loaded from cache via lazy useState.
+      // Just background-refresh so new messages appear without any spinner.
+      const cached = getCachedMessages(groupId);
+      if (cached && cached.length > 0) {
+        fetchMessagesForRoom(groupId, true);
+      } else {
+        // No cache at all — fetch normally
+        fetchMessagesForRoom(groupId, false);
+      }
+    }
+
+    markRoomRead(groupId, userId);
+  }, [groupId, userId]);
+
+  // Set selectedGroup from chatRooms (for header display and room details)
   useEffect(() => {
     if (!groupId || !chatRooms.length) return;
     const selected = chatRooms.find(
@@ -90,14 +170,18 @@ const ChatPage = () => {
     if (selected) setSelectedGroup(selected);
   }, [groupId, chatRooms]);
 
-  // Reset on room change
+  // Join socket room when chat opens so server sends message:new events here
   useEffect(() => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.classList.remove("ready");
+    if (!socket || !selectedGroup) return;
+    const gid = selectedGroup._id || selectedGroup.id;
+    const join = () => socket.emit("joinRoom", { groupId: gid });
+    if (socket.connected) {
+      join();
+    } else {
+      window.addEventListener("socket:connected", join, { once: true });
+      return () => window.removeEventListener("socket:connected", join);
     }
-    hasScrolledToUnreadRef.current = false;
-    initialScrollDoneRef.current = false;
-  }, [groupId]);
+  }, [selectedGroup]);
 
   // Local message listener
   useEffect(() => {
@@ -106,33 +190,40 @@ const ChatPage = () => {
     const onMessageNewLocal = (msg) => {
       if (String(msg.groupId) !== String(gid)) return;
       setMessages((prev) => {
+        let updated;
         if (msg.tempId && prev.some((m) => m.tempId === msg.tempId)) {
-          return prev.map((m) =>
+          updated = prev.map((m) =>
             m.tempId === msg.tempId ? { ...msg, id: msg._id } : m,
           );
-        }
-        if (prev.some((m) => String(m._id || m.id) === String(msg._id)))
+        } else if (prev.some((m) => String(m._id || m.id) === String(msg._id))) {
           return prev;
-        return [...prev, { ...msg, id: msg._id }];
+        } else {
+          updated = [...prev, { ...msg, id: msg._id }];
+        }
+        setCachedMessages(gid, updated);
+        return updated;
       });
       setTimeout(() => markRoomRead(gid, userId), 50);
-      scrollToBottom();
+      scrollToBottom(true);
     };
     socket.on("message:new", onMessageNewLocal);
     return () => socket.off("message:new", onMessageNewLocal);
   }, [selectedGroup, userId]);
 
-  // First scroll BEFORE paint (synchronous)
+  // First scroll BEFORE paint (synchronous) — runs as soon as messages are ready
   useLayoutEffect(() => {
-    if (!messages.length || !selectedGroup || !chatBodyRef.current) return;
+    if (!messages.length || !chatBodyRef.current) return;
     if (initialScrollDoneRef.current) return;
 
     const container = chatBodyRef.current;
-    const gid = selectedGroup._id || selectedGroup.id;
+    // Always reset to instant scroll — prevents stale `smooth` from animating this jump
+    container.style.scrollBehavior = "auto";
+
+    const gid = selectedGroup?._id || selectedGroup?.id || groupId;
     const unreadCount = unreadCounts[gid] || 0;
 
-    // FORCE scroll IMMEDIATELY (before ANY paint)
-    if (unreadCount > 0) {
+    // Only attempt unread-scroll when chatRooms is loaded so lastReadAt is available
+    if (unreadCount > 0 && chatRooms.length > 0) {
       const roomObj = chatRooms.find(
         (r) => String(r._id || r.id) === String(gid),
       );
@@ -154,36 +245,23 @@ const ChatPage = () => {
         }
       }
 
-      if (firstUnreadIndex !== -1) {
-        // Scroll to element using direct scrollTop calculation
+      if (firstUnreadIndex > 0) {
         const messageElements = container.querySelectorAll(".chat-message");
         const targetElement = messageElements[firstUnreadIndex];
         if (targetElement) {
-          // Calculate exact scroll position
           const containerTop = container.getBoundingClientRect().top;
           const targetTop = targetElement.getBoundingClientRect().top;
-          const scrollOffset = targetTop - containerTop;
-
-          // Set scroll INSTANTLY
-          container.scrollTop = container.scrollTop + scrollOffset;
-
-          // Blink effect
-          setTimeout(() => {
-            targetElement.style.backgroundColor = "";
-          }, 2000);
+          container.scrollTop = container.scrollTop + (targetTop - containerTop);
         }
       } else {
         container.scrollTop = container.scrollHeight;
       }
     } else {
-      // No unread - bottom
+      // chatRooms not yet loaded or no unread — default to bottom
       container.scrollTop = container.scrollHeight;
     }
 
     initialScrollDoneRef.current = true;
-    hasScrolledToUnreadRef.current = true;
-
-    // Show container AFTER scroll set
     container.classList.add("ready");
   }, [messages, selectedGroup, unreadCounts, chatRooms, userId]);
 
@@ -192,36 +270,84 @@ const ChatPage = () => {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
     const docEl = document.documentElement;
+
     const setVvh = () => {
       const vv = window.visualViewport;
-      if (vv && vv.height < window.innerHeight) {
+      if (!vv) return;
+      const chatLayout = document.querySelector(".chat-layout");
+
+      // iOS Safari auto-scrolls the page when keyboard opens to bring the focused
+      // input into view. This makes window.scrollY > 0, which shifts the layout
+      // viewport and can hide the header. Reset it immediately.
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
+
+      if (vv.height < window.innerHeight) {
+        // Emoji picker is managing layout — skip entirely to avoid flicker during
+        // the keyboard-close animation that plays while transitioning keyboard→emoji.
+        if (showEmojiPickerRef.current) return;
+
+        const keyboardH = window.innerHeight - vv.height;
+        // vv.offsetTop > 0 means iOS shifted the visual viewport downward to keep
+        // the focused input visible. In that case pin the chat-layout exactly to
+        // the visual viewport bounds so the header stays at the top and the input
+        // stays at the bottom (above the keyboard) without being hidden.
+        const offsetTop = vv.offsetTop || 0;
         docEl.style.setProperty("--vvh", `${vv.height}px`);
-        setTimeout(() => {
-          const input = document.querySelector(".chat-input-container");
-          if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
-        }, 100);
-        setTimeout(scrollToBottom, 150);
         document.body.style.overflow = "hidden";
-        document.body.style.position = "fixed";
-        document.body.style.width = "100vw";
-        const chatLayout = document.querySelector(".chat-layout");
+
         if (chatLayout) {
-          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, {
-            passive: false,
-          });
-          chatLayout.addEventListener("wheel", allowChatMessagesScroll, {
-            passive: false,
-          });
+          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
+          chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
+
+          if (offsetTop > 0) {
+            chatLayout.style.top = `${offsetTop}px`;
+            chatLayout.style.height = `${vv.height}px`;
+            chatLayout.style.bottom = "auto";
+            chatLayout.style.paddingBottom = "";
+          } else {
+            // Standard path: full-height layout, paddingBottom reserves space above keyboard.
+            // Math.max prevents padding from temporarily dropping during emoji→keyboard
+            // transition (keyboard opens gradually, keyboardH starts small).
+            chatLayout.style.top = "";
+            chatLayout.style.height = "";
+            chatLayout.style.bottom = "";
+            const currentPadding = parseFloat(chatLayout.style.paddingBottom) || 0;
+            chatLayout.style.paddingBottom = `${Math.max(keyboardH, currentPadding)}px`;
+          }
         }
+
+        requestAnimationFrame(() => scrollToBottom());
       } else {
+        // Keyboard fully closed — OR iOS 15+ where vv.height stays equal to
+        // window.innerHeight even while the keyboard is open (browser no longer
+        // shrinks the visual viewport for the keyboard on newer iOS).
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
         document.body.style.overflow = "";
-        document.body.style.position = "";
-        document.body.style.width = "";
-        const chatLayout = document.querySelector(".chat-layout");
+
         if (chatLayout) {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
+          // Reset any position overrides that were applied during the keyboard-open phase.
+          chatLayout.style.top = "";
+          chatLayout.style.height = "";
+          chatLayout.style.bottom = "";
+
+          const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+          if (showEmojiPickerRef.current) {
+            // Emoji picker is open — keep space reserved for it.
+            chatLayout.style.paddingBottom = `${kbh}px`;
+          } else if (
+            textareaRef.current &&
+            document.activeElement === textareaRef.current &&
+            textareaRef.current.getAttribute("inputmode") !== "none"
+          ) {
+            // iOS 15+: keyboard is open but vv.height is unchanged (browser doesn't
+            // report it). Input is focused → keyboard is almost certainly showing.
+            // Add stored keyboard height so the input stays visible above the keyboard.
+            chatLayout.style.paddingBottom = `${kbh}px`;
+          } else {
+            chatLayout.style.paddingBottom = "";
+          }
         }
       }
     };
@@ -243,12 +369,21 @@ const ChatPage = () => {
     window.visualViewport?.addEventListener("resize", setVvh);
     window.visualViewport?.addEventListener("scroll", setVvh);
 
+    // iOS 15+: keyboard opening does NOT resize the visual viewport, so the
+    // resize event never fires. Listen to focus/blur on the chat input so we
+    // can apply / remove keyboard padding as soon as focus changes.
+    const inputEl = textareaRef.current;
+    const onInputFocus = () => requestAnimationFrame(setVvh);
+    const onInputBlur = () => requestAnimationFrame(setVvh);
+    inputEl?.addEventListener("focus", onInputFocus);
+    inputEl?.addEventListener("blur", onInputBlur);
+
     return () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", setVvh);
+      inputEl?.removeEventListener("focus", onInputFocus);
+      inputEl?.removeEventListener("blur", onInputBlur);
       document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
       const chatLayout = document.querySelector(".chat-layout");
       if (chatLayout) {
         chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
@@ -257,35 +392,82 @@ const ChatPage = () => {
     };
   }, []);
 
-  // Cursor memory for emoji insertion
-  const saveCursor = () => {
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      lastRangeRef.current = sel.getRangeAt(0).cloneRange();
+  const emojiEffectMountedRef = useRef(false);
+  // Keep emoji ref in sync so setVvh closure can read it
+  // Scroll to bottom after layout reflow — skip on initial mount to avoid visible animation.
+  // Double RAF waits for React commit + browser layout so .chat-messages height is settled
+  // before scrollHeight is read. The ResizeObserver below handles any later settling.
+  useEffect(() => {
+    showEmojiPickerRef.current = showEmojiPicker;
+    if (!emojiEffectMountedRef.current) {
+      emojiEffectMountedRef.current = true;
+      return;
     }
-  };
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToBottom(true)));
+  }, [showEmojiPicker]);
+
+  // Re-pin to bottom whenever the messages-area height changes (picker open/close,
+  // keyboard show/hide, input grows multi-line) — but only when the user was already
+  // at-or-near the bottom, so reading older messages isn't disrupted.
+  useEffect(() => {
+    const el = chatBodyRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let prevHeight = el.clientHeight;
+    const NEAR_BOTTOM_PX = 80;
+    const obs = new ResizeObserver(() => {
+      if (isEmojiInsertRef.current) return; // emoji-insert manages its own scroll
+      const h = el.clientHeight;
+      if (h === prevHeight) return;
+      const wasNearBottom =
+        el.scrollTop + prevHeight >= el.scrollHeight - NEAR_BOTTOM_PX;
+      prevHeight = h;
+      if (wasNearBottom) scrollToBottom(true);
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Track cursor position whenever selection changes inside the input
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      if (!textareaRef.current) return;
+      const sel = window.getSelection();
+      if (
+        sel &&
+        sel.rangeCount > 0 &&
+        textareaRef.current.contains(sel.anchorNode)
+      ) {
+        lastRangeRef.current = sel.getRangeAt(0).cloneRange();
+      }
+    };
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () =>
+      document.removeEventListener("selectionchange", handleSelectionChange);
+  }, []);
 
   const insertEmoji = (emojiObject) => {
     const emojiUrl = emojiObject?.imageUrl;
     if (!textareaRef.current) return;
     ignoreNextFocusRef.current = true;
+    isEmojiInsertRef.current = true;
 
-    textareaRef.current.setAttribute("inputmode", "none");
-    textareaRef.current.focus({ preventScroll: true });
-    setTimeout(() => {
-      textareaRef.current.removeAttribute("inputmode");
-    }, 50);
+    const el = textareaRef.current;
+    // Capture scroll BEFORE focus() so mobile browser scroll side-effects don't corrupt it
+    const savedScrollTop = el.scrollTop;
+
+    el.setAttribute("inputmode", "none");
+    el.focus({ preventScroll: true });
 
     let sel = window.getSelection();
     let range;
     if (
       lastRangeRef.current &&
-      textareaRef.current.contains(lastRangeRef.current.startContainer)
+      el.contains(lastRangeRef.current.startContainer)
     ) {
       range = lastRangeRef.current;
     } else {
       range = document.createRange();
-      range.selectNodeContents(textareaRef.current);
+      range.selectNodeContents(el);
       range.collapse(false);
     }
 
@@ -295,11 +477,6 @@ const ChatPage = () => {
     const img = document.createElement("img");
     img.src = emojiUrl;
     img.className = "emoji-inline";
-    img.style.width = "24px";
-    img.style.height = "24px";
-    img.style.verticalAlign = "middle";
-    img.style.display = "inline-block";
-    img.style.margin = "0 2px";
 
     range.insertNode(img);
 
@@ -309,7 +486,60 @@ const ChatPage = () => {
     sel.removeAllRanges();
     sel.addRange(newRange);
     lastRangeRef.current = newRange;
-    resizeTextarea();
+
+    requestAnimationFrame(() => {
+      if (!el) return;
+
+      // Resize height (may reset scrollTop on mobile)
+      el.style.height = "auto";
+      const newHeight = Math.min(el.scrollHeight, 120);
+      el.style.height = `${newHeight}px`;
+
+      // Restore to the scroll position the user had before selecting the emoji
+      el.scrollTop = savedScrollTop;
+
+      // Only nudge scroll if cursor is genuinely outside the visible area
+      if (el.scrollHeight > el.clientHeight) {
+        const s = window.getSelection();
+        if (s && s.rangeCount > 0) {
+          const rng = s.getRangeAt(0).cloneRange();
+          rng.collapse(true);
+          const rect = rng.getBoundingClientRect();
+          if (rect.width !== 0 || rect.height !== 0 || rect.top !== 0) {
+            const elRect = el.getBoundingClientRect();
+            const relTop = rect.top - elRect.top + el.scrollTop;
+            if (relTop < el.scrollTop) {
+              el.scrollTop = relTop;
+            } else if (relTop + rect.height > el.scrollTop + el.clientHeight) {
+              el.scrollTop = relTop + rect.height - el.clientHeight;
+            }
+          } else {
+            // mobile Chrome: cursor rect is zero after img node.
+            // Use the inserted img's own rect to scroll just enough to keep it visible —
+            // avoids jumping to end when emoji was inserted in the middle of a message.
+            const imgRect = img.getBoundingClientRect();
+            if (imgRect.height !== 0) {
+              const elRect = el.getBoundingClientRect();
+              const relTop = imgRect.top - elRect.top + el.scrollTop;
+              if (relTop < el.scrollTop) {
+                el.scrollTop = relTop;
+              } else if (relTop + imgRect.height > el.scrollTop + el.clientHeight) {
+                el.scrollTop = relTop + imgRect.height - el.clientHeight;
+              }
+              // else: emoji is already visible — keep savedScrollTop as-is
+            }
+            // if imgRect is also zero, savedScrollTop is already restored above — do nothing
+          }
+        }
+      }
+
+      // Clear flag in a second RAF so any async onInput fired by insertNode
+      // (Chrome fires input events on contentEditable for programmatic mutations)
+      // still sees isEmojiInsertRef = true and does not scroll-to-bottom
+      requestAnimationFrame(() => {
+        isEmojiInsertRef.current = false;
+      });
+    });
   };
 
   const markRoomRead = async (groupId, userId) => {
@@ -339,23 +569,40 @@ const ChatPage = () => {
     }
   };
 
-  const fetchMessagesForRoom = async (groupId, page = 1, limit = 10000) => {
-    if (!groupId) return;
+  const fetchMessagesForRoom = async (targetGroupId, isBackgroundRefresh = false, page = 1, limit = 1000) => {
+    if (!targetGroupId) return;
+    let stale = false;
     try {
       const resp = await fetchMessagesRequest(
-        `${GET_CHAT_MESSAGES}/${groupId}?page=${page}&limit=${limit}`,
+        `${GET_CHAT_MESSAGES}/${targetGroupId}?page=${page}&limit=${limit}`,
         "GET",
       );
       if (!resp.error && resp.data) {
-        setMessages(resp?.data || []);
+        // Discard results if user navigated to a different room while fetch was in flight
+        if (activeGroupIdRef.current !== targetGroupId) { stale = true; return; }
+
+        const fetched = resp.data || [];
+
+        // Merge instead of overwrite: preserve any messages in current state that are
+        // NOT in the server response — covers:
+        //  • Optimistic messages sent but not yet confirmed by socket
+        //  • Socket-received messages that arrived after this fetch was dispatched
+        setMessages((prev) => {
+          if (!prev.length) return fetched;
+          const fetchedIdSet = new Set(fetched.map((m) => String(m._id || m.id)));
+          const extra = prev.filter((m) => !fetchedIdSet.has(String(m._id || m.id)));
+          return extra.length > 0 ? [...fetched, ...extra] : fetched;
+        });
+
+        setCachedMessages(targetGroupId, fetched);
         const roomObj = chatRooms.find(
-          (r) => String(r._id || r.id) === String(groupId),
+          (r) => String(r._id || r.id) === String(targetGroupId),
         );
         const lastReadMap = roomObj?.lastReadAt || roomObj?.lastReadAtMap || {};
         const lastReadForMe = lastReadMap[userId]
           ? new Date(lastReadMap[userId])
           : null;
-        const unread = (resp.data || []).filter((m) => {
+        const unread = fetched.filter((m) => {
           const created = m.createdAt
             ? new Date(m.createdAt)
             : m.sentAt
@@ -364,12 +611,14 @@ const ChatPage = () => {
           if (!created || String(m.senderId) === String(userId)) return false;
           return lastReadForMe ? created > lastReadForMe : true;
         }).length;
-        setUnreadCountsContext((prev) => ({ ...prev, [groupId]: unread }));
+        setUnreadCountsContext((prev) => ({ ...prev, [targetGroupId]: unread }));
       } else {
         console.warn("Failed fetch messages", resp);
       }
     } catch (err) {
       console.error("Fetch messages failed", err);
+    } finally {
+      if (!stale && !isBackgroundRefresh) setMessagesLoading(false);
     }
   };
 
@@ -392,43 +641,28 @@ const ChatPage = () => {
     fetchUserDetails();
   }, [userId]);
 
-  useEffect(() => {
-    const saved =
-      typeof window !== "undefined"
-        ? localStorage.getItem("chatBgImage")
-        : null;
-    if (saved) {
-      setChatBg(saved);
-    } else {
-      setChatBg(chatBgImage.src);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("chatBgImage", chatBgImage.src);
-      }
-    }
-  }, []);
-
   const handleBack = () => {
-    const basePath = "/wonderlandinternational/chat";
-    if (userId) {
-      router.push(`${basePath}?id=${encodeURIComponent(userId)}`);
-    } else {
-      router.push(basePath);
-    }
+    router.back();
   };
 
   const sendMessage = async () => {
     if (!textareaRef.current) return;
-    const messageHTML = textareaRef.current.innerHTML.trim();
+    const rawHTML = textareaRef.current.innerHTML.trim();
     const messageText = textareaRef.current.textContent.trim();
     if (
       !messageText &&
-      (!messageHTML ||
-        messageHTML === "<br>" ||
-        messageHTML === "<div><br></div>")
+      (!rawHTML ||
+        rawHTML === "<br>" ||
+        rawHTML === "<div><br></div>")
     ) {
       return;
     }
     if (!selectedGroup?.eventId || !userId) return;
+
+    // Convert any keyboard Unicode emoji → <img class="emoji-inline"> so all emoji
+    // are stored as images, matching the emoji picker's output
+    const messageHTML = processEmojiInHtml(rawHTML);
+
     const groupId = selectedGroup?._id;
     const tempId = `temp_${Date.now()}_${Math.random()
       .toString(36)
@@ -464,7 +698,8 @@ const ChatPage = () => {
 
     textareaRef.current.innerHTML = "";
     textareaRef.current.style.height = "auto";
-    scrollToBottom();
+    textareaRef.current.parentElement?.classList.remove("multi-line");
+    scrollToBottom(true);
 
     if (!showEmojiPicker) {
       requestAnimationFrame(() => {
@@ -473,16 +708,171 @@ const ChatPage = () => {
     }
   };
 
+  const handleBackspace = () => {
+    if (!textareaRef.current) return;
+    const sel = window.getSelection();
+    if (!sel) return;
+
+    // Restore saved cursor position
+    if (lastRangeRef.current && textareaRef.current.contains(lastRangeRef.current.startContainer)) {
+      sel.removeAllRanges();
+      sel.addRange(lastRangeRef.current.cloneRange());
+    }
+    if (!sel.rangeCount) return;
+
+    const range = sel.getRangeAt(0);
+    if (!range.collapsed) {
+      range.deleteContents();
+    } else {
+      const { startContainer: node, startOffset: offset } = range;
+      if (node.nodeType === Node.TEXT_NODE && offset > 0) {
+        range.setStart(node, offset - 1);
+        range.deleteContents();
+      } else {
+        const target =
+          node.nodeType === Node.ELEMENT_NODE && offset > 0
+            ? node.childNodes[offset - 1]
+            : node.nodeType === Node.TEXT_NODE
+              ? node.previousSibling
+              : null;
+        if (target) {
+          if (target.nodeType === Node.TEXT_NODE && target.length > 0) {
+            target.deleteData(target.length - 1, 1);
+            const r = document.createRange();
+            r.setStart(target, target.length);
+            r.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(r);
+          } else if (target.nodeType === Node.ELEMENT_NODE) {
+            const parent = target.parentNode;
+            const idx = [...parent.childNodes].indexOf(target);
+            target.remove();
+            const r = document.createRange();
+            r.setStart(parent, idx);
+            r.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(r);
+          }
+        }
+      }
+    }
+
+    const updated = window.getSelection();
+    if (updated?.rangeCount > 0) lastRangeRef.current = updated.getRangeAt(0).cloneRange();
+    resizeTextarea();
+  };
+
+  const convertEmojiInInput = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const EMOJI_RE =
+      /(?:[\u{1F1E0}-\u{1F1FF}]{2}|[#*0-9]️⃣|\p{Extended_Pictographic}\p{Emoji_Modifier}?️?(?:‍\p{Extended_Pictographic}\p{Emoji_Modifier}?️?)*)/gu;
+
+    const sel = window.getSelection();
+    const anchorNode = sel?.rangeCount ? sel.getRangeAt(0).startContainer : null;
+    const anchorOffset = sel?.rangeCount ? sel.getRangeAt(0).startOffset : 0;
+
+    let anyConverted = false;
+    let cursorImg = null;
+    let lastAnyImg = null;
+
+    const walk = (node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === "IMG") return;
+        [...node.childNodes].forEach(walk);
+        return;
+      }
+      if (node.nodeType !== Node.TEXT_NODE) return;
+
+      const text = node.nodeValue;
+      EMOJI_RE.lastIndex = 0;
+      if (!EMOJI_RE.test(text)) return;
+      EMOJI_RE.lastIndex = 0;
+
+      const isCursor = node === anchorNode;
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      let m;
+
+      while ((m = EMOJI_RE.exec(text)) !== null) {
+        if (m.index > last)
+          frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+
+        const img = document.createElement("img");
+        img.src = getEmojiImageUrl(m[0]);
+        img.className = "emoji-inline";
+        img.alt = m[0];
+        img.setAttribute(
+          "onerror",
+          "if(!this.dataset.r){this.dataset.r='1';this.src=this.src.replace('.png','-fe0f.png');}else{this.alt='';this.style.display='none';}"
+        );
+        frag.appendChild(img);
+        lastAnyImg = img;
+        if (isCursor && m.index + m[0].length <= anchorOffset) cursorImg = img;
+        last = m.index + m[0].length;
+        anyConverted = true;
+      }
+
+      if (last < text.length)
+        frag.appendChild(document.createTextNode(text.slice(last)));
+
+      node.parentNode.replaceChild(frag, node);
+    };
+
+    [...el.childNodes].forEach(walk);
+
+    if (!anyConverted) return;
+
+    const target = cursorImg || lastAnyImg;
+    if (target && sel) {
+      const range = document.createRange();
+      range.setStartAfter(target);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      lastRangeRef.current = range.cloneRange();
+    }
+  };
+
   const resizeTextarea = () => {
     const el = textareaRef.current;
     if (!el) return;
 
+    const prevScrollTop = el.scrollTop;
     el.style.height = "auto";
     const newHeight = Math.min(el.scrollHeight, 120);
     el.style.height = `${newHeight}px`;
 
+    // Reduce border-radius when input grows beyond a single line (~44px)
+    const container = el.parentElement;
+    if (container) {
+      container.classList.toggle("multi-line", newHeight > 44);
+    }
+
+    // Always restore first — height:auto resets scrollTop to 0 on mobile
+    el.scrollTop = prevScrollTop;
+
+    // During emoji insert, the RAF handles final scroll — don't interfere
+    if (isEmojiInsertRef.current) return;
+
+    // For keyboard typing: scroll just enough to keep cursor visible
     if (newHeight >= 120) {
-      el.scrollTop = el.scrollHeight;
+      const s = window.getSelection();
+      if (s && s.rangeCount > 0 && el.contains(s.anchorNode)) {
+        const rng = s.getRangeAt(0).cloneRange();
+        rng.collapse(true);
+        const rect = rng.getBoundingClientRect();
+        if (rect.height !== 0) {
+          const elRect = el.getBoundingClientRect();
+          const relTop = rect.top - elRect.top + el.scrollTop;
+          if (relTop < el.scrollTop) {
+            el.scrollTop = relTop;
+          } else if (relTop + rect.height > el.scrollTop + el.clientHeight) {
+            el.scrollTop = relTop + rect.height - el.clientHeight;
+          }
+        }
+      }
     }
   };
 
@@ -534,7 +924,10 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (selectedGroup) {
-      setRoomDisplayDetails(getRoomDetails(selectedGroup, userId));
+      const gid = selectedGroup._id || selectedGroup.id;
+      const details = getRoomDetails(selectedGroup, userId);
+      setRoomDisplayDetails(details);
+      setCachedRoomDetails(gid, details);
     }
   }, [selectedGroup]);
 
@@ -590,6 +983,70 @@ const ChatPage = () => {
     };
   }, []);
 
+  const getEmojiImageUrl = (emojiStr) => {
+    const chars = [...emojiStr].map((c) => c.codePointAt(0));
+    const codepoints = [];
+    for (let i = 0; i < chars.length; i++) {
+      const cp = chars[i];
+      // Strip FE0F except inside keycap sequences (char + FE0F + 20E3).
+      // Symbols that need FE0F in their filename (❤️ → 2764-fe0f.png) are
+      // recovered by the onerror retry that appends -fe0f before .png.
+      if (cp === 0xfe0f && chars[i + 1] !== 0x20e3) continue;
+      codepoints.push(cp.toString(16).toLowerCase().padStart(4, "0"));
+    }
+    return `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${codepoints.join("-")}.png`;
+  };
+
+  const processEmojiInHtml = (html) => {
+    if (!html || typeof document === "undefined") return html;
+
+    // Covers: flags (🇮🇳 🇺🇸), keycaps (#️⃣ 1️⃣), standard emoji, skin-tone variants, ZWJ sequences
+    const EMOJI_RE =
+      /(?:[\u{1F1E0}-\u{1F1FF}]{2}|[#*0-9]️⃣|\p{Extended_Pictographic}\p{Emoji_Modifier}?️?(?:‍\p{Extended_Pictographic}\p{Emoji_Modifier}?️?)*)/gu;
+
+    const container = document.createElement("div");
+    container.innerHTML = html;
+
+    const walk = (node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.nodeValue;
+        EMOJI_RE.lastIndex = 0;
+        if (!EMOJI_RE.test(text)) return;
+
+        EMOJI_RE.lastIndex = 0;
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        let m;
+
+        while ((m = EMOJI_RE.exec(text)) !== null) {
+          if (m.index > last)
+            frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+          const img = document.createElement("img");
+          img.src = getEmojiImageUrl(m[0]);
+          img.className = "emoji-inline";
+          img.alt = m[0];
+          img.setAttribute("onerror", "if(!this.dataset.r){this.dataset.r='1';this.src=this.src.replace('.png','-fe0f.png');}else{this.alt='';this.style.display='none';}");
+          frag.appendChild(img);
+          last = m.index + m[0].length;
+        }
+
+        if (last < text.length)
+          frag.appendChild(document.createTextNode(text.slice(last)));
+
+        node.parentNode.replaceChild(frag, node);
+        return;
+      }
+
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName === "IMG" || node.tagName === "A") return;
+        [...node.childNodes].forEach(walk);
+      }
+    };
+
+    [...container.childNodes].forEach(walk);
+    return container.innerHTML;
+  };
+
   const linkifyHtml = (html) => {
     if (!html) return html;
 
@@ -606,8 +1063,8 @@ const ChatPage = () => {
         span.innerHTML = node.nodeValue.replace(urlRegex, (url) => {
           const href = url.startsWith("http") ? url : `https://${url}`;
 
-          return `<a 
-  href="${href}" 
+          return `<a
+  href="${href}"
   data-url="${href}"
   class="chat-link"
   target="_blank"
@@ -681,7 +1138,13 @@ const ChatPage = () => {
         </div>
       </div>
 
-      <div className="chat-messages" ref={chatBodyRef}>
+      {messagesLoading && (
+        <div className="chat-loading-overlay">
+          <div className="chat-loading-spinner" />
+        </div>
+      )}
+
+      <div className="chat-messages" ref={chatBodyRef} style={{ display: messagesLoading ? "none" : undefined }}>
         {messages.map((msg, index) => {
           const isMe = msg.senderId === userId;
           const senderName = msg.senderName;
@@ -746,13 +1209,13 @@ const ChatPage = () => {
                   >
                     {senderName
                       ? senderName
-                      : `${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
+                      : `+91 ${msg.senderPhoneNumber?.slice(0, -4)}XXXX`}
                   </div>
                 )}
                 <div
                   className="chat-text"
                   dangerouslySetInnerHTML={{
-                    __html: linkifyHtml(msg.html || msg.message),
+                    __html: processEmojiInHtml(linkifyHtml(msg.html || msg.message)),
                   }}
                 />
                 <div className="chat-time">{formatTime(msg.createdAt)}</div>
@@ -765,7 +1228,7 @@ const ChatPage = () => {
               key={msg._id}
             >
               <p className="info-chat-message-box">
-                {renderInfoMessage(msg, membersProfileMap)}
+                {renderInfoMessage(msg, membersProfileMap || {})}
               </p>
             </div>
           );
@@ -782,31 +1245,38 @@ const ChatPage = () => {
           keyboardIcon={keyboardIcon}
           textareaRef={textareaRef}
           ignoreNextFocusRef={ignoreNextFocusRef}
+          onBackspace={handleBackspace}
+          showEmojiPickerRef={showEmojiPickerRef}
+          lastRangeRef={lastRangeRef}
         />
         <div
           ref={textareaRef}
           contentEditable
           inputMode="text"
           suppressContentEditableWarning={true}
-          onFocus={() => {
-            if (showEmojiPicker) {
-              setShowEmojiPicker(false);
-            }
-            const el = textareaRef.current;
-            if (!el) return;
-            el.addEventListener("keyup", saveCursor);
-            el.addEventListener("mouseup", saveCursor);
-            el.addEventListener("focus", saveCursor);
+          onTouchStart={(e) => {
+            inputTouchStartYRef.current = e.touches[0]?.clientY ?? 0;
           }}
-          onInput={(e) => {
-            resizeTextarea();
-            if (textareaRef.current.scrollHeight > 120) {
-              textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-            }
-          }}
-          onClick={() => {
+          onTouchEnd={(e) => {
+            if (!showEmojiPicker || !textareaRef.current) return;
+            const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
+            if (dy > 10) return; // swipe — keep picker open
+            // Tap on input while picker is open: hide picker, reveal keyboard.
+            // Input stays focused throughout the picker session (open path no
+            // longer blurs), so no focus/focusin event fires from this tap —
+            // we must update React state ourselves or the next emoji-btn tap
+            // will hit the close path instead of reopening the picker.
+            textareaRef.current.removeAttribute("inputmode");
+            document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
+            document.querySelectorAll(".chat-layout").forEach((el) => {
+              el.style.paddingBottom = "";
+            });
+            showEmojiPickerRef.current = false;
             setShowEmojiPicker(false);
           }}
+          onCompositionStart={() => { isComposingRef.current = true; }}
+          onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}
+          onInput={() => { resizeTextarea(); if (!isComposingRef.current) convertEmojiInInput(); }}
           className="chat-input"
           data-placeholder="Type message here..."
         />
