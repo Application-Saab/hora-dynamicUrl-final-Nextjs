@@ -65,6 +65,18 @@ export function ChatProvider({ children }) {
     };
   }, []);
 
+  // SSR hydration gap fix: on server window is undefined so useState initializer
+  // returns "". React does NOT re-run it on the client. This effect runs once
+  // after mount to sync from localStorage, with URL ?id= as fallback for
+  // Safari/iOS fresh loads where localStorage may be empty.
+  useEffect(() => {
+    if (loggedinUserId) return;
+    const id =
+      localStorage.getItem("userID") ||
+      new URLSearchParams(window.location.search).get("id");
+    if (id) setLoggedinUserId(id);
+  }, []);
+
   useLayoutEffect(() => {
     const fetchAllRooms = async () => {
       if (loggedinUserId) {

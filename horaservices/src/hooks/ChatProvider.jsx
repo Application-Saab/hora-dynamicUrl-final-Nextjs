@@ -23,7 +23,10 @@ const ChatProviderMain = ({ children }) => {
   const { setUnreadCountsContext, setChatRooms, refetchChatRooms, chatRooms } =
     useChatStore();
   const userID =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem("userID") ||
+        new URLSearchParams(window.location.search).get("id")
+      : null;
 
   // Prevent multiple listener attachments
   const listenersAttachedRef = useRef(false);

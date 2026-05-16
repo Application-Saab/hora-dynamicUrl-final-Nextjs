@@ -26,18 +26,10 @@ const PageLayout = ({ children }) => {
     pathname === "/wonderland/create-invite-template" ||
     pathname === "/wonderlandinternational/create-invite-template" ||
     pathname === "/templates" ||
-    pathname?.startsWith("/chat") ||
-    pathname?.startsWith("/wonderlandinternational/chat") ||
-    pathname === "/about" ||
-    pathname === "/accounts" ||
-    pathname === "/wonderlandinternational/accounts" ||
-    pathname === "/services" ||
-    pathname === "/wonderland/invite" ||
-    pathname === "/wonderlandinternational/invite";
+    (pathname?.startsWith("/chat") && !pathname?.startsWith("/chat/room")) || // covers /chat list but NOT /chat/room (full-screen layout)
+    pathname === "/about" || pathname === '/accounts' || pathname === "/services" || pathname === '/wonderland/invite';
 
-  const isWonderlandPath =
-    pathname?.startsWith("/wonderland") ||
-    pathname?.startsWith("/wonderlandinternational");
+  const isWonderlandPath = pathname?.startsWith("/wonderland");
 
   return (
     <div className="page-container container-fluid p-0">
@@ -51,11 +43,7 @@ const PageLayout = ({ children }) => {
       </main>
 
       {/*  Show BottomNav on selected pages, passing userId */}
-      {showBottomNav ? (
-        <BottomNav id={userId} />
-      ) : (
-        !isWonderlandPath && <Footer />
-      )}
+      {showBottomNav ? <BottomNav id={userId} /> : !isWonderlandPath && !pathname?.startsWith("/chat/room") && <Footer />}
     </div>
   );
 };

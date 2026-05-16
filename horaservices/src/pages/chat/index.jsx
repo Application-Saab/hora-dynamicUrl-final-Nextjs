@@ -14,7 +14,10 @@ import socket from "@/socket";
 
 const GroupsList = () => {
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem("userID") ||
+        new URLSearchParams(window.location.search).get("id")
+      : null;
   const router = useRouter();
   const { chatRooms, unreadCounts, setUnreadCountsContext } = useChatStore();
   const { makeRequest: markReadRequest } = useApi();
