@@ -48,6 +48,12 @@
   width: 81px;
   height: 81px;
 }
+
+.circle-img-folder_wonderland {
+  width: 73px;
+  height: 73px;
+  border: 1.82px solid rgba(224, 224, 224, 1);
+}
 .circle-img-both {
 border-radius: 50%;
   overflow: visible;        
@@ -72,8 +78,22 @@ border: 1px solid #0000001F;
   height: calc(100% - 5px);
 }
 
+.card-item.active .circle-img-innner-wonderland {
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+}
+
+.card-item .circle-img-innner-wonderland{
+  width: calc(100% - 2px) !important;
+  height: calc(100% - 2px) !important;
+}
+
 .card-item.active .circle-img-folder {
   border: 2px solid #97538C;
+}
+
+.card-item.active .circle-img-folder_wonderland {
+  border: 1.82px solid rgba(151, 83, 140, 1)
 }
 
 

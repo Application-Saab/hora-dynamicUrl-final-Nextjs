@@ -85,3 +85,54 @@ export const assignToSubfolder = async ({
     throw error;
   }
 };
+
+//api for download and share tracking
+export const trackActivity = async (mediaId, action) => {
+  if (!mediaId) return;
+  try {
+    await fetch(`${BASE_URL}/api/internal/track-activity/${mediaId}`, {
+      method: "POST", 
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }), 
+    });
+  } catch (error) {
+    console.error(`Failed to track ${action}:`, error);
+  }
+};
+
+//api for newly registered user
+export const trackGalleryView = async (userId, mainFolderId) => {
+  try {
+    await fetch(`${BASE_URL}/api/internal/track-gallery-view`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, mainFolderId }),
+    });
+  } catch (err) {
+    console.error("Tracking failed:", err);
+  }
+};
+
+// tracking folder click function 
+export const trackFolderClick = async (mainFolderId) => { 
+    try {
+      const response = await fetch(`${BASE_URL}/api/internal/track-click`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mainFolderId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error in trackFolderClick service:", error);
+      throw error;
+    }
+};

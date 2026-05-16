@@ -11,9 +11,11 @@ import {
 } from "@/utils/apiconstants";
 import CustomModal from "../CustomModal";
 import "./LoginModal.css";
+import { usePathname } from "next/navigation";
 
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const modalRef = useRef(null);
+  const pathname = usePathname();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -37,6 +39,10 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   const inputsRef = useRef([]);
 
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderlandinternational",
+  );
+
   // Close modal on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -50,9 +56,26 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   // Validate phone input
   const handleChangePhone = (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+
+    // Remove spaces
+    value = value.replace(/\s/g, "");
+    if (isWonderlandInternational) {
+      if (/^\d*$/.test(value)) {
+        setPhone(value);
+
+        setError((prev) => ({
+          ...prev,
+          phone: value.length > 0 ? "" : "Mobile number is required",
+        }));
+      }
+
+      return;
+    }
+
     if (/^\d{0,10}$/.test(value)) {
       setPhone(value);
+
       setError((prev) => ({
         ...prev,
         phone:
@@ -64,34 +87,77 @@ const LoginModal = ({ isOpen, onClose }) => {
   };
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const delayDebounce = setTimeout(async () => {
+      if (isWonderlandInternational) {
+        if (phone.length >= 4 && !isOtpSent && phone !== lastCheckedPhone) {
+          setLastCheckedPhone(phone);
+
+          try {
+            let resp = await fetchUserData(
+              `${GET_USER_BY_PHONE}/${phone}?isWonderlandInternational=${isWonderlandInternational}`,
+              "GET",
+            );
+
+            setUserData(resp?.data || {});
+            setName(resp?.data?.name || "");
+          } catch (err) {
+            console.error("Error fetching user details:", err);
+          }
+        }
+
+        return;
+      }
+
       if (phone.length === 10 && !isOtpSent && phone !== lastCheckedPhone) {
         setLastCheckedPhone(phone);
+
         try {
           let resp = await fetchUserData(
             `${GET_USER_BY_PHONE}/${phone}`,
             "GET",
           );
+
           setUserData(resp?.data);
           setName(resp?.data?.name || "");
         } catch (err) {
           console.error("Error fetching user details:", err);
         }
       }
-    };
-    fetchUserDetails();
+    }, 200);
+
+    return () => clearTimeout(delayDebounce);
   }, [phone]);
 
   useEffect(() => {
+    if (isWonderlandInternational) {
+      if (phone.length < 4) {
+        setShowNameField(false);
+        return;
+      }
+
+      setTimeout(() => {
+        setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
+      }, 150);
+
+      return;
+    }
+
     if (phone.length < 10) {
       setShowNameField(false);
     }
+
     if (phone.length === 10) {
       setTimeout(() => {
         setShowNameField(!userData?.name && !fetchUserDataLoading && isFetched);
       }, 150);
     }
-  }, [phone, userData, fetchUserDataLoading, isFetched]);
+  }, [
+    phone,
+    userData,
+    fetchUserDataLoading,
+    isFetched,
+    isWonderlandInternational,
+  ]);
 
   // Send welcome WhatsApp message
   const sendWelcomeMessage = async (mobileNumber) => {
@@ -106,7 +172,8 @@ const LoginModal = ({ isOpen, onClose }) => {
       headers: {
         accept: "application/json",
         "content-type": "application/json",
-        Authorization: "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
+        Authorization:
+          "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
       },
       data: {
         messages: [
@@ -141,10 +208,13 @@ const LoginModal = ({ isOpen, onClose }) => {
   // Send OTP
   const sendOtp = async () => {
     let newError = { name: "", phone: "" };
+
     if (!name.trim()) newError.name = "Name is required";
     if (!phone) newError.phone = "Mobile number is required";
-    if (phone && phone.length !== 10)
+
+    if (!isWonderlandInternational && phone && phone.length !== 10) {
       newError.phone = "Please enter a valid 10-digit number";
+    }
 
     if (newError.name || newError.phone) {
       setError(newError);
@@ -156,20 +226,92 @@ const LoginModal = ({ isOpen, onClose }) => {
         phone,
         name,
         role: "customer",
+        fromWonderland: true,
+        fromCapsule: fromCapsule,
+        fromWonderlandInternational: isWonderlandInternational,
       });
 
+      if (response.status === 200 && isWonderlandInternational) {
+        const generatedOtp = response?.otp?.toString();
+
+        if (!generatedOtp) {
+          setError({
+            ...newError,
+            phone: "OTP generation failed",
+          });
+          return;
+        }
+
+        try {
+          const verifyResponse = await makeVerifyRequest(
+            OTP_VERIFY_ENDPOINT,
+            "POST",
+            {
+              phone,
+              otp: generatedOtp,
+              role: "customer",
+            },
+          );
+
+          if (verifyResponse.status === 200) {
+            const { token, data } = verifyResponse;
+
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("mobileNumber", phone);
+            localStorage.setItem("token", token);
+            localStorage.setItem("userID", data?._id);
+
+            // sendWelcomeMessage(phone);
+
+            window.dispatchEvent(new Event("loginStateChange"));
+
+            onClose();
+          } else {
+            setError({
+              ...newError,
+              phone: "Login failed. Please try again.",
+            });
+          }
+        } catch (verifyErr) {
+          console.log("Silent verify error", verifyErr);
+
+          setError({
+            ...newError,
+            phone: "Verification failed. Please retry.",
+          });
+        }
+
+        return;
+      }
       if (response.status === 200) {
         setIsOtpSent(true);
+
         resetTimer();
-        setError({ name: "", phone: "" });
+
+        setError({
+          name: "",
+          phone: "",
+        });
+
         setOtp(["", "", "", ""]);
         setOtpError("");
-        setTimeout(() => inputsRef.current[0]?.focus(), 300);
+
+        setTimeout(() => {
+          inputsRef.current[0]?.focus();
+        }, 300);
       } else {
-        setError({ ...newError, phone: "Failed to send OTP. Try again." });
+        setError({
+          ...newError,
+          phone: "Failed to send OTP. Try again.",
+        });
       }
     } catch (err) {
-      setError({ ...newError, phone: "Error sending OTP. Please retry." });
+      console.log(err);
+
+      setError({
+        ...newError,
+        phone: "Error sending OTP. Please retry.",
+      });
     }
   };
 
@@ -286,6 +428,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         localStorage.setItem("mobileNumber", phone);
         localStorage.setItem("token", token);
         localStorage.setItem("userID", data?._id);
+        localStorage.setItem("userName", data?.name);
 
         // sendWelcomeMessage(phone);
 
@@ -340,7 +483,7 @@ const LoginModal = ({ isOpen, onClose }) => {
           </p>
 
           <div className="d-flex flex-column w-100 login-input-ctn">
-            {!isOtpSent ? (
+            {!isOtpSent || isWonderlandInternational ? (
               <>
                 <div>
                   <input
@@ -428,13 +571,21 @@ const LoginModal = ({ isOpen, onClose }) => {
 
           <div style={{ marginBlock: "37px" }}>
             <CustomButton
-              title={!isOtpSent ? "Get OTP" : "Verify"}
+              title={
+                isWonderlandInternational
+                  ? "Continue"
+                  : !isOtpSent
+                    ? "Get OTP"
+                    : "Verify"
+              }
               buttonClass="login-modal-btn"
               onClick={handleClick}
               disabled={
                 sendOtpLoading ||
                 verifyOtpLoading ||
-                (isOtpSent && otp.join("").length !== 4)
+                (!isWonderlandInternational &&
+                  isOtpSent &&
+                  otp.join("").length !== 4)
               }
               loading={sendOtpLoading || verifyOtpLoading}
             />

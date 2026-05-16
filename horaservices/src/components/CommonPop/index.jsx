@@ -18,11 +18,12 @@ const CommonPopup = ({
   popupHeight = 356,
   titleFontSize = "clamp(18px, 4.5vw, 22px)", 
   containerClass = "justify-between",
+  style = {},
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="popup-overlay">
+    <div className="popup-overlay" style={style}>
       <div className={`${containerClass} popup-container`}
         style={{ height: `${popupHeight}px` }}
       >

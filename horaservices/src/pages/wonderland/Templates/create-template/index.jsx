@@ -18,6 +18,13 @@ import { saveTemplate } from "@/utils/indexedDB";
 import axios from "axios";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
+
+const TEMPLATE_ASSETS_BASE =
+  "https://horaservices.com/api/template-assets/templates";
+
+// ─── Image cache: templateId → object URL or src string ───────────────────────
+const imageCache = new Map();
+
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) =>
   toText(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -106,6 +113,21 @@ const setCaretAtEnd = (node) => {
   selection.addRange(range);
 };
 
+// ─── Pre-fetch image and store in module-level Map ────────────────────────────
+const prefetchBgImage = (bgImageName, cacheKey) => {
+  if (!bgImageName) return;
+  if (imageCache.has(cacheKey)) return; // already cached
+
+  const url = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
+
+  // Mark as in-progress so parallel calls don't duplicate
+  imageCache.set(cacheKey, url);
+
+  const img = new window.Image();
+  img.src = url;
+  // No need to do anything on load — browser cache will serve it instantly
+};
+
 /* ---------- component ---------- */
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
@@ -128,6 +150,10 @@ const DynamicTemplateRenderer = () => {
 
   const [templateLoading, setTemplateLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // ── NEW: track if image src is ready (from cache or fresh fetch) ──────────
+  const [imageSrc, setImageSrc] = useState(null);
+  const [imgBlurred, setImgBlurred] = useState(true); // blur until fully loaded
 
   const loading = templateLoading || !imageLoaded;
 
@@ -168,6 +194,7 @@ const DynamicTemplateRenderer = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [heroTransform, setHeroTransform] = useState({ x: 0, y: 0, scale: 1 });
+
   const templatePayload = useMemo(() => {
     const today = new Date();
     const fallback = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(
@@ -180,8 +207,8 @@ const DynamicTemplateRenderer = () => {
     );
 
     const finalTime = formData.time?.trim()
-      ? formData.time // DB time present → Use it
-      : getCurrentTimeAMPM(); // No DB time → current time
+      ? formData.time
+      : getCurrentTimeAMPM();
 
     return {
       eventType: formData.eventType,
@@ -191,7 +218,6 @@ const DynamicTemplateRenderer = () => {
         templateMeta?.dateCase || "default",
       ),
       day: formatted?.day || "",
-      //  month: formatted?.month || "",
       month: applyCase(
         formatted?.month || "",
         templateMeta?.monthCase || "default",
@@ -199,7 +225,6 @@ const DynamicTemplateRenderer = () => {
       year: formatted?.year || "",
       time: finalTime,
       borderColor: templateMeta?.borderColor,
-
       address: applyCase(formData.address || "", templateMeta?.addressCase),
       templateId,
       image: uploadedImage || originalImage || DefaultImageBgCircle.src,
@@ -264,7 +289,6 @@ const DynamicTemplateRenderer = () => {
     const fetchTemplate = async () => {
       if (!templateId) {
         setTemplateLoading(false);
-
         return;
       }
       try {
@@ -272,11 +296,7 @@ const DynamicTemplateRenderer = () => {
           `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
         );
         const { template, error: apiError, message } = await res.json();
-        console.log(
-          "%c [ template ]-228",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          template,
-        );
+
         if (!active) return;
         if (apiError || !template) {
           setError(message || "Failed to fetch template");
@@ -293,29 +313,34 @@ const DynamicTemplateRenderer = () => {
 
         const heroConfig = template.configs?.heroImageConfig || {};
         const cropShape = heroConfig.cropShape === "round" ? "round" : "rect";
-        console.log(
-          "%c [ cropShape ]-242",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          cropShape,
-        );
         const ratioW = parseInt(heroConfig?.cropRatio?.width, 10) || 4;
-        console.log(
-          "%c [ ratioW ]-244",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          ratioW,
-        );
         const ratioH = parseInt(heroConfig?.cropRatio?.height, 10) || 3;
-        console.log(
-          "%c [ ratioH ]-246",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          ratioH,
-        );
+
+        const bgImageName = template.configs?.bgImageName || "";
+
+        // ── FIX 1: Inject <link rel="preload"> as soon as bgImageName is known ──
+        if (bgImageName && typeof document !== "undefined") {
+          const preloadLink = document.createElement("link");
+          preloadLink.rel = "preload";
+          preloadLink.as = "image";
+          preloadLink.href = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
+          // fetchpriority tells the browser this is high priority
+          preloadLink.setAttribute("fetchpriority", "high");
+          document.head.appendChild(preloadLink);
+        }
+
+        // ── FIX 2: Set imageSrc immediately so <img> starts loading ASAP ──
+        const src = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
+        setImageSrc(src);
+
+        // ── FIX 3: Prefetch into module cache for repeat visits ──
+        prefetchBgImage(bgImageName, `bg_${templateId}`);
 
         setTemplateMeta({
           cssCode: cssCode || "",
           jsCode: jsCode || "",
           fontUrls: fontUrls ? JSON.parse(fontUrls) : [],
-          bgImageName: template.configs?.bgImageName || "",
+          bgImageName,
           charLimits: template.configs?.charLimits || {},
           dateFormatCase: template.configs?.dateFormatCase || "1",
           templateInfo: template.configs?.templateinfo || {},
@@ -361,7 +386,7 @@ const DynamicTemplateRenderer = () => {
           ? new Date(data.eventDate).toISOString().split("T")[0]
           : "";
         const formattedTime = data.eventTime
-          ? formatToAMPM(data.eventTime) // DB time exists → Convert & use
+          ? formatToAMPM(data.eventTime)
           : "";
 
         setFormData((prev) => ({
@@ -411,13 +436,11 @@ const DynamicTemplateRenderer = () => {
     );
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
+  // ── FIX 4: onLoad — remove blur with smooth CSS transition ────────────────
   const handleImageLoad = useCallback(() => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
     if (!info.templateWidth || !info.templateHeight) return;
-
-    // const ratio = (info.templateWidth - window.innerWidth) / info.templateWidth;
-    // const scale = 1 - ratio;
 
     const effectiveWidth = Math.min(window.innerWidth, 480);
     const scale = effectiveWidth / info.templateWidth;
@@ -442,6 +465,8 @@ const DynamicTemplateRenderer = () => {
       dayFontSize: scale * info.templatedayfontSize,
       dayPosition: scale * info.templatedayposition,
     });
+
+    setImgBlurred(false); // ── remove blur once fully loaded
     setImageLoaded(true);
   }, [templateMeta?.templateInfo]);
 
@@ -459,11 +484,9 @@ const DynamicTemplateRenderer = () => {
       node.classList.add("editing");
 
       const placeholder = PLACEHOLDERS[field] || "";
-
       const isPlaceholder = node.innerText.trim() === placeholder;
       const isEmpty = !node.innerText.trim();
 
-      // 🔥 click pe placeholder clear
       if (isEmpty || isPlaceholder) {
         node.innerText = "";
         setCaretAtEnd(node);
@@ -622,7 +645,6 @@ const DynamicTemplateRenderer = () => {
       return;
     }
 
-    // 🧾 Convert blob → file
     const file = new File(
       [blob],
       `invite_${templateMeta?.bgImageName || "image"}.png`,
@@ -720,7 +742,6 @@ const DynamicTemplateRenderer = () => {
             "Content-Type": "application/json",
             Authorization: token || "",
           },
-
           body: JSON.stringify({
             userId,
             eventType: formData.eventType,
@@ -755,7 +776,6 @@ const DynamicTemplateRenderer = () => {
   const saveCaretPosition = (el) => {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return 0;
-
     const range = selection.getRangeAt(0);
     return range.startOffset;
   };
@@ -764,26 +784,22 @@ const DynamicTemplateRenderer = () => {
     try {
       const selection = window.getSelection();
       const range = document.createRange();
-
       let node = el;
-
       if (el.childNodes.length > 0) {
         node =
           [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
       }
-
       const textLength = node.textContent?.length ?? 0;
       const safeOffset = Math.min(offset, textLength);
-
       range.setStart(node, safeOffset);
       range.collapse(true);
-
       selection.removeAllRanges();
       selection.addRange(range);
     } catch (err) {
       console.warn("restoreCaretPosition failed on device:", err);
     }
   };
+
   useEffect(() => {
     if (!templateMeta?.borderColor) return;
     document.documentElement.style.setProperty(
@@ -793,25 +809,20 @@ const DynamicTemplateRenderer = () => {
   }, [templateMeta?.borderColor]);
 
   const handleBackgroundRemoval = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
+    const formDataObj = new FormData();
+    formDataObj.append("file", file);
 
     try {
-      const response = await axios.post(
-        `${BG_REMOVER_URL}`,
-        formData,
-        {
-          responseType: "blob",
-        },
-      );
-
+      const response = await axios.post(`${BG_REMOVER_URL}`, formDataObj, {
+        responseType: "blob",
+      });
       const imageUrl = URL.createObjectURL(response.data);
       setUploadedImage(imageUrl);
       setOriginalImage(imageUrl);
     } catch (error) {
       console.error("Background removal error:", error);
       alert(
-        "error to connect to the server. Make sure your Python backend is running on port 8000.",
+        "Error connecting to server. Make sure your Python backend is running on port 8000.",
       );
     }
   };
@@ -834,47 +845,68 @@ const DynamicTemplateRenderer = () => {
       style={{ maxWidth: "480px", margin: "0 auto" }}
     >
       <div style={{ padding: "8px", maxWidth: "480px", width: "100%" }}>
-        {/*  SKELETON – OUTSIDE TEMPLATE (design safe) */}
+        {/* SKELETON – shown while loading */}
         {loading && (
           <div style={{ padding: "8px" }}>
             <TemplatecardSkeleton />
           </div>
         )}
 
-        {/*  TEMPLATE CONTAINER – ALWAYS PRESENT */}
+        {/* TEMPLATE CONTAINER – always in DOM so image loads in background */}
         <div
           ref={templateRef}
           className="template-container"
           style={{
             position: "relative",
-            visibility: loading ? "hidden" : "visible",
+            // ── FIX 5: use opacity instead of visibility so layout is preserved
+            // and image loads even while skeleton is shown
+            opacity: loading ? 0 : 1,
+            pointerEvents: loading ? "none" : "auto",
+            position: "relative",
           }}
         >
-          {templateMeta && (
+          {/* ── FIX 6: Render <img> as soon as imageSrc is set (before templateMeta fully settles)
+              This means the fetch starts earlier.
+              Blur effect gives perceived speed improvement — image appears instantly,
+              then sharpens on load instead of popping in from nothing. ── */}
+          {imageSrc && (
             <img
               ref={imgRef}
-              src={`/assets/templates/${templateMeta.bgImageName}`}
+              src={imageSrc}
               alt="bg"
+              // ── FIX 7: fetchpriority="high" tells browser: load this before other assets ──
+              fetchPriority="high"
+              decoding="async"
+              loading="eager"
               onLoad={handleImageLoad}
-              onError={() => setImageLoaded(true)}
+              onError={() => {
+                setImgBlurred(false);
+                setImageLoaded(true);
+              }}
               style={{
                 width: "100%",
-                visibility: imageLoaded ? "visible" : "hidden",
+                display: "block",
+                // ── FIX 8: blur → clear transition instead of hidden → visible
+                // User sees a fast blurry image instead of a blank white box
+                filter: imgBlurred ? "blur(12px)" : "none",
+                transform: imgBlurred ? "scale(1.03)" : "scale(1)",
+                transition: "filter 0.35s ease, transform 0.35s ease",
+                willChange: "filter, transform",
               }}
             />
           )}
 
-          {/* 🔹 Fonts */}
+          {/* Fonts */}
           {templateMeta?.fontUrls?.map((url, idx) => (
             <link key={idx} href={url} rel="stylesheet" />
           ))}
 
-          {/* 🔹 CSS */}
+          {/* CSS */}
           {templateMeta?.cssCode && (
             <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
           )}
 
-          {/* 🔹 Template HTML */}
+          {/* Template HTML */}
           {!loading && renderedHTML && (
             <div
               style={{
@@ -888,30 +920,22 @@ const DynamicTemplateRenderer = () => {
           )}
         </div>
 
-        {/* 🔹 File Upload */}
+        {/* File Upload */}
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           hidden
-          // onChange={(e) => {
-          //   const file = e.target.files?.[0];
-          //   if (!file) return;
-          //   const url = URL.createObjectURL(file);
-          //   setUploadedImage(url);
-          //   setOriginalImage(url);
-          // }}
-
           onChange={handleImageUploadClick}
         />
 
-        {/* 🔹 Submit */}
+        {/* Submit */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton title="Submit" onClick={handleSave} />
         </div>
       </div>
 
-      {/* 🔹 Modals */}
+      {/* Modals */}
       <CalendarModal
         show={modal.calendar}
         onClose={() => setModal((p) => ({ ...p, calendar: false }))}

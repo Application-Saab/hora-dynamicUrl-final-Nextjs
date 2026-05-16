@@ -9,6 +9,11 @@ import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
+import CelebrationSection from "@/components/wonderland/wonderlandBanner1";
+import HowItWorks from "@/components/HowItWorks";
+import CheerChatBanner from "@/components/CheerChatBanner";
+import GuestListBanner from "@/components/GuestListBanner";
+import InviteSlider from "@/components/InviteSlider";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
@@ -33,16 +38,47 @@ const WonderlandMainPage = () => {
     return () => clearTimeout(timer);
   }, [loggedinUserId, isUserLoggedIn]);
 
-  const createInviteClick = () => {
-    if (!isUserLoggedIn) {
-      setShowHostLoginModal(true);
-      return;
-    } else {
-      router.replace(`/wonderland/invite`);
-    }
-  };
+const createInviteClick = () => {
+  const userId = localStorage.getItem("userID") || "";
+  const mobileNumber = localStorage.getItem("mobileNumber") || "";
+  const isLoggedIn = localStorage.getItem("isLoggedIn") || "false";
 
-  // Listen local storage changes for login state
+  let userName = "";
+
+  try {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      userName = payload?.name || "";
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push({
+    event: "create_invite_click",
+
+    page: "wonderland_main_page",
+    button_name: "CREATE INVITE",
+
+    user_id: userId,
+    mobile_number: mobileNumber,
+    user_name: userName,
+    is_logged_in: isLoggedIn,
+
+    timestamp: new Date().toISOString()
+  });
+
+  if (!isUserLoggedIn) {
+    setShowHostLoginModal(true);
+    return;
+  }
+
+  router.replace("/wonderland/invite");
+};
   useEffect(() => {
     const syncLoginState = () => {
       setIsUserLoggedIn(localStorage.getItem("isLoggedIn") === "true");
@@ -61,6 +97,7 @@ const WonderlandMainPage = () => {
   return (
     <>
       <div className="logedin-container">
+       
         <div className="invite-banner">
           <Image
             src={wonderlandBanner}
@@ -79,14 +116,13 @@ const WonderlandMainPage = () => {
         {isUserLoggedIn && loggedinUserId && (
           <InvitesListing userId={loggedinUserId} />
         )}
-
-        <div className="invite-banner">
-          <Image
-            src={howitworks}
-            alt="Invite Banner"
-            className="banner-image"
-          />
-        </div>
+      <div style={{maxWidth:"480px"}}>
+<InviteSlider onCreateInvite={createInviteClick} />
+</div>
+<GuestListBanner onCreateInvite={createInviteClick} />
+<HowItWorks />
+<CelebrationSection onCreateInvite={createInviteClick} />
+<CheerChatBanner onCreateInvite={createInviteClick} />
         <div
           style={{
             fontFamily: "Inter, sans-serif",
@@ -97,7 +133,7 @@ const WonderlandMainPage = () => {
             letterSpacing: "0%",
             textAlign: "center",
             verticalAlign: "middle",
-            margin: "10px",
+           margin: "10px 10px 0px",
           }}
         >
           Host & Guest Features
@@ -117,7 +153,8 @@ const WonderlandMainPage = () => {
             className="banner-image"
           />
         </div>
-      </div>
+        </div>
+  
 
       <LoginModal 
         isOpen={showHostLoginModal}

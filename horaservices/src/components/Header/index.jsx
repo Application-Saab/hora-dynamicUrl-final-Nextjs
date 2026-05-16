@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
@@ -7,8 +6,8 @@ import "./header.css";
 import { usePathname, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import loginImg from '../../assets/profile_picture.png'
-import logo from '../../assets/new_logo_light.png';
+import loginImg from "../../assets/profile_picture.png";
+import logo from "../../assets/new_logo_light.png";
 import MobileDrawer from "./MobileDrawer";
 import DesktopMenu from "./DesktopMenu";
 import OtploginPopup from "../OtpLoginPopup";
@@ -37,12 +36,16 @@ const Header = () => {
     "/services",
   ];
 
-  const isCityPage = /^\/(delhi|mumbai|noida|pune|goa|bengaluru|chennai|hyderabad)/.test(
-    pathname
-  );
+  const isCityPage =
+    /^\/(delhi|mumbai|noida|pune|goa|bengaluru|chennai|hyderabad)/.test(
+      pathname,
+    );
 
   const isHomeLikePage = homeLikeRoutes.includes(pathname) || isCityPage;
   const isInnerPage = !isHomeLikePage;
+  const isWonderlandInternational = pathname?.startsWith(
+    "/wonderlandinternational",
+  );
 
   /** -----------------------
    * AUTH
@@ -74,88 +77,86 @@ const Header = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-const toggleDrawer = () => {
-  setShowDrawer(prev => !prev);
-};
+  const toggleDrawer = () => {
+    setShowDrawer((prev) => !prev);
+  };
 
   /** -----------------------
    * RENDER
    ------------------------ */
   return (
     <>
-          <header className="sec-header">
+      <header className="sec-header">
         <div className="pageWidth header-wrapper">
           {/* LOGO */}
-          <Link href="/">
-           <Image src={logo} alt="Logo" className="header-logo"/>
+          <Link href={isWonderlandInternational ? "/wonderlandinternational" : "/"}>
+            <Image src={logo} alt="Logo" className="header-logo" />
           </Link>
 
           {/* DESKTOP MENU */}
-          <div className="desktop-only" >
-            <DesktopMenu />
-          </div>
+          {!isWonderlandInternational && (
+            <div className="desktop-only">
+              <DesktopMenu />
+            </div>
+          )}
 
           {/* AUTH (DESKTOP) */}
-          <div className="desktop-only auth-section">
-  {isMounted && !isLoggedIn ? (
-    /* LOGIN */
-    <div
-      onClick={() => setIsLoginOpen(true)}
-      className="auth-btn"
-    >
-      <Image
-        src={loginImg}   // 👈 sirf login image
-        alt="Login"
-        width={20}
-        height={20}
-      />
-      <span>Login</span>
-    </div>
-  ) : (
-    /* LOGOUT */
-    <div
-      onClick={() => setIsLogoutOpen(true)}
-      className="auth-btn"
-    >
-      <span>Logout</span>   {/* ❌ no image here */}
-    </div>
-  )}
-</div>
-
+          {!isWonderlandInternational && (
+            <div className="desktop-only auth-section">
+              {isMounted && !isLoggedIn ? (
+                /* LOGIN */
+                <div onClick={() => setIsLoginOpen(true)} className="auth-btn">
+                  <Image
+                    src={loginImg} // 👈 sirf login image
+                    alt="Login"
+                    width={20}
+                    height={20}
+                  />
+                  <span>Login</span>
+                </div>
+              ) : (
+                /* LOGOUT */
+                <div onClick={() => setIsLogoutOpen(true)} className="auth-btn">
+                  <span>Logout</span> {/* ❌ no image here */}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* MOBILE HEADER */}
-          <div className="mobile-only mobile-header">
-            {isHomeLikePage ? (
-              <FontAwesomeIcon
-                icon={faBars}
-                className="menu-icon"
-                onClick={() => setShowDrawer(true)}
-              />
-            ) : (
-              <>
-           <div className="mobile-only mobile-header">
-  <FontAwesomeIcon
-    icon={faBars}
-    className="menu-icon"
-    onClick={toggleDrawer}
-  />
-</div>
-
-              </>
-            )}
-          </div>
+          {!isWonderlandInternational && (
+            <div className="mobile-only mobile-header">
+              {isHomeLikePage ? (
+                <FontAwesomeIcon
+                  icon={faBars}
+                  className="menu-icon"
+                  onClick={() => setShowDrawer(true)}
+                />
+              ) : (
+                <>
+                  <div className="mobile-only mobile-header">
+                    <FontAwesomeIcon
+                      icon={faBars}
+                      className="menu-icon"
+                      onClick={toggleDrawer}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* MOBILE DRAWER */}
         {showDrawer && (
-          <MobileDrawer
-            drawerRef={drawerRef}
-            onClose={() => setShowDrawer(false)}
-            onLogin={() => setIsLoginOpen(true)}
-            onLogout={() => setIsLogoutOpen(true)}
-            isLoggedIn={isLoggedIn}
-          />
-        )}
+            <MobileDrawer
+              drawerRef={drawerRef}
+              onClose={() => setShowDrawer(false)}
+              onLogin={() => setIsLoginOpen(true)}
+              onLogout={() => setIsLogoutOpen(true)}
+              isLoggedIn={isLoggedIn}
+            />
+          )}
       </header>
 
       {/* LOGIN MODAL */}

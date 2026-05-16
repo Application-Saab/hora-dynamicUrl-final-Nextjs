@@ -1,0 +1,127 @@
+.gl-wrapper {
+ max-width: 480px;
+  border: 1px solid #0000000D;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 
+  clamp(16px, calc((20 / 393) * 100vw), 24px);
+  gap: clamp(16px, calc((20 / 393) * 100vw), 24px);
+}
+
+.gl-image {
+  width: clamp(
+    112px,
+    calc((138.35 / 393) * 100vw),
+    170px
+  );
+
+  height: clamp(
+    122px,
+    calc((150.04 / 393) * 100vw),
+    183px
+  );
+
+  object-fit: contain;
+}
+
+.gl-content {
+  flex: 1;
+}
+
+.gl-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+
+  font-size: clamp(
+    12.5px,
+    calc((15.44 / 393) * 100vw),
+    19px
+  );
+
+  color: #4B0082;
+  margin: 0;
+}
+
+.gl-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+
+  font-size: clamp(
+    7px,
+    calc((8.69 / 393) * 100vw),
+    11px
+  );
+
+  margin: clamp(4px, calc((6 / 393) * 100vw), 8px) 0;
+}
+
+.gl-desc {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+
+  font-size: clamp(
+    7px,
+    calc((8.69 / 393) * 100vw),
+    11px
+  );
+
+  line-height: 1.4;
+  color: #555;
+
+  margin-bottom: clamp(6px, calc((8 / 393) * 100vw), 12px);
+}
+
+.gl-btn {
+  width: clamp(
+    97px,
+    calc((119.63 / 393) * 100vw),
+    146px
+  );
+
+  height: clamp(
+    18px,
+    calc((22.68 / 393) * 100vw),
+    27px
+  );
+
+  padding: 
+    clamp(6px, calc((8.5 / 393) * 100vw), 10px)
+    clamp(4px, calc((5.66 / 393) * 100vw), 7px);
+
+  border-radius: clamp(
+    4px,
+    calc((5.66 / 393) * 100vw),
+    7px
+  );
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(90deg, #602480 0%, #C1266E 100%);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: clamp(8px, calc((10 / 393) * 100vw), 12px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: clamp(4px, calc((5.66 / 393) * 100vw), 7px);
+  cursor: pointer;
+}
+
+.arrow-img {
+  display: inline-block;
+  animation: arrowMove 1s infinite ease-in-out;
+}
+
+@keyframes arrowMove {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

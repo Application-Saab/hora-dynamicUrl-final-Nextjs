@@ -21,6 +21,7 @@ import {getCancellationPolicy, infoList, foodDeliveryInclusionItems, cateringInc
 
 import CouponPopup from "../CouponPopup";
 import Ratingsection from "../RatingSection";
+import PhotographyShareBanner from "../PhotographyMyOrderEventcapsule";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -1006,7 +1007,15 @@ orderId={orderDetail?.order_id}
           })}
         </div>
       ) : orderType === 8 ? (
+
        <div className="decoration-container">
+        {(orderDetail?.orderDriveLink || orderDetail?.orderWebLink) && (
+  <PhotographyShareBanner
+    googleDriveUrl={orderDetail.orderDriveLink}
+    eventCapsuleUrl={orderDetail.orderWebLink}
+    daysLeft={3}
+  />
+)}
          {showRating && (
   !reviewSubmitted ? (
  <Ratingsection

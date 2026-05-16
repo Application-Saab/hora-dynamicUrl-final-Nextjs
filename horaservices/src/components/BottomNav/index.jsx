@@ -46,12 +46,13 @@ export default function BottomNav() {
     };
   }, [router.events, loadUserId]);
 
-  const { isEvents, isChat, isServices, isAccount } = useMemo(() => {
+  const { isEvents, isChat, isServices, isAccount, isWonderlandInternational } = useMemo(() => {
     return {
       isEvents: currentPath.includes("wonderland"),
       isChat: currentPath.includes("chat"),
       isServices: currentPath.includes("services"),
       isAccount: currentPath.includes("accounts"),
+      isWonderlandInternational: currentPath.includes("wonderlandinternational"),
     };
   }, [currentPath]);
 
@@ -168,7 +169,7 @@ export default function BottomNav() {
                   title={"Go to Invites"}
                   onClick={() => {
                     setShowPopup(false);
-                    router.push("/wonderland");
+                    router.push(`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}`);
                   }}
                   buttonClass={"chat-instruction-popup-btn"}
                 />
@@ -180,7 +181,7 @@ export default function BottomNav() {
 
       <div className="bottom-nav">
         <NavItem
-          href="/wonderland"
+          href={`${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}`}
           isActive={isEvents}
           icon={eventIcon}
           iconFilled={eventsIconFill}
@@ -188,7 +189,7 @@ export default function BottomNav() {
         />
 
         <NavItem
-          href="/chat"
+          href={`${isWonderlandInternational ? "/wonderlandinternational/chat" : "/chat"}`}
           isActive={isChat}
           icon={CheerChatIcon}
           iconFilled={CheerChatIconFilled}
@@ -197,17 +198,17 @@ export default function BottomNav() {
           badgeCount={totalUnread}
         />
 
-        <NavItem
+        {/* {!isWonderlandInternational && <NavItem
           href="/services"
           isActive={isServices}
           icon={ExploreIcon}
           iconFilled={ExploreIconFilled}
           label="Explore"
           className="Explore-icon"
-        />
+        />} */}
 
         <NavItem
-          href="/accounts"
+          href={`${isWonderlandInternational ? "/wonderlandinternational/accounts" : "/accounts"}`}
           isActive={isAccount}
           icon={accountIcon}
           iconFilled={accountIconFill}
