@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 const actions = [
   {
     id: 1,
-    title: "Explore Templates",
+    title: "Invitation Templates",
     icon: "ExploreTemplateIcon",
   },
   {
@@ -20,7 +20,7 @@ const actions = [
   },
   {
     id: 3,
-    title: "Add Details",
+    title: "Event Details",
     icon: "AddDetailsIcon",
   },
 ];

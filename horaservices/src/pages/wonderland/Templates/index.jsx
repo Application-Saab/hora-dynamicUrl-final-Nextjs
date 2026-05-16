@@ -8,6 +8,7 @@ import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
 import "./Templates.css";
 import TemplateGrid from "@/components/wonderland/TemplatesGrid";
 import UploadCustomTemplate from "@/components/wonderland/UploadCustomTemplate";
+import { INVITE_CATEGORIES } from "@/utils/constants";
 
 const TemplatesPage = () => {
   const router = useRouter();
@@ -16,10 +17,24 @@ const TemplatesPage = () => {
 
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState(() => {
-    if (typeof window === "undefined") return "Birthday";
-    return sessionStorage.getItem("activeTemplateCategory") || "Birthday";
-  });
+
+  const [activeCategory, setActiveCategory] = useState("Birthday");
+
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+
+    if (categoryFromUrl) {
+      setActiveCategory(categoryFromUrl);
+      return;
+    }
+
+    const stored = sessionStorage.getItem("activeTemplateCategory");
+
+    if (stored) {
+      setActiveCategory(stored);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     sessionStorage.setItem("activeTemplateCategory", activeCategory);
   }, [activeCategory]);
@@ -111,7 +126,7 @@ const TemplatesPage = () => {
       <h2 className="templates-title">Explore Themes</h2>
 
       <CategoryTabs
-        categories={["Birthday", "BabyShower", "Annaprashan", "WelcomeBaby", "Baptism", "NamingCermony", "Housewarming" , "Wedding&Engagement"]}
+        categories={INVITE_CATEGORIES}
         selectedCategory={activeCategory}
         onSelectCategory={setActiveCategory}
       />

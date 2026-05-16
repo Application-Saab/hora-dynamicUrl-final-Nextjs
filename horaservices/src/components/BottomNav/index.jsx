@@ -198,14 +198,14 @@ export default function BottomNav() {
           badgeCount={totalUnread}
         />
 
-        {!isWonderlandInternational && <NavItem
+        {/* {!isWonderlandInternational && <NavItem
           href="/services"
           isActive={isServices}
           icon={ExploreIcon}
           iconFilled={ExploreIconFilled}
           label="Explore"
           className="Explore-icon"
-        />}
+        />} */}
 
         <NavItem
           href={`${isWonderlandInternational ? "/wonderlandinternational/accounts" : "/accounts"}`}
