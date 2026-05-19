@@ -31,6 +31,13 @@ export function UserDetailsProvider({ children }) {
     try {
       const resp = await makeRequest(`${GET_USER_BY_ID}/${id}`, "GET");
       setUserDetails(resp?.data || null);
+      if(!resp?.data?.name) {
+        localStorage.removeItem("userID");
+        setUserId(null);
+        setUserDetails(null);
+        window.dispatchEvent(new Event("loginStateChange"));
+        window.location.reload();
+      }
     } catch (err) {
       console.error("Fetch user error:", err);
       setUserDetails(null);
