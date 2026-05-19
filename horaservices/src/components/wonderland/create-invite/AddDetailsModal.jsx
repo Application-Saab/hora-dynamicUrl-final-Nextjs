@@ -19,16 +19,16 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
-    eventData?.eventDate ? new Date(eventData?.eventDate) : ""
+    eventData?.eventDate ? new Date(eventData?.eventDate) : "",
   );
   const [selectedTime, setSelectedTime] = useState(eventData?.eventTime || "");
   const [formData, setFormData] = useState({
+    hostName: eventData?.hostName || "",
     eventDate: selectedDate,
     eventTime: eventData?.eventTime || "",
     location: eventData?.location || "",
     googleMapLink: eventData?.googleMapLink || "",
   });
-const isSubmitDisabled = !formData.eventDate; // true if eventDate is empty
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -47,7 +47,7 @@ const isSubmitDisabled = !formData.eventDate; // true if eventDate is empty
         {
           userId: userId,
           ...formData,
-        }
+        },
       );
       if (resp?.data) {
         refetchInvite();
@@ -86,6 +86,30 @@ const isSubmitDisabled = !formData.eventDate; // true if eventDate is empty
         backdropClass={showCalendarModal || showTimeModal ? "d-none" : ""}
         body={
           <>
+            <div className="input-group custom-input-grop-add-details">
+              <span
+                className="input-group-text add-details-input-addon"
+                id="basic-addon1"
+              >
+                <Image src={DateIcon} alt="event name" />
+              </span>
+              <textarea
+                name="hostName"
+                className="form-control add-details-input"
+                placeholder="Occasion Name"
+                value={formData.hostName}
+                onChange={handleChange}
+                rows={1}
+                style={{
+                  resize: "none",
+                  overflow: "hidden",
+                }}
+                onInput={(e) => {
+                  e.target.style.height = "55px";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+              ></textarea>
+            </div>
             <div className="adddetails-input-group">
               <button
                 type="button"
@@ -153,16 +177,13 @@ const isSubmitDisabled = !formData.eventDate; // true if eventDate is empty
               ></textarea>
             </div>
             <div className="d-flex justify-content-center mt-1">
-        
-  <CustomButton
-  title={"Submit"}
-  loading={loading}
-  onClick={handleSubmit}
-  buttonClass="add-details-submit"
-  disabled={!formData.eventDate} 
-/>
-
-
+              <CustomButton
+                title={"Submit"}
+                loading={loading}
+                onClick={handleSubmit}
+                buttonClass="add-details-submit"
+                disabled={!formData.eventDate}
+              />
             </div>
           </>
         }
