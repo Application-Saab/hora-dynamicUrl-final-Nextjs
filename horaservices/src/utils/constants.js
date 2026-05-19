@@ -124,5 +124,6 @@ export const INVITE_CATEGORIES = [
   "Baptism",
   "NamingCermony",
   "Housewarming",
-  "Wedding&Engagement",
+  "Engagement",
+  "Anniversary"
 ];
