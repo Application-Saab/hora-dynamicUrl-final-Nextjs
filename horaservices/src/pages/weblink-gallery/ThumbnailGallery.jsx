@@ -1373,7 +1373,9 @@ useEffect(() => {
                   loading={loading}
                   isEventWall={false}
                   handleSelectImage={handleSelectImage}
-                  handleImageClick={handleImageClick}
+                  handleImageClick={(indexOnPage) =>
+                      handleImageClick(index * 6 + indexOnPage)
+                  }
                   isEditing={isEditing}
                   isSearchMode={isSearchMode}
                   activeSubFolderId={activeSubFolderId}
@@ -1392,7 +1394,9 @@ useEffect(() => {
                 loading={loading}
                 isEventWall={false}
                 handleSelectImage={handleSelectImage}
-                handleImageClick={handleImageClick}
+                handleImageClick={(indexOnPage) =>
+                    handleImageClick(18 + indexOnPage)
+                }
                 isEditing={isEditing}
                 isSearchMode={isSearchMode}
                 activeSubFolderId={activeSubFolderId}
