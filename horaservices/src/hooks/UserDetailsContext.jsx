@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import useApi from "./useApi";
 import { GET_USER_BY_ID } from "@/utils/apiconstants";
+import { usePathname } from "next/navigation";
 
 const UserDetailsContext = createContext({
   userDetails: null,
@@ -11,6 +12,13 @@ const UserDetailsContext = createContext({
 export function UserDetailsProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
+  const pathname = usePathname();
+  const isWonderland =
+    pathname?.startsWith("/wonderlandinternational") ||
+    pathname?.startsWith("/wonderland") ||
+    pathname?.startsWith("/chat") ||
+    pathname?.startsWith("/accounts") ||
+    pathname?.startsWith("/services");
 
   const { makeRequest, loading } = useApi();
 
@@ -31,8 +39,11 @@ export function UserDetailsProvider({ children }) {
     try {
       const resp = await makeRequest(`${GET_USER_BY_ID}/${id}`, "GET");
       setUserDetails(resp?.data || null);
-      if(!resp?.data?.name) {
+      if (!resp?.data?.name && isWonderland) {
         localStorage.removeItem("userID");
+        localStorage.removeItem("token");
+        localStorage.removeItem("mobileNumber");
+        localStorage.removeItem("isLoggedIn");
         setUserId(null);
         setUserDetails(null);
         window.dispatchEvent(new Event("loginStateChange"));
