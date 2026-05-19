@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import ExploreTemplateIcon from "@/assets/wonderland/ExploreTemplateIcon.svg";
 import ShareInviteIcon from "@/assets/wonderland/ShareInviteIcon.svg";
@@ -6,6 +6,8 @@ import AddDetailsIcon from "@/assets/wonderland/AddDetailsIcon.svg";
 import AddDetailsModal from "../create-invite/AddDetailsModal";
 import ShareInviteModal from "./ShareInviteModal";
 import { usePathname } from "next/navigation";
+import useApi from "@/hooks/useApi";
+import { GENERATE_SHARE_CODE } from "@/utils/apiconstants";
 
 const actions = [
   {
@@ -28,23 +30,24 @@ const actions = [
 const InviteActions = ({ eventData, refetchInvite }) => {
   const router = useRouter();
   const pathname = usePathname();
-    const { eventid } = router.query;
+  const { eventid } = router.query;
   const [openAddDetailsModal, setOpenAddDetailsModal] = useState(false);
   const [openShareInviteModal, setOpenShareInviteModal] = useState(false);
+  const { makeRequest } = useApi();
   const isWonderlandInternational = pathname?.startsWith(
     "/wonderlandinternational",
   );
+  const generatingRef = useRef(false);
 
   const handleClick = (actionId) => {
- if (actionId === 1) {
-
-  if (isWonderlandInternational) {
-    router.push(`/wonderlandinternational/templates?eventid=${eventid}`);
-  } else {
-    router.push(`/wonderland/templates?eventid=${eventid}`);
-  }
-  return;
-}
+    if (actionId === 1) {
+      if (isWonderlandInternational) {
+        router.push(`/wonderlandinternational/templates?eventid=${eventid}`);
+      } else {
+        router.push(`/wonderland/templates?eventid=${eventid}`);
+      }
+      return;
+    }
 
     if (actionId === 2) {
       setOpenShareInviteModal(true);
@@ -53,6 +56,51 @@ const InviteActions = ({ eventData, refetchInvite }) => {
       setOpenAddDetailsModal(true);
     }
   };
+
+  const handleCreateShareCode = async (retryCount = 0) => {
+    if (!eventid) return;
+    if (generatingRef.current) return;
+    try {
+      generatingRef.current = true;
+
+      const resp = await makeRequest(
+        `${GENERATE_SHARE_CODE}/${eventid}`,
+        "POST",
+        {
+          fromInternational: isWonderlandInternational ? "YES" : "NO",
+        }
+      );
+
+      if (resp?.data) {
+        refetchInvite();
+      }
+    } catch (err) {
+      console.error("Generate share code error:", err);
+
+      // Retry max 3 times
+      if (retryCount < 3) {
+        const retryDelay = (retryCount + 1) * 2000;
+
+        setTimeout(() => {
+          generatingRef.current = false;
+
+          handleCreateShareCode(retryCount + 1);
+        }, retryDelay);
+
+        return;
+      }
+    }
+
+    generatingRef.current = false;
+  };
+
+  useEffect(() => {
+    if (!eventid) return;
+
+    if (eventData?.shortCode) return;
+
+    handleCreateShareCode();
+  }, [eventData?.shortCode, eventid]);
 
   return (
     <>
@@ -68,8 +116,8 @@ const InviteActions = ({ eventData, refetchInvite }) => {
                 action.icon === "ExploreTemplateIcon"
                   ? ExploreTemplateIcon.src
                   : action.icon === "ShareInviteIcon"
-                  ? ShareInviteIcon.src
-                  : AddDetailsIcon.src
+                    ? ShareInviteIcon.src
+                    : AddDetailsIcon.src
               }
               alt={action.title}
               className="invite-action-icon"
@@ -78,8 +126,8 @@ const InviteActions = ({ eventData, refetchInvite }) => {
                 action.icon === "AddDetailsIcon"
                   ? "25px"
                   : action.icon === "ShareInviteIcon"
-                  ? "19px"
-                  : "16.5px"
+                    ? "19px"
+                    : "16.5px"
               }
             />
           </div>
