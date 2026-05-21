@@ -36,6 +36,7 @@ const prefetchBgImage = (bgImageName, cacheKey) => {
   const img = new window.Image();
   img.fetchPriority = "high";
   img.src = url;
+  img.decode?.().catch(() => {});
 };
 
 const toText = (val) => (val ?? "").toString();
@@ -454,9 +455,9 @@ const DynamicTemplateRenderer = () => {
     const payloadWithPlaceholder = {
       ...templatePayload,
       ...scaledData,
-      name: formData.name || "Type your name",
-      address: formData.address || "Type your address",
-      name2: formData.name2 || "Type your name 2",
+      name: formData.name || "Name Here",
+      address: formData.address || "Address Here",
+      name2: formData.name2 || "Name 2",
     };
 
     setRenderedHTML(
@@ -502,9 +503,9 @@ const DynamicTemplateRenderer = () => {
   }, [templateMeta?.templateInfo]);
 
   const PLACEHOLDERS = {
-    name: "Type your name",
-    address: "Type your address",
-    name2: "Type your name 2",
+    name: "Name Here",
+    address: "Address Here",
+    name2: "Name 2",
   };
 
   const handleEditableClick = useCallback(
@@ -710,7 +711,7 @@ const DynamicTemplateRenderer = () => {
     }
     const errors = [];
 
-    if (!formData.name?.trim() || formData.name === "Type your name") {
+    if (!formData.name?.trim() || formData.name === "Name Here") {
       errors.push("Name is required");
     }
 
