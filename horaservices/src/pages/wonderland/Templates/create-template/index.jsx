@@ -409,7 +409,7 @@ const DynamicTemplateRenderer = () => {
         setFormData((prev) => ({
           ...prev,
           name: applyCase(
-            data.names?.one || data.hostName || "",
+            data.names?.one || "",
             templateMeta?.nameCase,
           ),
           name2: applyCase(
@@ -427,7 +427,7 @@ const DynamicTemplateRenderer = () => {
 
         setCharCounts({
           eventType: data.eventType?.length || 0,
-          name: data.names?.one?.length || data.hostName?.length || 0,
+          name: data.names?.one?.length || 0,
           name2: data.names?.two?.length || 0,
           address: data.location?.length || 0,
         });
