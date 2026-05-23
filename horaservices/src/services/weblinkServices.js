@@ -3,7 +3,7 @@ import { MEDIA_WORKER_URL } from "../utils/apiconstants";
 import axios from "axios";
 
 // get images api function 
-export const getImagesbyFolderName = async ({ folderName, customerId, subFolderId, page = 1, limit = 10, }) => {
+export const getImagesbyFolderName = async ({ folderName, customerId, subFolderId, page = 1, limit = 24, }) => {
   try {
 
         const params = new URLSearchParams({

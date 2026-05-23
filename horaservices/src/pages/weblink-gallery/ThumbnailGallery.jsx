@@ -94,6 +94,7 @@ const ThumbnailGallery = ({
   const [localUserId, setLocalUserId] = useState("");
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [imagesReady, setImagesReady] = useState(false);
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
@@ -119,6 +120,7 @@ const ThumbnailGallery = ({
   const [guestData, setGuestData] = useState([]);
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
+  const observerRef = useRef(null);
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10);
   const [headerLoading, setHeaderLoading] = useState(true);
@@ -197,6 +199,12 @@ const ThumbnailGallery = ({
       alert("Image link copied!");
     }
   };
+
+  useEffect(() => {
+  setPage(1);
+  setAllThumbnails([]);
+  setHasMore(true);
+}, [folderName, customerId, activeSubFolderId]);
 
   const handleAddToFolderSubmit = async () => {
     if (usableFolders.length === 0) {
@@ -469,6 +477,8 @@ const popupImages = allThumbnails;
 
       const fetchedThumbnails = data.thumbnails || [];
 
+      await preloadImages(fetchedThumbnails);
+
       setAllThumbnails(prev => {
         const existingIds = new Set(prev.map(item => item._id));
         const newItems = fetchedThumbnails.filter(
@@ -476,6 +486,7 @@ const popupImages = allThumbnails;
         );
         return [...prev, ...newItems];
       });
+      setImagesReady(true);
 
       if (fetchedThumbnails.totalItems < pageSize) {
         setHasMore(false);
@@ -490,28 +501,34 @@ const popupImages = allThumbnails;
   };
 
   fetchThumbnails();
-}, [folderName, customerId, page]);
+}, [folderName, customerId, page, activeSubFolderId]);
 
 useEffect(() => {
-  const handleScroll = () => {
-    if (isFetchingMore || loading || !hasMore) return;
+  if (!observerRef.current) return;
 
-    const scrollTop = window.scrollY;
-    const windowHeight = window.innerHeight;
-    const fullHeight = document.documentElement.scrollHeight;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const first = entries[0];
 
-    if (scrollTop + windowHeight >= fullHeight - 1800) {
-      setIsFetchingMore(true);
-      setPage(prev => prev + 1);
+      if (
+        first.isIntersecting &&
+        hasMore &&
+        !loading &&
+        !isFetchingMore
+      ) {
+        setIsFetchingMore(true);
+        setPage((prev) => prev + 1);
+      }
+    },
+    {
+      rootMargin: "1500px",
     }
-  };
+  );
 
-  window.addEventListener("scroll", handleScroll);
+  observer.observe(observerRef.current);
 
-  return () => {
-    window.removeEventListener("scroll", handleScroll);
-  };
-}, [loading, hasMore, isFetchingMore]);
+  return () => observer.disconnect();
+}, [hasMore, loading, isFetchingMore]);
 
 
   useEffect(() => {
@@ -943,6 +960,24 @@ useEffect(() => {
     processWeblinkUploadQueue,
   ]);
 
+  const preloadImages = async (images) => {
+  const promises = images.map((img) => {
+    return new Promise((resolve) => {
+      const image = new window.Image();
+
+      image.src =
+        img.thumbnailImageUrl ||
+        img.originalUrl ||
+        "";
+
+      image.onload = resolve;
+      image.onerror = resolve;
+    });
+  });
+
+  await Promise.all(promises);
+};
+
   if (error) {
     return (
       <div className="thumbnail-gallery-status text-red-500" role="alert">
@@ -990,7 +1025,15 @@ useEffect(() => {
           `thumb-${index}-${Date.now()}`,
       }));
 
-      setAllThumbnails(fetchedThumbnails);
+      setAllThumbnails(prev => {
+  const existingIds = new Set(prev.map(item => item._id));
+
+  const newItems = fetchedThumbnails.filter(
+    item => !existingIds.has(item._id)
+  );
+
+  return [...prev, ...newItems];
+});
     } catch (err) {
       console.error(err);
     } finally {
@@ -1263,7 +1306,7 @@ useEffect(() => {
             )}
           </div>
 {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
-          {!loading && activeTab === "all" && (
+          {imagesReady && activeTab === "all" && (
             <div ref={buttonsRef} className="buttons-container">
               <button
                 className="add-photo-btn"
@@ -1500,6 +1543,7 @@ useEffect(() => {
                 setSelectedImages={setSelectedImages}
               />
             )}
+            <div ref={observerRef} style={{ height: "20px" }} />
           </>
         </div>
       </div>
