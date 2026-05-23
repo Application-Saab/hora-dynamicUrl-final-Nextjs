@@ -30,7 +30,7 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, getSubFolders } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
@@ -119,6 +119,11 @@ const ThumbnailGallery = ({
   const [guestData, setGuestData] = useState([]);
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10);
+  const [headerLoading, setHeaderLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const getInitial = (guest) => {
     const name =
@@ -371,13 +376,7 @@ useEffect(() => {
   });
 }, [localUserId, localPhoneNumber]);
 
-  const popupImages = useMemo(() => {
-    if (!activeSubFolderId) return allThumbnails;
-
-    return allThumbnails.filter((img) =>
-      img.folderIds?.includes(activeSubFolderId),
-    );
-  }, [allThumbnails, activeSubFolderId]);
+const popupImages = allThumbnails;
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
@@ -433,41 +432,111 @@ useEffect(() => {
   const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
   useEffect(() => {
-    if (activeSubFolderId) {
-      const ids = allThumbnails
-        .filter((img) => img.folderIds?.includes(activeSubFolderId))
-        .map((img) => img._id);
-
-      setSelectedImages(ids);
-      setInitialSubfolderImages(ids);
+    if(activeSubFolderId){
+    const ids = allThumbnails.map(img => img._id);
+    setSelectedImages(ids);
+    setInitialSubfolderImages(ids);
     }
-  }, [activeSubFolderId, allThumbnails]);
+  }, [allThumbnails, activeSubFolderId]);
+
 
   useEffect(() => {
-    const fetchThumbnails = async () => {
-      if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
-      }
-      setLoading(true); setError(null);
-      try {
-        const data = await getImagesbyFolderName({
-          folderName,
-          customerId,
-        });
-        setSubFolders(data?.folders[0]?.subFolders || []);
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+  }, [folderName, customerId, activeSubFolderId]);
+
+  useEffect(() => {
+  const fetchThumbnails = async () => {
+    if (!folderName || !customerId) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await getImagesbyFolderName({
+        folderName,
+        customerId,
+        activeSubFolderId,
+        page,
+        pageSize,
+      });
+
+      setSubFolders(data?.folders[0]?.subFolders || []);
         setMainFolderId(data?.folders[0]?._id || null)
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
-        const fetchedThumbnails = (data.thumbnails || [])
 
-          .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
-        setAllThumbnails(fetchedThumbnails);
-      } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
-      } finally { setLoading(false); }
+      const fetchedThumbnails = data.thumbnails || [];
+
+      setAllThumbnails(prev => {
+        const existingIds = new Set(prev.map(item => item._id));
+        const newItems = fetchedThumbnails.filter(
+          item => !existingIds.has(item._id)
+        );
+        return [...prev, ...newItems];
+      });
+
+      if (fetchedThumbnails.totalItems < pageSize) {
+        setHasMore(false);
+      }
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setIsFetchingMore(false); 
+    }
+  };
+
+  fetchThumbnails();
+}, [folderName, customerId, page]);
+
+useEffect(() => {
+  const handleScroll = () => {
+    if (isFetchingMore || loading || !hasMore) return;
+
+    const scrollTop = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const fullHeight = document.documentElement.scrollHeight;
+
+    if (scrollTop + windowHeight >= fullHeight - 1800) {
+      setIsFetchingMore(true);
+      setPage(prev => prev + 1);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, [loading, hasMore, isFetchingMore]);
+
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      if (!folderName) return;
+
+      setHeaderLoading(true);
+
+      try {
+        const data = await getSubFolders({ folderName });
+
+
+        setSubFolders(data?.folder?.subFolders || []);
+        setMainFolderId(data.folder?._id || null);
+
+      } catch (err) {
+        console.error("Folder fetch error:", err);
+      }
+      finally {
+        setHeaderLoading(false);
+      }
     };
-    fetchThumbnails();
-  }, [folderName, customerId]);
+
+    fetchFolders();
+  }, [folderName]);
 
   useEffect(() => {
     const handleLoginChange = () => {
@@ -881,18 +950,18 @@ useEffect(() => {
       </div>
     );
   }
-  if (allThumbnails.length === 0 && !loading) {
-    return (
-      <div className="thumbnail-gallery-status">
-        No photos found in this gallery.
-      </div>
-    );
-  }
+  // if (allThumbnails.length === 0 && !loading) {
+  //   return (
+  //     <div className="thumbnail-gallery-status">
+  //       No photos found in this gallery.
+  //     </div>
+  //   );
+  // }
   if (!authChecked) {
     return null;
   }
 
-  const handleSubFolderSelect = (id) => {
+  const handleSubFolderSelect = async (id) => {
     setActiveSubFolderId(id);
     setSelectedImages([]);
 
@@ -903,6 +972,32 @@ useEffect(() => {
       setIsEditing(false);
       setActiveTab(id ?? "all");
     }
+
+    try {
+      setLoading(true);
+
+      const data = await getImagesbyFolderName({
+        folderName,
+        customerId,
+        subFolderId: id,
+      });
+
+      const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
+        ...thumb,
+        stableKey:
+          thumb._id ||
+          thumb.originalKey ||
+          `thumb-${index}-${Date.now()}`,
+      }));
+
+      setAllThumbnails(fetchedThumbnails);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setIsFetchingMore(false);
+    }
+
   };
 
   const handleLikeToggle = async (imageId) => {
@@ -1074,7 +1169,7 @@ useEffect(() => {
     <div className="thumbnail-gallery">
       
       <div className="">
-        {loading ? (
+        {headerLoading ? (
           <HeaderCardsFlashLoader />
         ) : (
           <>
