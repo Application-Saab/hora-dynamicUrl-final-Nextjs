@@ -122,7 +122,7 @@ const ThumbnailGallery = ({
   const buttonsRef = useRef(null);
   const observerRef = useRef(null);
   const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(24);
   const [headerLoading, setHeaderLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
@@ -202,7 +202,6 @@ const ThumbnailGallery = ({
 
   useEffect(() => {
   setPage(1);
-  setAllThumbnails([]);
   setHasMore(true);
 }, [folderName, customerId, activeSubFolderId]);
 
@@ -458,7 +457,9 @@ const popupImages = allThumbnails;
   const fetchThumbnails = async () => {
     if (!folderName || !customerId) return;
 
-    setLoading(true);
+    if (page === 1) {
+  setLoading(true);
+}
     setError(null);
 
     try {
@@ -488,7 +489,7 @@ const popupImages = allThumbnails;
       });
       setImagesReady(true);
 
-      if (fetchedThumbnails.totalItems < pageSize) {
+      if (fetchedThumbnails.length < pageSize) {
         setHasMore(false);
       }
 
@@ -521,7 +522,7 @@ useEffect(() => {
       }
     },
     {
-      rootMargin: "1500px",
+      rootMargin: "1200px",
     }
   );
 
@@ -1008,38 +1009,38 @@ useEffect(() => {
       setActiveTab(id ?? "all");
     }
 
-    try {
-      setLoading(true);
+//     try {
+//       setLoading(true);
 
-      const data = await getImagesbyFolderName({
-        folderName,
-        customerId,
-        subFolderId: id,
-      });
+//       const data = await getImagesbyFolderName({
+//         folderName,
+//         customerId,
+//         subFolderId: id,
+//       });
 
-      const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
-        ...thumb,
-        stableKey:
-          thumb._id ||
-          thumb.originalKey ||
-          `thumb-${index}-${Date.now()}`,
-      }));
+//       const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
+//         ...thumb,
+//         stableKey:
+//           thumb._id ||
+//           thumb.originalKey ||
+//           `thumb-${index}-${Date.now()}`,
+//       }));
 
-      setAllThumbnails(prev => {
-  const existingIds = new Set(prev.map(item => item._id));
+//       setAllThumbnails(prev => {
+//   const existingIds = new Set(prev.map(item => item._id));
 
-  const newItems = fetchedThumbnails.filter(
-    item => !existingIds.has(item._id)
-  );
+//   const newItems = fetchedThumbnails.filter(
+//     item => !existingIds.has(item._id)
+//   );
 
-  return [...prev, ...newItems];
-});
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-      setIsFetchingMore(false);
-    }
+//   return [...prev, ...newItems];
+// });
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       setLoading(false);
+//       setIsFetchingMore(false);
+//     }
 
   };
 
@@ -1444,7 +1445,7 @@ useEffect(() => {
 
         <div>
           {/* ================= LOADING SKELETON ================= */}
-          {loading && (
+          {(loading && page === 1) && (
             <div className="gallery-image-grid">
               {[...Array(6)].map((_, index) => {
                 const type = getBlockType(index);
@@ -1543,6 +1544,25 @@ useEffect(() => {
                 setSelectedImages={setSelectedImages}
               />
             )}
+
+            {/* ================= PAGINATION DUMMY GRID ================= */}
+{hasMore && page > 1 && (
+  <div className="gallery-image-grid">
+    {[...Array(20)].map((_, index) => {
+      const type = getBlockType(index);
+
+      return (
+        <div key={`dummy-${index}`} className={`grid-item ${type}`}>
+          <div className="event-masonry-item">
+            <div className="event-lazy-image-spinner-container placeholder-glow">
+              <div className="placeholder w-100 h-100"></div>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
             <div ref={observerRef} style={{ height: "20px" }} />
           </>
         </div>
