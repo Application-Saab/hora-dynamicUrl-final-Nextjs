@@ -35,6 +35,8 @@ const CommonImagePopup = ({
   onClose,
   renderFooter,
   isEventWall = false,
+  isZoomed = false,
+  zoomLevel = 1,
 }) => {
   const sliderSettings = {
     dots: false,
@@ -43,6 +45,9 @@ const CommonImagePopup = ({
     slidesToShow: 1,
     slidesToScroll: 1,
     adaptiveHeight: true,
+    swipe: zoomLevel === 1,
+    draggable: zoomLevel === 1,
+    touchMove: zoomLevel === 1,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     beforeChange: (current, next) => {
@@ -171,36 +176,45 @@ const CommonImagePopup = ({
 
               return (
                 <div key={item._id || idx} className="slick-slide-item">
-                  {isVideo ? (
-                    <video
-                      src={ isEventWall ? item?.postUrl : item.originalUrl}
-                      controls
-                      playsInline
-                      muted={false}
-                      preload="metadata"
-                      style={{
-                        maxHeight: "80vh",
-                        width: "100%",
-                        objectFit: "contain",
-                        background: "#000",
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={
-                        isEventWall
-                          ? item?.postWebpUrl || item?.postUrl
-                          : item.thumbnailImageUrl || item.originalUrl
-                      }
-                      loading="lazy"
-                      alt={`Media ${idx + 1}`}
-                      style={{
-                        maxHeight: "80vh",
-                        width: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
-                  )}
+                  <div className="zoom-container">
+                    {isVideo ? (
+                      <video
+                        src={isEventWall ? item?.postUrl : item.originalUrl}
+                        controls
+                        playsInline
+                        muted={false}
+                        preload="metadata"
+                        style={{
+                          maxHeight: "80vh",
+                          width: "100%",
+                          objectFit: "contain",
+                          background: "#000",
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={
+                          isZoomed
+                            ? item.originalUrl
+                            : isEventWall
+                              ? item?.postWebpUrl || item?.postUrl
+                              : item.thumbnailImageUrl || item.originalUrl
+                        }
+                        loading="lazy"
+                        alt={`Media ${idx + 1}`}
+                        style={{
+                          maxHeight: "80vh",
+                          maxWidth: "100%",
+                          objectFit: "contain",
+                          transform: `scale(${zoomLevel})`,
+                          transformOrigin: "center center",
+                          transition: "transform 0.25s ease",
+                          cursor: isZoomed ? "zoom-out" : "zoom-in",
+                          willChange: "transform",
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })}

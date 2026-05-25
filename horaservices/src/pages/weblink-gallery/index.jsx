@@ -1,29 +1,29 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/router';
-import ThumbnailGallery from './ThumbnailGallery'; // Import the ThumbnailGallery component
+import { useRouter } from "next/router";
+import ThumbnailGallery from "./ThumbnailGallery"; // Import the ThumbnailGallery component
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import shareIcon from '../../assets/share-photo-icon.png'
-import OtpLoginPopup from '../../components/OtpLoginPopup';
+import shareIcon from "../../assets/share-photo-icon.png";
+import OtpLoginPopup from "../../components/OtpLoginPopup";
+import { trackShareCapsuleClick } from "@/services/weblinkServices";
 
 const PhotoGallery = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const folderName = urlParams.get('folderName');
-  const customerId = urlParams.get('customerId');
+  const folderName = urlParams.get("folderName");
+  const customerId = urlParams.get("customerId");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);  
-  const [isLoggedIn, setIsLoggedIn] = useState(false);  // State for login status
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
   const router = useRouter();
 
-  
-
-  const handleShareicon = async () => {
-    const shareUrl = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName)
-      .replace(/%20/g, "%2520")}&customerId=${customerId}`;
-
+  const handleShareicon = async (mainFolderId) => {
+    const shareUrl = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(
+      folderName,
+    ).replace(/%20/g, "%2520")}&customerId=${customerId}`;
+    await trackShareCapsuleClick(mainFolderId);
     if (navigator.share) {
       try {
         await navigator.share({
@@ -42,8 +42,6 @@ const PhotoGallery = () => {
 
   return (
     <div className="photo-container">
-  
-
       {/* {isLoggedIn ? (
         folderName && customerId ? (
           <ThumbnailGallery folderName={folderName} customerId={customerId} />
@@ -53,7 +51,11 @@ const PhotoGallery = () => {
       ) : (
         isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
       )} */}
-                <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={handleShareicon} />
+      <ThumbnailGallery
+        folderName={folderName}
+        customerId={customerId}
+        handleShareicon={(id) => handleShareicon(id)}
+      />
     </div>
   );
 };

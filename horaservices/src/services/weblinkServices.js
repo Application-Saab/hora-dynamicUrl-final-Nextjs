@@ -136,3 +136,25 @@ export const trackFolderClick = async (mainFolderId) => {
       throw error;
     }
 };
+
+// tracking share capsule click function 
+export const trackShareCapsuleClick = async (mainFolderId) => { 
+    try {
+      const response = await fetch(`${BASE_URL}/api/internal/track-capsule-share-click`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mainFolderId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error in trackShareCapsuleClick service:", error);
+      throw error;
+    }
+};
