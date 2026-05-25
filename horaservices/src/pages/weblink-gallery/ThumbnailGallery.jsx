@@ -416,11 +416,11 @@ const popupImages = allThumbnails;
       );
     }
 
-    if (activeSubFolderId) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(activeSubFolderId),
-      );
-    }
+    // if (activeSubFolderId) {
+    //   return allThumbnails.filter((img) =>
+    //     img.folderIds?.includes(activeSubFolderId),
+    //   );
+    // }
 
     return allThumbnails;
   }, [
@@ -466,15 +466,15 @@ const popupImages = allThumbnails;
       const data = await getImagesbyFolderName({
         folderName,
         customerId,
-        activeSubFolderId,
+        subFolderId: activeSubFolderId,
         page,
         pageSize,
       });
 
-      setSubFolders(data?.folders[0]?.subFolders || []);
-        setMainFolderId(data?.folders[0]?._id || null)
-        setViewedBy(data?.folders[0]?.viewedBy || []);
-        setGuestData(data?.folders[0]?.guestDetails || []);
+      // setSubFolders(data?.folders[0]?.subFolders || []);
+        // setMainFolderId(data?.folders[0]?._id || null)
+        // setViewedBy(data?.folders[0]?.viewedBy || []);
+        // setGuestData(data?.folders[0]?.guestDetails || []);
 
       const fetchedThumbnails = data.thumbnails || [];
 
@@ -544,6 +544,8 @@ useEffect(() => {
 
         setSubFolders(data?.folder?.subFolders || []);
         setMainFolderId(data.folder?._id || null);
+        setViewedBy(data?.folder?.viewedBy || []);
+        setGuestData(data?.guestDetails || []);
 
       } catch (err) {
         console.error("Folder fetch error:", err);
