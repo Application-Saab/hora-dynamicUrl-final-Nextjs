@@ -478,15 +478,11 @@ useEffect(() => {
           pageSize,
         });
 
-        // setSubFolders(data?.folders[0]?.subFolders || []);
-        // setMainFolderId(data?.folders[0]?._id || null)
-        // setViewedBy(data?.folders[0]?.viewedBy || []);
-        // setGuestData(data?.folders[0]?.guestDetails || []);
         setTotalPages(data?.pagination?.totalItems)
 
         const fetchedThumbnails = data.thumbnails || [];
 
-        await preloadImages(fetchedThumbnails);
+         preloadImages(fetchedThumbnails);
 
         setAllThumbnails(prev => {
           const existingIds = new Set(prev.map(item => item._id));
@@ -511,109 +507,6 @@ useEffect(() => {
 
     fetchThumbnails();
   }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
-
-
-  // useEffect(() => {
-
-  //   const fetchThumbnails = async () => {
-
-  //     if (!folderName || !customerId) return;
-
-
-
-  //     if (page === 1) {
-
-  //       setLoading(true);
-
-  //     }
-
-  //     setError(null);
-
-
-
-  //     try {
-
-  //       const data = await getImagesbyFolderName({
-
-  //         folderName,
-
-  //         customerId,
-
-  //         subFolderId: isEditing ? null : activeSubFolderId,
-
-  //         page,
-
-  //         pageSize,
-
-  //       });
-
-
-
-  //       // setSubFolders(data?.folders[0]?.subFolders || []);
-
-  //       // setMainFolderId(data?.folders[0]?._id || null)
-
-  //       // setViewedBy(data?.folders[0]?.viewedBy || []);
-
-  //       // setGuestData(data?.folders[0]?.guestDetails || []);
-
-
-
-  //       const fetchedThumbnails = data.thumbnails || [];
-
-
-
-  //       await preloadImages(fetchedThumbnails);
-
-
-
-  //       setAllThumbnails(prev => {
-
-  //         const existingIds = new Set(prev.map(item => item._id));
-
-  //         const newItems = fetchedThumbnails.filter(
-
-  //           item => !existingIds.has(item._id)
-
-  //         );
-
-  //         return [...prev, ...newItems];
-
-  //       });
-
-  //       setImagesReady(true);
-
-
-
-  //       if (fetchedThumbnails.length < pageSize) {
-
-  //         setHasMore(false);
-
-  //       }
-
-
-
-  //     } catch (err) {
-
-  //       console.error(err);
-
-  //     } finally {
-
-  //       setLoading(false);
-
-  //       setIsFetchingMore(false);
-
-  //     }
-
-  //   };
-
-
-
-  //   fetchThumbnails();
-
-  // }, [folderName, customerId, page, activeSubFolderId, isEditing]);
-
-
 
   useEffect(() => {
 
@@ -696,88 +589,13 @@ useEffect(() => {
     visibleThumbnails.length,
 
   ]);
-
-  // const observer = new IntersectionObserver(
-  //   (entries) => {
-  //     const first = entries[0];
-  //     if (
-  //       first.isIntersecting &&
-  //       hasMore &&   // <-- YAHAN DIKKAT HAI
-  //       !loading &&
-  //       !isFetchingMore
-  //     ) {
-  //       setIsFetchingMore(true);
-  //       setPage((prev) => prev + 1);
-  //     }
-  //   },
-  //   { rootMargin: "400px" }
-  // );
-
-  // 1. NAYA EFFECT: Tab ya Edit mode change hone par sab reset karo
   useEffect(() => {
     setPage(1);
-    setAllThumbnails([]); // Purana data saaf karo taaki mixing na ho
-    setHasMore(true);     // Infinite scroll ko dobara zinda karo
+    setAllThumbnails([]); 
+    setHasMore(true);     
     setImagesReady(false);
-  }, [activeSubFolderId, isEditing]); // Jab bhi ye dono badlenge, reset hoga.
+  }, [activeSubFolderId, isEditing]); 
 
-
-  // 2. DATA FETCH EFFECT: Isme se loading ka chota sa logic sahi karo
-  // useEffect(() => {
-  //   const fetchThumbnails = async () => {
-  //     if (!folderName || !customerId) return;
-
-  //     // Sirf tabhi main loader dikhao jab pehla page ho
-  //     if (page === 1) {
-  //       setLoading(true);
-  //     }
-  //     setError(null);
-
-  //     try {
-  //       const data = await getImagesbyFolderName({
-  //         folderName,
-  //         customerId,
-  //         subFolderId: isEditing ? null : activeSubFolderId,
-  //         page,
-  //         pageSize,
-  //       });
-
-  //       const fetchedThumbnails = data.thumbnails || [];
-  //       await preloadImages(fetchedThumbnails);
-
-  //       setAllThumbnails(prev => {
-  //         // Agar page 1 hai toh naya data hi set karo, purane me append mat karo
-  //         if (page === 1) return fetchedThumbnails;
-
-  //         const existingIds = new Set(prev.map(item => item._id));
-  //         const newItems = fetchedThumbnails.filter(
-  //           item => !existingIds.has(item._id)
-  //         );
-  //         return [...prev, ...newItems];
-  //       });
-
-  //       setImagesReady(true);
-
-  //       // Agar data page size se kam aya hai, matlab aage aur data nahi hai
-  //       if (fetchedThumbnails.length < pageSize) {
-  //         setHasMore(false);
-  //       } else {
-  //         setHasMore(true); // Ensure karo ki agar data full aaya hai toh scroll chalu rahe
-  //       }
-
-  //     } catch (err) {
-  //       console.error(err);
-  //     } finally {
-  //       setLoading(false);
-  //       setIsFetchingMore(false);
-  //     }
-  //   };
-
-  //   fetchThumbnails();
-  // }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
-
-
-  // 3. OBSERVER EFFECT: Isme se faltu dependencies hatao
   useEffect(() => {
     const currentObserver = observerRef.current;
     if (!currentObserver) return;
@@ -1264,6 +1082,22 @@ const handleSearchResults = (matches) => {
     await Promise.all(promises);
   };
 
+  const remainingImages = useMemo(() => {
+  return visibleThumbnails.slice(18);
+}, [visibleThumbnails]);
+
+const imageChunks = useMemo(() => {
+  const first18 = visibleThumbnails.slice(0, 18);
+
+  const chunks = [];
+
+  for (let i = 0; i < first18.length; i += 6) {
+    chunks.push(first18.slice(i, i + 6));
+  }
+
+  return chunks;
+}, [visibleThumbnails]);
+
   if (error) {
     return (
       <div className="thumbnail-gallery-status text-red-500" role="alert">
@@ -1271,13 +1105,6 @@ const handleSearchResults = (matches) => {
       </div>
     );
   }
-  // if (allThumbnails.length === 0 && !loading) {
-  //   return (
-  //     <div className="thumbnail-gallery-status">
-  //       No photos found in this gallery.
-  //     </div>
-  //   );
-  // }
   if (!authChecked) {
     return null;
   }
@@ -1293,39 +1120,6 @@ const handleSearchResults = (matches) => {
       setIsEditing(false);
       setActiveTab(id ?? "all");
     }
-
-    //     try {
-    //       setLoading(true);
-
-    //       const data = await getImagesbyFolderName({
-    //         folderName,
-    //         customerId,
-    //         subFolderId: id,
-    //       });
-
-    //       const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
-    //         ...thumb,
-    //         stableKey:
-    //           thumb._id ||
-    //           thumb.originalKey ||
-    //           `thumb-${index}-${Date.now()}`,
-    //       }));
-
-    //       setAllThumbnails(prev => {
-    //   const existingIds = new Set(prev.map(item => item._id));
-
-    //   const newItems = fetchedThumbnails.filter(
-    //     item => !existingIds.has(item._id)
-    //   );
-
-    //   return [...prev, ...newItems];
-    // });
-    //     } catch (err) {
-    //       console.error(err);
-    //     } finally {
-    //       setLoading(false);
-    //       setIsFetchingMore(false);
-    //     }
 
   };
 
@@ -1405,20 +1199,7 @@ const handleSearchResults = (matches) => {
   };
 
 
-  const first18Images = visibleThumbnails.slice(0, 18);
-  const remainingImages = visibleThumbnails.slice(18);
 
-  const chunkArray = (array, size) => {
-    const chunks = [];
-
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size));
-    }
-
-    return chunks;
-  };
-
-  const imageChunks = chunkArray(first18Images, 6);
 
   const handleCreateFolderBannerClick = () => {
     setShowCreateFolderPopup(true);
