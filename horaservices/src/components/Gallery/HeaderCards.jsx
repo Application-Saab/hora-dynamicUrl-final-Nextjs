@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import "./headerCards.css";
 
 import myPhoto from "../../assets/myPhotos.svg";
+import LockerFolderIcon from "../../assets/my_locker_folder_icon.svg";
 import allPhotos from "../../assets/allPhotos.svg";
 import captureIcon from "../../assets/captureIcon.svg";
 import userIcon from "../../assets/userIcon.svg";
@@ -57,12 +58,6 @@ const HeaderCards = ({
   const [cameraReady, setCameraReady] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [isVerifiedOTP, setIsVerifiedOTP] = useState(false);
-  console.log(
-    "%c [ isVerifiedOTP ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    isVerifiedOTP,
-  );
-
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -70,18 +65,7 @@ const HeaderCards = ({
   const localUserId = localStorage.getItem("userID");
   const localPhoneNumber = localStorage.getItem("mobileNumber");
   const { userDetails, refetchUser } = useUserDetailsStore();
-  console.log(
-    "%c [ userDetails ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    userDetails,
-  );
-
   /* ================= DERIVED ================= */
-  console.log(
-    "%c [ subFolders ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    subFolders,
-  );
   const myPhotosFolder = useMemo(
     () =>
       localMyPhotos ||
@@ -101,11 +85,6 @@ const HeaderCards = ({
           sf.isLocker === true,
       ),
     [localPrivateLocker, subFolders, localUserId],
-  );
-  console.log(
-    "%c [ privateLocker ]",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    privateLocker,
   );
 
   useEffect(() => {
@@ -329,7 +308,12 @@ const HeaderCards = ({
         setAllThumbnails((prev) =>
           prev.map((img) =>
             img._id === pendingAssignImageId
-              ? { ...img, folderIds: [...(img.folderIds || []), newFolder._id] }
+              ? {
+                  ...img,
+                  folderIds: isLocker
+                    ? [newFolder._id]
+                    : [...(img.folderIds || []), newFolder._id],
+                }
               : img,
           ),
         );
@@ -401,20 +385,14 @@ const HeaderCards = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (isVerifiedOTP) {
-  //     if (!privateLocker) {
-  //       setNewFolderName(`${userDetails?.name}'s Locker` || "My Locker");
-  //       handleCreateFolder(
-  //         true,
-  //         `${userDetails?.name}'s Locker` || "My Locker",
-  //       );
-  //     } else {
-  //       setActiveTab(privateLocker._id);
-  //       onSelectSubFolder(privateLocker._id);
-  //     }
-  //   }
-  // }, [isVerifiedOTP, showOTPModal, privateLocker]);
+  useEffect(() => {
+    if (isVerifiedOTP) {
+        if (privateLocker) {
+          setActiveTab(privateLocker._id);
+          onSelectSubFolder(privateLocker._id);
+        }
+    }
+  }, [isVerifiedOTP, showOTPModal, privateLocker]);
 
   return (
     <>
@@ -489,7 +467,7 @@ const HeaderCards = ({
         )}
 
         {/* Private Folder */}
-        {privateLocker ? (
+        {(privateLocker && localUserId === customerId) && (
           <div>
             <div
               className={`card-item ${
@@ -502,46 +480,22 @@ const HeaderCards = ({
                 } else {
                   setShowOTPModal(true);
                 }
-
-                // setIsActualMyPhotos(true);
-                // setIsRefreshShow(true);
-
-                // if (matchedKeys.length > 0) {
-                //   setIsSearching(true);
-                // }
               }}
             >
               <div className="circle-img-folder circle-img-both">
                 <div className="circle-img-inner">
                   <img
-                    src={privateLocker.folderDp?.thumbnailUrl || myPhoto.src}
+                    src={privateLocker.folderDp?.thumbnailUrl || LockerFolderIcon.src}
                     alt="Private Locker"
+                    style={{width: '100%', height: '100%', objectFit: 'scale-down'}}
                   />
                 </div>
               </div>
               <div className="flex">
-                <span>{`${userDetails?.name}'s Locker` || "My Locker"}</span>
+                <span>My Locker</span>
               </div>
             </div>
           </div>
-        ) : (
-          <></>
-          // <div
-          //   className="card-item"
-          //   onClick={() => {
-          //     setShowOTPModal(true);
-          //     // setIsActualMyPhotos(true);
-          //     // setShowCameraPopup(true);
-          //     // setIsRefreshShow(false);
-          //   }}
-          // >
-          //   <div className="circle-img-folder circle-img-both">
-          //     <div className="circle-img-inner">
-          //       <img src={myPhoto.src} alt="My Photos" />
-          //     </div>
-          //   </div>
-          //   <span>{`${userDetails?.name}'s Locker` || "My Locker"}</span>
-          // </div>
         )}
 
         {/* CREATE ALBUM */}

@@ -526,9 +526,9 @@ const LoginModal = ({
       verticalCenter={false}
       body={
         <>
-          <p className="login-modal-heading">Join The Celebration!</p>
+          <p className="login-modal-heading">{onlyOTP ? "Access Your Locker" : "Join The Celebration!"}</p>
           <p className="login-modal-subheading">
-            Enter your mobile number to get started
+            {onlyOTP ? `Enter OTP sent to your number xxxx${phone?.slice(-4)}` : "Enter your mobile number to get started"}
           </p>
 
           <div className="d-flex flex-column w-100 login-input-ctn">

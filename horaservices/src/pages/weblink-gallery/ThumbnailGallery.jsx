@@ -32,6 +32,7 @@ import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import {
   assignToSubfolder,
+  createSubfolder,
   getImagesbyFolderName,
   trackActivity,
   trackGalleryView,
@@ -111,6 +112,16 @@ const ThumbnailGallery = ({
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const privateLocker = useMemo(
+    () =>
+      subFolders.find(
+        (sf) =>
+          sf.type === "others" &&
+          // sf.userId === localUserId &&
+          sf.isLocker === true,
+      ),
+    [subFolders, localUserId],
+  );
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
@@ -136,6 +147,7 @@ const ThumbnailGallery = ({
   const [headerLoading, setHeaderLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [isAddingToLocker, setIsAddingToLocker] = useState(false);
 
   const getInitial = (guest) => {
     const name = guest.name || guest.firstName || guest.phone || "";
@@ -386,13 +398,9 @@ const ThumbnailGallery = ({
     });
   }, [localUserId, localPhoneNumber]);
 
-  const popupImages = allThumbnails;
-
-  const currentImage =
-    selectedIndex !== null ? popupImages[selectedIndex] : null;
-
   const visibleThumbnails = useMemo(() => {
     const normalize = (val) => (val || "").trim().toLowerCase();
+    const lockerId = privateLocker?._id;
 
     if (!isActualMyPhotos) {
       if (isEditing) {
@@ -421,11 +429,20 @@ const ThumbnailGallery = ({
       );
     }
 
-    // if (activeSubFolderId) {
-    //   return allThumbnails.filter((img) =>
-    //     img.folderIds?.includes(activeSubFolderId),
-    //   );
-    // }
+    if (lockerId && activeTab === lockerId) {
+      return allThumbnails.filter((img) => img.folderIds?.includes(lockerId));
+    }
+
+    if (activeSubFolderId && activeSubFolderId !== lockerId) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(activeSubFolderId),
+      );
+    }
+
+    if (activeTab === "all" && lockerId) {
+      console.log('%c [ lockerId ]', 'font-size:13px; background:pink; color:#bf2c9f;', lockerId)
+      return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
+    }
 
     return allThumbnails;
   }, [
@@ -437,7 +454,15 @@ const ThumbnailGallery = ({
     myPhotosFolder,
     activeSubFolderId,
     isEditing,
+    isActualMyPhotos,
+    privateLocker,
   ]);
+
+  const popupImages = visibleThumbnails;
+
+  const currentImage =
+    selectedIndex !== null ? popupImages[selectedIndex] : null;
+
   console.log(
     "%c [ matchedKeys ]-277",
     "font-size:13px; background:pink; color:#bf2c9f;",
@@ -449,7 +474,9 @@ const ThumbnailGallery = ({
     visibleThumbnails,
   );
 
-  const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
+  const usableFolders = subFolders.filter(
+    (sf) => sf.type !== "my_photos" && !sf.isLocker,
+  );
 
   useEffect(() => {
     if (activeSubFolderId) {
@@ -967,17 +994,6 @@ const ThumbnailGallery = ({
     upsertPendingUploadsIntoUI,
     processWeblinkUploadQueue,
   ]);
-  const privateLocker = useMemo(
-    () =>
-      subFolders.find(
-        (sf) =>
-          sf.type === "others" &&
-          sf.userId === localUserId &&
-          sf.isLocker === true,
-      ),
-    [subFolders, localUserId],
-  );
-
   const preloadImages = async (images) => {
     const promises = images.map((img) => {
       return new Promise((resolve) => {
@@ -1153,17 +1169,85 @@ const ThumbnailGallery = ({
     setIsRefreshShow(false);
   };
 
-  const handleAddToLocker = (imgData, index) => {
-    console.log(
-      "%c [ index ]",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      index,
+  const assignImageToLockerExclusive = async (
+    imageId,
+    lockerId,
+    previousFolderIds = [],
+  ) => {
+    const newFolderIds = [lockerId];
+    const toAdd = newFolderIds.filter((id) => !previousFolderIds.includes(id));
+    const toRemove = previousFolderIds.filter(
+      (id) => !newFolderIds.includes(id),
     );
-    console.log(
-      "%c [ imgData ]",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      imgData,
+
+    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subFolderId: newFolderIds,
+        addImageIds: toAdd.length ? [imageId] : [],
+        removeImageIds: toRemove.length ? [imageId] : [],
+      }),
+    });
+
+    setAllThumbnails((prev) =>
+      prev.map((img) =>
+        img._id === imageId ? { ...img, folderIds: newFolderIds } : img,
+      ),
     );
+  };
+
+  const ensurePrivateLocker = async () => {
+    if (privateLocker) return privateLocker;
+
+    const fd = new FormData();
+    fd.append("folderName", folderName);
+    fd.append("subFolderName", "My Locker");
+    fd.append("type", "others");
+    fd.append("userId", localUserId);
+    fd.append("customerId", customerId);
+    fd.append("phoneNo", localPhoneNumber);
+    fd.append("isLocker", "true");
+
+    const data = await createSubfolder(fd);
+    const created = data.subFolder;
+    handleSubFolderCreated(created);
+    return created;
+  };
+
+  const handleAddToLocker = async (imgData) => {
+    if (!imgData?._id || !localUserId || isAddingToLocker) return;
+
+    const previousFolderIds = imgData.folderIds || [];
+    const existingLockerId = privateLocker?._id;
+
+    if (
+      existingLockerId &&
+      previousFolderIds.length === 1 &&
+      previousFolderIds[0] === existingLockerId
+    ) {
+      return;
+    }
+
+    setIsAddingToLocker(true);
+    try {
+      const locker = await ensurePrivateLocker();
+      await assignImageToLockerExclusive(
+        imgData._id,
+        locker._id,
+        previousFolderIds,
+      );
+
+      if (activeTab !== locker._id) {
+        setSelectedIndex(null);
+        setShowActionMenu(false);
+      }
+    } catch (err) {
+      console.error("Add to locker failed:", err);
+      alert("Failed to add image to locker");
+    } finally {
+      setIsAddingToLocker(false);
+    }
   };
 
   const banners = [
@@ -1292,7 +1376,7 @@ const ThumbnailGallery = ({
         <div className="thumbnail-gallery-content">
           <div>
             <div>
-              {activeTab !== "my-photos" && (
+              {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
                 <div>
                   {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                     <div className="buttons-container">
@@ -1755,11 +1839,21 @@ const ThumbnailGallery = ({
 
           return (
             <div className="imagepopup-footer">
-              <div>
-                <button onClick={() => handleAddToLocker(currentImage, index)}>
-                  Add To Locker
+              {(localUserId === customerId && currentImage?.userId === customerId) && (
+                <div>
+                  <button
+                    className="add-photo-btn"
+                    onClick={() => handleAddToLocker(currentImage)}
+                    style={{
+                      color: "#FFFFFF",
+                    backgroundColor: "#97538C",
+                    border: "1px solid #97538C",
+                  }}
+                >
+                  <span className="add-photo-icon">+</span>
+                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
                 </button>
-              </div>
+              </div>)}
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -1909,7 +2003,7 @@ const ThumbnailGallery = ({
           style={{
             position: "fixed",
             left: "50%",
-            bottom: "60px",
+            bottom: "45px",
             transform: "translateX(-50%)",
             zIndex: 11111111,
           }}
