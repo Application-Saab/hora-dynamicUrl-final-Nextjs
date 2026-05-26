@@ -12,8 +12,15 @@ import {
 import CustomModal from "../CustomModal";
 import "./LoginModal.css";
 import { usePathname } from "next/navigation";
+import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 
-const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
+const LoginModal = ({
+  isOpen,
+  onClose,
+  fromCapsule = false,
+  onlyOTP = false,
+  setIsVerifiedOTP
+}) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
   const [name, setName] = useState("");
@@ -26,6 +33,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const [otpError, setOtpError] = useState("");
   const [error, setError] = useState({ name: "", phone: "" });
   const [showNameField, setShowNameField] = useState(false);
+  const { userDetails } = useUserDetailsStore();
 
   const { time, resetTimer, isTimeUp } = useTimer(30);
   const { loading: sendOtpLoading, makeRequest } = useApi();
@@ -42,6 +50,47 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const isWonderlandInternational = pathname?.startsWith(
     "/wonderlandinternational",
   );
+
+  // Auto send OTP when onlyOTP mode is enabled
+  useEffect(() => {
+    if (!isOpen || !onlyOTP) return;
+
+    const storedPhone = localStorage.getItem("mobileNumber");
+
+    if (!storedPhone) return;
+
+    setPhone(storedPhone);
+
+    const triggerOtp = async () => {
+      try {
+        const response = await makeRequest(OTP_GENERATE_END_POINT, "POST", {
+          phone: storedPhone,
+          name: userDetails?.name || "",
+          role: "customer",
+          fromWonderland: true,
+          fromCapsule: fromCapsule,
+          fromWonderlandInternational: isWonderlandInternational,
+        });
+
+        if (response.status === 200) {
+          setIsOtpSent(true);
+
+          resetTimer();
+
+          setOtp(["", "", "", ""]);
+          setOtpError("");
+
+          setTimeout(() => {
+            inputsRef.current[0]?.focus();
+          }, 300);
+        }
+      } catch (err) {
+        console.log("Auto OTP send failed", err);
+      }
+    };
+
+    triggerOtp();
+  }, [isOpen, onlyOTP]);
 
   // Close modal on outside click
   useEffect(() => {
@@ -431,7 +480,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
         localStorage.setItem("userName", data?.name);
 
         // sendWelcomeMessage(phone);
-
+        onlyOTP && setIsVerifiedOTP(true);
         setIsOtpSent(false);
         setOtp(["", "", "", ""]);
         setOtpError("");
@@ -456,7 +505,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   };
 
   const handleClick = () => {
-    if (!isOtpSent) {
+    if (!isOtpSent && !onlyOTP) {
       sendOtp();
     } else {
       verifyOtp();
@@ -483,7 +532,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
           </p>
 
           <div className="d-flex flex-column w-100 login-input-ctn">
-            {!isOtpSent || isWonderlandInternational ? (
+            {(!isOtpSent && !onlyOTP) || isWonderlandInternational ? (
               <>
                 <div>
                   <input
@@ -571,10 +620,17 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
 
           <div style={{ marginBlock: "37px" }}>
             <CustomButton
+              // title={
+              //   isWonderlandInternational
+              //     ? "Continue"
+              //     : !isOtpSent
+              //       ? "Get OTP"
+              //       : "Verify"
+              // }
               title={
                 isWonderlandInternational
                   ? "Continue"
-                  : !isOtpSent
+                  : !isOtpSent && !onlyOTP
                     ? "Get OTP"
                     : "Verify"
               }
