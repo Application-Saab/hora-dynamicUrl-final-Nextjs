@@ -126,6 +126,7 @@ const ThumbnailGallery = ({
   const [headerLoading, setHeaderLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [totalPages, setTotalPages] = useState(10);
 
   const getInitial = (guest) => {
     const name =
@@ -201,9 +202,9 @@ const ThumbnailGallery = ({
   };
 
   useEffect(() => {
-  setPage(1);
-  setHasMore(true);
-}, [folderName, customerId, activeSubFolderId]);
+    setPage(1);
+    setHasMore(true);
+  }, [folderName, customerId, activeSubFolderId]);
 
   const handleAddToFolderSubmit = async () => {
     if (usableFolders.length === 0) {
@@ -290,246 +291,523 @@ const ThumbnailGallery = ({
   }, [selectedIndex]);
 
 
-useEffect(() => {
-  const pushTrap = () => {
-    if (!window.history.state?.exitTrap) {
-      window.history.pushState({ exitTrap: true }, "", window.location.href);
-    }
+  useEffect(() => {
+    const pushTrap = () => {
+      if (!window.history.state?.exitTrap) {
+        window.history.pushState({ exitTrap: true }, "", window.location.href);
+      }
+    };
+
+    pushTrap();
+
+    const handlePopState = () => {
+      if (selectedIndex !== null) {
+        setSelectedIndex(null);
+        pushTrap();
+        return;
+      }
+
+      if (showCameraPopup) {
+        setShowCameraPopup(false);
+        pushTrap();
+        return;
+      }
+
+      if (showCreateFolderPopup) {
+        setShowCreateFolderPopup(false);
+        pushTrap();
+        return;
+      }
+
+      if (showGuestModal) {
+        setShowGuestModal(false);
+        pushTrap();
+        return;
+      }
+
+      const exitPopupShown =
+        sessionStorage.getItem("exitPopupShown") === "true";
+
+      if (exitPopupShown) {
+        window.history.back();
+        return;
+      }
+
+      if (!showExitPopup) {
+        setShowExitPopup(true);
+        pushTrap();
+      } else {
+        window.history.back();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [
+    selectedIndex,
+    showCameraPopup,
+    showCreateFolderPopup,
+    showGuestModal,
+    showExitPopup,
+  ]);
+
+  const closeExitPopup = () => {
+    setShowExitPopup(false);
+    sessionStorage.setItem("exitPopupShown", "true");
   };
 
-  pushTrap();
 
-  const handlePopState = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(null);
-      pushTrap();
-      return;
-    }
+  useEffect(() => {
+    if (!localUserId) return;
 
-    if (showCameraPopup) {
-      setShowCameraPopup(false);
-      pushTrap();
-      return;
-    }
+    const alreadyExists = guestData.some(
+      (guest) => String(guest._id) === String(localUserId)
+    );
 
-    if (showCreateFolderPopup) {
-      setShowCreateFolderPopup(false);
-      pushTrap();
-      return;
-    }
+    if (alreadyExists) return;
 
-    if (showGuestModal) {
-      setShowGuestModal(false);
-      pushTrap();
-      return;
-    }
+    const currentGuest = {
+      _id: localUserId,
+      name: localStorage.getItem("userName") || "",
+      phone: localPhoneNumber || "",
+      avatar: "",
+    };
 
-    const exitPopupShown =
-      sessionStorage.getItem("exitPopupShown") === "true";
+    setGuestData((prev) => [currentGuest, ...prev]);
 
-    if (exitPopupShown) {
-      window.history.back(); 
-      return;
-    }
+    setViewedBy((prev) => {
+      if (prev.includes(localUserId)) return prev;
+      return [localUserId, ...prev];
+    });
+  }, [localUserId, localPhoneNumber]);
 
-    if (!showExitPopup) {
-      setShowExitPopup(true);
-      pushTrap();
-    } else {
-      window.history.back();
-    }
-  };
-
-  window.addEventListener("popstate", handlePopState);
-
-  return () => {
-    window.removeEventListener("popstate", handlePopState);
-  };
-}, [
-  selectedIndex,
-  showCameraPopup,
-  showCreateFolderPopup,
-  showGuestModal,
-  showExitPopup,
-]);
-
-const closeExitPopup = () => {
-  setShowExitPopup(false);
-  sessionStorage.setItem("exitPopupShown", "true");
-};
-
-
-useEffect(() => {
-  if (!localUserId) return;
-
-  const alreadyExists = guestData.some(
-    (guest) => String(guest._id) === String(localUserId)
-  );
-
-  if (alreadyExists) return;
-
-  const currentGuest = {
-    _id: localUserId,
-    name: localStorage.getItem("userName") || "",
-    phone: localPhoneNumber || "",
-    avatar: "",
-  };
-
-  setGuestData((prev) => [currentGuest, ...prev]);
-
-  setViewedBy((prev) => {
-    if (prev.includes(localUserId)) return prev;
-    return [localUserId, ...prev];
-  });
-}, [localUserId, localPhoneNumber]);
-
-const popupImages = allThumbnails;
+  const popupImages = allThumbnails;
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
+const visibleThumbnails = useMemo(() => {
+  // 1. Agar search active hai aur hamare paas matched URLs hain
+if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+  return matchedKeys.map((url) => ({
+    type: "image",
+    thumbnailImageUrl: url,
+    originalUrl: url,
+  }));
+}
 
-  const visibleThumbnails = useMemo(() => {
-    const normalize = (val) => (val || "").trim().toLowerCase();
-
-    if (!isActualMyPhotos) {
-      if (isEditing) {
-        return allThumbnails;
-      }
-    }
-    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
-      const normalizedKeys = matchedKeys.map(normalize);
-
-      return allThumbnails.filter((img) => {
-        if (img.type !== "image") return false;
-
-        return normalizedKeys.includes(normalize(img.thumbnailKey));
-      });
-    }
-
-    if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
-      return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
-    }
-
-    if (isMyPhotosTabActive && myPhotosFolder) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(myPhotosFolder._id),
-      );
-    }
-
-    // if (activeSubFolderId) {
-    //   return allThumbnails.filter((img) =>
-    //     img.folderIds?.includes(activeSubFolderId),
-    //   );
-    // }
-
+  // 2. Agar editing mode chal raha hai
+  if (!isActualMyPhotos && isEditing) {
     return allThumbnails;
-  }, [
-    allThumbnails,
-    matchedKeys,
-    activeTab,
-    isMyPhotosTabActive,
-    isSearchActive,
-    myPhotosFolder,
-    activeSubFolderId,
-    isEditing,
-  ]);
+  }
+
+  // 3. Agar normal folder view hai
+  if (isMyPhotosTabActive && myPhotosFolder) {
+    return allThumbnails.filter((img) =>
+      img.folderIds?.includes(myPhotosFolder._id),
+    );
+  }
+
+  // Default fallback
+  return allThumbnails;
+}, [
+  allThumbnails,
+  matchedKeys,
+  isMyPhotosTabActive,
+  isSearchActive,
+  myPhotosFolder,
+  isEditing,
+  isActualMyPhotos
+]);
   console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
   console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
   const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
-  useEffect(() => {
-    if(activeSubFolderId){
-    const ids = allThumbnails.map(img => img._id);
-    setSelectedImages(ids);
-    setInitialSubfolderImages(ids);
-    }
-  }, [allThumbnails, activeSubFolderId]);
+useEffect(() => {
+  if (!activeSubFolderId || !isEditing) {
+    setSelectedImages([]);
+    setInitialSubfolderImages([]);
+    return;
+  }
 
+  const imagesAlreadyInFolder = allThumbnails
+    .filter((img) => img.folderIds?.includes(activeSubFolderId))
+    .map((img) => img._id);
+
+  setSelectedImages(imagesAlreadyInFolder);
+  setInitialSubfolderImages(imagesAlreadyInFolder);
+
+}, [activeSubFolderId, isEditing]);
 
   useEffect(() => {
     setPage(1);
     setAllThumbnails([]);
     setHasMore(true);
+    setIsFetchingMore(false); 
+    setImagesReady(false); 
   }, [folderName, customerId, activeSubFolderId]);
 
+
   useEffect(() => {
-  const fetchThumbnails = async () => {
-    if (!folderName || !customerId) return;
+    setPage(1);
+    setAllThumbnails([]); 
+    setHasMore(true);    
+    setImagesReady(false);
+  }, [activeSubFolderId, isEditing]); 
 
-    if (page === 1) {
-  setLoading(true);
-}
-    setError(null);
 
-    try {
-      const data = await getImagesbyFolderName({
-        folderName,
-        customerId,
-        subFolderId: activeSubFolderId,
-        page,
-        pageSize,
-      });
 
-      // setSubFolders(data?.folders[0]?.subFolders || []);
+  useEffect(() => {
+    const fetchThumbnails = async () => {
+      if (!folderName || !customerId) return;
+
+      if (page === 1) {
+        setLoading(true);
+      }
+      setError(null);
+
+      try {
+        const data = await getImagesbyFolderName({
+          folderName,
+          customerId,
+          subFolderId: isEditing ? null : activeSubFolderId,
+          page,
+          pageSize,
+        });
+
+        // setSubFolders(data?.folders[0]?.subFolders || []);
         // setMainFolderId(data?.folders[0]?._id || null)
         // setViewedBy(data?.folders[0]?.viewedBy || []);
         // setGuestData(data?.folders[0]?.guestDetails || []);
+        setTotalPages(data?.pagination?.totalItems)
 
-      const fetchedThumbnails = data.thumbnails || [];
+        const fetchedThumbnails = data.thumbnails || [];
 
-      await preloadImages(fetchedThumbnails);
+        await preloadImages(fetchedThumbnails);
 
-      setAllThumbnails(prev => {
-        const existingIds = new Set(prev.map(item => item._id));
-        const newItems = fetchedThumbnails.filter(
-          item => !existingIds.has(item._id)
-        );
-        return [...prev, ...newItems];
-      });
-      setImagesReady(true);
+        setAllThumbnails(prev => {
+          const existingIds = new Set(prev.map(item => item._id));
+          const newItems = fetchedThumbnails.filter(
+            item => !existingIds.has(item._id)
+          );
+          return [...prev, ...newItems];
+        });
+        setImagesReady(true);
 
-      if (fetchedThumbnails.length < pageSize) {
-        setHasMore(false);
+        if (fetchedThumbnails.length < pageSize) {
+          setHasMore(false);
+        }
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+        setIsFetchingMore(false);
+      }
+    };
+
+    fetchThumbnails();
+  }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
+
+
+  // useEffect(() => {
+
+  //   const fetchThumbnails = async () => {
+
+  //     if (!folderName || !customerId) return;
+
+
+
+  //     if (page === 1) {
+
+  //       setLoading(true);
+
+  //     }
+
+  //     setError(null);
+
+
+
+  //     try {
+
+  //       const data = await getImagesbyFolderName({
+
+  //         folderName,
+
+  //         customerId,
+
+  //         subFolderId: isEditing ? null : activeSubFolderId,
+
+  //         page,
+
+  //         pageSize,
+
+  //       });
+
+
+
+  //       // setSubFolders(data?.folders[0]?.subFolders || []);
+
+  //       // setMainFolderId(data?.folders[0]?._id || null)
+
+  //       // setViewedBy(data?.folders[0]?.viewedBy || []);
+
+  //       // setGuestData(data?.folders[0]?.guestDetails || []);
+
+
+
+  //       const fetchedThumbnails = data.thumbnails || [];
+
+
+
+  //       await preloadImages(fetchedThumbnails);
+
+
+
+  //       setAllThumbnails(prev => {
+
+  //         const existingIds = new Set(prev.map(item => item._id));
+
+  //         const newItems = fetchedThumbnails.filter(
+
+  //           item => !existingIds.has(item._id)
+
+  //         );
+
+  //         return [...prev, ...newItems];
+
+  //       });
+
+  //       setImagesReady(true);
+
+
+
+  //       if (fetchedThumbnails.length < pageSize) {
+
+  //         setHasMore(false);
+
+  //       }
+
+
+
+  //     } catch (err) {
+
+  //       console.error(err);
+
+  //     } finally {
+
+  //       setLoading(false);
+
+  //       setIsFetchingMore(false);
+
+  //     }
+
+  //   };
+
+
+
+  //   fetchThumbnails();
+
+  // }, [folderName, customerId, page, activeSubFolderId, isEditing]);
+
+
+
+  useEffect(() => {
+
+    const currentObserver = observerRef.current;
+
+
+
+    if (!currentObserver) return;
+
+
+
+    const observer = new IntersectionObserver(
+
+      (entries) => {
+
+        const first = entries[0];
+
+
+
+        if (
+
+          first.isIntersecting &&
+
+          hasMore &&
+
+          !loading &&
+
+          !isFetchingMore
+
+        ) {
+
+          setIsFetchingMore(true);
+
+
+
+          setPage((prev) => prev + 1);
+
+        }
+
+      },
+
+      {
+
+        rootMargin: "400px",
+
       }
 
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-      setIsFetchingMore(false); 
-    }
-  };
+    );
 
-  fetchThumbnails();
-}, [folderName, customerId, page, activeSubFolderId]);
 
-useEffect(() => {
-  if (!observerRef.current) return;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const first = entries[0];
+    observer.observe(currentObserver);
 
-      if (
-        first.isIntersecting &&
-        hasMore &&
-        !loading &&
-        !isFetchingMore
-      ) {
-        setIsFetchingMore(true);
-        setPage((prev) => prev + 1);
+
+
+    return () => {
+
+      if (currentObserver) {
+
+        observer.unobserve(currentObserver);
+
       }
-    },
-    {
-      rootMargin: "1200px",
-    }
-  );
 
-  observer.observe(observerRef.current);
 
-  return () => observer.disconnect();
-}, [hasMore, loading, isFetchingMore]);
+
+      observer.disconnect();
+
+    };
+
+  }, [
+
+    hasMore,
+
+    loading,
+
+    isFetchingMore,
+
+    activeSubFolderId,
+
+    visibleThumbnails.length,
+
+  ]);
+
+  // const observer = new IntersectionObserver(
+  //   (entries) => {
+  //     const first = entries[0];
+  //     if (
+  //       first.isIntersecting &&
+  //       hasMore &&   // <-- YAHAN DIKKAT HAI
+  //       !loading &&
+  //       !isFetchingMore
+  //     ) {
+  //       setIsFetchingMore(true);
+  //       setPage((prev) => prev + 1);
+  //     }
+  //   },
+  //   { rootMargin: "400px" }
+  // );
+
+  // 1. NAYA EFFECT: Tab ya Edit mode change hone par sab reset karo
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]); // Purana data saaf karo taaki mixing na ho
+    setHasMore(true);     // Infinite scroll ko dobara zinda karo
+    setImagesReady(false);
+  }, [activeSubFolderId, isEditing]); // Jab bhi ye dono badlenge, reset hoga.
+
+
+  // 2. DATA FETCH EFFECT: Isme se loading ka chota sa logic sahi karo
+  // useEffect(() => {
+  //   const fetchThumbnails = async () => {
+  //     if (!folderName || !customerId) return;
+
+  //     // Sirf tabhi main loader dikhao jab pehla page ho
+  //     if (page === 1) {
+  //       setLoading(true);
+  //     }
+  //     setError(null);
+
+  //     try {
+  //       const data = await getImagesbyFolderName({
+  //         folderName,
+  //         customerId,
+  //         subFolderId: isEditing ? null : activeSubFolderId,
+  //         page,
+  //         pageSize,
+  //       });
+
+  //       const fetchedThumbnails = data.thumbnails || [];
+  //       await preloadImages(fetchedThumbnails);
+
+  //       setAllThumbnails(prev => {
+  //         // Agar page 1 hai toh naya data hi set karo, purane me append mat karo
+  //         if (page === 1) return fetchedThumbnails;
+
+  //         const existingIds = new Set(prev.map(item => item._id));
+  //         const newItems = fetchedThumbnails.filter(
+  //           item => !existingIds.has(item._id)
+  //         );
+  //         return [...prev, ...newItems];
+  //       });
+
+  //       setImagesReady(true);
+
+  //       // Agar data page size se kam aya hai, matlab aage aur data nahi hai
+  //       if (fetchedThumbnails.length < pageSize) {
+  //         setHasMore(false);
+  //       } else {
+  //         setHasMore(true); // Ensure karo ki agar data full aaya hai toh scroll chalu rahe
+  //       }
+
+  //     } catch (err) {
+  //       console.error(err);
+  //     } finally {
+  //       setLoading(false);
+  //       setIsFetchingMore(false);
+  //     }
+  //   };
+
+  //   fetchThumbnails();
+  // }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
+
+
+  // 3. OBSERVER EFFECT: Isme se faltu dependencies hatao
+  useEffect(() => {
+    const currentObserver = observerRef.current;
+    if (!currentObserver) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+
+        if (
+          first.isIntersecting &&
+          hasMore &&
+          !loading &&
+          !isFetchingMore
+        ) {
+          setIsFetchingMore(true);
+          setPage((prev) => prev + 1);
+        }
+      },
+      { rootMargin: "400px" }
+    );
+
+    observer.observe(currentObserver);
+
+    return () => {
+      if (currentObserver) {
+        observer.unobserve(currentObserver);
+      }
+      observer.disconnect();
+    };
+  }, [hasMore, loading, isFetchingMore]);
 
 
   useEffect(() => {
@@ -576,23 +854,23 @@ useEffect(() => {
       window.removeEventListener("loginStateChange", handleLoginChange);
     };
   }, []);
-useEffect(() => {
-  if (!buttonsRef.current) return;
+  useEffect(() => {
+    if (!buttonsRef.current) return;
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      setShowFloatingBtn(!entry.isIntersecting);
-    },
-    {
-      root: null,
-      threshold: 0.1,
-    }
-  );
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowFloatingBtn(!entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
 
-  observer.observe(buttonsRef.current);
+    observer.observe(buttonsRef.current);
 
-  return () => observer.disconnect();
-}, [loading]);
+    return () => observer.disconnect();
+  }, [loading]);
 
 
   useEffect(() => {
@@ -669,14 +947,19 @@ useEffect(() => {
     setSelectedIndex(null);
   }, []);
 
-  const handleSearchResults = (matches) => {
-    console.log('%c [ matches ]-402', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
-    if (!Array.isArray(matches)) return;
-    const keys = matches.map((m) => m?.file);
-    setMatchedKeys(keys);
-    setIsSearching(true);
-    setMyPhotoSearchResults(keys);
-  };
+const handleSearchResults = (matches) => {
+  console.log("matches:", matches);
+
+  if (!Array.isArray(matches)) return;
+
+  const urls = matches
+    .map((m) => m?.file?.thumbnailImageUrl || m?.file?.originalUrl)
+    .filter(Boolean);
+
+  setMatchedKeys(urls);
+  setIsSearching(true);
+  setMyPhotoSearchResults(urls);
+};
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
@@ -964,22 +1247,22 @@ useEffect(() => {
   ]);
 
   const preloadImages = async (images) => {
-  const promises = images.map((img) => {
-    return new Promise((resolve) => {
-      const image = new window.Image();
+    const promises = images.map((img) => {
+      return new Promise((resolve) => {
+        const image = new window.Image();
 
-      image.src =
-        img.thumbnailImageUrl ||
-        img.originalUrl ||
-        "";
+        image.src =
+          img.thumbnailImageUrl ||
+          img.originalUrl ||
+          "";
 
-      image.onload = resolve;
-      image.onerror = resolve;
+        image.onload = resolve;
+        image.onerror = resolve;
+      });
     });
-  });
 
-  await Promise.all(promises);
-};
+    await Promise.all(promises);
+  };
 
   if (error) {
     return (
@@ -1011,38 +1294,38 @@ useEffect(() => {
       setActiveTab(id ?? "all");
     }
 
-//     try {
-//       setLoading(true);
+    //     try {
+    //       setLoading(true);
 
-//       const data = await getImagesbyFolderName({
-//         folderName,
-//         customerId,
-//         subFolderId: id,
-//       });
+    //       const data = await getImagesbyFolderName({
+    //         folderName,
+    //         customerId,
+    //         subFolderId: id,
+    //       });
 
-//       const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
-//         ...thumb,
-//         stableKey:
-//           thumb._id ||
-//           thumb.originalKey ||
-//           `thumb-${index}-${Date.now()}`,
-//       }));
+    //       const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
+    //         ...thumb,
+    //         stableKey:
+    //           thumb._id ||
+    //           thumb.originalKey ||
+    //           `thumb-${index}-${Date.now()}`,
+    //       }));
 
-//       setAllThumbnails(prev => {
-//   const existingIds = new Set(prev.map(item => item._id));
+    //       setAllThumbnails(prev => {
+    //   const existingIds = new Set(prev.map(item => item._id));
 
-//   const newItems = fetchedThumbnails.filter(
-//     item => !existingIds.has(item._id)
-//   );
+    //   const newItems = fetchedThumbnails.filter(
+    //     item => !existingIds.has(item._id)
+    //   );
 
-//   return [...prev, ...newItems];
-// });
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setLoading(false);
-//       setIsFetchingMore(false);
-//     }
+    //   return [...prev, ...newItems];
+    // });
+    //     } catch (err) {
+    //       console.error(err);
+    //     } finally {
+    //       setLoading(false);
+    //       setIsFetchingMore(false);
+    //     }
 
   };
 
@@ -1213,272 +1496,348 @@ useEffect(() => {
 
   return (
     <div className="thumbnail-gallery">
-      
+
       <div className="">
         {headerLoading ? (
           <HeaderCardsFlashLoader />
         ) : (
           <>
-          {console.log("LOADING STATE:", loading)}
-{console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-{console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
-          <div>
-          <Image
-        src={capsuleTopBanner}
-        alt="banner"
-        className="top-banner-image"
-      />
-      <div className="thumbnail-gallery-content">
-          <HeaderCards
-            folderName={folderName}
-            customerId={customerId}
-            setIsSearching={setIsSearching}
-            onSearchResults={handleSearchResults}
-            subFolders={subFolders}
-            onSelectSubFolder={handleSubFolderSelect}
-            onSubFolderCreated={handleSubFolderCreated}
-            onNewFolderActivate={activateNewSubFolderEditMode}
-            showCreateFolderPopup={showCreateFolderPopup}
-            setShowCreateFolderPopup={setShowCreateFolderPopup}
-            pendingAssignImageId={pendingAssignImageId}
-            setPendingAssignImageId={setPendingAssignImageId}
-            setAllThumbnails={setAllThumbnails}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            isSearching={isSearching}
-            setIsActualMyPhotos={setIsActualMyPhotos}
-            setIsStremSearching={setIsStremSearching}
-            mainFolderId={mainFolderId}
-            setSubFolders={setSubFolders}
-            setIsRefreshShow={setIsRefreshShow}
-            isEditingDP={isEditingDP}
-            setIsEditingDP={setIsEditingDP}
-            showCameraPopup={showCameraPopup}
-            setShowCameraPopup={setShowCameraPopup}
-            capturedImage={capturedImage}
-            setCapturedImage={setCapturedImage}
-            matchedKeys={matchedKeys}
-          />
-      </div>
-          </div>
+            {console.log("LOADING STATE:", loading)}
+            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
+            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
+            <div>
+              <Image
+                src={capsuleTopBanner}
+                alt="banner"
+                className="top-banner-image"
+              />
+              <div className="thumbnail-gallery-content">
+                <HeaderCards
+                  folderName={folderName}
+                  customerId={customerId}
+                  setIsSearching={setIsSearching}
+                  onSearchResults={handleSearchResults}
+                  subFolders={subFolders}
+                  onSelectSubFolder={handleSubFolderSelect}
+                  onSubFolderCreated={handleSubFolderCreated}
+                  onNewFolderActivate={activateNewSubFolderEditMode}
+                  showCreateFolderPopup={showCreateFolderPopup}
+                  setShowCreateFolderPopup={setShowCreateFolderPopup}
+                  pendingAssignImageId={pendingAssignImageId}
+                  setPendingAssignImageId={setPendingAssignImageId}
+                  setAllThumbnails={setAllThumbnails}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  isSearching={isSearching}
+                  setIsActualMyPhotos={setIsActualMyPhotos}
+                  setIsStremSearching={setIsStremSearching}
+                  mainFolderId={mainFolderId}
+                  setSubFolders={setSubFolders}
+                  setIsRefreshShow={setIsRefreshShow}
+                  isEditingDP={isEditingDP}
+                  setIsEditingDP={setIsEditingDP}
+                  showCameraPopup={showCameraPopup}
+                  setShowCameraPopup={setShowCameraPopup}
+                  capturedImage={capturedImage}
+                  setCapturedImage={setCapturedImage}
+                  matchedKeys={matchedKeys}
+                />
+              </div>
+            </div>
           </>
         )}
         <div className="thumbnail-gallery-content">
 
-        <div>
           <div>
-            {activeTab !== "my-photos" && (
-              <div>
-                {!isMyPhotosTab && activeSubFolderId && !isEditing && (
-                  <div className="buttons-container">
+            <div>
+              {activeTab !== "my-photos" && (
+                <div>
+                  {!isMyPhotosTab && activeSubFolderId && !isEditing && (
+                    <div className="buttons-container">
+                      <button
+                        className="add-new-btn"
+                        onClick={() => {
+                          setSelectedImages(initialSubfolderImages);
+                          setIsEditing(true);
+                        }}
+                      >
+                        <span className="add-icon">+</span>
+                        <span>Add Photos To Album</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {!isMyPhotosTab && activeSubFolderId && isEditing && (
                     <button
-                      className="add-new-btn"
-                      onClick={() => {
-                        setSelectedImages(initialSubfolderImages);
-                        setIsEditing(true);
+                      className="save-image-btn"
+                      onClick={handleSave}
+                      disabled={!hasChanges}
+                      style={{
+                        opacity: !hasChanges ? 0.75 : 1,
+                        cursor: !hasChanges ? "not-allowed" : "pointer",
                       }}
                     >
-                      <span className="add-icon">+</span>
-                      <span>Add Photos To Album</span>
+                      <span className="save-icon">
+                        <Image
+                          src={checkWithBoard}
+                          alt="share"
+                          height={13}
+                          width={11}
+                        />
+                      </span>
+                      <span>Save Photos To Album</span>
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
+              )}
+            </div>
+            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
+            {imagesReady && activeTab === "all" && (
+              <div ref={buttonsRef} className="buttons-container">
+                <button
+                  className="add-photo-btn"
+                  onClick={() => addMoreImagesRef.current?.click()}
+                >
+                  <span className="add-photo-icon">+</span>
+                  <span>Add Photos</span>
+                </button>
+                <button className="share-capsule-btn" onClick={handleShareicon}>
+                  <span className="">
+                    {typeof handleShareicon === "function" && (
+                      <Image src={share} alt="share" height={13} width={14} />
+                    )}
+                  </span>
+                  <span>Share Event Capsule</span>
+                </button>
+                <button
+                  onClick={() => setShowGuestModal(true)}
+                  className="guest-btn">
+                  <span className="">
+                    <Image src={guest} alt="guest" height={13} width={17} />
+                  </span>
+                  <span className="guest-text"> <span className="guest-count">{viewedBy.length}</span> <span>Guests Joined</span></span>
+                </button>
+              </div>
+            )}
 
-                {!isMyPhotosTab && activeSubFolderId && isEditing && (
-                  <button
-                    className="save-image-btn"
-                    onClick={handleSave}
-                    disabled={!hasChanges}
-                    style={{
-                      opacity: !hasChanges ? 0.75 : 1,
-                      cursor: !hasChanges ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <span className="save-icon">
+            {isRefreshShow && (
+              <div className="buttons-container">
+                <button
+                  className="refresh-image-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    setIsEditingDP(true);
+                    setIsActualMyPhotos(true);
+                    setIsSearching(false);
+                    handleSearchResults([]);
+                    setCapturedImage(null);
+                    setShowCameraPopup(true);
+                    setIsRefreshShow(true);
+                  }}
+                >
+                  <span className="refresh-icon">
+                    {typeof handleShareicon === "function" && (
                       <Image
-                        src={checkWithBoard}
+                        src={refreshIcon}
                         alt="share"
-                        height={13}
-                        width={11}
+                        height={12}
+                        width={14}
                       />
-                    </span>
-                    <span>Save Photos To Album</span>
-                  </button>
-                )}
+                    )}
+                  </span>
+                  <span>Refresh</span>
+                </button>
               </div>
             )}
           </div>
-{console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
-          {imagesReady && activeTab === "all" && (
-            <div ref={buttonsRef} className="buttons-container">
-              <button
-                className="add-photo-btn"
-                onClick={() => addMoreImagesRef.current?.click()}
-              >
-                <span className="add-photo-icon">+</span>
-                <span>Add Photos</span>
-              </button>
-              <button className="share-capsule-btn" onClick={handleShareicon}>
-                <span className="">
-                  {typeof handleShareicon === "function" && (
-                    <Image src={share} alt="share" height={13} width={14} />
-                  )}
-                </span>
-                <span>Share Event Capsule</span>
-              </button>
-              <button
-                onClick={() => setShowGuestModal(true)}
-                className="guest-btn">
-                <span className="">
-                  <Image src={guest} alt="guest" height={13} width={17} />
-                </span>
-                <span className="guest-text"> <span className="guest-count">{viewedBy.length}</span> <span>Guests Joined</span></span>
-              </button>
-            </div>
-          )}
+          {/* Hidden file input – Add More Images */}
+          <input
+            type="file"
+            id="addMoreImagesInput"
+            ref={addMoreImagesRef}
+            multiple
+            accept="image/*,video/*"
+            style={{ display: "none" }}
+            onChange={async (e) => {
+              const files = Array.from(e.target.files || []);
+              if (!files.length) return;
 
-          {isRefreshShow && (
-            <div className="buttons-container">
-              <button
-                className="refresh-image-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-
-                  setIsEditingDP(true);
-                  setIsActualMyPhotos(true);
-                  setIsSearching(false);
-                  handleSearchResults([]);
-                  setCapturedImage(null);
-                  setShowCameraPopup(true);
-                  setIsRefreshShow(true);
-                }}
-              >
-                <span className="refresh-icon">
-                  {typeof handleShareicon === "function" && (
-                    <Image
-                      src={refreshIcon}
-                      alt="share"
-                      height={12}
-                      width={14}
-                    />
-                  )}
-                </span>
-                <span>Refresh</span>
-              </button>
-            </div>
-          )}
-        </div>
-        {/* Hidden file input – Add More Images */}
-        <input
-          type="file"
-          id="addMoreImagesInput"
-          ref={addMoreImagesRef}
-          multiple
-          accept="image/*,video/*"
-          style={{ display: "none" }}
-          onChange={async (e) => {
-            const files = Array.from(e.target.files || []);
-            if (!files.length) return;
-
-            if (!folderName || !customerId) {
-              alert("Missing folderName/customerId");
-              return;
-            }
-
-            const now = Date.now();
-
-            const optimistic = [];
-
-            for (const file of files) {
-              const id = crypto.randomUUID();
-              const isVideo = file.type.startsWith("video/");
-              const localPreview = URL.createObjectURL(file);
-
-              const saved = await saveFileToOPFS({
-                rootDir: WEBLINK_OPFS_ROOT_DIR,
-                prefix: galleryKey,
-                id,
-                file,
-              });
-
-              if (!saved.ok || !saved.key) {
-                URL.revokeObjectURL(localPreview);
-                continue;
+              if (!folderName || !customerId) {
+                alert("Missing folderName/customerId");
+                return;
               }
 
-              await weblinkUploadsDb.add({
-                id,
-                galleryKey,
-                folderName,
-                customerId,
-                phoneNo: localPhoneNumber || "",
-                fileName: file.name,
-                mimeType: file.type,
-                isVideo,
-                status: "queued",
-                progress: 0,
-                retryCount: 0,
-                createdAt: now,
-                opfsKey: saved.key,
-              });
+              const now = Date.now();
 
-              optimistic.push({
-                _id: id,
-                type: isVideo ? "video" : "image",
-                originalUrl: localPreview,
-                thumbnailImageUrl: isVideo ? null : localPreview,
-                videoClipUrl: isVideo ? localPreview : null,
-                isTemp: true,
-                uploading: true,
-                uploaded: false,
-                orderByName: localPhoneNumber,
-                progress: 0,
-              });
-            }
+              const optimistic = [];
 
-            if (optimistic.length) {
-              setAllThumbnails((prev) => [...optimistic, ...prev]);
-              processWeblinkUploadQueue();
-            }
+              for (const file of files) {
+                const id = crypto.randomUUID();
+                const isVideo = file.type.startsWith("video/");
+                const localPreview = URL.createObjectURL(file);
 
-            e.target.value = "";
-          }}
-        />
+                const saved = await saveFileToOPFS({
+                  rootDir: WEBLINK_OPFS_ROOT_DIR,
+                  prefix: galleryKey,
+                  id,
+                  file,
+                });
 
-        <div>
-          {/* ================= LOADING SKELETON ================= */}
-          {(loading && page === 1) && (
-            <div className="gallery-image-grid">
-              {[...Array(6)].map((_, index) => {
-                const type = getBlockType(index);
-                return (
-                  <div key={index} className={`grid-item ${type}`}>
-                    <div className="event-masonry-item">
-                      <div className="event-lazy-image-spinner-container placeholder-glow">
-                        <div className="placeholder w-100 h-100"></div>
+                if (!saved.ok || !saved.key) {
+                  URL.revokeObjectURL(localPreview);
+                  continue;
+                }
+
+                await weblinkUploadsDb.add({
+                  id,
+                  galleryKey,
+                  folderName,
+                  customerId,
+                  phoneNo: localPhoneNumber || "",
+                  fileName: file.name,
+                  mimeType: file.type,
+                  isVideo,
+                  status: "queued",
+                  progress: 0,
+                  retryCount: 0,
+                  createdAt: now,
+                  opfsKey: saved.key,
+                });
+
+                optimistic.push({
+                  _id: id,
+                  type: isVideo ? "video" : "image",
+                  originalUrl: localPreview,
+                  thumbnailImageUrl: isVideo ? null : localPreview,
+                  videoClipUrl: isVideo ? localPreview : null,
+                  isTemp: true,
+                  uploading: true,
+                  uploaded: false,
+                  orderByName: localPhoneNumber,
+                  progress: 0,
+                });
+              }
+
+              if (optimistic.length) {
+                setAllThumbnails((prev) => [...optimistic, ...prev]);
+                processWeblinkUploadQueue();
+              }
+
+              e.target.value = "";
+            }}
+          />
+
+          <div>
+            {/* ================= LOADING SKELETON ================= */}
+            {(loading && page === 1) && (
+              <div className="gallery-image-grid">
+                {[...Array(6)].map((_, index) => {
+                  const type = getBlockType(index);
+                  return (
+                    <div key={index} className={`grid-item ${type}`}>
+                      <div className="event-masonry-item">
+                        <div className="event-lazy-image-spinner-container placeholder-glow">
+                          <div className="placeholder w-100 h-100"></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            )}
 
-          {/* ================= SEARCHING STATE ================= */}
-          {!loading &&
-            isStreamSearching &&
-            isSearching &&
-            isActualMyPhotos &&
-            matchedKeys.length === 0 && (
-              <>
-                <div className="thumbnail-gallery-status">
-                  Searching Photos....{" "}
-                </div>
+            {/* ================= SEARCHING STATE ================= */}
+            {!loading &&
+              isStreamSearching &&
+              isSearching &&
+              isActualMyPhotos &&
+              matchedKeys.length === 0 && (
+                <>
+                  <div className="thumbnail-gallery-status">
+                    Searching Photos....{" "}
+                  </div>
+                  <div className="gallery-image-grid">
+                    {[...Array(6)].map((_, index) => {
+                      const type = getBlockType(index);
+                      return (
+                        <div key={index} className={`grid-item ${type}`}>
+                          <div className="event-masonry-item">
+                            <div className="event-lazy-image-spinner-container placeholder-glow">
+                              <div className="placeholder w-100 h-100"></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+            {/* ================= NO SEARCH RESULT ================= */}
+            {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
+              <div className="weblink-emptyFolder-container">
+                <Image
+                  src={emptyFolder}
+                  alt="no images select"
+                />
+                <p className="label">No Photos Yet!</p>
+                <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
+              </div>
+            )}
+
+            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
+
+            {/* ================= MAIN IMAGE GRID ================= */}
+            <>
+              {imageChunks.map((chunk, index) => (
+                <React.Fragment key={index}>
+                  <ImageGrid
+                    data={chunk}
+                    loading={loading}
+                    isEventWall={false}
+                    handleSelectImage={handleSelectImage}
+                    handleImageClick={(indexOnPage) =>
+                      handleImageClick(index * 6 + indexOnPage)
+                    }
+                    isEditing={isEditing}
+                    isSearchMode={isSearchMode}
+                    activeSubFolderId={activeSubFolderId}
+                    isActualMyPhotos={isActualMyPhotos}
+                    selectedImages={selectedImages}
+                    setSelectedImages={setSelectedImages}
+                  />
+
+                  {banners[index]}
+                </React.Fragment>
+              ))}
+
+              {remainingImages.length > 0 && (
+                <ImageGrid
+                  data={remainingImages}
+                  loading={loading}
+                  isEventWall={false}
+                  handleSelectImage={handleSelectImage}
+                  handleImageClick={(indexOnPage) =>
+                    handleImageClick(18 + indexOnPage)
+                  }
+                  isEditing={isEditing}
+                  isSearchMode={isSearchMode}
+                  activeSubFolderId={activeSubFolderId}
+                  isActualMyPhotos={isActualMyPhotos}
+                  selectedImages={selectedImages}
+                  setSelectedImages={setSelectedImages}
+                />
+              )}
+
+              {/* ================= PAGINATION DUMMY GRID ================= */}
+              {hasMore && page > 1 && (
                 <div className="gallery-image-grid">
-                  {[...Array(6)].map((_, index) => {
+                  {[...Array(20)].map((_, index) => {
                     const type = getBlockType(index);
+
                     return (
-                      <div key={index} className={`grid-item ${type}`}>
+                      <div key={`dummy-${index}`} className={`grid-item ${type}`}>
                         <div className="event-masonry-item">
                           <div className="event-lazy-image-spinner-container placeholder-glow">
                             <div className="placeholder w-100 h-100"></div>
@@ -1488,88 +1847,12 @@ useEffect(() => {
                     );
                   })}
                 </div>
-              </>
-            )}
-
-          {/* ================= NO SEARCH RESULT ================= */}
-          {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
-            <div className="weblink-emptyFolder-container">
-              <Image
-                src={emptyFolder}
-                alt="no images select"
-              />
-              <p className="label">No Photos Yet!</p>
-              <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
-            </div>
-          )}
-
-          {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
-
-          {/* ================= MAIN IMAGE GRID ================= */}
-          <>
-            {imageChunks.map((chunk, index) => (
-              <React.Fragment key={index}>
-                <ImageGrid
-                  data={chunk}
-                  loading={loading}
-                  isEventWall={false}
-                  handleSelectImage={handleSelectImage}
-                  handleImageClick={(indexOnPage) =>
-                      handleImageClick(index * 6 + indexOnPage)
-                  }
-                  isEditing={isEditing}
-                  isSearchMode={isSearchMode}
-                  activeSubFolderId={activeSubFolderId}
-                  isActualMyPhotos={isActualMyPhotos}
-                  selectedImages={selectedImages}
-                  setSelectedImages={setSelectedImages}
-                />
-
-                {banners[index]}
-              </React.Fragment>
-            ))}
-
-            {remainingImages.length > 0 && (
-              <ImageGrid
-                data={remainingImages}
-                loading={loading}
-                isEventWall={false}
-                handleSelectImage={handleSelectImage}
-                handleImageClick={(indexOnPage) =>
-                    handleImageClick(18 + indexOnPage)
-                }
-                isEditing={isEditing}
-                isSearchMode={isSearchMode}
-                activeSubFolderId={activeSubFolderId}
-                isActualMyPhotos={isActualMyPhotos}
-                selectedImages={selectedImages}
-                setSelectedImages={setSelectedImages}
-              />
-            )}
-
-            {/* ================= PAGINATION DUMMY GRID ================= */}
-{hasMore && page > 1 && (
-  <div className="gallery-image-grid">
-    {[...Array(20)].map((_, index) => {
-      const type = getBlockType(index);
-
-      return (
-        <div key={`dummy-${index}`} className={`grid-item ${type}`}>
-          <div className="event-masonry-item">
-            <div className="event-lazy-image-spinner-container placeholder-glow">
-              <div className="placeholder w-100 h-100"></div>
-            </div>
+              )}
+              <div ref={observerRef} style={{ height: "20px" }} />
+            </>
           </div>
         </div>
-      );
-    })}
-  </div>
-)}
-            <div ref={observerRef} style={{ height: "20px" }} />
-          </>
-        </div>
       </div>
-        </div>
 
       <AddToFolderPopup
         isOpen={showAddToFolderPopup}
@@ -1584,6 +1867,7 @@ useEffect(() => {
       />
 
       <CommonImagePopup
+      total={totalPages}
         images={popupImages}
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
@@ -1788,63 +2072,63 @@ useEffect(() => {
         <div className="guest-modal-overlay">
           <div className="guest-modal-container">
             <div>
-            {/* Header Section */}
-            <div className="modal-header">
-              <div>
-                <button
-                  onClick={() => setShowGuestModal(false)}
-                  className="back-button">
-                  <Image
-                    src={ArrowImg}
-                    alt="Back"
-                    width={24}
-                    height={24}
-                    className="login-back-icon"
-                  />
-                </button>
+              {/* Header Section */}
+              <div className="modal-header">
+                <div>
+                  <button
+                    onClick={() => setShowGuestModal(false)}
+                    className="back-button">
+                    <Image
+                      src={ArrowImg}
+                      alt="Back"
+                      width={24}
+                      height={24}
+                      className="login-back-icon"
+                    />
+                  </button>
+                </div>
+                <div className="modal-title">Guests Joined</div>
               </div>
-              <div className="modal-title">Guests Joined</div>
-            </div>
 
-            {/* List Section */}
-            <div className="list-container">
-              <div className="list-content">
-                {guestData.map((guest) => {
-                  const hasAvatar = guest.avatar && guest.avatar.trim() !== "";
+              {/* List Section */}
+              <div className="list-container">
+                <div className="list-content">
+                  {guestData.map((guest) => {
+                    const hasAvatar = guest.avatar && guest.avatar.trim() !== "";
 
-                  return (
-                    <div key={guest._id} className="guest-row">
+                    return (
+                      <div key={guest._id} className="guest-row">
 
-                      {/* Avatar Section */}
-                      {hasAvatar ? (
-                        <img
-                          src={guest.avatar}
-                          alt="avatar"
-                          className="avatar-img"
-                        />
-                      ) : (
-                        <div
-                          className="avatar-fallback"
-                          style={{ backgroundColor: getColor(guest._id) }}
-                        >
-                          {getInitial(guest)}
+                        {/* Avatar Section */}
+                        {hasAvatar ? (
+                          <img
+                            src={guest.avatar}
+                            alt="avatar"
+                            className="avatar-img"
+                          />
+                        ) : (
+                          <div
+                            className="avatar-fallback"
+                            style={{ backgroundColor: getColor(guest._id) }}
+                          >
+                            {getInitial(guest)}
+                          </div>
+                        )}
+
+                        {/* Info */}
+                        <div className="guest-info">
+                          <span>
+                            {guest.name ||
+                              guest.firstName ||
+                              formatPhoneNumber(guest?.phone)}
+                          </span>
+                          <hr className="divider" />
                         </div>
-                      )}
-
-                      {/* Info */}
-                      <div className="guest-info">
-                        <span>
-                          {guest.name ||
-                            guest.firstName ||
-                            formatPhoneNumber(guest?.phone)}
-                        </span>
-                        <hr className="divider" />
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
             </div>
 
@@ -1860,36 +2144,36 @@ useEffect(() => {
 
 
       {showFloatingBtn && (
-<div
-   style={{
-    position: "fixed",
-    left: "50%",
-    bottom: "60px",
-    transform: "translateX(-50%)",
-    zIndex: 11111111,
-  }}
->
-  <button
-    className="share-capsule-btn2"
-    onClick={handleShareicon}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
-    }}
-  >
-    <Image src={whiteShareIcon} alt="share" height={13} width={14} />
-    <span>Share Event Capsule</span>
-  </button>
-</div>
-)}
+        <div
+          style={{
+            position: "fixed",
+            left: "50%",
+            bottom: "60px",
+            transform: "translateX(-50%)",
+            zIndex: 11111111,
+          }}
+        >
+          <button
+            className="share-capsule-btn2"
+            onClick={handleShareicon}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Image src={whiteShareIcon} alt="share" height={13} width={14} />
+            <span>Share Event Capsule</span>
+          </button>
+        </div>
+      )}
 
       <LoginModal
         isOpen={isLoginOpen && !isLogin}
         onClose={() => setIsLoginOpen(false)}
         fromCapsule={true}
       />
-      
+
 
     </div>
   );
