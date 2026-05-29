@@ -30,6 +30,8 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
+import { IoIosCloudDone } from "react-icons/io";
+import { BsZoomIn, BsZoomOut  } from "react-icons/bs";
 import {
   assignToSubfolder,
   createSubfolder,
@@ -37,7 +39,7 @@ import {
   trackActivity,
   trackGalleryView,
   trackFolderClick,
-  getSubFolders,
+  getSubFolders
 } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from "../../assets/emptyFolder.svg";
@@ -136,6 +138,13 @@ const ThumbnailGallery = ({
   const [showGuestModal, setShowGuestModal] = useState(false);
   const [guestData, setGuestData] = useState([]);
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    show: true,
+    message: "Image downloaded successfully",
+  });
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [isZoomed, setIsZoomed] = useState(false);
+
   const buttonsRef = useRef(null);
   const observerRef = useRef(null);
   const [page, setPage] = useState(1);
@@ -194,6 +203,20 @@ const ThumbnailGallery = ({
     }
 
     return colors[Math.abs(hash) % colors.length];
+  };
+
+  const showSnackbar = (message) => {
+    setSnackbar({
+      show: true,
+      message,
+    });
+
+    setTimeout(() => {
+      setSnackbar({
+        show: false,
+        message: "",
+      });
+    }, 5000);
   };
 
   const uploadingRef = useRef(false);
@@ -335,13 +358,6 @@ const ThumbnailGallery = ({
       document.body.style.overflow = "";
     };
   }, [selectedIndex]);
-
-  useEffect(() => {
-    const pushTrap = () => {
-      if (!window.history.state?.exitTrap) {
-        window.history.pushState({ exitTrap: true }, "", window.location.href);
-      }
-    };
 
   useEffect(() => {
     const pushTrap = () => {
@@ -659,9 +675,6 @@ const ThumbnailGallery = ({
       }
       observer.disconnect();
     };
-  }, [hasMore, loading, isFetchingMore]);
-
-    return () => observer.disconnect();
   }, [hasMore, loading, isFetchingMore]);
 
   useEffect(() => {
@@ -1093,6 +1106,35 @@ const ThumbnailGallery = ({
     upsertPendingUploadsIntoUI,
     processWeblinkUploadQueue,
   ]);
+
+  useEffect(() => {
+    setZoomLevel(1);
+    setIsZoomed(false);
+  }, [selectedIndex]);
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => {
+      const nextZoom = Math.min(prev + 0.5, 5);
+
+      if (nextZoom > 1) {
+        setIsZoomed(true);
+      }
+
+      return nextZoom;
+    });
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => {
+      const nextZoom = Math.max(prev - 0.5, 1);
+
+      if (nextZoom <= 1) {
+        setIsZoomed(false);
+      }
+
+      return nextZoom;
+    });
+  };
   const preloadImages = async (images) => {
     const promises = images.map((img) => {
       return new Promise((resolve) => {
@@ -1236,6 +1278,17 @@ const imageChunks = useMemo(() => {
     setIsRefreshShow(false);
   };
 
+  const handleDownloadImage = async (currentImage) => {
+    try {
+      trackActivity(currentImage?._id, "download");
+      setShowActionMenu(false);
+      await downloadFile(currentImage?.originalUrl);
+      showSnackbar("Image downloaded successfully");
+    } catch (err) {
+      showSnackbar("Download failed");
+    }
+  };
+
   const assignImageToLockerExclusive = async (
     imageId,
     lockerId,
@@ -1330,7 +1383,10 @@ const imageChunks = useMemo(() => {
       </div>
 
       <div className="banner-right">
-        <button onClick={handleShareicon} className="banner-btn">
+        <button
+          onClick={() => handleShareicon(mainFolderId)}
+          className="banner-btn"
+        >
           <span>
             <Image src={share} alt="share" height={10} width={11} />
           </span>
@@ -1488,7 +1544,10 @@ const imageChunks = useMemo(() => {
                   <span className="add-photo-icon">+</span>
                   <span>Add Photos</span>
                 </button>
-                <button className="share-capsule-btn" onClick={handleShareicon}>
+                <button
+                  className="share-capsule-btn"
+                  onClick={() => handleShareicon(mainFolderId)}
+                >
                   <span className="">
                     {typeof handleShareicon === "function" && (
                       <Image src={share} alt="share" height={13} width={14} />
@@ -1770,6 +1829,8 @@ const imageChunks = useMemo(() => {
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
         onClose={closePopup}
+        isZoomed={isZoomed}
+        zoomLevel={zoomLevel}
         renderActions={(currentImage, index) => (
           <div>
             <div style={{ position: "relative" }}>
@@ -1807,9 +1868,7 @@ const imageChunks = useMemo(() => {
                         className="action-item flex"
                         onClick={() => {
                           const current = popupImages[selectedIndex];
-                          downloadFile(current?.originalUrl);
-                          trackActivity(current?._id, "download");
-                          setShowActionMenu(false);
+                          handleDownloadImage(current);
                         }}
                       >
                         <Image src={downloadVector} width={15} height={15} />
@@ -1894,6 +1953,25 @@ const imageChunks = useMemo(() => {
 
           return (
             <div className="imagepopup-footer">
+              {currentImage.type !== "video" && (
+                <div className="zoom-controls">
+                  <button
+                    className="zoom-btn"
+                    onClick={handleZoomOut}
+                    disabled={zoomLevel <= 1}
+                  >
+                    <BsZoomOut />
+                  </button>
+
+                  <button
+                    className="zoom-btn"
+                    onClick={handleZoomIn}
+                    disabled={zoomLevel >= 5}
+                  >
+                    <BsZoomIn />
+                  </button>
+                </div>
+              )}
               {(localUserId === customerId && currentImage?.userId === customerId) && (
                 <div>
                   <button
@@ -1966,7 +2044,10 @@ const imageChunks = useMemo(() => {
             </div>
 
             <div className="share-btn-container">
-              <button className="share-btn" onClick={handleShareicon}>
+              <button
+                className="share-btn"
+                onClick={() => handleShareicon(mainFolderId)}
+              >
                 <span>
                   <Image src={share} alt="share" height={15} width={16} />
                 </span>
@@ -2064,7 +2145,7 @@ const imageChunks = useMemo(() => {
         >
           <button
             className="share-capsule-btn2"
-            onClick={handleShareicon}
+            onClick={() => handleShareicon(mainFolderId)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -2082,8 +2163,14 @@ const imageChunks = useMemo(() => {
         onClose={() => setIsLoginOpen(false)}
         fromCapsule={true}
       />
-
-
+      {snackbar.show && (
+        <div className="custom-snackbar">
+          <span>
+            <IoIosCloudDone color="green" size={30} />
+          </span>
+          {snackbar.message}
+        </div>
+      )}
     </div>
   );
 };
