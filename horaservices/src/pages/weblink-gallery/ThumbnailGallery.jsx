@@ -57,6 +57,7 @@ import MyPhotos2 from "../../assets/MyPhotos2.svg";
 import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
+import PaginationUI from "./PaginationUi";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -76,11 +77,6 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
-  console.log(
-    "%c [ allThumbnails ]-59",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    allThumbnails,
-  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -148,6 +144,40 @@ const ThumbnailGallery = ({
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
+  const [totalPages, setTotalPages] = useState(10);
+  const [isIOSMobile, setIsIOSMobile] = useState(false);
+
+
+  // iOS Mobile Detection
+  useEffect(() => {
+    const detectIOSMobile = () => {
+      if (typeof navigator !== 'undefined') {
+        // Basic check for iPhone, iPad, iPod.
+        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
+        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
+        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
+        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      }
+      return false;
+    };
+    setIsIOSMobile(detectIOSMobile());
+  }, []);
+
+  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
+  const getItemsPerPage = useCallback(() => {
+    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
+    // For iOS mobile, a smaller number might be better, e.g. 12-15.
+    // For other devices (where pagination is hidden), this number doesn't directly limit display
+    // but affects the `totalPages` calculation if we were to show it.
+    // Let's adjust: more items for wider screens if pagination *were* shown.
+    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
+    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
+    if (isIOSMobile) {
+      return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
+    }
+    return window.innerWidth >= 768 ? 36 : 24; // Fallback for general calculation (though UI is hidden)
+
+  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
 
   const getInitial = (guest) => {
     const name = guest.name || guest.firstName || guest.phone || "";
@@ -313,6 +343,13 @@ const ThumbnailGallery = ({
       }
     };
 
+  useEffect(() => {
+    const pushTrap = () => {
+      if (!window.history.state?.exitTrap) {
+        window.history.pushState({ exitTrap: true }, "", window.location.href);
+      }
+    };
+
     pushTrap();
 
     const handlePopState = () => {
@@ -408,21 +445,19 @@ const ThumbnailGallery = ({
       }
     }
     if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
-      const normalizedKeys = matchedKeys.map(normalize);
-
-      return allThumbnails.filter((img) => {
-        if (img.type !== "image") return false;
-
-        return normalizedKeys.includes(normalize(img.thumbnailKey));
-      });
+      return matchedKeys.map((url) => ({
+        type: "image",
+        thumbnailImageUrl: url,
+        originalUrl: url,
+      }));
     }
 
-    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
-      return allThumbnails.filter((img) =>
-        matchedKeys.includes(img.thumbnailKey),
-      );
+    // 2. Agar editing mode chal raha hai
+    if (!isActualMyPhotos && isEditing) {
+      return allThumbnails;
     }
 
+    // 3. Agar normal folder view hai
     if (isMyPhotosTabActive && myPhotosFolder) {
       return allThumbnails.filter((img) =>
         img.folderIds?.includes(myPhotosFolder._id),
@@ -444,15 +479,14 @@ const ThumbnailGallery = ({
       return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
     }
 
+    // Default fallback
     return allThumbnails;
   }, [
     allThumbnails,
     matchedKeys,
-    activeTab,
     isMyPhotosTabActive,
     isSearchActive,
     myPhotosFolder,
-    activeSubFolderId,
     isEditing,
     isActualMyPhotos,
     privateLocker,
@@ -479,18 +513,38 @@ const ThumbnailGallery = ({
   );
 
   useEffect(() => {
-    if (activeSubFolderId) {
-      const ids = allThumbnails.map((img) => img._id);
-      setSelectedImages(ids);
-      setInitialSubfolderImages(ids);
+    if (!activeSubFolderId || !isEditing) {
+      setSelectedImages([]);
+      setInitialSubfolderImages([]);
+      return;
     }
-  }, [allThumbnails, activeSubFolderId]);
+
+    const imagesAlreadyInFolder = allThumbnails
+      .filter((img) => img.folderIds?.includes(activeSubFolderId))
+      .map((img) => img._id);
+
+    setSelectedImages(imagesAlreadyInFolder);
+    setInitialSubfolderImages(imagesAlreadyInFolder);
+
+  }, [activeSubFolderId, isEditing]);
 
   useEffect(() => {
     setPage(1);
     setAllThumbnails([]);
     setHasMore(true);
+    setIsFetchingMore(false);
+    setImagesReady(false);
   }, [folderName, customerId, activeSubFolderId]);
+
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setImagesReady(false);
+  }, [activeSubFolderId, isEditing]);
+
+
 
   useEffect(() => {
     const fetchThumbnails = async () => {
@@ -505,24 +559,25 @@ const ThumbnailGallery = ({
         const data = await getImagesbyFolderName({
           folderName,
           customerId,
-          subFolderId: activeSubFolderId,
+          subFolderId: isEditing ? null : activeSubFolderId,
           page,
           pageSize,
         });
 
-        // setSubFolders(data?.folders[0]?.subFolders || []);
-        // setMainFolderId(data?.folders[0]?._id || null)
-        // setViewedBy(data?.folders[0]?.viewedBy || []);
-        // setGuestData(data?.folders[0]?.guestDetails || []);
+        setTotalPages(data?.pagination?.totalItems)
 
         const fetchedThumbnails = data.thumbnails || [];
 
-        await preloadImages(fetchedThumbnails);
+        preloadImages(fetchedThumbnails);
 
         setAllThumbnails((prev) => {
-          const existingIds = new Set(prev.map((item) => item._id));
+          if (isIOSMobile) {
+            return fetchedThumbnails;
+          }
+
+          const existingIds = new Set(prev.map(item => item._id));
           const newItems = fetchedThumbnails.filter(
-            (item) => !existingIds.has(item._id),
+            item => !existingIds.has(item._id)
           );
           return [...prev, ...newItems];
         });
@@ -531,6 +586,7 @@ const ThumbnailGallery = ({
         if (fetchedThumbnails.length < pageSize) {
           setHasMore(false);
         }
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -540,26 +596,82 @@ const ThumbnailGallery = ({
     };
 
     fetchThumbnails();
-  }, [folderName, customerId, page, activeSubFolderId]);
+  }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
 
   useEffect(() => {
-    if (!observerRef.current) return;
-
+    const currentObserver = observerRef.current;
+    if (!currentObserver) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        const first = entries[0];
 
-        if (first.isIntersecting && hasMore && !loading && !isFetchingMore) {
+        const first = entries[0];
+        if (
+          !isIOSMobile &&
+          first.isIntersecting &&
+          hasMore &&
+          !loading &&
+          !isFetchingMore
+        ) {
           setIsFetchingMore(true);
           setPage((prev) => prev + 1);
         }
       },
       {
-        rootMargin: "1200px",
-      },
+        rootMargin: "400px",
+      }
     );
 
-    observer.observe(observerRef.current);
+    observer.observe(currentObserver);
+    return () => {
+      if (currentObserver) {
+        observer.unobserve(currentObserver);
+      }
+      observer.disconnect();
+    };
+  }, [
+    hasMore,
+    loading,
+    isFetchingMore,
+    activeSubFolderId,
+    visibleThumbnails.length,
+  ]);
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setImagesReady(false);
+  }, [activeSubFolderId, isEditing]);
+
+  useEffect(() => {
+    const currentObserver = observerRef.current;
+    if (!currentObserver) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+
+        if (
+          first.isIntersecting &&
+          hasMore &&
+          !loading &&
+          !isFetchingMore
+        ) {
+          setIsFetchingMore(true);
+          setPage((prev) => prev + 1);
+        }
+      },
+      { rootMargin: "400px" }
+    );
+
+    observer.observe(currentObserver);
+
+    return () => {
+      if (currentObserver) {
+        observer.unobserve(currentObserver);
+      }
+      observer.disconnect();
+    };
+  }, [hasMore, loading, isFetchingMore]);
 
     return () => observer.disconnect();
   }, [hasMore, loading, isFetchingMore]);
@@ -615,10 +727,13 @@ const ThumbnailGallery = ({
       {
         root: null,
         threshold: 0.1,
-      },
+      }
     );
 
     observer.observe(buttonsRef.current);
+
+    return () => observer.disconnect();
+  }, [loading]);
 
     return () => observer.disconnect();
   }, [loading]);
@@ -651,7 +766,6 @@ const ThumbnailGallery = ({
 
           sessionStorage.setItem(sessionKey, "true");
 
-          console.log("Click tracked and session flag set!");
         } catch (err) {
           console.log(
             "Tracking failed. Session flag not set, will retry on refresh.",
@@ -699,16 +813,16 @@ const ThumbnailGallery = ({
   }, []);
 
   const handleSearchResults = (matches) => {
-    console.log(
-      "%c [ matches ]-402",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      matches,
-    );
+
     if (!Array.isArray(matches)) return;
-    const keys = matches.map((m) => m?.file);
-    setMatchedKeys(keys);
+
+    const urls = matches
+      .map((m) => m?.file?.thumbnailImageUrl || m?.file?.originalUrl)
+      .filter(Boolean);
+
+    setMatchedKeys(urls);
     setIsSearching(true);
-    setMyPhotoSearchResults(keys);
+    setMyPhotoSearchResults(urls);
   };
 
   const hasChanges = useMemo(() => {
@@ -999,7 +1113,10 @@ const ThumbnailGallery = ({
       return new Promise((resolve) => {
         const image = new window.Image();
 
-        image.src = img.thumbnailImageUrl || img.originalUrl || "";
+        image.src =
+          img.thumbnailImageUrl ||
+          img.originalUrl ||
+          "";
 
         image.onload = resolve;
         image.onerror = resolve;
@@ -1009,6 +1126,22 @@ const ThumbnailGallery = ({
     await Promise.all(promises);
   };
 
+const remainingImages = useMemo(() => {
+  return visibleThumbnails.slice(18);
+}, [visibleThumbnails]);
+
+const imageChunks = useMemo(() => {
+  const first18 = visibleThumbnails.slice(0, 18);
+
+  const chunks = [];
+
+  for (let i = 0; i < first18.length; i += 6) {
+    chunks.push(first18.slice(i, i + 6));
+  }
+
+  return chunks;
+}, [visibleThumbnails]);
+
   if (error) {
     return (
       <div className="thumbnail-gallery-status text-red-500" role="alert">
@@ -1016,13 +1149,6 @@ const ThumbnailGallery = ({
       </div>
     );
   }
-  // if (allThumbnails.length === 0 && !loading) {
-  //   return (
-  //     <div className="thumbnail-gallery-status">
-  //       No photos found in this gallery.
-  //     </div>
-  //   );
-  // }
   if (!authChecked) {
     return null;
   }
@@ -1039,38 +1165,6 @@ const ThumbnailGallery = ({
       setActiveTab(id ?? "all");
     }
 
-    //     try {
-    //       setLoading(true);
-
-    //       const data = await getImagesbyFolderName({
-    //         folderName,
-    //         customerId,
-    //         subFolderId: id,
-    //       });
-
-    //       const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
-    //         ...thumb,
-    //         stableKey:
-    //           thumb._id ||
-    //           thumb.originalKey ||
-    //           `thumb-${index}-${Date.now()}`,
-    //       }));
-
-    //       setAllThumbnails(prev => {
-    //   const existingIds = new Set(prev.map(item => item._id));
-
-    //   const newItems = fetchedThumbnails.filter(
-    //     item => !existingIds.has(item._id)
-    //   );
-
-    //   return [...prev, ...newItems];
-    // });
-    //     } catch (err) {
-    //       console.error(err);
-    //     } finally {
-    //       setLoading(false);
-    //       setIsFetchingMore(false);
-    //     }
   };
 
   const handleLikeToggle = async (imageId) => {
@@ -1148,20 +1242,8 @@ const ThumbnailGallery = ({
     }
   };
 
-  const first18Images = visibleThumbnails.slice(0, 18);
-  const remainingImages = visibleThumbnails.slice(18);
 
-  const chunkArray = (array, size) => {
-    const chunks = [];
 
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size));
-    }
-
-    return chunks;
-  };
-
-  const imageChunks = chunkArray(first18Images, 6);
 
   const handleCreateFolderBannerClick = () => {
     setShowCreateFolderPopup(true);
@@ -1321,17 +1403,12 @@ const ThumbnailGallery = ({
 
   return (
     <div className="thumbnail-gallery">
+
       <div className="">
         {headerLoading ? (
           <HeaderCardsFlashLoader />
         ) : (
           <>
-            {console.log("LOADING STATE:", loading)}
-            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-            {console.log(
-              "VISIBLE THUMBNAILS LENGTH:",
-              visibleThumbnails?.length,
-            )}
             <div>
               <Image
                 src={capsuleTopBanner}
@@ -1417,12 +1494,6 @@ const ThumbnailGallery = ({
                 </div>
               )}
             </div>
-            {console.log(
-              "------------------------------------BUTTON DEBUG → loading:",
-              loading,
-              "activeTab:",
-              activeTab,
-            )}
             {imagesReady && activeTab === "all" && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
@@ -1442,16 +1513,11 @@ const ThumbnailGallery = ({
                 </button>
                 <button
                   onClick={() => setShowGuestModal(true)}
-                  className="guest-btn"
-                >
+                  className="guest-btn">
                   <span className="">
                     <Image src={guest} alt="guest" height={13} width={17} />
                   </span>
-                  <span className="guest-text">
-                    {" "}
-                    <span className="guest-count">{viewedBy.length}</span>{" "}
-                    <span>Guests Joined</span>
-                  </span>
+                  <span className="guest-text"> <span className="guest-count">{viewedBy.length}</span> <span>Guests Joined</span></span>
                 </button>
               </div>
             )}
@@ -1566,9 +1632,9 @@ const ThumbnailGallery = ({
 
           <div>
             {/* ================= LOADING SKELETON ================= */}
-            {loading && page === 1 && (
+            {loading && (isIOSMobile || page === 1) && (
               <div className="gallery-image-grid">
-                {[...Array(6)].map((_, index) => {
+                {[...Array(24)].map((_, index) => {
                   const type = getBlockType(index);
                   return (
                     <div key={index} className={`grid-item ${type}`}>
@@ -1611,23 +1677,17 @@ const ThumbnailGallery = ({
               )}
 
             {/* ================= NO SEARCH RESULT ================= */}
-            {visibleThumbnails.length === 0 &&
-              activeSubFolderId &&
-              !isStreamSearching &&
-              !isSearching && (
-                <div className="weblink-emptyFolder-container">
-                  <Image src={emptyFolder} alt="no images select" />
-                  <p className="label">No Photos Yet!</p>
-                  <p className="sub-label" style={{ color: "#8F939C" }}>
-                    Start adding photos to build your album
-                  </p>
-                </div>
-              )}
-
-            {console.log(
-              "visibleThumbnails inside returned code",
-              visibleThumbnails,
+            {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
+              <div className="weblink-emptyFolder-container">
+                <Image
+                  src={emptyFolder}
+                  alt="no images select"
+                />
+                <p className="label">No Photos Yet!</p>
+                <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
+              </div>
             )}
+
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <>
@@ -1672,16 +1732,13 @@ const ThumbnailGallery = ({
               )}
 
               {/* ================= PAGINATION DUMMY GRID ================= */}
-              {hasMore && page > 1 && (
+              {!isIOSMobile && hasMore && page > 1 && (
                 <div className="gallery-image-grid">
-                  {[...Array(20)].map((_, index) => {
+                  {[...Array(24)].map((_, index) => {
                     const type = getBlockType(index);
 
                     return (
-                      <div
-                        key={`dummy-${index}`}
-                        className={`grid-item ${type}`}
-                      >
+                      <div key={`dummy-${index}`} className={`grid-item ${type}`}>
                         <div className="event-masonry-item">
                           <div className="event-lazy-image-spinner-container placeholder-glow">
                             <div className="placeholder w-100 h-100"></div>
@@ -1692,7 +1749,19 @@ const ThumbnailGallery = ({
                   })}
                 </div>
               )}
-              <div ref={observerRef} style={{ height: "20px" }} />
+              <div ref={observerRef} style={{ height: "10px" }} />
+              {isIOSMobile && totalPages > 0 && (
+                <div className="gallery-pagination-container">
+                  <PaginationUI
+                    currentPage={page}
+                    setCurrentPage={(newPage) => {
+                      setLoading(true);
+                      setPage(newPage);
+                    }}
+                    totalPages={Math.ceil(totalPages / pageSize)}
+                  />
+                </div>
+              )} 
             </>
           </div>
         </div>
@@ -1711,6 +1780,7 @@ const ThumbnailGallery = ({
       />
 
       <CommonImagePopup
+        total={totalPages}
         images={popupImages}
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
@@ -1931,8 +2001,7 @@ const ThumbnailGallery = ({
                 <div>
                   <button
                     onClick={() => setShowGuestModal(false)}
-                    className="back-button"
-                  >
+                    className="back-button">
                     <Image
                       src={ArrowImg}
                       alt="Back"
@@ -1949,11 +2018,11 @@ const ThumbnailGallery = ({
               <div className="list-container">
                 <div className="list-content">
                   {guestData.map((guest) => {
-                    const hasAvatar =
-                      guest.avatar && guest.avatar.trim() !== "";
+                    const hasAvatar = guest.avatar && guest.avatar.trim() !== "";
 
                     return (
                       <div key={guest._id} className="guest-row">
+
                         {/* Avatar Section */}
                         {hasAvatar ? (
                           <img
@@ -1984,7 +2053,6 @@ const ThumbnailGallery = ({
                   })}
                 </div>
               </div>
-            </div>
 
             {/* Footer Section */}
             <div className="footer-container">
@@ -2028,6 +2096,8 @@ const ThumbnailGallery = ({
         onClose={() => setIsLoginOpen(false)}
         fromCapsule={true}
       />
+
+
     </div>
   );
 };
