@@ -30,9 +30,17 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, getSubFolders } from "@/services/weblinkServices";
+import {
+  assignToSubfolder,
+  createSubfolder,
+  getImagesbyFolderName,
+  trackActivity,
+  trackGalleryView,
+  trackFolderClick,
+  getSubFolders,
+} from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
-import emptyFolder from '../../assets/emptyFolder.svg';
+import emptyFolder from "../../assets/emptyFolder.svg";
 import { filterThumbnails } from "@/utils/filterThumbnails";
 import {
   deleteFromOPFS,
@@ -45,7 +53,7 @@ import guest from "../../assets/guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
 import FaceRecognitionBanner from "../../assets/FaceRecognitionBanner.svg";
-import MyPhotos2 from '../../assets/MyPhotos2.svg';
+import MyPhotos2 from "../../assets/MyPhotos2.svg";
 import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
@@ -100,6 +108,16 @@ const ThumbnailGallery = ({
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const privateLocker = useMemo(
+    () =>
+      subFolders.find(
+        (sf) =>
+          sf.type === "others" &&
+          // sf.userId === localUserId &&
+          sf.isLocker === true,
+      ),
+    [subFolders, localUserId],
+  );
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
@@ -120,11 +138,12 @@ const ThumbnailGallery = ({
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
   const observerRef = useRef(null);
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
   const [headerLoading, setHeaderLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [totalPages, setTotalPages] = useState(10);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
 
@@ -161,11 +180,7 @@ const ThumbnailGallery = ({
   }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
 
   const getInitial = (guest) => {
-    const name =
-      guest.name ||
-      guest.firstName ||
-      guest.phone ||
-      "";
+    const name = guest.name || guest.firstName || guest.phone || "";
 
     return name.trim().charAt(0).toUpperCase();
   };
@@ -211,7 +226,6 @@ const ThumbnailGallery = ({
       setIsEditing(false);
     }
   }, [matchedKeys, myPhotosFolder]);
-
 
   const handleImageShare = async (imageUrl, id) => {
     if (!imageUrl) return;
@@ -264,22 +278,22 @@ const ThumbnailGallery = ({
         addImageIds: toAdd.length ? [currentImage._id] : [],
         removeImageIds: toRemove.length ? [currentImage._id] : [],
       }),
-    }).then(() => {
-      setAllThumbnails((prev) =>
-        prev.map((img) =>
-          img._id === currentImage._id
-            ? { ...img, folderIds: folderSelection }
-            : img,
-        ),
-      );
+    })
+      .then(() => {
+        setAllThumbnails((prev) =>
+          prev.map((img) =>
+            img._id === currentImage._id
+              ? { ...img, folderIds: folderSelection }
+              : img,
+          ),
+        );
 
-      setShowAddToFolderPopup(false);
-      setIsEditing(false);
-
-    }).catch((error) => {
-      console.error(error);
-    });
-
+        setShowAddToFolderPopup(false);
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   useEffect(() => {
@@ -322,6 +336,12 @@ const ThumbnailGallery = ({
     };
   }, [selectedIndex]);
 
+  useEffect(() => {
+    const pushTrap = () => {
+      if (!window.history.state?.exitTrap) {
+        window.history.pushState({ exitTrap: true }, "", window.location.href);
+      }
+    };
 
   useEffect(() => {
     const pushTrap = () => {
@@ -391,12 +411,11 @@ const ThumbnailGallery = ({
     sessionStorage.setItem("exitPopupShown", "true");
   };
 
-
   useEffect(() => {
     if (!localUserId) return;
 
     const alreadyExists = guestData.some(
-      (guest) => String(guest._id) === String(localUserId)
+      (guest) => String(guest._id) === String(localUserId),
     );
 
     if (alreadyExists) return;
@@ -416,12 +435,15 @@ const ThumbnailGallery = ({
     });
   }, [localUserId, localPhoneNumber]);
 
-  const popupImages = allThumbnails;
-
-  const currentImage =
-    selectedIndex !== null ? popupImages[selectedIndex] : null;
   const visibleThumbnails = useMemo(() => {
-    // 1. Agar search active hai aur hamare paas matched URLs hain
+    const normalize = (val) => (val || "").trim().toLowerCase();
+    const lockerId = privateLocker?._id;
+
+    if (!isActualMyPhotos) {
+      if (isEditing) {
+        return allThumbnails;
+      }
+    }
     if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
       return matchedKeys.map((url) => ({
         type: "image",
@@ -442,6 +464,20 @@ const ThumbnailGallery = ({
       );
     }
 
+    if (lockerId && activeTab === lockerId) {
+      return allThumbnails.filter((img) => img.folderIds?.includes(lockerId));
+    }
+
+    if (activeSubFolderId && activeSubFolderId !== lockerId) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(activeSubFolderId),
+      );
+    }
+
+    if (activeTab === "all" && lockerId) {
+      return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
+    }
+
     // Default fallback
     return allThumbnails;
   }, [
@@ -451,10 +487,18 @@ const ThumbnailGallery = ({
     isSearchActive,
     myPhotosFolder,
     isEditing,
-    isActualMyPhotos
+    isActualMyPhotos,
+    privateLocker,
   ]);
 
-  const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
+  const popupImages = visibleThumbnails;
+
+  const currentImage =
+    selectedIndex !== null ? popupImages[selectedIndex] : null;
+
+  const usableFolders = subFolders.filter(
+    (sf) => sf.type !== "my_photos" && !sf.isLocker,
+  );
 
   useEffect(() => {
     if (!activeSubFolderId || !isEditing) {
@@ -617,6 +661,8 @@ const ThumbnailGallery = ({
     };
   }, [hasMore, loading, isFetchingMore]);
 
+    return () => observer.disconnect();
+  }, [hasMore, loading, isFetchingMore]);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -627,16 +673,13 @@ const ThumbnailGallery = ({
       try {
         const data = await getSubFolders({ folderName });
 
-
         setSubFolders(data?.folder?.subFolders || []);
         setMainFolderId(data.folder?._id || null);
         setViewedBy(data?.folder?.viewedBy || []);
         setGuestData(data?.guestDetails || []);
-
       } catch (err) {
         console.error("Folder fetch error:", err);
-      }
-      finally {
+      } finally {
         setHeaderLoading(false);
       }
     };
@@ -680,7 +723,6 @@ const ThumbnailGallery = ({
     return () => observer.disconnect();
   }, [loading]);
 
-
   useEffect(() => {
     if (!mainFolderId || !localUserId) return;
     const params = new URLSearchParams(window.location.search);
@@ -690,9 +732,8 @@ const ThumbnailGallery = ({
     if (fromPanel === "true") return;
 
     const isAlreadyViewed = viewedBy?.some(
-      (id) => String(id) === String(localUserId)
+      (id) => String(id) === String(localUserId),
     );
-
 
     if (!isAlreadyViewed) {
       trackGalleryView(localUserId, mainFolderId);
@@ -711,14 +752,16 @@ const ThumbnailGallery = ({
           sessionStorage.setItem(sessionKey, "true");
 
         } catch (err) {
-          console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
+          console.log(
+            "Tracking failed. Session flag not set, will retry on refresh.",
+            err,
+          );
         }
       }
     };
 
     logClick();
   }, [mainFolderId]);
-
 
   useEffect(() => {
     if (!localUserId || allThumbnails.length === 0) return;
@@ -822,7 +865,6 @@ const ThumbnailGallery = ({
 
       setInitialSubfolderImages(selectedImages);
       setIsEditing(false);
-
     } catch (error) {
       console.error(error);
     }
@@ -1051,7 +1093,6 @@ const ThumbnailGallery = ({
     upsertPendingUploadsIntoUI,
     processWeblinkUploadQueue,
   ]);
-
   const preloadImages = async (images) => {
     const promises = images.map((img) => {
       return new Promise((resolve) => {
@@ -1195,6 +1236,87 @@ const imageChunks = useMemo(() => {
     setIsRefreshShow(false);
   };
 
+  const assignImageToLockerExclusive = async (
+    imageId,
+    lockerId,
+    previousFolderIds = [],
+  ) => {
+    const newFolderIds = [lockerId];
+    const toAdd = newFolderIds.filter((id) => !previousFolderIds.includes(id));
+    const toRemove = previousFolderIds.filter(
+      (id) => !newFolderIds.includes(id),
+    );
+
+    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subFolderId: newFolderIds,
+        addImageIds: toAdd.length ? [imageId] : [],
+        removeImageIds: toRemove.length ? [imageId] : [],
+      }),
+    });
+
+    setAllThumbnails((prev) =>
+      prev.map((img) =>
+        img._id === imageId ? { ...img, folderIds: newFolderIds } : img,
+      ),
+    );
+  };
+
+  const ensurePrivateLocker = async () => {
+    if (privateLocker) return privateLocker;
+
+    const fd = new FormData();
+    fd.append("folderName", folderName);
+    fd.append("subFolderName", "My Locker");
+    fd.append("type", "others");
+    fd.append("userId", localUserId);
+    fd.append("customerId", customerId);
+    fd.append("phoneNo", localPhoneNumber);
+    fd.append("isLocker", "true");
+
+    const data = await createSubfolder(fd);
+    const created = data.subFolder;
+    handleSubFolderCreated(created);
+    return created;
+  };
+
+  const handleAddToLocker = async (imgData) => {
+    if (!imgData?._id || !localUserId || isAddingToLocker) return;
+
+    const previousFolderIds = imgData.folderIds || [];
+    const existingLockerId = privateLocker?._id;
+
+    if (
+      existingLockerId &&
+      previousFolderIds.length === 1 &&
+      previousFolderIds[0] === existingLockerId
+    ) {
+      return;
+    }
+
+    setIsAddingToLocker(true);
+    try {
+      const locker = await ensurePrivateLocker();
+      await assignImageToLockerExclusive(
+        imgData._id,
+        locker._id,
+        previousFolderIds,
+      );
+
+      if (activeTab !== locker._id) {
+        setSelectedIndex(null);
+        setShowActionMenu(false);
+      }
+    } catch (err) {
+      console.error("Add to locker failed:", err);
+      alert("Failed to add image to locker");
+    } finally {
+      setIsAddingToLocker(false);
+    }
+  };
+
   const banners = [
     <div className="custom-banner" key="banner-2">
       <div className="banner-left">
@@ -1208,10 +1330,10 @@ const imageChunks = useMemo(() => {
       </div>
 
       <div className="banner-right">
-        <button
-          onClick={handleShareicon}
-          className="banner-btn">
-          <span><Image src={share} alt="share" height={10} width={11} /></span>
+        <button onClick={handleShareicon} className="banner-btn">
+          <span>
+            <Image src={share} alt="share" height={10} width={11} />
+          </span>
           <span>Share Event</span>
         </button>
       </div>
@@ -1231,12 +1353,15 @@ const imageChunks = useMemo(() => {
       <div className="banner-right">
         <button
           onClick={() => {
-            setIsActualMyPhotos(true)
-            setShowCameraPopup(true)
-            setIsRefreshShow(false)
+            setIsActualMyPhotos(true);
+            setShowCameraPopup(true);
+            setIsRefreshShow(false);
           }}
-          className="banner-btn">
-          <span><Image src={MyPhotos2} alt="share" height={13} width={13} /></span>
+          className="banner-btn"
+        >
+          <span>
+            <Image src={MyPhotos2} alt="share" height={13} width={13} />
+          </span>
           <span>My Photos</span>
         </button>
       </div>
@@ -1254,9 +1379,7 @@ const imageChunks = useMemo(() => {
       </div>
 
       <div className="banner-right">
-        <button
-          onClick={handleCreateFolderBannerClick}
-          className="banner-btn">
+        <button onClick={handleCreateFolderBannerClick} className="banner-btn">
           Create Folder
         </button>
       </div>
@@ -1313,10 +1436,9 @@ const imageChunks = useMemo(() => {
           </>
         )}
         <div className="thumbnail-gallery-content">
-
           <div>
             <div>
-              {activeTab !== "my-photos" && (
+              {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
                 <div>
                   {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                     <div className="buttons-container">
@@ -1772,6 +1894,21 @@ const imageChunks = useMemo(() => {
 
           return (
             <div className="imagepopup-footer">
+              {(localUserId === customerId && currentImage?.userId === customerId) && (
+                <div>
+                  <button
+                    className="add-photo-btn"
+                    onClick={() => handleAddToLocker(currentImage)}
+                    style={{
+                      color: "#FFFFFF",
+                    backgroundColor: "#97538C",
+                    border: "1px solid #97538C",
+                  }}
+                >
+                  <span className="add-photo-icon">+</span>
+                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                </button>
+              </div>)}
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -1792,7 +1929,10 @@ const imageChunks = useMemo(() => {
                   style={{ filter: "none", cursor: "pointer" }}
                   onClick={() => {
                     if (!currentImage) return;
-                    handleImageShare(currentImage?.originalUrl, currentImage?._id);
+                    handleImageShare(
+                      currentImage?.originalUrl,
+                      currentImage?._id,
+                    );
                   }}
                 />
               </div>
@@ -1801,14 +1941,10 @@ const imageChunks = useMemo(() => {
         }}
       />
 
-
       {showExitPopup && (
         <div className="popup-overlay">
           <div className="popup-card">
-            <span
-              className="close-btn"
-              onClick={closeExitPopup}
-            >
+            <span className="close-btn" onClick={closeExitPopup}>
               &times;
             </span>
 
@@ -1821,22 +1957,19 @@ const imageChunks = useMemo(() => {
             </div>
 
             <div className="content">
-              <h2 className="title">
-                Don't let any guest miss out!
-              </h2>
+              <h2 className="title">Don't let any guest miss out!</h2>
 
               <p className="description">
-                Forget manual sharing! Give every guest instant access
-                to relive all the event's best moments.
+                Forget manual sharing! Give every guest instant access to relive
+                all the event's best moments.
               </p>
             </div>
 
             <div className="share-btn-container">
-              <button
-                className="share-btn"
-                onClick={handleShareicon}
-              >
-                <span><Image src={share} alt="share" height={15} width={16} /></span>
+              <button className="share-btn" onClick={handleShareicon}>
+                <span>
+                  <Image src={share} alt="share" height={15} width={16} />
+                </span>
                 <span> Share Event Capsule</span>
               </button>
             </div>
@@ -1906,25 +2039,25 @@ const imageChunks = useMemo(() => {
                 </div>
               </div>
 
-            </div>
-
             {/* Footer Section */}
             <div className="footer-container">
               <div className="modal-footer">
-                <div className="total-badge">{guestData?.length} Total Joined</div>
+                <div className="total-badge">
+                  {guestData?.length} Total Joined
+                </div>
               </div>
             </div>
           </div>
         </div>
+        </div>
       )}
-
 
       {showFloatingBtn && (
         <div
           style={{
             position: "fixed",
             left: "50%",
-            bottom: "60px",
+            bottom: "45px",
             transform: "translateX(-50%)",
             zIndex: 11111111,
           }}
