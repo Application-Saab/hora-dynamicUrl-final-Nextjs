@@ -49,6 +49,7 @@ import MyPhotos2 from '../../assets/MyPhotos2.svg';
 import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
+import PaginationUI from "./PaginationUi";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -68,7 +69,6 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
-  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -99,7 +99,6 @@ const ThumbnailGallery = ({
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
-  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
@@ -127,6 +126,39 @@ const ThumbnailGallery = ({
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [totalPages, setTotalPages] = useState(10);
+  const [isIOSMobile, setIsIOSMobile] = useState(false);
+
+
+  // iOS Mobile Detection
+  useEffect(() => {
+    const detectIOSMobile = () => {
+      if (typeof navigator !== 'undefined') {
+        // Basic check for iPhone, iPad, iPod.
+        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
+        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
+        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
+        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      }
+      return false;
+    };
+    setIsIOSMobile(detectIOSMobile());
+  }, []);
+
+  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
+  const getItemsPerPage = useCallback(() => {
+    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
+    // For iOS mobile, a smaller number might be better, e.g. 12-15.
+    // For other devices (where pagination is hidden), this number doesn't directly limit display
+    // but affects the `totalPages` calculation if we were to show it.
+    // Let's adjust: more items for wider screens if pagination *were* shown.
+    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
+    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
+    if (isIOSMobile) {
+      return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
+    }
+    return window.innerWidth >= 768 ? 36 : 24; // Fallback for general calculation (though UI is hidden)
+
+  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
 
   const getInitial = (guest) => {
     const name =
@@ -388,75 +420,73 @@ const ThumbnailGallery = ({
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
-const visibleThumbnails = useMemo(() => {
-  // 1. Agar search active hai aur hamare paas matched URLs hain
-if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
-  return matchedKeys.map((url) => ({
-    type: "image",
-    thumbnailImageUrl: url,
-    originalUrl: url,
-  }));
-}
+  const visibleThumbnails = useMemo(() => {
+    // 1. Agar search active hai aur hamare paas matched URLs hain
+    if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
+      return matchedKeys.map((url) => ({
+        type: "image",
+        thumbnailImageUrl: url,
+        originalUrl: url,
+      }));
+    }
 
-  // 2. Agar editing mode chal raha hai
-  if (!isActualMyPhotos && isEditing) {
+    // 2. Agar editing mode chal raha hai
+    if (!isActualMyPhotos && isEditing) {
+      return allThumbnails;
+    }
+
+    // 3. Agar normal folder view hai
+    if (isMyPhotosTabActive && myPhotosFolder) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(myPhotosFolder._id),
+      );
+    }
+
+    // Default fallback
     return allThumbnails;
-  }
-
-  // 3. Agar normal folder view hai
-  if (isMyPhotosTabActive && myPhotosFolder) {
-    return allThumbnails.filter((img) =>
-      img.folderIds?.includes(myPhotosFolder._id),
-    );
-  }
-
-  // Default fallback
-  return allThumbnails;
-}, [
-  allThumbnails,
-  matchedKeys,
-  isMyPhotosTabActive,
-  isSearchActive,
-  myPhotosFolder,
-  isEditing,
-  isActualMyPhotos
-]);
-  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
-  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
+  }, [
+    allThumbnails,
+    matchedKeys,
+    isMyPhotosTabActive,
+    isSearchActive,
+    myPhotosFolder,
+    isEditing,
+    isActualMyPhotos
+  ]);
 
   const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
-useEffect(() => {
-  if (!activeSubFolderId || !isEditing) {
-    setSelectedImages([]);
-    setInitialSubfolderImages([]);
-    return;
-  }
+  useEffect(() => {
+    if (!activeSubFolderId || !isEditing) {
+      setSelectedImages([]);
+      setInitialSubfolderImages([]);
+      return;
+    }
 
-  const imagesAlreadyInFolder = allThumbnails
-    .filter((img) => img.folderIds?.includes(activeSubFolderId))
-    .map((img) => img._id);
+    const imagesAlreadyInFolder = allThumbnails
+      .filter((img) => img.folderIds?.includes(activeSubFolderId))
+      .map((img) => img._id);
 
-  setSelectedImages(imagesAlreadyInFolder);
-  setInitialSubfolderImages(imagesAlreadyInFolder);
+    setSelectedImages(imagesAlreadyInFolder);
+    setInitialSubfolderImages(imagesAlreadyInFolder);
 
-}, [activeSubFolderId, isEditing]);
+  }, [activeSubFolderId, isEditing]);
 
   useEffect(() => {
     setPage(1);
     setAllThumbnails([]);
     setHasMore(true);
-    setIsFetchingMore(false); 
-    setImagesReady(false); 
+    setIsFetchingMore(false);
+    setImagesReady(false);
   }, [folderName, customerId, activeSubFolderId]);
 
 
   useEffect(() => {
     setPage(1);
-    setAllThumbnails([]); 
-    setHasMore(true);    
+    setAllThumbnails([]);
+    setHasMore(true);
     setImagesReady(false);
-  }, [activeSubFolderId, isEditing]); 
+  }, [activeSubFolderId, isEditing]);
 
 
 
@@ -482,9 +512,13 @@ useEffect(() => {
 
         const fetchedThumbnails = data.thumbnails || [];
 
-         preloadImages(fetchedThumbnails);
+        preloadImages(fetchedThumbnails);
 
-        setAllThumbnails(prev => {
+        setAllThumbnails((prev) => {
+          if (isIOSMobile) {
+            return fetchedThumbnails;
+          }
+
           const existingIds = new Set(prev.map(item => item._id));
           const newItems = fetchedThumbnails.filter(
             item => !existingIds.has(item._id)
@@ -509,92 +543,48 @@ useEffect(() => {
   }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
 
   useEffect(() => {
-
     const currentObserver = observerRef.current;
-
-
-
     if (!currentObserver) return;
-
-
-
     const observer = new IntersectionObserver(
-
       (entries) => {
 
         const first = entries[0];
-
-
-
         if (
-
+          !isIOSMobile &&
           first.isIntersecting &&
-
           hasMore &&
-
           !loading &&
-
           !isFetchingMore
-
         ) {
-
           setIsFetchingMore(true);
-
-
-
           setPage((prev) => prev + 1);
-
         }
-
       },
-
       {
-
         rootMargin: "400px",
-
       }
-
     );
 
-
-
     observer.observe(currentObserver);
-
-
-
     return () => {
-
       if (currentObserver) {
-
         observer.unobserve(currentObserver);
-
       }
-
-
-
       observer.disconnect();
-
     };
-
   }, [
-
     hasMore,
-
     loading,
-
     isFetchingMore,
-
     activeSubFolderId,
-
     visibleThumbnails.length,
-
   ]);
   useEffect(() => {
     setPage(1);
-    setAllThumbnails([]); 
-    setHasMore(true);     
+    setAllThumbnails([]);
+    setHasMore(true);
     setImagesReady(false);
-  }, [activeSubFolderId, isEditing]); 
+  }, [activeSubFolderId, isEditing]);
 
   useEffect(() => {
     const currentObserver = observerRef.current;
@@ -720,7 +710,6 @@ useEffect(() => {
 
           sessionStorage.setItem(sessionKey, "true");
 
-          console.log("Click tracked and session flag set!");
         } catch (err) {
           console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
         }
@@ -765,19 +754,18 @@ useEffect(() => {
     setSelectedIndex(null);
   }, []);
 
-const handleSearchResults = (matches) => {
-  console.log("matches:", matches);
+  const handleSearchResults = (matches) => {
 
-  if (!Array.isArray(matches)) return;
+    if (!Array.isArray(matches)) return;
 
-  const urls = matches
-    .map((m) => m?.file?.thumbnailImageUrl || m?.file?.originalUrl)
-    .filter(Boolean);
+    const urls = matches
+      .map((m) => m?.file?.thumbnailImageUrl || m?.file?.originalUrl)
+      .filter(Boolean);
 
-  setMatchedKeys(urls);
-  setIsSearching(true);
-  setMyPhotoSearchResults(urls);
-};
+    setMatchedKeys(urls);
+    setIsSearching(true);
+    setMyPhotoSearchResults(urls);
+  };
 
   const hasChanges = useMemo(() => {
     if (!activeSubFolderId) return false;
@@ -1082,7 +1070,7 @@ const handleSearchResults = (matches) => {
     await Promise.all(promises);
   };
 
-  const remainingImages = useMemo(() => {
+const remainingImages = useMemo(() => {
   return visibleThumbnails.slice(18);
 }, [visibleThumbnails]);
 
@@ -1283,9 +1271,6 @@ const imageChunks = useMemo(() => {
           <HeaderCardsFlashLoader />
         ) : (
           <>
-            {console.log("LOADING STATE:", loading)}
-            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
               <Image
                 src={capsuleTopBanner}
@@ -1372,7 +1357,6 @@ const imageChunks = useMemo(() => {
                 </div>
               )}
             </div>
-            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
             {imagesReady && activeTab === "all" && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
@@ -1511,9 +1495,9 @@ const imageChunks = useMemo(() => {
 
           <div>
             {/* ================= LOADING SKELETON ================= */}
-            {(loading && page === 1) && (
+            {loading && (isIOSMobile || page === 1) && (
               <div className="gallery-image-grid">
-                {[...Array(6)].map((_, index) => {
+                {[...Array(24)].map((_, index) => {
                   const type = getBlockType(index);
                   return (
                     <div key={index} className={`grid-item ${type}`}>
@@ -1567,7 +1551,6 @@ const imageChunks = useMemo(() => {
               </div>
             )}
 
-            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <>
@@ -1612,9 +1595,9 @@ const imageChunks = useMemo(() => {
               )}
 
               {/* ================= PAGINATION DUMMY GRID ================= */}
-              {hasMore && page > 1 && (
+              {!isIOSMobile && hasMore && page > 1 && (
                 <div className="gallery-image-grid">
-                  {[...Array(20)].map((_, index) => {
+                  {[...Array(24)].map((_, index) => {
                     const type = getBlockType(index);
 
                     return (
@@ -1629,7 +1612,19 @@ const imageChunks = useMemo(() => {
                   })}
                 </div>
               )}
-              <div ref={observerRef} style={{ height: "20px" }} />
+              <div ref={observerRef} style={{ height: "10px" }} />
+              {isIOSMobile && totalPages > 0 && (
+                <div className="gallery-pagination-container">
+                  <PaginationUI
+                    currentPage={page}
+                    setCurrentPage={(newPage) => {
+                      setLoading(true);
+                      setPage(newPage);
+                    }}
+                    totalPages={Math.ceil(totalPages / pageSize)}
+                  />
+                </div>
+              )} 
             </>
           </div>
         </div>
@@ -1648,7 +1643,7 @@ const imageChunks = useMemo(() => {
       />
 
       <CommonImagePopup
-      total={totalPages}
+        total={totalPages}
         images={popupImages}
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
