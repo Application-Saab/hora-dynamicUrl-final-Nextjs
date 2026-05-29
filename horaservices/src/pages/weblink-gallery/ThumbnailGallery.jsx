@@ -34,6 +34,7 @@ import { IoIosCloudDone } from "react-icons/io";
 import { BsZoomIn, BsZoomOut  } from "react-icons/bs";
 import {
   assignToSubfolder,
+  createSubfolder,
   getImagesbyFolderName,
   trackActivity,
   trackGalleryView,
@@ -109,6 +110,16 @@ const ThumbnailGallery = ({
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const privateLocker = useMemo(
+    () =>
+      subFolders.find(
+        (sf) =>
+          sf.type === "others" &&
+          // sf.userId === localUserId &&
+          sf.isLocker === true,
+      ),
+    [subFolders, localUserId],
+  );
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
@@ -136,11 +147,12 @@ const ThumbnailGallery = ({
 
   const buttonsRef = useRef(null);
   const observerRef = useRef(null);
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
   const [headerLoading, setHeaderLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [totalPages, setTotalPages] = useState(10);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
 
@@ -422,12 +434,11 @@ const ThumbnailGallery = ({
     sessionStorage.setItem("exitPopupShown", "true");
   };
 
-
   useEffect(() => {
     if (!localUserId) return;
 
     const alreadyExists = guestData.some(
-      (guest) => String(guest._id) === String(localUserId)
+      (guest) => String(guest._id) === String(localUserId),
     );
 
     if (alreadyExists) return;
@@ -447,12 +458,15 @@ const ThumbnailGallery = ({
     });
   }, [localUserId, localPhoneNumber]);
 
-  const popupImages = allThumbnails;
-
-  const currentImage =
-    selectedIndex !== null ? popupImages[selectedIndex] : null;
   const visibleThumbnails = useMemo(() => {
-    // 1. Agar search active hai aur hamare paas matched URLs hain
+    const normalize = (val) => (val || "").trim().toLowerCase();
+    const lockerId = privateLocker?._id;
+
+    if (!isActualMyPhotos) {
+      if (isEditing) {
+        return allThumbnails;
+      }
+    }
     if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {
       return matchedKeys.map((url) => ({
         type: "image",
@@ -473,6 +487,20 @@ const ThumbnailGallery = ({
       );
     }
 
+    if (lockerId && activeTab === lockerId) {
+      return allThumbnails.filter((img) => img.folderIds?.includes(lockerId));
+    }
+
+    if (activeSubFolderId && activeSubFolderId !== lockerId) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(activeSubFolderId),
+      );
+    }
+
+    if (activeTab === "all" && lockerId) {
+      return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
+    }
+
     // Default fallback
     return allThumbnails;
   }, [
@@ -482,10 +510,18 @@ const ThumbnailGallery = ({
     isSearchActive,
     myPhotosFolder,
     isEditing,
-    isActualMyPhotos
+    isActualMyPhotos,
+    privateLocker,
   ]);
 
-  const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
+  const popupImages = visibleThumbnails;
+
+  const currentImage =
+    selectedIndex !== null ? popupImages[selectedIndex] : null;
+
+  const usableFolders = subFolders.filter(
+    (sf) => sf.type !== "my_photos" && !sf.isLocker,
+  );
 
   useEffect(() => {
     if (!activeSubFolderId || !isEditing) {
@@ -648,6 +684,8 @@ const ThumbnailGallery = ({
     };
   }, [hasMore, loading, isFetchingMore]);
 
+    return () => observer.disconnect();
+  }, [hasMore, loading, isFetchingMore]);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -658,16 +696,13 @@ const ThumbnailGallery = ({
       try {
         const data = await getSubFolders({ folderName });
 
-
         setSubFolders(data?.folder?.subFolders || []);
         setMainFolderId(data.folder?._id || null);
         setViewedBy(data?.folder?.viewedBy || []);
         setGuestData(data?.guestDetails || []);
-
       } catch (err) {
         console.error("Folder fetch error:", err);
-      }
-      finally {
+      } finally {
         setHeaderLoading(false);
       }
     };
@@ -707,9 +742,6 @@ const ThumbnailGallery = ({
     );
 
     observer.observe(buttonsRef.current);
-
-    return () => observer.disconnect();
-  }, [loading]);
 
     return () => observer.disconnect();
   }, [loading]);
@@ -1267,6 +1299,87 @@ const imageChunks = useMemo(() => {
     }
   };
 
+  const assignImageToLockerExclusive = async (
+    imageId,
+    lockerId,
+    previousFolderIds = [],
+  ) => {
+    const newFolderIds = [lockerId];
+    const toAdd = newFolderIds.filter((id) => !previousFolderIds.includes(id));
+    const toRemove = previousFolderIds.filter(
+      (id) => !newFolderIds.includes(id),
+    );
+
+    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subFolderId: newFolderIds,
+        addImageIds: toAdd.length ? [imageId] : [],
+        removeImageIds: toRemove.length ? [imageId] : [],
+      }),
+    });
+
+    setAllThumbnails((prev) =>
+      prev.map((img) =>
+        img._id === imageId ? { ...img, folderIds: newFolderIds } : img,
+      ),
+    );
+  };
+
+  const ensurePrivateLocker = async () => {
+    if (privateLocker) return privateLocker;
+
+    const fd = new FormData();
+    fd.append("folderName", folderName);
+    fd.append("subFolderName", "My Locker");
+    fd.append("type", "others");
+    fd.append("userId", localUserId);
+    fd.append("customerId", customerId);
+    fd.append("phoneNo", localPhoneNumber);
+    fd.append("isLocker", "true");
+
+    const data = await createSubfolder(fd);
+    const created = data.subFolder;
+    handleSubFolderCreated(created);
+    return created;
+  };
+
+  const handleAddToLocker = async (imgData) => {
+    if (!imgData?._id || !localUserId || isAddingToLocker) return;
+
+    const previousFolderIds = imgData.folderIds || [];
+    const existingLockerId = privateLocker?._id;
+
+    if (
+      existingLockerId &&
+      previousFolderIds.length === 1 &&
+      previousFolderIds[0] === existingLockerId
+    ) {
+      return;
+    }
+
+    setIsAddingToLocker(true);
+    try {
+      const locker = await ensurePrivateLocker();
+      await assignImageToLockerExclusive(
+        imgData._id,
+        locker._id,
+        previousFolderIds,
+      );
+
+      if (activeTab !== locker._id) {
+        setSelectedIndex(null);
+        setShowActionMenu(false);
+      }
+    } catch (err) {
+      console.error("Add to locker failed:", err);
+      alert("Failed to add image to locker");
+    } finally {
+      setIsAddingToLocker(false);
+    }
+  };
+
   const banners = [
     <div className="custom-banner" key="banner-2">
       <div className="banner-left">
@@ -1389,10 +1502,9 @@ const imageChunks = useMemo(() => {
           </>
         )}
         <div className="thumbnail-gallery-content">
-
           <div>
             <div>
-              {activeTab !== "my-photos" && (
+              {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
                 <div>
                   {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                     <div className="buttons-container">
@@ -1870,6 +1982,21 @@ const imageChunks = useMemo(() => {
                   </button>
                 </div>
               )}
+              {(localUserId === customerId && currentImage?.userId === customerId) && (
+                <div>
+                  <button
+                    className="add-photo-btn"
+                    onClick={() => handleAddToLocker(currentImage)}
+                    style={{
+                      color: "#FFFFFF",
+                    backgroundColor: "#97538C",
+                    border: "1px solid #97538C",
+                  }}
+                >
+                  <span className="add-photo-icon">+</span>
+                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                </button>
+              </div>)}
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -2013,6 +2140,7 @@ const imageChunks = useMemo(() => {
             </div>
           </div>
         </div>
+        </div>
       )}
 
       {showFloatingBtn && (
@@ -2020,7 +2148,7 @@ const imageChunks = useMemo(() => {
           style={{
             position: "fixed",
             left: "50%",
-            bottom: "60px",
+            bottom: "45px",
             transform: "translateX(-50%)",
             zIndex: 11111111,
           }}
