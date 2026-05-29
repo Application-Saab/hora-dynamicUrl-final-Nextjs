@@ -1608,7 +1608,7 @@ const imageChunks = useMemo(() => {
               {/* ================= PAGINATION DUMMY GRID ================= */}
               {!isIOSMobile && hasMore && page > 1 && (
                 <div className="gallery-image-grid">
-                  {[...Array(20)].map((_, index) => {
+                  {[...Array(24)].map((_, index) => {
                     const type = getBlockType(index);
 
                     return (
