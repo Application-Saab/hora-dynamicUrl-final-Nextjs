@@ -69,7 +69,6 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
-  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -100,7 +99,6 @@ const ThumbnailGallery = ({
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
-  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
@@ -455,8 +453,6 @@ const ThumbnailGallery = ({
     isEditing,
     isActualMyPhotos
   ]);
-  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
-  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
   const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
 
@@ -714,7 +710,6 @@ const ThumbnailGallery = ({
 
           sessionStorage.setItem(sessionKey, "true");
 
-          console.log("Click tracked and session flag set!");
         } catch (err) {
           console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
         }
@@ -760,7 +755,6 @@ const ThumbnailGallery = ({
   }, []);
 
   const handleSearchResults = (matches) => {
-    console.log("matches:", matches);
 
     if (!Array.isArray(matches)) return;
 
@@ -1277,9 +1271,6 @@ const imageChunks = useMemo(() => {
           <HeaderCardsFlashLoader />
         ) : (
           <>
-            {console.log("LOADING STATE:", loading)}
-            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
               <Image
                 src={capsuleTopBanner}
@@ -1366,7 +1357,6 @@ const imageChunks = useMemo(() => {
                 </div>
               )}
             </div>
-            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
             {imagesReady && activeTab === "all" && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
@@ -1561,7 +1551,6 @@ const imageChunks = useMemo(() => {
               </div>
             )}
 
-            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <>
