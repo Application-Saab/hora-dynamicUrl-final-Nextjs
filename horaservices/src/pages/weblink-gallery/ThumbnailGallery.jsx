@@ -139,8 +139,8 @@ const ThumbnailGallery = ({
   const [guestData, setGuestData] = useState([]);
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const [snackbar, setSnackbar] = useState({
-    show: false,
-    message: "",
+    show: true,
+    message: "Image downloaded successfully",
   });
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -358,13 +358,6 @@ const ThumbnailGallery = ({
       document.body.style.overflow = "";
     };
   }, [selectedIndex]);
-
-  useEffect(() => {
-    const pushTrap = () => {
-      if (!window.history.state?.exitTrap) {
-        window.history.pushState({ exitTrap: true }, "", window.location.href);
-      }
-    };
 
   useEffect(() => {
     const pushTrap = () => {
@@ -682,9 +675,6 @@ const ThumbnailGallery = ({
       }
       observer.disconnect();
     };
-  }, [hasMore, loading, isFetchingMore]);
-
-    return () => observer.disconnect();
   }, [hasMore, loading, isFetchingMore]);
 
   useEffect(() => {
