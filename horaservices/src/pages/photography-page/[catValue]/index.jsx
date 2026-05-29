@@ -80,11 +80,11 @@ const categoryToGallery = {
     folderName: "birthday poses, birthday_weblink, kids_bdy_weblink, Candid, 19754",
     customerId: "6683e5d43e33c54c0ebde8f2",
   },
-  "House-Warming-Photography": {
+  "House-warming-Photography": {
     folderName: "House warming weblink",
     customerId: "64137625549b58e3dc39a685",
   },
-  "Naming-Ceremony-Photography": {
+  "Naming-ceremony-Photography": {
     folderName: "naming ceremony weblink",
     customerId: "64137625549b58e3dc39a685",
   },

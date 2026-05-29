@@ -541,14 +541,29 @@ const ProductDetails = () => {
                   {" > "}
                 </h2>
 
-                <button
-                  onClick={() => {
-                    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="view-similar-btn"
-                >
-                  View Similar
-                </button>
+                     <button
+  onClick={() => {
+    // GTM Event
+    window.dataLayer = window.dataLayer || [];
+   window.dataLayer.push({
+  event: "view_similar_click",
+  eventCategory: "Product Details Page",
+  eventAction: "View Similar Button Click",
+  eventLabel: product?.name,
+  product_name: product?.name,
+  category: catValue,
+  price: product?.price,
+});
+
+    // Scroll
+    similarRef?.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }}
+  className="view-similar-btn"
+>
+  View Similar
+</button>
               </div>
 
 
