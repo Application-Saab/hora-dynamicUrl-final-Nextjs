@@ -37,6 +37,7 @@ const CommonImagePopup = ({
   isEventWall = false,
   isZoomed = false,
   zoomLevel = 1,
+  total,
 }) => {
   const sliderSettings = {
     dots: false,
@@ -151,7 +152,7 @@ const CommonImagePopup = ({
               <Image src={Crossicon} alt="Close" width={18} height={18} />
             </button>
             <div className="image-index">
-              {`${imageNumber} / ${images.length}`}
+              {`${imageNumber} / ${total ? total : images.length}`}
             </div>
           </div>
 
