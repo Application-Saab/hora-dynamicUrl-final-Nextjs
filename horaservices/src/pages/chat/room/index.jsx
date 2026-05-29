@@ -106,6 +106,7 @@ const ChatPage = () => {
   const isComposingRef = useRef(false);
   const initialScrollDoneRef = useRef(false);
   const showEmojiPickerRef = useRef(false);
+  const keyboardOpeningRef = useRef(false);
   const inputTouchStartYRef = useRef(0);
   // Tracks which groupId is currently rendered — used to detect room switches
   const activeGroupIdRef = useRef(
@@ -271,27 +272,42 @@ const ChatPage = () => {
       return;
     const docEl = document.documentElement;
 
-    const setVvh = () => {
+    // Tracks the last PROCESSED vv.height (only updated when a significant change fires).
+    // Using the last processed height (not the last seen height) prevents cumulative
+    // drift from many tiny cursor-drag events fooling the threshold check.
+    let prevVvHeight = window.visualViewport?.height ?? window.innerHeight;
+
+    // setVvh(fromFocusEvent)
+    // fromFocusEvent = true  → called by input focus/blur (iOS 15+ path).
+    //   vv.height never changes on iOS 15+ so heightChanged would always be false;
+    //   bypass the threshold so the iOS 15+ keyboard padding is still applied.
+    // fromFocusEvent = false → called by vv.resize; use threshold to filter noise.
+    const setVvh = (fromFocusEvent = false) => {
       const vv = window.visualViewport;
       if (!vv) return;
-      const chatLayout = document.querySelector(".chat-layout");
 
-      // iOS Safari auto-scrolls the page when keyboard opens to bring the focused
-      // input into view. This makes window.scrollY > 0, which shifts the layout
-      // viewport and can hide the header. Reset it immediately.
+      // Always reset page scroll first: iOS auto-scrolls when keyboard opens, making
+      // window.scrollY > 0 and shifting the layout viewport off-screen (hides header).
       if (window.scrollY !== 0) window.scrollTo(0, 0);
 
+      // On iOS, dragging the cursor handle causes vv.height to fluctuate by ~5-20 px.
+      // These micro-changes must NOT trigger a paddingBottom recalculation — doing so
+      // increases paddingBottom slightly and makes the input box slide upward.
+      // Keyboard open/close changes vv.height by ~260 px, well above the 80 px threshold.
+      // Only update prevVvHeight when we actually process the change; this prevents
+      // cumulative drift from many small steps adding up to a large apparent change.
+      const heightDelta = Math.abs(vv.height - prevVvHeight);
+      const heightChanged = heightDelta > 80;
+      if (heightChanged) prevVvHeight = vv.height;
+      if (!heightChanged && !fromFocusEvent) return;
+
+      const chatLayout = document.querySelector(".chat-layout");
+
       if (vv.height < window.innerHeight) {
-        // Emoji picker is managing layout — skip entirely to avoid flicker during
-        // the keyboard-close animation that plays while transitioning keyboard→emoji.
+        // Emoji picker is managing layout — skip during keyboard-close animation.
         if (showEmojiPickerRef.current) return;
 
         const keyboardH = window.innerHeight - vv.height;
-        // vv.offsetTop > 0 means iOS shifted the visual viewport downward to keep
-        // the focused input visible. In that case pin the chat-layout exactly to
-        // the visual viewport bounds so the header stays at the top and the input
-        // stays at the bottom (above the keyboard) without being hidden.
-        const offsetTop = vv.offsetTop || 0;
         docEl.style.setProperty("--vvh", `${vv.height}px`);
         document.body.style.overflow = "hidden";
 
@@ -299,35 +315,26 @@ const ChatPage = () => {
           chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
           chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
 
-          if (offsetTop > 0) {
-            chatLayout.style.top = `${offsetTop}px`;
-            chatLayout.style.height = `${vv.height}px`;
-            chatLayout.style.bottom = "auto";
-            chatLayout.style.paddingBottom = "";
-          } else {
-            // Standard path: full-height layout, paddingBottom reserves space above keyboard.
-            // Math.max prevents padding from temporarily dropping during emoji→keyboard
-            // transition (keyboard opens gradually, keyboardH starts small).
-            chatLayout.style.top = "";
-            chatLayout.style.height = "";
-            chatLayout.style.bottom = "";
-            const currentPadding = parseFloat(chatLayout.style.paddingBottom) || 0;
-            chatLayout.style.paddingBottom = `${Math.max(keyboardH, currentPadding)}px`;
-          }
+          // Use paddingBottom only — never manipulate top/height based on vv.offsetTop.
+          // Setting chatLayout.style.top to vv.offsetTop shifts the entire layout while
+          // iOS renders the text cursor at its absolute document position, making the
+          // cursor appear visually outside the input box (flies to centre of screen).
+          // position:fixed + window.scrollTo(0,0) already keeps the header at the top.
+          chatLayout.style.top = "";
+          chatLayout.style.height = "";
+          chatLayout.style.bottom = "";
+          chatLayout.style.paddingBottom = `${keyboardH}px`;
         }
 
         requestAnimationFrame(() => scrollToBottom());
       } else {
-        // Keyboard fully closed — OR iOS 15+ where vv.height stays equal to
-        // window.innerHeight even while the keyboard is open (browser no longer
-        // shrinks the visual viewport for the keyboard on newer iOS).
+        // Keyboard fully closed — OR iOS 15+ where vv.height = window.innerHeight always.
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
         document.body.style.overflow = "";
 
         if (chatLayout) {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
-          // Reset any position overrides that were applied during the keyboard-open phase.
           chatLayout.style.top = "";
           chatLayout.style.height = "";
           chatLayout.style.bottom = "";
@@ -335,7 +342,6 @@ const ChatPage = () => {
           const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
           const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
           if (showEmojiPickerRef.current) {
-            // Emoji picker is open — keep space reserved for it.
             chatLayout.style.paddingBottom = `${kbh}px`;
           } else if (
             isIOS &&
@@ -343,13 +349,10 @@ const ChatPage = () => {
             document.activeElement === textareaRef.current &&
             textareaRef.current.getAttribute("inputmode") !== "none"
           ) {
-            // iOS 15+ only: vv.height equals window.innerHeight even when keyboard is open.
-            // Input focused → keyboard is almost certainly showing → reserve space.
-            // NOT applied on Android: Android always shrinks vv.height when keyboard opens,
-            // so this branch is never needed there. More importantly, Android's hardware
-            // back button closes the keyboard WITHOUT blurring the input — so
-            // `activeElement === input` would be true even after keyboard closes, causing
-            // this branch to wrongly keep the padding and leave the layout lifted up (issue 3).
+            // iOS 15+ only: vv.height = window.innerHeight even when keyboard is open.
+            // Input focused → keyboard is showing → reserve space above it.
+            // Not applied on Android: back button closes keyboard without blurring input,
+            // so activeElement===input would wrongly keep padding after keyboard closes.
             chatLayout.style.paddingBottom = `${kbh}px`;
           } else {
             chatLayout.style.paddingBottom = "";
@@ -379,14 +382,16 @@ const ChatPage = () => {
     // resize event never fires. Listen to focus/blur on the chat input so we
     // can apply / remove keyboard padding as soon as focus changes.
     const inputEl = textareaRef.current;
-    const onInputFocus = () => requestAnimationFrame(setVvh);
-    const onInputBlur = () => requestAnimationFrame(setVvh);
+    // Pass fromFocusEvent=true so setVvh bypasses the 80px threshold on iOS 15+,
+    // where vv.height never changes with keyboard and the threshold would block the update.
+    const onInputFocus = () => requestAnimationFrame(() => setVvh(true));
+    const onInputBlur  = () => requestAnimationFrame(() => setVvh(true));
     inputEl?.addEventListener("focus", onInputFocus);
     inputEl?.addEventListener("blur", onInputBlur);
 
     return () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
-      window.visualViewport?.removeEventListener("scroll", setVvh);
+      window.visualViewport?.removeEventListener("scroll", onVvScroll);
       inputEl?.removeEventListener("focus", onInputFocus);
       inputEl?.removeEventListener("blur", onInputBlur);
       document.body.style.overflow = "";
@@ -1254,6 +1259,7 @@ const ChatPage = () => {
           onBackspace={handleBackspace}
           showEmojiPickerRef={showEmojiPickerRef}
           lastRangeRef={lastRangeRef}
+          keyboardOpeningRef={keyboardOpeningRef}
         />
         <div
           ref={textareaRef}
@@ -1267,11 +1273,9 @@ const ChatPage = () => {
             if (!showEmojiPicker || !textareaRef.current) return;
             const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
             if (dy > 10) return; // swipe — keep picker open
-            // Tap inside the input while picker is open.
-            // Do NOT close the picker — the user is repositioning the cursor to
-            // insert the next emoji at a specific position between existing emojis.
-            // Use caretRangeFromPoint to place cursor exactly where the user tapped
-            // (emoji imgs have pointer-events:none so the tap coordinates land here).
+
+            // 1. Position cursor exactly at tap point.
+            //    emoji imgs have pointer-events:none so tap coords reach the text layer.
             const touch = e.changedTouches[0];
             if (touch) {
               const range =
@@ -1291,6 +1295,56 @@ const ChatPage = () => {
                 lastRangeRef.current = range.cloneRange();
               }
             }
+
+            // 2. Force keyboard open via tunnel trick (works on both iOS and Android).
+            //    Problem: the contentEditable is ALREADY focused the whole time the
+            //    picker is open. On Android, click/focus on an already-focused element
+            //    is a no-op — the IME never receives a new focus signal, so the keyboard
+            //    stays hidden. iOS has the same issue with inputmode="none" + re-focus.
+            //    Solution: momentarily move focus to a throwaway <input>, then transfer
+            //    back to the contentEditable. This gives both Android's IME and iOS's
+            //    WebKit a real focus transition → keyboard opens.
+            //    Must happen synchronously inside touchend (user-gesture window).
+            const input = textareaRef.current;
+            input.removeAttribute("inputmode");
+            // Signal to EmojiPicker cleanup: keyboard is opening — do NOT clear
+            // paddingBottom. The cleanup runs as a microtask (React re-render) before
+            // vv.resize fires, so it can't detect keyboard state via vv.height yet.
+            // This flag is the only timing-safe way to prevent the premature clear.
+            keyboardOpeningRef.current = true;
+            // Prevent the focusin handler from calling setIsPickerOpen(false) during
+            // the tunnel focus transfer — we close picker ourselves below.
+            ignoreNextFocusRef.current = true;
+            const tunnel = document.createElement("input");
+            tunnel.type = "text";
+            tunnel.setAttribute("autocomplete", "off");
+            tunnel.setAttribute("autocorrect", "off");
+            tunnel.setAttribute("autocapitalize", "off");
+            tunnel.style.cssText =
+              "position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;";
+            document.body.appendChild(tunnel);
+            tunnel.focus();
+            input.focus({ preventScroll: true });
+            tunnel.remove();
+            // Restore cursor to position set by caretRangeFromPoint above
+            // (input.focus() may reset selection to start/end).
+            if (lastRangeRef.current) {
+              const sel = window.getSelection();
+              if (sel && input.contains(lastRangeRef.current.startContainer)) {
+                sel.removeAllRanges();
+                sel.addRange(lastRangeRef.current);
+              }
+            }
+
+            // 3. Close picker — deferred so the focus transfer above completes first.
+            //    Do NOT clear paddingBottom: vv.resize fires when keyboard opens and
+            //    setVvh sets the correct keyboard padding. Clearing here races with that
+            //    and causes input to jump below keyboard → Android dismisses keyboard.
+            queueMicrotask(() => {
+              document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
+              showEmojiPickerRef.current = false;
+              setShowEmojiPicker(false);
+            });
           }}
           onCompositionStart={() => { isComposingRef.current = true; }}
           onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}

@@ -22,6 +22,7 @@ export default function EmojiPickerButton({
   textareaRef,
   showEmojiPickerRef,
   lastRangeRef,
+  keyboardOpeningRef,
 }) {
   const [keyboardHeight, setKeyboardHeight] = useState(260);
   const [safeAreaBottom, setSafeAreaBottom] = useState(0);
@@ -286,11 +287,20 @@ export default function EmojiPickerButton({
 
     return () => {
       window.visualViewport?.removeEventListener("resize", onVvResize);
-      // The EmojiPicker owns .chat-layout's paddingBottom while open; setVvh in
-      // the room owns it once the keyboard takes over (it gates on showEmojiPickerRef).
-      elements.forEach((el) => {
-        el.style.paddingBottom = "";
-      });
+      // keyboardOpeningRef is set by onTouchEnd (input-tap-to-type gesture) to
+      // signal that the keyboard is about to open. We must NOT clear paddingBottom
+      // in that case: the cleanup runs as a React microtask re-render, which fires
+      // BEFORE vv.resize (the keyboard-open event). Clearing here drops the input
+      // below the keyboard and causes Android to immediately dismiss it.
+      // For all other close paths (back button, outside tap, keyboard icon) the
+      // flag is false and we clear normally.
+      if (keyboardOpeningRef?.current) {
+        keyboardOpeningRef.current = false; // consumed — reset for next use
+      } else {
+        elements.forEach((el) => {
+          el.style.paddingBottom = "";
+        });
+      }
     };
   }, [isPickerOpen, keyboardHeight]);
 
