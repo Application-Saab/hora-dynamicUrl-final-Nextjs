@@ -121,16 +121,23 @@ export default function EmojiPickerButton({
           return;
         }
 
-        // real user tap — remove inputmode so keyboard opens, close picker.
-        // Clear padding now: the keyboard (mobile) or layout default (desktop)
-        // will define the input's resting position; leftover picker padding
-        // doesn't match the keyboard height and pushes the input under it on iOS.
-        e.target.removeAttribute("inputmode");
-        document.querySelectorAll(".chat-layout").forEach((el) => {
-          el.style.paddingBottom = "";
-        });
-        markPickerClosed(); // sync update so setVvh reads correct state immediately
-        setIsPickerOpen(false);
+        if (isPickerOpen) {
+          // Picker is open — user tapped input to dismiss picker and show keyboard.
+          // Clear padding and close picker; setVvh will re-apply correct keyboard padding.
+          e.target.removeAttribute("inputmode");
+          document.querySelectorAll(".chat-layout").forEach((el) => {
+            el.style.paddingBottom = "";
+          });
+          markPickerClosed();
+          setIsPickerOpen(false);
+        } else {
+          // Picker is already closed — user tapped to reposition cursor while keyboard shows.
+          // Do NOT touch paddingBottom: setVvh already manages it for the open keyboard.
+          // Clearing it here causes the layout to jump (issue: keyboard appears to close).
+          if (e.target.getAttribute("inputmode") === "none") {
+            e.target.removeAttribute("inputmode");
+          }
+        }
       }
     };
 

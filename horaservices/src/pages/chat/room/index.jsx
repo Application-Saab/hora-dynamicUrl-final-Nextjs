@@ -333,17 +333,23 @@ const ChatPage = () => {
           chatLayout.style.bottom = "";
 
           const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
           if (showEmojiPickerRef.current) {
             // Emoji picker is open — keep space reserved for it.
             chatLayout.style.paddingBottom = `${kbh}px`;
           } else if (
+            isIOS &&
             textareaRef.current &&
             document.activeElement === textareaRef.current &&
             textareaRef.current.getAttribute("inputmode") !== "none"
           ) {
-            // iOS 15+: keyboard is open but vv.height is unchanged (browser doesn't
-            // report it). Input is focused → keyboard is almost certainly showing.
-            // Add stored keyboard height so the input stays visible above the keyboard.
+            // iOS 15+ only: vv.height equals window.innerHeight even when keyboard is open.
+            // Input focused → keyboard is almost certainly showing → reserve space.
+            // NOT applied on Android: Android always shrinks vv.height when keyboard opens,
+            // so this branch is never needed there. More importantly, Android's hardware
+            // back button closes the keyboard WITHOUT blurring the input — so
+            // `activeElement === input` would be true even after keyboard closes, causing
+            // this branch to wrongly keep the padding and leave the layout lifted up (issue 3).
             chatLayout.style.paddingBottom = `${kbh}px`;
           } else {
             chatLayout.style.paddingBottom = "";
@@ -1261,18 +1267,30 @@ const ChatPage = () => {
             if (!showEmojiPicker || !textareaRef.current) return;
             const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
             if (dy > 10) return; // swipe — keep picker open
-            // Tap on input while picker is open: hide picker, reveal keyboard.
-            // Input stays focused throughout the picker session (open path no
-            // longer blurs), so no focus/focusin event fires from this tap —
-            // we must update React state ourselves or the next emoji-btn tap
-            // will hit the close path instead of reopening the picker.
-            textareaRef.current.removeAttribute("inputmode");
-            document.querySelector(".emoji-picker-container.open")?.classList.remove("open");
-            document.querySelectorAll(".chat-layout").forEach((el) => {
-              el.style.paddingBottom = "";
-            });
-            showEmojiPickerRef.current = false;
-            setShowEmojiPicker(false);
+            // Tap inside the input while picker is open.
+            // Do NOT close the picker — the user is repositioning the cursor to
+            // insert the next emoji at a specific position between existing emojis.
+            // Use caretRangeFromPoint to place cursor exactly where the user tapped
+            // (emoji imgs have pointer-events:none so the tap coordinates land here).
+            const touch = e.changedTouches[0];
+            if (touch) {
+              const range =
+                document.caretRangeFromPoint?.(touch.clientX, touch.clientY) ??
+                (() => {
+                  const pos = document.caretPositionFromPoint?.(touch.clientX, touch.clientY);
+                  if (!pos) return null;
+                  const r = document.createRange();
+                  r.setStart(pos.offsetNode, pos.offset);
+                  r.collapse(true);
+                  return r;
+                })();
+              if (range && textareaRef.current.contains(range.startContainer)) {
+                const sel = window.getSelection();
+                sel?.removeAllRanges();
+                sel?.addRange(range);
+                lastRangeRef.current = range.cloneRange();
+              }
+            }
           }}
           onCompositionStart={() => { isComposingRef.current = true; }}
           onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}

@@ -311,6 +311,18 @@
   margin: 0 1px;
 }
 
+/* Inside the input box: prevent emoji images from capturing taps.
+   Without this, tapping between two emoji images selects the img node
+   instead of placing the text cursor — so cursor lands at wrong position
+   and the image can accidentally get deleted on next keypress.
+   pointer-events:none lets the tap fall through to the contentEditable
+   which correctly places the cursor at the nearest insertion point. */
+.chat-input .emoji-inline {
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .chat-input {
   flex: 1;
   outline: none;
