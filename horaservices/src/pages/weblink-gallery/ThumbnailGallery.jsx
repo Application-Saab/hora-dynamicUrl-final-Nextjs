@@ -475,7 +475,6 @@ const ThumbnailGallery = ({
     }
 
     if (activeTab === "all" && lockerId) {
-      console.log('%c [ lockerId ]', 'font-size:13px; background:pink; color:#bf2c9f;', lockerId)
       return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
     }
 
@@ -496,17 +495,6 @@ const ThumbnailGallery = ({
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
-
-  console.log(
-    "%c [ matchedKeys ]-277",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    matchedKeys,
-  );
-  console.log(
-    "%c [ visibleThumbnails ]-240",
-    "font-size:13px; background:pink; color:#bf2c9f;",
-    visibleThumbnails,
-  );
 
   const usableFolders = subFolders.filter(
     (sf) => sf.type !== "my_photos" && !sf.isLocker,
@@ -731,9 +719,6 @@ const ThumbnailGallery = ({
     );
 
     observer.observe(buttonsRef.current);
-
-    return () => observer.disconnect();
-  }, [loading]);
 
     return () => observer.disconnect();
   }, [loading]);
@@ -2063,6 +2048,7 @@ const imageChunks = useMemo(() => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       )}
 
