@@ -63,7 +63,8 @@ const ChatPage = () => {
   const hasScrolledToUnreadRef = useRef(false);
   const lastRangeRef = useRef(null);
   const ignoreNextFocusRef = useRef(false);
-  const initialScrollDoneRef = useRef(false); // 🔥 NEW
+  const initialScrollDoneRef = useRef(false);
+  const inputTouchStartYRef = useRef(0);
 
   const scrollToBottom = () => {
     if (!chatBodyRef.current) return;
@@ -192,36 +193,65 @@ const ChatPage = () => {
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
     const docEl = document.documentElement;
-    const setVvh = () => {
+
+    // Only update when height changes by >80px (keyboard open/close ~260px).
+    // iOS cursor-drag fires vv.resize with ~5-20px fluctuations — these must NOT
+    // trigger a paddingBottom recalculation or they shift the input box upward.
+    let prevVvHeight = window.visualViewport?.height ?? window.innerHeight;
+
+    const setVvh = (fromFocusEvent = false) => {
       const vv = window.visualViewport;
-      if (vv && vv.height < window.innerHeight) {
+      if (!vv) return;
+
+      const heightDelta = Math.abs(vv.height - prevVvHeight);
+      const heightChanged = heightDelta > 80;
+      if (heightChanged) prevVvHeight = vv.height;
+      if (!heightChanged && !fromFocusEvent) return;
+
+      // Reset page scroll only on real keyboard events, not on every scroll tick.
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
+
+      const chatLayout = document.querySelector(".chat-layout");
+
+      if (vv.height < window.innerHeight) {
+        // iOS <15: keyboard reduces vv.height. The CSS uses height:var(--vvh) to
+        // constrain the layout to the above-keyboard area — NO paddingBottom needed.
+        // Adding paddingBottom here would double-compensate: layout height already = vv.height,
+        // and padding would further shrink the content area (e.g. 400-260 = 140px — too small).
         docEl.style.setProperty("--vvh", `${vv.height}px`);
-        setTimeout(() => {
-          const input = document.querySelector(".chat-input-container");
-          if (input) input.scrollIntoView({ block: "end", behavior: "smooth" });
-        }, 100);
-        setTimeout(scrollToBottom, 150);
         document.body.style.overflow = "hidden";
-        document.body.style.position = "fixed";
-        document.body.style.width = "100vw";
-        const chatLayout = document.querySelector(".chat-layout");
+
         if (chatLayout) {
-          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, {
-            passive: false,
-          });
-          chatLayout.addEventListener("wheel", allowChatMessagesScroll, {
-            passive: false,
-          });
+          chatLayout.addEventListener("touchmove", allowChatMessagesScroll, { passive: false });
+          chatLayout.addEventListener("wheel", allowChatMessagesScroll, { passive: false });
+          chatLayout.style.paddingBottom = "";
         }
+
+        requestAnimationFrame(() => scrollToBottom());
       } else {
+        // Keyboard closed, OR iOS 15+ where vv.height === window.innerHeight always.
         docEl.style.setProperty("--vvh", `${window.innerHeight}px`);
         document.body.style.overflow = "";
-        document.body.style.position = "";
-        document.body.style.width = "";
-        const chatLayout = document.querySelector(".chat-layout");
+
         if (chatLayout) {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
+
+          const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (
+            isIOS &&
+            textareaRef.current &&
+            document.activeElement === textareaRef.current &&
+            textareaRef.current.getAttribute("inputmode") !== "none"
+          ) {
+            // iOS 15+: --vvh stays at window.innerHeight even with keyboard open,
+            // so the layout covers the full screen including keyboard area.
+            // paddingBottom pushes the input above the keyboard.
+            chatLayout.style.paddingBottom = `${kbh}px`;
+          } else {
+            chatLayout.style.paddingBottom = "";
+          }
         }
       }
     };
@@ -230,25 +260,48 @@ const ChatPage = () => {
       const chatMessages = document.querySelector(".chat-messages");
       const chatInput = document.querySelector(".chat-input");
 
-      if (!chatMessages && !chatInput) return e.preventDefault();
+      if (!chatMessages || !chatInput) return e.preventDefault();
 
-      if (chatMessages.contains(e.target) || chatInput.contains(e.target)) {
-        return;
+      if (chatMessages.contains(e.target)) return;
+
+      if (chatInput.contains(e.target)) {
+        // Allow internal scroll ONLY when input has overflow text (multi-line).
+        // If input is short/empty (scrollHeight <= clientHeight), iOS bubbles the
+        // pan gesture to the window — shifting the fixed layout upward.
+        // Preventing here stops iOS from treating the gesture as a page scroll.
+        if (chatInput.scrollHeight > chatInput.clientHeight + 2) return;
+        return e.preventDefault();
       }
 
       e.preventDefault();
     }
 
+    // Minimal scroll handler — only resets page scrollY, does NOT recalculate layout.
+    // On iOS, scrolling within the contentEditable or dragging the cursor handle fires
+    // vv.scroll WITHOUT changing vv.height. Calling full setVvh here would incorrectly
+    // recalculate keyboardH and shift the input box up, leaving a gap above the keyboard.
+    const onVvScroll = () => {
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
+    };
+
+    // iOS 15+: keyboard does NOT change vv.height, so vv.resize never fires.
+    // Use focus/blur on the input to apply/remove keyboard padding.
+    const inputEl = textareaRef.current;
+    const onInputFocus = () => requestAnimationFrame(() => setVvh(true));
+    const onInputBlur  = () => requestAnimationFrame(() => setVvh(true));
+    inputEl?.addEventListener("focus", onInputFocus);
+    inputEl?.addEventListener("blur", onInputBlur);
+
     setVvh();
     window.visualViewport?.addEventListener("resize", setVvh);
-    window.visualViewport?.addEventListener("scroll", setVvh);
+    window.visualViewport?.addEventListener("scroll", onVvScroll);
 
     return () => {
       window.visualViewport?.removeEventListener("resize", setVvh);
-      window.visualViewport?.removeEventListener("scroll", setVvh);
+      window.visualViewport?.removeEventListener("scroll", onVvScroll);
+      inputEl?.removeEventListener("focus", onInputFocus);
+      inputEl?.removeEventListener("blur", onInputBlur);
       document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
       const chatLayout = document.querySelector(".chat-layout");
       if (chatLayout) {
         chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
@@ -788,6 +841,9 @@ const ChatPage = () => {
           contentEditable
           inputMode="text"
           suppressContentEditableWarning={true}
+          onTouchStart={(e) => {
+            inputTouchStartYRef.current = e.touches[0]?.clientY ?? 0;
+          }}
           onFocus={() => {
             if (showEmojiPicker) {
               setShowEmojiPicker(false);
@@ -798,14 +854,37 @@ const ChatPage = () => {
             el.addEventListener("mouseup", saveCursor);
             el.addEventListener("focus", saveCursor);
           }}
-          onInput={(e) => {
+          onInput={() => {
             resizeTextarea();
             if (textareaRef.current.scrollHeight > 120) {
               textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
             }
           }}
-          onClick={() => {
+          onClick={(e) => {
             setShowEmojiPicker(false);
+            // iOS Safari: cursor placement in contentEditable is unreliable when
+            // emoji <img> nodes are present — iOS places cursor at start/end of the
+            // nearest block instead of the exact tap point.
+            // The click event fires AFTER iOS's mousedown cursor placement, so
+            // overriding the selection here wins over iOS's native (incorrect) result.
+            if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) return;
+            if (!textareaRef.current) return;
+            const range =
+              document.caretRangeFromPoint?.(e.clientX, e.clientY) ??
+              (() => {
+                const pos = document.caretPositionFromPoint?.(e.clientX, e.clientY);
+                if (!pos) return null;
+                const r = document.createRange();
+                r.setStart(pos.offsetNode, pos.offset);
+                r.collapse(true);
+                return r;
+              })();
+            if (range && textareaRef.current.contains(range.startContainer)) {
+              const sel = window.getSelection();
+              sel?.removeAllRanges();
+              sel?.addRange(range);
+              lastRangeRef.current = range.cloneRange();
+            }
           }}
           className="chat-input"
           data-placeholder="Type message here..."

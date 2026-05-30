@@ -286,10 +286,6 @@ const ChatPage = () => {
       const vv = window.visualViewport;
       if (!vv) return;
 
-      // Always reset page scroll first: iOS auto-scrolls when keyboard opens, making
-      // window.scrollY > 0 and shifting the layout viewport off-screen (hides header).
-      if (window.scrollY !== 0) window.scrollTo(0, 0);
-
       // On iOS, dragging the cursor handle causes vv.height to fluctuate by ~5-20 px.
       // These micro-changes must NOT trigger a paddingBottom recalculation — doing so
       // increases paddingBottom slightly and makes the input box slide upward.
@@ -300,6 +296,12 @@ const ChatPage = () => {
       const heightChanged = heightDelta > 80;
       if (heightChanged) prevVvHeight = vv.height;
       if (!heightChanged && !fromFocusEvent) return;
+
+      // Reset page scroll only when processing a real keyboard open/close event — NOT
+      // on every vv.scroll tick. iOS auto-scrolls when keyboard opens (scrollY > 0),
+      // which shifts the layout off-screen; resetting here corrects it. But calling
+      // scrollTo(0,0) on every minor scroll event fights iOS's cursor-follow behavior.
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
 
       const chatLayout = document.querySelector(".chat-layout");
 
@@ -365,18 +367,34 @@ const ChatPage = () => {
       const chatMessages = document.querySelector(".chat-messages");
       const chatInput = document.querySelector(".chat-input");
 
-      if (!chatMessages && !chatInput) return e.preventDefault();
+      if (!chatMessages || !chatInput) return e.preventDefault();
 
-      if (chatMessages.contains(e.target) || chatInput.contains(e.target)) {
-        return;
+      if (chatMessages.contains(e.target)) return;
+
+      if (chatInput.contains(e.target)) {
+        // Allow internal scroll ONLY when input has overflow text (multi-line).
+        // If input is short/empty (scrollHeight <= clientHeight), iOS bubbles the
+        // pan gesture to the window — shifting the fixed layout upward.
+        // Preventing here stops iOS from treating the gesture as a page scroll.
+        if (chatInput.scrollHeight > chatInput.clientHeight + 2) return;
+        return e.preventDefault();
       }
 
       e.preventDefault();
     }
 
+    // Separate minimal scroll handler — only resets page scrollY, does NOT recalculate
+    // paddingBottom or call scrollToBottom. On iOS, scrolling within the contentEditable
+    // input (or chat messages) fires vv.scroll without changing vv.height; calling the
+    // full setVvh here would incorrectly recalculate keyboardH and shift the input box
+    // upward, leaving an empty gap between the input and the keyboard.
+    const onVvScroll = () => {
+      if (window.scrollY !== 0) window.scrollTo(0, 0);
+    };
+
     setVvh();
     window.visualViewport?.addEventListener("resize", setVvh);
-    window.visualViewport?.addEventListener("scroll", setVvh);
+    window.visualViewport?.addEventListener("scroll", onVvScroll);
 
     // iOS 15+: keyboard opening does NOT resize the visual viewport, so the
     // resize event never fires. Listen to focus/blur on the chat input so we
@@ -1345,6 +1363,31 @@ const ChatPage = () => {
               showEmojiPickerRef.current = false;
               setShowEmojiPicker(false);
             });
+          }}
+          onClick={(e) => {
+            // iOS Safari misplaces cursor in contentEditable with emoji <img> nodes —
+            // tap lands at start/end instead of exact tap position.
+            // click fires AFTER iOS's mousedown cursor placement, so overriding here
+            // wins. Android handles cursor placement correctly — iOS only.
+            if (showEmojiPicker) return; // picker-open tap handled by onTouchEnd
+            if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) return;
+            if (!textareaRef.current) return;
+            const range =
+              document.caretRangeFromPoint?.(e.clientX, e.clientY) ??
+              (() => {
+                const pos = document.caretPositionFromPoint?.(e.clientX, e.clientY);
+                if (!pos) return null;
+                const r = document.createRange();
+                r.setStart(pos.offsetNode, pos.offset);
+                r.collapse(true);
+                return r;
+              })();
+            if (range && textareaRef.current.contains(range.startContainer)) {
+              const sel = window.getSelection();
+              sel?.removeAllRanges();
+              sel?.addRange(range);
+              lastRangeRef.current = range.cloneRange();
+            }
           }}
           onCompositionStart={() => { isComposingRef.current = true; }}
           onCompositionEnd={() => { isComposingRef.current = false; convertEmojiInInput(); }}
