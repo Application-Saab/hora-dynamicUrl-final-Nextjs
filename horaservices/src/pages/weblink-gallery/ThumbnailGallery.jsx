@@ -576,14 +576,17 @@ const ThumbnailGallery = ({
 
         setAllThumbnails((prev) => {
           if (isIOSMobile) {
-            return fetchedThumbnails;
+            setAllThumbnails(fetchedThumbnails); 
           }
-
-          const existingIds = new Set(prev.map(item => item._id));
-          const newItems = fetchedThumbnails.filter(
-            item => !existingIds.has(item._id)
-          );
-          return [...prev, ...newItems];
+          else {
+  setAllThumbnails((prev) => {
+    const existingIds = new Set(prev.map(item => item._id));
+    const newItems = fetchedThumbnails.filter(
+      item => !existingIds.has(item._id)
+    );
+    return [...prev, ...newItems];
+  });
+}
         });
         setImagesReady(true);
 
@@ -645,37 +648,6 @@ const ThumbnailGallery = ({
     setHasMore(true);
     setImagesReady(false);
   }, [activeSubFolderId, isEditing]);
-
-  useEffect(() => {
-    const currentObserver = observerRef.current;
-    if (!currentObserver) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const first = entries[0];
-
-        if (
-          first.isIntersecting &&
-          hasMore &&
-          !loading &&
-          !isFetchingMore
-        ) {
-          setIsFetchingMore(true);
-          setPage((prev) => prev + 1);
-        }
-      },
-      { rootMargin: "400px" }
-    );
-
-    observer.observe(currentObserver);
-
-    return () => {
-      if (currentObserver) {
-        observer.unobserve(currentObserver);
-      }
-      observer.disconnect();
-    };
-  }, [hasMore, loading, isFetchingMore]);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -1800,6 +1772,7 @@ const imageChunks = useMemo(() => {
                     currentPage={page}
                     setCurrentPage={(newPage) => {
                       setLoading(true);
+                      setAllThumbnails([]); 
                       setPage(newPage);
                     }}
                     totalPages={Math.ceil(totalPages / pageSize)}
