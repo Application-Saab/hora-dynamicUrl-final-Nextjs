@@ -31,7 +31,7 @@ import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import { IoIosCloudDone } from "react-icons/io";
-import { BsZoomIn, BsZoomOut  } from "react-icons/bs";
+import { BsZoomIn, BsZoomOut } from "react-icons/bs";
 import {
   assignToSubfolder,
   createSubfolder,
@@ -574,20 +574,21 @@ const ThumbnailGallery = ({
 
         preloadImages(fetchedThumbnails);
 
-        setAllThumbnails((prev) => {
-          if (isIOSMobile) {
-            setAllThumbnails(fetchedThumbnails); 
-          }
-          else {
-  setAllThumbnails((prev) => {
-    const existingIds = new Set(prev.map(item => item._id));
-    const newItems = fetchedThumbnails.filter(
-      item => !existingIds.has(item._id)
-    );
-    return [...prev, ...newItems];
-  });
-}
-        });
+        if (isIOSMobile) {
+          setAllThumbnails(fetchedThumbnails || []);
+        } else {
+          setAllThumbnails((prev = []) => {
+            const existingIds = new Set(
+              prev.map((item) => item._id)
+            );
+
+            const newItems = (fetchedThumbnails || []).filter(
+              (item) => !existingIds.has(item._id)
+            );
+
+            return [...prev, ...newItems];
+          });
+        }
         setImagesReady(true);
 
         if (fetchedThumbnails.length < pageSize) {
@@ -605,15 +606,23 @@ const ThumbnailGallery = ({
     fetchThumbnails();
   }, [folderName, customerId, page, activeSubFolderId, isEditing, pageSize]);
 
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setImagesReady(false);
+  }, [activeSubFolderId, isEditing]);
+
   useEffect(() => {
     const currentObserver = observerRef.current;
     if (!currentObserver) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-
         const first = entries[0];
+
         if (
-          !isIOSMobile &&
           first.isIntersecting &&
           hasMore &&
           !loading &&
@@ -623,31 +632,18 @@ const ThumbnailGallery = ({
           setPage((prev) => prev + 1);
         }
       },
-      {
-        rootMargin: "400px",
-      }
+      { rootMargin: "400px" }
     );
 
     observer.observe(currentObserver);
+
     return () => {
       if (currentObserver) {
         observer.unobserve(currentObserver);
       }
       observer.disconnect();
     };
-  }, [
-    hasMore,
-    loading,
-    isFetchingMore,
-    activeSubFolderId,
-    visibleThumbnails.length,
-  ]);
-  useEffect(() => {
-    setPage(1);
-    setAllThumbnails([]);
-    setHasMore(true);
-    setImagesReady(false);
-  }, [activeSubFolderId, isEditing]);
+  }, [hasMore, loading, isFetchingMore]);
 
   useEffect(() => {
     const fetchFolders = async () => {
@@ -749,11 +745,11 @@ const ThumbnailGallery = ({
   }, [mainFolderId]);
 
   useEffect(() => {
-    if (!localUserId || allThumbnails.length === 0) return;
+    if (!localUserId || allThumbnails?.length === 0) return;
 
     const initialLikes = {};
 
-    allThumbnails.forEach((img) => {
+    allThumbnails?.forEach((img) => {
       initialLikes[img._id] = img.likedBy?.some(
         (id) => String(id) === String(localUserId),
       );
@@ -1125,21 +1121,21 @@ const ThumbnailGallery = ({
     await Promise.all(promises);
   };
 
-const remainingImages = useMemo(() => {
-  return visibleThumbnails.slice(18);
-}, [visibleThumbnails]);
+  const remainingImages = useMemo(() => {
+    return (visibleThumbnails || []).slice(18);
+  }, [visibleThumbnails]);
 
-const imageChunks = useMemo(() => {
-  const first18 = visibleThumbnails.slice(0, 18);
+  const imageChunks = useMemo(() => {
+    const first18 = (visibleThumbnails || []).slice(0, 18);
 
-  const chunks = [];
+    const chunks = [];
 
-  for (let i = 0; i < first18.length; i += 6) {
-    chunks.push(first18.slice(i, i + 6));
-  }
+    for (let i = 0; i < first18.length; i += 6) {
+      chunks.push(first18.slice(i, i + 6));
+    }
 
-  return chunks;
-}, [visibleThumbnails]);
+    return chunks;
+  }, [visibleThumbnails]);
 
   if (error) {
     return (
@@ -1693,7 +1689,7 @@ const imageChunks = useMemo(() => {
               )}
 
             {/* ================= NO SEARCH RESULT ================= */}
-            {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
+            {(visibleThumbnails?.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
               <div className="weblink-emptyFolder-container">
                 <Image
                   src={emptyFolder}
@@ -1772,13 +1768,13 @@ const imageChunks = useMemo(() => {
                     currentPage={page}
                     setCurrentPage={(newPage) => {
                       setLoading(true);
-                      setAllThumbnails([]); 
+                      setAllThumbnails([]);
                       setPage(newPage);
                     }}
                     totalPages={Math.ceil(totalPages / pageSize)}
                   />
                 </div>
-              )} 
+              )}
             </>
           </div>
         </div>
@@ -1952,14 +1948,14 @@ const imageChunks = useMemo(() => {
                     onClick={() => handleAddToLocker(currentImage)}
                     style={{
                       color: "#FFFFFF",
-                    backgroundColor: "#97538C",
-                    border: "1px solid #97538C",
-                  }}
-                >
-                  <span className="add-photo-icon">+</span>
-                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
-                </button>
-              </div>)}
+                      backgroundColor: "#97538C",
+                      border: "1px solid #97538C",
+                    }}
+                  >
+                    <span className="add-photo-icon">+</span>
+                    <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                  </button>
+                </div>)}
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -2093,16 +2089,16 @@ const imageChunks = useMemo(() => {
                 </div>
               </div>
 
-            {/* Footer Section */}
-            <div className="footer-container">
-              <div className="modal-footer">
-                <div className="total-badge">
-                  {guestData?.length} Total Joined
+              {/* Footer Section */}
+              <div className="footer-container">
+                <div className="modal-footer">
+                  <div className="total-badge">
+                    {guestData?.length} Total Joined
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       )}
 
