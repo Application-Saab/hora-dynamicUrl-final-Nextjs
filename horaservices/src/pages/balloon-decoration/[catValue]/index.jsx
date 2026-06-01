@@ -460,6 +460,26 @@ const handleViewDetails = (item) => {
         ? `Nation Pride Decoration in ${city} with Latest Designs, Starting at ₹3000`
         :"Nation Pride Decoration with Latest Designs, Starting at ₹3000";
     }
+else if (catValue?.toLowerCase() === "house-warming-decoration") {
+  baseTitle = city
+    ? `House Warming Decoration in ${city} with Elegant Balloon & Flower Decor, Starting at ₹1999`
+    : "House Warming Decoration with Elegant Balloon & Flower Decor, Starting at ₹1999";
+}
+else if (catValue === "premium-decoration") {
+  baseTitle = city
+    ? `Stage Decoration in ${city} with Premium Balloon & Flower Designs, Starting at ₹3000`
+    : "Stage Decoration with Premium Balloon & Flower Designs, Starting at ₹3000";
+}
+else if (catValue === "Wedding") {
+  baseTitle = city
+    ? `Wedding Decoration in ${city} with Stunning Balloon & Floral Designs, Starting at ₹4999`
+    : "Wedding Decoration with Stunning Balloon & Floral Designs, Starting at ₹4999";
+}
+else if (catValue === "bachelorette-decoration") {
+  baseTitle = city
+    ? `Bachelorette Party Decoration in ${city} with Trendy Balloon & Theme Decor, Starting at ₹1999`
+    : "Bachelorette Party Decoration with Trendy Balloon & Theme Decor, Starting at ₹1999";
+}
      else {
       baseTitle = city
         ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`

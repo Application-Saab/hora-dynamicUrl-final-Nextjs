@@ -21,6 +21,7 @@ import InfoIcon from '../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../css/chefOrder.css';
+import Head from 'next/head';
 
 const FoodDeliveryCreateOrder = (currentStep) => {
   const viewBottomSheetRef = useRef(null);
@@ -484,6 +485,147 @@ console.log('selectedOption',selectedOption)
   }
 
   return (
+    <>
+  <Head>
+  <title>
+    {selectedfoodCategory === "party-food-delivery"
+      ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
+      : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"}
+  </title>
+
+  <meta
+    name="description"
+    content={
+      selectedfoodCategory === "party-food-delivery"
+        ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events. Professional party food delivery services by HORA."
+        : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events. Customized menus by HORA."
+    }
+  />
+
+  <meta name="robots" content="index,follow" />
+  <meta name="author" content="Hora Services" />
+
+  <link
+    rel="canonical"
+    href={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+  />
+
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+  />
+
+  {/* Open Graph */}
+  <meta
+    property="og:title"
+    content={
+      selectedfoodCategory === "party-food-delivery"
+        ? "Party Food Delivery Services for Birthdays, House Parties & Events | HORA"
+        : "Live Buffet Catering Services for Weddings, Parties & Events | HORA"
+    }
+  />
+
+  <meta
+    property="og:description"
+    content={
+      selectedfoodCategory === "party-food-delivery"
+        ? "Order fresh and delicious food for birthdays, anniversaries, kitty parties, house parties, baby showers, and corporate events."
+        : "Book live buffet catering services with professional chefs for weddings, birthdays, anniversaries, house parties, baby showers, and corporate events."
+    }
+  />
+
+  <meta
+    property="og:url"
+    content={`https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`}
+  />
+
+  <meta property="og:type" content="website" />
+
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <meta
+    name="twitter:title"
+    content={
+      selectedfoodCategory === "party-food-delivery"
+        ? "Party Food Delivery Services | HORA"
+        : "Live Buffet Catering Services | HORA"
+    }
+  />
+
+  <meta
+    name="twitter:description"
+    content={
+      selectedfoodCategory === "party-food-delivery"
+        ? "Fresh food delivery for birthdays, house parties, and events."
+        : "Professional live buffet catering for weddings, parties, and events."
+    }
+  />
+
+  <meta
+    name="twitter:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Service Schema */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name:
+          selectedfoodCategory === "party-food-delivery"
+            ? "Party Food Delivery Services"
+            : "Live Buffet Catering Services",
+        provider: {
+          "@type": "Organization",
+          name: "HORA",
+          url: "https://horaservices.com",
+          logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        },
+        areaServed: {
+          "@type": "Country",
+          name: "India",
+        },
+        description:
+          selectedfoodCategory === "party-food-delivery"
+            ? "Food delivery services for birthdays, anniversaries, house parties, baby showers, and corporate events."
+            : "Live buffet catering services with professional chefs for weddings, birthdays, anniversaries, and corporate events.",
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.8",
+          reviewCount: "100",
+        },
+      }),
+    }}
+  />
+
+  {/* WebPage Schema */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name:
+          selectedfoodCategory === "party-food-delivery"
+            ? "Party Food Delivery Services"
+            : "Live Buffet Catering Services",
+        url: `https://horaservices.com/party-food-delivery-live-catering-buffet/${selectedfoodCategory}`,
+        description:
+          selectedfoodCategory === "party-food-delivery"
+            ? "Order fresh food for birthdays, anniversaries, and events."
+            : "Book live buffet catering services for weddings, parties, and events.",
+      }),
+    }}
+  />
+</Head>
     <div className="chef-create-order">
       <div className="order-container chef">
         <div style={{ flexDirection: 'row', backgroundColor: '#EFF0F3', boxShadow: "0px 0px 6px 0px rgba(0, 0, 0, 0.08)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px 0" }}>
@@ -616,6 +758,7 @@ console.log('selectedOption',selectedOption)
         <Popup popupMessage={popupMessage} onClose={handleWarningClose} />
       )}
     </div>
+    </>
   );
 };
 
