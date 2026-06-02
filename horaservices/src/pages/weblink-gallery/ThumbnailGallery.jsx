@@ -34,6 +34,8 @@ import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryVi
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
+import PaginationControls from "./capsulePagination";
+
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -119,6 +121,54 @@ const ThumbnailGallery = ({
   const [guestData, setGuestData] = useState([]);
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isIOSMobile, setIsIOSMobile] = useState(false);
+
+
+
+    // iOS Mobile Detection
+    useEffect(() => {
+      const detectIOSMobile = () => {
+        if (typeof navigator !== 'undefined') {
+          // Basic check for iPhone, iPad, iPod.
+          // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
+          // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
+          // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
+          return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+        return false;
+      };
+      setIsIOSMobile(detectIOSMobile());
+    }, []);
+  
+    // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
+    const getItemsPerPage = useCallback(() => {
+      if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
+      // For iOS mobile, a smaller number might be better, e.g. 12-15.
+      // For other devices (where pagination is hidden), this number doesn't directly limit display
+      // but affects the `totalPages` calculation if we were to show it.
+      // Let's adjust: more items for wider screens if pagination *were* shown.
+      // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
+      // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
+      if (isIOSMobile) {
+          return 24; // Example: more items on larger iPhones
+      }
+      return 24; // Fallback for general calculation (though UI is hidden)
+  
+    }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
+  
+  
+    const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
+  
+    useEffect(() => {
+      const handleResize = () => {
+        setItemsPerPage(getItemsPerPage());
+      };
+      if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
+          window.addEventListener('resize', handleResize);
+          return () => window.removeEventListener('resize', handleResize);
+      }
+    }, [isIOSMobile, getItemsPerPage]);
 
   const getInitial = (guest) => {
     const name =
@@ -468,6 +518,33 @@ useEffect(() => {
     };
     fetchThumbnails();
   }, [folderName, customerId]);
+
+    // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
+    const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+      if (isIOSMobile) {
+        const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        const currentItems = allThumbnails.slice(startIndex, endIndex);
+        return { currentThumbnailsOnPage: currentItems, totalPages: total };
+      } else {
+        // Not iOS mobile: show all thumbnails, no pagination UI
+        return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+      }
+    }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+
+      const handlePageChange = useCallback((pageNumber) => {
+        setCurrentPage(pageNumber);
+        // Scroll to top of gallery header after a short delay to allow UI to update
+        setTimeout(() => {
+          const galleryHeader = document.querySelector('.gallery-header');
+          if (galleryHeader) {
+            galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 100);
+      }, []);
 
   useEffect(() => {
     const handleLoginChange = () => {
@@ -980,9 +1057,13 @@ useEffect(() => {
     }
   };
 
+  const thumbnailsToRender = isIOSMobile
+  ? currentThumbnailsOnPage
+  : visibleThumbnails;
 
-  const first18Images = visibleThumbnails.slice(0, 18);
-  const remainingImages = visibleThumbnails.slice(18);
+
+const first18Images = thumbnailsToRender.slice(0, 18);
+const remainingImages = thumbnailsToRender.slice(18);
 
   const chunkArray = (array, size) => {
     const chunks = [];
@@ -1408,6 +1489,35 @@ useEffect(() => {
           </>
         </div>
       </div>
+
+      <div className={`}`}>
+        <div className="">
+          {showInternalTitle && (
+            <div>
+              {/* <h1 className="gallery-title">Your Photos</h1> */}
+              {/* <Image
+                src={shareIcon}
+                alt="Info"
+                style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
+                onClick={handleShareicon}
+              /> */}
+            </div>
+          )}
+      
+          {/* Conditional Pagination Rendering */}
+                    {isIOSMobile && totalPages > 1 && (
+                      <div className="">
+                        <PaginationControls
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                          inline={true} // Keep compact style
+                        />
+                      </div>
+                    )}
+        </div>
+      </div>
+      
         </div>
 
       <AddToFolderPopup
