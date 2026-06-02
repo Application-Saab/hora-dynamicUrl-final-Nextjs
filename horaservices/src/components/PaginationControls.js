@@ -36,7 +36,7 @@ const PaginationControls = ({ currentPage, totalPages, onPageChange, inline = fa
   return (
     <nav className={`pagination-container ${inline ? 'inline' : ''}`} aria-label="Gallery pagination">
       <div className="pagination-info">
-        Page {currentPage} of {totalPages}
+        Page {currentPage} of {totalPages} 
       </div>
       <div className="pagination-controls-main">
         <button onClick={handlePrevious} disabled={currentPage === 1} className="pagination-arrow prev" aria-label="Go to previous page">&laquo;</button>

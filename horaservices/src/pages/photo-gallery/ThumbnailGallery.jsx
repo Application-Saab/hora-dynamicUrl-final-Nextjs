@@ -128,7 +128,7 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-    }, 100);
+    }, 100); 
   }, []);
 
   const sliderSettings = useMemo(() => ({

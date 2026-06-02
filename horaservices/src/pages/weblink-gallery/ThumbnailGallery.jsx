@@ -50,6 +50,7 @@ import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
 import PaginationUI from "./PaginationUi";
+import PaginationControls from "@/components/PaginationControls";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -514,17 +515,17 @@ const ThumbnailGallery = ({
 
         preloadImages(fetchedThumbnails);
 
-        setAllThumbnails((prev) => {
-          if (isIOSMobile) {
-            return fetchedThumbnails;
-          }
-
-          const existingIds = new Set(prev.map(item => item._id));
-          const newItems = fetchedThumbnails.filter(
-            item => !existingIds.has(item._id)
-          );
-          return [...prev, ...newItems];
-        });
+if (isIOSMobile) {
+  setAllThumbnails(fetchedThumbnails); 
+} else {
+  setAllThumbnails((prev) => {
+    const existingIds = new Set(prev.map(item => item._id));
+    const newItems = fetchedThumbnails.filter(
+      item => !existingIds.has(item._id)
+    );
+    return [...prev, ...newItems];
+  });
+}
         setImagesReady(true);
 
         if (fetchedThumbnails.length < pageSize) {
@@ -587,38 +588,6 @@ const ThumbnailGallery = ({
   }, [activeSubFolderId, isEditing]);
 
   useEffect(() => {
-    const currentObserver = observerRef.current;
-    if (!currentObserver) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const first = entries[0];
-
-        if (
-          first.isIntersecting &&
-          hasMore &&
-          !loading &&
-          !isFetchingMore
-        ) {
-          setIsFetchingMore(true);
-          setPage((prev) => prev + 1);
-        }
-      },
-      { rootMargin: "400px" }
-    );
-
-    observer.observe(currentObserver);
-
-    return () => {
-      if (currentObserver) {
-        observer.unobserve(currentObserver);
-      }
-      observer.disconnect();
-    };
-  }, [hasMore, loading, isFetchingMore]);
-
-
-  useEffect(() => {
     const fetchFolders = async () => {
       if (!folderName) return;
 
@@ -679,6 +648,20 @@ const ThumbnailGallery = ({
 
     return () => observer.disconnect();
   }, [loading]);
+
+
+    const handlePageChange = useCallback((pageNumber) => {
+      setPage(pageNumber);
+      // Scroll to top of gallery header after a short delay to allow UI to update
+      setTimeout(() => {
+        const galleryHeader = document.querySelector('.gallery-header');
+        if (galleryHeader) {
+          galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100); 
+    }, []);
 
 
   useEffect(() => {
@@ -1266,7 +1249,7 @@ const imageChunks = useMemo(() => {
   return (
     <div className="thumbnail-gallery">
 
-      <div className="">
+      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
         {headerLoading ? (
           <HeaderCardsFlashLoader />
         ) : (
@@ -1615,13 +1598,11 @@ const imageChunks = useMemo(() => {
               <div ref={observerRef} style={{ height: "10px" }} />
               {isIOSMobile && totalPages > 0 && (
                 <div className="gallery-pagination-container">
-                  <PaginationUI
+                  <PaginationControls
                     currentPage={page}
-                    setCurrentPage={(newPage) => {
-                      setLoading(true);
-                      setPage(newPage);
-                    }}
                     totalPages={Math.ceil(totalPages / pageSize)}
+                    onPageChange={handlePageChange}
+                    inline={true}
                   />
                 </div>
               )} 
