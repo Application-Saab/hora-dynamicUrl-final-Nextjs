@@ -10,6 +10,7 @@ import dangerImage from "../../assets/danger.png";
 import Popup from "../../utils/popup";
 import OtpLoginPopup from '../../components/OtpLoginPopup';
 import './orderlist.css';
+import Head from "next/head";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -309,6 +310,102 @@ const Orderlist = () => {
   };
 
   return (
+    <>
+    <Head>
+  {/* Title */}
+  <title>My Orders | Track Your Service Bookings | HORA</title>
+
+  {/* Meta Description */}
+  <meta
+    name="description"
+    content="View and manage all your HORA bookings in one place. Track order status, check booking details, view executor information, and manage your decoration, photography, chef, catering, and event service orders."
+  />
+
+  <meta name="robots" content="noindex, follow" />
+  <meta name="author" content="Hora Services" />
+
+  {/* Canonical */}
+  <link
+    rel="canonical"
+    href="https://horaservices.com/orderlist"
+  />
+
+  {/* Favicon */}
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+  />
+
+  {/* Open Graph */}
+  <meta
+    property="og:title"
+    content="My Orders | HORA"
+  />
+  <meta
+    property="og:description"
+    content="Track and manage all your HORA service bookings, order details, and booking status from one dashboard."
+  />
+  <meta
+    property="og:url"
+    content="https://horaservices.com/orderlist"
+  />
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    name="twitter:title"
+    content="My Orders | HORA"
+  />
+  <meta
+    name="twitter:description"
+    content="View your booking history, track order status, and manage HORA service orders."
+  />
+  <meta
+    name="twitter:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Schema - WebPage */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "My Orders",
+        url: "https://horaservices.com/orderlist",
+        description:
+          "Manage and track your HORA service bookings including decoration, photography, chef, catering, and other event services.",
+      }),
+    }}
+  />
+
+  {/* Schema - Profile Page */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        name: "User Orders Dashboard",
+        description:
+          "User dashboard for viewing and tracking service bookings and orders.",
+        publisher: {
+          "@type": "Organization",
+          name: "HORA",
+          url: "https://horaservices.com",
+          logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        },
+      }),
+    }}
+  />
+</Head>
+   
     <main className="order-list">
       <div className="myorder-container">
         {!isLoggedIn ? (
@@ -534,6 +631,7 @@ const Orderlist = () => {
           )}
       </div>
     </main>
+     </>
   );
 }
 

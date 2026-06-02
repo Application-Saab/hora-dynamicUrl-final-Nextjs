@@ -22,9 +22,109 @@ import kanpur from "../../assets/Kanpur.webp";
 import surat from "../../assets/Kanpur.webp";
 import goa from "../../assets/Goa.webp";
 import Image from "next/image";
+import Head from "next/head";
 
 const ContactUs = () => {
   return (
+    <>
+    <Head>
+  {/* Title */}
+  <title>
+    Contact Us | HORA Services - Event Planning & Home Services
+  </title>
+
+  {/* Meta Description */}
+  <meta
+    name="description"
+    content="Contact HORA Services for decoration, photography, catering, chef, waiter, cleaner, and event services across India. Call, WhatsApp, email, or download the HORA app to book services."
+  />
+
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+
+  {/* Canonical */}
+  <link
+    rel="canonical"
+    href="https://horaservices.com/contactus"
+  />
+
+  {/* Favicon */}
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+  />
+
+  {/* Open Graph */}
+  <meta
+    property="og:title"
+    content="Contact HORA Services"
+  />
+  <meta
+    property="og:description"
+    content="Get in touch with HORA Services for event planning, decoration, catering, photography, and home services across India."
+  />
+  <meta
+    property="og:url"
+    content="https://horaservices.com/contactus"
+  />
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    name="twitter:title"
+    content="Contact HORA Services"
+  />
+  <meta
+    name="twitter:description"
+    content="Call, WhatsApp, email, or download the HORA app to book trusted event and home services."
+  />
+  <meta
+    name="twitter:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Contact Page Schema */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        name: "Contact HORA Services",
+        url: "https://horaservices.com/contactus",
+        description:
+          "Contact HORA Services for decoration, photography, catering, chef, and event services across India.",
+      }),
+    }}
+  />
+
+  {/* Organization Schema */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "HORA Services",
+        url: "https://horaservices.com",
+        logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+91-7338584828",
+          contactType: "customer service",
+          areaServed: "IN",
+          availableLanguage: ["English", "Hindi"],
+        },
+        email: "dev@horaservices.com",
+      }),
+    }}
+  />
+</Head>
     <main>
       <div className="aboutUsContainer" style={styles.aboutUsContainer}>
         <div
@@ -252,6 +352,7 @@ const ContactUs = () => {
         </div>
       </div>
     </main>
+    </>
   );
 }
 const styles = {
