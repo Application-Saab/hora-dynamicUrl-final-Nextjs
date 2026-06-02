@@ -59,7 +59,7 @@ const ChatPage = () => {
   const userId =
     typeof window !== "undefined"
       ? localStorage.getItem("userID") ||
-        new URLSearchParams(window.location.search).get("id")
+      new URLSearchParams(window.location.search).get("id")
       : null;
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
     useChatStore();
@@ -94,7 +94,7 @@ const ChatPage = () => {
     if (typeof window === "undefined") return chatBgImage.src;
     const saved = localStorage.getItem("chatBgImage");
     if (saved) return saved;
-    try { localStorage.setItem("chatBgImage", chatBgImage.src); } catch {}
+    try { localStorage.setItem("chatBgImage", chatBgImage.src); } catch { }
     return chatBgImage.src;
   });
   const [userData, setUserData] = useState({});
@@ -341,21 +341,29 @@ const ChatPage = () => {
           chatLayout.style.height = "";
           chatLayout.style.bottom = "";
 
-          const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+          const cached = localStorage.getItem("keyboardHeight");
+          const kbh = cached
+            ? parseFloat(cached)
+            : Math.max(Math.round((window.screen?.height ?? 750) * 0.44), 280);
           const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
           if (showEmojiPickerRef.current) {
             chatLayout.style.paddingBottom = `${kbh}px`;
           } else if (
             isIOS &&
+            fromFocusEvent &&
             textareaRef.current &&
             document.activeElement === textareaRef.current &&
             textareaRef.current.getAttribute("inputmode") !== "none"
           ) {
             // iOS 15+ only: vv.height = window.innerHeight even when keyboard is open.
             // Input focused → keyboard is showing → reserve space above it.
-            // Not applied on Android: back button closes keyboard without blurring input,
-            // so activeElement===input would wrongly keep padding after keyboard closes.
+            // fromFocusEvent guard is critical: when Chrome iOS "Done" closes the keyboard,
+            // vv.resize fires (heightChanged=true) with vv.height=innerHeight, but Chrome
+            // keeps the input focused (no blur). Without this guard the activeElement check
+            // would see textarea focused and wrongly re-apply padding — input stuck in middle.
             chatLayout.style.paddingBottom = `${kbh}px`;
+            requestAnimationFrame(() => scrollToBottom());
+
           } else {
             chatLayout.style.paddingBottom = "";
           }
@@ -402,12 +410,33 @@ const ChatPage = () => {
     const inputEl = textareaRef.current;
     // Pass fromFocusEvent=true so setVvh bypasses the 80px threshold on iOS 15+,
     // where vv.height never changes with keyboard and the threshold would block the update.
-    const onInputFocus = () => requestAnimationFrame(() => setVvh(true));
-    const onInputBlur  = () => requestAnimationFrame(() => setVvh(true));
+    //
+    // blurSafetyTimer: iOS 15+ safety net for Chrome "Done" button.
+    // On iOS 15+, vv.height never changes, so vv.resize won't fire on keyboard close.
+    // If Chrome also keeps input focused (no blur), setVvh is never called to clear
+    // paddingBottom. The timer ensures padding is cleared ~350ms after blur regardless.
+    let blurSafetyTimer = null;
+    const onInputFocus = () => {
+      clearTimeout(blurSafetyTimer);
+      requestAnimationFrame(() => setVvh(true));
+    };
+    const onInputBlur = () => {
+      requestAnimationFrame(() => setVvh(true));
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        blurSafetyTimer = setTimeout(() => {
+          blurSafetyTimer = null;
+          if (showEmojiPickerRef.current) return;
+          const cl = document.querySelector(".chat-layout");
+          if (cl) cl.style.paddingBottom = "";
+        }, 350);
+      }
+    };
+
     inputEl?.addEventListener("focus", onInputFocus);
     inputEl?.addEventListener("blur", onInputBlur);
 
     return () => {
+      clearTimeout(blurSafetyTimer);
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", onVvScroll);
       inputEl?.removeEventListener("focus", onInputFocus);
@@ -962,7 +991,7 @@ const ChatPage = () => {
 
   const membersProfileMap = selectedGroup?.members?.reduce((acc, member) => {
     acc[member.userId] =
-    { name: member.name, avatar: member.profileImageUrl } || {};
+      { name: member.name, avatar: member.profileImageUrl } || {};
     return acc;
   }, {});
   function renderInfoMessage(msg, usersMap) {
@@ -1174,6 +1203,8 @@ const ChatPage = () => {
       )}
 
       <div className="chat-messages" ref={chatBodyRef} style={{ display: messagesLoading ? "none" : undefined }}>
+        {/* Spacer pushes messages to the bottom when content is shorter than the container */}
+        <div style={{ flex: 1 }} />
         {messages.map((msg, index) => {
           const isMe = msg.senderId === userId;
           const senderName = msg.senderName;
@@ -1193,9 +1224,8 @@ const ChatPage = () => {
           return msg?.type !== "info" ? (
             <div
               key={msg._id}
-              className={`chat-message ${isMe ? "sender" : "receiver"} ${
-                isConsecutive ? "consecutive" : ""
-              }`}
+              className={`chat-message ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""
+                }`}
             >
               {!isMe &&
                 !isConsecutive &&
@@ -1221,15 +1251,13 @@ const ChatPage = () => {
                   </div>
                 ))}
               <div
-                className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
-                  isConsecutive ? "consecutive" : ""
-                } ${
-                  isConsecutive && !isMe
+                className={`chat-bubble ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""
+                  } ${isConsecutive && !isMe
                     ? consecutiveIndex % 2 === 0
                       ? "consecutive-even"
                       : "consecutive-odd"
                     : ""
-                }`}
+                  }`}
               >
                 {!isMe && !isConsecutive && (
                   <div
@@ -1288,7 +1316,43 @@ const ChatPage = () => {
             inputTouchStartYRef.current = e.touches[0]?.clientY ?? 0;
           }}
           onTouchEnd={(e) => {
-            if (!showEmojiPicker || !textareaRef.current) return;
+            if (!textareaRef.current) return;
+
+            if (!showEmojiPicker) {
+              if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
+                if (dy <= 10) {
+                  // Check paddingBottom rather than activeElement — catches the case where
+                  // Chrome iOS keeps input focused after Done (no blur, no vv.resize) but
+                  // keyboard IS closed (paddingBottom was cleared by our fromFocusEvent fix).
+                  const cl = document.querySelector(".chat-layout");
+                  const hasPadding = parseFloat(cl?.style.paddingBottom) > 100;
+                  if (!hasPadding) {
+                    // Keyboard is closed. Replicate emoji-picker→keyboard flow:
+                    // setting inputmode="none" first makes iOS treat the next focus as a
+                    // "fresh keyboard open" and update vv.height → vv.resize fires with
+                    // the real keyboard height. Without this, iOS 15+ ignores vv.height
+                    // changes for contentEditable re-focus and we can't measure kbh.
+                    const input = textareaRef.current;
+                    input.setAttribute("inputmode", "none");
+                    const tunnel = document.createElement("input");
+                    tunnel.type = "text";
+                    tunnel.setAttribute("autocomplete", "off");
+                    tunnel.setAttribute("autocorrect", "off");
+                    tunnel.setAttribute("autocapitalize", "off");
+                    tunnel.style.cssText = "position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;";
+                    document.body.appendChild(tunnel);
+                    ignoreNextFocusRef.current = true;
+                    tunnel.focus();
+                    input.removeAttribute("inputmode"); // remove before refocus so keyboard shows
+                    input.focus({ preventScroll: true });
+                    tunnel.remove();
+                  }
+                }
+              }
+              return;
+            }
+
             const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
             if (dy > 10) return; // swipe — keep picker open
 

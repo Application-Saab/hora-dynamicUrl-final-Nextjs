@@ -237,18 +237,25 @@ const ChatPage = () => {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
 
-          const kbh = parseFloat(localStorage.getItem("keyboardHeight") || "260");
+const cached = localStorage.getItem("keyboardHeight");
+          const kbh = cached
+            ? parseFloat(cached)
+            : Math.max(Math.round((window.screen?.height ?? 750) * 0.44), 280);
           const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
           if (
             isIOS &&
+            fromFocusEvent &&
             textareaRef.current &&
             document.activeElement === textareaRef.current &&
             textareaRef.current.getAttribute("inputmode") !== "none"
           ) {
-            // iOS 15+: --vvh stays at window.innerHeight even with keyboard open,
-            // so the layout covers the full screen including keyboard area.
-            // paddingBottom pushes the input above the keyboard.
+            // iOS 15+ only: vv.height = window.innerHeight even with keyboard open.
+            // fromFocusEvent guard prevents Chrome iOS "Done" button from re-applying
+            // padding: Done closes keyboard (vv.resize fires) but keeps input focused,
+            // so without this guard activeElement===textarea wrongly re-applies padding.
+
             chatLayout.style.paddingBottom = `${kbh}px`;
+             requestAnimationFrame(() => scrollToBottom());
           } else {
             chatLayout.style.paddingBottom = "";
           }
@@ -286,9 +293,25 @@ const ChatPage = () => {
 
     // iOS 15+: keyboard does NOT change vv.height, so vv.resize never fires.
     // Use focus/blur on the input to apply/remove keyboard padding.
+    // blurSafetyTimer: safety net for Chrome iOS "Done" on iOS 15+ — if blur fires
+    // but vv.resize doesn't (height never changes), clear padding after animation.
     const inputEl = textareaRef.current;
-    const onInputFocus = () => requestAnimationFrame(() => setVvh(true));
-    const onInputBlur  = () => requestAnimationFrame(() => setVvh(true));
+let blurSafetyTimer = null;
+    const onInputFocus = () => {
+      clearTimeout(blurSafetyTimer);
+      requestAnimationFrame(() => setVvh(true));
+    };
+    const onInputBlur = () => {
+      requestAnimationFrame(() => setVvh(true));
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        blurSafetyTimer = setTimeout(() => {
+          blurSafetyTimer = null;
+          const cl = document.querySelector(".chat-layout");
+          if (cl) cl.style.paddingBottom = "";
+        }, -5);
+      }
+    };
+
     inputEl?.addEventListener("focus", onInputFocus);
     inputEl?.addEventListener("blur", onInputBlur);
 
@@ -297,6 +320,7 @@ const ChatPage = () => {
     window.visualViewport?.addEventListener("scroll", onVvScroll);
 
     return () => {
+      clearTimeout(blurSafetyTimer);
       window.visualViewport?.removeEventListener("resize", setVvh);
       window.visualViewport?.removeEventListener("scroll", onVvScroll);
       inputEl?.removeEventListener("focus", onInputFocus);
@@ -735,6 +759,7 @@ const ChatPage = () => {
       </div>
 
       <div className="chat-messages" ref={chatBodyRef}>
+      <div style={{ flex: 1 }} />
         {messages.map((msg, index) => {
           const isMe = msg.senderId === userId;
           const senderName = msg.senderName;
@@ -754,8 +779,7 @@ const ChatPage = () => {
           return msg?.type !== "info" ? (
             <div
               key={msg._id}
-              className={`chat-message ${isMe ? "sender" : "receiver"} ${
-                isConsecutive ? "consecutive" : ""
+               className={`chat-message ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""
               }`}
             >
               {!isMe &&
@@ -782,10 +806,8 @@ const ChatPage = () => {
                   </div>
                 ))}
               <div
-                className={`chat-bubble ${isMe ? "sender" : "receiver"} ${
-                  isConsecutive ? "consecutive" : ""
-                } ${
-                  isConsecutive && !isMe
+                className={`chat-bubble ${isMe ? "sender" : "receiver"} ${isConsecutive ? "consecutive" : ""
+                  } ${isConsecutive && !isMe
                     ? consecutiveIndex % 2 === 0
                       ? "consecutive-even"
                       : "consecutive-odd"
@@ -844,6 +866,36 @@ const ChatPage = () => {
           onTouchStart={(e) => {
             inputTouchStartYRef.current = e.touches[0]?.clientY ?? 0;
           }}
+          onTouchEnd={(e) => {
+            if (!textareaRef.current) return;
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+              const dy = Math.abs((e.changedTouches[0]?.clientY ?? 0) - inputTouchStartYRef.current);
+              if (dy <= 10) {
+                const cl = document.querySelector(".chat-layout");
+                const hasPadding = parseFloat(cl?.style.paddingBottom) > 100;
+                if (!hasPadding) {
+                  // Keyboard is closed — replicate emoji-picker→keyboard flow.
+                  // Setting inputmode="none" first makes iOS treat next focus as a fresh
+                  // keyboard open → vv.height updates → vv.resize fires with real kbh.
+                  const input = textareaRef.current;
+                  input.setAttribute("inputmode", "none");
+                  const tunnel = document.createElement("input");
+                  tunnel.type = "text";
+                  tunnel.setAttribute("autocomplete", "off");
+                  tunnel.setAttribute("autocorrect", "off");
+                  tunnel.setAttribute("autocapitalize", "off");
+                  tunnel.style.cssText = "position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;";
+                  document.body.appendChild(tunnel);
+                  ignoreNextFocusRef.current = true;
+                  tunnel.focus();
+                  input.removeAttribute("inputmode");
+                  input.focus({ preventScroll: true });
+                  tunnel.remove();
+                }
+              }
+            }
+          }}
+
           onFocus={() => {
             if (showEmojiPicker) {
               setShowEmojiPicker(false);
