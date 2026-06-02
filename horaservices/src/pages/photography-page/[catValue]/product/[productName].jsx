@@ -468,7 +468,7 @@ const ProductDetails = () => {
 
   return (
     <div>
-      <SeoWork city={city} work={work} scriptTag={scriptTag} />
+      <SeoWork city={city}  locality={locality} work={work} scriptTag={scriptTag} />
 
       <div style={{ maxWidth: "600px", margin: "0 auto" }}>
         <div className="decDetails">

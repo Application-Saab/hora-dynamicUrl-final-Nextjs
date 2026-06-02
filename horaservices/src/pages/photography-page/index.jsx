@@ -69,7 +69,7 @@ const brandItems = [
     <>
       <div style={{maxWidth:"800px",margin:"auto"}}>
       
-   <SeoMain city={city}  scriptTag={scriptTag} />
+   <SeoMain city={city}  locality={locality} scriptTag={scriptTag} />
         <div className="party-services homeslider">
           <div className="image-banner-slider">
             <Swiper
