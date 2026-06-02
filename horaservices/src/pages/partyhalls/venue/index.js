@@ -22,23 +22,20 @@ const PartyhallsInvitePage = () => {
   const router = useRouter();
   const { venueid: queryVenueId } = router.query;
   const [showTermsModal, setShowTermsModal] = useState(false);
- const venueTerms = getTermsByEventId(queryVenueId);
+  const venueTerms = getTermsByEventId(queryVenueId);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
-    const [showHostActionSection, setShowHostActionSection] = useState(false);
+  const [showHostActionSection, setShowHostActionSection] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || ""
+    localStorage.getItem("userID") || "",
   );
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [pushRsvpClick, setPushRsvpClick] = useState(false);
-   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
- const { } = useRsvpStatus(
-    queryVenueId,
-    skipRsvpCheck,
-  );
+  const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
+  const {} = useRsvpStatus(queryVenueId, skipRsvpCheck);
   const {
     data: eventData,
     loading: fetchEventLoading,
@@ -51,20 +48,20 @@ const PartyhallsInvitePage = () => {
   const foodPackages = getFoodPackagesByEventId(queryVenueId);
 
   useEffect(() => {
-      const timer = setTimeout(() => {
-        if (!router.isReady) return;
-  
-        if (!queryVenueId && loggedinUserId) {
-          setOpenCreateInviteModal(true);
-        }
-        if (queryVenueId && !loggedinUserId) {
-          setShowGuestLoginModal(true);
-        }
-        setFullPageLoader(false);
-      }, 600);
-  
-      return () => clearTimeout(timer);
-    }, [router.isReady, queryVenueId, loggedinUserId]);
+    const timer = setTimeout(() => {
+      if (!router.isReady) return;
+
+      if (!queryVenueId && loggedinUserId) {
+        setOpenCreateInviteModal(true);
+      }
+      if (queryVenueId && !loggedinUserId) {
+        setShowGuestLoginModal(true);
+      }
+      setFullPageLoader(false);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [router.isReady, queryVenueId, loggedinUserId]);
 
   useLayoutEffect(() => {
     const fetchEventDetails = async () => {
@@ -85,7 +82,7 @@ const PartyhallsInvitePage = () => {
         try {
           let resp = await fetchUserData(
             `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET"
+            "GET",
           );
           setUserData(resp?.data);
         } catch (err) {
@@ -103,15 +100,15 @@ const PartyhallsInvitePage = () => {
     }
   }, [eventData]);
   useLayoutEffect(() => {
-     if (eventDetails && loggedinUserId) {
-       if (eventDetails?.userId === loggedinUserId) {
-         setSkipRsvpCheck(true);
-       } else {
-         setSkipRsvpCheck(false);
-       }
-     }
-   }, [eventDetails, loggedinUserId]);
-console.log("loggedinUserId",loggedinUserId);
+    if (eventDetails && loggedinUserId) {
+      if (eventDetails?.userId === loggedinUserId) {
+        setSkipRsvpCheck(true);
+      } else {
+        setSkipRsvpCheck(false);
+      }
+    }
+  }, [eventDetails, loggedinUserId]);
+  console.log("loggedinUserId", loggedinUserId);
 
   useEffect(() => {
     const syncLoginState = () =>
@@ -126,7 +123,8 @@ console.log("loggedinUserId",loggedinUserId);
 
   // Back button handler
   useEffect(() => {
-    const anyModalOpen = selectedPackage || showGuestLoginModal || openCreateInviteModal;
+    const anyModalOpen =
+      selectedPackage || showGuestLoginModal || openCreateInviteModal;
 
     if (anyModalOpen) {
       window.history.pushState({ modalOpen: true }, "");
@@ -154,7 +152,7 @@ console.log("loggedinUserId",loggedinUserId);
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
   }, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
-useEffect(() => {
+  useEffect(() => {
     setTimeout(() => {
       if (eventDetails && eventDetails.userId === loggedinUserId) {
         setShowHostActionSection(true);
@@ -169,7 +167,6 @@ useEffect(() => {
     <>
       <div className="invite-page">
         <div className="invite-page-container">
-
           {/* Template */}
           <div className="invite-template-shell">
             {fetchEventLoading ? (
@@ -199,7 +196,7 @@ useEffect(() => {
           )}
 
           {/* InviteActions — sirf actual host ko */}
-         {showHostActionSection && (
+          {showHostActionSection && (
             <div className="invite-action-container">
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}
@@ -234,32 +231,46 @@ useEffect(() => {
               </div>
             </div>
           )}
-    
-{venueTerms && (
-  <>
-    <div className="terms-strip" onClick={() => setShowTermsModal(true)}>
-      <div className="terms-blob" />
-      <div className="terms-blob2" />
-      <div className="terms-seal">
-        <svg viewBox="0 0 24 24" fill="none" width={20} height={20}>
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
-          <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-      <div className="terms-body">
-        <p className="terms-title">Terms &amp; Conditions</p>
-        <p className="terms-sub">Tap to read before booking</p>
-      </div>
-      <div className="terms-view-btn">View</div>
-    </div>
 
-    <TermsModal
-      isOpen={showTermsModal}
-      onClose={() => setShowTermsModal(false)}
-      venueId={queryVenueId}
-    />
-  </>
-)}
+          {venueTerms && (
+            <>
+              <div
+                className="terms-strip"
+                onClick={() => setShowTermsModal(true)}
+              >
+                <div className="terms-blob" />
+                <div className="terms-blob2" />
+                <div className="terms-seal">
+                  <svg viewBox="0 0 24 24" fill="none" width={20} height={20}>
+                    <path
+                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                      stroke="#fff"
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M9 12l2 2 4-4"
+                      stroke="#fff"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div className="terms-body">
+                  <p className="terms-title">Terms &amp; Conditions</p>
+                  <p className="terms-sub">Tap to read before booking</p>
+                </div>
+                <div className="terms-view-btn">View</div>
+              </div>
+
+              <TermsModal
+                isOpen={showTermsModal}
+                onClose={() => setShowTermsModal(false)}
+                venueId={queryVenueId}
+              />
+            </>
+          )}
           {/* Celebration Wall */}
           <div className="event-wall-container">
             <h2 className="wall-heading text-center m-0 p-0">Explore Spaces</h2>
@@ -271,7 +282,6 @@ useEffect(() => {
               isVenueHost={true}
             />
           </div>
-
         </div>
       </div>
 
@@ -285,10 +295,10 @@ useEffect(() => {
       <CreateInviteModal
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}
-            getRedirectRoute={(data) => ({
-            pathname: "/partyhalls/venue",
-            query: { venueid: data._id },
-            })}
+        getRedirectRoute={(data) => ({
+          pathname: "/partyhalls/venue",
+          query: { venueid: data._id },
+        })}
       />
       <LoginModal
         isOpen={showGuestLoginModal}
