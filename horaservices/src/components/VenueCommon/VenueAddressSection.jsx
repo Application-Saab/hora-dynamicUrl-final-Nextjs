@@ -25,9 +25,8 @@ const VenueAddressSection = ({ eventData }) => {
       >
         {/* LEFT — Venue Name + Address */}
         <div className="vas-info">
-          {eventData?.hostName && (
-            <h1 className="vas-venue-name">{eventData.hostName
-}</h1>
+          {eventData?.venueName && (
+            <h1 className="vas-venue-name">{eventData.venueName}</h1>
           )}
           {eventData?.location && (
             <p className="vas-address">{eventData.location}</p>
@@ -35,7 +34,10 @@ const VenueAddressSection = ({ eventData }) => {
         </div>
 
         {/* RIGHT — Direction (same as Wonderland) */}
-        <div className="d-flex align-items-center" style={{ marginLeft: "-30px" }}>
+        <div
+          className="d-flex align-items-center"
+          style={{ marginLeft: "-30px" }}
+        >
           <div className="direction-ctn">
             <img
               src="/assets/wonderland/MapGraphImage.png"

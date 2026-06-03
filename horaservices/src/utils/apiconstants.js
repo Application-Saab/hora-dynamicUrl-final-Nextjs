@@ -1,4 +1,4 @@
-export const BASE_URL = "https://horaservices.com";
+export const BASE_URL = "http://localhost:5000";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
@@ -73,3 +73,7 @@ export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
 
+// Venue Listing API Endpoints
+export const GET_VENUE_DETAILS_BY_ID = '/api/party-venue/venue-details';
+export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages-by-venue';
+export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'

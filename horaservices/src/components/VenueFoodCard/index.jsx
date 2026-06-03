@@ -13,12 +13,12 @@ const VenueFoodCard = ({ item, onView }) => {
 
         {/* LEFT — IMAGE */}
         <div className="vfc-imgBox">
-          {item.discount && (
-            <span className="vfc-discount">🔥 {item.discount}</span>
+          {item.discountedPrice && (
+            <span className="vfc-discount">🔥 {item.discountedPrice}</span>
           )}
           <Image
             src={item.image}
-            alt={item.name}
+            alt={item.title}
             fill
             className="vfc-img"
           />
@@ -36,14 +36,14 @@ const VenueFoodCard = ({ item, onView }) => {
             </span> */}
 
             {/* Title */}
-            <h3 className="vfc-title">{item.name}</h3>
+            <h3 className="vfc-title">{item.title}</h3>
 
             {/* Price row */}
             <div className="vfc-priceRow">
-              {item.originalPrice && (
-                <span className="vfc-origPrice">{item.originalPrice}</span>
+              {item.actualPrice && (
+                <span className="vfc-origPrice">{item.actualPrice}</span>
               )}
-              <span className="vfc-price">{item.price}</span>
+              <span className="vfc-price">{item.discountedPrice}</span>
               {item.tag && (
               <span className="vfc-inclusive">✦ {item.tag}</span>
             )}
@@ -53,8 +53,8 @@ const VenueFoodCard = ({ item, onView }) => {
           
 
             {/* Subtitle */}
-            {item.subtitle && (
-              <p className="vfc-subtitle">{item.subtitle}</p>
+            {item.subTitle && (
+              <p className="vfc-subtitle">{item.subTitle}</p>
             )}
 
           </div>
