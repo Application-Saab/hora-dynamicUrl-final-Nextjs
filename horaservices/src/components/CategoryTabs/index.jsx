@@ -103,7 +103,7 @@ const CategoryTabs = ({
       <div className="ctabs-wrap" role="list">
       {data
         .filter((cat) => cat.image)
-        .slice(0, 10)
+        .slice(0, 13)
         .map((cat) => (
           <button
             key={cat.id}

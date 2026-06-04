@@ -87,7 +87,46 @@ export const decCat = [
     imgAlt:
       "Add extra happiness quotient to your wedding night with our exclusive décor package",
   },
-  
+  {
+  id: "10",
+  image:
+    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+  name: "Corporate Showroom",
+  subCategory: "Coorporate-showrooms-decoration",
+  catValue: "Coorporate-showrooms-decoration",
+  imgAlt:
+    "Professional corporate showroom decoration services for product launches, exhibitions, and brand promotions",
+},
+  {
+  id: "11",
+  image:
+    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+  name: "Car Decoration",
+  subCategory: "Car-Decoration",
+  catValue: "Car-Decoration",
+  imgAlt:
+    "Beautiful car decoration services for weddings, engagements, anniversaries, surprises, and special occasions",
+},
+{
+  id: "12",
+ image:
+    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+  name: "Pet Animals Decoration",
+  subCategory: "PetAnimalsDecoration",
+  catValue: "PetAnimalsDecoration",
+  imgAlt:
+    "Creative pet animal decoration services for pet birthdays, adoption celebrations, pet parties, and special occasions",
+},
+{
+  id: "13",
+  image:
+    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+  name: "Festivals Decoration",
+  subCategory: "Festivals-decoration",
+  catValue: "Festivals-decoration",
+  imgAlt:
+    "Beautiful festival decoration services for Diwali, Holi, Christmas, New Year, Navratri, and other special celebrations",
+},
 //  {
 //     id: "3",
 //     image:
