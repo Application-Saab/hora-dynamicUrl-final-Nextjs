@@ -136,3 +136,36 @@ export const trackFolderClick = async (mainFolderId) => {
       throw error;
     }
 };
+
+// track device type api
+export const trackDevice = async ({
+  mainFolderId,
+  userId,
+  deviceType,
+}) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/internal/track-device`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mainFolderId,
+          userId,
+          deviceType,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to track device");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("trackDevice error:", error);
+    throw error;
+  }
+};

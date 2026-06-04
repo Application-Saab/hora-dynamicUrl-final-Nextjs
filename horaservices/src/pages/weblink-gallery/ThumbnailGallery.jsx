@@ -30,7 +30,7 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
@@ -123,7 +123,7 @@ const ThumbnailGallery = ({
   const buttonsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
-
+  const [deviceTracking, setDeviceTracking] = useState(null);
 
 
   // iOS Mobile Detection
@@ -508,6 +508,7 @@ const ThumbnailGallery = ({
         setMainFolderId(data?.folders[0]?._id || null)
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
+        setDeviceTracking(data?.folders[0]?.deviceTracking || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -600,6 +601,41 @@ const ThumbnailGallery = ({
       trackGalleryView(localUserId, mainFolderId);
     }
   }, [mainFolderId, localUserId, viewedBy, customerId]);
+
+  useEffect(() => {
+  if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
+
+  const params = new URLSearchParams(window.location.search);
+    const fromPanel = params.get("fromPanel");
+
+    if (fromPanel === "true") return;
+
+  const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
+
+  if (sessionStorage.getItem(sessionKey)) return;
+
+  const getDeviceType = () => {
+    const ua = navigator.userAgent;
+
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      return "ios";
+    }
+
+    return "android";
+  };
+
+  trackDevice({
+    mainFolderId,
+    userId: localUserId,
+    deviceType: getDeviceType(),
+  })
+    .then(() => {
+      sessionStorage.setItem(sessionKey, "true");
+    })
+    .catch((err) => {
+      console.error("Device tracking failed:", err);
+    });
+}, [mainFolderId, localUserId]);
 
   useEffect(() => {
     const logClick = async () => {
