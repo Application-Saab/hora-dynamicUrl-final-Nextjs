@@ -37,7 +37,7 @@ export default function AddToFolderPopup({
     >
       <div
         className="add-folder-list"
-        style={{ maxHeight: "300px", overflowY: "auto" }}
+        style={{ maxHeight: "285px", overflowY: "auto" }}
       >
         {hasFolders ? (
           folders.map((sf) => (

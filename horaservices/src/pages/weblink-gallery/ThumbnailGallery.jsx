@@ -523,16 +523,16 @@ const ThumbnailGallery = ({
   // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
     if (isIOSMobile) {
-      const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
+      const total = Math.ceil(visibleThumbnails.length / ITEMS_PER_PAGE);
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
-      const currentItems = allThumbnails.slice(startIndex, endIndex);
+      const currentItems = visibleThumbnails.slice(startIndex, endIndex);
       return { currentThumbnailsOnPage: currentItems, totalPages: total };
     } else {
       // Not iOS mobile: show all thumbnails, no pagination UI
-      return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+      return { currentThumbnailsOnPage: visibleThumbnails, totalPages: 1 };
     }
-  }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
@@ -1006,6 +1006,7 @@ const ThumbnailGallery = ({
   }
 
   const handleSubFolderSelect = (id) => {
+    setCurrentPage(1);
     setActiveSubFolderId(id);
     setSelectedImages([]);
 
@@ -1569,7 +1570,7 @@ const ThumbnailGallery = ({
         initialSelection={initialPopupFolders}
         onSubmit={handleAddToFolderSubmit}
         onCreateFolder={handleAddToFolderSubmit}
-        style={{ zIndex: 100001 }}
+        style={{ zIndex: 9999 }}
       />
 
       <CommonImagePopup
