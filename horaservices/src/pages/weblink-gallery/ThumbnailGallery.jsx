@@ -1487,7 +1487,7 @@ const ThumbnailGallery = ({
             {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
 
             {/* ================= MAIN IMAGE GRID ================= */}
-            <>
+            <div style={{ minHeight: "500px" }}>
               {imageChunks.map((chunk, index) => (
                 <React.Fragment key={index}>
                   <ImageGrid
@@ -1527,7 +1527,7 @@ const ThumbnailGallery = ({
                   setSelectedImages={setSelectedImages}
                 />
               )}
-            </>
+            </div>
           </div>
         </div>
 
