@@ -14,7 +14,7 @@ import "../../../css/decoration.css"
 import FAQSection from "@/components/FAQSection";
 function DecorationCityPage() {
   const router = useRouter();
-  let { city, catValue } = router.query;
+  let { city, catValue ,locality} = router.query;
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
   }
@@ -52,7 +52,7 @@ const handleCategoryClick = (slug) => {
 };
   return (
     <>
-      <Decoration city={city} />
+      <Decoration city={city} locality={locality}/>
       <LocalitiesSection
         title={`${city} localities`}
         localities={localities}
