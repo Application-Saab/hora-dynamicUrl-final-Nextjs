@@ -227,6 +227,7 @@ const VenuePage = () => {
                 eventDetails={eventDetails}
                 orderDetails={eventDetails}
                 isHost={eventDetails?.userId === loggedinUserId}
+                isVenue={true}
               />
             )}
           </div>
@@ -278,7 +279,7 @@ const VenuePage = () => {
             </div>
           )}
 
-          {venueTerms && (
+          {eventDetails?.termsAndConditionsHtml && (
             <>
               <div
                 className="terms-strip"
@@ -313,7 +314,7 @@ const VenuePage = () => {
               <TermsModal
                 isOpen={showTermsModal}
                 onClose={() => setShowTermsModal(false)}
-                venueId={queryVenueId}
+                data={eventDetails?.termsAndConditionsHtml}
               />
             </>
           )}

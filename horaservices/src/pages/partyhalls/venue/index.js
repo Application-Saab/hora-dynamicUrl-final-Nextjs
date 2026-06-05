@@ -21,8 +21,9 @@ import useRsvpStatus from "@/hooks/useRsvpStatus";
 const PartyhallsInvitePage = () => {
   const router = useRouter();
   const { venueid: queryVenueId } = router.query;
-  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(true);
   const venueTerms = getTermsByEventId(queryVenueId);
+  console.log('%c [ venueTerms ]', 'font-size:13px; background:pink; color:#bf2c9f;', venueTerms)
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
   const [fullPageLoader, setFullPageLoader] = useState(true);

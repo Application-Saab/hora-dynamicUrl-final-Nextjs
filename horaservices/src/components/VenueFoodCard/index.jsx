@@ -17,7 +17,7 @@ const VenueFoodCard = ({ item, onView }) => {
             <span className="vfc-discount">🔥 {item.discountedPrice}</span>
           )}
           <Image
-            src={item.image}
+            src={item?.packageImageUrl}
             alt={item.title}
             fill
             className="vfc-img"

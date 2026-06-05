@@ -4,24 +4,25 @@ import React from "react";
 import "./TermsModal.css";
 import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms.js";
 
-const TermsModal = ({ isOpen, onClose, eventId }) => {
+const TermsModal = ({ isOpen, onClose, data }) => {
   if (!isOpen) return null;
 
-  const terms = getTermsByEventId(eventId); // now returns array
+  // const terms = getTermsByEventId(eventId); // now returns array
 
   return (
     <div className="tm-overlay" onClick={onClose}>
       <div className="tm-sheet" onClick={(e) => e.stopPropagation()}>
-
         {/* Header */}
         <div className="tm-header">
           <h2 className="tm-title">Terms & Conditions</h2>
-          <button className="tm-close" onClick={onClose}>✕</button>
+          <button className="tm-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
-        <div className="tm-body">
+        {/* <div className="tm-body">
 
-          {terms.map((section, index) => (
+          {terms?.map((section, index) => (
             <React.Fragment key={index}>
 
               <div className="tm-section">
@@ -40,13 +41,20 @@ const TermsModal = ({ isOpen, onClose, eventId }) => {
                 </ul>
               </div>
 
-              {/* Divider except last */}
               {index !== terms.length - 1 && <div className="tm-divider" />}
 
             </React.Fragment>
           ))}
 
-        </div>
+        </div> */}
+
+        <div
+          className="tm-body"
+          dangerouslySetInnerHTML={{
+            __html:
+              data || "<p>No Terms Available</p>",
+          }}
+        />
 
         {/* Footer */}
         <div className="tm-footer">
@@ -54,7 +62,6 @@ const TermsModal = ({ isOpen, onClose, eventId }) => {
             I Understand
           </button>
         </div>
-
       </div>
     </div>
   );
