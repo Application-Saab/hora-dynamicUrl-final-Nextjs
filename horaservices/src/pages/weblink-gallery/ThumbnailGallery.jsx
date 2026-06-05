@@ -30,7 +30,7 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
@@ -123,7 +123,7 @@ const ThumbnailGallery = ({
   const buttonsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
-
+  const [deviceTracking, setDeviceTracking] = useState(null);
 
 
   // iOS Mobile Detection
@@ -508,6 +508,7 @@ const ThumbnailGallery = ({
         setMainFolderId(data?.folders[0]?._id || null)
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
+        setDeviceTracking(data?.folders[0]?.deviceTracking || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -522,16 +523,16 @@ const ThumbnailGallery = ({
   // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
     if (isIOSMobile) {
-      const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
+      const total = Math.ceil(visibleThumbnails.length / ITEMS_PER_PAGE);
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
-      const currentItems = allThumbnails.slice(startIndex, endIndex);
+      const currentItems = visibleThumbnails.slice(startIndex, endIndex);
       return { currentThumbnailsOnPage: currentItems, totalPages: total };
     } else {
       // Not iOS mobile: show all thumbnails, no pagination UI
-      return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+      return { currentThumbnailsOnPage: visibleThumbnails, totalPages: 1 };
     }
-  }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
@@ -600,6 +601,41 @@ const ThumbnailGallery = ({
       trackGalleryView(localUserId, mainFolderId);
     }
   }, [mainFolderId, localUserId, viewedBy, customerId]);
+
+  useEffect(() => {
+  if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
+
+  const params = new URLSearchParams(window.location.search);
+    const fromPanel = params.get("fromPanel");
+
+    if (fromPanel === "true") return;
+
+  const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
+
+  if (sessionStorage.getItem(sessionKey)) return;
+
+  const getDeviceType = () => {
+    const ua = navigator.userAgent;
+
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      return "ios";
+    }
+
+    return "android";
+  };
+
+  trackDevice({
+    mainFolderId,
+    userId: localUserId,
+    deviceType: getDeviceType(),
+  })
+    .then(() => {
+      sessionStorage.setItem(sessionKey, "true");
+    })
+    .catch((err) => {
+      console.error("Device tracking failed:", err);
+    });
+}, [mainFolderId, localUserId]);
 
   useEffect(() => {
     const logClick = async () => {
@@ -970,6 +1006,7 @@ const ThumbnailGallery = ({
   }
 
   const handleSubFolderSelect = (id) => {
+    setCurrentPage(1);
     setActiveSubFolderId(id);
     setSelectedImages([]);
 
@@ -1450,7 +1487,7 @@ const ThumbnailGallery = ({
             {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
 
             {/* ================= MAIN IMAGE GRID ================= */}
-            <>
+            <div style={{ minHeight: "500px" }}>
               {imageChunks.map((chunk, index) => (
                 <React.Fragment key={index}>
                   <ImageGrid
@@ -1490,7 +1527,7 @@ const ThumbnailGallery = ({
                   setSelectedImages={setSelectedImages}
                 />
               )}
-            </>
+            </div>
           </div>
         </div>
 
@@ -1533,7 +1570,7 @@ const ThumbnailGallery = ({
         initialSelection={initialPopupFolders}
         onSubmit={handleAddToFolderSubmit}
         onCreateFolder={handleAddToFolderSubmit}
-        style={{ zIndex: 100001 }}
+        style={{ zIndex: 9999 }}
       />
 
       <CommonImagePopup

@@ -25,19 +25,17 @@ const PaginationControls = ({
     (_, i) => startPage + i
   );
 
-  const handleNext = () => {
-    if (startPage + pagesPerView <= totalPages) {
-      onPageChange(startPage + pagesPerView);
-    }
-  };
+const handleNext = () => {
+  if (currentPage < totalPages) {
+    onPageChange(currentPage + 1);
+  }
+};
 
-  const handlePrev = () => {
-    if (startPage > 1) {
-      onPageChange(
-        Math.max(1, startPage - pagesPerView)
-      );
-    }
-  };
+const handlePrev = () => {
+  if (currentPage > 1) {
+    onPageChange(currentPage - 1);
+  }
+};
 
   return (
     <div
@@ -64,13 +62,13 @@ const PaginationControls = ({
       >
         <button
           onClick={handlePrev}
-          disabled={startPage === 1}
+          disabled={currentPage === 1}
           style={{
             border: "none",
             background: "transparent",
-            opacity: startPage === 1 ? 0.4 : 1,
+            opacity: currentPage === 1 ? 0.4 : 1,
             cursor:
-              startPage === 1
+              currentPage === 1
                 ? "not-allowed"
                 : "pointer",
           }}
@@ -116,18 +114,16 @@ const PaginationControls = ({
 
         <button
           onClick={handleNext}
-          disabled={
-            startPage + pagesPerView > totalPages
-          }
+          disabled={currentPage === totalPages}
           style={{
             border: "none",
             background: "transparent",
             opacity:
-              startPage + pagesPerView > totalPages
+              currentPage === totalPages
                 ? 0.4
                 : 1,
             cursor:
-              startPage + pagesPerView > totalPages
+              currentPage === totalPages
                 ? "not-allowed"
                 : "pointer",
           }}
