@@ -143,7 +143,7 @@ const CommonImagePopup = ({
       onClick={() => setSelectedIndex(null)}
       role="dialog"
       aria-modal="true"
-      style={{ zIndex: 9999 }}
+      style={{ zIndex: 999 }}
     >
       <div className="popupContent" onClick={(e) => e.stopPropagation()}>
         <div className="popupHeader">

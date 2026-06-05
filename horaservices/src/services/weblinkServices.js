@@ -1,23 +1,10 @@
 import { BASE_URL } from "../utils/apiconstants"
 import { MEDIA_WORKER_URL } from "../utils/apiconstants";
-import axios from "axios";
 
 // get images api function 
-export const getImagesbyFolderName = async ({ folderName, customerId, subFolderId, page = 1, limit = 24, }) => {
+export const getImagesbyFolderName = async ({ folderName, customerId }) => {
   try {
-
-        const params = new URLSearchParams({
-      folderName,
-      customerId,
-      page,
-      limit,
-    });
-
-    if (subFolderId) {
-      params.append("subFolderId", subFolderId);
-    }
-
-    const url = `${BASE_URL}/api/internal/weblink-gallery-images?${params.toString()}`;
+    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`;
 
     const response = await fetch(url);
 
@@ -150,32 +137,35 @@ export const trackFolderClick = async (mainFolderId) => {
     }
 };
 
-export const getSubFolders = async ({ folderName }) => {
-  const res = await axios.get(`${BASE_URL}/api/internal/getSubFolders`, {
-    params: { folderName },
-  });
-  return res.data;
-};
-
-
-// tracking share capsule click function 
-export const trackShareCapsuleClick = async (mainFolderId) => { 
-    try {
-      const response = await fetch(`${BASE_URL}/api/internal/track-capsule-share-click`, { 
-        method: 'POST',
+// track device type api
+export const trackDevice = async ({
+  mainFolderId,
+  userId,
+  deviceType,
+}) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/internal/track-device`,
+      {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ mainFolderId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+        body: JSON.stringify({
+          mainFolderId,
+          userId,
+          deviceType,
+        }),
       }
+    );
 
-      return await response.json();
-    } catch (error) {
-      console.error("Error in trackShareCapsuleClick service:", error);
-      throw error;
+    if (!response.ok) {
+      throw new Error("Failed to track device");
     }
+
+    return await response.json();
+  } catch (error) {
+    console.error("trackDevice error:", error);
+    throw error;
+  }
 };
