@@ -177,26 +177,36 @@ const intro = content.description || "";
   const slugify = (text) =>
     text.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const handleViewMore = (work) => {
-    const slug = slugify(work.name);
-    const categorySlug = slugify(catValue || "photography");
-    const city = router.query.city;
-    const locality = router.query.locality;
+const handleViewMore = (work) => {
+  const slug = slugify(work.name);
+  const categorySlug = slugify(catValue || "photography");
 
-    let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+  // router.query se nahi, asPath se parse karo
+  const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
+  // e.g. ['delhi', 'dwarka', 'photography-page', 'Birthday-Photography']
+  // e.g. ['delhi', 'photography-page', 'Birthday-Photography']
+  // e.g. ['photography-page', 'Birthday-Photography']
 
-    if (city && locality) {
-      basePath = `/${city.toLowerCase()}/${locality.toLowerCase()}${basePath}`;
-    } else if (city) {
-      basePath = `/${city.toLowerCase()}${basePath}`;
-    }
+  const photoIndex = pathParts.findIndex((p) => p === "photography-page");
 
-    router.push({
-      pathname: basePath,
-      query: { id: work._id },
-    });
-  };
+  const city =
+    photoIndex > 0 ? pathParts[0] : router.query.city || null;
+  const locality =
+    photoIndex > 1 ? pathParts[1] : router.query.locality || null;
 
+  let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+
+  if (city && locality) {
+    basePath = `/${city.toLowerCase()}/${locality.toLowerCase()}${basePath}`;
+  } else if (city) {
+    basePath = `/${city.toLowerCase()}${basePath}`;
+  }
+
+  router.push({
+    pathname: basePath,
+    query: { id: work._id },
+  });
+};
  
   
  const normalizedCat = normalizeCatValue(catValue);

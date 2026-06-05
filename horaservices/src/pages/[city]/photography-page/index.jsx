@@ -36,7 +36,7 @@ const PhotographyCityPage = () => {
 
   return (
     <div >
-      <Index />
+      <Index city={city} />
         <LocalitiesSection
         title={`${city} localities`}
         localities={cityLocalitiesList}

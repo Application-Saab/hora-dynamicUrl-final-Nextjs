@@ -100,6 +100,7 @@ const brandItems = [
               title={item.name}
               subCategory={item.subCategory}
               city={city}
+              locality={locality}
             />
           ))}
         </div>

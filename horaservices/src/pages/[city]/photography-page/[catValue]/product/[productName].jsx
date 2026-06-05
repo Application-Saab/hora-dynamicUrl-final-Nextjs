@@ -6,7 +6,7 @@ import ProductDetails from "@/pages/photography-page/[catValue]/product/[product
 
 const PhotographyCityPage = () => {
   const router = useRouter();
-  let { city } = router.query;
+  let { city ,locality} = router.query;
 
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
@@ -31,7 +31,7 @@ const PhotographyCityPage = () => {
 
   return (
     <div >
-      <ProductDetails />
+      <ProductDetails city={city} locality={locality} />
      
     </div>
   );

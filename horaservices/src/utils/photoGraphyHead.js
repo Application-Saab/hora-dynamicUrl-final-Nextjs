@@ -134,9 +134,9 @@ export function SeoCategory({
 
   const title =
     locality && city
-      ? `${safeCat} Photography in ${locality}, ${city} | Book Online | HORA`
+      ? `${safeCat}  in ${locality}, ${city} | Book Online | HORA`
       : city
-      ? `${safeCat} Photography in ${city} | Book Online | HORA`
+      ? `${safeCat}  in ${city} | Book Online | HORA`
       : seo?.title || `${safeCat} Photography | HORA`;
 
   const description =
@@ -224,10 +224,10 @@ export function SeoWork({
 }) {
   const title =
     locality && city
-      ? `${work?.name} Photography in ${locality}, ${city} | Starting at ₹3500 | HORA`
+      ? `${work?.name}  in ${locality}, ${city} | Starting at ₹3500 | HORA`
       : city
-      ? `${work?.name} Photography in ${city} | Starting at ₹3500 | HORA`
-      : `${work?.name} Photography | Starting at ₹3500 | HORA`;
+      ? `${work?.name}  in ${city} | Starting at ₹3500 | HORA`
+      : `${work?.name}  | Starting at ₹3500 | HORA`;
 
   const description =
     locality && city
