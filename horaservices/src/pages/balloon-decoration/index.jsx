@@ -107,7 +107,6 @@ const cardsData = [
     catValue: "anniversary-decoration",
        link: `/${getCategorySlug()}/anniversary-decoration`,
     sizeClass: "category-grid__card--small",
-    catValue: "Anniversary",
   },
 ];
 

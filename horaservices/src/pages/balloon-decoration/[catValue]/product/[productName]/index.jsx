@@ -245,10 +245,13 @@ useEffect(() => {
       setCatValue(urlCatValue || "");
       setSendCategoryId(urlCatValue || "");
 
-      if (productName) {
-        const formattedProduct = productName.replace(/-/g, " ");
-        setApiProduct(formattedProduct);
-      }
+  if (productName) {
+  const formattedProduct = productName
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  setApiProduct(formattedProduct);
+}
     }
   }, [router.isReady, router.query]);
 
@@ -259,29 +262,48 @@ useEffect(() => {
     }
   }, [apiProduct]);
 
-  const fetchDecorationDetails = async () => {
-    try {
-      const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
+const fetchDecorationDetails = async () => {
+  try {
+    const tryFetch = async (name) => {
+      const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${encodeURIComponent(
+        name
+      )}`;
+
       const response = await axios.get(url);
-      const fetchedProduct = response.data.data[0];
-      setProduct(fetchedProduct);
-      setIsFetched(true);
 
-      if (fetchedProduct?.price) {
-        const discountDetails = getDiscountedPrice(fetchedProduct.price);
-        setDiscountInfo(discountDetails);
-      }
-      
+      if (response?.data?.error) return null;
 
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching product details:", error.message);
-      setLoading(false);
+      return response?.data?.data?.[0] || null;
+    };
+
+    // 1️⃣ Pehle exact name try karo
+    let fetchedProduct = await tryFetch(apiProduct);
+
+    // 2️⃣ Agar nahi mila aur "And" present hai tab "&" try karo
+    if (!fetchedProduct && /\bAnd\b/i.test(apiProduct)) {
+      const withAmpersand = apiProduct.replace(/\bAnd\b/gi, "&");
+      fetchedProduct = await tryFetch(withAmpersand);
     }
-  };
 
+    if (!fetchedProduct) {
+      console.warn("Product not found:", apiProduct);
+      setLoading(false);
+      return;
+    }
 
+    setProduct(fetchedProduct);
+    setIsFetched(true);
 
+    if (fetchedProduct?.price) {
+      setDiscountInfo(getDiscountedPrice(fetchedProduct.price));
+    }
+
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching:", error);
+    setLoading(false);
+  }
+};
 useEffect(() => {
   if (!router.isReady) return;
 
@@ -301,10 +323,13 @@ useEffect(() => {
   }
 
   // Product name
-  if (productName) {
-    const formattedProduct = productName.replace(/-/g, " ");
-    setApiProduct(formattedProduct);
-  }
+if (productName) {
+  const formattedProduct = productName
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  setApiProduct(formattedProduct);
+}
 
 }, [router.isReady]);
 
@@ -586,6 +611,7 @@ const generateSlug = (name) => {
   return name
     ?.toLowerCase()
     .trim()
+    .replace(/&/g, "and")        // ← yeh add karo & → and
     .replace(/\s+/g, "-")
     .replace(/[^\w-]+/g, "");
 };
@@ -689,52 +715,76 @@ const generateSlug = (name) => {
   return (
     <div className="App" style={{ backgroundColor: "white" }}>
       <Head>
-        <title>
-          {cityName
-            ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName}`
-            : `${product?.name} | ${catValue.replace(/-/g, " ")} `}
-        </title>
+  <title>
+    {locality && cityName
+      ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${locality}, ${cityName}`
+      : cityName
+      ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName}`
+      : `${product?.name} | ${catValue.replace(/-/g, " ")}`}
+  </title>
 
-        <meta
-          name="description"
-          content={
-            cityName
-              ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
-              : `${product?.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`
-          }
-        />
+  <meta
+    name="description"
+    content={
+      locality && cityName
+        ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${locality}, ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
+        : cityName
+        ? `${product?.name} from Hora Services – Stunning ${catValue.replace(/-/g, " ")} decoration starting at just ₹999 in ${cityName}. Perfect for birthdays, anniversaries, baby showers & more!`
+        : `${product?.name} from Hora Services – Beautiful ${catValue.replace(/-/g, " ")} decoration starting at just ₹999. Book for birthdays, anniversaries, weddings & more!`
+    }
+  />
 
-        <meta
-          name="keywords"
-          content={
-            cityName
-              ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${cityName}, balloon decoration in ${cityName}, ${product?.name} decoration price`
-              : `${product?.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name} decoration price`
-          }
-        />
+  <meta
+    name="keywords"
+    content={
+      locality && cityName
+        ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${locality} ${cityName}, balloon decoration in ${locality} ${cityName}, ${product?.name} decoration price`
+        : cityName
+        ? `${product?.name}, ${catValue.replace(/-/g, " ")} in ${cityName}, balloon decoration in ${cityName}, ${product?.name} decoration price`
+        : `${product?.name}, ${catValue.replace(/-/g, " ")}, balloon decoration, ${product?.name} decoration price`
+    }
+  />
 
-        <meta property="og:title" content={`${product?.name} | ${catValue.replace(/-/g, " ")} by Hora Services`} />
-        <meta
-          property="og:description"
-          content={`Book ${product?.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`}
-        />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <meta property="og:image:alt" content={`${product?.name}, ${catValue.replace(/-/g, " ")} decoration`} />
+  <meta
+    property="og:title"
+    content={
+      locality && cityName
+        ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${locality}, ${cityName} by Hora Services`
+        : cityName
+        ? `${product?.name} | ${catValue.replace(/-/g, " ")} in ${cityName} by Hora Services`
+        : `${product?.name} | ${catValue.replace(/-/g, " ")} by Hora Services`
+    }
+  />
+  <meta
+    property="og:description"
+    content={
+      locality && cityName
+        ? `Book ${product?.name} decoration in ${locality}, ${cityName} by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`
+        : `Book ${product?.name} decoration by Hora Services. Explore ${catValue.replace(/-/g, " ")} designs for birthdays, anniversaries, baby showers & more.`
+    }
+  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content={`${product?.name}, ${catValue.replace(/-/g, " ")} decoration`} />
 
-        <script type="application/ld+json">{scriptTag}</script>
-        <script type="application/ld+json">{faqScriptTag}</script>
+  <script type="application/ld+json">{scriptTag}</script>
+  <script type="application/ld+json">{faqScriptTag}</script>
 
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
 
-        <meta
-          property="og:url"
-          content={`https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`}
-        />
-        <meta property="og:type" content="website" />
-      </Head>
-
+  <meta
+    property="og:url"
+    content={
+      locality && cityName
+        ? `https://horaservices.com/${cityName}/${locality}/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`
+        : cityName
+        ? `https://horaservices.com/${cityName}/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`
+        : `https://horaservices.com/balloon-decoration/${catValue}/product/${product?.name?.replace(/\s+/g, "-")}`
+    }
+  />
+  <meta property="og:type" content="website" />
+</Head>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div
@@ -812,14 +862,29 @@ const generateSlug = (name) => {
                   {" > "}
                 </h2>
 
-                <button
-                  onClick={() => {
-                    similarRef?.current?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="view-similar-btn"
-                >
-                  View Similar
-                </button>
+            <button
+  onClick={() => {
+    // GTM Event
+    window.dataLayer = window.dataLayer || [];
+   window.dataLayer.push({
+  event: "view_similar_click",
+  eventCategory: "Product Details Page",
+  eventAction: "View Similar Button Click",
+  eventLabel: product?.name,
+  product_name: product?.name,
+  category: catValue,
+  price: product?.price,
+});
+
+    // Scroll
+    similarRef?.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }}
+  className="view-similar-btn"
+>
+  View Similar
+</button>
               </div>
 
               <h1 className="product-title">

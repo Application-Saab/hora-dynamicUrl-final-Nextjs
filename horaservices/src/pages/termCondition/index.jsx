@@ -1,7 +1,24 @@
+import Head from 'next/head'
 import React from 'react'
 
 const TermsCondition = () => {
   return (
+    <>
+    <Head>
+  <title>Terms & Conditions | HORA Services</title>
+
+  <meta
+    name="description"
+    content="Read the Terms & Conditions of HORA Services. Learn about bookings, payments, cancellations, refunds, service policies, and user responsibilities."
+  />
+
+  <meta name="robots" content="index,follow" />
+
+  <link
+    rel="canonical"
+    href="https://horaservices.com/termCondition"
+  />
+</Head>
     <div class="page-width">
         <h1>Welcome to Hora Services!</h1>
         <p>
@@ -208,7 +225,8 @@ const TermsCondition = () => {
             As long as the website and the information and services on the website are provided free of charge, we will 
             not be liable for any loss or damage of any nature.
         </p>
-    </div>    
+    </div> 
+    </>   
   )
 }
 

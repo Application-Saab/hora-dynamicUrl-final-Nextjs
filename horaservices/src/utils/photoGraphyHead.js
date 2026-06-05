@@ -3,152 +3,156 @@ import {
   categoryBannerMap,
   normalizeCatValue,
 } from "@/pages/photography-page/[catValue]/index.jsx";
-export function SeoMain({ city, scriptTag }) {
+export function SeoMain({ city, locality, scriptTag }) {
   return (
-   <Head>
-  {/* Title (within 60 chars) */}
-<title>
-  {city
-    ? `Photographers in ${city} for All Events | Book Online | HORA`
-    : `Professional Photographers for All Events | Book Online | HORA`}
-</title>
-  {/* Meta Description */}
-  <meta
-  name="description"
-  content={
-    city
-      ? `Book professional photographers in ${city} for birthdays, weddings, baby showers & more. 100+ photographers. Lifetime photo storage. Book HORA now.`
-      : `Book professional photographers for birthdays, anniversaries, weddings, maternity, baby showers & more. 100+ photographers across India. Lifetime photo storage. Book HORA now.`
-  }
-/>
+    <Head>
+      <title>
+        {locality && city
+          ? `Photographers in ${locality}, ${city} for All Events | Book Online | HORA`
+          : city
+          ? `Photographers in ${city} for All Events | Book Online | HORA`
+          : `Professional Photographers for All Events | Book Online | HORA`}
+      </title>
 
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="Hora Services" />
+      <meta
+        name="description"
+        content={
+          locality && city
+            ? `Book professional photographers in ${locality}, ${city} for birthdays, weddings, baby showers & more. 100+ photographers. Lifetime photo storage. Book HORA now.`
+            : city
+            ? `Book professional photographers in ${city} for birthdays, weddings, baby showers & more. 100+ photographers. Lifetime photo storage. Book HORA now.`
+            : `Book professional photographers for birthdays, anniversaries, weddings, maternity, baby showers & more. 100+ photographers across India. Lifetime photo storage. Book HORA now.`
+        }
+      />
 
-  {/* Canonical */}
-  <link rel="canonical" href="https://horaservices.com/photography-page" />
+      <meta name="robots" content="index, follow" />
+      <meta name="author" content="Hora Services" />
 
-  {/* Favicon */}
-  <link
-    rel="icon"
-    href="https://horaservices.com/api/uploads/logo-icon.png"
-  />
+      <link
+        rel="canonical"
+        href={
+          locality && city
+            ? `https://horaservices.com/${city}/${locality}/photography-page`
+            : city
+            ? `https://horaservices.com/${city}/photography-page`
+            : `https://horaservices.com/photography-page`
+        }
+      />
 
-  {/* Open Graph */}
-  <meta
-    property="og:title"
-    content="Professional Photographers for All Events | HORA"
-  />
-  <meta
-    property="og:description"
-    content="Book photographers for birthdays, weddings & events across India."
-  />
-  <meta
-    property="og:url"
-    content="https://horaservices.com/photography-page"
-  />
-  <meta property="og:type" content="website" />
-  <meta
-    property="og:image"
-    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
-  />
+      <link
+        rel="icon"
+        href="https://horaservices.com/api/uploads/logo-icon.png"
+      />
 
-  {/* Twitter */}
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta
-    name="twitter:title"
-    content="Professional Photographers | HORA"
-  />
-  <meta
-    name="twitter:description"
-    content="Hire photographers for birthdays, weddings & events."
-  />
-  <meta
-    name="twitter:image"
-    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
-  />
+      <meta
+        property="og:title"
+        content={
+          locality && city
+            ? `Photographers in ${locality}, ${city} | HORA`
+            : city
+            ? `Photographers in ${city} | HORA`
+            : `Professional Photographers for All Events | HORA`
+        }
+      />
 
-  {/* Schema - Service */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Service",
-        name: "Professional Event Photography Services",
-        provider: {
-          "@type": "Organization",
-          name: "HORA",
-          url: "https://horaservices.com/",
-          logo: "https://horaservices.com/api/uploads/logo-icon.png",
-        },
-        areaServed: {
-          "@type": "Country",
-          name: "India",
-        },
-        description:
-          "Professional photographers for birthdays, weddings, baby showers and corporate events across India.",
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: "4.8",
-          reviewCount: "100",
-        },
-      }),
-    }}
-  />
+      <meta
+        property="og:description"
+        content={
+          locality && city
+            ? `Book photographers in ${locality}, ${city} for birthdays, weddings and events.`
+            : city
+            ? `Book photographers in ${city} for birthdays, weddings and events.`
+            : `Book photographers for birthdays, weddings & events across India.`
+        }
+      />
 
-  {/* Schema - WebPage */}
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: "Photography Services",
-        url: "https://horaservices.com/photography-page",
-        description:
-          "Book professional photographers for events across India.",
-      }),
-    }}
-  />
+      <meta
+        property="og:url"
+        content={
+          locality && city
+            ? `https://horaservices.com/${city}/${locality}/photography-page`
+            : city
+            ? `https://horaservices.com/${city}/photography-page`
+            : `https://horaservices.com/photography-page`
+        }
+      />
 
+      <meta property="og:type" content="website" />
 
-</Head>
+      <meta
+        property="og:image"
+        content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+      />
+
+      <meta name="twitter:card" content="summary_large_image" />
+
+      <meta
+        name="twitter:title"
+        content={
+          locality && city
+            ? `Photographers in ${locality}, ${city} | HORA`
+            : city
+            ? `Photographers in ${city} | HORA`
+            : `Professional Photographers | HORA`
+        }
+      />
+
+      <meta
+        name="twitter:description"
+        content={
+          locality && city
+            ? `Photography services in ${locality}, ${city}.`
+            : city
+            ? `Photography services in ${city}.`
+            : `Hire photographers for birthdays, weddings & events.`
+        }
+      />
+
+      <meta
+        name="twitter:image"
+        content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+      />
+
+      {scriptTag}
+    </Head>
   );
 }
 
-export function SeoCategory({ city, catValue, seoData }) {
+export function SeoCategory({
+  city,
+  locality,
+  catValue,
+  seoData,
+}) {
   const seo = seoData?.[catValue] || {};
 
-  // ✅ SAFE values
   const safeCat = catValue ? catValue.replace(/-/g, " ") : "";
   const safeDesc = seo?.description || "";
 
   const citySlug = city?.toLowerCase()?.replace(/\s+/g, "-");
+  const localitySlug = locality?.toLowerCase()?.replace(/\s+/g, "-");
 
-  const formattedCity = city ? `in ${city}` : "in India";
+  const title =
+    locality && city
+      ? `${safeCat} Photography in ${locality}, ${city} | Book Online | HORA`
+      : city
+      ? `${safeCat} Photography in ${city} | Book Online | HORA`
+      : seo?.title || `${safeCat} Photography | HORA`;
 
-  // ✅ Title
-  const title = city
-    ? `${safeCat} in ${city} | Book Photographer | HORA`
-    : seo?.title || `${safeCat} Photography | HORA`;
+  const description =
+    locality && city
+      ? `Book professional ${safeCat.toLowerCase()} photography in ${locality}, ${city} for birthdays, weddings, baby showers, anniversaries and special events. Trusted photographers with HORA.`
+      : city
+      ? `Book professional ${safeCat.toLowerCase()} photography in ${city} for birthdays, weddings, baby showers, anniversaries and special events. Trusted photographers with HORA.`
+      : safeDesc;
 
-  // ✅ Description
-  const description = city
-    ? safeDesc
-      ? safeDesc.replace(
-          "Book",
-          `Book ${safeCat.toLowerCase()} in ${city}. Book`
-        )
-      : `Book ${safeCat.toLowerCase()} photography in ${city}.`
-    : safeDesc;
+  const url =
+    localitySlug && citySlug
+      ? `https://horaservices.com/${citySlug}/${localitySlug}/photography/${catValue}`
+      : citySlug
+      ? `https://horaservices.com/${citySlug}/photography/${catValue}`
+      : `https://horaservices.com/photography/${catValue}`;
 
-  // ✅ URL
-  const url = citySlug
-    ? `https://horaservices.com/${citySlug}/photography/${catValue}`
-    : `https://horaservices.com/photography/${catValue}`;
-
-  // ✅ Banner Image (IMPORTANT 🔥)
   const normalizedCat = normalizeCatValue(catValue);
 
   const bannerToShow =
@@ -159,41 +163,49 @@ export function SeoCategory({ city, catValue, seoData }) {
 
   return (
     <Head>
-      {/* ✅ Basic SEO */}
       <title>{title}</title>
+
       <meta name="description" content={description} />
+
+      <meta name="robots" content="index, follow" />
+
       <link rel="canonical" href={url} />
 
-      {/* ✅ Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:type" content="website" />
       <meta property="og:image" content={bannerUrl} />
 
-      {/* ✅ Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={bannerUrl} />
 
-      {/* ✅ Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: `${safeCat} ${formattedCity}`,
-            description: description,
-            areaServed: {
-              "@type": city ? "City" : "Country",
-              name: city || "India",
-            },
+            name:
+              locality && city
+                ? `${safeCat} Photography in ${locality}, ${city}`
+                : city
+                ? `${safeCat} Photography in ${city}`
+                : `${safeCat} Photography`,
+            description,
             provider: {
               "@type": "Organization",
               name: "HORA",
               url: "https://horaservices.com",
+            },
+            areaServed: {
+              "@type": locality && city ? "Place" : city ? "City" : "Country",
+              name:
+                locality && city
+                  ? `${locality}, ${city}`
+                  : city || "India",
             },
             image: [bannerUrl],
           }),
@@ -204,22 +216,50 @@ export function SeoCategory({ city, catValue, seoData }) {
 }
 
 
-export function SeoWork({ city, work, scriptTag }) {
+export function SeoWork({
+  city,
+  locality,
+  work,
+  scriptTag,
+}) {
+  const title =
+    locality && city
+      ? `${work?.name} Photography in ${locality}, ${city} | Starting at ₹3500 | HORA`
+      : city
+      ? `${work?.name} Photography in ${city} | Starting at ₹3500 | HORA`
+      : `${work?.name} Photography | Starting at ₹3500 | HORA`;
+
+  const description =
+    locality && city
+      ? `Book professional ${work?.name} photography in ${locality}, ${city} for birthdays, weddings, baby showers, maternity shoots, anniversaries and special events.`
+      : city
+      ? `Book professional ${work?.name} photography in ${city} for birthdays, weddings, baby showers, maternity shoots, anniversaries and special events.`
+      : `Book professional ${work?.name} photography services across India for all occasions.`;
+
   return (
     <Head>
-      <title>
-        {city
-         ? `HORA Photography ${city} ${work.name} by Professionals Photographer, Starting at ₹3500`
-            : `HORA Photography ${work.name} by Professionals Photographer, Starting at ₹3500`}
-      </title>
+      <title>{title}</title>
+
+      <meta name="description" content={description} />
 
       <meta
-        name="description"
-        content={
-          city
-            ? `📸 Capture Every Moment, Forever! ✨ Welcome to HORA ${city} ${work?.name} — where every click tells your story! 😊 Weddings, Baby Shoots, Birthdays, and more — our professional photographers make your memories magical.`
-            : `📸 Capture Every Moment, Forever! ✨ Welcome to HORA ${work?.name} — where every click tells your story! 😊 Weddings, Baby Shoots, Birthdays, and more — our professional photographers make your memories magical.`
-        }
+        property="og:title"
+        content={title}
+      />
+
+      <meta
+        property="og:description"
+        content={description}
+      />
+
+      <meta
+        name="twitter:title"
+        content={title}
+      />
+
+      <meta
+        name="twitter:description"
+        content={description}
       />
 
       <MetaCommon scriptTag={scriptTag} />
