@@ -45,6 +45,10 @@ import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
 import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.webp";
 import HouseWarming from "@/assets/categories/HouseWarming.webp";
+import PetAnimalBanner from "@/assets/categories/petanimal.webp";
+import showroomBanner from "@/assets/categories/showroom.webp"; 
+import festivalBanner from "@/assets/categories/festivals.webp";
+import carDecoration from "@/assets/categories/car.webp";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
@@ -130,10 +134,20 @@ const DecorationCatPage = ({ locality }) => {
       return "PremiumDecoration";
     } else if (catValue === "bachelorette-decoration") {
       return "bachelorette";
-      }else if (catValue === "naming-ceremony-decoration") {
-        return "NamingCeremony";
+    }else if (catValue === "naming-ceremony-decoration") {
+      return "NamingCeremony";
+    }else if (catValue === "coorporate-showrooms-decoration"){
+      return "Coorporateshowrooms"
+    }else if (catValue === "car-decoration"){
+      return "CarDecoration"
+    }else if (catValue === "festivals-decoration"){
+      return "Festivals"
+    }else if (catValue === "pet-animals-decoration") {
+      return "PetAnimalsDecoration";
+    }
 
-    } else {
+
+     else {
       const parts = catValue.split("-"); 
       return parts
         .slice(0, 2) 
@@ -356,6 +370,10 @@ const DecorationCatPage = ({ locality }) => {
     "naming-ceremony-decoration":NamingCeremonyBanner,
     "Nation-Pride-decoration": NationPride,
     "House-Warming-decoration": HouseWarming,
+    "coorporate-showrooms-decoration": showroomBanner,
+    "festivals-decoration": festivalBanner,
+    "car-decoration": carDecoration,
+    "pet-animals-decoration": PetAnimalBanner,
   };
 
   function trimText(text) {

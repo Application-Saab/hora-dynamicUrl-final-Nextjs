@@ -90,40 +90,40 @@ export const decCat = [
   {
   id: "10",
   image:
-    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+    "https://horaservices.com/api/uploads/compressed_webp/ShowroomCoorporate.webp",
   name: "Corporate Showroom",
-  subCategory: "Coorporate-showrooms-decoration",
-  catValue: "Coorporate-showrooms-decoration",
+  subCategory: "Coorporateshowrooms",
+  catValue: "coorporate-showrooms-decoration",
   imgAlt:
     "Professional corporate showroom decoration services for product launches, exhibitions, and brand promotions",
 },
   {
   id: "11",
   image:
-    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+    "https://horaservices.com/api/uploads/compressed_webp/CarDecoration.webp",
   name: "Car Decoration",
-  subCategory: "Car-Decoration",
-  catValue: "Car-Decoration",
+  subCategory: "CarDecoration",
+  catValue: "car-decoration",
   imgAlt:
     "Beautiful car decoration services for weddings, engagements, anniversaries, surprises, and special occasions",
 },
 {
   id: "12",
  image:
-    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+    "https://horaservices.com/api/uploads/compressed_webp/PetAnimalsDecoration.webp",
   name: "Pet Animals Decoration",
   subCategory: "PetAnimalsDecoration",
-  catValue: "PetAnimalsDecoration",
+  catValue: "Pet-Animals-Decoration",
   imgAlt:
     "Creative pet animal decoration services for pet birthdays, adoption celebrations, pet parties, and special occasions",
 },
 {
   id: "13",
   image:
-    "https://horaservices.com/api/uploads/compressed_webp/corporate-showroom.webp",
+    "https://horaservices.com/api/uploads/compressed_webp/FestivalsDecoration.webp",
   name: "Festivals Decoration",
-  subCategory: "Festivals-decoration",
-  catValue: "Festivals-decoration",
+  subCategory: "Festivals",
+  catValue: "festivals-decoration",
   imgAlt:
     "Beautiful festival decoration services for Diwali, Holi, Christmas, New Year, Navratri, and other special celebrations",
 },
