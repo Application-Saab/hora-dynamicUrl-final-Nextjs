@@ -475,7 +475,27 @@ const PageTitle = (catValue, city, locality, theme) => {
     baseTitle = location
       ? `Bachelorette Party Decoration in ${location} with Trendy Balloon & Theme Decor, Starting at ₹1999`
       : "Bachelorette Party Decoration with Trendy Balloon & Theme Decor, Starting at ₹1999";
-  } else {
+  } else if (catValue === "coorporate-showrooms-decoration") {
+  baseTitle = location
+    ? `Corporate Showroom Decoration in ${location} for Product Launches & Brand Promotions, Starting at ₹3999`
+    : "Corporate Showroom Decoration for Product Launches & Brand Promotions, Starting at ₹3999";
+}
+else if (catValue === "car-decoration") {
+  baseTitle = location
+    ? `Car Decoration in ${location} for Weddings, Engagements & Special Occasions, Starting at ₹999`
+    : "Car Decoration for Weddings, Engagements & Special Occasions, Starting at ₹999";
+}
+else if (catValue === "Pet-Animals-Decoration") {
+  baseTitle = location
+    ? `Pet Animal Decoration in ${location} for Pet Birthdays, Adoption Celebrations & Parties, Starting at ₹999`
+    : "Pet Animal Decoration for Pet Birthdays, Adoption Celebrations & Parties, Starting at ₹999";
+}
+else if (catValue === "festivals-decoration") {
+  baseTitle = location
+    ? `Festival Decoration in ${location} for Diwali, Holi, Christmas, New Year & More, Starting at ₹1499`
+    : "Festival Decoration for Diwali, Holi, Christmas, New Year & More, Starting at ₹1499";
+}
+  else {
     baseTitle = location
       ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
       : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
@@ -507,7 +527,26 @@ const getPageMetaDescription = (catValue, city, locality) => {
       ? `Brighten up your Haldi ceremony in ${location} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
       : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
   }
-
+if (catValue === "coorporate-showrooms-decoration") {
+  return location
+    ? `Transform your corporate showroom in ${location} with professional decoration for product launches, exhibitions & brand promotions. Book HORA today! 🏢✨`
+    : "Transform your corporate showroom with professional decoration for product launches, exhibitions & brand promotions. Book HORA today! 🏢✨";
+}
+if (catValue === "car-decoration") {
+  return location
+    ? `Make your special moments memorable with beautiful car decoration in ${location} for weddings, engagements & anniversaries. Book HORA! 🚗🎊`
+    : "Make your special moments memorable with beautiful car decoration for weddings, engagements & anniversaries. Book HORA! 🚗🎊";
+}
+if (catValue === "Pet-Animals-Decoration") {
+  return location
+    ? `Celebrate your furry friend in ${location} with creative pet decoration for birthdays, adoption parties & special occasions. Book HORA! 🐾🎉`
+    : "Celebrate your furry friend with creative pet decoration for birthdays, adoption parties & special occasions. Book HORA! 🐾🎉";
+}
+if (catValue === "festivals-decoration") {
+  return location
+    ? `Light up your festivals in ${location} with stunning decoration for Diwali, Holi, Christmas, New Year & Navratri. Book HORA! 🪔🎊`
+    : "Light up your festivals with stunning decoration for Diwali, Holi, Christmas, New Year & Navratri. Book HORA! 🪔🎊";
+}
   return location
     ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
     : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
