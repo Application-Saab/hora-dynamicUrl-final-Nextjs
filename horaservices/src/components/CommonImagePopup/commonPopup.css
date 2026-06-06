@@ -53,19 +53,6 @@
 .slick-slide-item {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-}
-
-.zoom-container {
-  width: 100%;
-  height: 80vh;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  overflow: hidden;
-  position: relative;
 }
 .popupFooter a{
   font-size: 15px;

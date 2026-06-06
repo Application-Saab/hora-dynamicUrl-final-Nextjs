@@ -3,19 +3,16 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import "./headerCards.css";
 
 import myPhoto from "../../assets/myPhotos.svg";
-import LockerFolderIcon from "../../assets/my_locker_folder_icon.svg";
 import allPhotos from "../../assets/allPhotos.svg";
 import captureIcon from "../../assets/captureIcon.svg";
 import userIcon from "../../assets/userIcon.svg";
 import imagePicker from "../../assets/imagePicker.svg";
 import selfieCapture from "../../assets/selfieCapture.png";
-import user2 from "../../assets/user2.svg";
+import user2 from '../../assets/user2.svg';
 import { createSubfolder, updateSubfolderDP } from "@/services/weblinkServices";
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
-import { FACE_FINDER_URL } from "../../utils/apiconstants";
-import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
-import LoginModal from "../wonderland/common/login/LoginModal";
+import { FACE_FINDER_URL } from '../../utils/apiconstants'
 
 const HeaderCards = ({
   folderName,
@@ -52,39 +49,26 @@ const HeaderCards = ({
   const [previewFile, setPreviewFile] = useState(null);
   const [albums, setAlbums] = useState([]);
   const [localMyPhotos, setLocalMyPhotos] = useState(null);
-  const [localPrivateLocker, setLocalPrivateLocker] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-  const [showOTPModal, setShowOTPModal] = useState(false);
-  const [isVerifiedOTP, setIsVerifiedOTP] = useState(false);
+
+
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
   const localUserId = localStorage.getItem("userID");
-  const localPhoneNumber = localStorage.getItem("mobileNumber");
-  const { userDetails, refetchUser } = useUserDetailsStore();
+  const localPhoneNumber = localStorage.getItem("mobileNumber")
+
   /* ================= DERIVED ================= */
   const myPhotosFolder = useMemo(
     () =>
       localMyPhotos ||
       subFolders.find(
-        (sf) => sf.type === "my_photos" && sf.userId === localUserId,
+        sf => sf.type === "my_photos" && sf.userId === localUserId
       ),
-    [localMyPhotos, subFolders, localUserId],
-  );
-
-  const privateLocker = useMemo(
-    () =>
-      localPrivateLocker ||
-      subFolders.find(
-        (sf) =>
-          sf.type === "others" &&
-          sf.userId === localUserId &&
-          sf.isLocker === true,
-      ),
-    [localPrivateLocker, subFolders, localUserId],
+    [localMyPhotos, subFolders, localUserId]
   );
 
   useEffect(() => {
@@ -93,15 +77,17 @@ const HeaderCards = ({
     }
   }, [showCameraPopup]);
 
-  const isCreateDisabled = !newFolderName.trim() || isLoading;
+  const isCreateDisabled =
+    !newFolderName.trim() || isLoading;
 
-  const isCaptureDisabled = !cameraReady || isCreating || isLoading;
+  const isCaptureDisabled =
+    !cameraReady || isCreating || isLoading;
 
   /* ================= ALBUM LIST ================= */
   useEffect(() => {
     const mapped = subFolders
-      .filter((sf) => sf.type === "others" && !sf.isLocker)
-      .map((sf) => ({
+      .filter(sf => sf.type === "others")
+      .map(sf => ({
         _id: sf._id,
         name: sf.folderName,
         folderDp: {
@@ -112,7 +98,7 @@ const HeaderCards = ({
   }, [subFolders]);
 
   /* ================= FILE PICK ================= */
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -129,7 +115,7 @@ const HeaderCards = ({
 
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: "user" } })
-      .then((stream) => {
+      .then(stream => {
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -139,13 +125,13 @@ const HeaderCards = ({
       .catch(console.error);
 
     return () => {
-      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current?.getTracks().forEach(t => t.stop());
       setCameraReady(false);
     };
   }, [showCameraPopup]);
 
   /* ================= ENSURE MY PHOTOS ================= */
-  const ensureMyPhotosFolder = async (file) => {
+  const ensureMyPhotosFolder = async file => {
     if (myPhotosFolder) return myPhotosFolder;
 
     setIsLoading(true);
@@ -157,7 +143,7 @@ const HeaderCards = ({
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
       fd.append("file", file);
-      fd.append("phoneNo", localPhoneNumber);
+      fd.append("phoneNo", localPhoneNumber)
 
       const data = await createSubfolder(fd);
 
@@ -175,7 +161,7 @@ const HeaderCards = ({
   };
 
   /* ================= SEARCH STREAM ================= */
-  const startSearchStream = async (formData) => {
+  const startSearchStream = async formData => {
     setIsStremSearching(true);
     try {
       const response = await fetch(`${FACE_FINDER_URL}/search`, {
@@ -200,11 +186,12 @@ const HeaderCards = ({
         const events = buffer.split("\n\n");
         buffer = events.pop();
 
-        events.forEach((event) => {
+        events.forEach(event => {
           if (!event.startsWith("data:")) return;
           const payload = JSON.parse(event.replace("data:", ""));
           if (payload.type === "match") {
             matches.push(payload);
+            console.log('%c [ matches ]-197', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
             onSearchResults([...matches]);
           }
           if (payload.type === "complete") {
@@ -214,7 +201,8 @@ const HeaderCards = ({
           }
         });
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Search stream error:", error);
       setIsStremSearching(false);
       setIsSearching(false);
@@ -248,7 +236,7 @@ const HeaderCards = ({
     const imageDataUrl = canvas.toDataURL("image/png");
     setCapturedImage(imageDataUrl);
 
-    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current?.getTracks().forEach(track => track.stop());
     setCameraReady(false);
 
     canvas.toBlob(async (blob) => {
@@ -264,6 +252,7 @@ const HeaderCards = ({
           await handleUpdateSubfolderDP(blob, myFolder._id);
         }
 
+
         setShowCameraPopup(false);
         const fd = new FormData();
         fd.append("sample_image", blob, "capture.png");
@@ -273,49 +262,40 @@ const HeaderCards = ({
 
         await startSearchStream(fd);
       } catch (error) {
-        console.log("error :" + error);
+        console.log("error :" + error)
       }
     }, "image/png");
   };
 
   /* ================= CREATE ALBUM ================= */
-  const handleCreateFolder = async (
-    isLocker = false,
-    subFolder = newFolderName,
-  ) => {
-    if (!isLocker && isCreateDisabled) return;
+  const handleCreateFolder = async () => {
+    if (isCreateDisabled) return;
+
     setIsLoading(true);
     try {
       const fd = new FormData();
       fd.append("file", previewFile);
       fd.append("folderName", folderName);
-      fd.append("subFolderName", subFolder || newFolderName);
+      fd.append("subFolderName", newFolderName);
       fd.append("type", "others");
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
-      fd.append("phoneNo", localPhoneNumber);
-      fd.append("isLocker", isLocker ? true : false);
+      fd.append("phoneNo", localPhoneNumber)
 
       const data = await createSubfolder(fd);
       const newFolder = data.subFolder;
 
       onSubFolderCreated(newFolder);
-      setLocalPrivateLocker(newFolder);
       setActiveTab(newFolder._id);
       onNewFolderActivate(newFolder._id);
 
       if (pendingAssignImageId) {
-        setAllThumbnails((prev) =>
-          prev.map((img) =>
+        setAllThumbnails(prev =>
+          prev.map(img =>
             img._id === pendingAssignImageId
-              ? {
-                  ...img,
-                  folderIds: isLocker
-                    ? [newFolder._id]
-                    : [...(img.folderIds || []), newFolder._id],
-                }
-              : img,
-          ),
+              ? { ...img, folderIds: [...(img.folderIds || []), newFolder._id] }
+              : img
+          )
         );
         setPendingAssignImageId(null);
       }
@@ -327,38 +307,33 @@ const HeaderCards = ({
     } catch (error) {
       console.log("create folder error :", error?.message);
       // alert("create folder error :",error?.message)
-      alert("create folder error: " + error?.message);
-    } finally {
+      alert("create folder error: " + error?.message)
+    }
+    finally {
       setIsLoading(false);
     }
   };
 
   const updateAllStates = (subFolderId, url) => {
-    setAlbums((prev) =>
-      prev.map((album) =>
+    setAlbums(prev =>
+      prev.map(album =>
         album._id === subFolderId
           ? { ...album, folderDp: { thumbnailUrl: url } }
-          : album,
-      ),
+          : album
+      )
     );
-    setLocalMyPhotos((prev) =>
+    setLocalMyPhotos(prev =>
       prev && prev._id === subFolderId
         ? { ...prev, folderDp: { thumbnailUrl: url } }
-        : prev,
+        : prev
     );
 
-    setLocalPrivateLocker((prev) =>
-      prev && prev._id === subFolderId
-        ? { ...prev, folderDp: { thumbnailUrl: url } }
-        : prev,
-    );
-
-    setSubFolders((prev) =>
-      prev.map((sf) =>
+    setSubFolders(prev =>
+      prev.map(sf =>
         sf._id === subFolderId
           ? { ...sf, folderDp: { thumbnailUrl: url } }
-          : sf,
-      ),
+          : sf
+      )
     );
   };
 
@@ -372,32 +347,25 @@ const HeaderCards = ({
       fd.append("image", file);
       fd.append("folderId", mainFolderId);
       fd.append("subFolderId", subFolderId);
-      fd.append("phoneNo", localPhoneNumber);
+      fd.append("phoneNo", localPhoneNumber)
 
       const data = await updateSubfolderDP(fd);
 
       if (data?.data?.thumbnailUrl) {
         updateAllStates(subFolderId, data.data.thumbnailUrl);
       }
+
     } catch (err) {
       console.error("DP update failed", err);
       alert("Failed to update image");
     }
   };
 
-  useEffect(() => {
-    if (isVerifiedOTP) {
-        if (privateLocker) {
-          setActiveTab(privateLocker._id);
-          onSelectSubFolder(privateLocker._id);
-        }
-    }
-  }, [isVerifiedOTP, showOTPModal, privateLocker]);
-
   return (
     <>
       {/* HEADER CARDS */}
       <div className="gallery-headerCard">
+
         {/* ALL */}
         <div
           className={`card-item ${activeTab === "all" ? "active" : ""}`}
@@ -405,7 +373,7 @@ const HeaderCards = ({
             setActiveTab("all");
             onSelectSubFolder(null);
             setIsActualMyPhotos(false);
-            setIsRefreshShow(false);
+            setIsRefreshShow(false)
           }}
         >
           <div className="circle-img-folder circle-img-both">
@@ -420,25 +388,27 @@ const HeaderCards = ({
         {myPhotosFolder ? (
           <div>
             <div
-              className={`card-item ${
-                activeTab === myPhotosFolder._id ? "active" : ""
-              }`}
+              className={`card-item ${activeTab === myPhotosFolder._id ? "active" : ""
+                }`}
               onClick={() => {
                 setActiveTab(myPhotosFolder._id);
 
-                setIsActualMyPhotos(true);
+                setIsActualMyPhotos(true)
                 onSelectSubFolder(myPhotosFolder._id);
                 setIsRefreshShow(true);
 
                 if (matchedKeys.length > 0) {
                   setIsSearching(true);
                 }
+
               }}
             >
               <div className="circle-img-folder circle-img-both">
                 <div className="circle-img-inner">
                   <img
-                    src={myPhotosFolder.folderDp?.thumbnailUrl || myPhoto.src}
+                    src={
+                      myPhotosFolder.folderDp?.thumbnailUrl || myPhoto.src
+                    }
                     alt="My Photos"
                   />
                 </div>
@@ -447,15 +417,17 @@ const HeaderCards = ({
                 <span>My Photos</span>
               </div>
             </div>
+
           </div>
         ) : (
           <div
             className="card-item"
             onClick={() => {
-              setIsActualMyPhotos(true);
-              setShowCameraPopup(true);
-              setIsRefreshShow(false);
-            }}
+              setIsActualMyPhotos(true)
+              setShowCameraPopup(true)
+              setIsRefreshShow(false)
+            }
+            }
           >
             <div className="circle-img-folder circle-img-both">
               <div className="circle-img-inner">
@@ -466,46 +438,15 @@ const HeaderCards = ({
           </div>
         )}
 
-        {/* Private Folder */}
-        {(privateLocker && localUserId === customerId) && (
-          <div>
-            <div
-              className={`card-item ${
-                activeTab === privateLocker._id ? "active" : ""
-              }`}
-              onClick={() => {
-                if (isVerifiedOTP) {
-                  setActiveTab(privateLocker._id);
-                  onSelectSubFolder(privateLocker._id);
-                } else {
-                  setShowOTPModal(true);
-                }
-              }}
-            >
-              <div className="circle-img-folder circle-img-both">
-                <div className="circle-img-inner">
-                  <img
-                    src={privateLocker.folderDp?.thumbnailUrl || LockerFolderIcon.src}
-                    alt="Private Locker"
-                    style={{width: '100%', height: '100%', objectFit: 'scale-down'}}
-                  />
-                </div>
-              </div>
-              <div className="flex">
-                <span>My Locker</span>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* CREATE ALBUM */}
         <div
           className="card-item"
           onClick={() => {
-            setShowCreateFolderPopup(true);
-            setIsActualMyPhotos(false);
-            setIsRefreshShow(false);
-          }}
+            setShowCreateFolderPopup(true)
+            setIsActualMyPhotos(false)
+            setIsRefreshShow(false)
+          }
+          }
         >
           <div className="circle-img add circle-img-both">
             <span>+</span>
@@ -514,21 +455,19 @@ const HeaderCards = ({
         </div>
 
         {/* ALBUMS */}
-        {albums.map((sf) => (
+        {albums.map(sf => (
           <div
             key={sf._id}
             className={`card-item ${activeTab === sf._id ? "active" : ""}`}
             onClick={() => {
               setActiveTab(sf._id);
               onSelectSubFolder(sf._id);
-              setIsActualMyPhotos(false);
-              setIsRefreshShow(false);
+              setIsActualMyPhotos(false)
+              setIsRefreshShow(false)
             }}
           >
             <div className="circle-img-folder circle-img-both">
-              <div
-                className={`${sf.folderDp.thumbnailUrl ? "circle-img-inner" : ""}`}
-              >
+              <div className={`${sf.folderDp.thumbnailUrl ? 'circle-img-inner' : ""}`}>
                 <img
                   src={sf?.folderDp?.thumbnailUrl || user2.src}
                   alt={sf?.name || "Album"}
@@ -538,6 +477,8 @@ const HeaderCards = ({
             <span>{sf.name}</span>
           </div>
         ))}
+
+
       </div>
 
       {/* CAMERA POPUP */}
@@ -572,9 +513,13 @@ const HeaderCards = ({
               />
             )}
 
-            <img src={selfieCapture.src} className="face-overlay" />
+            <img
+              src={selfieCapture.src}
+              className="face-overlay"
+            />
           </div>
         </div>
+
       </CommonPopup>
 
       {/* CREATE FOLDER POPUP */}
@@ -630,20 +575,13 @@ const HeaderCards = ({
           <input
             className="folderName-input"
             value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
+            onChange={e => setNewFolderName(e.target.value)}
             maxLength={14}
             placeholder="Type Folder Name"
           />
           <p className="sub-text">{newFolderName.length}/14 Characters</p>
         </div>
       </CommonPopup>
-      <LoginModal
-        isOpen={showOTPModal}
-        onClose={() => setShowOTPModal(false)}
-        fromCapsule={true}
-        onlyOTP={true}
-        setIsVerifiedOTP={setIsVerifiedOTP}
-      />
     </>
   );
 };
