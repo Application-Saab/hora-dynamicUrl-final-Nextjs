@@ -16,7 +16,7 @@ const PhotographyCityPage = () => {
   return (
     <div >
   
-      <Index />
+      <Index  locality={locality}/>
     
     </div>
   );

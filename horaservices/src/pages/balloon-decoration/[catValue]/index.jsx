@@ -50,6 +50,7 @@ import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
 import NationPride from "@/assets/categories/NationPride.jpeg";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
+import SeoHead from "@/utils/SeoHead";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -417,103 +418,6 @@ const handleViewDetails = (item) => {
   router.push(finalPath);
 };
 
-
-
-const PageTitle = (catValue, city, locality, theme) => {
-  let baseTitle;
-  const location = locality && city ? `${locality}, ${city}` : city ? city : null;
-
-  if (catValue === "kids-birthday-decoration") {
-    baseTitle = location
-      ? `Kids Birthday Balloon Decoration in ${location} by Professional Decorators, Starting at ₹1199`
-      : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "birthday-decoration") {
-    baseTitle = location
-      ? `Birthday Balloon Decoration in ${location} at Home by Professional Decorators, Starting at ₹1199`
-      : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "anniversary-decoration") {
-    baseTitle = location
-      ? `Anniversary Decorations in ${location} with Balloon & Rose Petals, Starting at ₹1199`
-      : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
-  } else if (catValue === "first-night-decoration") {
-    baseTitle = location
-      ? `First Night Decorations in ${location} with Balloon & Rose Petals, Starting at ₹1199`
-      : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
-  } else if (catValue === "baby-shower-decoration") {
-    baseTitle = location
-      ? `Baby Shower in ${location} with Latest Designs by Professional Decorators, Starting at ₹1199`
-      : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "welcome-baby-decoration") {
-    baseTitle = location
-      ? `Baby Welcome Decoration in ${location} at Home by Professional Decorators, Starting at ₹1199`
-      : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
-  } else if (catValue === "haldi-mehendi-decoration") {
-    baseTitle = location
-      ? `Haldi Decoration in ${location} with Latest Designs, Starting at ₹3000`
-      : "Haldi Decoration with Latest Designs, Starting at ₹3000";
-  } else if (catValue === "naming-ceremony-decoration") {
-    baseTitle = location
-      ? `Naming Ceremony Decoration in ${location} with Latest Designs, Starting at ₹3000`
-      : "Naming Ceremony Decoration with Latest Designs, Starting at ₹3000";
-  } else if (catValue === "Nation-Pride-decoration") {
-    baseTitle = location
-      ? `Nation Pride Decoration in ${location} with Latest Designs, Starting at ₹3000`
-      : "Nation Pride Decoration with Latest Designs, Starting at ₹3000";
-  } else if (catValue?.toLowerCase() === "house-warming-decoration") {
-    baseTitle = location
-      ? `House Warming Decoration in ${location} with Elegant Balloon & Flower Decor, Starting at ₹1999`
-      : "House Warming Decoration with Elegant Balloon & Flower Decor, Starting at ₹1999";
-  } else if (catValue === "premium-decoration") {
-    baseTitle = location
-      ? `Stage Decoration in ${location} with Premium Balloon & Flower Designs, Starting at ₹3000`
-      : "Stage Decoration with Premium Balloon & Flower Designs, Starting at ₹3000";
-  } else if (catValue === "Wedding") {
-    baseTitle = location
-      ? `Wedding Decoration in ${location} with Stunning Balloon & Floral Designs, Starting at ₹4999`
-      : "Wedding Decoration with Stunning Balloon & Floral Designs, Starting at ₹4999";
-  } else if (catValue === "bachelorette-decoration") {
-    baseTitle = location
-      ? `Bachelorette Party Decoration in ${location} with Trendy Balloon & Theme Decor, Starting at ₹1999`
-      : "Bachelorette Party Decoration with Trendy Balloon & Theme Decor, Starting at ₹1999";
-  } else {
-    baseTitle = location
-      ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
-      : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-  }
-
-  return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
-};
-
-const getPageMetaDescription = (catValue, city, locality) => {
-  const location = locality && city ? `${locality}, ${city}` : city ? city : null;
-
-  if (catValue === "kids-birthday-decoration") {
-    return location
-      ? `At Hora in ${location}, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨`
-      : "At Hora, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨";
-  }
-  if (catValue === "birthday-decoration") {
-    return location
-      ? `Celebrate birthdays in ${location} with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉`
-      : "Celebrate birthdays with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉";
-  }
-  if (catValue === "anniversary-decoration") {
-    return location
-      ? `Make your anniversary in ${location} magical with elegant balloon & rose petal decorations. Book directly online! 💖`
-      : "Make your anniversary magical with elegant balloon & rose petal decorations. Book directly online! 💖";
-  }
-  if (catValue === "haldi-mehendi-decoration") {
-    return location
-      ? `Brighten up your Haldi ceremony in ${location} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
-      : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
-  }
-
-  return location
-    ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${location} – Starting at ₹1199`
-    : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-};
-
-
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
@@ -523,29 +427,12 @@ const getPageMetaDescription = (catValue, city, locality) => {
 
   return (
     <div className="decCatPage">
-     <Head>
-  <title>{PageTitle(normalizedCat, city, locality, theme)}</title>
-  <meta name="description" content={getPageMetaDescription(normalizedCat, city, locality)} />
-  <meta name="keywords" content="Balloon and Flower Decoration @999" />
-  <meta property="og:title" content={PageTitle(normalizedCat, city, locality)} />
-  <meta property="og:description" content={getPageMetaDescription(normalizedCat, city, locality)} />
-  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-  <script type="application/ld+json">{scriptTag}</script>
-  <meta name="robots" content="index, follow" />
-  <meta name="author" content="Hora Services" />
-  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-  <meta
-    property="og:url"
-    content={
-      locality && city
-        ? `https://horaservices.com/${city}/${locality}/balloon-decoration/${normalizedCat}`
-        : city
-        ? `https://horaservices.com/${city}/balloon-decoration/${normalizedCat}`
-        : `https://horaservices.com/balloon-decoration/${normalizedCat}`
-    }
-  />
-  <meta property="og:type" content="website" />
-</Head>
+<SeoHead
+  catValue={normalizedCat}
+  city={city}
+  locality={locality}
+  theme={theme}
+/>
 
    {loading ? (
   <div className="skeleton-wrapper">

@@ -7,7 +7,7 @@ import CatValuePage from "@/pages/photography-page/[catValue]";
 
 const PhotographyCityPage = () => {
   const router = useRouter();
-  let { city } = router.query;
+  let { city,locality } = router.query;
 
   if (city) {
     city = city.charAt(0).toUpperCase() + city.slice(1);
@@ -30,7 +30,7 @@ const PhotographyCityPage = () => {
 
   return (
     <div >
-      <CatValuePage />
+      <CatValuePage city={city} locality={locality} />
     </div>
   );
 };
