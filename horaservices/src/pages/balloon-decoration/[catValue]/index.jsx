@@ -49,6 +49,7 @@ import PetAnimalBanner from "@/assets/categories/petanimal.webp";
 import showroomBanner from "@/assets/categories/showroom.webp"; 
 import festivalBanner from "@/assets/categories/festivals.webp";
 import carDecoration from "@/assets/categories/car.webp";
+import Engagementdecoration from "@/assets/categories/Engagementdecoration.webp";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
@@ -145,7 +146,9 @@ const DecorationCatPage = ({ locality }) => {
     }else if (catValue === "pet-animals-decoration") {
       return "PetAnimalsDecoration";
     }
-
+    else if  (catValue === "engagement-decoration"){
+      return "Engagementdecoration"
+    }
 
      else {
       const parts = catValue.split("-"); 
@@ -374,6 +377,7 @@ const DecorationCatPage = ({ locality }) => {
     "festivals-decoration": festivalBanner,
     "car-decoration": carDecoration,
     "pet-animals-decoration": PetAnimalBanner,
+    "engagement-decoration": Engagementdecoration,
   };
 
   function trimText(text) {

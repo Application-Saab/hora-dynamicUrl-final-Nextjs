@@ -111,7 +111,7 @@ export const decCat = [
   id: "12",
  image:
     "https://horaservices.com/api/uploads/compressed_webp/PetAnimalsDecoration.webp",
-  name: "Pet Animals Decoration",
+  name: "Pet Decoration",
   subCategory: "PetAnimalsDecoration",
   catValue: "Pet-Animals-Decoration",
   imgAlt:
@@ -186,12 +186,13 @@ export const decCat = [
     catValue: "House-warming-decoration",
     imgAlt: "House Warming Decoration",
   },
-  {
+   {
     id: "17",
     Image: "",
-    name: "Car Decoration",
-    subCategory: "CarDecoration",
-    catValue: "Car-decoration",
-    imgAlt: "Car Decoration",
+    name: "Engagement decoration",
+    subCategory: "Engagementdecoration",
+    catValue: "engagement-decoration",
+    imgAlt: "Engagement Decoration",
   },
+
 ];
