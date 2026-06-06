@@ -52,6 +52,7 @@ import BrandBanner from "@/components/BrandBanner";
 import decorationWedding from "@/assets/decorationwedding.webp"
 import decorationBridetobe from"@/assets/decorationBride-tobe.webp"
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp"
+import Engagementdecoration from "@/assets/engament.webp"
 import {
   birthdayData,
   haldiAndMehndiData,
@@ -144,6 +145,16 @@ const smallCards = [
     subCategory: "bachelorette",
     catValue: "bachelorette-decoration",
     imgAlt: "Bride to be Decoration",
+  },
+    {
+    image: Engagementdecoration,
+    title: "Engagement",
+    // link: "balloon-decoration/bachelorette-decoration",
+      link: `/${getCategorySlug()}/engagement-decoration`,
+    categoryName: "engagement",
+    subCategory: "engagement",
+    catValue: "engagement-decoration",
+    imgAlt: "Engagement Decoration",
   },
 ];
 

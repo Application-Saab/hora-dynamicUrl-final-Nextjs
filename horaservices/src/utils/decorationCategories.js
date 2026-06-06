@@ -87,7 +87,46 @@ export const decCat = [
     imgAlt:
       "Add extra happiness quotient to your wedding night with our exclusive décor package",
   },
-  
+  {
+  id: "10",
+  image:
+    "https://horaservices.com/api/uploads/compressed_webp/ShowroomCoorporate.webp",
+  name: "Corporate Showroom",
+  subCategory: "Coorporateshowrooms",
+  catValue: "coorporate-showrooms-decoration",
+  imgAlt:
+    "Professional corporate showroom decoration services for product launches, exhibitions, and brand promotions",
+},
+  {
+  id: "11",
+  image:
+    "https://horaservices.com/api/uploads/compressed_webp/CarDecoration.webp",
+  name: "Car Decoration",
+  subCategory: "CarDecoration",
+  catValue: "car-decoration",
+  imgAlt:
+    "Beautiful car decoration services for weddings, engagements, anniversaries, surprises, and special occasions",
+},
+{
+  id: "12",
+ image:
+    "https://horaservices.com/api/uploads/compressed_webp/PetAnimalsDecoration.webp",
+  name: "Pet Decoration",
+  subCategory: "PetAnimalsDecoration",
+  catValue: "Pet-Animals-Decoration",
+  imgAlt:
+    "Creative pet animal decoration services for pet birthdays, adoption celebrations, pet parties, and special occasions",
+},
+{
+  id: "13",
+  image:
+    "https://horaservices.com/api/uploads/compressed_webp/FestivalsDecoration.webp",
+  name: "Festivals Decoration",
+  subCategory: "Festivals",
+  catValue: "festivals-decoration",
+  imgAlt:
+    "Beautiful festival decoration services for Diwali, Holi, Christmas, New Year, Navratri, and other special celebrations",
+},
 //  {
 //     id: "3",
 //     image:
@@ -147,12 +186,13 @@ export const decCat = [
     catValue: "House-warming-decoration",
     imgAlt: "House Warming Decoration",
   },
-  {
+   {
     id: "17",
     Image: "",
-    name: "Car Decoration",
-    subCategory: "CarDecoration",
-    catValue: "Car-decoration",
-    imgAlt: "Car Decoration",
+    name: "Engagement decoration",
+    subCategory: "Engagementdecoration",
+    catValue: "engagement-decoration",
+    imgAlt: "Engagement Decoration",
   },
+
 ];

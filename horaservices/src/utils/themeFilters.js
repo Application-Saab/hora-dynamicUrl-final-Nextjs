@@ -36,6 +36,9 @@ import NamingCeremony from "@/assets/NamingCeremony.webp";
 import NameRevealing from "@/assets/NameRevealing.webp";
 import Annaprashan from "@/assets/Annaprashan.webp";
 import Baptism from "@/assets/Baptism.webp";
+import Candyland from "@/assets/Candyland.webp";
+import peppaPigImg from "@/assets/Pig.webp";
+import Kpop from "@/assets/Kpop.webp";
 export const themeFilters = [
   { label: "Select Theme", value: "all", image: "" },
   { label: "Astronaut space ", value: "Astronaut-space", image: astronautImg },
@@ -69,7 +72,10 @@ export const themeFilters = [
   {label:"Minion ",value:"Minion",image: MinionImg},
   {label:"Sonic ",value:"Sonic",image: SonicImg},
   {label:"Krishna ",value:"Krishna",image:KrishnaImg},
- 
+  {label:"Avengers ",value:"Avengers",image: avengersImg},
+  {label:"Candyland",value:"Candy",image:Candyland},
+  {label:"Peppa pig",value:"pig",image:peppaPigImg},
+  {label:"Kpop",value:"pop",image:Kpop},
 ];
 
 export const NamingCeremonyThemes = [
