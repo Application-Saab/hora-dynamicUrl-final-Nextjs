@@ -35,9 +35,6 @@ const CommonImagePopup = ({
   onClose,
   renderFooter,
   isEventWall = false,
-  isZoomed = false,
-  zoomLevel = 1,
-  total,
 }) => {
   const sliderSettings = {
     dots: false,
@@ -46,9 +43,6 @@ const CommonImagePopup = ({
     slidesToShow: 1,
     slidesToScroll: 1,
     adaptiveHeight: true,
-    swipe: zoomLevel === 1,
-    draggable: zoomLevel === 1,
-    touchMove: zoomLevel === 1,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     beforeChange: (current, next) => {
@@ -152,7 +146,7 @@ const CommonImagePopup = ({
               <Image src={Crossicon} alt="Close" width={18} height={18} />
             </button>
             <div className="image-index">
-              {`${imageNumber} / ${total ? total : images.length}`}
+              {`${imageNumber} / ${images.length}`}
             </div>
           </div>
 
@@ -177,45 +171,36 @@ const CommonImagePopup = ({
 
               return (
                 <div key={item._id || idx} className="slick-slide-item">
-                  <div className="zoom-container">
-                    {isVideo ? (
-                      <video
-                        src={isEventWall ? item?.postUrl : item.originalUrl}
-                        controls
-                        playsInline
-                        muted={false}
-                        preload="metadata"
-                        style={{
-                          maxHeight: "80vh",
-                          width: "100%",
-                          objectFit: "contain",
-                          background: "#000",
-                        }}
-                      />
-                    ) : (
-                      <img
-                        src={
-                          isZoomed
-                            ? item.originalUrl
-                            : isEventWall
-                              ? item?.postWebpUrl || item?.postUrl
-                              : item.thumbnailImageUrl || item.originalUrl
-                        }
-                        loading="lazy"
-                        alt={`Media ${idx + 1}`}
-                        style={{
-                          maxHeight: "80vh",
-                          maxWidth: "100%",
-                          objectFit: "contain",
-                          transform: `scale(${zoomLevel})`,
-                          transformOrigin: "center center",
-                          transition: "transform 0.25s ease",
-                          cursor: isZoomed ? "zoom-out" : "zoom-in",
-                          willChange: "transform",
-                        }}
-                      />
-                    )}
-                  </div>
+                  {isVideo ? (
+                    <video
+                      src={ isEventWall ? item?.postUrl : item.originalUrl}
+                      controls
+                      playsInline
+                      muted={false}
+                      preload="metadata"
+                      style={{
+                        maxHeight: "80vh",
+                        width: "100%",
+                        objectFit: "contain",
+                        background: "#000",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={
+                        isEventWall
+                          ? item?.postWebpUrl || item?.postUrl
+                          : item.thumbnailImageUrl || item.originalUrl
+                      }
+                      loading="lazy"
+                      alt={`Media ${idx + 1}`}
+                      style={{
+                        maxHeight: "80vh",
+                        width: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  )}
                 </div>
               );
             })}
