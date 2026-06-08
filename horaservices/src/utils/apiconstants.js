@@ -74,3 +74,8 @@ export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
 
+// Venue Listing API Endpoints
+export const GET_VENUE_DETAILS_BY_ID = '/api/party-venue/venue-details';
+export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages-by-venue';
+export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'
+export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'

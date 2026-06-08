@@ -17,6 +17,7 @@ const TemplateRenderer = ({
   isLandingPage = true,
   templatewrapperclass,
   isHost,
+  isVenue = false,
 }) => {
   const textRef = useRef(null);
   const templateRef = useRef(null);
@@ -74,18 +75,22 @@ const TemplateRenderer = ({
       if (savedImage) {
         setMediaUrl(savedImage);
       } else {
-        setMediaUrl(
-          orderDetails?.externalTemplateVideoUrl ||
-            orderDetails?.externalTemplateImageUrl ||
-            orderDetails?.Image ||
-            orderDetails?.hostImage ||
-            DefaultTemplate.src,
-        );
+        if (!isVenue) {
+          setMediaUrl(
+            eventDetails?.externalTemplateVideoUrl ||
+              eventDetails?.externalTemplateImageUrl ||
+              eventDetails?.Image ||
+              eventDetails?.hostImage ||
+              DefaultTemplate.src,
+          );
+        } else if (isVenue) {
+          setMediaUrl(eventDetails?.venueImageUrl || DefaultTemplate.src);
+        }
       }
     };
 
     fetchImage();
-  }, [eventDetails, orderDetails]);
+  }, [eventDetails]);
 
   const handleImageLoad = (e) => {
     const img = e.target;
@@ -123,15 +128,16 @@ const TemplateRenderer = ({
     form.append("image", file);
     form.append("userId", eventDetails?.userId);
 
+    let url = isVenue
+      ? `${BASE_URL}/api/party-venue/venue-banner-image/${eventDetails?._id}`
+      : `${BASE_URL}/api/customer/event/event-invites/external-template/${eventDetails?._id}`;
+      
     try {
-      await fetch(
-        `${BASE_URL}/api/customer/event/event-invites/external-template/${eventDetails?._id}`,
-        {
-          method: "PUT",
-          headers: { Authorization: token || "" },
-          body: form,
-        },
-      );
+      await fetch(url, {
+        method: "PUT",
+        headers: { Authorization: token || "" },
+        body: form,
+      });
       refetchChatRooms();
     } catch (err) {
       console.error("Upload failed:", err);
@@ -140,13 +146,25 @@ const TemplateRenderer = ({
 
   useEffect(() => {
     setTimeout(() => {
-      if (
-        !eventDetails?.externalTemplateImageUrl &&
-        mediaUrl === DefaultTemplate.src &&
-        isHost &&
-        imageLoaded
-      ) {
-        handleDownload();
+      if (!isVenue) {
+        if (
+          !eventDetails?.externalTemplateImageUrl &&
+          mediaUrl === DefaultTemplate.src &&
+          isHost &&
+          imageLoaded
+        ) {
+          handleDownload();
+        }
+      } else if (isVenue) {
+        console.log('%c [ isVenue ]', 'font-size:13px; background:pink; color:#bf2c9f;', isVenue)
+        if (
+          !eventDetails?.venueImageUrl &&
+          mediaUrl === DefaultTemplate.src &&
+          isHost &&
+          imageLoaded
+        ) {
+          handleDownload();
+        }
       }
     }, 2500);
   }, [eventDetails, mediaUrl, isHost, imageLoaded]);
@@ -255,7 +273,7 @@ const TemplateRenderer = ({
 
             {!isVideoFile(mediaUrl) &&
               mediaUrl === DefaultTemplate.src &&
-              eventDetails?.hostName && (
+              (eventDetails?.hostName || eventDetails?.venueName) && (
                 <div
                   ref={textRef}
                   className="default-template-text"
@@ -274,7 +292,7 @@ const TemplateRenderer = ({
                     pointerEvents: "auto",
                   }}
                 >
-                  {eventDetails?.hostName}
+                  {eventDetails?.hostName || eventDetails?.venueName}
                 </div>
               )}
           </div>

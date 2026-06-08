@@ -1,0 +1,40 @@
+/* ── VENUE ADDRESS SECTION ── */
+/* Direction wali saari classes same hain — direction-ctn, direction-bg-img,
+   address-direction-image, direction-icon-ctn — inhe dobara likhne ki zarurat nahi.
+   Sirf venue-specific styles yahan hain. */
+
+.vas-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  margin-top: 9px;
+}
+
+.vas-info {
+  display: flex;
+  flex-direction: column;
+  padding-left: 5px;
+  gap: 3px;
+}
+
+/* Venue Name — date-time-text ki jagah */
+.vas-venue-name {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #423e3e;
+  line-height: normal;
+  margin-bottom: 0px;
+}
+
+/* Address — same as existing address-text */
+.vas-address {
+  font-size: 10px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  color: #505050;
+  line-height: 13px;
+  letter-spacing: 0%;
+  margin-bottom: 0px;
+}
