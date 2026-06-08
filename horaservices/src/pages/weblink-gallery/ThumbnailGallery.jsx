@@ -433,7 +433,9 @@ const ThumbnailGallery = ({
     selectedIndex !== null ? popupImages[selectedIndex] : null;
 
   const visibleThumbnails = useMemo(() => {
-    const normalize = (val) => (val || "").trim().toLowerCase();
+    const normalize = (val) => {
+  return String(val ?? "").trim().toLowerCase();
+};
 
     if (!isActualMyPhotos) {
       if (isEditing) {
@@ -614,13 +616,14 @@ const ThumbnailGallery = ({
 
   if (sessionStorage.getItem(sessionKey)) return;
 
-  const getDeviceType = () => {
-    const ua = navigator.userAgent;
-
+    const getDeviceType = () => {
+    if (typeof navigator !== 'undefined') {
+      const ua = navigator.userAgent;
     if (/iPhone|iPad|iPod/i.test(ua)) {
       return "ios";
     }
-
+    }
+    
     return "android";
   };
 
