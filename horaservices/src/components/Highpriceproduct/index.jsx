@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 
 import "./highpriceproduct.css";
+import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 
 const HighPriceProduct = ({ data, onCardClick }) => {
   if (!data || data.length === 0) return null;
@@ -31,8 +32,12 @@ const HighPriceProduct = ({ data, onCardClick }) => {
             </div>
           )}
 
-          <img
-            src={`https://horaservices.com/api/uploads/compressed_webp/${highest.featured_image?.split(".")[0]}.webp`}
+          <Image
+            src={
+              highest.featured_images?.[0]?.fileName
+                ? `${COMPRESSED_WEBP_IMG_URL}${highest.featured_images[0].fileName.split(".")[0]}.webp`
+                : "/fallback-image.png"
+            }
             alt={highest.name}
             className="highPriceImage"
           />

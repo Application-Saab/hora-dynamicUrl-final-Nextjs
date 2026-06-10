@@ -22,6 +22,7 @@ import {
   GET_DECORATION_BY_NAME,
   GET_DECORATION_CAT_ID,
   GET_ADDON_BY_ID,
+  COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
 import axios from "axios";
 import FAQSection from "@/components/FAQSection";
@@ -796,18 +797,16 @@ const generateSlug = (name) => {
 
             <div>
               <Image
-                src={
-                  product?.featured_image
-                    ? `https://horaservices.com/api/uploads/compressed_webp/${product.featured_image.split(".")[0]
-                    }.webp`
-                    : "/default-image.webp" // fallback image
-                }
-                alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+                 src={
+                 product?.featured_images?.[0]?.fileName
+                 ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
+                  : "/fallback-image.png"
+                 }
+                 alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
                 style={{ width: "100%", height: "auto" }}
                 width={300}
                 height={300}
               />
-
               <div
                 style={{
                   position: "absolute",

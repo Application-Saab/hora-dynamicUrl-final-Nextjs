@@ -113,7 +113,7 @@ export const decCat = [
     "https://horaservices.com/api/uploads/compressed_webp/PetAnimalsDecoration.webp",
   name: "Pet Decoration",
   subCategory: "PetAnimalsDecoration",
-  catValue: "Pet-Animals-Decoration",
+  catValue: "pet-animals-decoration",
   imgAlt:
     "Creative pet animal decoration services for pet birthdays, adoption celebrations, pet parties, and special occasions",
 },
