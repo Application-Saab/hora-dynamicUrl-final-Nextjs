@@ -1,0 +1,68 @@
+.venue-box {
+  width: 100%;
+}
+
+.venue-scroll {
+  display: flex;
+  gap: clamp(8px, 2vw, 12px);
+  overflow-x: auto;
+  padding: 8px 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  max-width: 480px;
+  margin: auto;
+}
+
+.venue-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.venue-item {
+  flex: 0 0 auto;
+  text-align: center;
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.venue-item:active {
+  transform: scale(0.93);
+}
+
+/* ── Circle image wrapper ── */
+.venue-img {
+  width: clamp(58px, 16vw, 70px);
+  height: clamp(58px, 16vw, 70px);
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: 2.5px solid transparent;         /* default — no ring */
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ── Active ring ── */
+.venue-img.active {
+  border:3px solid #97538C;      /* soft outer glow */
+}
+
+/* ── Label ── */
+.venue-item p {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-size: clamp(10px, 2.6vw, 12px);
+  font-weight: 500;
+  white-space: nowrap;
+  color: #97538C;                              /* default — grey */
+  font-family: 'Inter', sans-serif;
+  transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+/* ── Active label ── */
+.venue-item.active p {
+  color: #97538C;
+  font-weight: 700;
+}

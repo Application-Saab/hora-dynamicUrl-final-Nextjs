@@ -1,0 +1,82 @@
+/* .event-box {
+  background: #fff;
+  padding: clamp(10px, 3vw, 14px) clamp(10px, 3vw, 12px);
+  border-radius: clamp(12px, 3vw, 16px);
+  width: clamp(320px, 100%, 480px);
+  margin: 0 auto;
+  box-sizing: border-box;
+  width: 98%;
+  border: 1px solid #00000021
+} */
+.event-box {
+  background: #fff;
+  padding: clamp(10px, 3vw, 14px) clamp(10px, 3vw, 12px);
+  border-radius: clamp(12px, 3vw, 16px);
+   
+  width: 58%;
+  margin: -30px auto 10px auto;   /* ← yahi kaam karega — banner ke upar pull karega */
+  box-sizing: border-box;
+  border: 1px solid #00000021;
+  position: relative;           /* ← z-index ke liye zaroori */
+  z-index: 10;                  /* ← banner ke upar rahega */
+}
+.event-box h3 {
+    color:black;
+  margin-bottom: clamp(8px, 2.5vw, 12px);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(9.8px, 3.05vw, 14.7px);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.event-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+ gap: clamp(4px, 1.2vw, 6px);
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+.event-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.event-chip {
+  flex: 0 0 auto;
+  padding: clamp(7px, 2vw, 10px) clamp(12px, 4vw, 18px);
+  border-radius: 6px;
+  background: #efefef;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: clamp(8.1px, 2.54vw, 12.2px);
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1.5vw, 6px);
+  user-select: none;
+}
+
+.chip-emoji {
+  font-size: clamp(13px, 3.5vw, 15px);
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  line-height: 1;
+}
+
+.event-chip.active {
+  background: #b57aa8;
+  color: #fff;
+  font-weight: 600;
+}
+
+.event-chip:active {
+  transform: scale(0.97);
+}

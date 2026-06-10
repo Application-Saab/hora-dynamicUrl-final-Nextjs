@@ -1,0 +1,70 @@
+.venue-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 480px;
+  margin: 14px auto 6px auto;
+  padding: 0 10px;
+}
+
+.vlh-title {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(13px, 3.8vw, 16px);
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+
+}
+.vlh-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  max-width: 170px;
+
+  height: 42px;
+
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 14px;
+
+  padding: 0 12px;
+
+  position: relative;
+}
+
+.vlh-filter-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vlh-icon {
+  color: #9b4f96;
+  display: flex;
+  align-items: center;
+}
+
+.vlh-select {
+  border: none;
+  outline: none;
+  background: transparent;
+
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: #9b9b9b;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  cursor: pointer;
+}
+
+.vlh-chevron {
+  color: #9b4f96;
+  font-size: 18px;
+  font-weight: 700;
+  pointer-events: none;
+}

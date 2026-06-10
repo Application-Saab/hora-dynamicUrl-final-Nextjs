@@ -1,14 +1,16 @@
 import OtpLogin from "@/components/OtpLoginPopup";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import Image from "next/image";
-import wonderlandBanner from "@/assets/wonderlandBanner1.webp";
-import howitworks from "@/assets/howitworks2.jpg";
-import hostandGuest from "@/assets/hostandGuest.webp";
-import yourcelebration from "@/assets/yourcelebration.png";
 import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/venueCommon/InvitesListing";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
+import TopBanner from "@/components/Venue/Topbanner";
+import VenueCategories from "@/components/Venue/VenueCategories";
+import venueTopBanner from "@/assets/venuelanding/Topbanner.webp";
+import VenueBannertitle from "@/components/Venue/venuetitle";
+import VenueCircle from "@/components/Venue/VenueCircle";
+import VenueList from "@/components/venueCommon/InvitesListing";
+import VenueListHeader from "@/components/Venue/VenueListHeader";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
@@ -19,39 +21,34 @@ const WonderlandMainPage = () => {
     localStorage.getItem("userID") || ""
   );
   const [showHostLoginModal, setShowHostLoginModal] = useState(false);
-
+  const [activeEvent, setActiveEvent]         = useState("Birthday");
+const [activeVenueType, setActiveVenueType] = useState("all");
+const [guestCapacity, setGuestCapacity]     = useState("");
   useLayoutEffect(() => {
     let timer;
-
-    if (isUserLoggedIn && loggedinUserId 
-    ) {
+    if (isUserLoggedIn && loggedinUserId) {
       timer = setTimeout(() => {
         router.push(`/partyhalls`);
       }, 2500);
     }
-
     return () => clearTimeout(timer);
   }, [loggedinUserId, isUserLoggedIn]);
 
   const createInviteClick = () => {
     if (!isUserLoggedIn) {
       setShowHostLoginModal(true);
-      return;
     } else {
       router.replace(`/partyhalls/venue`);
     }
   };
 
-  // Listen local storage changes for login state
   useEffect(() => {
     const syncLoginState = () => {
       setIsUserLoggedIn(localStorage.getItem("isLoggedIn") === "true");
       setLoggedinUserId(localStorage.getItem("userID") || "");
     };
-
     window.addEventListener("storage", syncLoginState);
     window.addEventListener("loginStateChange", syncLoginState);
-
     return () => {
       window.removeEventListener("storage", syncLoginState);
       window.removeEventListener("loginStateChange", syncLoginState);
@@ -61,69 +58,35 @@ const WonderlandMainPage = () => {
   return (
     <>
       <div className="logedin-container">
-        <div className="invite-banner">
-          <Image
-            src={wonderlandBanner}
-            alt="Invite Banner"
-            className="banner-image-top"
+        <div style={{ position: "relative" }}>
+          <TopBanner image={venueTopBanner} alt="Venue" />
+          <VenueCategories
+            active={activeEvent}
+            onSelect={setActiveEvent} // ✅ category change parent ko batayega
           />
-
-          <button
-            type="button"
-            className="create-invite-btn-landing"
-            onClick={createInviteClick}
-          >
-            <span>CREATE VENUE</span>
-          </button>
-        </div>
-        {isUserLoggedIn && loggedinUserId && (
-          <InvitesListing userId={loggedinUserId} />
-        )}
-
-        <div className="invite-banner">
-          <Image
-            src={howitworks}
-            alt="Invite Banner"
-            className="banner-image"
-          />
-        </div>
-        <div
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 700,
-            fontStyle: "normal",
-            fontSize: "21px",
-            lineHeight: "100%",
-            letterSpacing: "0%",
-            textAlign: "center",
-            verticalAlign: "middle",
-            margin: "10px",
-          }}
-        >
-          Host & Guest Features
         </div>
 
-        <div className="invite-banner">
-          <Image
-            src={hostandGuest}
-            alt="Invite Banner"
-            className="banner-image"
-          />
-        </div>
-        <div className="invite">
-          <Image
-            src={yourcelebration}
-            alt="Invite Banner"
-            className="banner-image"
-          />
-        </div>
+        <VenueBannertitle eventType={activeEvent} />
+<VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
+
+<VenueListHeader
+  eventType={activeEvent}
+  guestCapacity={guestCapacity}
+  onCapacityChange={setGuestCapacity}
+/>
+
+<VenueList
+  eventType={activeEvent}
+  venueType={activeVenueType}
+  guestCapacity={guestCapacity}
+/>
       </div>
 
-      <LoginModal 
+      <LoginModal
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace('/partyhalls/venue')
+          router.replace("/partyhalls/venue");
         }}
       />
     </>
