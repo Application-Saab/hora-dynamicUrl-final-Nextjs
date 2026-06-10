@@ -3,12 +3,13 @@ import "./venuelist.css";
 import VenueAmenityBar from "../Venue/VenueAmenityBar";
 import  vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";
-import locationIcon from "@/assets/location.png";
+import locationIcon from "@/assets/venuelanding/location.svg";
 import Image from "next/image";
+import { useRouter } from "next/router";
 const VenueList = ({ eventType, venueType, guestCapacity }) => {
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   useEffect(() => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -48,7 +49,11 @@ const VenueList = ({ eventType, venueType, guestCapacity }) => {
     alt="Location"
     className="location-icon"
   />
-  {v.location || v.city || "N/A"}
+ <span className="location-text">
+  {(v.location || v.city || "N/A").length > 30
+    ? `${(v.location || v.city || "N/A").slice(0, 30)}...`
+    : (v.location || v.city || "N/A")}
+</span>
 </p>
 <div
   style={{
@@ -83,8 +88,12 @@ const VenueList = ({ eventType, venueType, guestCapacity }) => {
     </span>
   )}
 </div>
-            <button className="venue-menu-btn">View Menu ➜</button>
-        
+      <button
+  className="venue-menu-btn"
+  onClick={() => router.push(`/partyhalls/venue?venueid=${v._id}`)}
+>
+  View Menu ➜
+</button>
           </div>
         </div>
       ))}

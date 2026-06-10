@@ -91,20 +91,20 @@ background: #f3e8ff;
 
 .venue-location {
  color: #574737;
-
+  align-items: flex-start; 
   font-family: Inter, sans-serif;
   font-weight: 500;
 
   font-size: clamp(8px, 2.46vw, 11px);
 display: flex;
-  align-items: center;
   gap: clamp(3px, 1vw, 5px);
   margin: 0;
 }
 
 .location-icon {
-  width: clamp(8px, 2.5vw, 10px);
-  height: clamp(10px, 2.6vw, 12px);
+  margin-top: 2px; 
+  width: clamp(8px, 2.29vw, 11px);
+  height: clamp(8px, 2.29vw, 11px);
   flex-shrink: 0;
 }
 .venue-price {
@@ -136,10 +136,14 @@ display: flex;
 
 /* ── Food ── */
 .venue-food {
-  display: flex;
-  gap: 10px;
-  font-size: 10.5px;
-  font-family: 'Inter', sans-serif;
+ display: flex;
+gap: clamp(8px, 2.55vw, 12px);
+
+margin-left: clamp(1px, 0.5vw, 3px);
+
+font-size: clamp(9px, 2.8vw, 12px);
+
+font-family: 'Inter', sans-serif;
 }
 
 .veg   { 

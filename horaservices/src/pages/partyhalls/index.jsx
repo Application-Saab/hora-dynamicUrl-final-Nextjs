@@ -58,7 +58,7 @@ const [guestCapacity, setGuestCapacity]     = useState("");
   return (
     <>
       <div className="logedin-container">
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", maxWidth: "480px", margin: "0 auto" }}>
           <TopBanner image={venueTopBanner} alt="Venue" />
           <VenueCategories
             active={activeEvent}
@@ -70,9 +70,10 @@ const [guestCapacity, setGuestCapacity]     = useState("");
 <VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
 
 <VenueListHeader
+
   eventType={activeEvent}
-  guestCapacity={guestCapacity}
-  onCapacityChange={setGuestCapacity}
+  value={guestCapacity}
+  onChange={setGuestCapacity}
 />
 
 <VenueList

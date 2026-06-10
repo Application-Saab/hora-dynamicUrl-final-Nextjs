@@ -1,68 +1,40 @@
-// import { useState } from "react";
-// import "./venuecategories.css";
-
-// const events = [
-//   { label: "Birthday",   emoji: "🎂" },
-//   { label: "Baby Shower", emoji: "🍼" },
-//   { label: "Engagement",  emoji: "💍" },
-//   { label: "Reception",   emoji: "👰" },
-//   { label: "Corporate",   emoji: "🏢" },
-//   { label: "Anniversary", emoji: "🥂" },
-// ];
-
-// const VenueCategories = () => {
-//   const [active, setActive] = useState("Birthday");
-
-//   return (
-    
-//     <div className="event-box">
-//       <h3>Choose Event Type</h3>
-
-//       <div className="event-scroll">
-//         {events.map(({ label, emoji }) => (
-//           <div
-//             key={label}
-//             className={`event-chip ${active === label ? "active" : ""}`}
-//             onClick={() => setActive(label)}
-//           >
-//             <span className="chip-emoji">{emoji}</span>
-//             {label}
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default VenueCategories;
-
-
-
-
+import Image from "next/image";
 import "./venuecategories.css";
 
+import birthdayIcon from "@/assets/venuelanding/cake.png";
+import babyshowerIcon from "@/assets/venuelanding/baby-shower.png";
+import engagementIcon from "@/assets/venuelanding/wedding-ring.png";
+import corporateIcon from "@/assets/venuelanding/happy.png";
+import receptionIcon from "@/assets/venuelanding/hall.png";
+import anniversaryIcon from "@/assets/venuelanding/glass.png";
+
 const events = [
-  { label: "Birthday",    emoji: "🎂" },
-  { label: "Baby Shower", emoji: "🍼" },
-  { label: "Engagement",  emoji: "💍" },
-  { label: "Reception",   emoji: "👰" },
-  { label: "Corporate",   emoji: "🏢" },
-  { label: "Anniversary", emoji: "🥂" },
+  { label: "Birthday", icon: birthdayIcon },
+  { label: "Baby Shower", icon: babyshowerIcon },
+  { label: "Engagement", icon: engagementIcon },
+  { label: "Reception", icon: receptionIcon },
+  { label: "Corporate", icon: corporateIcon },
+  { label: "Anniversary", icon: anniversaryIcon },
 ];
 
-const VenueCategories = ({ active, onSelect }) => { // ✅ props se control
+const VenueCategories = ({ active, onSelect }) => {
   return (
     <div className="event-box">
       <h3>Choose Event Type</h3>
+
       <div className="event-scroll">
-        {events.map(({ label, emoji }) => (
+        {events.map(({ label, icon }) => (
           <div
             key={label}
             className={`event-chip ${active === label ? "active" : ""}`}
             onClick={() => onSelect(label)}
           >
-            <span className="chip-emoji">{emoji}</span>
-            {label}
+            <Image
+              src={icon}
+              alt={label}
+              className="chip-icon"
+            />
+            <span>{label}</span>
           </div>
         ))}
       </div>

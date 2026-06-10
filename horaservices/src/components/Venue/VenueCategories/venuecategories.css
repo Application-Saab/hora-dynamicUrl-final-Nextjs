@@ -1,24 +1,14 @@
-/* .event-box {
-  background: #fff;
-  padding: clamp(10px, 3vw, 14px) clamp(10px, 3vw, 12px);
-  border-radius: clamp(12px, 3vw, 16px);
-  width: clamp(320px, 100%, 480px);
-  margin: 0 auto;
-  box-sizing: border-box;
-  width: 98%;
-  border: 1px solid #00000021
-} */
 .event-box {
   background: #fff;
-  padding: clamp(10px, 3vw, 14px) clamp(10px, 3vw, 12px);
+  padding: clamp(6px, calc(8 * 100vw / 393), 10px);;
   border-radius: clamp(12px, 3vw, 16px);
    
-  width: 58%;
-  margin: -30px auto 10px auto;   /* ← yahi kaam karega — banner ke upar pull karega */
+  width: clamp(300px, calc(380 * 100vw / 393), 480px);
+  margin: -30px auto 10px auto;   
   box-sizing: border-box;
   border: 1px solid #00000021;
-  position: relative;           /* ← z-index ke liye zaroori */
-  z-index: 10;                  /* ← banner ke upar rahega */
+  position: relative;       
+  z-index: 10;                 
 }
 .event-box h3 {
     color:black;
@@ -79,4 +69,10 @@
 
 .event-chip:active {
   transform: scale(0.97);
+}
+.chip-icon {
+  width: clamp(14px, 3.6vw, 18px);
+  height: clamp(14px, 3.6vw, 18px);
+  object-fit: contain;
+  flex-shrink: 0;
 }
