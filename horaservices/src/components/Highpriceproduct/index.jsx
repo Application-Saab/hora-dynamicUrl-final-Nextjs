@@ -40,6 +40,8 @@ const HighPriceProduct = ({ data, onCardClick }) => {
             }
             alt={highest.name}
             className="highPriceImage"
+            width={300} 
+            height={300}
           />
         </div>
 
