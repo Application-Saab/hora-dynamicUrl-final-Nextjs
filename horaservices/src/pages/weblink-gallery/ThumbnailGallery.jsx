@@ -2108,7 +2108,11 @@ const handleAddToLocker = async (imgData) => {
       )}
 
 
+<<<<<<< HEAD
       {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex == null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin && !showLockerPopup)  && (
+=======
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && !selectedIndex && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin)  && (
+>>>>>>> 2d9e0b1b0e542e70a23ae28f87790282acdeef04
         <div
           style={{
             position: "fixed",

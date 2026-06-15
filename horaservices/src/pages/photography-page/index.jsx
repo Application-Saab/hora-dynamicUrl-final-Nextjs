@@ -167,7 +167,7 @@ const brandItems = [
     </div>
 
 
-{/* <div class="suggested-poses">
+<div class="suggested-poses">
           <div class="suggested-poses-section">
             <Image src={PhotoBanner} alt="Camera Holding" class="suggested-image" />
           </div>
@@ -194,7 +194,7 @@ const brandItems = [
 ))}
 
 </div>
-     </div> */}
+     </div>
 
 <section className="BabyShowerBanner">
         <Image

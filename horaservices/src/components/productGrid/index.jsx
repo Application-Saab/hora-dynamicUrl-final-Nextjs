@@ -28,12 +28,16 @@ const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
     )}
 
   <Image
-      src={`${COMPRESSED_WEBP_IMG_URL}${item.featured_image?.split(".")[0]}.webp`}
-    alt={`balloon decoration ${item.name}`}
-    className="decImage"
-    width={300}
-    height={300}
-  />
+  src={
+    item.featured_images?.[0]?.fileName
+      ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_images[0].fileName.split(".")[0]}.webp`
+      : "/fallback-image.png"
+  }
+  alt={`balloon decoration ${item.name}`}
+  className="decImage"
+  width={300}
+  height={300}
+/>
 
   <div className="watermark">
     <Image src={logo} alt="logo" width={28} height={28} />
