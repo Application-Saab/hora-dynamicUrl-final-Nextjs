@@ -90,12 +90,12 @@ const handleCardClick = (item) => {
             const originalPrice = price + discountDiff;
 
             const imageUrl =
-              item.Image ||
-              (item.featured_image
-                ? `https://horaservices.com/api/uploads/compressed_webp/${
-                    item.featured_image.split(".")[0]
-                  }.webp`
-                : "/default.png");
+  item.Image ||
+  (item.featured_images?.[0]?.fileName
+    ? `https://horaservices.com/api/uploads/compressed_webp/${
+        item.featured_images[0].fileName.split(".")[0]
+      }.webp`
+    : "/default.png");
 
             const titleText = item.title || item.name || "Decoration";
 
