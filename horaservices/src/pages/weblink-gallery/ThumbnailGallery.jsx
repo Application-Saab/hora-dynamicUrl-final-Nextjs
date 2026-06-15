@@ -1141,7 +1141,7 @@ const ThumbnailGallery = ({
 
       <div className="banner-right">
         <button
-          onClick={handleShareicon}
+          onClick={() => handleShareicon(mainFolderId)}
           className="banner-btn">
           <span><Image src={share} alt="share" height={10} width={11} /></span>
           <span>Share Event</span>
@@ -1302,7 +1302,7 @@ const ThumbnailGallery = ({
                   <span className="add-photo-icon">+</span>
                   <span>Add Photos</span>
                 </button>
-                <button className="share-capsule-btn" onClick={handleShareicon}>
+                <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId)}>
                   <span className="">
                     {typeof handleShareicon === "function" && (
                       <Image src={share} alt="share" height={13} width={14} />
@@ -1767,7 +1767,7 @@ const ThumbnailGallery = ({
             <div className="share-btn-container">
               <button
                 className="share-btn"
-                onClick={handleShareicon}
+                onClick={() => handleShareicon(mainFolderId)}
               >
                 <span><Image src={share} alt="share" height={15} width={16} /></span>
                 <span> Share Event Capsule</span>
@@ -1852,7 +1852,7 @@ const ThumbnailGallery = ({
       )}
 
 
-      {showFloatingBtn && (
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && !selectedIndex && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin)  && (
         <div
           style={{
             position: "fixed",
@@ -1864,7 +1864,7 @@ const ThumbnailGallery = ({
         >
           <button
             className="share-capsule-btn2"
-            onClick={handleShareicon}
+            onClick={() => handleShareicon(mainFolderId)}
             style={{
               display: "flex",
               alignItems: "center",
