@@ -1245,42 +1245,6 @@ const showSnackbar = (message) => {
     return created;
   };
 
-  // const handleAddToLocker = async (imgData) => {
-  //   if (!imgData?._id || !localUserId || isAddingToLocker) return;
-
-  //   const previousFolderIds = imgData.folderIds || [];
-  //   const existingLockerId = privateLocker?._id;
-
-  //   if (
-  //     existingLockerId &&
-  //     previousFolderIds.length === 1 &&
-  //     previousFolderIds[0] === existingLockerId
-  //   ) {
-  //     return;
-  //   }
-
-  //   setIsAddingToLocker(true);
-  //   try {
-  //     const locker = await ensurePrivateLocker();
-  //     await assignImageToLockerExclusive(
-  //       imgData._id,
-  //       locker._id,
-  //       previousFolderIds,
-  //     );
-
-  //     if (activeTab !== locker._id) {
-  //       setSelectedIndex(null);
-  //       setShowActionMenu(false);
-  //     }
-  //   } catch (err) {
-  //     console.error("Add to locker failed:", err);
-  //     alert("Failed to add image to locker");
-  //   } finally {
-  //     setIsAddingToLocker(false);
-  //   }
-  // };
-
-
 const handleAddToLocker = async (imgData) => {
   if (!imgData?._id || !localUserId || isAddingToLocker) return;
 
