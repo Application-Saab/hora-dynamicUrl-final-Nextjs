@@ -471,6 +471,9 @@ const showSnackbar = (message) => {
 
     const lockerId = privateLocker?._id;
 
+    const isLockerImage = (img) =>
+  lockerId && img.folderIds?.includes(lockerId);
+
     if (!isActualMyPhotos) {
       if (isEditing) {
         return allThumbnails;
@@ -491,10 +494,12 @@ const showSnackbar = (message) => {
     }
 
     if (activeSubFolderId && activeSubFolderId !== lockerId) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(activeSubFolderId),
-      );
-    }
+  return allThumbnails.filter(
+    (img) =>
+      img.folderIds?.includes(activeSubFolderId) &&
+      !isLockerImage(img)
+  );
+}
 
     if (activeTab === "all" && lockerId) {
       return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
@@ -506,16 +511,20 @@ const showSnackbar = (message) => {
     }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(myPhotosFolder._id),
-      );
-    }
+  return allThumbnails.filter(
+    (img) =>
+      img.folderIds?.includes(myPhotosFolder._id) &&
+      !isLockerImage(img)
+  );
+}
 
     if (activeSubFolderId) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(activeSubFolderId),
-      );
-    }
+  return allThumbnails.filter(
+    (img) =>
+      img.folderIds?.includes(activeSubFolderId) &&
+      !isLockerImage(img)
+  );
+}
 
     return allThumbnails;
   }, [
