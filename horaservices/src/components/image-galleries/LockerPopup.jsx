@@ -9,11 +9,11 @@ import "./LockerPopup.css";
 const LockerPopup = ({ onClose, onMoveToLocker }) => {
   return (
     <div className="locker-overlay">
+      
       <div className="locker-popup">
         <button className="locker-close-btn" onClick={onClose}>
-          ✕
-        </button>
-
+        ✕
+      </button>
         <div className="locker-header">
           <Image
             src={lockerImage}
@@ -23,9 +23,9 @@ const LockerPopup = ({ onClose, onMoveToLocker }) => {
             className="locker-main-image"
           />
 
-          <h2>Host Photos Are Private</h2>
+          <div className="host-popup-heading">Host Photos Are Private</div>
 
-          <p>
+          <p className="host-popup-subHeading">
             Photos added in the locker will get hidden from guests and
             will be under your control. Now share the event capsule with
             your guests with more control and freedom.
@@ -35,12 +35,12 @@ const LockerPopup = ({ onClose, onMoveToLocker }) => {
         <div className="locker-features">
           <div className="locker-feature-item">
             <div className="locker-icon-box">
-              <Image src={eyeIcon} alt="View" width={32} height={32} />
+              <Image src={eyeIcon} alt="View" />
             </div>
 
             <div>
-              <h4>Only Host Can View</h4>
-              <p>
+              <div className="explaination-head">Only Host Can View</div>
+              <p className="explanation-para">
                 Only the host can access the photos in the locker and nobody
                 else.
               </p>
@@ -49,12 +49,12 @@ const LockerPopup = ({ onClose, onMoveToLocker }) => {
 
           <div className="locker-feature-item">
             <div className="locker-icon-box">
-              <Image src={shieldIcon} alt="Protected" width={32} height={32} />
+              <Image src={shieldIcon} alt="Protected" />
             </div>
 
             <div>
-              <h4>Secure & Protected</h4>
-              <p>
+              <div className="explaination-head">Secure & Protected</div>
+              <p className="explanation-para">
                 Your personal locker is protected with OTP verification.
               </p>
             </div>
@@ -62,12 +62,12 @@ const LockerPopup = ({ onClose, onMoveToLocker }) => {
 
           <div className="locker-feature-item">
             <div className="locker-icon-box">
-              <Image src={lockIcon} alt="Safe" width={32} height={32} />
+              <Image src={lockIcon} alt="Safe" />
             </div>
 
             <div>
-              <h4>Your Number is Safe</h4>
-              <p>
+              <div className="explaination-head">Your Number is Safe</div>
+              <p className="explanation-para">
                 We use your mobile number only for security purposes. We never
                 share it.
               </p>

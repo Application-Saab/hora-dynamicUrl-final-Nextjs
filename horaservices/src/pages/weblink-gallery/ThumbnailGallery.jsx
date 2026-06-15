@@ -38,6 +38,7 @@ import PaginationControls from "./capsulePagination";
 import { IoIosCloudDone } from "react-icons/io";
 import Lock from '../../assets/Lock.svg'
 import lockerBannerimage from '../../assets/lockerBanner.svg'
+import LockerPopup from "@/components/image-galleries/LockerPopup";
 
 import {
   deleteFromOPFS,
@@ -1235,41 +1236,96 @@ const showSnackbar = (message) => {
     return created;
   };
 
-  const handleAddToLocker = async (imgData) => {
-    if (!imgData?._id || !localUserId || isAddingToLocker) return;
+  // const handleAddToLocker = async (imgData) => {
+  //   if (!imgData?._id || !localUserId || isAddingToLocker) return;
 
-    const previousFolderIds = imgData.folderIds || [];
-    const existingLockerId = privateLocker?._id;
+  //   const previousFolderIds = imgData.folderIds || [];
+  //   const existingLockerId = privateLocker?._id;
 
-    if (
-      existingLockerId &&
-      previousFolderIds.length === 1 &&
-      previousFolderIds[0] === existingLockerId
-    ) {
+  //   if (
+  //     existingLockerId &&
+  //     previousFolderIds.length === 1 &&
+  //     previousFolderIds[0] === existingLockerId
+  //   ) {
+  //     return;
+  //   }
+
+  //   setIsAddingToLocker(true);
+  //   try {
+  //     const locker = await ensurePrivateLocker();
+  //     await assignImageToLockerExclusive(
+  //       imgData._id,
+  //       locker._id,
+  //       previousFolderIds,
+  //     );
+
+  //     if (activeTab !== locker._id) {
+  //       setSelectedIndex(null);
+  //       setShowActionMenu(false);
+  //     }
+  //   } catch (err) {
+  //     console.error("Add to locker failed:", err);
+  //     alert("Failed to add image to locker");
+  //   } finally {
+  //     setIsAddingToLocker(false);
+  //   }
+  // };
+
+
+const handleAddToLocker = async (imgData) => {
+  if (!imgData?._id || !localUserId || isAddingToLocker) return;
+
+  const previousFolderIds = imgData.folderIds || [];
+  const existingLockerId = privateLocker?._id;
+
+  if (
+    existingLockerId &&
+    previousFolderIds.length === 1 &&
+    previousFolderIds[0] === existingLockerId
+  ) {
+    return;
+  }
+
+  const lockerAlreadyExists = !!privateLocker;
+
+  setIsAddingToLocker(true);
+
+  try {
+    const locker = await ensurePrivateLocker();
+
+    await assignImageToLockerExclusive(
+      imgData._id,
+      locker._id,
+      previousFolderIds
+    );
+
+    // FIRST TIME locker create hua
+    if (!lockerAlreadyExists) {
+      setSelectedIndex(null);
+      setShowActionMenu(false);
       return;
     }
 
-    setIsAddingToLocker(true);
-    try {
-      const locker = await ensurePrivateLocker();
-      await assignImageToLockerExclusive(
-        imgData._id,
-        locker._id,
-        previousFolderIds,
-      );
+    // Locker pehle se tha
+    const isLastImage =
+      selectedIndex >= popupImages.length - 1;
 
-      if (activeTab !== locker._id) {
-        setSelectedIndex(null);
-        setShowActionMenu(false);
-      }
-    } catch (err) {
-      console.error("Add to locker failed:", err);
-      alert("Failed to add image to locker");
-    } finally {
-      setIsAddingToLocker(false);
+    if (popupImages.length <= 1) {
+      setSelectedIndex(null);
+    } else if (isLastImage) {
+      setSelectedIndex(selectedIndex - 1);
+    } else {
+      setSelectedIndex(selectedIndex);
     }
-  };
 
+    setShowActionMenu(false);
+  } catch (err) {
+    console.error("Add to locker failed:", err);
+    alert("Failed to add image to locker");
+  } finally {
+    setIsAddingToLocker(false);
+  }
+};
 
   const handleDownloadImage = async (currentImage) => {
     try {
@@ -1284,7 +1340,7 @@ const showSnackbar = (message) => {
 
 
   const lockerBanner = (
-  <div className="" key="locker-banner">
+  <div className="locker-banner" key="locker-banner">
     <div className="">
       <Image
         src={lockerBannerimage.src} // apni new image
@@ -1464,7 +1520,7 @@ const showSnackbar = (message) => {
               )}
             </div>
             {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
-            {!loading && activeTab === "all" && (
+            {!loading && (activeTab === "all" || activeTab === privateLocker?._id) && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
                   className="add-photo-btn"
@@ -1680,10 +1736,9 @@ const showSnackbar = (message) => {
                     selectedImages={selectedImages}
                     setSelectedImages={setSelectedImages}
                   />
-{!isPrivateFolder &&
-        (!isIOSMobile || currentPage === 1) &&
-        banners[index]}
-                  {/* {(!isIOSMobile || currentPage === 1) && banners[index]} */}
+                {!isPrivateFolder &&
+                (!isIOSMobile || currentPage === 1) &&
+                banners[index]}
                 </React.Fragment>
               ))}
 
@@ -1913,7 +1968,15 @@ const showSnackbar = (message) => {
                 <div>
                   <button
                     className="add-locker-btn"
-                    onClick={() => handleAddToLocker(currentImage)}
+                    onClick={() => {
+  if (!privateLocker) {
+    setPendingLockerImage(currentImage);
+    setShowLockerPopup(true);
+    return;
+  }
+
+  handleAddToLocker(currentImage);
+}}
                     disabled={isAddingToLocker}
                 >
                   <span className="add-locker-icon">
@@ -2045,7 +2108,7 @@ const showSnackbar = (message) => {
       )}
 
 
-      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex !== null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin)  && (
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex == null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin && !showLockerPopup)  && (
         <div
           style={{
             position: "fixed",
@@ -2078,6 +2141,28 @@ const showSnackbar = (message) => {
           {snackbar.message}
         </div>
       )}
+
+      {showLockerPopup && (
+  <LockerPopup
+    onClose={() => {
+      setShowLockerPopup(false);
+      setPendingLockerImage(null);
+    }}
+    onMoveToLocker={async () => {
+      try {
+        setShowLockerPopup(false);
+
+        if (pendingLockerImage) {
+          await handleAddToLocker(pendingLockerImage);
+        }
+
+        setPendingLockerImage(null);
+      } catch (err) {
+        console.error(err);
+      }
+    }}
+  />
+)}
 
       <LoginModal
         isOpen={isLoginOpen && !isLogin}
