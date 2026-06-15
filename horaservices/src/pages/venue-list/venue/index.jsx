@@ -344,7 +344,7 @@ const VenuePage = () => {
         isOpen={openCreateInviteModal}
         onClose={() => setOpenCreateInviteModal(false)}
         getRedirectRoute={(data) => ({
-          pathname: "/partyhalls/venue",
+          pathname: "/venue-list/venue",
           query: { venueid: data._id },
         })}
       />

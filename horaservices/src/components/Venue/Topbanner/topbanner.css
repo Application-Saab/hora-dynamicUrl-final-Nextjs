@@ -1,0 +1,12 @@
+.bannerWrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.bannerImg {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}

@@ -1,0 +1,61 @@
+.amenity-scroll-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 0;
+  width: 100%;
+}
+
+.amenity-scroll-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.amenity-bar {
+  display: inline-flex;
+  min-width: max-content;
+  border: 0.1px solid #0000001A;
+  border-radius: 3px;
+  background: #fff;
+}
+
+.amenity-chip {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1.27vw, 5px);
+  padding: clamp(2px, 0.56vw, 2.7px) clamp(3px, 1vw, 5px);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+
+.amenity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(17px, 5.25vw, 25px);
+  height: clamp(17px, 5.25vw, 25px);
+  border-radius: clamp(3px, 0.95vw, 4.5px);
+  padding: clamp(3px, 1.02vw, 5px);
+  flex-shrink: 0;
+}
+
+.amenity-icon.purple { background: #97538C1F; }
+.amenity-icon.green  { background: #EAF3DE; }
+.amenity-icon.amber  { background: #FAEEDA; }
+.amenity-icon.blue   { background: #E6F1FB; }
+
+.amenity-label {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  font-size: clamp(6px, 1.85vw, 8px);
+
+  color: #574737;
+}
+
+.amenity-sub {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: clamp(5px, 1.5vw, 6.5px);
+
+  color: #574737;
+}
