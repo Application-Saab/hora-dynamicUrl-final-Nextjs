@@ -1046,3 +1046,40 @@ padding: 5px 4px;
     left: 150%;
   }
 }
+
+.custom-snackbar {
+  width: 90%;
+  max-width: 480px;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #FFFFFF;
+  color: #97538C;
+
+  padding: 12px 15px;
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  z-index: 999999;
+
+  animation: snackbarFade 0.3s ease;
+}
+
+@keyframes snackbarFade {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

@@ -30,11 +30,12 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
 import PaginationControls from "./capsulePagination";
+import { IoIosCloudDone } from "react-icons/io";
 
 import {
   deleteFromOPFS,
@@ -96,12 +97,23 @@ const ThumbnailGallery = ({
   const [localUserId, setLocalUserId] = useState("");
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [isPrivateFolder, setIsPrivateFolder] = useState(false);
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const privateLocker = useMemo(
+    () =>
+      subFolders.find(
+        (sf) =>
+          sf.type === "others" &&
+          // sf.userId === localUserId &&
+          sf.isLocker === true,
+      ),
+    [subFolders, localUserId],
+  );
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
@@ -124,6 +136,32 @@ const ThumbnailGallery = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
   const [deviceTracking, setDeviceTracking] = useState(null);
+  const [isAddingToLocker, setIsAddingToLocker] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    show: false,
+    message: "Image downloaded successfully",
+  });
+
+
+ const snackbarTimeout = useRef(null);
+
+const showSnackbar = (message) => {
+  setSnackbar({
+    show: true,
+    message,
+  });
+
+  if (snackbarTimeout.current) {
+    clearTimeout(snackbarTimeout.current);
+  }
+
+  snackbarTimeout.current = setTimeout(() => {
+    setSnackbar({
+      show: false,
+      message: "",
+    });
+  }, 5000);
+};
 
 
   // iOS Mobile Detection
@@ -421,21 +459,12 @@ const ThumbnailGallery = ({
     });
   }, [localUserId, localPhoneNumber]);
 
-  const popupImages = useMemo(() => {
-    if (!activeSubFolderId) return allThumbnails;
-
-    return allThumbnails.filter((img) =>
-      img.folderIds?.includes(activeSubFolderId),
-    );
-  }, [allThumbnails, activeSubFolderId]);
-
-  const currentImage =
-    selectedIndex !== null ? popupImages[selectedIndex] : null;
-
   const visibleThumbnails = useMemo(() => {
     const normalize = (val) => {
   return String(val ?? "").trim().toLowerCase();
 };
+
+    const lockerId = privateLocker?._id;
 
     if (!isActualMyPhotos) {
       if (isEditing) {
@@ -451,6 +480,21 @@ const ThumbnailGallery = ({
         return normalizedKeys.includes(normalize(img.thumbnailKey));
       });
     }
+
+    if (lockerId && activeTab === lockerId) {
+      return allThumbnails.filter((img) => img.folderIds?.includes(lockerId));
+    }
+
+    if (activeSubFolderId && activeSubFolderId !== lockerId) {
+      return allThumbnails.filter((img) =>
+        img.folderIds?.includes(activeSubFolderId),
+      );
+    }
+
+    if (activeTab === "all" && lockerId) {
+      return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
+    }
+
 
     if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
       return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
@@ -478,11 +522,24 @@ const ThumbnailGallery = ({
     myPhotosFolder,
     activeSubFolderId,
     isEditing,
+    isActualMyPhotos,
+    privateLocker,
   ]);
+
+  const popupImages = useMemo(() => {
+  return visibleThumbnails;
+}, [visibleThumbnails]); 
+
+  const currentImage =
+    selectedIndex !== null ? popupImages[selectedIndex] : null;
+
+
   console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
   console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
-  const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
+  const usableFolders = subFolders.filter(
+    (sf) => sf.type !== "my_photos" && !sf.isLocker,
+  );
 
   useEffect(() => {
     if (activeSubFolderId) {
@@ -1127,6 +1184,101 @@ const ThumbnailGallery = ({
     setIsRefreshShow(false);
   };
 
+
+  const assignImageToLockerExclusive = async (
+    imageId,
+    lockerId,
+    previousFolderIds = [],
+  ) => {
+    const newFolderIds = [lockerId];
+    const toAdd = newFolderIds.filter((id) => !previousFolderIds.includes(id));
+    const toRemove = previousFolderIds.filter(
+      (id) => !newFolderIds.includes(id),
+    );
+
+    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subFolderId: newFolderIds,
+        addImageIds: toAdd.length ? [imageId] : [],
+        removeImageIds: toRemove.length ? [imageId] : [],
+      }),
+    });
+
+    setAllThumbnails((prev) =>
+      prev.map((img) =>
+        img._id === imageId ? { ...img, folderIds: newFolderIds } : img,
+      ),
+    );
+  };
+
+  const ensurePrivateLocker = async () => {
+    if (privateLocker) return privateLocker;
+
+    const fd = new FormData();
+    fd.append("folderName", folderName);
+    fd.append("subFolderName", "My Locker");
+    fd.append("type", "others");
+    fd.append("userId", localUserId);
+    fd.append("customerId", customerId);
+    fd.append("phoneNo", localPhoneNumber);
+    fd.append("isLocker", "true");
+
+    const data = await createSubfolder(fd);
+    const created = data.subFolder;
+    handleSubFolderCreated(created);
+    return created;
+  };
+
+  const handleAddToLocker = async (imgData) => {
+    if (!imgData?._id || !localUserId || isAddingToLocker) return;
+
+    const previousFolderIds = imgData.folderIds || [];
+    const existingLockerId = privateLocker?._id;
+
+    if (
+      existingLockerId &&
+      previousFolderIds.length === 1 &&
+      previousFolderIds[0] === existingLockerId
+    ) {
+      return;
+    }
+
+    setIsAddingToLocker(true);
+    try {
+      const locker = await ensurePrivateLocker();
+      await assignImageToLockerExclusive(
+        imgData._id,
+        locker._id,
+        previousFolderIds,
+      );
+
+      if (activeTab !== locker._id) {
+        setSelectedIndex(null);
+        setShowActionMenu(false);
+      }
+    } catch (err) {
+      console.error("Add to locker failed:", err);
+      alert("Failed to add image to locker");
+    } finally {
+      setIsAddingToLocker(false);
+    }
+  };
+
+
+  const handleDownloadImage = async (currentImage) => {
+    try {
+      trackActivity(currentImage?._id, "download");
+      setShowActionMenu(false);
+      await downloadFile(currentImage?.originalUrl);
+      showSnackbar("Image downloaded successfully");
+    } catch (err) {
+      showSnackbar("Download failed");
+    }
+  };
+
+
   const banners = [
     <div className="custom-banner" key="banner-2">
       <div className="banner-left">
@@ -1141,7 +1293,7 @@ const ThumbnailGallery = ({
 
       <div className="banner-right">
         <button
-          onClick={handleShareicon}
+          onClick={() => handleShareicon(mainFolderId)}
           className="banner-btn">
           <span><Image src={share} alt="share" height={10} width={11} /></span>
           <span>Share Event</span>
@@ -1242,6 +1394,7 @@ const ThumbnailGallery = ({
                   capturedImage={capturedImage}
                   setCapturedImage={setCapturedImage}
                   matchedKeys={matchedKeys}
+                  setIsPrivateFolder={setIsPrivateFolder}
                 />
               </div>
             </div>
@@ -1251,7 +1404,7 @@ const ThumbnailGallery = ({
 
           <div>
             <div>
-              {activeTab !== "my-photos" && (
+              {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
                 <div>
                   {!isMyPhotosTab && activeSubFolderId && !isEditing && (
                     <div className="buttons-container">
@@ -1302,7 +1455,7 @@ const ThumbnailGallery = ({
                   <span className="add-photo-icon">+</span>
                   <span>Add Photos</span>
                 </button>
-                <button className="share-capsule-btn" onClick={handleShareicon}>
+                <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId)}>
                   <span className="">
                     {typeof handleShareicon === "function" && (
                       <Image src={share} alt="share" height={13} width={14} />
@@ -1618,9 +1771,7 @@ const ThumbnailGallery = ({
                         className="action-item flex"
                         onClick={() => {
                           const current = popupImages[selectedIndex];
-                          downloadFile(current?.originalUrl);
-                          trackActivity(current?._id, "download");
-                          setShowActionMenu(false);
+                          handleDownloadImage(current);
                         }}
                       >
                         <Image src={downloadVector} width={15} height={15} />
@@ -1701,10 +1852,31 @@ const ThumbnailGallery = ({
         renderFooter={(currentImage, index) => {
           const imageId = currentImage?._id;
 
-          const isLiked = likedImages[imageId];
 
+      console.log("isPrivateFolder ---------------", isPrivateFolder)
+
+
+
+          const isLiked = likedImages[imageId];
+// && currentImage?.orderById === customerId
           return (
             <div className="imagepopup-footer">
+              {(localUserId === customerId && !isPrivateFolder ) && (
+                <div>
+                  <button
+                    className="add-photo-btn"
+                    onClick={() => handleAddToLocker(currentImage)}
+                    disabled={isAddingToLocker}
+                    style={{
+                      color: "#FFFFFF",
+                    backgroundColor: "#97538C",
+                    border: "1px solid #97538C",
+                  }}
+                >
+                  <span className="add-photo-icon">+</span>
+                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                </button>
+              </div>)}
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -1767,7 +1939,7 @@ const ThumbnailGallery = ({
             <div className="share-btn-container">
               <button
                 className="share-btn"
-                onClick={handleShareicon}
+                onClick={() => handleShareicon(mainFolderId)}
               >
                 <span><Image src={share} alt="share" height={15} width={16} /></span>
                 <span> Share Event Capsule</span>
@@ -1852,19 +2024,19 @@ const ThumbnailGallery = ({
       )}
 
 
-      {showFloatingBtn && (
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && !selectedIndex && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin)  && (
         <div
           style={{
             position: "fixed",
             left: "50%",
-            bottom: "60px",
+            bottom: "45px",
             transform: "translateX(-50%)",
             zIndex: 11111111,
           }}
         >
           <button
             className="share-capsule-btn2"
-            onClick={handleShareicon}
+            onClick={() => handleShareicon(mainFolderId)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -1874,6 +2046,15 @@ const ThumbnailGallery = ({
             <Image src={whiteShareIcon} alt="share" height={13} width={14} />
             <span>Share Event Capsule</span>
           </button>
+        </div>
+      )}
+
+      {snackbar.show && (
+        <div className="custom-snackbar">
+          <span>
+            <IoIosCloudDone color="green" size={30} />
+          </span>
+          {snackbar.message}
         </div>
       )}
 

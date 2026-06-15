@@ -14,6 +14,7 @@ import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 
+
 const LoginModal = ({
   isOpen,
   onClose,
