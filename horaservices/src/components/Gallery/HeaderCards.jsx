@@ -674,6 +674,7 @@ const HeaderCards = ({
         fromCapsule={true}
         onlyOTP={true}
         setIsVerifiedOTP={setIsVerifiedOTP}
+        bgColor="login-modal-white-content"
       />
     </>
   );

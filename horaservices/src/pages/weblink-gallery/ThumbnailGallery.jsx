@@ -36,6 +36,8 @@ import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
 import PaginationControls from "./capsulePagination";
 import { IoIosCloudDone } from "react-icons/io";
+import Lock from '../../assets/Lock.svg'
+import lockerBannerimage from '../../assets/lockerBanner.svg'
 
 import {
   deleteFromOPFS,
@@ -137,6 +139,8 @@ const ThumbnailGallery = ({
   const [isIOSMobile, setIsIOSMobile] = useState(false);
   const [deviceTracking, setDeviceTracking] = useState(null);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
+  const [showLockerPopup, setShowLockerPopup] = useState(false);
+const [pendingLockerImage, setPendingLockerImage] = useState(null);
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
@@ -1279,6 +1283,20 @@ const showSnackbar = (message) => {
   };
 
 
+  const lockerBanner = (
+  <div className="" key="locker-banner">
+    <div className="">
+      <Image
+        src={lockerBannerimage.src} // apni new image
+        alt="LockerBanner"
+        width={150}
+        height={58}
+        className="banner-side-image"
+      />
+    </div>
+  </div>
+);
+
   const banners = [
     <div className="custom-banner" key="banner-2">
       <div className="banner-left">
@@ -1644,6 +1662,7 @@ const showSnackbar = (message) => {
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <div style={{ minHeight: "500px" }}>
+                {isPrivateFolder && lockerBanner}
               {imageChunks.map((chunk, index) => (
                 <React.Fragment key={index}>
                   <ImageGrid
@@ -1661,8 +1680,10 @@ const showSnackbar = (message) => {
                     selectedImages={selectedImages}
                     setSelectedImages={setSelectedImages}
                   />
-
-                  {(!isIOSMobile || currentPage === 1) && banners[index]}
+{!isPrivateFolder &&
+        (!isIOSMobile || currentPage === 1) &&
+        banners[index]}
+                  {/* {(!isIOSMobile || currentPage === 1) && banners[index]} */}
                 </React.Fragment>
               ))}
 
@@ -1861,22 +1882,7 @@ const showSnackbar = (message) => {
 // && currentImage?.orderById === customerId
           return (
             <div className="imagepopup-footer">
-              {(localUserId === customerId && !isPrivateFolder ) && (
-                <div>
-                  <button
-                    className="add-photo-btn"
-                    onClick={() => handleAddToLocker(currentImage)}
-                    disabled={isAddingToLocker}
-                    style={{
-                      color: "#FFFFFF",
-                    backgroundColor: "#97538C",
-                    border: "1px solid #97538C",
-                  }}
-                >
-                  <span className="add-photo-icon">+</span>
-                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
-                </button>
-              </div>)}
+              <div className="imagepopup-footer-left">
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -1901,6 +1907,21 @@ const showSnackbar = (message) => {
                   }}
                 />
               </div>
+              </div>
+
+               {(localUserId === customerId && !isPrivateFolder ) && (
+                <div>
+                  <button
+                    className="add-locker-btn"
+                    onClick={() => handleAddToLocker(currentImage)}
+                    disabled={isAddingToLocker}
+                >
+                  <span className="add-locker-icon">
+                    <img src={Lock.src} alt="" />
+                  </span>
+                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                </button>
+              </div>)}
             </div>
           );
         }}
@@ -2024,7 +2045,7 @@ const showSnackbar = (message) => {
       )}
 
 
-      {(showFloatingBtn && !showGuestModal && !showExitPopup && !selectedIndex && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin)  && (
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex !== null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin)  && (
         <div
           style={{
             position: "fixed",

@@ -532,9 +532,15 @@ display: flex;
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 0px 20px 80px 20px;
-  justify-content: end !important;
+  padding: 0px 12px 80px 12px;
+  justify-content: space-between !important;
   margin: 30px 0px 10px 0px;
+}
+.imagepopup-footer-left{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: start !important;
 }
 .weblink-emptyFolder-container{
   display: flex;
@@ -1082,4 +1088,19 @@ padding: 5px 4px;
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+}
+.add-locker-btn{
+  background-color: #97538C;
+  color: white;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  padding: 5px 14px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.add-locker-icon{
+  margin-bottom: 3px;
 }
