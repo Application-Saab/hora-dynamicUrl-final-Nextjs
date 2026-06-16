@@ -43,7 +43,7 @@ const VenueCircle = ({ active, onSelect }) => { // ✅ props
             onClick={() => onSelect(v.id)} // ✅ click handler
           >
             <div className={`venue-img ${active === v.id ? "active" : ""}`}>
-              <Image src={v.img} alt={v.label} width={70} height={70} />
+              <Image src={v.img} alt={v.label} width={88} height={88} />
             </div>
             <p>{v.label}</p>
           </div>

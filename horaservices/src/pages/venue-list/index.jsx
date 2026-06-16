@@ -1,8 +1,6 @@
-import OtpLogin from "@/components/OtpLoginPopup";
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "@/components/wonderland/wonderland.css";
-import InvitesListing from "@/components/venueCommon/InvitesListing";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TopBanner from "@/components/Venue/Topbanner";
 import VenueCategories from "@/components/Venue/VenueCategories";
@@ -11,7 +9,10 @@ import VenueBannertitle from "@/components/Venue/venuetitle";
 import VenueCircle from "@/components/Venue/VenueCircle";
 import VenueList from "@/components/venueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
-
+import VenueFeatures from "@/components/Venue/VenueFeatures";
+import ReviewSlider from "@/components/ReviewSection";
+import { balloonreviews } from "@/utils/balloonReviews";
+import "./venue/venue.css"
 const venuelandMainPage = () => {
   const router = useRouter();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
@@ -51,7 +52,7 @@ const [guestCapacity, setGuestCapacity]     = useState("");
 
   return (
     <>
-      <div className="logedin-container">
+      <div className="venue-container">
         <div style={{ position: "relative" }}>
           <TopBanner image={venueTopBanner} alt="Venue" />
           <VenueCategories
@@ -74,13 +75,22 @@ const [guestCapacity, setGuestCapacity]     = useState("");
   venueType={activeVenueType}
   guestCapacity={guestCapacity}
 />
+
+<VenueFeatures/>
+<div style={{ margin: " clamp(16px, calc((20 / 393) * 100vw), 24px) 0", maxWidth: "480px", background:"#F5F1F7" }}>
+  <div className="trusted-heading">
+    <h2 className="trusted-title">Trusted By Thousands</h2>
+    <p className="trusted-subtitle">Real experiences From Happy Customers</p>
+  </div>
+  <ReviewSlider reviews={balloonreviews} />
+</div>
       </div>
 
       <LoginModal
         isOpen={showHostLoginModal}
         onClose={() => {
           setShowHostLoginModal(false);
-          router.replace("/venue-list/venue");
+          router.replace("/venue-list");
         }}
       />
     </>

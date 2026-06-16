@@ -184,3 +184,36 @@ gap: clamp(3px, 1.02vw, 5px);
   text-align: left;
 
 }
+.view-all-wrap {
+  display: flex;
+  justify-content: center;
+  margin: clamp(20px, calc((24 / 393) * 100vw), 30px) 0;
+}
+
+.view-all-btn {
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+
+  font-size: clamp(11px, calc((14 / 393) * 100vw), 17px);
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+
+  width: clamp(129px, calc((158 / 393) * 100vw), 193px);
+  height: clamp(25px, calc((31 / 393) * 100vw), 38px);
+
+  border-radius: clamp(6px, calc((7 / 393) * 100vw), 9px);
+
+  padding: clamp(4px, calc((5 / 393) * 100vw), 6px);
+
+  gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+
+  background: #97538C;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.view-all-btn:hover {
+  opacity: 0.9;
+}
