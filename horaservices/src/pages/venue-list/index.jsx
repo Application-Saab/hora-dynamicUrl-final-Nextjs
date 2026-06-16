@@ -11,10 +11,13 @@ import VenueList from "@/components/venueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import ReviewSlider from "@/components/ReviewSection";
-import { balloonreviews } from "@/utils/balloonReviews";
-import "./venue/venue.css"
+import CitySelector from "@/components/Venue/CitySelector";
+import "./venue/venue.css";
+import { venueReviews } from "@/utils/veneureviews";
+
 const venuelandMainPage = () => {
   const router = useRouter();
+
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
   );
@@ -22,9 +25,51 @@ const venuelandMainPage = () => {
     localStorage.getItem("userID") || ""
   );
   const [showHostLoginModal, setShowHostLoginModal] = useState(false);
-  const [activeEvent, setActiveEvent]         = useState("Birthday");
-const [activeVenueType, setActiveVenueType] = useState("all");
-const [guestCapacity, setGuestCapacity]     = useState("");
+  const [activeEvent, setActiveEvent] = useState("Birthday");
+  const [activeVenueType, setActiveVenueType] = useState("all");
+  const [guestCapacity, setGuestCapacity] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [showCityModal, setShowCityModal] = useState(false);
+
+  // router ready hone pe URL se city lo
+  useEffect(() => {
+    if (router.isReady) {
+      setSelectedCity(router.query.city || "");
+    }
+  }, [router.isReady, router.query.city]);
+
+  // 5 sec baad sirf ek baar dikhao
+  useEffect(() => {
+    const alreadyShown = sessionStorage.getItem("cityModalShown");
+    if (!alreadyShown) {
+      const timer = setTimeout(() => {
+        setShowCityModal(true);
+        sessionStorage.setItem("cityModalShown", "true");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // city select handler
+  const handleCitySelect = (city) => {
+    const selected = city === "Others" ? "" : city;
+    setSelectedCity(selected);
+    setShowCityModal(false);
+
+    const newQuery = { ...router.query };
+    if (selected) {
+      newQuery.city = selected;
+    } else {
+      delete newQuery.city;
+    }
+    router.replace(
+      { pathname: router.pathname, query: newQuery },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  // login hone pe redirect
   useLayoutEffect(() => {
     let timer;
     if (isUserLoggedIn && loggedinUserId) {
@@ -34,8 +79,6 @@ const [guestCapacity, setGuestCapacity]     = useState("");
     }
     return () => clearTimeout(timer);
   }, [loggedinUserId, isUserLoggedIn]);
-
-
 
   useEffect(() => {
     const syncLoginState = () => {
@@ -52,38 +95,45 @@ const [guestCapacity, setGuestCapacity]     = useState("");
 
   return (
     <>
+      {showCityModal && (
+        <CitySelector onSelect={handleCitySelect} />
+      )}
+
       <div className="venue-container">
         <div style={{ position: "relative" }}>
           <TopBanner image={venueTopBanner} alt="Venue" />
           <VenueCategories
             active={activeEvent}
-            onSelect={setActiveEvent} // ✅ category change parent ko batayega
+            onSelect={setActiveEvent}
           />
         </div>
 
         <VenueBannertitle eventType={activeEvent} />
-<VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
+        <VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
 
-<VenueListHeader
-  eventType={activeEvent}
-  value={guestCapacity}
-  onChange={setGuestCapacity}
-/>
 
-<VenueList
-  eventType={activeEvent}
-  venueType={activeVenueType}
-  guestCapacity={guestCapacity}
-/>
+        <VenueListHeader
+          eventType={activeEvent}
+          value={guestCapacity}
+          onChange={setGuestCapacity}
+        />
 
-<VenueFeatures/>
-<div style={{ margin: " clamp(16px, calc((20 / 393) * 100vw), 24px) 0", maxWidth: "480px", background:"#F5F1F7" }}>
-  <div className="trusted-heading">
-    <h2 className="trusted-title">Trusted By Thousands</h2>
-    <p className="trusted-subtitle">Real experiences From Happy Customers</p>
-  </div>
-  <ReviewSlider reviews={balloonreviews} />
-</div>
+        <VenueList
+          eventType={activeEvent}
+          venueType={activeVenueType}
+          guestCapacity={guestCapacity}
+          city={selectedCity}
+        />
+
+        <VenueFeatures />
+
+        <div style={{ margin: "clamp(16px, calc((20 / 393) * 100vw), 24px) 0", maxWidth: "480px", background: "#F5F1F7" }}>
+          <div className="trusted-heading">
+            <h2 className="trusted-title">Trusted By Thousands</h2>
+            <p className="trusted-subtitle">Real experiences From Happy Customers</p>
+          </div>
+          <ReviewSlider reviews={venueReviews} />
+        </div>
       </div>
 
       <LoginModal

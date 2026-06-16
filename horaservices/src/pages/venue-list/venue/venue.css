@@ -361,3 +361,7 @@ font-family: Inter, sans-serif;
   color: #2E2E3D;
   margin: 0;
 }
+.venue-container{
+  max-width: 480px;
+  margin:auto;
+}

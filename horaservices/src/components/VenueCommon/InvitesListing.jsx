@@ -7,7 +7,7 @@ import locationIcon from "@/assets/venuelanding/location.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-const VenueList = ({ eventType, venueType, guestCapacity }) => {
+const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false); // ← yahan rakho
@@ -20,12 +20,12 @@ const VenueList = ({ eventType, venueType, guestCapacity }) => {
     if (eventType) params.append("eventType", eventType);
     if (venueType && venueType !== "all") params.append("venueType", venueType);
     if (guestCapacity) params.append("guestCapacity", guestCapacity);
-
+    if (city)                             params.append("city", city);
     fetch(`https://horaservices.com/api/party-venue/venues-public-list?${params}`)
       .then((r) => r.json())
       .then((res) => { setVenues(res.data || []); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [eventType, venueType, guestCapacity]);
+  }, [eventType, venueType, guestCapacity,city]);
 
   if (loading) return <p className="venue-status">Loading venues...</p>;
   if (!venues.length) return <p className="venue-status">No venues found</p>;
@@ -82,7 +82,7 @@ const VenueList = ({ eventType, venueType, guestCapacity }) => {
                 className="venue-menu-btn"
                 onClick={() => router.push(`/venue-list/venue?venueid=${v._id}`)}
               >
-                View Menu ➜
+                View Package ➜
               </button>
             </div>
           </div>
