@@ -94,18 +94,19 @@ background: #f3e8ff;
 
   font-family: Inter, sans-serif;
   font-weight: 500;
-
+ margin: 0;
   font-size: clamp(8px, 2.46vw, 11px);
 display: flex;
   align-items: center;
-  gap: clamp(3px, 1vw, 5px);
-  margin: 0;
+    justify-content: space-between; /* ← left mein location, right mein tag */
+  gap: 6px;
 }
 
 .location-icon {
   width: clamp(8px, 2.5vw, 10px);
   height: clamp(10px, 2.6vw, 12px);
   flex-shrink: 0;
+  margin-top: 3px;
 }
 .venue-price {
    font-family: 'Rubik', sans-serif;

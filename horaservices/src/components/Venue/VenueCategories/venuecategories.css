@@ -37,7 +37,9 @@
 
 .event-chip {
   flex: 0 0 auto;
-  padding: clamp(7px, 2vw, 10px) clamp(12px, 4vw, 18px);
+ padding: 
+  clamp(5.1px, calc((6.3 / 393) * 100vw), 7.7px)
+  clamp(2.9px, calc((3.5 / 393) * 100vw), 4.3px);
   border-radius: 6px;
   background: #efefef;
   font-family: 'Inter', sans-serif;
@@ -64,7 +66,7 @@
 .event-chip.active {
   background: #b57aa8;
   color: #fff;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .event-chip:active {

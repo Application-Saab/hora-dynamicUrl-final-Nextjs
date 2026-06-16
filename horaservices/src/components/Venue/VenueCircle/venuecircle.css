@@ -6,12 +6,12 @@
 
 .venue-scroll {
   display: flex;
-  gap: clamp(8px, 2vw, 12px);
+ gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
   overflow-x: auto;
   padding: 8px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  margin-left: 4px;
+  margin-left: 6px;
 }
 
 .venue-scroll::-webkit-scrollbar {
@@ -32,8 +32,8 @@
 
 /* ── Circle image wrapper ── */
 .venue-img {
-  width: clamp(58px, 16vw, 70px);
-  height: clamp(58px, 16vw, 70px);
+width: clamp(59px, calc((72 / 393) * 100vw), 88px);
+height: clamp(59px, calc((72 / 393) * 100vw), 88px);
   border-radius: 50%;
   overflow: hidden;
   display: flex;
