@@ -10,6 +10,7 @@
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   animation: tmFadeIn 0.2s ease;
+  padding: clamp(8px, calc((10 / 393) * 100vw), 12px);
 }
 
 @keyframes tmFadeIn {
@@ -22,7 +23,7 @@
   background: #fff;
   width: 100%;
   max-width: 520px;
-  border-radius: 20px 20px 0 0;
+  border-radius: 20px;
   max-height: 88vh;
   display: flex;
   flex-direction: column;

@@ -327,6 +327,7 @@ const VenuePage = () => {
               rsvpSubmitted={false}
               isHost={eventDetails?.userId === loggedinUserId}
               isVenueHost={true}
+               venueImageUrl={eventDetails?.venueImageUrl}  
             />
           </div>
         </div>

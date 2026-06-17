@@ -28,6 +28,7 @@ export default function VenueWallHeaderTabs({
   setIsActualMyPhotos,
   showCreateFolderPopup: showCreateFolderPopupProp,
   setShowCreateFolderPopup: setShowCreateFolderPopupProp,
+  venueImageUrl,
 }) {
   console.log('%c [ subFolders ]', 'font-size:13px; background:pink; color:#bf2c9f;', subFolders)
   const fileInputRef = useRef(null);
@@ -244,7 +245,10 @@ export default function VenueWallHeaderTabs({
       setIsLoading(false);
     }
   };
-
+const coverImage =
+  venueImageUrl ||
+  albums?.[0]?.folderDp?.thumbnailUrl ||
+  allPhotos.src;
   return (
     <>
       <div className="gallery-headerCard">
@@ -259,11 +263,17 @@ export default function VenueWallHeaderTabs({
             setIsActualMyPhotos(false);
           }}
         >
-          <div className="circle-img-folder_wonderland circle-img-both" >
-            <div className="circle-img-inner circle-img-innner-wonderland">
-              <img src={allPhotos.src} alt="All" />
-            </div>
-          </div>
+         <div className="circle-img-folder_wonderland circle-img-both">
+  <div className="circle-img-inner circle-img-innner-wonderland">
+   <img
+  src={coverImage}
+  alt="All"
+  onError={(e) => {
+    e.target.src = allPhotos.src;
+  }}
+/>
+  </div>
+</div>
           <span>All</span>
         </div>
 
