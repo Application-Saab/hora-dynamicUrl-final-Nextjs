@@ -12,20 +12,27 @@ const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false); // ← yahan rakho
   const router = useRouter();
+  const [visibleCount, setVisibleCount] = useState(5);
 
-  useEffect(() => {
-    setLoading(true);
-    setShowAll(false); // ← filter change hone pe reset karo
-    const params = new URLSearchParams();
-    if (eventType) params.append("eventType", eventType);
-    if (venueType && venueType !== "all") params.append("venueType", venueType);
-    if (guestCapacity) params.append("guestCapacity", guestCapacity);
-    if (city)                             params.append("city", city);
-    fetch(`https://horaservices.com/api/party-venue/venues-public-list?${params}`)
-      .then((r) => r.json())
-      .then((res) => { setVenues(res.data || []); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [eventType, venueType, guestCapacity,city]);
+useEffect(() => {
+  setLoading(true);
+  setVisibleCount(5);
+
+  const params = new URLSearchParams();
+
+  if (eventType) params.append("eventType", eventType);
+  if (venueType && venueType !== "all") params.append("venueType", venueType);
+  if (guestCapacity) params.append("guestCapacity", guestCapacity);
+  if (city) params.append("city", city);
+
+  fetch(`https://horaservices.com/api/party-venue/venues-public-list?${params}`)
+    .then((r) => r.json())
+    .then((res) => {
+      setVenues(res.data || []);
+      setLoading(false);
+    })
+    .catch(() => setLoading(false));
+}, [eventType, venueType, guestCapacity, city]);
 
   if (loading) return <p className="venue-status">Loading venues...</p>;
  if (!venues.length) {
@@ -46,8 +53,7 @@ const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
   );
 }
 
-  const displayedVenues = showAll ? venues : venues.slice(0, 5); // ← yahan slice
-
+  const displayedVenues = venues.slice(0, visibleCount);
   return (
     <>
       <div className="venue-list">
@@ -67,11 +73,9 @@ const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
               <p className="venue-location">
                 <span style={{ display: "flex", gap: "4px" }}>
                   <Image src={locationIcon} alt="Location" className="location-icon" />
-                  <span className="location-text">
-                    {(v.location || v.city || "N/A").length > 20
-                      ? `${(v.location || v.city || "N/A").slice(0, 20)}...`
-                      : (v.location || v.city || "N/A")}
-                  </span>
+                 <span className="location-text">
+                   {v.city || "N/A"}
+                 </span>
                 </span>
                 <span className="venue-tag">🏨 {v.venueType || "Venue"}</span>
               </p>
@@ -106,13 +110,16 @@ const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
       </div>
 
       {/* View All — component ke andar hi */}
-      {venues.length > 5 && !showAll && (
-        <div className="view-all-wrap">
-          <button className="view-all-btn" onClick={() => setShowAll(true)}>
-            View All
-          </button>
-        </div>
-      )}
+      {visibleCount < venues.length && (
+  <div className="view-all-wrap">
+    <button
+      className="view-all-btn"
+      onClick={() => setVisibleCount((prev) => prev + 5)}
+    >
+      View More
+    </button>
+  </div>
+)}
     </>
   );
 };
