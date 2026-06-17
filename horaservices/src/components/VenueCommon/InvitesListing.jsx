@@ -28,7 +28,23 @@ const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
   }, [eventType, venueType, guestCapacity,city]);
 
   if (loading) return <p className="venue-status">Loading venues...</p>;
-  if (!venues.length) return <p className="venue-status">No venues found</p>;
+ if (!venues.length) {
+  return (
+    <div className="venue-status coming-soon-box">
+      <h3>
+        {city
+          ? `${city} venues are coming soon! 🎉`
+          : "Venues are coming soon! 🎉"}
+      </h3>
+
+      <p>
+        {city
+          ? `We're expanding our venue network in ${city}. Stay tuned for amazing venues and packages.`
+          : "We're expanding to more cities. Stay tuned for amazing venues and packages."}
+      </p>
+    </div>
+  );
+}
 
   const displayedVenues = showAll ? venues : venues.slice(0, 5); // ← yahan slice
 

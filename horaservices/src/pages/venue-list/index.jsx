@@ -31,44 +31,60 @@ const venuelandMainPage = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [showCityModal, setShowCityModal] = useState(false);
 
-  // router ready hone pe URL se city lo
-  useEffect(() => {
-    if (router.isReady) {
-      setSelectedCity(router.query.city || "");
-    }
-  }, [router.isReady, router.query.city]);
+useEffect(() => {
+  if (!router.isReady) return;
 
-  // 5 sec baad sirf ek baar dikhao
-  useEffect(() => {
-    const alreadyShown = sessionStorage.getItem("cityModalShown");
-    if (!alreadyShown) {
-      const timer = setTimeout(() => {
-        setShowCityModal(true);
-        sessionStorage.setItem("cityModalShown", "true");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  const queryCity = router.query.city;
 
-  // city select handler
-  const handleCitySelect = (city) => {
-    const selected = city === "Others" ? "" : city;
-    setSelectedCity(selected);
-    setShowCityModal(false);
+  if (queryCity) {
+    setSelectedCity(queryCity);
+    sessionStorage.setItem("selectedCity", queryCity);
+  } else {
+    const savedCity = sessionStorage.getItem("selectedCity") || "";
+    setSelectedCity(savedCity);
+  }
+}, [router.isReady, router.query.city]);
 
-    const newQuery = { ...router.query };
-    if (selected) {
-      newQuery.city = selected;
-    } else {
-      delete newQuery.city;
-    }
-    router.replace(
-      { pathname: router.pathname, query: newQuery },
-      undefined,
-      { shallow: true }
-    );
-  };
+ useEffect(() => {
+  const alreadyShown = sessionStorage.getItem("cityModalShown");
+  const savedCity = sessionStorage.getItem("selectedCity");
 
+  if (!alreadyShown && !savedCity) {
+    const timer = setTimeout(() => {
+      setShowCityModal(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }
+}, []);
+
+
+ const handleCitySelect = (city) => {
+  const selected = city === "Others" ? "" : city;
+
+  setSelectedCity(selected);
+  setShowCityModal(false);
+
+  sessionStorage.setItem("cityModalShown", "true");
+  sessionStorage.setItem("selectedCity", selected);
+
+  const newQuery = { ...router.query };
+
+  if (selected) {
+    newQuery.city = selected;
+  } else {
+    delete newQuery.city;
+  }
+
+  router.replace(
+    {
+      pathname: router.pathname,
+      query: newQuery,
+    },
+    undefined,
+    { shallow: true }
+  );
+};
   // login hone pe redirect
   useLayoutEffect(() => {
     let timer;
