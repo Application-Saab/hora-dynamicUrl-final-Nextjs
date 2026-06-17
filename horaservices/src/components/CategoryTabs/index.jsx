@@ -26,12 +26,11 @@ const CategoryTabs = ({
     return `${base}${path}`;
   };
 
-  const GridhandleClick = (cat) => {
+ const GridhandleClick = (cat) => {
   if (!cat || !catValue) return;
 
   const ROOT_CATEGORY = "balloon-decoration";
 
-  // 🔹 GTM / dataLayer (same as before)
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "theme_circle_clicked",
@@ -42,14 +41,15 @@ const CategoryTabs = ({
     locality: locality || "default",
   });
 
-  // 🔹 FIXED NAVIGATION
+  // theme value ke aage "-decoration" add karo
+  const themeSlug = `${cat.value}-theme-decoration`;
+
   const path = formatPath(
-    `/${ROOT_CATEGORY}/${catValue}?theme=${encodeURIComponent(cat.value)}`
+    `/${ROOT_CATEGORY}/${catValue}/${themeSlug}`
   );
 
   router.push(path);
 };
-
 
   const handleClick = (cat) => {
     if (!cat) return;
