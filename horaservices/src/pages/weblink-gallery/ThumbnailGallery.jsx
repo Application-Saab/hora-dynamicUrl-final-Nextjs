@@ -1008,6 +1008,10 @@ const ThumbnailGallery = ({
     return null;
   }
 
+const currentUrl =
+  typeof window !== "undefined" ? window.location.href : "";
+
+
   const handleSubFolderSelect = (id) => {
     setCurrentPage(1);
     setActiveSubFolderId(id);
@@ -1881,6 +1885,8 @@ const ThumbnailGallery = ({
         isOpen={isLoginOpen && !isLogin}
         onClose={() => setIsLoginOpen(false)}
         fromCapsule={true}
+        template="guest_login_2"
+        link={currentUrl}
       />
 
 
