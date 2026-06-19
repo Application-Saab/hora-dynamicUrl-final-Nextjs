@@ -1,0 +1,106 @@
+.love-poses-banner {
+  width: 100%;
+  max-width: 480px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #f3edf4;
+  border: 1px solid #d8d2dc;
+
+  border-radius: clamp(12px, calc((16 / 393) * 100vw), 18px);
+
+  padding: clamp(10px, calc((12 / 393) * 100vw), 15px);
+
+  box-sizing: border-box;
+}
+
+.love-poses-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+
+  flex: 1;
+  min-width: 0;
+}
+
+.love-icon {
+  width: clamp(48px, calc((58 / 393) * 100vw), 70px);
+  height: clamp(48px, calc((58 / 393) * 100vw), 70px);
+
+  border-radius: 50%;
+
+  background: #c79bc5;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: clamp(24px, calc((30 / 393) * 100vw), 36px);
+
+  flex-shrink: 0;
+}
+
+.love-content h3 {
+  margin: 0 0 4px;
+
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+
+  font-size: clamp(16px, calc((20 / 393) * 100vw), 24px);
+
+  color: #111;
+}
+
+.love-content p {
+  margin: 0;
+
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+
+  font-size: clamp(10px, calc((12 / 393) * 100vw), 14px);
+
+  line-height: 1.35;
+
+  color: #666;
+}
+
+.love-btn {
+  border: none;
+
+  background: #a45a97;
+  color: #fff;
+
+  border-radius: clamp(6px, calc((8 / 393) * 100vw), 10px);
+
+  padding:
+    clamp(11px, calc((13 / 393) * 100vw), 16px)
+    clamp(18px, calc((22 / 393) * 100vw), 28px);
+
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+
+  font-size: clamp(11px, calc((13 / 393) * 100vw), 16px);
+
+  white-space: nowrap;
+  cursor: pointer;
+
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .love-content h3 {
+    font-size: 14px;
+  }
+
+  .love-content p {
+    font-size: 10px;
+  }
+
+  .love-btn {
+    font-size: 11px;
+    padding: 10px 14px;
+  }
+}

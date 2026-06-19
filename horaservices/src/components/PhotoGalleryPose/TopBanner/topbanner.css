@@ -1,0 +1,134 @@
+.card-containor {
+  width: 100%;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.hero-inner {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 180px;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+padding: clamp(8px, calc((10 / 393) * 100vw), 12.2px);
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(13.85px, calc((17 / 393) * 100vw), 20.76px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #1a1a2e;
+}
+
+.hero-highlight {
+  color: #5923af;
+}
+
+.hero-description {
+  margin: 0;
+  max-width: 240px;
+
+  font-size: clamp(8.95px, calc((11 / 393) * 100vw), 13.4px);
+
+  line-height: clamp(16px, calc((18 / 393) * 100vw), 22px);
+
+  color: #6b7280;
+}
+
+.hero-social-proof {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, calc((8 / 393) * 100vw), 10px);
+}
+
+.hero-avatar-group {
+  display: flex;
+}
+
+.hero-avatar {
+  width: clamp(16.3px, calc((20 / 393) * 100vw), 24.5px);
+  height: clamp(16.3px, calc((20 / 393) * 100vw), 24.5px);
+
+  border-radius: 50%;
+  border: 2px solid #fff;
+
+  object-fit: cover;
+  margin-left: -8px;
+}
+
+.hero-avatar-group .hero-avatar:first-child {
+  margin-left: 0;
+}
+
+.hero-social-proof-text {
+  font-size: clamp(8.1px, calc((10 / 393) * 100vw), 12.2px);
+  font-weight: 500;
+  color: #374151;
+}
+
+.hero-heart {
+  font-size: clamp(10px, calc((12 / 393) * 100vw), 14px);
+}
+
+.hero-cta-button {
+  margin-top: 4px;
+
+  width: fit-content;
+  display: flex;
+  align-items: center;
+
+  gap: clamp(6px, calc((8 / 393) * 100vw), 10px);
+
+  background: #97538C;
+  color: #fff;
+  border: none;
+
+  padding: clamp(8px, calc((10 / 393) * 100vw), 12px);
+  border-radius: 8px;
+
+  font-size: clamp(12px, calc((14 / 393) * 100vw), 16px);
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.hero-camera-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.hero-image-wrap {
+  position: relative;
+  width: 35%;
+  overflow: hidden;
+}
+
+.hero-image {
+  object-fit: cover;
+}
+
+.hero-image-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    rgba(255, 255, 255, 0) 50%
+  );
+}
+
+/* Mobile */

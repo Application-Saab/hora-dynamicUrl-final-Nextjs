@@ -1,0 +1,105 @@
+.photo-cta-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  padding: clamp(10px, calc((12 / 393) * 100vw), 14px);
+  box-sizing: border-box;
+  max-width: 480px;
+  margin:10px auto;
+}
+
+.photo-cta-top {
+  display: flex;
+  align-items: center;
+ gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+}
+
+.photo-cta-images {
+  display: flex;
+  gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+  flex-shrink: 0;
+}
+
+.photo-thumb {
+  position: relative;
+
+  width: clamp(34px, calc((42 / 393) * 100vw), 51px);
+height: clamp(39px, calc((48 / 393) * 100vw), 59px);
+
+border-radius: clamp(5.1px, calc((6.24 / 393) * 100vw), 7.6px);
+  overflow: hidden;
+}
+
+.photo-thumb img {
+  object-fit: cover;
+}
+
+.photo-cta-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.photo-cta-content h3 {
+  margin: 0 0 4px;
+
+ font-family: 'Rubik', sans-serif;
+font-weight: 500;
+font-size: clamp(10.15px, calc((12.47 / 393) * 100vw), 15.23px);
+line-height: 1.2;
+
+  color: #000000;
+}
+
+.photo-cta-content p {
+  margin: 0;
+
+font-family: 'Rubik', sans-serif;
+font-weight: 400;
+
+font-size: clamp(7.1px, calc((8.73 / 393) * 100vw), 10.7px);
+
+  color: #000000;
+}
+
+.photo-book-btn {
+  flex-shrink: 0;
+
+  border: none;
+  background: #a35b97;
+  color: #fff;
+padding:
+  clamp(8.95px, calc((11 / 393) * 100vw), 13.44px)
+  clamp(18.73px, calc((23 / 393) * 100vw), 28.09px);
+gap: clamp(5.1px, calc((6.24 / 393) * 100vw), 7.6px);
+
+border-radius: clamp(5.1px, calc((6.24 / 393) * 100vw), 7.6px);
+
+font-family: 'Rubik', sans-serif;
+font-weight: 600;
+
+font-size: clamp(9.8px, calc((12 / 393) * 100vw), 14.7px);
+  cursor: pointer;
+}
+
+.photo-divider {
+  height: 1px;
+  background: #e3e3e3;
+  margin: clamp(10px, calc((12 / 393) * 100vw), 14px) 0;
+}
+
+.photo-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+
+  font-family: 'Rubik', sans-serif;
+font-weight: 500;
+
+font-size: clamp(7.1px, calc((8.73 / 393) * 100vw), 10.7px);
+
+  color: #000000;
+}
+
+.photo-stats span {
+  white-space: nowrap;
+}
