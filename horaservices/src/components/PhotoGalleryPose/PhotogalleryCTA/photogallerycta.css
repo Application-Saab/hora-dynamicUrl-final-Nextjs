@@ -43,7 +43,7 @@ border-radius: clamp(5.1px, calc((6.24 / 393) * 100vw), 7.6px);
   margin: 0 0 4px;
 
  font-family: 'Rubik', sans-serif;
-font-weight: 500;
+font-weight: 550;
 font-size: clamp(10.15px, calc((12.47 / 393) * 100vw), 15.23px);
 line-height: 1.2;
 
@@ -54,7 +54,7 @@ line-height: 1.2;
   margin: 0;
 
 font-family: 'Rubik', sans-serif;
-font-weight: 400;
+font-weight: 450;
 
 font-size: clamp(7.1px, calc((8.73 / 393) * 100vw), 10.7px);
 
@@ -91,9 +91,8 @@ font-size: clamp(9.8px, calc((12 / 393) * 100vw), 14.7px);
   display: flex;
   justify-content: space-between;
   gap: 8px;
-
   font-family: 'Rubik', sans-serif;
-font-weight: 500;
+  font-weight: 550;
 
 font-size: clamp(7.1px, calc((8.73 / 393) * 100vw), 10.7px);
 

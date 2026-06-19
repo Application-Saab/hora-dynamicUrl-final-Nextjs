@@ -7,26 +7,31 @@ import {
 } from "react-icons/md";
 
 import "./whychoosehora.css";
-
+import Unlimited from "@/assets//poselink/galleryicon.svg";
+import HDicon from "@/assets/poselink/hdedit.svg";
+import clock from "@/assets/poselink/clock.svg";
+import user from "@/assets/poselink/user.svg";
+import support from "@/assets/poselink/support.svg";
+import Image from "next/image";
 const features = [
   {
-    icon: <MdPhotoLibrary />,
+    icon: Unlimited,
     title: "Unlimited Photos",
   },
   {
-    icon: <MdOutlinePhotoSizeSelectActual />,
+    icon: HDicon,
     title: "HD Edited Image",
   },
   {
-    icon: <MdAccessTime />,
+    icon: clock,
     title: "On-Time Delivery",
   },
   {
-    icon: <MdGroups />,
+    icon: user,
     title: "Dedicated Team",
   },
   {
-    icon: <MdSupportAgent />,
+    icon: support,
     title: "24×7 Support",
   },
 ];
@@ -35,11 +40,18 @@ export default function WhyChooseHora() {
   return (
     <div className="whyhora-card">
       <h2 className="whyhora-title">Why Choose Hora ?</h2>
-
+ 
       <div className="whyhora-grid">
         {features.map((item, index) => (
           <div className="whyhora-item" key={index}>
-            <div className="whyhora-icon">{item.icon}</div>
+            <div className="whyhora-icon">
+              <Image
+                src={item.icon}
+                alt={item.title}
+                width={32}
+                height={32}
+              />
+            </div>
             <p>{item.title}</p>
           </div>
         ))}

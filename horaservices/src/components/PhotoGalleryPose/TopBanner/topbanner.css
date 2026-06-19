@@ -1,15 +1,16 @@
 .card-containor {
   width: 100%;
-  background: #fff;
+  background: #F5EDFA;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  max-width: 480px;
+  margin:10px auto;
 }
 
 .hero-inner {
   position: relative;
   display: flex;
   align-items: stretch;
-  min-height: 180px;
 }
 
 .hero-content {
@@ -19,32 +20,35 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-
-  gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+gap: clamp(6.5px, calc((8 / 393) * 100vw), 9.8px);
 padding: clamp(8px, calc((10 / 393) * 100vw), 12.2px);
 }
 
 .hero-title {
   margin: 0;
-  font-size: clamp(13.85px, calc((17 / 393) * 100vw), 20.76px);
-  font-weight: 800;
-  line-height: 1.2;
-  color: #1a1a2e;
+   display: flex;
+
+}
+.hero-highlight {
+font-size: clamp(14.7px, calc((18 / 393) * 100vw), 22px);
+font-weight: 700;
+  color: 511398;             
+  line-height: 1;
+}
+ 
+.hero-title-text {
+  font-size: clamp(11.4px, calc((14 / 393) * 100vw), 17px);
+font-weight: 600;
+color:#000000
 }
 
-.hero-highlight {
-  color: #5923af;
-}
 
 .hero-description {
   margin: 0;
-  max-width: 240px;
-
-  font-size: clamp(8.95px, calc((11 / 393) * 100vw), 13.4px);
-
-  line-height: clamp(16px, calc((18 / 393) * 100vw), 22px);
-
-  color: #6b7280;
+font-size: clamp(6.5px, calc((8 / 393) * 100vw), 10px);
+font-weight: 400;
+  color: #000000;
+  width:90%
 }
 
 .hero-social-proof {
@@ -73,7 +77,7 @@ padding: clamp(8px, calc((10 / 393) * 100vw), 12.2px);
 }
 
 .hero-social-proof-text {
-  font-size: clamp(8.1px, calc((10 / 393) * 100vw), 12.2px);
+  font-size: clamp(6.5px, calc((8 / 393) * 100vw), 9.8px);
   font-weight: 500;
   color: #374151;
 }
@@ -95,10 +99,10 @@ padding: clamp(8px, calc((10 / 393) * 100vw), 12.2px);
   color: #fff;
   border: none;
 
-  padding: clamp(8px, calc((10 / 393) * 100vw), 12px);
+  padding: clamp(5.7px, calc((7 / 393) * 100vw), 8.6px);
   border-radius: 8px;
 
-  font-size: clamp(12px, calc((14 / 393) * 100vw), 16px);
+ font-size: clamp(8.57px, calc((10.53 / 393) * 100vw), 12.86px);
   font-weight: 600;
 
   cursor: pointer;
@@ -112,7 +116,7 @@ padding: clamp(8px, calc((10 / 393) * 100vw), 12.2px);
 
 .hero-image-wrap {
   position: relative;
-  width: 35%;
+  width: clamp(165px, calc((203 / 393) * 100vw), 248px);
   overflow: hidden;
 }
 

@@ -4,18 +4,18 @@ import Image from "next/image";
 import "./topbanner.css";
 
 const TopBanner = ({
-  backgroundImage = "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1200&q=80",
-  highlightText = "2500+",
-  title = "Wedding Poses",
-  description = "Get inspired with trending poses and book the best photographer for your Event.",
-  avatarImages = [
+  backgroundImage,
+  highlightText,
+  title,
+  description,
+   avatarImages = [
     "https://i.pravatar.cc/40?img=1",
     "https://i.pravatar.cc/40?img=2",
     "https://i.pravatar.cc/40?img=3",
   ],
-  socialProofText = "Loved by 10,000+ couples",
-  ctaText = "Book Photographer",
-  onCtaClick = () => {},
+ socialProofText = "Loved by 10,000+ couples",
+  ctaText,
+  onCtaClick,
 }) => {
   return (
     <section className="card-containor">
@@ -23,7 +23,8 @@ const TopBanner = ({
         {/* Left: text content */}
         <div className="hero-content">
           <h1 className="hero-title">
-            <span className="hero-highlight">{highlightText}</span> {title}
+            <span className="hero-highlight">{highlightText}</span>
+            <span className="hero-title-text">{title}</span>
           </h1>
 
           <p className="hero-description">{description}</p>
@@ -43,9 +44,17 @@ const TopBanner = ({
               ))}
             </div>
 
-            <span className="hero-social-proof-text">
-              {socialProofText} <span className="hero-heart">❤️</span>
-            </span>
+           <span className="hero-social-proof-text">
+  {socialProofText}
+
+  {/* <Image
+    src={starIcon}
+    alt="Star"
+    width={12}
+    height={12}
+    className="hero-icon"
+  /> */}
+</span>
           </div>
 
           <button className="hero-cta-button" onClick={onCtaClick}>
