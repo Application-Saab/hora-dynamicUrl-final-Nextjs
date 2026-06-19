@@ -1807,7 +1807,7 @@ const currentUrl =
               <div className="list-container">
                 <div className="list-content">
                   {guestData.map((guest) => {
-                    const hasAvatar = guest.avatar && guest.avatar.trim() !== "";
+                    const hasAvatar = guest?.avatar && guest?.avatar?.trim() !== "";
 
                     return (
                       <div key={guest._id} className="guest-row">
