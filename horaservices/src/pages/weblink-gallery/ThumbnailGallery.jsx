@@ -1079,6 +1079,10 @@ const showSnackbar = (message) => {
     return null;
   }
 
+const currentUrl =
+  typeof window !== "undefined" ? window.location.href : "";
+
+
   const handleSubFolderSelect = (id) => {
     setCurrentPage(1);
     setActiveSubFolderId(id);
@@ -2032,7 +2036,7 @@ const handleAddToLocker = async (imgData) => {
               <div className="list-container">
                 <div className="list-content">
                   {guestData.map((guest) => {
-                    const hasAvatar = guest.avatar && guest.avatar.trim() !== "";
+                    const hasAvatar = guest?.avatar && guest?.avatar?.trim() !== "";
 
                     return (
                       <div key={guest._id} className="guest-row">
@@ -2141,6 +2145,8 @@ const handleAddToLocker = async (imgData) => {
         isOpen={isLoginOpen && !isLogin}
         onClose={() => setIsLoginOpen(false)}
         fromCapsule={true}
+        template="guest_login_2"
+        link={currentUrl}
       />
 
 
