@@ -1,3 +1,5 @@
+/* TermsModal.css — 30px to 480px screen size ke liye clamp */
+
 /* ── OVERLAY ── */
 .tm-overlay {
   position: fixed;
@@ -10,7 +12,7 @@
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   animation: tmFadeIn 0.2s ease;
-  padding: clamp(8px, calc((10 / 393) * 100vw), 12px);
+  padding: clamp(6px, calc((10 / 480) * 100vw), 12px);
 }
 
 @keyframes tmFadeIn {
@@ -18,12 +20,12 @@
   to   { opacity: 1; }
 }
 
-/* ── BOTTOM SHEET ── */
+/* ── SHEET ── */
 .tm-sheet {
   background: #fff;
   width: 100%;
-  max-width: 520px;
-  border-radius: 20px;
+  max-width: 480px;
+  border-radius: clamp(14px, calc((20 / 480) * 100vw), 22px);
   max-height: 88vh;
   display: flex;
   flex-direction: column;
@@ -41,13 +43,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+  padding: clamp(10px, calc((16 / 480) * 100vw), 20px) clamp(12px, calc((18 / 480) * 100vw), 22px);
+  padding-bottom: clamp(8px, calc((12 / 480) * 100vw), 14px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
 }
 
 .tm-title {
-  font-size: 1rem;
+  font-size: clamp(13px, calc((17 / 480) * 100vw), 20px);
   font-weight: 700;
   color: #1a1208;
   margin: 0;
@@ -55,13 +58,13 @@
 }
 
 .tm-close {
-  width: 28px;
-  height: 28px;
+  width: clamp(22px, calc((30 / 480) * 100vw), 36px);
+  height: clamp(22px, calc((30 / 480) * 100vw), 36px);
   border-radius: 50%;
-  border: none;
-  background: #f2f2f2;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
   color: #555;
-  font-size: 0.7rem;
+  font-size: clamp(9px, calc((12 / 480) * 100vw), 14px);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -73,124 +76,83 @@
 /* ── SCROLLABLE BODY ── */
 .tm-body {
   overflow-y: auto;
-  padding: 14px 18px;
+  padding: clamp(10px, calc((14 / 480) * 100vw), 18px) clamp(12px, calc((18 / 480) * 100vw), 22px);
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   -webkit-overflow-scrolling: touch;
-
-  /* Firefox */
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
-/* Chrome, Edge, Safari */
-.tm-body::-webkit-scrollbar {
-  width: 4px;   /* 👈 thickness control */
-}
+.tm-body::-webkit-scrollbar { width: 4px; }
+.tm-body::-webkit-scrollbar-track { background: transparent; }
+.tm-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+.tm-body::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.35); }
 
-.tm-body::-webkit-scrollbar-track {
-  background: transparent; /* no box */
-}
-
-.tm-body::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.25); /* thin line look */
-  border-radius: 10px;
-}
-
-.tm-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.4);
-}
- 
-.tm-body strong {
-  color: #8c6a1a;
-  font-weight: 700;
-}
-
-/* ── SECTION ── */
-.tm-section {
-  padding: 4px 0 8px;
-}
-
-.tm-section-header {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 10px;
-}
-
-.tm-icon {
-  font-size: 1.05rem;
-  line-height: 1;
-}
-
-.tm-section-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #8c6a1a;
+/* ── dangerouslySetInnerHTML content styling ── */
+/* Bullet list — screenshot jaisa */
+.tm-body ul {
+  list-style: disc;
+  padding-left: clamp(14px, calc((20 / 480) * 100vw), 24px);
   margin: 0;
-  letter-spacing: 0.2px;
-}
-
-/* ── LIST ── */
-.tm-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: clamp(6px, calc((10 / 480) * 100vw), 14px);
 }
 
-.tm-list-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 0.76rem;
-  color: #3d2c0a;
-  line-height: 1.5;
+.tm-body ul li {
+  font-size: clamp(11px, calc((14 / 480) * 100vw), 17px);
+  color: #2a2a2a;
+  line-height: 1.55;
+  padding-left: 2px;
 }
 
-.tm-bullet {
-  color: #8c6a1a;
-  font-size: 0.5rem;
-  margin-top: 4px;
-  flex-shrink: 0;
-  font-weight: 900;
+.tm-body ul li::marker {
+  color: #2a2a2a;
+  font-size: clamp(10px, calc((13 / 480) * 100vw), 16px);
 }
 
-.tm-bullet--gold {
-  color: #8c6a1a;
-  font-size: 0.75rem;
-  margin-top: 1px;
+/* Paragraph styling */
+.tm-body p {
+  font-size: clamp(11px, calc((14 / 480) * 100vw), 17px);
+  color: #2a2a2a;
+  line-height: 1.55;
+  margin: 0 0 8px 0;
+}
+
+/* Bold text */
+.tm-body strong {
   font-weight: 700;
+  color: #1a1a1a;
 }
 
-/* ── DIVIDER ── */
-.tm-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.35), transparent);
-  margin: 6px 0;
+/* Section headings agar HTML mein hain */
+.tm-body h3,
+.tm-body h4 {
+  font-size: clamp(12px, calc((15 / 480) * 100vw), 18px);
+  font-weight: 700;
+  color: #1a1208;
+  margin: 10px 0 6px;
 }
 
 /* ── FOOTER ── */
 .tm-footer {
-  padding: 12px 18px 20px;
+  padding: clamp(10px, calc((12 / 480) * 100vw), 16px) clamp(12px, calc((18 / 480) * 100vw), 22px);
+  padding-bottom: clamp(14px, calc((20 / 480) * 100vw), 26px);
   flex-shrink: 0;
-  border-top: 1px solid rgba(201, 168, 76, 0.15);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .tm-accept-btn {
   width: 100%;
-  padding: 11px 0;
-   background: #8c6a1a;
+  padding: clamp(10px, calc((13 / 480) * 100vw), 16px) 0;
+  background: #8c6a1a;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: clamp(11px, calc((14 / 480) * 100vw), 17px);
   font-weight: 700;
   border: none;
-  border-radius: 24px;
+  border-radius: clamp(18px, calc((24 / 480) * 100vw), 30px);
   cursor: pointer;
   letter-spacing: 0.3px;
   -webkit-tap-highlight-color: transparent;
 }
+.tm-accept-btn:active { opacity: 0.88; }
