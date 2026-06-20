@@ -1,36 +1,98 @@
-// ThumbnailGallery.js
 "use client";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Slider from "react-slick";
 import Image from 'next/image';
 
-import './gallery.css'; // Ensure this path is correct
-import photogallryIcon from '../../assets/gallry-loading.gif'; // Ensure path is correct
-import LazyImage from '../../components/LazyImage';            // Ensure path is correct
-import PaginationControls from '../../components/PaginationControls'; // Ensure path is correct
-import shareIcon from '../../assets/share-photo-icon.png'; // Ensure path is correct
+import './gallery.css';
+import photogallryIcon from '../../assets/gallry-loading.gif';
+import LazyImage from '../../components/LazyImage';
+import PaginationControls from '../../components/PaginationControls';
+import shareIcon from '../../assets/share-photo-icon.png';
 import { BASE_URL } from "@/utils/apiconstants";
 
-// If you use slick-carousel's CSS, ensure they are imported (e.g., in a global CSS file or _app.js)
-// import "slick-carousel/slick/slick.css"; 
-// import "slick-carousel/slick/slick-theme.css";
+// ── Step 1: Ek image ka naturalWidth/Height fetch karo ──
+const getImageDimensions = (url) =>
+  new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
+    img.onerror = () => resolve({ w: 4, h: 3 }); // fallback landscape
+    img.src = url;
+  });
 
-const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, handleShareicon }) => {
+// ── Step 2: Justified Layout Algorithm ──
+// Yeh function images ki list leta hai aur unhe rows mein pack karta hai
+// Har row ki height aise set hoti hai ki row poori containerWidth fill kare
+const buildJustifiedRows = (thumbnails, containerWidth, targetRowHeight = 150, gap = 4) => {
+  const rows = [];
+  let i = 0;
+
+  while (i < thumbnails.length) {
+    let j = i;
+    let rowRatioSum = 0;
+
+    while (j < thumbnails.length) {
+      const ratio = (thumbnails[j].w || 4) / (thumbnails[j].h || 3);
+      const gapsWidth = (j - i) * gap;
+      const projectedWidth = (rowRatioSum + ratio) * targetRowHeight + gapsWidth;
+      if (projectedWidth > containerWidth && j > i) break;
+      rowRatioSum += ratio;
+      j++;
+    }
+
+    const rowThumbs = thumbnails.slice(i, j);
+    const totalGap = (rowThumbs.length - 1) * gap;
+    const totalRatio = rowThumbs.reduce((sum, t) => sum + (t.w || 4) / (t.h || 3), 0);
+
+    // ✅ Last row ko bhi full width fill karao — cap mat lagao
+    const rowH = (containerWidth - totalGap) / totalRatio;
+
+    rows.push(
+      rowThumbs.map((thumb) => ({
+        ...thumb,
+        displayW: ((thumb.w || 4) / (thumb.h || 3)) * rowH,
+        displayH: rowH,
+      }))
+    );
+
+    i = j;
+  }
+
+  return rows;
+};
+
+const ThumbnailGallery = ({
+  folderName,
+  customerId,
+  showInternalTitle = true,
+  handleShareicon,
+  banners = [],
+  bannerInterval = 6,
+}) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(390);
+  const galleryRef = useRef(null);
 
-  // iOS Mobile Detection
+  // ── Container ki actual width track karo (resize pe bhi) ──
+  useEffect(() => {
+    const updateWidth = () => {
+      if (galleryRef.current) {
+        setContainerWidth(galleryRef.current.offsetWidth);
+      }
+    };
+    updateWidth();
+    const ro = new ResizeObserver(updateWidth);
+    if (galleryRef.current) ro.observe(galleryRef.current);
+    return () => ro.disconnect();
+  }, []);
+
   useEffect(() => {
     const detectIOSMobile = () => {
       if (typeof navigator !== 'undefined') {
-        // Basic check for iPhone, iPad, iPod.
-        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
-        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
-        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
         return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       }
       return false;
@@ -38,89 +100,96 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     setIsIOSMobile(detectIOSMobile());
   }, []);
 
-  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
   const getItemsPerPage = useCallback(() => {
-    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
-    // For iOS mobile, a smaller number might be better, e.g. 12-15.
-    // For other devices (where pagination is hidden), this number doesn't directly limit display
-    // but affects the `totalPages` calculation if we were to show it.
-    // Let's adjust: more items for wider screens if pagination *were* shown.
-    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
-    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
-    if (isIOSMobile) {
-        return window.innerWidth >= 400 ? 15 : 9; // Example: more items on larger iPhones
-    }
-    return window.innerWidth >= 768 ? 36 : 24; // Fallback for general calculation (though UI is hidden)
-
-  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
-
+    if (typeof window === 'undefined') return 12;
+    if (isIOSMobile) return window.innerWidth >= 400 ? 15 : 9;
+    return window.innerWidth >= 768 ? 36 : 24;
+  }, [isIOSMobile]);
 
   const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
 
   useEffect(() => {
-    const handleResize = () => {
-      setItemsPerPage(getItemsPerPage());
-    };
-    if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => setItemsPerPage(getItemsPerPage());
+    if (isIOSMobile) {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
     }
   }, [isIOSMobile, getItemsPerPage]);
 
-
+  // ── Step 3: Fetch thumbnails + background mein dimensions load karo ──
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); setCurrentPage(1); return;
+        setAllThumbnails([]);
+        setLoading(false);
+        setError("Folder name or customer ID is missing.");
+        setCurrentPage(1);
+        return;
       }
-      setLoading(true); setError(null);
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
-        if (!response.ok) { const errorData = await response.text(); throw new Error(`API Error: ${response.status} - ${errorData}`); }
+        const response = await fetch(
+          `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`
+        );
+        if (!response.ok) {
+          const errorData = await response.text();
+          throw new Error(`API Error: ${response.status} - ${errorData}`);
+        }
         const data = await response.json();
-        const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({ ...thumb, stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}` }));
-        setAllThumbnails(fetchedThumbnails); setCurrentPage(1);
+
+        // Pehle default ratio ke saath fast render karo
+        const basicThumbnails = (data.thumbnails || []).map((thumb, index) => ({
+          ...thumb,
+          w: 4, h: 3, // default landscape ratio
+          stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}`,
+        }));
+        setAllThumbnails(basicThumbnails);
+        setCurrentPage(1);
+        setLoading(false);
+
+        // Background mein actual dimensions fetch karo — ek ek karke
+        // setAllThumbnails update hoti rahegi jaise jaise dimensions aati hain
+        const withDimensions = await Promise.all(
+          basicThumbnails.map(async (thumb) => {
+            const { w, h } = await getImageDimensions(thumb.thumbnailImageUrl);
+            return { ...thumb, w, h };
+          })
+        );
+        setAllThumbnails(withDimensions);
+
       } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
-      } finally { setLoading(false); }
+        console.error("Fetch thumbnails error:", fetchError);
+        setError(fetchError.message);
+        setLoading(false);
+      }
     };
     fetchThumbnails();
   }, [folderName, customerId]);
 
-  // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
     if (isIOSMobile) {
       const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
-      const currentItems = allThumbnails.slice(startIndex, endIndex);
-      return { currentThumbnailsOnPage: currentItems, totalPages: total };
-    } else {
-      // Not iOS mobile: show all thumbnails, no pagination UI
-      return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+      return {
+        currentThumbnailsOnPage: allThumbnails.slice(startIndex, endIndex),
+        totalPages: total,
+      };
     }
+    return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
   }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
-  const handleImageClick = useCallback((indexInDisplayedList) => {
-    let originalIndex;
-    if (isIOSMobile) {
-      originalIndex = (currentPage - 1) * ITEMS_PER_PAGE + indexInDisplayedList;
-    } else {
-      originalIndex = indexInDisplayedList; // Index is direct from allThumbnails
+  const handleImageClick = useCallback((globalIndex) => {
+    if (globalIndex >= 0 && globalIndex < allThumbnails.length) {
+      setSelectedIndex(globalIndex);
     }
-    
-    if (originalIndex >= 0 && originalIndex < allThumbnails.length) {
-      setSelectedIndex(originalIndex);
-    }
-  }, [currentPage, ITEMS_PER_PAGE, allThumbnails.length, isIOSMobile]);
+  }, [allThumbnails.length]);
 
-  const closePopup = useCallback(() => {
-    setSelectedIndex(null);
-  }, []);
+  const closePopup = useCallback(() => setSelectedIndex(null), []);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
-    // Scroll to top of gallery header after a short delay to allow UI to update
     setTimeout(() => {
       const galleryHeader = document.querySelector('.gallery-header');
       if (galleryHeader) {
@@ -141,9 +210,79 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
     adaptiveHeight: true,
   }), [allThumbnails.length]);
 
+  // ── Step 4: Justified rows render karo ──
+  const renderChunkedGallery = () => {
+    const result = [];
+    const total = currentThumbnailsOnPage.length;
+
+    // Mobile pe chhoti row height, desktop pe badi
+    const targetRowHeight = containerWidth < 500 ? 120 : 180;
+
+    for (let chunkStart = 0; chunkStart < total; chunkStart += bannerInterval) {
+      const chunkEnd = Math.min(chunkStart + bannerInterval, total);
+      const chunk = currentThumbnailsOnPage.slice(chunkStart, chunkEnd);
+      const chunkIndex = Math.floor(chunkStart / bannerInterval);
+
+      // Iss chunk ke liye justified rows banao
+      const rows = buildJustifiedRows(chunk, containerWidth, targetRowHeight, 4);
+
+      result.push(
+        <div key={`grid-${chunkIndex}`} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {rows.map((rowItems, rIdx) => (
+  <div
+    key={`row-${chunkIndex}-${rIdx}`}
+    style={{ display: 'flex', flexDirection: 'row', gap: '4px' }}
+  >
+ {rowItems.map((thumbnail, itemIdx) => {
+  const globalIndex = allThumbnails.findIndex(
+    (t) => t.stableKey === thumbnail.stableKey
+  );
+  const isLast = itemIdx === rowItems.length - 1;
+  return (
+    <div
+      key={thumbnail.stableKey}
+      style={{
+        flex: isLast ? '1 1 auto' : `0 0 ${Math.floor(thumbnail.displayW)}px`,
+        height: `${Math.floor(thumbnail.displayH)}px`,
+        overflow: 'hidden',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        backgroundColor: '#e9ecef',
+      }}
+      onClick={() => handleImageClick(globalIndex)}
+    >
+      <LazyImage
+        src={thumbnail.thumbnailImageUrl}
+        alt={`Photo ${globalIndex + 1}`}
+        wrapperClassName="smart-image-wrapper"
+      />
+    </div>
+  );
+})}
+  </div>
+))}
+        </div>
+      );
+
+      const isLastChunk = chunkEnd >= total;
+      if (!isLastChunk && banners[chunkIndex]) {
+        result.push(
+          <div key={`banner-${chunkIndex}`} style={{ width: '100%' }}>
+            {banners[chunkIndex]}
+          </div>
+        );
+      }
+    }
+    return result;
+  };
+
   if (loading) {
-    return <div className="thumbnail-gallery-status d-flex justify-content-center"><Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority /></div>;
- }
+    return (
+      <div className="thumbnail-gallery-status d-flex justify-content-center">
+        <Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority />
+      </div>
+    );
+  }
   if (error) {
     return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
   }
@@ -152,57 +291,41 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
   }
 
   return (
-    <div className="thumbnail-gallery">
+    <div className="thumbnail-gallery" ref={galleryRef}>
       <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-         <div className="gallery-header">
-            <div className="gallery-header-content">
-              {typeof handleShareicon === 'function' && (
-                <Image
-                  src={shareIcon}
-                  alt="Share"
-                  className="gallery-share-icon"
-                  onClick={handleShareicon}
-                  width={22}
-                  height={22}
-                />
-              )}
-            </div>
-          </div>
-
-
-          {/* Conditional Pagination Rendering */}
-          {isIOSMobile && totalPages > 1 && (
-            <div className="gallery-pagination-container">
-              <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                inline={true} // Keep compact style
+        <div className="gallery-header">
+          <div className="gallery-header-content">
+            {typeof handleShareicon === 'function' && (
+              <Image
+                src={shareIcon}
+                alt="Share"
+                className="gallery-share-icon"
+                onClick={handleShareicon}
+                width={22}
+                height={22}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
-    
-
-      {currentThumbnailsOnPage.length > 0 ? (
-        <div className="masonryGrid">
-          {currentThumbnailsOnPage.map((thumbnail, indexOnPage) => (
-            <LazyImage
-              key={thumbnail._id}
-              src={thumbnail.thumbnailImageUrl}
-              alt={`Photo ${isIOSMobile ? ((currentPage - 1) * ITEMS_PER_PAGE + indexOnPage + 1) : (indexOnPage + 1)}`}
-              wrapperClassName="masonry-item"
-              onClick={() => handleImageClick(indexOnPage)}
+        {isIOSMobile && totalPages > 1 && (
+          <div className="gallery-pagination-container">
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              inline={true}
             />
-          ))}
-        </div>
-      ) : (
-        // Show message if on iOS and current page is empty (shouldn't happen with correct totalPages logic)
-        // Or if allThumbnails is genuinely empty after loading.
-        isIOSMobile && totalPages > 0 && <div className="thumbnail-gallery-status">No photos on this page.</div>
-      )}
+          </div>
+        )}
+      </div>
 
-      {/* Popup/Modal remains the same, using allThumbnails and original selectedIndex */}
+      {currentThumbnailsOnPage.length > 0
+        ? renderChunkedGallery()
+        : isIOSMobile && totalPages > 0 && (
+            <div className="thumbnail-gallery-status">No photos on this page.</div>
+          )
+      }
+
       {selectedIndex !== null && allThumbnails[selectedIndex] && (
         <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true" aria-labelledby="popup-title">
           <div className="popupContent" onClick={(e) => e.stopPropagation()}>
@@ -211,7 +334,9 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
                 {`${selectedIndex + 1} / ${allThumbnails.length}`}
               </span>
               <button className="closeButton" onClick={closePopup} aria-label="Close image viewer">
-                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"></path></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor" />
+                </svg>
               </button>
             </div>
             <Slider
@@ -232,32 +357,22 @@ const ThumbnailGallery = ({ folderName, customerId, showInternalTitle = true, ha
           </div>
         </div>
       )}
-      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-  <div className="gallery-header-content">
-    {showInternalTitle && (
-      <div className="gallery-title-container">
-        {/* <h1 className="gallery-title">Your Photos</h1> */}
-        {/* <Image
-          src={shareIcon}
-          alt="Info"
-          style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
-          onClick={handleShareicon}
-        /> */}
-      </div>
-    )}
 
-    {totalPages > 0 && (
-      <div className="gallery-pagination-container">
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          inline={true}
-        />
+      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
+        <div className="gallery-header-content">
+          {showInternalTitle && <div className="gallery-title-container"></div>}
+          {totalPages > 0 && (
+            <div className="gallery-pagination-container">
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                inline={true}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    )}
-  </div>
-</div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 .capture-card {
   width: 98%;
   max-width: 480px;
- margin:auto;
+ margin:10px auto;
   background: #f3eef4;
   border: 1px solid #d9d4dc;
   border-radius: 16px;
@@ -9,13 +9,14 @@
  padding: clamp(7px, calc((9 / 393) * 100vw), 11px);
   display: flex;
   align-items: center;
-  gap: clamp(12px, calc((16 / 393) * 100vw), 20px);
-
-  box-sizing: border-box;
+  gap: clamp(8px, calc((10 / 393) * 100vw), 12px);
+    box-sizing: border-box;
 }
 
+/* ---- LEFT ---- */
 .capture-left {
-  flex: 1;
+  flex: 0.85;
+  min-width: 0;
 }
 
 .capture-tag {
@@ -58,16 +59,22 @@ font-size: clamp(6.2px, calc((7.62 / 393) * 100vw), 9.3px);
 .capture-divider {
   width: 1px;
   align-self: stretch;
-  background: #c8c1cc;
+  background: #d0c0da;
+  flex-shrink: 0;
 }
 
+/* ---- RIGHT ---- */
 .capture-right {
-  flex: 1;
-
+  flex: 1.2;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.capture-price-wrap {
+  min-width: 0;
 }
 
 .capture-starting {
@@ -97,8 +104,6 @@ font-family: 'Rubik', sans-serif;
 font-weight: 300;
 
 font-size: clamp(6.2px, calc((7.62 / 393) * 100vw), 9.3px);
-
-line-height: clamp(7.4px, calc((9.14 / 393) * 100vw), 11.2px);
 
   color: #666;
 }

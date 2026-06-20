@@ -26,20 +26,19 @@ const FIXED_CONFIG = {
 
 // ✅ Har folder ke liye — background image + dynamic title ka event name
 const folderMap = {
-  "Wedding":                    { image: weddingBg,      eventName: "Wedding" },
-  "maternity poses":            { image: maternityBg,    eventName: "Maternity" },
-  "birthday poses":             { image: birthdayBg,     eventName: "Birthday" },
-  "pre wedding":                { image: preWeddingBg,   eventName: "Pre-Wedding" },
-  "HaldiandMehendi":            { image: haldiBg,        eventName: "Haldi & Mehndi" },
-  "baby shower":                { image: babyShowerBg,   eventName: "Baby Shower" },
-  "naming ceremony weblink":    { image: namingBg,       eventName: "Naming Ceremony" },
-  "new born ":                  { image: newBornBg,      eventName: "New Born Baby" },
-  "engagement weblink":         { image: engagementBg,   eventName: "Engagement" },
-  "anniversary poses web link": { image: anniversaryBg,  eventName: "Anniversary" },
-  "House warming weblink":      { image: houseWarmingBg, eventName: "House Warming" },
-  "bacherrolerate":             { image: bachelorateBg,  eventName: "Bachelorette" },
+  "Wedding":                    { image: weddingBg,      eventName: "Wedding",         planningTitle: "Planning Wedding?",         planningDesc: "See wedding photography packages curated for your big day." },
+  "maternity poses":            { image: maternityBg,    eventName: "Maternity",        planningTitle: "Planning Maternity Shoot?", planningDesc: "See maternity packages curated for your beautiful journey." },
+  "birthday poses":             { image: birthdayBg,     eventName: "Birthday",         planningTitle: "Planning a Birthday?",      planningDesc: "See birthday photography packages for an unforgettable celebration." },
+  "pre wedding":                { image: preWeddingBg,   eventName: "Pre-Wedding",      planningTitle: "Planning Pre-Wedding?",     planningDesc: "See pre-wedding packages for dreamy shots before the big day." },
+  "HaldiandMehendi":            { image: haldiBg,        eventName: "Haldi & Mehndi",   planningTitle: "Planning Haldi/Mehndi?",    planningDesc: "See Haldi & Mehndi photography packages for your ceremony." },
+  "baby shower":                { image: babyShowerBg,   eventName: "Baby Shower",      planningTitle: "Planning Baby Shower?",     planningDesc: "See baby shower packages to celebrate your little one's arrival." },
+  "naming ceremony weblink":    { image: namingBg,       eventName: "Naming Ceremony",  planningTitle: "Planning Naming Ceremony?", planningDesc: "See naming ceremony packages to capture every precious moment." },
+  "new born ":                  { image: newBornBg,      eventName: "New Born Baby",    planningTitle: "Planning Newborn Shoot?",   planningDesc: "See newborn photography packages for tiny precious memories." },
+  "engagement weblink":         { image: engagementBg,   eventName: "Engagement",       planningTitle: "Planning Engagement?",      planningDesc: "See engagement photography packages to capture your love story." },
+  "anniversary poses web link": { image: anniversaryBg,  eventName: "Anniversary",      planningTitle: "Planning Anniversary?",     planningDesc: "See anniversary packages to relive your beautiful love story." },
+  "House warming weblink":      { image: houseWarmingBg, eventName: "House Warming",    planningTitle: "Planning House Warming?",   planningDesc: "See house warming packages to capture your new beginning." },
+  "bacherrolerate":             { image: bachelorateBg,  eventName: "Bachelorette",     planningTitle: "Planning Bachelorette?",    planningDesc: "See bachelorette packages for a fun celebration photoshoot." },
 };
-
 export const getBannerConfig = (folderName) => {
   const matched = folderMap[folderName];
 
@@ -56,5 +55,12 @@ export const getBannerConfig = (folderName) => {
     backgroundImage,
     title,           // dynamic
     ...FIXED_CONFIG, // highlightText, description, ctaText, ctaUrl — sab fixed
+  };
+};
+export const getPlanningCardData = (folderName) => {
+  const matched = folderMap[folderName];
+  return {
+    title: matched?.planningTitle || "Planning an Event?",
+    description: matched?.planningDesc || "See photography packages curated for your special occasion.",
   };
 };
