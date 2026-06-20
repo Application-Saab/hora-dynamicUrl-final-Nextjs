@@ -14,12 +14,14 @@ import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 
+
 const LoginModal = ({
   isOpen,
   onClose,
   fromCapsule = false,
   onlyOTP = false,
-  setIsVerifiedOTP
+  setIsVerifiedOTP,
+  bgColor="login-modal-content"
 }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
@@ -520,7 +522,7 @@ const LoginModal = ({
       onClose={onClose}
       showHeader={false}
       backdropClass="login-modal-backdrop"
-      modalClass="login-modal-content"
+      modalClass={bgColor}
       bodyClass="login-modal-body"
       disableBackdropClick={true}
       verticalCenter={false}

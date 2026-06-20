@@ -13,6 +13,9 @@ import { createSubfolder, updateSubfolderDP } from "@/services/weblinkServices";
 import Image from "next/image";
 import CommonPopup from "../../components/CommonPop";
 import { FACE_FINDER_URL } from '../../utils/apiconstants'
+import LockerFolderIcon from "../../assets/my_locker_folder_icon.svg";
+import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
+import LoginModal from "../wonderland/common/login/LoginModal";
 
 const HeaderCards = ({
   folderName,
@@ -42,6 +45,7 @@ const HeaderCards = ({
   setCapturedImage,
   capturedImage,
   matchedKeys,
+  setIsPrivateFolder
 }) => {
   /* ================= STATE ================= */
   const [newFolderName, setNewFolderName] = useState("");
@@ -52,7 +56,10 @@ const HeaderCards = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-
+  const [localPrivateLocker, setLocalPrivateLocker] = useState(null);
+   const [showOTPModal, setShowOTPModal] = useState(false);
+  const [isVerifiedOTP, setIsVerifiedOTP] = useState(false);
+    const { userDetails, refetchUser } = useUserDetailsStore();
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -71,6 +78,19 @@ const HeaderCards = ({
     [localMyPhotos, subFolders, localUserId]
   );
 
+  const privateLocker = useMemo(
+    () =>
+      localPrivateLocker ||
+      subFolders.find(
+        (sf) =>
+          sf.type === "others" &&
+          sf.userId === localUserId &&
+          sf.isLocker === true,
+      ),
+    [localPrivateLocker, subFolders, localUserId],
+  );
+
+
   useEffect(() => {
     if (showCameraPopup) {
       setCapturedImage(null);
@@ -86,8 +106,8 @@ const HeaderCards = ({
   /* ================= ALBUM LIST ================= */
   useEffect(() => {
     const mapped = subFolders
-      .filter(sf => sf.type === "others")
-      .map(sf => ({
+      .filter((sf) => sf.type === "others" && !sf.isLocker)
+      .map((sf) => ({
         _id: sf._id,
         name: sf.folderName,
         folderDp: {
@@ -98,7 +118,7 @@ const HeaderCards = ({
   }, [subFolders]);
 
   /* ================= FILE PICK ================= */
-  const handleFileChange = e => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -115,7 +135,7 @@ const HeaderCards = ({
 
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: "user" } })
-      .then(stream => {
+      .then((stream) => {
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -125,13 +145,13 @@ const HeaderCards = ({
       .catch(console.error);
 
     return () => {
-      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current?.getTracks().forEach((t) => t.stop());
       setCameraReady(false);
     };
   }, [showCameraPopup]);
 
   /* ================= ENSURE MY PHOTOS ================= */
-  const ensureMyPhotosFolder = async file => {
+  const ensureMyPhotosFolder = async (file) => {
     if (myPhotosFolder) return myPhotosFolder;
 
     setIsLoading(true);
@@ -161,7 +181,7 @@ const HeaderCards = ({
   };
 
   /* ================= SEARCH STREAM ================= */
-  const startSearchStream = async formData => {
+  const startSearchStream = async (formData) => {
     setIsStremSearching(true);
     try {
       const response = await fetch(`${FACE_FINDER_URL}/search`, {
@@ -186,7 +206,7 @@ const HeaderCards = ({
         const events = buffer.split("\n\n");
         buffer = events.pop();
 
-        events.forEach(event => {
+        events.forEach((event) => {
           if (!event.startsWith("data:")) return;
           const payload = JSON.parse(event.replace("data:", ""));
           if (payload.type === "match") {
@@ -236,7 +256,7 @@ const HeaderCards = ({
     const imageDataUrl = canvas.toDataURL("image/png");
     setCapturedImage(imageDataUrl);
 
-    streamRef.current?.getTracks().forEach(track => track.stop());
+    streamRef.current?.getTracks().forEach((track) => track.stop());
     setCameraReady(false);
 
     canvas.toBlob(async (blob) => {
@@ -268,33 +288,43 @@ const HeaderCards = ({
   };
 
   /* ================= CREATE ALBUM ================= */
-  const handleCreateFolder = async () => {
-    if (isCreateDisabled) return;
+  const handleCreateFolder = async (
+    isLocker = false,
+    subFolder = newFolderName,
+  ) => {
+    if (!isLocker && isCreateDisabled) return;
 
     setIsLoading(true);
     try {
       const fd = new FormData();
       fd.append("file", previewFile);
       fd.append("folderName", folderName);
-      fd.append("subFolderName", newFolderName);
+      fd.append("subFolderName", subFolder || newFolderName);
       fd.append("type", "others");
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
       fd.append("phoneNo", localPhoneNumber)
+      fd.append("isLocker", isLocker ? true : false);
 
       const data = await createSubfolder(fd);
       const newFolder = data.subFolder;
 
       onSubFolderCreated(newFolder);
+      setLocalPrivateLocker(newFolder);
       setActiveTab(newFolder._id);
       onNewFolderActivate(newFolder._id);
 
       if (pendingAssignImageId) {
-        setAllThumbnails(prev =>
-          prev.map(img =>
+        setAllThumbnails((prev) =>
+          prev.map((img) =>
             img._id === pendingAssignImageId
-              ? { ...img, folderIds: [...(img.folderIds || []), newFolder._id] }
-              : img
+              ? {
+                  ...img,
+                  folderIds: isLocker
+                    ? [newFolder._id]
+                    : [...(img.folderIds || []), newFolder._id],
+                }
+              : img,
           )
         );
         setPendingAssignImageId(null);
@@ -315,17 +345,23 @@ const HeaderCards = ({
   };
 
   const updateAllStates = (subFolderId, url) => {
-    setAlbums(prev =>
-      prev.map(album =>
+    setAlbums((prev) =>
+      prev.map((album) =>
         album._id === subFolderId
           ? { ...album, folderDp: { thumbnailUrl: url } }
           : album
       )
     );
-    setLocalMyPhotos(prev =>
+    setLocalMyPhotos((prev) =>
       prev && prev._id === subFolderId
         ? { ...prev, folderDp: { thumbnailUrl: url } }
         : prev
+    );
+
+    setLocalPrivateLocker((prev) =>
+      prev && prev._id === subFolderId
+        ? { ...prev, folderDp: { thumbnailUrl: url } }
+        : prev,
     );
 
     setSubFolders(prev =>
@@ -361,6 +397,16 @@ const HeaderCards = ({
     }
   };
 
+  useEffect(() => {
+    if (isVerifiedOTP) {
+        if (privateLocker) {
+          setActiveTab(privateLocker._id);
+          onSelectSubFolder(privateLocker._id);
+          setIsPrivateFolder(true)
+        }
+    }
+  }, [isVerifiedOTP, showOTPModal, privateLocker]);
+
   return (
     <>
       {/* HEADER CARDS */}
@@ -374,6 +420,7 @@ const HeaderCards = ({
             onSelectSubFolder(null);
             setIsActualMyPhotos(false);
             setIsRefreshShow(false)
+            setIsPrivateFolder(false)
           }}
         >
           <div className="circle-img-folder circle-img-both">
@@ -396,6 +443,7 @@ const HeaderCards = ({
                 setIsActualMyPhotos(true)
                 onSelectSubFolder(myPhotosFolder._id);
                 setIsRefreshShow(true);
+                setIsPrivateFolder(false)
 
                 if (matchedKeys.length > 0) {
                   setIsSearching(true);
@@ -426,6 +474,7 @@ const HeaderCards = ({
               setIsActualMyPhotos(true)
               setShowCameraPopup(true)
               setIsRefreshShow(false)
+              setIsPrivateFolder(false)
             }
             }
           >
@@ -438,6 +487,40 @@ const HeaderCards = ({
           </div>
         )}
 
+
+        {/* Private Folder */}
+        {(privateLocker && localUserId === customerId) && (
+          <div>
+            <div
+              className={`card-item ${
+                activeTab === privateLocker._id ? "active" : ""
+              }`}
+              onClick={() => {
+                if (isVerifiedOTP) {
+                  setActiveTab(privateLocker._id);
+                  onSelectSubFolder(privateLocker._id);
+                  setIsPrivateFolder(true)
+                } else {
+                  setShowOTPModal(true);
+                }
+              }}
+            >
+              <div className="circle-img-folder circle-img-both">
+                <div className="circle-img-inner">
+                  <img
+                    src={privateLocker.folderDp?.thumbnailUrl || LockerFolderIcon.src}
+                    alt="Private Locker"
+                    style={{width: '100%', height: '100%', objectFit: 'scale-down'}}
+                  />
+                </div>
+              </div>
+              <div className="flex">
+                <span>My Locker</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* CREATE ALBUM */}
         <div
           className="card-item"
@@ -445,6 +528,7 @@ const HeaderCards = ({
             setShowCreateFolderPopup(true)
             setIsActualMyPhotos(false)
             setIsRefreshShow(false)
+            setIsPrivateFolder(false)
           }
           }
         >
@@ -455,7 +539,7 @@ const HeaderCards = ({
         </div>
 
         {/* ALBUMS */}
-        {albums.map(sf => (
+        {albums.map((sf) => (
           <div
             key={sf._id}
             className={`card-item ${activeTab === sf._id ? "active" : ""}`}
@@ -464,6 +548,7 @@ const HeaderCards = ({
               onSelectSubFolder(sf._id);
               setIsActualMyPhotos(false)
               setIsRefreshShow(false)
+              setIsPrivateFolder(false)
             }}
           >
             <div className="circle-img-folder circle-img-both">
@@ -582,6 +667,15 @@ const HeaderCards = ({
           <p className="sub-text">{newFolderName.length}/14 Characters</p>
         </div>
       </CommonPopup>
+
+      <LoginModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        fromCapsule={true}
+        onlyOTP={true}
+        setIsVerifiedOTP={setIsVerifiedOTP}
+        bgColor="login-modal-white-content"
+      />
     </>
   );
 };
