@@ -71,6 +71,12 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
                       "https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg",
                   },
                   body: { placeholders: ["Hora Services"] },
+                  buttons: [
+                    {
+                      type: "URL",
+                      parameter: "https://horaservices.com/"
+                    }
+                  ]
                 },
               },
             },
