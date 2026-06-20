@@ -169,6 +169,8 @@ export const trackDevice = async ({
     throw error;
   }
 };
+
+
 // tracking share capsule click function 
 export const trackShareCapsuleClick = async (mainFolderId) => { 
     try {

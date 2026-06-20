@@ -14,6 +14,7 @@ import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 
+
 const LoginModal = ({
   isOpen,
   onClose,
@@ -21,7 +22,8 @@ const LoginModal = ({
   onlyOTP = false,
   setIsVerifiedOTP,
   template = "happy_to_help_v2",
-  link=null
+  link=null,
+  bgColor="login-modal-content"
 }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
@@ -527,7 +529,7 @@ const sendWelcomeMessage = async (mobileNumber, link) => {
       onClose={onClose}
       showHeader={false}
       backdropClass="login-modal-backdrop"
-      modalClass="login-modal-content"
+      modalClass={bgColor}
       bodyClass="login-modal-body"
       disableBackdropClick={true}
       verticalCenter={false}

@@ -60,6 +60,6 @@
 }
 .popupFooter img{
     cursor: pointer;
-    filter: invert(90%) sepia(0) saturate(0) hue-rotate(0deg) brightness(90%) contrast(90%);
-    margin-left: 10px;
+    /* filter: invert(90%) sepia(0) saturate(0) hue-rotate(0deg) brightness(90%) contrast(90%); */
+    /* margin-left: 10px; */
 }
