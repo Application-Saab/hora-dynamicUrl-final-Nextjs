@@ -107,13 +107,15 @@
  
 }
 .category-tabs-grid {
-  display: flex;
   gap: 10px;
-  overflow-x: auto;
   padding: 10px 0px 10px 5px;
- scrollbar-width: none;          /* ✅ Firefox */
-  -ms-overflow-style: none; 
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* hide scrollbar firefox */
+  -ms-overflow-style: none;
 }
+
 
 .category-tabs-grid::-webkit-scrollbar {
   height: 1px;
@@ -160,7 +162,41 @@ height: clamp(80px, 26vw, 102px);
   white-space: normal;
 }
 
+.category-tabs-slider-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 
+
+.category-tabs-grid::-webkit-scrollbar {
+  display: none; /* hide scrollbar chrome/safari */
+}
+
+.category-tabs-arrow {
+  position: absolute;
+  top: 35%;
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a1f6a; /* aapke brand purple jaisa, adjust kar lena */
+  cursor: pointer;
+}
+
+.category-tabs-arrow-left {
+  left: -6px;
+}
+
+.category-tabs-arrow-right {
+  right: -6px;
+}
 
 .ctabs-wrap {
   display: flex;
