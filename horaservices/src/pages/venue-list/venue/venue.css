@@ -335,3 +335,33 @@
   flex-shrink: 0;
   letter-spacing: 0.3px;
 }
+
+
+.trusted-heading {
+  text-align: center;
+  padding: clamp(16px, calc((20 / 393) * 100vw), 24px) 0 0 0;
+ }
+
+.trusted-title {
+font-family: Inter, sans-serif;
+  font-weight: 600;
+
+  font-size: clamp(12.7px, calc((15.58 / 393) * 100vw), 19px);
+  text-align: center;
+
+  color: #0F1524;
+  margin: 0 0 clamp(4px, calc((6 / 393) * 100vw), 8px);
+}
+
+.trusted-subtitle {
+ font-family: Inter, sans-serif;
+  font-weight: 400;
+  font-size: clamp(9.9px, calc((12.12 / 393) * 100vw), 14.8px);
+  text-align: center;
+  color: #2E2E3D;
+  margin: 0;
+}
+.venue-container{
+  max-width: 480px;
+  margin:auto;
+}

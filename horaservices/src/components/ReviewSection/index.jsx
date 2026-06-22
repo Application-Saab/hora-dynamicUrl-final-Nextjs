@@ -11,7 +11,7 @@ const getStars = (rating) => {
   return [...filled, ...blank];
 };
 
-const ReviewSlider = ({ reviews = [], title = "Customer Reviews" }) => {
+const ReviewSlider = ({ reviews = [], title = "" }) => {
   return (
     <div className="review-section">
     <h2 className="review-heading">{title}</h2>

@@ -83,14 +83,14 @@
   flex-wrap: wrap;
 }
 .vfc-origPrice {
-  font-size: clamp(0.52rem, 1.5vw, 0.60rem);
-  color: #999;
+ font-size: clamp(0.75rem, 2.2vw, 0.90rem);
+  color: #574737;
   text-decoration: line-through;
   font-weight: 500;
 }
 .vfc-price {
   font-size: clamp(0.80rem, 2.4vw, 0.95rem);
-  color: #1a1208;
+  color: #574737;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -150,7 +150,8 @@
 .vfc-dot--vegdlx  { background: #1a6b5a; }
 .vfc-dot--nveg    { background: #c0392b; }
 .vfc-dot--nvegdlx { background: #7a3010; }
-
+.vfc-tag--both    { background: #fff3e0; color: #e65100; }
+.vfc-dot--both    { background: #e65100; }
 /* ── TITLE ── */
 .vfc-title {
   font-size: clamp(0.66rem, 2vw, 0.76rem);

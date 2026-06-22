@@ -60,6 +60,7 @@ const VenueWallSection = ({
   rsvpSubmitted,
   setPushRsvpClick,
   isHost,
+    venueImageUrl, 
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -916,7 +917,7 @@ useEffect(() => {
       </div> */}
 
       <div>
-        {allImages.length === 0 || (!rsvpSubmitted && !isHost) ? (
+        {allImages.length === 0  ? (
           <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img src={NopostCamera.src} alt="No Post Camera" className="" />
@@ -933,7 +934,7 @@ useEffect(() => {
           <div style={{ position: "relative", marginTop: "auto" }}>
             <div
               style={{
-                margin: "20px auto",
+                margin: "10px auto",
               }}
             >
               <VenueWallHeaderTabs
@@ -950,6 +951,7 @@ useEffect(() => {
                 setIsActualMyPhotos={setIsActualMyPhotos}
                 showCreateFolderPopup={showCreateFolderPopup}
                 setShowCreateFolderPopup={setShowCreateFolderPopup}
+                 venueImageUrl={venueImageUrl}
               />
 
               {/* {activeTab !== "all" && !isMyPhotosTab && activeSubFolderId && (

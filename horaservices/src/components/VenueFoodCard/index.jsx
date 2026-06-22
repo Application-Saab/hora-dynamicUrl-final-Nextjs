@@ -5,6 +5,11 @@ import "./VenueFoodCard.css";
 import Image from "next/image";
 
 const VenueFoodCard = ({ item, onView }) => {
+  const hasNonVeg = item.packageItems?.some((pi) => pi.foodType === "non-veg");
+  const hasVeg = item.packageItems?.some((pi) => pi.foodType === "veg");
+  const type = hasNonVeg && hasVeg ? "both" : hasNonVeg ? "nveg" : "veg";
+  const label = hasNonVeg && hasVeg ? "Veg & Non-Veg" : hasNonVeg ? "Non-Veg" : "Veg";
+
   return (
     <div className="vfc-card" onClick={() => onView(item)}>
 
@@ -13,9 +18,9 @@ const VenueFoodCard = ({ item, onView }) => {
 
         {/* LEFT — IMAGE */}
         <div className="vfc-imgBox">
-          {item.discountedPrice && (
+          {/* {item.discountedPrice && (
             <span className="vfc-discount">🔥 {item.discountedPrice}</span>
-          )}
+          )} */}
           <Image
             src={item?.packageImageUrl}
             alt={item.title}
@@ -30,14 +35,15 @@ const VenueFoodCard = ({ item, onView }) => {
           <div className="vfc-body">
 
             {/* Veg / Non-veg tag */}
-            {/* <span className={`vfc-tag vfc-tag--${item.type}`}>
-              <span className={`vfc-dot vfc-dot--${item.type}`} />
-              {item.typeLabel}
-            </span> */}
 
             {/* Title */}
-            <h3 className="vfc-title">{item.title}</h3>
-
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "space-between" }}>
+              <h3 className="vfc-title">{item.title}</h3>
+              <span className={`vfc-tag vfc-tag--${type}`}>
+                <span className={`vfc-dot vfc-dot--${type}`} />
+                {label}
+              </span>
+            </div>
             {/* Price row */}
             <div className="vfc-priceRow">
               {item.actualPrice && (
@@ -45,12 +51,12 @@ const VenueFoodCard = ({ item, onView }) => {
               )}
               <span className="vfc-price">{item.discountedPrice}</span>
               {item.tag && (
-              <span className="vfc-inclusive">✦ {item.tag}</span>
-            )}
+                <span className="vfc-inclusive">✦ {item.tag}</span>
+              )}
             </div>
 
             {/* All Inclusive pill */}
-          
+
 
             {/* Subtitle */}
             {item.subTitle && (
