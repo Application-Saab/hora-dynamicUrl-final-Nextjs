@@ -516,6 +516,7 @@ const handleViewDetails = (item) => {
       locality={locality}
       variant="grid"
       catValue="naming-ceremony-decoration"
+       eventName="theme_click"
     />
   </div>
 )}

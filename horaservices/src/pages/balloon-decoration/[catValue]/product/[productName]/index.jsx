@@ -1019,6 +1019,7 @@ const generateSlug = (name) => {
                   catValue="KidsBirthday"
                   heading="Other Popular Themes"
                   hasBg={true}
+                   eventName="theme_Categorytabs_click"
                 />
               </div>
             )}

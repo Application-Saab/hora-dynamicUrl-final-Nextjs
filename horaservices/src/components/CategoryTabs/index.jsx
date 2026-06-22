@@ -14,6 +14,7 @@ const CategoryTabs = ({
   catValue, // sub-category slug
   heading,
   hasBg = false,
+   eventName,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -34,13 +35,14 @@ const CategoryTabs = ({
   // 🔹 GTM / dataLayer (same as before)
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
-    event: "theme_circle_clicked",
-    themeName: cat.name,
-    themeValue: cat.value,
-    catValue,
-    city: city || "default",
-    locality: locality || "default",
-  });
+  event: eventName || "circle_tabs_clicked",
+  categoryName: cat.name,
+  subCategory: cat.subCategory || "",
+  catValue: cat.catValue || "",
+  imgAlt: cat.imgAlt || "",
+  city: city || "default",
+  locality: locality || "default",
+});
 
   // 🔹 FIXED NAVIGATION
   const path = formatPath(

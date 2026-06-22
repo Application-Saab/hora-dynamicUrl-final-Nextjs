@@ -325,6 +325,7 @@ const openCatItems = (item) => {
           hasCityPageParam={hasCityPageParam}
           locality={locality}
           variant="circle"
+         eventName="category__click"
         />
       </div>
 
