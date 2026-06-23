@@ -24,6 +24,7 @@ import trustimage from "@/assets/poselink/trustedimage.webp";
 import { getBannerConfig, getPlanningCardData, getTrustedCardData } from "@/utils/bannerConfig";
 import { getPhotoCategoryUrl } from "@/utils/Getphotocategoryurl.js"; 
 import { reviewsData } from "@/utils/poselinkreviews";
+import Head from "next/head";
 
 const PhotoGallery = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -97,7 +98,98 @@ const bannerData = {
 
   return (
     <div className="photo-container" style={{ padding: "8px", maxWidth: "480px", margin: "auto", paddingBottom: "100px" }}>
+ <Head>
+  <title>
+    {bannerConfig.title
+      ? `${bannerConfig.title} Poses & Photography Ideas | Book Photographer | HORA`
+      : `Professional Photography Poses & Ideas | Book Photographer | HORA`}
+  </title>
 
+  <meta
+    name="description"
+    content={
+      bannerConfig.title
+        ? `Explore 2500+ ${bannerConfig.title} poses and book the best photographer for your ${bannerConfig.title} event. Trusted by 10,000+ people. 100+ expert photographers. Book HORA now.`
+        : `Explore 2500+ photography poses for weddings, birthdays, maternity & more. Book expert photographers across India. Trusted by 10,000+ people. Book HORA now.`
+    }
+  />
+
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+
+  <link
+    rel="canonical"
+    href={
+      folderName
+        ? `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}`
+        : `https://horaservices.com/photo-gallery`
+    }
+  />
+
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+  />
+
+  <meta
+    property="og:title"
+    content={
+      bannerConfig.title
+        ? `${bannerConfig.title} Poses & Photography Ideas | HORA`
+        : `Professional Photography Poses & Ideas | HORA`
+    }
+  />
+
+  <meta
+    property="og:description"
+    content={
+      bannerConfig.title
+        ? `Book photographers for ${bannerConfig.title} events. 2500+ pose ideas, 100+ expert photographers.`
+        : `Book photographers for weddings, birthdays & events across India.`
+    }
+  />
+
+  <meta
+    property="og:url"
+    content={
+      folderName
+        ? `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}`
+        : `https://horaservices.com/photo-gallery`
+    }
+  />
+
+  <meta property="og:type" content="website" />
+
+  <meta
+    property="og:image"
+    content={bannerConfig.backgroundImage || "https://horaservices.com/api/uploads/attachment-1711520474508.png"}
+  />
+
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <meta
+    name="twitter:title"
+    content={
+      bannerConfig.title
+        ? `${bannerConfig.title} Poses & Photography Ideas | HORA`
+        : `Professional Photography Poses & Ideas | HORA`
+    }
+  />
+
+  <meta
+    name="twitter:description"
+    content={
+      bannerConfig.title
+        ? `${bannerConfig.title} photography poses & booking. Trusted by 10,000+ people.`
+        : `Photography poses & booking for all events across India.`
+    }
+  />
+
+  <meta
+    name="twitter:image"
+    content={bannerConfig.backgroundImage || "https://horaservices.com/api/uploads/attachment-1711520474508.png"}
+  />
+</Head>
       <TopBanner
         backgroundImage={bannerConfig.backgroundImage}
         highlightText={bannerConfig.highlightText}
