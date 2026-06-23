@@ -1,0 +1,90 @@
+.venue-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 10px 0;
+  max-width: 480px;
+  padding: 0 5px;
+}
+
+.vlh-title {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(13px, 3.8vw, 16px);
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+
+}
+.gd-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.gd-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 7px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.gd-label {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(10px, 2.8vw, 12px);
+  font-weight: 500;
+  color: #333;
+}
+
+.gd-chevron {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.gd-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown box */
+.gd-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 6px 0;
+}
+.gd-dropdown::-webkit-scrollbar { display: none; }
+
+/* Each option */
+.gd-option {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 400;
+  color: #555;
+  padding: 11px 20px;
+  cursor: pointer;
+  border-bottom: 0.5px solid #f0f0f0;
+  text-align: center;
+}
+.gd-option:last-child {
+  border-bottom: none;
+}
+.gd-option:hover {
+  background: #f9f4ff;
+  color: #7C3FB1;
+}
+.gd-option.active {
+  color: #7C3FB1;
+  font-weight: 600;
+}

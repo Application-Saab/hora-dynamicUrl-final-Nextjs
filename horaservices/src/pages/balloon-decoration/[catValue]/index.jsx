@@ -45,11 +45,17 @@ import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
 import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
 import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.webp";
 import HouseWarming from "@/assets/categories/HouseWarming.webp";
+import PetAnimalBanner from "@/assets/categories/petanimal.webp";
+import showroomBanner from "@/assets/categories/showroom.webp"; 
+import festivalBanner from "@/assets/categories/festivals.webp";
+import carDecoration from "@/assets/categories/car.webp";
+import Engagementdecoration from "@/assets/categories/Engagementdecoration.webp";
 import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
 import NationPride from "@/assets/categories/NationPride.jpeg";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
+import SeoHead from "@/utils/SeoHead";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -130,10 +136,22 @@ const DecorationCatPage = ({ locality }) => {
       return "PremiumDecoration";
     } else if (catValue === "bachelorette-decoration") {
       return "bachelorette";
-      }else if (catValue === "naming-ceremony-decoration") {
-        return "NamingCeremony";
+    }else if (catValue === "naming-ceremony-decoration") {
+      return "NamingCeremony";
+    }else if (catValue === "coorporate-showrooms-decoration"){
+      return "Coorporateshowrooms"
+    }else if (catValue === "car-decoration"){
+      return "CarDecoration"
+    }else if (catValue === "festivals-decoration"){
+      return "Festivals"
+    }else if (catValue === "pet-animals-decoration") {
+      return "PetAnimalsDecoration";
+    }
+    else if  (catValue === "engagement-decoration"){
+      return "Engagementdecoration"
+    }
 
-    } else {
+     else {
       const parts = catValue.split("-"); 
       return parts
         .slice(0, 2) 
@@ -356,6 +374,11 @@ const DecorationCatPage = ({ locality }) => {
     "naming-ceremony-decoration":NamingCeremonyBanner,
     "Nation-Pride-decoration": NationPride,
     "House-Warming-decoration": HouseWarming,
+    "coorporate-showrooms-decoration": showroomBanner,
+    "festivals-decoration": festivalBanner,
+    "car-decoration": carDecoration,
+    "pet-animals-decoration": PetAnimalBanner,
+    "engagement-decoration": Engagementdecoration,
   };
 
   function trimText(text) {
@@ -417,86 +440,6 @@ const handleViewDetails = (item) => {
   router.push(finalPath);
 };
 
-
-
-  const PageTitle = (catValue, city, theme) => {
-    let baseTitle;
-
-    if (catValue === "kids-birthday-decoration") {
-      baseTitle = city
-        ? `Kids Birthday Balloon Decoration in ${city} by Professional Decorators, Starting at ₹1199`
-        : "Kids' Birthday Balloon Decoration by Professional Decorators, Starting at ₹1199";
-    } else if (catValue === "birthday-decoration") {
-      baseTitle = city
-        ? `Birthday Balloon Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
-        : "Birthday Balloon Decoration at Home by Professional Decorators, Starting at ₹1199";
-    } else if (catValue === "anniversary-decoration") {
-      baseTitle = city
-        ? `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
-        : "Anniversary Decorations with Balloon & Rose Petals, Starting at ₹1199";
-    } else if (catValue === "first-night-decoration") {
-      baseTitle = city
-        ? `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`
-        : "First Night Decorations with Balloon & Rose Petals, Starting at ₹1199";
-    } else if (catValue === "baby-shower-decoration") {
-      baseTitle = city
-        ? `Baby Shower in ${city} with Latest Designs by Professional Decorators, Starting at ₹1199`
-        : "Baby Shower with Latest Designs by Professional Decorators, Starting at ₹1199";
-    } else if (catValue === "welcome-baby-decoration") {
-      baseTitle = city
-        ? `Baby Welcome Decoration in ${city} at Home by Professional Decorators, Starting at ₹1199`
-        : "Baby Welcome Decoration at Home by Professional Decorators, Starting at ₹1199";
-    } else if (catValue === "haldi-mehendi-decoration") {
-      baseTitle = city
-        ? `Haldi Decoration in ${city} with Latest Designs, Starting at ₹3000`
-        : "Haldi Decoration with Latest Designs, Starting at ₹3000";
-    }else if (catValue === "naming-ceremony-decoration") {
-      baseTitle = city
-        ? `NamingCeremony Decoration in ${city} with Latest Designs, Starting at ₹3000`
-        :"NamingCeremony Decoration with Latest Designs, Starting at ₹3000";
-    }
-    else if (catValue === "Nation-Pride-decoration") {
-      baseTitle = city
-        ? `Nation Pride Decoration in ${city} with Latest Designs, Starting at ₹3000`
-        :"Nation Pride Decoration with Latest Designs, Starting at ₹3000";
-    }
-     else {
-      baseTitle = city
-        ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
-        : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-    }
-    return theme ? `HORA Decorations - <${theme}> - ${baseTitle}` : baseTitle;
-  };
-
-  const getPageMetaDescription = (catValue, city) => {
-    if (catValue === "kids-birthday-decoration") {
-      return city
-        ? `At Hora in ${city}, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨`
-        : "At Hora, 🎉 Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠️, Baby Boss 👔, Barbie 💖, and cars 🚗. Book your perfect party decor today! 🎈✨";
-    }
-    if (catValue === "birthday-decoration") {
-      return city
-        ? `Celebrate birthdays in ${city} with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉`
-        : "Celebrate birthdays with balloon & flower decorations by professional decorators. Customize your party and make it unforgettable! 🎉";
-    }
-    if (catValue === "anniversary-decoration") {
-      return city
-        ? `Make your anniversary in ${city} magical with elegant balloon & rose petal decorations. Book directly online! 💖`
-        : "Make your anniversary magical with elegant balloon & rose petal decorations. Book directly online! 💖";
-    }
-    if (catValue === "haldi-mehendi-decoration") {
-      return city
-        ? `Brighten up your Haldi ceremony in ${city} with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.`
-        : "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups.";
-    }
-
-    return city
-      ? `Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`
-      : "Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199";
-  };
-
-
-
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
@@ -506,20 +449,12 @@ const handleViewDetails = (item) => {
 
   return (
     <div className="decCatPage">
-      <Head>
-        <title>{PageTitle(normalizedCat, city, theme)}</title>
-        <meta name="description" content={getPageMetaDescription(normalizedCat, city)} />
-        <meta name="keywords" content="Balloon and Flower Decoration @999" />
-        <meta property="og:title" content={PageTitle(normalizedCat, city)} />
-        <meta property="og:description" content={getPageMetaDescription(normalizedCat, city)} />
-        <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
-        <script type="application/ld+json">{scriptTag}</script>
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
-        <meta property="og:url" content={`https://horaservices.com/balloon-decoration/${normalizedCat}`} />
-        <meta property="og:type" content="website" />
-      </Head>
+<SeoHead
+  catValue={normalizedCat}
+  city={city}
+  locality={locality}
+  theme={theme}
+/>
 
    {loading ? (
   <div className="skeleton-wrapper">

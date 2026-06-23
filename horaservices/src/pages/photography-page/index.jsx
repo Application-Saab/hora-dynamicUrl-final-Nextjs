@@ -69,7 +69,7 @@ const brandItems = [
     <>
       <div style={{maxWidth:"800px",margin:"auto"}}>
       
-   <SeoMain city={city}  scriptTag={scriptTag} />
+   <SeoMain city={city}  locality={locality} scriptTag={scriptTag} />
         <div className="party-services homeslider">
           <div className="image-banner-slider">
             <Swiper
@@ -100,6 +100,7 @@ const brandItems = [
               title={item.name}
               subCategory={item.subCategory}
               city={city}
+              locality={locality}
             />
           ))}
         </div>
@@ -166,7 +167,7 @@ const brandItems = [
     </div>
 
 
-{/* <div class="suggested-poses">
+<div class="suggested-poses">
           <div class="suggested-poses-section">
             <Image src={PhotoBanner} alt="Camera Holding" class="suggested-image" />
           </div>
@@ -193,7 +194,7 @@ const brandItems = [
 ))}
 
 </div>
-     </div> */}
+     </div>
 
 <section className="BabyShowerBanner">
         <Image

@@ -12,8 +12,19 @@ import {
 import CustomModal from "../CustomModal";
 import "./LoginModal.css";
 import { usePathname } from "next/navigation";
+import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 
-const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
+
+const LoginModal = ({
+  isOpen,
+  onClose,
+  fromCapsule = false,
+  onlyOTP = false,
+  setIsVerifiedOTP,
+  template = "happy_to_help_v2",
+  link=null,
+  bgColor="login-modal-content"
+}) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
   const [name, setName] = useState("");
@@ -26,6 +37,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const [otpError, setOtpError] = useState("");
   const [error, setError] = useState({ name: "", phone: "" });
   const [showNameField, setShowNameField] = useState(false);
+  const { userDetails } = useUserDetailsStore();
 
   const { time, resetTimer, isTimeUp } = useTimer(30);
   const { loading: sendOtpLoading, makeRequest } = useApi();
@@ -42,6 +54,47 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   const isWonderlandInternational = pathname?.startsWith(
     "/wonderlandinternational",
   );
+
+  // Auto send OTP when onlyOTP mode is enabled
+  useEffect(() => {
+    if (!isOpen || !onlyOTP) return;
+
+    const storedPhone = localStorage.getItem("mobileNumber");
+
+    if (!storedPhone) return;
+
+    setPhone(storedPhone);
+
+    const triggerOtp = async () => {
+      try {
+        const response = await makeRequest(OTP_GENERATE_END_POINT, "POST", {
+          phone: storedPhone,
+          name: userDetails?.name || "",
+          role: "customer",
+          fromWonderland: true,
+          fromCapsule: fromCapsule,
+          fromWonderlandInternational: isWonderlandInternational,
+        });
+
+        if (response.status === 200) {
+          setIsOtpSent(true);
+
+          resetTimer();
+
+          setOtp(["", "", "", ""]);
+          setOtpError("");
+
+          setTimeout(() => {
+            inputsRef.current[0]?.focus();
+          }, 300);
+        }
+      } catch (err) {
+        console.log("Auto OTP send failed", err);
+      }
+    };
+
+    triggerOtp();
+  }, [isOpen, onlyOTP]);
 
   // Close modal on outside click
   useEffect(() => {
@@ -160,50 +213,51 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   ]);
 
   // Send welcome WhatsApp message
-  const sendWelcomeMessage = async (mobileNumber) => {
-    if (!mobileNumber) return;
-    let formattedNumber = mobileNumber.startsWith("+91")
-      ? mobileNumber
-      : "+91" + mobileNumber;
+const sendWelcomeMessage = async (mobileNumber, link) => {
+  if (!mobileNumber) return false;
 
-    const options = {
-      method: "POST",
-      url: "https://public.doubletick.io/whatsapp/message/template",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-        Authorization:
-          "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
-      },
-      data: {
-        messages: [
-          {
-            content: {
-              language: "en",
-              templateData: {
-                header: {
-                  type: "IMAGE",
-                  mediaUrl:
-                    "https://quickscale-template-media.s3.ap-south-1.amazonaws.com/org_FGdNfMoTi9/2a2f1b0c-63e0-4c3e-a0fb-7ba269f23014.jpeg",
-                },
-                body: { placeholders: ["Hora Services"] },
+  const formattedNumber = mobileNumber.toString().startsWith("+91")
+    ? mobileNumber.toString()
+    : `+91${mobileNumber}`;
+
+  const options = {
+    method: "POST",
+    url: "https://public.doubletick.io/whatsapp/message/template",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      Authorization:
+        "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
+    },
+    data: {
+      messages: [
+        {
+          from: "+917338584828",
+          to: formattedNumber,
+          content: {
+            templateName: "guest_login_2",
+            language: "en",
+            templateData: {
+              body: {
+                placeholders: [link], 
               },
-              templateName: "happy_to_help_v2",
             },
-            from: "+917338584828",
-            to: formattedNumber,
           },
-        ],
-      },
-    };
-
-    try {
-      const res = await axios.request(options);
-      console.log("WhatsApp message sent:", res.data);
-    } catch (err) {
-      console.error("WhatsApp message error:", err);
-    }
+        },
+      ],
+    },
   };
+
+  try {
+    const res = await axios.request(options);
+
+    return true;
+  } catch (err) {
+    console.log("MESSAGE:", err?.message);
+
+    return false;
+  }
+};
 
   // Send OTP
   const sendOtp = async () => {
@@ -261,7 +315,9 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
             localStorage.setItem("token", token);
             localStorage.setItem("userID", data?._id);
 
-            // sendWelcomeMessage(phone);
+            if(fromCapsule){
+            sendWelcomeMessage(phone, link);
+            }
 
             window.dispatchEvent(new Event("loginStateChange"));
 
@@ -430,8 +486,10 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
         localStorage.setItem("userID", data?._id);
         localStorage.setItem("userName", data?.name);
 
-        // sendWelcomeMessage(phone);
-
+        if(fromCapsule){
+            sendWelcomeMessage(phone, link);
+            }
+        onlyOTP && setIsVerifiedOTP(true);
         setIsOtpSent(false);
         setOtp(["", "", "", ""]);
         setOtpError("");
@@ -456,7 +514,7 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
   };
 
   const handleClick = () => {
-    if (!isOtpSent) {
+    if (!isOtpSent && !onlyOTP) {
       sendOtp();
     } else {
       verifyOtp();
@@ -471,19 +529,19 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
       onClose={onClose}
       showHeader={false}
       backdropClass="login-modal-backdrop"
-      modalClass="login-modal-content"
+      modalClass={bgColor}
       bodyClass="login-modal-body"
       disableBackdropClick={true}
       verticalCenter={false}
       body={
         <>
-          <p className="login-modal-heading">Join The Celebration!</p>
+          <p className="login-modal-heading">{onlyOTP ? "Access Your Locker" : "Join The Celebration!"}</p>
           <p className="login-modal-subheading">
-            Enter your mobile number to get started
+            {onlyOTP ? `Enter OTP sent to your number xxxx${phone?.slice(-4)}` : "Enter your mobile number to get started"}
           </p>
 
           <div className="d-flex flex-column w-100 login-input-ctn">
-            {!isOtpSent || isWonderlandInternational ? (
+            {(!isOtpSent && !onlyOTP) || isWonderlandInternational ? (
               <>
                 <div>
                   <input
@@ -571,10 +629,17 @@ const LoginModal = ({ isOpen, onClose, fromCapsule = false }) => {
 
           <div style={{ marginBlock: "37px" }}>
             <CustomButton
+              // title={
+              //   isWonderlandInternational
+              //     ? "Continue"
+              //     : !isOtpSent
+              //       ? "Get OTP"
+              //       : "Verify"
+              // }
               title={
                 isWonderlandInternational
                   ? "Continue"
-                  : !isOtpSent
+                  : !isOtpSent && !onlyOTP
                     ? "Get OTP"
                     : "Verify"
               }

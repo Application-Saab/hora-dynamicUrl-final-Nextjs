@@ -867,6 +867,59 @@ const ChefCitypage = () => {
     }
 
     return (
+        <>
+        <Head>
+  <title>
+    {city
+      ? `HORA Chef Services in ${city} | Hire Private Chef & Cook for Parties, Events & Home – Book Now`
+      : `HORA Chef Services | Hire Private Chef & Cook for Parties, Events & Home – Book Now`}
+  </title>
+
+  <meta
+    name="description"
+    content={
+      city
+        ? `🍽️ Book a Professional Chef in ${city}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for birthdays, house parties, weddings, corporate events & more. Starting at affordable prices.`
+        : `🍽️ Book a Professional Chef Near You! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for birthdays, house parties, weddings, corporate events & more.`
+    }
+  />
+
+  <meta
+    name="keywords"
+    content={
+      city
+        ? `hire chef in ${city}, book a cook in ${city}, private chef ${city}, personal chef ${city}, chef for party ${city}, catering services ${city}, home chef ${city}, cook near me ${city}`
+        : `hire chef, book a cook, private chef, personal chef, chef for party, catering services, home chef, cook near me`
+    }
+  />
+
+  <meta
+    property="og:title"
+    content={
+      city
+        ? `Hire Professional Chef & Cook in ${city} | HORA Chef Services`
+        : `Hire Professional Chef & Cook | HORA Chef Services`
+    }
+  />
+  <meta
+    property="og:description"
+    content="🍽️ Explore a wide range of professional chef and cook services for every event and party. Book your ideal chef directly through our website for a seamless experience. Need help? Contact us at 7338584828."
+  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content="hire chef, private chef, cook for party, catering services, home chef" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta
+    property="og:url"
+    content={
+      city
+        ? `https://horaservices.com/${city.toLowerCase()}/book-chef-cook-for-party`
+        : `https://horaservices.com/book-chef-cook-for-party`
+    }
+  />
+  <meta property="og:type" content="website" />
+</Head>
         <div>
            
             <CreateOrder/>
@@ -1081,6 +1134,7 @@ const ChefCitypage = () => {
                 </div>
             </section>
         </div>
+        </>
     );
 }
 

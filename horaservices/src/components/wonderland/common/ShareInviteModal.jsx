@@ -79,10 +79,7 @@ const ShareInviteModal = ({ isOpen, onClose, eventData }) => {
   // Format share text
   const createShareText = (orderDetails) => {
     if (!orderDetails) return "";
-
-    const inviteURL = `https://horaservices.com/${
-      isWonderlandInternational ? "wonderlandinternational" : "wonderland"
-    }/invite?eventid=${orderDetails?._id}`;
+    const inviteURL = `https://horaservices.com/smartinvite/share/${orderDetails?.shortCode}`;
 
     return `You're invited to ${orderDetails?.hostName}! 🎉
 📅 ${

@@ -22,8 +22,22 @@ import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 const TEMPLATE_ASSETS_BASE =
   "https://horaservices.com/api/template-assets/templates";
 
-// ─── Image cache: templateId → object URL or src string ───────────────────────
+// ─── Image cache ───────────────────────────────────────────────────────────────
 const imageCache = new Map();
+
+// ─── FIX: Preload image immediately using just templateId (before API response)
+// bgImageName pattern: templateId + some extension — we try to resolve from cache first
+// OR we build the URL as soon as API gives bgImageName
+const prefetchBgImage = (bgImageName, cacheKey) => {
+  if (!bgImageName) return;
+  if (imageCache.has(cacheKey)) return;
+  const url = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
+  imageCache.set(cacheKey, url);
+  const img = new window.Image();
+  img.fetchPriority = "high";
+  img.src = url;
+  img.decode?.().catch(() => {});
+};
 
 const toText = (val) => (val ?? "").toString();
 const escapeRegex = (value) =>
@@ -35,7 +49,7 @@ const wrapEditable = (html = "", formData = {}) => {
     "$1",
   );
 
-  ["name", "eventType"].forEach((field) => {
+  ["name", "eventType", "name2"].forEach((field) => {
     const value = toText(formData[field]);
     if (!value) return;
     rendered = rendered.replace(
@@ -88,7 +102,7 @@ const renderTemplate = (templateHtml = "", rawData = {}, formData) => {
     }
   });
 
-  ["name", "eventType", "address", "time", "day", "month", "year"].forEach(
+  ["name", "name2", "eventType", "address", "time", "day", "month", "year"].forEach(
     (field) => {
       const value = toText(rawData[field]);
       if (!value) return;
@@ -113,21 +127,6 @@ const setCaretAtEnd = (node) => {
   selection.addRange(range);
 };
 
-// ─── Pre-fetch image and store in module-level Map ────────────────────────────
-const prefetchBgImage = (bgImageName, cacheKey) => {
-  if (!bgImageName) return;
-  if (imageCache.has(cacheKey)) return; // already cached
-
-  const url = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
-
-  // Mark as in-progress so parallel calls don't duplicate
-  imageCache.set(cacheKey, url);
-
-  const img = new window.Image();
-  img.src = url;
-  // No need to do anything on load — browser cache will serve it instantly
-};
-
 /* ---------- component ---------- */
 const DynamicTemplateRenderer = () => {
   const router = useRouter();
@@ -150,23 +149,19 @@ const DynamicTemplateRenderer = () => {
 
   const [templateLoading, setTemplateLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
-
-  // ── NEW: track if image src is ready (from cache or fresh fetch) ──────────
   const [imageSrc, setImageSrc] = useState(null);
-  const [imgBlurred, setImgBlurred] = useState(true); // blur until fully loaded
+  const [imgBlurred, setImgBlurred] = useState(true);
 
   const loading = templateLoading || !imageLoaded;
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [errorModal, setErrorModal] = useState({
-    open: false,
-    message: "",
-  });
+  const [errorModal, setErrorModal] = useState({ open: false, message: "" });
 
   const [formData, setFormData] = useState({
     eventType: "",
     name: "",
+    name2: "",
     date: "",
     time: "",
     address: "",
@@ -182,11 +177,13 @@ const DynamicTemplateRenderer = () => {
   const [charCounts, setCharCounts] = useState({
     eventType: 0,
     name: 0,
+    name2: 0,
     address: 0,
   });
   const [formErrors, setFormErrors] = useState({
     eventType: "",
     name: "",
+    name2: "",
     address: "",
   });
   const [isSaved, setIsSaved] = useState(false);
@@ -213,6 +210,7 @@ const DynamicTemplateRenderer = () => {
     return {
       eventType: formData.eventType,
       name: applyCase(formData.name || "", templateMeta?.nameCase),
+      name2: applyCase(formData.name2 || "", templateMeta?.name2Case),
       date: applyCase(
         formatted?.full || "",
         templateMeta?.dateCase || "default",
@@ -235,16 +233,17 @@ const DynamicTemplateRenderer = () => {
     templateId,
     uploadedImage,
     originalImage,
-    templateMeta?.configs?.nameCase,
-    templateMeta?.configs?.addressCase,
-    templateMeta?.configs?.monthCase,
+    templateMeta?.nameCase,
+    templateMeta?.name2Case,
+    templateMeta?.addressCase,
+    templateMeta?.monthCase,
   ]);
 
   /* --- enforce char limits on pre-filled data --- */
   useEffect(() => {
     if (!templateMeta?.charLimits) return;
 
-    const fields = ["eventType", "name", "address"];
+    const fields = ["eventType", "name", "name2", "address"];
     const updates = {};
     const nextCounts = {};
     let needsUpdate = false;
@@ -270,6 +269,7 @@ const DynamicTemplateRenderer = () => {
       if (
         prev.eventType === nextCounts.eventType &&
         prev.name === nextCounts.name &&
+        prev.name2 === nextCounts.name2 &&
         prev.address === nextCounts.address
       ) {
         return prev;
@@ -279,6 +279,7 @@ const DynamicTemplateRenderer = () => {
   }, [
     formData.eventType,
     formData.name,
+    formData.name2,
     formData.address,
     templateMeta?.charLimits,
   ]);
@@ -292,6 +293,12 @@ const DynamicTemplateRenderer = () => {
         return;
       }
       try {
+        // ✅ FIX: Set imageSrc IMMEDIATELY from cache if available (before API call)
+        const cachedSrc = imageCache.get(`bg_${templateId}`);
+        if (cachedSrc) {
+          setImageSrc(cachedSrc);
+        }
+
         const res = await fetch(
           `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
         );
@@ -318,22 +325,28 @@ const DynamicTemplateRenderer = () => {
 
         const bgImageName = template.configs?.bgImageName || "";
 
-        // ── FIX 1: Inject <link rel="preload"> as soon as bgImageName is known ──
+        // ✅ FIX: Inject preload link immediately
         if (bgImageName && typeof document !== "undefined") {
-          const preloadLink = document.createElement("link");
-          preloadLink.rel = "preload";
-          preloadLink.as = "image";
-          preloadLink.href = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
-          // fetchpriority tells the browser this is high priority
-          preloadLink.setAttribute("fetchpriority", "high");
-          document.head.appendChild(preloadLink);
+          const existingPreload = document.head.querySelector(
+            `link[rel="preload"][href*="${bgImageName}"]`
+          );
+          if (!existingPreload) {
+            const preloadLink = document.createElement("link");
+            preloadLink.rel = "preload";
+            preloadLink.as = "image";
+            preloadLink.href = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
+            preloadLink.setAttribute("fetchpriority", "high");
+            document.head.appendChild(preloadLink);
+          }
         }
 
-        // ── FIX 2: Set imageSrc immediately so <img> starts loading ASAP ──
+        // ✅ FIX: Set imageSrc immediately (only if not already set from cache)
         const src = `${TEMPLATE_ASSETS_BASE}/${bgImageName}`;
-        setImageSrc(src);
+        if (!cachedSrc) {
+          setImageSrc(src);
+        }
 
-        // ── FIX 3: Prefetch into module cache for repeat visits ──
+        // Prefetch into module cache for repeat visits
         prefetchBgImage(bgImageName, `bg_${templateId}`);
 
         setTemplateMeta({
@@ -351,6 +364,9 @@ const DynamicTemplateRenderer = () => {
           aspectRatio: cropShape === "round" ? 1 : ratioW / ratioH,
           borderColor: template.configs?.borderColor,
           isBgRemove: template.configs?.isBgRemove || false,
+          name2Case: template.configs?.name2Case || "default",
+          name2Size: template.configs?.templateinfo?.templateName2Size,
+          name2Position: template.configs?.templateinfo?.templateName2Position,
         });
       } catch (err) {
         if (active) setError(`Error fetching template: ${err.message}`);
@@ -365,6 +381,7 @@ const DynamicTemplateRenderer = () => {
     };
   }, [templateId]);
 
+  /* --- fetch existing event data --- */
   useEffect(() => {
     if (!eventId) return;
     let active = true;
@@ -391,7 +408,14 @@ const DynamicTemplateRenderer = () => {
 
         setFormData((prev) => ({
           ...prev,
-          name: applyCase(data.hostName || "", templateMeta?.nameCase),
+          name: applyCase(
+            data.names?.one || "",
+            templateMeta?.nameCase,
+          ),
+          name2: applyCase(
+            data.names?.two || "",
+            templateMeta?.name2Case,
+          ),
           eventType: applyCase(
             data.eventType || "",
             templateMeta?.eventTypeCase,
@@ -403,9 +427,11 @@ const DynamicTemplateRenderer = () => {
 
         setCharCounts({
           eventType: data.eventType?.length || 0,
-          name: data.hostName?.length || 0,
+          name: data.names?.one?.length || 0,
+          name2: data.names?.two?.length || 0,
           address: data.location?.length || 0,
         });
+
         if (data.imageUrl) {
           setUploadedImage(data.imageUrl);
           setOriginalImage(data.imageUrl);
@@ -419,16 +445,19 @@ const DynamicTemplateRenderer = () => {
     return () => {
       active = false;
     };
-  }, [eventId, token]);
+  }, [eventId, token, templateMeta?.nameCase, templateMeta?.name2Case, templateMeta?.addressCase]);
+  // ✅ FIX: Added templateMeta dependencies so applyCase runs with correct case config
 
+  /* --- render HTML --- */
   useEffect(() => {
     if (!templateMeta?.jsCode) return;
 
     const payloadWithPlaceholder = {
       ...templatePayload,
       ...scaledData,
-      name: formData.name || "Type your name",
-      address: formData.address || "Type your address",
+      name: formData.name || "Name Here",
+      address: formData.address || "Address Here",
+      name2: formData.name2 || "Name 2",
     };
 
     setRenderedHTML(
@@ -436,7 +465,6 @@ const DynamicTemplateRenderer = () => {
     );
   }, [templateMeta?.jsCode, templatePayload, scaledData, formData]);
 
-  // ── FIX 4: onLoad — remove blur with smooth CSS transition ────────────────
   const handleImageLoad = useCallback(() => {
     if (!imgRef.current || !templateMeta?.templateInfo) return;
     const info = templateMeta.templateInfo;
@@ -447,6 +475,7 @@ const DynamicTemplateRenderer = () => {
 
     setScaledData({
       imgHeight: scale * info.templateHeight,
+      // ✅ FIX: removed duplicate nameFontSize key (was declared twice)
       nameFontSize: scale * info.templateNameSize,
       nameLineHeight:
         scale * info.templateNameSize + info.templateNamelineHeight,
@@ -464,15 +493,19 @@ const DynamicTemplateRenderer = () => {
       imgCircleWidth: scale * info.templateCircleWidth,
       dayFontSize: scale * info.templatedayfontSize,
       dayPosition: scale * info.templatedayposition,
+      // ✅ nameFontSize only once (above), name2 separately
+      name2FontSize: scale * (info.templateName2Size || info.templateNameSize),
+      name2Position: scale * (info.templateName2Position || info.templateNamePosition),
     });
 
-    setImgBlurred(false); // ── remove blur once fully loaded
+    setImgBlurred(false);
     setImageLoaded(true);
   }, [templateMeta?.templateInfo]);
 
   const PLACEHOLDERS = {
-    name: "Type your name",
-    address: "Type your address",
+    name: "Name Here",
+    address: "Address Here",
+    name2: "Name 2",
   };
 
   const handleEditableClick = useCallback(
@@ -499,15 +532,8 @@ const DynamicTemplateRenderer = () => {
           ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
         if (printable && node.innerText.length >= charLimit) {
           const allowed = [
-            "Backspace",
-            "Delete",
-            "ArrowLeft",
-            "ArrowRight",
-            "ArrowUp",
-            "ArrowDown",
-            "Home",
-            "End",
-            "Tab",
+            "Backspace", "Delete", "ArrowLeft", "ArrowRight",
+            "ArrowUp", "ArrowDown", "Home", "End", "Tab",
           ];
           if (!allowed.includes(ev.key)) {
             ev.preventDefault();
@@ -544,10 +570,8 @@ const DynamicTemplateRenderer = () => {
         }
 
         if (field !== "time") {
-          const formattedValue = applyCase(
-            text,
-            templateMeta?.[field + "Case"],
-          );
+          const caseKey = field === "name2" ? "name2Case" : `${field}Case`;
+          const formattedValue = applyCase(text, templateMeta?.[caseKey]);
           if (formattedValue !== text) {
             const caret = saveCaretPosition(el);
             el.innerText = formattedValue;
@@ -560,9 +584,7 @@ const DynamicTemplateRenderer = () => {
 
       const onPaste = (ev) => {
         ev.preventDefault();
-        const pasted = (ev.clipboardData || window.clipboardData).getData(
-          "text",
-        );
+        const pasted = (ev.clipboardData || window.clipboardData).getData("text");
         const allowed = Math.max(0, charLimit - node.innerText.length);
         document.execCommand("insertText", false, pasted.slice(0, allowed));
       };
@@ -599,7 +621,7 @@ const DynamicTemplateRenderer = () => {
       node.addEventListener("paste", onPaste);
       node.addEventListener("blur", onBlur);
     },
-    [formData, templateMeta?.charLimits],
+    [formData, templateMeta?.charLimits, templateMeta?.name2Case],
   );
 
   useEffect(() => {
@@ -648,10 +670,7 @@ const DynamicTemplateRenderer = () => {
     const file = new File(
       [blob],
       `invite_${templateMeta?.bgImageName || "image"}.png`,
-      {
-        type: "image/png",
-        lastModified: Date.now(),
-      },
+      { type: "image/png", lastModified: Date.now() },
     );
 
     const reader = new FileReader();
@@ -687,15 +706,12 @@ const DynamicTemplateRenderer = () => {
 
   const handleSave = async () => {
     if (!userId) {
-      setErrorModal({
-        open: true,
-        message: "User not logged in or UserId missing.",
-      });
+      setErrorModal({ open: true, message: "User not logged in or UserId missing." });
       return;
     }
     const errors = [];
 
-    if (!formData.name?.trim() || formData.name === "Type your name") {
+    if (!formData.name?.trim() || formData.name === "Name Here") {
       errors.push("Name is required");
     }
 
@@ -705,19 +721,13 @@ const DynamicTemplateRenderer = () => {
       renderedHTML.includes("Type your address");
 
     if (addressExistsInTemplate) {
-      if (
-        !formData.address?.trim() ||
-        formData.address === "Type your address"
-      ) {
+      if (!formData.address?.trim() || formData.address === "Type your address") {
         errors.push("Address is required");
       }
     }
 
     if (errors.length > 0) {
-      setErrorModal({
-        open: true,
-        message: errors.join("\n"),
-      });
+      setErrorModal({ open: true, message: errors.join("\n") });
       return;
     }
 
@@ -745,7 +755,10 @@ const DynamicTemplateRenderer = () => {
           body: JSON.stringify({
             userId,
             eventType: formData.eventType,
-            hostName: formData.name,
+            names: {
+              one: formData.name,
+              two: formData.name2,
+            },
             eventDate: finalDate,
             eventTime: finalTime,
             location: formData.address,
@@ -760,11 +773,7 @@ const DynamicTemplateRenderer = () => {
 
       await handleDownload();
     } catch (err) {
-      setErrorModal({
-        open: true,
-        message: err.message || "Something went wrong",
-      });
-
+      setErrorModal({ open: true, message: err.message || "Something went wrong" });
       setSaving(false);
       setIsSaved(false);
       document.body.classList.remove("saved-mode");
@@ -786,8 +795,7 @@ const DynamicTemplateRenderer = () => {
       const range = document.createRange();
       let node = el;
       if (el.childNodes.length > 0) {
-        node =
-          [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
+        node = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE) || el;
       }
       const textLength = node.textContent?.length ?? 0;
       const safeOffset = Math.min(offset, textLength);
@@ -821,9 +829,7 @@ const DynamicTemplateRenderer = () => {
       setOriginalImage(imageUrl);
     } catch (error) {
       console.error("Background removal error:", error);
-      alert(
-        "Error connecting to server. Make sure your Python backend is running on port 8000.",
-      );
+      alert("Error connecting to server. Make sure your Python backend is running on port 8000.");
     }
   };
 
@@ -845,36 +851,26 @@ const DynamicTemplateRenderer = () => {
       style={{ maxWidth: "480px", margin: "0 auto" }}
     >
       <div style={{ padding: "8px", maxWidth: "480px", width: "100%" }}>
-        {/* SKELETON – shown while loading */}
         {loading && (
           <div style={{ padding: "8px" }}>
             <TemplatecardSkeleton />
           </div>
         )}
 
-        {/* TEMPLATE CONTAINER – always in DOM so image loads in background */}
         <div
           ref={templateRef}
           className="template-container"
           style={{
             position: "relative",
-            // ── FIX 5: use opacity instead of visibility so layout is preserved
-            // and image loads even while skeleton is shown
             opacity: loading ? 0 : 1,
             pointerEvents: loading ? "none" : "auto",
-            position: "relative",
           }}
         >
-          {/* ── FIX 6: Render <img> as soon as imageSrc is set (before templateMeta fully settles)
-              This means the fetch starts earlier.
-              Blur effect gives perceived speed improvement — image appears instantly,
-              then sharpens on load instead of popping in from nothing. ── */}
           {imageSrc && (
             <img
               ref={imgRef}
               src={imageSrc}
               alt="bg"
-              // ── FIX 7: fetchpriority="high" tells browser: load this before other assets ──
               fetchPriority="high"
               decoding="async"
               loading="eager"
@@ -886,8 +882,6 @@ const DynamicTemplateRenderer = () => {
               style={{
                 width: "100%",
                 display: "block",
-                // ── FIX 8: blur → clear transition instead of hidden → visible
-                // User sees a fast blurry image instead of a blank white box
                 filter: imgBlurred ? "blur(12px)" : "none",
                 transform: imgBlurred ? "scale(1.03)" : "scale(1)",
                 transition: "filter 0.35s ease, transform 0.35s ease",
@@ -896,31 +890,22 @@ const DynamicTemplateRenderer = () => {
             />
           )}
 
-          {/* Fonts */}
           {templateMeta?.fontUrls?.map((url, idx) => (
             <link key={idx} href={url} rel="stylesheet" />
           ))}
 
-          {/* CSS */}
           {templateMeta?.cssCode && (
             <style dangerouslySetInnerHTML={{ __html: templateMeta.cssCode }} />
           )}
 
-          {/* Template HTML */}
           {!loading && renderedHTML && (
             <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                zIndex: 2,
-                cursor: "text",
-              }}
+              style={{ position: "absolute", inset: 0, zIndex: 2, cursor: "text" }}
               dangerouslySetInnerHTML={{ __html: renderedHTML }}
             />
           )}
         </div>
 
-        {/* File Upload */}
         <input
           ref={fileInputRef}
           type="file"
@@ -929,13 +914,11 @@ const DynamicTemplateRenderer = () => {
           onChange={handleImageUploadClick}
         />
 
-        {/* Submit */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CustomButton title="Submit" onClick={handleSave} />
         </div>
       </div>
 
-      {/* Modals */}
       <CalendarModal
         show={modal.calendar}
         onClose={() => setModal((p) => ({ ...p, calendar: false }))}

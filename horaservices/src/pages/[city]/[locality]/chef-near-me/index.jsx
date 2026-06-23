@@ -25,6 +25,9 @@ import cityData from '../../../../utils/cityData';
 
 
 const ChefCitypage = () => {
+   
+const { locality } = router.query;
+
     const [showButton, setShowButton] = useState(false);
     const [city, setCity] = useState("");
     const openLink = () => {
@@ -909,6 +912,67 @@ const ChefCitypage = () => {
     
        
     return (
+        <>
+        <Head>
+  <title>
+    {city && locality
+      ? `HORA Chef Services in ${locality}, ${city} | Hire Private Chef & Cook Near You – Book Now`
+      : city
+        ? `HORA Chef Services in ${city} | Hire Private Chef & Cook for Parties – Book Now`
+        : `HORA Chef Services | Hire Private Chef & Cook – Book Now`}
+  </title>
+
+  <meta
+    name="description"
+    content={
+      city && locality
+        ? `🍽️ Book a Professional Chef in ${locality}, ${city}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks near you for birthdays, house parties, weddings & more.`
+        : city
+          ? `🍽️ Book a Professional Chef in ${city}! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for parties, weddings & more.`
+          : `🍽️ Book a Professional Chef Near You! ✨ HORA Chef Services — Hire trained & verified private chefs and cooks for any event.`
+    }
+  />
+
+  <meta
+    name="keywords"
+    content={
+      city && locality
+        ? `chef near me in ${locality} ${city}, hire chef in ${locality}, cook for party ${locality} ${city}, private chef ${locality}, catering ${locality} ${city}`
+        : city
+          ? `hire chef in ${city}, private chef ${city}, cook near me ${city}, catering services ${city}`
+          : `hire chef, private chef, cook near me, catering services`
+    }
+  />
+
+  <meta
+    property="og:title"
+    content={
+      city && locality
+        ? `Hire Chef & Cook in ${locality}, ${city} | HORA Chef Services`
+        : `Hire Chef & Cook | HORA Chef Services`
+    }
+  />
+  <meta
+    property="og:description"
+    content="🍽️ Book professional chefs and cooks for your event. Contact us at 7338584828."
+  />
+  <meta property="og:image" content="https://horaservices.com/api/uploads/attachment-1706520980436.png" />
+  <meta property="og:image:alt" content="hire chef near me, private chef, cook for party" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+  <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" type="image/x-icon" />
+  <meta
+    property="og:url"
+    content={
+      city && locality
+        ? `https://horaservices.com/${city.toLowerCase()}/${locality.toLowerCase()}/chef-near-me`
+        : city
+          ? `https://horaservices.com/${city.toLowerCase()}/book-chef-cook-for-party`
+          : `https://horaservices.com/book-chef-cook-for-party`
+    }
+  />
+  <meta property="og:type" content="website" />
+</Head>
         <div>
             <div style={styles.homebanner} className="homebanner citypage">
                 <div style={{ ...styles.bgImg, backgroundImage: `url(${bannerSvgImage.src})` }} className="bgImg">
@@ -1200,6 +1264,7 @@ const ChefCitypage = () => {
                 </div>
             </section>
         </div>
+        </>
     );
 }
 

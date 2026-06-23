@@ -5,7 +5,6 @@ import Image from "next/image";
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 import ErrorPopup from "../../common/ErrorPopup";
 
-
 const InviteAddressSection = ({ eventData }) => {
   const [openLocationAlertModal, setOpenLocationAlertModal] = useState(false);
 
@@ -25,8 +24,12 @@ const InviteAddressSection = ({ eventData }) => {
         style={{ gap: "30px", marginTop: "9px" }}
       >
         <div className="address-part-ctn">
-          {(eventData?.eventDate || eventData?.eventTime) && (
+          {(eventData?.eventDate ||
+            eventData?.eventTime ||
+            eventData?.hostName) && (
             <span className="date-time-text">
+              {eventData?.hostName}
+              {eventData?.eventDate || eventData?.eventTime ? "," : ""}{" "}
               {eventData?.eventDate &&
                 formateDateInDMDFormat(eventData?.eventDate)}
               <span className="ms-2">
@@ -63,15 +66,14 @@ const InviteAddressSection = ({ eventData }) => {
           </div>
         </div>
       </div>
-<ErrorPopup
-  isOpen={openLocationAlertModal}
-  onClose={() => setOpenLocationAlertModal(false)}
-  heading="Location Missing"
-  message= "Map location is not available"
-  buttonLabel="OK"
-  icon={AlertIcon}
-/>
-
+      <ErrorPopup
+        isOpen={openLocationAlertModal}
+        onClose={() => setOpenLocationAlertModal(false)}
+        heading="Location Missing"
+        message="Map location is not available"
+        buttonLabel="OK"
+        icon={AlertIcon}
+      />
     </>
   );
 };

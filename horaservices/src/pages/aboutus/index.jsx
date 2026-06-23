@@ -5,9 +5,108 @@ import how_2 from '../../assets/how_2.webp';
 import how_3 from "../../assets/how_3.webp";
 import Image from "next/image";
 import '../../pages/aboutus/aboutus.css';
+import Head from "next/head";
 
 const AboutUs = () => {
   return (
+    <>
+    <Head>
+  {/* Title */}
+  <title>
+    About HORA Services | Event Planning, Decoration & Catering Experts
+  </title>
+
+  {/* Meta Description */}
+  <meta
+    name="description"
+    content="Learn about HORA Services, India's trusted event planning platform. Book decorations, catering, chefs, photography, entertainment, and event services for birthdays, weddings, anniversaries, baby showers, and more."
+  />
+
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Hora Services" />
+
+  {/* Canonical */}
+  <link
+    rel="canonical"
+    href="https://horaservices.com/aboutus"
+  />
+
+  {/* Favicon */}
+  <link
+    rel="icon"
+    href="https://horaservices.com/api/uploads/logo-icon.png"
+  />
+
+  {/* Open Graph */}
+  <meta
+    property="og:title"
+    content="About HORA Services | Event Planning Experts"
+  />
+  <meta
+    property="og:description"
+    content="Since 2019, HORA has been helping customers plan memorable events with decoration, catering, photography, entertainment, and event management services across India."
+  />
+  <meta
+    property="og:url"
+    content="https://horaservices.com/aboutus"
+  />
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    name="twitter:title"
+    content="About HORA Services"
+  />
+  <meta
+    name="twitter:description"
+    content="Planning and celebrating events since 2019. Discover HORA's decoration, catering, photography, and event services."
+  />
+  <meta
+    name="twitter:image"
+    content="https://horaservices.com/api/uploads/attachment-1711520474508.png"
+  />
+
+  {/* Organization Schema */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "HORA Services",
+        url: "https://horaservices.com",
+        logo: "https://horaservices.com/api/uploads/logo-icon.png",
+        foundingDate: "2019",
+        description:
+          "HORA Services provides event planning, decoration, catering, photography, entertainment, and home event services across India.",
+        areaServed: {
+          "@type": "Country",
+          name: "India",
+        },
+      }),
+    }}
+  />
+
+  {/* About Page Schema */}
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        name: "About HORA Services",
+        url: "https://horaservices.com/aboutus",
+        description:
+          "Learn about HORA Services and how we help customers plan birthdays, weddings, anniversaries, baby showers, house parties, and corporate events across India.",
+      }),
+    }}
+  />
+</Head>
     <div className="aboutUsContainer">
       <div className="heroSingle" style={{ backgroundImage: `url(${hero_general.src})` }}>
      
@@ -73,6 +172,7 @@ const AboutUs = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

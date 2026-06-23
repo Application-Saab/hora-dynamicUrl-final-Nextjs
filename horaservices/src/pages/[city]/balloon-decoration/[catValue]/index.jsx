@@ -17,6 +17,7 @@ import DecorationCatPage from "@/pages/balloon-decoration/[catValue]";
 const DecorationCatCITYPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+   let {  locality} = router.query;
     // let { city } = useParams();
     const [city, setCity] = useState('');
   const [catValue, setCatValue] = useState('');
@@ -275,54 +276,7 @@ const DecorationCatCITYPage = () => {
     return text;
   }
 
- 
-  const PageTitle = (e) =>{
-    if(catValue === "kids-birthday-decoration"){
-      return `Kids Birthday Balloon Decoration in ${city} by Professionals Decorators, Starting at ₹1199`
-    }
-    else if(catValue === "birthday-decoration"){
-      return `Birthday Balloon Decoration ${city} at Home by Professionals  Decorators, Starting at ₹1199`;
-    }
-    else if(catValue === "anniversary-decoration"){
-      return `Anniversary Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`;
-    }
-    else if(catValue === "first-night-decoration"){
-      return `First Night Decorations in ${city} with Balloon & Rose Petals, Starting at ₹1199`;
-    }
-    else if(catValue === "baby-shower-decoration") {
-      return `Baby Shower in ${city} with Latest Designs by Professionals  Decorators Starting at ₹1199`;
-    }
-    else if (catValue === "welcome-baby-decoration"){
-      return `Baby Welcome Decoration in ${city} at home by Professionals  Decorators, Starting at ₹1199`;
-    }
-    else if (catValue === "haldi-mehendi-decoration"){
-      return `Haldi Decoration in ${city} with Latest Designs starting at ₹3000`
-    }
-    else{
-     return(`Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings in ${city} – Starting at ₹1199`)
-    }
-  }
 
-  const getPageMetaDescription = () =>{
-    if(catValue === "kids-birthday-decoration"){
-      return "At Hora, 🎉Explore popular themes like jungle 🌴, Cocomelon 🍉, candy 🍭, unicorn 🦄, dinosaur 🦖, superhero 🦸‍♂️, princess 👑, space 🚀, pirate 🏴‍☠, under the sea 🌊, Baby Boss 👔, Barbie 💖, and cars 🚗. Explore detailed pricing and inclusions, and let our professional team bring your chosen design to life. Book your perfect party decor today! 🎈✨"
-    }
-    else if(catValue === "birthday-decoration"){
-      return "At Hora, 🎈 Explore our wide range of balloon and flower decorations for birthday parties, featuring ring, sequin, wall, and room designs. Discover pricing and inclusions for every balloon color and variety. Customise your celebration and make it unforgettable with our stunning decor. Book your perfect party setup today! 🎉🌟";
-    }
-    else if(catValue === "anniversary-decoration"){
-      return "🎉 Explore top-notch anniversary decoration designs and book directly from our website 💖. Find elegant and customizable decor options for your special event. Browse our selection to choose the perfect theme and make your anniversary memorable with seamless online booking. ✨"
-    }
-    else if(catValue === "first-night-decoration"){
-      return "🌟 Explore our selection of elegant decoration designs for your first night event 💖. Choose from a variety of styles and themes, and book your perfect decor directly through our website. Make your special night unforgettable with seamless online booking and beautiful, personalised decorations. ✨"
-    }
-    else if (catValue === "haldi-mehendi-decoration"){
-      return "Brighten up your Haldi ceremony with vibrant and elegant décor! 🌼✨ Explore our stunning Haldi decoration setups, featuring traditional elements, colorful floral arrangements, and custom designs to make your event unforgettable. 🌸💛"
-    }
-    else{
-     return("Professional Balloon & Flower Decorations for Birthdays, Parties, & Weddings – Starting at ₹1199")
-    }
-  }
 
    // Set themeFilter based on query parameter when component mounts or query changes
    useEffect(() => {
@@ -349,7 +303,7 @@ const DecorationCatCITYPage = () => {
 
   return (
     <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
-    <DecorationCatPage/>
+    <DecorationCatPage city={city} locality={locality}/>
    </div>)}
 
 export default DecorationCatCITYPage;

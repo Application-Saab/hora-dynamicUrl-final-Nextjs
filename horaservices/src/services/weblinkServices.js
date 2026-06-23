@@ -136,3 +136,59 @@ export const trackFolderClick = async (mainFolderId) => {
       throw error;
     }
 };
+
+// track device type api
+export const trackDevice = async ({
+  mainFolderId,
+  userId,
+  deviceType,
+}) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/internal/track-device`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mainFolderId,
+          userId,
+          deviceType,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to track device");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("trackDevice error:", error);
+    throw error;
+  }
+};
+
+
+// tracking share capsule click function 
+export const trackShareCapsuleClick = async (mainFolderId) => { 
+    try {
+      const response = await fetch(`${BASE_URL}/api/internal/track-capsule-share-click`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mainFolderId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error in trackShareCapsuleClick service:", error);
+      throw error;
+    }
+  }

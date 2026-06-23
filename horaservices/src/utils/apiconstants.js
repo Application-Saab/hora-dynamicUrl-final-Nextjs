@@ -1,4 +1,3 @@
-// export const BASE_URL = "https://horaservices.com";
 export const BASE_URL = "https://horaservices.com";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
@@ -47,6 +46,7 @@ export const GET_ALL_TEMPLATES = "/api/photo/templates";
 export const GET_TEMPLATES_BY_ID = "/api/photo/templates";
 export const EVENT_POST_LIKE_UNLIKE = '/api/customer/event';
 export const LIKED_POST_BY_EVENT_AND_USERID = "/api/customer/event/liked-posts"
+export const GENERATE_SHARE_CODE = '/smartinvite/share/generate-share-code'
 
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
 export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
@@ -74,3 +74,8 @@ export const UNSUBSCRIBE_NOTIFICATION = "/api/customer/event/chat/unsubscribe";
 export const UNREAD_MESSAGE_COUNT = "/api/customer/event/chat/chatrooms";
 export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photography";
 
+// Venue Listing API Endpoints
+export const GET_VENUE_DETAILS_BY_ID = '/api/party-venue/venue-details';
+export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages-by-venue';
+export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'
+export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'

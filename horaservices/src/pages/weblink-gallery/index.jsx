@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import shareIcon from '../../assets/share-photo-icon.png'
 import OtpLoginPopup from '../../components/OtpLoginPopup';
+import { trackShareCapsuleClick } from "@/services/weblinkServices";
 
 const PhotoGallery = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -20,10 +21,10 @@ const PhotoGallery = () => {
 
   
 
-  const handleShareicon = async () => {
+  const handleShareicon = async (mainFolderId) => {
     const shareUrl = `https://horaservices.com/weblink-gallery?folderName=${encodeURIComponent(folderName)
       .replace(/%20/g, "%2520")}&customerId=${customerId}`;
-
+await trackShareCapsuleClick(mainFolderId);
     if (navigator.share) {
       try {
         await navigator.share({
@@ -53,7 +54,7 @@ const PhotoGallery = () => {
       ) : (
         isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} />
       )} */}
-                <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={handleShareicon} />
+                <ThumbnailGallery folderName={folderName} customerId={customerId} handleShareicon={(id) => handleShareicon(id)} />
     </div>
   );
 };

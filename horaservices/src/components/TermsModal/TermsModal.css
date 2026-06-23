@@ -1,0 +1,158 @@
+/* TermsModal.css — 30px to 480px screen size ke liye clamp */
+
+/* ── OVERLAY ── */
+.tm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: tmFadeIn 0.2s ease;
+  padding: clamp(6px, calc((10 / 480) * 100vw), 12px);
+}
+
+@keyframes tmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── SHEET ── */
+.tm-sheet {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: clamp(14px, calc((20 / 480) * 100vw), 22px);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: tmSlideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow: hidden;
+}
+
+@keyframes tmSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── HEADER ── */
+.tm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(10px, calc((16 / 480) * 100vw), 20px) clamp(12px, calc((18 / 480) * 100vw), 22px);
+  padding-bottom: clamp(8px, calc((12 / 480) * 100vw), 14px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.tm-title {
+  font-size: clamp(13px, calc((17 / 480) * 100vw), 20px);
+  font-weight: 700;
+  color: #1a1208;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.tm-close {
+  width: clamp(22px, calc((30 / 480) * 100vw), 36px);
+  height: clamp(22px, calc((30 / 480) * 100vw), 36px);
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: #f5f5f5;
+  color: #555;
+  font-size: clamp(9px, calc((12 / 480) * 100vw), 14px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tm-close:active { background: #e0e0e0; }
+
+/* ── SCROLLABLE BODY ── */
+.tm-body {
+  overflow-y: auto;
+  padding: clamp(10px, calc((14 / 480) * 100vw), 18px) clamp(12px, calc((18 / 480) * 100vw), 22px);
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.tm-body::-webkit-scrollbar { width: 4px; }
+.tm-body::-webkit-scrollbar-track { background: transparent; }
+.tm-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+.tm-body::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.35); }
+
+/* ── dangerouslySetInnerHTML content styling ── */
+/* Bullet list — screenshot jaisa */
+.tm-body ul {
+  list-style: disc;
+  padding-left: clamp(14px, calc((20 / 480) * 100vw), 24px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, calc((10 / 480) * 100vw), 14px);
+}
+
+.tm-body ul li {
+  font-size: clamp(11px, calc((14 / 480) * 100vw), 17px);
+  color: #2a2a2a;
+  line-height: 1.55;
+  padding-left: 2px;
+}
+
+.tm-body ul li::marker {
+  color: #2a2a2a;
+  font-size: clamp(10px, calc((13 / 480) * 100vw), 16px);
+}
+
+/* Paragraph styling */
+.tm-body p {
+  font-size: clamp(11px, calc((14 / 480) * 100vw), 17px);
+  color: #2a2a2a;
+  line-height: 1.55;
+  margin: 0 0 8px 0;
+}
+
+/* Bold text */
+.tm-body strong {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Section headings agar HTML mein hain */
+.tm-body h3,
+.tm-body h4 {
+  font-size: clamp(12px, calc((15 / 480) * 100vw), 18px);
+  font-weight: 700;
+  color: #1a1208;
+  margin: 10px 0 6px;
+}
+
+/* ── FOOTER ── */
+.tm-footer {
+  padding: clamp(10px, calc((12 / 480) * 100vw), 16px) clamp(12px, calc((18 / 480) * 100vw), 22px);
+  padding-bottom: clamp(14px, calc((20 / 480) * 100vw), 26px);
+  flex-shrink: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.tm-accept-btn {
+  width: 100%;
+  padding: clamp(10px, calc((13 / 480) * 100vw), 16px) 0;
+  background: #8c6a1a;
+  color: #fff;
+  font-size: clamp(11px, calc((14 / 480) * 100vw), 17px);
+  font-weight: 700;
+  border: none;
+  border-radius: clamp(18px, calc((24 / 480) * 100vw), 30px);
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  -webkit-tap-highlight-color: transparent;
+}
+.tm-accept-btn:active { opacity: 0.88; }

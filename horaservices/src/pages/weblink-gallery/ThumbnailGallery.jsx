@@ -30,10 +30,16 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
+import PaginationControls from "./capsulePagination";
+import { IoIosCloudDone } from "react-icons/io";
+import Lock from '../../assets/Lock.svg'
+import lockerBannerimage from '../../assets/lockerBanner.svg'
+import LockerPopup from "@/components/image-galleries/LockerPopup";
+
 import {
   deleteFromOPFS,
   getFileFromOPFS,
@@ -94,12 +100,23 @@ const ThumbnailGallery = ({
   const [localUserId, setLocalUserId] = useState("");
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+  const [isPrivateFolder, setIsPrivateFolder] = useState(false);
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
   console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
+  const privateLocker = useMemo(
+    () =>
+      subFolders.find(
+        (sf) =>
+          sf.type === "others" &&
+          // sf.userId === localUserId &&
+          sf.isLocker === true,
+      ),
+    [subFolders, localUserId],
+  );
   const isMyPhotosTabActive =
     activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
@@ -119,6 +136,82 @@ const ThumbnailGallery = ({
   const [guestData, setGuestData] = useState([]);
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [deviceTracking, setDeviceTracking] = useState(null);
+  const [isAddingToLocker, setIsAddingToLocker] = useState(false);
+  const [showLockerPopup, setShowLockerPopup] = useState(false);
+const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    show: false,
+    message: "Image downloaded successfully",
+  });
+
+
+ const snackbarTimeout = useRef(null);
+
+const showSnackbar = (message) => {
+  setSnackbar({
+    show: true,
+    message,
+  });
+
+  if (snackbarTimeout.current) {
+    clearTimeout(snackbarTimeout.current);
+  }
+
+  snackbarTimeout.current = setTimeout(() => {
+    setSnackbar({
+      show: false,
+      message: "",
+    });
+  }, 5000);
+};
+
+
+  // iOS Mobile Detection
+  useEffect(() => {
+    const detectIOSMobile = () => {
+      if (typeof navigator !== 'undefined') {
+        // Basic check for iPhone, iPad, iPod.
+        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
+        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
+        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
+        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      }
+      return false;
+    };
+    setIsIOSMobile(detectIOSMobile());
+  }, []);
+
+  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
+  const getItemsPerPage = useCallback(() => {
+    if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
+    // For iOS mobile, a smaller number might be better, e.g. 12-15.
+    // For other devices (where pagination is hidden), this number doesn't directly limit display
+    // but affects the `totalPages` calculation if we were to show it.
+    // Let's adjust: more items for wider screens if pagination *were* shown.
+    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
+    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
+    if (isIOSMobile) {
+      return 24; // Example: more items on larger iPhones
+    }
+    return 24; // Fallback for general calculation (though UI is hidden)
+
+  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
+
+
+  const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(getItemsPerPage());
+    };
+    if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [isIOSMobile, getItemsPerPage]);
 
   const getInitial = (guest) => {
     const name =
@@ -278,112 +371,108 @@ const ThumbnailGallery = ({
   }, [selectedIndex]);
 
 
-useEffect(() => {
-  const pushTrap = () => {
-    if (!window.history.state?.exitTrap) {
-      window.history.pushState({ exitTrap: true }, "", window.location.href);
-    }
+  useEffect(() => {
+    const pushTrap = () => {
+      if (!window.history.state?.exitTrap) {
+        window.history.pushState({ exitTrap: true }, "", window.location.href);
+      }
+    };
+
+    pushTrap();
+
+    const handlePopState = () => {
+      if (selectedIndex !== null) {
+        setSelectedIndex(null);
+        pushTrap();
+        return;
+      }
+
+      if (showCameraPopup) {
+        setShowCameraPopup(false);
+        pushTrap();
+        return;
+      }
+
+      if (showCreateFolderPopup) {
+        setShowCreateFolderPopup(false);
+        pushTrap();
+        return;
+      }
+
+      if (showGuestModal) {
+        setShowGuestModal(false);
+        pushTrap();
+        return;
+      }
+
+      const exitPopupShown =
+        sessionStorage.getItem("exitPopupShown") === "true";
+
+      if (exitPopupShown) {
+        window.history.back();
+        return;
+      }
+
+      if (!showExitPopup) {
+        setShowExitPopup(true);
+        pushTrap();
+      } else {
+        window.history.back();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [
+    selectedIndex,
+    showCameraPopup,
+    showCreateFolderPopup,
+    showGuestModal,
+    showExitPopup,
+  ]);
+
+  const closeExitPopup = () => {
+    setShowExitPopup(false);
+    sessionStorage.setItem("exitPopupShown", "true");
   };
 
-  pushTrap();
 
-  const handlePopState = () => {
-    if (selectedIndex !== null) {
-      setSelectedIndex(null);
-      pushTrap();
-      return;
-    }
+  useEffect(() => {
+    if (!localUserId) return;
 
-    if (showCameraPopup) {
-      setShowCameraPopup(false);
-      pushTrap();
-      return;
-    }
-
-    if (showCreateFolderPopup) {
-      setShowCreateFolderPopup(false);
-      pushTrap();
-      return;
-    }
-
-    if (showGuestModal) {
-      setShowGuestModal(false);
-      pushTrap();
-      return;
-    }
-
-    const exitPopupShown =
-      sessionStorage.getItem("exitPopupShown") === "true";
-
-    if (exitPopupShown) {
-      window.history.back(); 
-      return;
-    }
-
-    if (!showExitPopup) {
-      setShowExitPopup(true);
-      pushTrap();
-    } else {
-      window.history.back();
-    }
-  };
-
-  window.addEventListener("popstate", handlePopState);
-
-  return () => {
-    window.removeEventListener("popstate", handlePopState);
-  };
-}, [
-  selectedIndex,
-  showCameraPopup,
-  showCreateFolderPopup,
-  showGuestModal,
-  showExitPopup,
-]);
-
-const closeExitPopup = () => {
-  setShowExitPopup(false);
-  sessionStorage.setItem("exitPopupShown", "true");
-};
-
-
-useEffect(() => {
-  if (!localUserId) return;
-
-  const alreadyExists = guestData.some(
-    (guest) => String(guest._id) === String(localUserId)
-  );
-
-  if (alreadyExists) return;
-
-  const currentGuest = {
-    _id: localUserId,
-    name: localStorage.getItem("userName") || "",
-    phone: localPhoneNumber || "",
-    avatar: "",
-  };
-
-  setGuestData((prev) => [currentGuest, ...prev]);
-
-  setViewedBy((prev) => {
-    if (prev.includes(localUserId)) return prev;
-    return [localUserId, ...prev];
-  });
-}, [localUserId, localPhoneNumber]);
-
-  const popupImages = useMemo(() => {
-    if (!activeSubFolderId) return allThumbnails;
-
-    return allThumbnails.filter((img) =>
-      img.folderIds?.includes(activeSubFolderId),
+    const alreadyExists = guestData.some(
+      (guest) => String(guest._id) === String(localUserId)
     );
-  }, [allThumbnails, activeSubFolderId]);
 
-  const currentImage =
-    selectedIndex !== null ? popupImages[selectedIndex] : null;
+    if (alreadyExists) return;
+
+    const currentGuest = {
+      _id: localUserId,
+      name: localStorage.getItem("userName") || "",
+      phone: localPhoneNumber || "",
+      avatar: "",
+    };
+
+    setGuestData((prev) => [currentGuest, ...prev]);
+
+    setViewedBy((prev) => {
+      if (prev.includes(localUserId)) return prev;
+      return [localUserId, ...prev];
+    });
+  }, [localUserId, localPhoneNumber]);
 
   const visibleThumbnails = useMemo(() => {
-    const normalize = (val) => (val || "").trim().toLowerCase();
+    const normalize = (val) => {
+  return String(val ?? "").trim().toLowerCase();
+};
+
+    const lockerId = privateLocker?._id;
+
+    const isLockerImage = (img) =>
+  lockerId && img.folderIds?.includes(lockerId);
 
     if (!isActualMyPhotos) {
       if (isEditing) {
@@ -400,21 +489,42 @@ useEffect(() => {
       });
     }
 
+    if (lockerId && activeTab === lockerId) {
+      return allThumbnails.filter((img) => img.folderIds?.includes(lockerId));
+    }
+
+    if (activeSubFolderId && activeSubFolderId !== lockerId) {
+  return allThumbnails.filter(
+    (img) =>
+      img.folderIds?.includes(activeSubFolderId) &&
+      !isLockerImage(img)
+  );
+}
+
+    if (activeTab === "all" && lockerId) {
+      return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
+    }
+
+
     if (matchedKeys.length > 0 && ((isMyPhotosTabActive || isSearchActive))) {
       return allThumbnails.filter(img => matchedKeys.includes(img.thumbnailKey));
     }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(myPhotosFolder._id),
-      );
-    }
+  return allThumbnails.filter(
+    (img) =>
+      img.folderIds?.includes(myPhotosFolder._id) &&
+      !isLockerImage(img)
+  );
+}
 
     if (activeSubFolderId) {
-      return allThumbnails.filter((img) =>
-        img.folderIds?.includes(activeSubFolderId),
-      );
-    }
+  return allThumbnails.filter(
+    (img) =>
+      img.folderIds?.includes(activeSubFolderId) &&
+      !isLockerImage(img)
+  );
+}
 
     return allThumbnails;
   }, [
@@ -426,11 +536,24 @@ useEffect(() => {
     myPhotosFolder,
     activeSubFolderId,
     isEditing,
+    isActualMyPhotos,
+    privateLocker,
   ]);
+
+  const popupImages = useMemo(() => {
+  return visibleThumbnails;
+}, [visibleThumbnails]); 
+
+  const currentImage =
+    selectedIndex !== null ? popupImages[selectedIndex] : null;
+
+
   console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
   console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
-  const usableFolders = subFolders.filter((sf) => sf.type !== "my_photos");
+  const usableFolders = subFolders.filter(
+    (sf) => sf.type !== "my_photos" && !sf.isLocker,
+  );
 
   useEffect(() => {
     if (activeSubFolderId) {
@@ -458,6 +581,7 @@ useEffect(() => {
         setMainFolderId(data?.folders[0]?._id || null)
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
+        setDeviceTracking(data?.folders[0]?.deviceTracking || []);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -468,6 +592,33 @@ useEffect(() => {
     };
     fetchThumbnails();
   }, [folderName, customerId]);
+
+  // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
+  const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+    if (isIOSMobile) {
+      const total = Math.ceil(visibleThumbnails.length / ITEMS_PER_PAGE);
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const currentItems = visibleThumbnails.slice(startIndex, endIndex);
+      return { currentThumbnailsOnPage: currentItems, totalPages: total };
+    } else {
+      // Not iOS mobile: show all thumbnails, no pagination UI
+      return { currentThumbnailsOnPage: visibleThumbnails, totalPages: 1 };
+    }
+  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+
+  const handlePageChange = useCallback((pageNumber) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top of gallery header after a short delay to allow UI to update
+    setTimeout(() => {
+      const galleryHeader = document.querySelector('.gallery-header');
+      if (galleryHeader) {
+        galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
+  }, []);
 
   useEffect(() => {
     const handleLoginChange = () => {
@@ -487,23 +638,23 @@ useEffect(() => {
       window.removeEventListener("loginStateChange", handleLoginChange);
     };
   }, []);
-useEffect(() => {
-  if (!buttonsRef.current) return;
+  useEffect(() => {
+    if (!buttonsRef.current) return;
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      setShowFloatingBtn(!entry.isIntersecting);
-    },
-    {
-      root: null,
-      threshold: 0.1,
-    }
-  );
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowFloatingBtn(!entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
 
-  observer.observe(buttonsRef.current);
+    observer.observe(buttonsRef.current);
 
-  return () => observer.disconnect();
-}, [loading]);
+    return () => observer.disconnect();
+  }, [loading]);
 
 
   useEffect(() => {
@@ -523,6 +674,42 @@ useEffect(() => {
       trackGalleryView(localUserId, mainFolderId);
     }
   }, [mainFolderId, localUserId, viewedBy, customerId]);
+
+  useEffect(() => {
+  if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
+
+  const params = new URLSearchParams(window.location.search);
+    const fromPanel = params.get("fromPanel");
+
+    if (fromPanel === "true") return;
+
+  const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
+
+  if (sessionStorage.getItem(sessionKey)) return;
+
+    const getDeviceType = () => {
+    if (typeof navigator !== 'undefined') {
+      const ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      return "ios";
+    }
+    }
+    
+    return "android";
+  };
+
+  trackDevice({
+    mainFolderId,
+    userId: localUserId,
+    deviceType: getDeviceType(),
+  })
+    .then(() => {
+      sessionStorage.setItem(sessionKey, "true");
+    })
+    .catch((err) => {
+      console.error("Device tracking failed:", err);
+    });
+}, [mainFolderId, localUserId]);
 
   useEffect(() => {
     const logClick = async () => {
@@ -892,7 +1079,12 @@ useEffect(() => {
     return null;
   }
 
+const currentUrl =
+  typeof window !== "undefined" ? window.location.href : "";
+
+
   const handleSubFolderSelect = (id) => {
+    setCurrentPage(1);
     setActiveSubFolderId(id);
     setSelectedImages([]);
 
@@ -980,9 +1172,17 @@ useEffect(() => {
     }
   };
 
+  const pageOffset = isIOSMobile
+    ? (currentPage - 1) * ITEMS_PER_PAGE
+    : 0;
 
-  const first18Images = visibleThumbnails.slice(0, 18);
-  const remainingImages = visibleThumbnails.slice(18);
+  const thumbnailsToRender = isIOSMobile
+    ? currentThumbnailsOnPage
+    : visibleThumbnails;
+
+
+  const first18Images = thumbnailsToRender.slice(0, 18);
+  const remainingImages = thumbnailsToRender.slice(18);
 
   const chunkArray = (array, size) => {
     const chunks = [];
@@ -1002,6 +1202,134 @@ useEffect(() => {
     setIsRefreshShow(false);
   };
 
+
+  const assignImageToLockerExclusive = async (
+    imageId,
+    lockerId,
+    previousFolderIds = [],
+  ) => {
+    const newFolderIds = [lockerId];
+    const toAdd = newFolderIds.filter((id) => !previousFolderIds.includes(id));
+    const toRemove = previousFolderIds.filter(
+      (id) => !newFolderIds.includes(id),
+    );
+
+    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subFolderId: newFolderIds,
+        addImageIds: toAdd.length ? [imageId] : [],
+        removeImageIds: toRemove.length ? [imageId] : [],
+      }),
+    });
+
+    setAllThumbnails((prev) =>
+      prev.map((img) =>
+        img._id === imageId ? { ...img, folderIds: newFolderIds } : img,
+      ),
+    );
+  };
+
+  const ensurePrivateLocker = async () => {
+    if (privateLocker) return privateLocker;
+
+    const fd = new FormData();
+    fd.append("folderName", folderName);
+    fd.append("subFolderName", "My Locker");
+    fd.append("type", "others");
+    fd.append("userId", localUserId);
+    fd.append("customerId", customerId);
+    fd.append("phoneNo", localPhoneNumber);
+    fd.append("isLocker", "true");
+
+    const data = await createSubfolder(fd);
+    const created = data.subFolder;
+    handleSubFolderCreated(created);
+    return created;
+  };
+
+const handleAddToLocker = async (imgData) => {
+  if (!imgData?._id || !localUserId || isAddingToLocker) return;
+
+  const previousFolderIds = imgData.folderIds || [];
+  const existingLockerId = privateLocker?._id;
+
+  if (
+    existingLockerId &&
+    previousFolderIds.length === 1 &&
+    previousFolderIds[0] === existingLockerId
+  ) {
+    return;
+  }
+
+  const lockerAlreadyExists = !!privateLocker;
+
+  setIsAddingToLocker(true);
+
+  try {
+    const locker = await ensurePrivateLocker();
+
+    await assignImageToLockerExclusive(
+      imgData._id,
+      locker._id,
+      previousFolderIds
+    );
+
+    // FIRST TIME locker create hua
+    if (!lockerAlreadyExists) {
+      setSelectedIndex(null);
+      setShowActionMenu(false);
+      return;
+    }
+
+    // Locker pehle se tha
+    const isLastImage =
+      selectedIndex >= popupImages.length - 1;
+
+    if (popupImages.length <= 1) {
+      setSelectedIndex(null);
+    } else if (isLastImage) {
+      setSelectedIndex(selectedIndex - 1);
+    } else {
+      setSelectedIndex(selectedIndex);
+    }
+
+    setShowActionMenu(false);
+  } catch (err) {
+    console.error("Add to locker failed:", err);
+    alert("Failed to add image to locker");
+  } finally {
+    setIsAddingToLocker(false);
+  }
+};
+
+  const handleDownloadImage = async (currentImage) => {
+    try {
+      trackActivity(currentImage?._id, "download");
+      setShowActionMenu(false);
+      await downloadFile(currentImage?.originalUrl);
+      showSnackbar("Image downloaded successfully");
+    } catch (err) {
+      showSnackbar("Download failed");
+    }
+  };
+
+
+  const lockerBanner = (
+  <div className="locker-banner" key="locker-banner">
+    <div className="">
+      <Image
+        src={lockerBannerimage.src} // apni new image
+        alt="LockerBanner"
+        width={150}
+        height={58}
+        className="banner-side-image"
+      />
+    </div>
+  </div>
+);
+
   const banners = [
     <div className="custom-banner" key="banner-2">
       <div className="banner-left">
@@ -1016,7 +1344,7 @@ useEffect(() => {
 
       <div className="banner-right">
         <button
-          onClick={handleShareicon}
+          onClick={() => handleShareicon(mainFolderId)}
           className="banner-btn">
           <span><Image src={share} alt="share" height={10} width={11} /></span>
           <span>Share Event</span>
@@ -1072,308 +1400,334 @@ useEffect(() => {
 
   return (
     <div className="thumbnail-gallery">
-      
+
       <div className="">
         {loading ? (
           <HeaderCardsFlashLoader />
         ) : (
           <>
-          {console.log("LOADING STATE:", loading)}
-{console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-{console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
-          <div>
-          <Image
-        src={capsuleTopBanner}
-        alt="banner"
-        className="top-banner-image"
-      />
-      <div className="thumbnail-gallery-content">
-          <HeaderCards
-            folderName={folderName}
-            customerId={customerId}
-            setIsSearching={setIsSearching}
-            onSearchResults={handleSearchResults}
-            subFolders={subFolders}
-            onSelectSubFolder={handleSubFolderSelect}
-            onSubFolderCreated={handleSubFolderCreated}
-            onNewFolderActivate={activateNewSubFolderEditMode}
-            showCreateFolderPopup={showCreateFolderPopup}
-            setShowCreateFolderPopup={setShowCreateFolderPopup}
-            pendingAssignImageId={pendingAssignImageId}
-            setPendingAssignImageId={setPendingAssignImageId}
-            setAllThumbnails={setAllThumbnails}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            isSearching={isSearching}
-            setIsActualMyPhotos={setIsActualMyPhotos}
-            setIsStremSearching={setIsStremSearching}
-            mainFolderId={mainFolderId}
-            setSubFolders={setSubFolders}
-            setIsRefreshShow={setIsRefreshShow}
-            isEditingDP={isEditingDP}
-            setIsEditingDP={setIsEditingDP}
-            showCameraPopup={showCameraPopup}
-            setShowCameraPopup={setShowCameraPopup}
-            capturedImage={capturedImage}
-            setCapturedImage={setCapturedImage}
-            matchedKeys={matchedKeys}
-          />
-      </div>
-          </div>
+            {console.log("LOADING STATE:", loading)}
+            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
+            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
+            <div>
+              <Image
+                src={capsuleTopBanner}
+                alt="banner"
+                className="top-banner-image"
+              />
+              <div className="thumbnail-gallery-content">
+                <HeaderCards
+                  folderName={folderName}
+                  customerId={customerId}
+                  setIsSearching={setIsSearching}
+                  onSearchResults={handleSearchResults}
+                  subFolders={subFolders}
+                  onSelectSubFolder={handleSubFolderSelect}
+                  onSubFolderCreated={handleSubFolderCreated}
+                  onNewFolderActivate={activateNewSubFolderEditMode}
+                  showCreateFolderPopup={showCreateFolderPopup}
+                  setShowCreateFolderPopup={setShowCreateFolderPopup}
+                  pendingAssignImageId={pendingAssignImageId}
+                  setPendingAssignImageId={setPendingAssignImageId}
+                  setAllThumbnails={setAllThumbnails}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  isSearching={isSearching}
+                  setIsActualMyPhotos={setIsActualMyPhotos}
+                  setIsStremSearching={setIsStremSearching}
+                  mainFolderId={mainFolderId}
+                  setSubFolders={setSubFolders}
+                  setIsRefreshShow={setIsRefreshShow}
+                  isEditingDP={isEditingDP}
+                  setIsEditingDP={setIsEditingDP}
+                  showCameraPopup={showCameraPopup}
+                  setShowCameraPopup={setShowCameraPopup}
+                  capturedImage={capturedImage}
+                  setCapturedImage={setCapturedImage}
+                  matchedKeys={matchedKeys}
+                  setIsPrivateFolder={setIsPrivateFolder}
+                />
+              </div>
+            </div>
           </>
         )}
         <div className="thumbnail-gallery-content">
 
-        <div>
           <div>
-            {activeTab !== "my-photos" && (
-              <div>
-                {!isMyPhotosTab && activeSubFolderId && !isEditing && (
-                  <div className="buttons-container">
+            <div>
+              {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
+                <div>
+                  {!isMyPhotosTab && activeSubFolderId && !isEditing && (
+                    <div className="buttons-container">
+                      <button
+                        className="add-new-btn"
+                        onClick={() => {
+                          setSelectedImages(initialSubfolderImages);
+                          setIsEditing(true);
+                        }}
+                      >
+                        <span className="add-icon">+</span>
+                        <span>Add Photos To Album</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {!isMyPhotosTab && activeSubFolderId && isEditing && (
                     <button
-                      className="add-new-btn"
-                      onClick={() => {
-                        setSelectedImages(initialSubfolderImages);
-                        setIsEditing(true);
+                      className="save-image-btn"
+                      onClick={handleSave}
+                      disabled={!hasChanges}
+                      style={{
+                        opacity: !hasChanges ? 0.75 : 1,
+                        cursor: !hasChanges ? "not-allowed" : "pointer",
                       }}
                     >
-                      <span className="add-icon">+</span>
-                      <span>Add Photos To Album</span>
+                      <span className="save-icon">
+                        <Image
+                          src={checkWithBoard}
+                          alt="share"
+                          height={13}
+                          width={11}
+                        />
+                      </span>
+                      <span>Save Photos To Album</span>
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
+              )}
+            </div>
+            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
+            {!loading && (activeTab === "all" || activeTab === privateLocker?._id) && (
+              <div ref={buttonsRef} className="buttons-container">
+                <button
+                  className="add-photo-btn"
+                  onClick={() => addMoreImagesRef.current?.click()}
+                >
+                  <span className="add-photo-icon">+</span>
+                  <span>Add Photos</span>
+                </button>
+                <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId)}>
+                  <span className="">
+                    {typeof handleShareicon === "function" && (
+                      <Image src={share} alt="share" height={13} width={14} />
+                    )}
+                  </span>
+                  <span>Share Event Capsule</span>
+                </button>
+                <button
+                  onClick={() => setShowGuestModal(true)}
+                  className="guest-btn">
+                  <span className="">
+                    <Image src={guest} alt="guest" height={13} width={17} />
+                  </span>
+                  <span className="guest-text"> <span className="guest-count">{viewedBy.length}</span> <span>Guests Joined</span></span>
+                </button>
+              </div>
+            )}
 
-                {!isMyPhotosTab && activeSubFolderId && isEditing && (
-                  <button
-                    className="save-image-btn"
-                    onClick={handleSave}
-                    disabled={!hasChanges}
-                    style={{
-                      opacity: !hasChanges ? 0.75 : 1,
-                      cursor: !hasChanges ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <span className="save-icon">
+            {isRefreshShow && (
+              <div className="buttons-container">
+                <button
+                  className="refresh-image-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    setIsEditingDP(true);
+                    setIsActualMyPhotos(true);
+                    setIsSearching(false);
+                    handleSearchResults([]);
+                    setCapturedImage(null);
+                    setShowCameraPopup(true);
+                    setIsRefreshShow(true);
+                  }}
+                >
+                  <span className="refresh-icon">
+                    {typeof handleShareicon === "function" && (
                       <Image
-                        src={checkWithBoard}
+                        src={refreshIcon}
                         alt="share"
-                        height={13}
-                        width={11}
+                        height={12}
+                        width={14}
                       />
-                    </span>
-                    <span>Save Photos To Album</span>
-                  </button>
-                )}
+                    )}
+                  </span>
+                  <span>Refresh</span>
+                </button>
               </div>
             )}
           </div>
-{console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
-          {!loading && activeTab === "all" && (
-            <div ref={buttonsRef} className="buttons-container">
-              <button
-                className="add-photo-btn"
-                onClick={() => addMoreImagesRef.current?.click()}
-              >
-                <span className="add-photo-icon">+</span>
-                <span>Add Photos</span>
-              </button>
-              <button className="share-capsule-btn" onClick={handleShareicon}>
-                <span className="">
-                  {typeof handleShareicon === "function" && (
-                    <Image src={share} alt="share" height={13} width={14} />
-                  )}
-                </span>
-                <span>Share Event Capsule</span>
-              </button>
-              <button
-                onClick={() => setShowGuestModal(true)}
-                className="guest-btn">
-                <span className="">
-                  <Image src={guest} alt="guest" height={13} width={17} />
-                </span>
-                <span className="guest-text"> <span className="guest-count">{viewedBy.length}</span> <span>Guests Joined</span></span>
-              </button>
-            </div>
-          )}
+          {/* Hidden file input – Add More Images */}
+          <input
+            type="file"
+            id="addMoreImagesInput"
+            ref={addMoreImagesRef}
+            multiple
+            accept="image/*,video/*"
+            style={{ display: "none" }}
+            onChange={async (e) => {
+              const files = Array.from(e.target.files || []);
+              if (!files.length) return;
 
-          {isRefreshShow && (
-            <div className="buttons-container">
-              <button
-                className="refresh-image-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-
-                  setIsEditingDP(true);
-                  setIsActualMyPhotos(true);
-                  setIsSearching(false);
-                  handleSearchResults([]);
-                  setCapturedImage(null);
-                  setShowCameraPopup(true);
-                  setIsRefreshShow(true);
-                }}
-              >
-                <span className="refresh-icon">
-                  {typeof handleShareicon === "function" && (
-                    <Image
-                      src={refreshIcon}
-                      alt="share"
-                      height={12}
-                      width={14}
-                    />
-                  )}
-                </span>
-                <span>Refresh</span>
-              </button>
-            </div>
-          )}
-        </div>
-        {/* Hidden file input – Add More Images */}
-        <input
-          type="file"
-          id="addMoreImagesInput"
-          ref={addMoreImagesRef}
-          multiple
-          accept="image/*,video/*"
-          style={{ display: "none" }}
-          onChange={async (e) => {
-            const files = Array.from(e.target.files || []);
-            if (!files.length) return;
-
-            if (!folderName || !customerId) {
-              alert("Missing folderName/customerId");
-              return;
-            }
-
-            const now = Date.now();
-
-            const optimistic = [];
-
-            for (const file of files) {
-              const id = crypto.randomUUID();
-              const isVideo = file.type.startsWith("video/");
-              const localPreview = URL.createObjectURL(file);
-
-              const saved = await saveFileToOPFS({
-                rootDir: WEBLINK_OPFS_ROOT_DIR,
-                prefix: galleryKey,
-                id,
-                file,
-              });
-
-              if (!saved.ok || !saved.key) {
-                URL.revokeObjectURL(localPreview);
-                continue;
+              if (!folderName || !customerId) {
+                alert("Missing folderName/customerId");
+                return;
               }
 
-              await weblinkUploadsDb.add({
-                id,
-                galleryKey,
-                folderName,
-                customerId,
-                phoneNo: localPhoneNumber || "",
-                fileName: file.name,
-                mimeType: file.type,
-                isVideo,
-                status: "queued",
-                progress: 0,
-                retryCount: 0,
-                createdAt: now,
-                opfsKey: saved.key,
-              });
+              const now = Date.now();
 
-              optimistic.push({
-                _id: id,
-                type: isVideo ? "video" : "image",
-                originalUrl: localPreview,
-                thumbnailImageUrl: isVideo ? null : localPreview,
-                videoClipUrl: isVideo ? localPreview : null,
-                isTemp: true,
-                uploading: true,
-                uploaded: false,
-                orderByName: localPhoneNumber,
-                progress: 0,
-              });
-            }
+              const optimistic = [];
 
-            if (optimistic.length) {
-              setAllThumbnails((prev) => [...optimistic, ...prev]);
-              processWeblinkUploadQueue();
-            }
+              for (const file of files) {
+                const id = crypto.randomUUID();
+                const isVideo = file.type.startsWith("video/");
+                const localPreview = URL.createObjectURL(file);
 
-            e.target.value = "";
-          }}
-        />
+                const saved = await saveFileToOPFS({
+                  rootDir: WEBLINK_OPFS_ROOT_DIR,
+                  prefix: galleryKey,
+                  id,
+                  file,
+                });
 
-        <div>
-          {/* ================= LOADING SKELETON ================= */}
-          {loading && (
-            <div className="gallery-image-grid">
-              {[...Array(6)].map((_, index) => {
-                const type = getBlockType(index);
-                return (
-                  <div key={index} className={`grid-item ${type}`}>
-                    <div className="event-masonry-item">
-                      <div className="event-lazy-image-spinner-container placeholder-glow">
-                        <div className="placeholder w-100 h-100"></div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                if (!saved.ok || !saved.key) {
+                  URL.revokeObjectURL(localPreview);
+                  continue;
+                }
 
-          {/* ================= SEARCHING STATE ================= */}
-          {!loading &&
-            isStreamSearching &&
-            isSearching &&
-            isActualMyPhotos &&
-            matchedKeys.length === 0 && (
-              <>
-                <div className="thumbnail-gallery-status">
-                  Searching Photos....{" "}
-                </div>
-                <div className="gallery-image-grid">
-                  {[...Array(6)].map((_, index) => {
-                    const type = getBlockType(index);
-                    return (
-                      <div key={index} className={`grid-item ${type}`}>
-                        <div className="event-masonry-item">
-                          <div className="event-lazy-image-spinner-container placeholder-glow">
-                            <div className="placeholder w-100 h-100"></div>
-                          </div>
+                await weblinkUploadsDb.add({
+                  id,
+                  galleryKey,
+                  folderName,
+                  customerId,
+                  phoneNo: localPhoneNumber || "",
+                  fileName: file.name,
+                  mimeType: file.type,
+                  isVideo,
+                  status: "queued",
+                  progress: 0,
+                  retryCount: 0,
+                  createdAt: now,
+                  opfsKey: saved.key,
+                });
+
+                optimistic.push({
+                  _id: id,
+                  type: isVideo ? "video" : "image",
+                  originalUrl: localPreview,
+                  thumbnailImageUrl: isVideo ? null : localPreview,
+                  videoClipUrl: isVideo ? localPreview : null,
+                  isTemp: true,
+                  uploading: true,
+                  uploaded: false,
+                  orderByName: localPhoneNumber,
+                  progress: 0,
+                });
+              }
+
+              if (optimistic.length) {
+                setAllThumbnails((prev) => [...optimistic, ...prev]);
+                processWeblinkUploadQueue();
+              }
+
+              e.target.value = "";
+            }}
+          />
+
+          <div>
+            {/* ================= LOADING SKELETON ================= */}
+            {loading && (
+              <div className="gallery-image-grid">
+                {[...Array(6)].map((_, index) => {
+                  const type = getBlockType(index);
+                  return (
+                    <div key={index} className={`grid-item ${type}`}>
+                      <div className="event-masonry-item">
+                        <div className="event-lazy-image-spinner-container placeholder-glow">
+                          <div className="placeholder w-100 h-100"></div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </>
+                    </div>
+                  );
+                })}
+              </div>
             )}
 
-          {/* ================= NO SEARCH RESULT ================= */}
-          {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
-            <div className="weblink-emptyFolder-container">
-              <Image
-                src={emptyFolder}
-                alt="no images select"
-              />
-              <p className="label">No Photos Yet!</p>
-              <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
-            </div>
-          )}
+            {/* ================= SEARCHING STATE ================= */}
+            {!loading &&
+              isStreamSearching &&
+              isSearching &&
+              isActualMyPhotos &&
+              matchedKeys.length === 0 && (
+                <>
+                  <div className="thumbnail-gallery-status">
+                    Searching Photos....{" "}
+                  </div>
+                  <div className="gallery-image-grid">
+                    {[...Array(6)].map((_, index) => {
+                      const type = getBlockType(index);
+                      return (
+                        <div key={index} className={`grid-item ${type}`}>
+                          <div className="event-masonry-item">
+                            <div className="event-lazy-image-spinner-container placeholder-glow">
+                              <div className="placeholder w-100 h-100"></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
 
-          {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
+            {/* ================= NO SEARCH RESULT ================= */}
+            {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
+              <div className="weblink-emptyFolder-container">
+                <Image
+                  src={emptyFolder}
+                  alt="no images select"
+                />
+                <p className="label">No Photos Yet!</p>
+                <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
+              </div>
+            )}
 
-          {/* ================= MAIN IMAGE GRID ================= */}
-          <>
-            {imageChunks.map((chunk, index) => (
-              <React.Fragment key={index}>
+            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
+
+            {/* ================= MAIN IMAGE GRID ================= */}
+            <div style={{ minHeight: "500px" }}>
+                {isPrivateFolder && lockerBanner}
+              {imageChunks.map((chunk, index) => (
+                <React.Fragment key={index}>
+                  <ImageGrid
+                    data={chunk}
+                    loading={loading}
+                    isEventWall={false}
+                    handleSelectImage={handleSelectImage}
+                    handleImageClick={(indexOnPage) =>
+                      handleImageClick(pageOffset + index * 6 + indexOnPage)
+                    }
+                    isEditing={isEditing}
+                    isSearchMode={isSearchMode}
+                    activeSubFolderId={activeSubFolderId}
+                    isActualMyPhotos={isActualMyPhotos}
+                    selectedImages={selectedImages}
+                    setSelectedImages={setSelectedImages}
+                  />
+                {!isPrivateFolder &&
+                (!isIOSMobile || currentPage === 1) &&
+                banners[index]}
+                </React.Fragment>
+              ))}
+
+              {remainingImages.length > 0 && (
                 <ImageGrid
-                  data={chunk}
+                  data={remainingImages}
                   loading={loading}
                   isEventWall={false}
                   handleSelectImage={handleSelectImage}
-                  handleImageClick={handleImageClick}
+                  handleImageClick={(indexOnPage) =>
+                    handleImageClick(pageOffset + 18 + indexOnPage)
+                  }
                   isEditing={isEditing}
                   isSearchMode={isSearchMode}
                   activeSubFolderId={activeSubFolderId}
@@ -1381,30 +1735,40 @@ useEffect(() => {
                   selectedImages={selectedImages}
                   setSelectedImages={setSelectedImages}
                 />
+              )}
+            </div>
+          </div>
+        </div>
 
-                {banners[index]}
-              </React.Fragment>
-            ))}
-
-            {remainingImages.length > 0 && (
-              <ImageGrid
-                data={remainingImages}
-                loading={loading}
-                isEventWall={false}
-                handleSelectImage={handleSelectImage}
-                handleImageClick={handleImageClick}
-                isEditing={isEditing}
-                isSearchMode={isSearchMode}
-                activeSubFolderId={activeSubFolderId}
-                isActualMyPhotos={isActualMyPhotos}
-                selectedImages={selectedImages}
-                setSelectedImages={setSelectedImages}
-              />
+        <div className={`}`}>
+          <div className="">
+            {showInternalTitle && (
+              <div>
+                {/* <h1 className="gallery-title">Your Photos</h1> */}
+                {/* <Image
+                src={shareIcon}
+                alt="Info"
+                style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
+                onClick={handleShareicon}
+              /> */}
+              </div>
             )}
-          </>
+
+            {/* Conditional Pagination Rendering */}
+            {isIOSMobile && totalPages > 1 && (
+              <div className="">
+                <PaginationControls
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  inline={true} // Keep compact style
+                />
+              </div>
+            )}
+          </div>
         </div>
+
       </div>
-        </div>
 
       <AddToFolderPopup
         isOpen={showAddToFolderPopup}
@@ -1415,7 +1779,7 @@ useEffect(() => {
         initialSelection={initialPopupFolders}
         onSubmit={handleAddToFolderSubmit}
         onCreateFolder={handleAddToFolderSubmit}
-        style={{ zIndex: 100001 }}
+        style={{ zIndex: 9999 }}
       />
 
       <CommonImagePopup
@@ -1460,9 +1824,7 @@ useEffect(() => {
                         className="action-item flex"
                         onClick={() => {
                           const current = popupImages[selectedIndex];
-                          downloadFile(current?.originalUrl);
-                          trackActivity(current?._id, "download");
-                          setShowActionMenu(false);
+                          handleDownloadImage(current);
                         }}
                       >
                         <Image src={downloadVector} width={15} height={15} />
@@ -1543,10 +1905,16 @@ useEffect(() => {
         renderFooter={(currentImage, index) => {
           const imageId = currentImage?._id;
 
-          const isLiked = likedImages[imageId];
 
+      console.log("isPrivateFolder ---------------", isPrivateFolder)
+
+
+
+          const isLiked = likedImages[imageId];
+// && currentImage?.orderById === customerId
           return (
             <div className="imagepopup-footer">
+              <div className="imagepopup-footer-left">
               <div>
                 <Image
                   src={isLiked ? like : unLike}
@@ -1571,6 +1939,29 @@ useEffect(() => {
                   }}
                 />
               </div>
+              </div>
+
+               {(localUserId === customerId && !isPrivateFolder ) && (
+                <div>
+                  <button
+                    className="add-locker-btn"
+                    onClick={() => {
+  if (!privateLocker) {
+    setPendingLockerImage(currentImage);
+    setShowLockerPopup(true);
+    return;
+  }
+
+  handleAddToLocker(currentImage);
+}}
+                    disabled={isAddingToLocker}
+                >
+                  <span className="add-locker-icon">
+                    <img src={Lock.src} alt="" />
+                  </span>
+                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                </button>
+              </div>)}
             </div>
           );
         }}
@@ -1609,7 +2000,7 @@ useEffect(() => {
             <div className="share-btn-container">
               <button
                 className="share-btn"
-                onClick={handleShareicon}
+                onClick={() => handleShareicon(mainFolderId)}
               >
                 <span><Image src={share} alt="share" height={15} width={16} /></span>
                 <span> Share Event Capsule</span>
@@ -1623,63 +2014,63 @@ useEffect(() => {
         <div className="guest-modal-overlay">
           <div className="guest-modal-container">
             <div>
-            {/* Header Section */}
-            <div className="modal-header">
-              <div>
-                <button
-                  onClick={() => setShowGuestModal(false)}
-                  className="back-button">
-                  <Image
-                    src={ArrowImg}
-                    alt="Back"
-                    width={24}
-                    height={24}
-                    className="login-back-icon"
-                  />
-                </button>
+              {/* Header Section */}
+              <div className="modal-header">
+                <div>
+                  <button
+                    onClick={() => setShowGuestModal(false)}
+                    className="back-button">
+                    <Image
+                      src={ArrowImg}
+                      alt="Back"
+                      width={24}
+                      height={24}
+                      className="login-back-icon"
+                    />
+                  </button>
+                </div>
+                <div className="modal-title">Guests Joined</div>
               </div>
-              <div className="modal-title">Guests Joined</div>
-            </div>
 
-            {/* List Section */}
-            <div className="list-container">
-              <div className="list-content">
-                {guestData.map((guest) => {
-                  const hasAvatar = guest.avatar && guest.avatar.trim() !== "";
+              {/* List Section */}
+              <div className="list-container">
+                <div className="list-content">
+                  {guestData.map((guest) => {
+                    const hasAvatar = guest?.avatar && guest?.avatar?.trim() !== "";
 
-                  return (
-                    <div key={guest._id} className="guest-row">
+                    return (
+                      <div key={guest._id} className="guest-row">
 
-                      {/* Avatar Section */}
-                      {hasAvatar ? (
-                        <img
-                          src={guest.avatar}
-                          alt="avatar"
-                          className="avatar-img"
-                        />
-                      ) : (
-                        <div
-                          className="avatar-fallback"
-                          style={{ backgroundColor: getColor(guest._id) }}
-                        >
-                          {getInitial(guest)}
+                        {/* Avatar Section */}
+                        {hasAvatar ? (
+                          <img
+                            src={guest.avatar}
+                            alt="avatar"
+                            className="avatar-img"
+                          />
+                        ) : (
+                          <div
+                            className="avatar-fallback"
+                            style={{ backgroundColor: getColor(guest._id) }}
+                          >
+                            {getInitial(guest)}
+                          </div>
+                        )}
+
+                        {/* Info */}
+                        <div className="guest-info">
+                          <span>
+                            {guest.name ||
+                              guest.firstName ||
+                              formatPhoneNumber(guest?.phone)}
+                          </span>
+                          <hr className="divider" />
                         </div>
-                      )}
-
-                      {/* Info */}
-                      <div className="guest-info">
-                        <span>
-                          {guest.name ||
-                            guest.firstName ||
-                            formatPhoneNumber(guest?.phone)}
-                        </span>
-                        <hr className="divider" />
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
             </div>
 
@@ -1694,37 +2085,70 @@ useEffect(() => {
       )}
 
 
-      {showFloatingBtn && (
-<div
-   style={{
-    position: "fixed",
-    left: "50%",
-    bottom: "60px",
-    transform: "translateX(-50%)",
-    zIndex: 11111111,
-  }}
->
-  <button
-    className="share-capsule-btn2"
-    onClick={handleShareicon}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "6px",
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex == null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin && !showLockerPopup)  && (
+        <div
+          style={{
+            position: "fixed",
+            left: "50%",
+            bottom: "45px",
+            transform: "translateX(-50%)",
+            zIndex: 11111111,
+          }}
+        >
+          <button
+            className="share-capsule-btn2"
+            onClick={() => handleShareicon(mainFolderId)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Image src={whiteShareIcon} alt="share" height={13} width={14} />
+            <span>Share Event Capsule</span>
+          </button>
+        </div>
+      )}
+
+      {snackbar.show && (
+        <div className="custom-snackbar">
+          <span>
+            <IoIosCloudDone color="green" size={30} />
+          </span>
+          {snackbar.message}
+        </div>
+      )}
+
+      {showLockerPopup && (
+  <LockerPopup
+    onClose={() => {
+      setShowLockerPopup(false);
+      setPendingLockerImage(null);
     }}
-  >
-    <Image src={whiteShareIcon} alt="share" height={13} width={14} />
-    <span>Share Event Capsule</span>
-  </button>
-</div>
+    onMoveToLocker={async () => {
+      try {
+        setShowLockerPopup(false);
+
+        if (pendingLockerImage) {
+          await handleAddToLocker(pendingLockerImage);
+        }
+
+        setPendingLockerImage(null);
+      } catch (err) {
+        console.error(err);
+      }
+    }}
+  />
 )}
 
       <LoginModal
         isOpen={isLoginOpen && !isLogin}
         onClose={() => setIsLoginOpen(false)}
         fromCapsule={true}
+        template="guest_login_2"
+        link={currentUrl}
       />
-      
+
 
     </div>
   );

@@ -158,7 +158,7 @@ const InvitesPage = () => {
           {((eventDetails && eventDetails?.eventDate) ||
             eventData?.location ||
             eventData?.googleMapLink ||
-            eventData?.eventTime) && (
+            eventData?.eventTime || eventDetails?.hostName) && (
             <div className="invite-address-section">
               <InviteAddressSection eventData={eventDetails} />
             </div>

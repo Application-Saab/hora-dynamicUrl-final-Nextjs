@@ -26,6 +26,7 @@ const CreateInviteModal = ({ isOpen, onClose }) => {
     let payload = {
       userId: userId,
       hostName: occasion,
+      fromInternational: isWonderlandInternational ? "YES" : "NO",
     };
     try {
       let resp = await makeRequest(`${CREATE_EVENT_INVITE}`, "POST", payload);

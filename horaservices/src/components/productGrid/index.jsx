@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
 import "./productGrid.css";
+import fallbackImg from "@/assets/fallback-image.png"
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
   return (
@@ -28,12 +29,20 @@ const ProductGrid = ({ data = [], onCardClick, categoryType  }) => {
     )}
 
   <Image
-      src={`${COMPRESSED_WEBP_IMG_URL}${item.featured_image?.split(".")[0]}.webp`}
-    alt={`balloon decoration ${item.name}`}
-    className="decImage"
-    width={300}
-    height={300}
-  />
+src={
+  categoryType === "photography"
+    ? item.featured_image
+      ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_image.split(".")[0]}.webp`
+      : fallbackImg         
+    : item.featured_images?.[0]?.fileName
+    ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_images[0].fileName.split(".")[0]}.webp`
+    : fallbackImg           
+}
+  alt={`balloon decoration ${item.name}`}
+  className="decImage"
+  width={300}
+  height={300}
+/>
 
   <div className="watermark">
     <Image src={logo} alt="logo" width={28} height={28} />
