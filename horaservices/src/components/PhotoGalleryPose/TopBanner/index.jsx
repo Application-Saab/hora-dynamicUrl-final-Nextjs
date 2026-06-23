@@ -24,7 +24,7 @@ const TopBanner = ({
         <div className="hero-content">
           <h1 className="hero-title">
             <span className="hero-highlight">{highlightText}</span>
-            <span className="hero-title-text">{title}</span>
+            <span className="hero-title-text">{title} Poses</span>
           </h1>
 
           <p className="hero-description">{description}</p>

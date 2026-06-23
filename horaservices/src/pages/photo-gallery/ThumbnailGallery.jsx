@@ -231,7 +231,7 @@ const ThumbnailGallery = ({
           {rows.map((rowItems, rIdx) => (
   <div
     key={`row-${chunkIndex}-${rIdx}`}
-    style={{ display: 'flex', flexDirection: 'row', gap: '4px' }}
+    style={{ display: 'flex', flexDirection: 'row', gap: '4px', marginTop: '4px' }}
   >
  {rowItems.map((thumbnail, itemIdx) => {
   const globalIndex = allThumbnails.findIndex(

@@ -13,7 +13,7 @@ const stats = [
   {
     icon: camera,
     value: "2500+",
-    label: "Whatsapp Downloads",
+    label: "Events Covered",
     className: "camera-bg",
   },
   {

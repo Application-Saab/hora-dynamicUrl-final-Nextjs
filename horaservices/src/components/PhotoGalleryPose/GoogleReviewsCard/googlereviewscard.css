@@ -2,7 +2,6 @@
   width: 100%;
   max-width: 480px;
   background: #fff;
-  padding: 10px;
   max-width:480;
   margin:auto;
 }
@@ -36,7 +35,10 @@
 
 .gr-rating {
   margin-left: 6px;
-  font-size: 10px;
+font-family: "Roboto", sans-serif;
+font-weight: 400;
+font-size: clamp(10px, calc((12 / 393) * 100vw), 14px);
+vertical-align: bottom;
 }
 
 .gr-heading {
@@ -46,13 +48,19 @@
   font-weight: 700;
 }
 
+/* .gr-reviews {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+} */
 .gr-reviews {
   display: flex;
   gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
+  scroll-behavior: auto; /* smooth nahi — requestAnimationFrame handle karega */
 }
-
 .gr-reviews::-webkit-scrollbar {
   display: none;
 }
@@ -84,7 +92,9 @@
   color: #8c8c8c;
   line-height: 1;
 }
-
+.gr-quote-close {
+  text-align: right;
+}
 .gr-text {
   margin: 4px 0 10px;
   font-size: 10px;

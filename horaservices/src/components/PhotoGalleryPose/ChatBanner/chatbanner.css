@@ -10,7 +10,7 @@
   border: 1px solid #d7e8d4;
   border-radius: 10px;
   margin:10px auto;
- padding: clamp(5.7px, calc((7 / 393) * 100vw), 8.6px);
+ padding: clamp(4.9px, calc((6 / 393) * 100vw), 7.3px);
   box-sizing: border-box;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .chat-banner-points span {
-  color: #2f2f2f;
+  color: #000000;
 
   font-family: Inter, sans-serif;
   font-weight: 500;

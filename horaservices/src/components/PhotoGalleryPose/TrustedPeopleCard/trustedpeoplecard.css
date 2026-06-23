@@ -1,7 +1,7 @@
 .trusted-card {
   width: 100%;
   max-width: 480px;
-  background: #f3eef5;
+  background: #f8f4fe;
   padding: clamp(10px, calc((12 / 393) * 100vw), 14px);
 }
 
@@ -111,7 +111,7 @@ height: clamp(24px, calc((30 / 393) * 100vw), 37px);
 }
 
 .star-bg {
-  background: #fff0c9;
+  background: #f6c64a9e;
   border-color: #f6c64a;
 }
 
