@@ -293,7 +293,7 @@ const ThumbnailGallery = ({
   return (
     <div className="thumbnail-gallery" ref={galleryRef}>
       <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-        <div className="gallery-header">
+        {/* <div className="gallery-header">
           <div className="gallery-header-content">
             {typeof handleShareicon === 'function' && (
               <Image
@@ -306,7 +306,7 @@ const ThumbnailGallery = ({
               />
             )}
           </div>
-        </div>
+        </div> */}
         {isIOSMobile && totalPages > 1 && (
           <div className="gallery-pagination-container">
             <PaginationControls

@@ -82,8 +82,5 @@ export const getTrustedCardData = (folderName) => {
   const matched = folderMap[folderName];
   return {
     collageImage: matched?.collageImage || trustimage,
-    title: matched?.eventName
-      ? `TRUSTED BY 10,000 ${matched.eventName.toUpperCase()} CLIENTS`
-      : "TRUSTED BY 10,000 PEOPLE",
   };
 };
