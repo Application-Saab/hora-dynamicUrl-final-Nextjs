@@ -1,15 +1,14 @@
 /* gallery.css */
 
-/* ---- Masonry fallback (ratios load hone tak) ---- */
+/* ---- Masonry fallback ---- */
 .masonryGrid {
-  column-count: 2;   /* ✅ 2 karo */
+  column-count: 2;
   column-gap: 4px;
 }
 @media (min-width: 480px)  { .masonryGrid { column-count: 3; } }
 @media (min-width: 768px)  { .masonryGrid { column-count: 4; } }
 @media (min-width: 1024px) { .masonryGrid { column-count: 5; } }
 @media (min-width: 1280px) { .masonryGrid { column-count: 6; } }
-/* @media (max-width: 800px)  { .masonryGrid { column-count: 3; column-gap: 4px; } } */
 
 .masonry-item {
   overflow: hidden;
@@ -23,58 +22,40 @@
   transition: background-color 0.3s;
 }
 
-/* ---- Smart Gallery ---- */
-.smart-gallery {
+/* ---- Gallery wrapper ---- */
+.thumbnail-gallery {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-/* Ek row — images side by side, tallest image ki height follow karegi row */
-.smart-row {
-  display: flex;
-  flex-direction: row;
-  gap: 4px;
-  width: 100%;
-  align-items: stretch; /* sabhi images row ki height match karengi */
-}
-
-/* Har image ka container */
-.smart-item {
-  flex: 1;
   overflow: hidden;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #e9ecef;
-  position: relative;
-  min-width: 0;
+  box-sizing: border-box;
 }
 
-/* Image wrapper */
+/* ---- Smart Image Wrapper ---- */
 .smart-image-wrapper {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  overflow: hidden;
+  position: relative;
 }
 
+/* ✅ Images — cover with top positioning (faces usually at top) */
 .smart-image-wrapper img,
 .smart-image-wrapper .lazy-image-actual-img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+  object-position: center 20% !important; /* ✅ 20% se face area better show hoga */
   display: block !important;
   border-radius: 4px;
 }
-/* ---- LazyImage styles ---- */
+
+/* ---- LazyImage ---- */
 .lazy-image-actual-img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.4s ease-in-out;
   border-radius: inherit;
 }
 
@@ -82,16 +63,10 @@
   opacity: 1;
 }
 
-.lazy-image-actual-img.loading {
-  /* loading state */
-}
-
 .lazy-image-spinner-container {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,22 +75,18 @@
 }
 
 .lazy-image-spinner-animation {
-  width: 28px;
-  height: 28px;
-  border: 3px solid rgba(0, 0, 0, 0.2);
-  border-top-color: #333;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(0,0,0,0.15);
+  border-top-color: #555;
   border-radius: 50%;
-  animation: lazy-image-spin 0.7s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
-@keyframes lazy-image-spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---- Gallery Header ---- */
-.gallery-header {
-  width: 100%;
-}
+.gallery-header { width: 100%; }
 
 .gallery-header-content {
   display: flex;
@@ -124,23 +95,18 @@
   padding: 10px;
 }
 
-.gallery-share-icon {
-  cursor: pointer;
-}
+.gallery-share-icon { cursor: pointer; }
 
 .gallery-pagination-container {
   display: flex;
   align-items: center;
 }
 
-/* ---- Popup Overlay ---- */
+/* ---- Popup ---- */
 .popupOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 1);
+  inset: 0;
+  background-color: rgba(0,0,0,1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -148,71 +114,40 @@
 }
 
 .popupContent {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0,0,0,0.7);
   position: relative;
   max-width: 98%;
   max-height: 100%;
   overflow: hidden;
 }
 
-.popupHeader h2 {
-  margin: 0;
-}
-
 .closeButton {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 15px;
-}
-
-.popupFooter {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.popupFooter a {
-  font-size: 15px;
   color: #bfbfbf;
-}
-
-.popupFooter img {
-  cursor: pointer;
-  filter: invert(90%) sepia(0) saturate(0) hue-rotate(0deg) brightness(90%) contrast(90%);
-  margin-left: 10px;
-}
-
-svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
-  height: 13px !important;
-}
-
-.slick-prev:before,
-.slick-next:before {
-  content: '' !important;
-  display: inline-block;
-  width: 0;
-  height: 0;
-}
-
-.slick-next:before {
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid #e2e8f0;
-}
-
-.slick-prev:before {
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-right: 10px solid #e2e8f0;
 }
 
 .popupImage {
   width: 100%;
   max-height: 500px;
   object-fit: contain;
+}
+
+.slick-prev:before, .slick-next:before {
+  content: '' !important;
+  display: inline-block;
+  width: 0; height: 0;
+}
+.slick-next:before {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #e2e8f0;
+}
+.slick-prev:before {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #e2e8f0;
 }
 
 .slick-next { right: 13px !important; }
@@ -224,7 +159,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   justify-content: center;
   align-items: center;
   height: 85vh;
-  padding: 0px;
+  padding: 0;
 }
 
 .popupHeader {
@@ -232,15 +167,13 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
   justify-content: space-between;
   align-items: center;
   color: #bfbfbf;
-  padding: 0px 12px 0;
+  padding: 0 12px;
 }
 
-p.image-index {
+p.image-index, span.image-index {
   margin-bottom: 0;
   color: #bfbfbf;
   font-size: 13px;
 }
 
-.gallery-banner-insert {
-  width: 100%;
-}
+.gallery-banner-insert { width: 100%; }

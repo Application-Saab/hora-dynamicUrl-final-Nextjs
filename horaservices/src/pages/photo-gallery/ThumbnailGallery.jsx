@@ -7,56 +7,56 @@ import './gallery.css';
 import photogallryIcon from '../../assets/gallry-loading.gif';
 import LazyImage from '../../components/LazyImage';
 import PaginationControls from '../../components/PaginationControls';
-import shareIcon from '../../assets/share-photo-icon.png';
 import { BASE_URL } from "@/utils/apiconstants";
 
-// ── Step 1: Ek image ka naturalWidth/Height fetch karo ──
 const getImageDimensions = (url) =>
   new Promise((resolve) => {
     const img = new window.Image();
-    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
-    img.onerror = () => resolve({ w: 4, h: 3 }); // fallback landscape
+    img.onload  = () => resolve({ w: img.naturalWidth,  h: img.naturalHeight });
+    img.onerror = () => resolve({ w: 4, h: 3 });
     img.src = url;
   });
 
-// ── Step 2: Justified Layout Algorithm ──
-// Yeh function images ki list leta hai aur unhe rows mein pack karta hai
-// Har row ki height aise set hoti hai ki row poori containerWidth fill kare
-const buildJustifiedRows = (thumbnails, containerWidth, targetRowHeight = 150, gap = 4) => {
+// ── Justified Layout ──
+// cw        = container pixel width (integer)
+// targetH   = approximate row height
+// gap       = px gap between images
+const buildJustifiedRows = (thumbs, cw, targetH, gap) => {
   const rows = [];
   let i = 0;
 
-  while (i < thumbnails.length) {
+  while (i < thumbs.length) {
     let j = i;
-    let rowRatioSum = 0;
+    let ratioSum = 0;
 
-    while (j < thumbnails.length) {
-      const ratio = (thumbnails[j].w || 4) / (thumbnails[j].h || 3);
-      const gapsWidth = (j - i) * gap;
-      const projectedWidth = (rowRatioSum + ratio) * targetRowHeight + gapsWidth;
-      if (projectedWidth > containerWidth && j > i) break;
-      rowRatioSum += ratio;
+    // Kitni images ek row mein fit hongi
+    while (j < thumbs.length) {
+      const r = thumbs[j].w / thumbs[j].h;
+      const projected = (ratioSum + r) * targetH + (j - i) * gap;
+      if (projected > cw && j > i) break;
+      ratioSum += r;
       j++;
     }
 
-    const rowThumbs = thumbnails.slice(i, j);
-    const totalGap = (rowThumbs.length - 1) * gap;
-    const totalRatio = rowThumbs.reduce((sum, t) => sum + (t.w || 4) / (t.h || 3), 0);
+    const row     = thumbs.slice(i, j);
+    const gaps    = (row.length - 1) * gap;
+    const total_r = row.reduce((s, t) => s + t.w / t.h, 0);
+    // Exact height so row fills cw perfectly
+    const rowH    = Math.floor((cw - gaps) / total_r);
 
-    // ✅ Last row ko bhi full width fill karao — cap mat lagao
-    const rowH = (containerWidth - totalGap) / totalRatio;
+    let used = 0;
+    const sized = row.map((t, idx) => {
+      const isLast = idx === row.length - 1;
+      const w = isLast
+        ? cw - gaps - used          // remaining pixels → no gap on right
+        : Math.floor((t.w / t.h) * rowH);
+      if (!isLast) used += w;
+      return { ...t, displayW: w, displayH: rowH };
+    });
 
-    rows.push(
-      rowThumbs.map((thumb) => ({
-        ...thumb,
-        displayW: ((thumb.w || 4) / (thumb.h || 3)) * rowH,
-        displayH: rowH,
-      }))
-    );
-
+    rows.push(sized);
     i = j;
   }
-
   return rows;
 };
 
@@ -68,36 +68,32 @@ const ThumbnailGallery = ({
   banners = [],
   bannerInterval = 6,
 }) => {
-  const [allThumbnails, setAllThumbnails] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isIOSMobile, setIsIOSMobile] = useState(false);
-  const [containerWidth, setContainerWidth] = useState(390);
+  const [allThumbnails,  setAllThumbnails]  = useState([]);
+
+  const [loading,        setLoading]        = useState(true);
+  const [error,          setError]          = useState(null);
+  const [selectedIndex,  setSelectedIndex]  = useState(null);
+  const [currentPage,    setCurrentPage]    = useState(1);
+  const [isIOSMobile,    setIsIOSMobile]    = useState(false);
+  const [cw,             setCw]             = useState(320); // default 320, update hoga measure se
   const galleryRef = useRef(null);
 
-  // ── Container ki actual width track karo (resize pe bhi) ──
+  // ── Container width — actual rendered px ──
   useEffect(() => {
-    const updateWidth = () => {
-      if (galleryRef.current) {
-        setContainerWidth(galleryRef.current.offsetWidth);
-      }
+    const measure = () => {
+      // ✅ clientWidth = scrollbar exclude, actual content area
+      const screenW = document.documentElement.clientWidth;
+      const w = Math.min(screenW, 480);
+      setCw(w);
     };
-    updateWidth();
-    const ro = new ResizeObserver(updateWidth);
-    if (galleryRef.current) ro.observe(galleryRef.current);
-    return () => ro.disconnect();
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
 
   useEffect(() => {
-    const detectIOSMobile = () => {
-      if (typeof navigator !== 'undefined') {
-        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      }
-      return false;
-    };
-    setIsIOSMobile(detectIOSMobile());
+    if (typeof navigator !== 'undefined')
+      setIsIOSMobile(/iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
   }, []);
 
   const getItemsPerPage = useCallback(() => {
@@ -107,250 +103,198 @@ const ThumbnailGallery = ({
   }, [isIOSMobile]);
 
   const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
-
   useEffect(() => {
-    const handleResize = () => setItemsPerPage(getItemsPerPage());
-    if (isIOSMobile) {
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
+    const fn = () => setItemsPerPage(getItemsPerPage());
+    if (isIOSMobile) { window.addEventListener('resize', fn); return () => window.removeEventListener('resize', fn); }
   }, [isIOSMobile, getItemsPerPage]);
 
-  // ── Step 3: Fetch thumbnails + background mein dimensions load karo ──
+  // ── Fetch thumbnails ──
   useEffect(() => {
-    const fetchThumbnails = async () => {
+    const fetch_ = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]);
-        setLoading(false);
-        setError("Folder name or customer ID is missing.");
-        setCurrentPage(1);
-        return;
+        setAllThumbnails([]); setLoading(false);
+        setError("Folder name or customer ID missing."); return;
       }
-      setLoading(true);
-      setError(null);
+      setLoading(true); setError(null);
       try {
-        const response = await fetch(
-          `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`
-        );
-        if (!response.ok) {
-          const errorData = await response.text();
-          throw new Error(`API Error: ${response.status} - ${errorData}`);
-        }
-        const data = await response.json();
+        const res  = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
 
-        // Pehle default ratio ke saath fast render karo
-        const basicThumbnails = (data.thumbnails || []).map((thumb, index) => ({
-          ...thumb,
-          w: 4, h: 3, // default landscape ratio
-          stableKey: thumb.id || thumb.uniqueKey || thumb.url || `thumb-gallery-${index}-${Date.now()}`,
+        // Step 1 — default 4:3 se fast render
+        const basic = (data.thumbnails || []).map((t, i) => ({
+          ...t,
+          w: 4, h: 3,
+          stableKey: t.id || t.uniqueKey || t.url || `t-${i}`,
         }));
-        setAllThumbnails(basicThumbnails);
+        setAllThumbnails(basic);
         setCurrentPage(1);
         setLoading(false);
 
-        // Background mein actual dimensions fetch karo — ek ek karke
-        // setAllThumbnails update hoti rahegi jaise jaise dimensions aati hain
-        const withDimensions = await Promise.all(
-          basicThumbnails.map(async (thumb) => {
-            const { w, h } = await getImageDimensions(thumb.thumbnailImageUrl);
-            return { ...thumb, w, h };
+        // Step 2 — actual dims background mein load karo
+        const withDims = await Promise.all(
+          basic.map(async (t) => {
+            const { w, h } = await getImageDimensions(t.thumbnailImageUrl);
+            return { ...t, w, h };
           })
         );
-        setAllThumbnails(withDimensions);
-
-      } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError);
-        setError(fetchError.message);
-        setLoading(false);
+        setAllThumbnails(withDims);
+      } catch (e) {
+        console.error(e); setError(e.message); setLoading(false);
       }
     };
-    fetchThumbnails();
+    fetch_();
   }, [folderName, customerId]);
 
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
     if (isIOSMobile) {
       const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
-      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      const endIndex = startIndex + ITEMS_PER_PAGE;
-      return {
-        currentThumbnailsOnPage: allThumbnails.slice(startIndex, endIndex),
-        totalPages: total,
-      };
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
+      return { currentThumbnailsOnPage: allThumbnails.slice(start, start + ITEMS_PER_PAGE), totalPages: total };
     }
     return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
   }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
-  const handleImageClick = useCallback((globalIndex) => {
-    if (globalIndex >= 0 && globalIndex < allThumbnails.length) {
-      setSelectedIndex(globalIndex);
-    }
+  const handleImageClick = useCallback((i) => {
+    if (i >= 0 && i < allThumbnails.length) setSelectedIndex(i);
   }, [allThumbnails.length]);
 
   const closePopup = useCallback(() => setSelectedIndex(null), []);
 
-  const handlePageChange = useCallback((pageNumber) => {
-    setCurrentPage(pageNumber);
+  const handlePageChange = useCallback((page) => {
+    setCurrentPage(page);
     setTimeout(() => {
-      const galleryHeader = document.querySelector('.gallery-header');
-      if (galleryHeader) {
-        galleryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      const el = document.querySelector('.gallery-header');
+      (el ? el.scrollIntoView({ behavior:'smooth', block:'start' }) : window.scrollTo({ top:0, behavior:'smooth' }));
     }, 100);
   }, []);
 
   const sliderSettings = useMemo(() => ({
-    dots: false,
-    infinite: allThumbnails.length > 1,
-    speed: 300,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    lazyLoad: 'ondemand',
-    adaptiveHeight: true,
+    dots: false, infinite: allThumbnails.length > 1,
+    speed: 300, slidesToShow: 1, slidesToScroll: 1,
+    lazyLoad: 'ondemand', adaptiveHeight: true,
   }), [allThumbnails.length]);
 
-  // ── Step 4: Justified rows render karo ──
-  const renderChunkedGallery = () => {
+  // ── Grid render ──
+  const renderGallery = () => {
+    // ✅ galleryRef ki actual width lo — ye sabse accurate hai
+    const actualW = galleryRef.current
+      ? Math.floor(galleryRef.current.getBoundingClientRect().width)
+      : cw;
+    const effectiveCw = actualW > 0 ? Math.min(actualW, 480) : cw;
+    if (!effectiveCw || effectiveCw < 10) return null;
+
+    const gap = 3;
+
+    // ✅ targetRowHeight — 320-480px ke liye tuned
+    // Chhota value = zyada images per row (cramped)
+    // Bada value = kam images per row (spacious)
+    let targetH;
+    if      (effectiveCw <= 360) targetH = 120;
+    else if (effectiveCw <= 480) targetH = 140;
+    else if (effectiveCw <= 768) targetH = 170;
+    else                         targetH = 210;
+
+    const allRows = buildJustifiedRows(currentThumbnailsOnPage, effectiveCw, targetH, gap);
+
     const result = [];
-    const total = currentThumbnailsOnPage.length;
+    let bannerIdx  = 0;
+    let imgCount   = 0;
 
-    // Mobile pe chhoti row height, desktop pe badi
-    const targetRowHeight = containerWidth < 500 ? 120 : 180;
-
-    for (let chunkStart = 0; chunkStart < total; chunkStart += bannerInterval) {
-      const chunkEnd = Math.min(chunkStart + bannerInterval, total);
-      const chunk = currentThumbnailsOnPage.slice(chunkStart, chunkEnd);
-      const chunkIndex = Math.floor(chunkStart / bannerInterval);
-
-      // Iss chunk ke liye justified rows banao
-      const rows = buildJustifiedRows(chunk, containerWidth, targetRowHeight, 4);
+    allRows.forEach((rowItems, rIdx) => {
+      if (imgCount > 0 && imgCount % bannerInterval === 0 && banners[bannerIdx]) {
+        result.push(
+          <div key={`b-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
+            {banners[bannerIdx]}
+          </div>
+        );
+        bannerIdx++;
+      }
 
       result.push(
-        <div key={`grid-${chunkIndex}`} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          {rows.map((rowItems, rIdx) => (
-  <div
-    key={`row-${chunkIndex}-${rIdx}`}
-    style={{ display: 'flex', flexDirection: 'row', gap: '4px', marginTop: '4px' }}
-  >
- {rowItems.map((thumbnail, itemIdx) => {
-  const globalIndex = allThumbnails.findIndex(
-    (t) => t.stableKey === thumbnail.stableKey
-  );
-  const isLast = itemIdx === rowItems.length - 1;
-  return (
-    <div
-      key={thumbnail.stableKey}
-      style={{
-        flex: isLast ? '1 1 auto' : `0 0 ${Math.floor(thumbnail.displayW)}px`,
-        height: `${Math.floor(thumbnail.displayH)}px`,
-        overflow: 'hidden',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        backgroundColor: '#e9ecef',
-      }}
-      onClick={() => handleImageClick(globalIndex)}
-    >
-      <LazyImage
-        src={thumbnail.thumbnailImageUrl}
-        alt={`Photo ${globalIndex + 1}`}
-        wrapperClassName="smart-image-wrapper"
-      />
-    </div>
-  );
-})}
-  </div>
-))}
+        <div
+          key={`r-${rIdx}`}
+          style={{
+            display: 'flex',
+            gap: `${gap}px`,
+            marginBottom: `${gap}px`,
+            width: `${effectiveCw}px`,
+            overflow: 'hidden',
+          }}
+        >
+          {rowItems.map((thumb) => {
+            const gi = allThumbnails.findIndex(t => t.stableKey === thumb.stableKey);
+            return (
+              <div
+                key={thumb.stableKey}
+                onClick={() => handleImageClick(gi)}
+                style={{
+                  width:      `${thumb.displayW}px`,
+                  height:     `${thumb.displayH}px`,
+                  flexShrink: 0,           // ✅ squeeze nahi hogi
+                  overflow:   'hidden',
+                  borderRadius: '4px',
+                  cursor:     'pointer',
+                  backgroundColor: '#e9ecef',
+                  position:   'relative',
+                }}
+              >
+                <LazyImage
+                  src={thumb.thumbnailImageUrl}
+                  alt={`Photo ${gi + 1}`}
+                  wrapperClassName="smart-image-wrapper"
+                />
+              </div>
+            );
+          })}
         </div>
       );
 
-      const isLastChunk = chunkEnd >= total;
-      if (!isLastChunk && banners[chunkIndex]) {
-        result.push(
-          <div key={`banner-${chunkIndex}`} style={{ width: '100%' }}>
-            {banners[chunkIndex]}
-          </div>
-        );
-      }
-    }
+      imgCount += rowItems.length;
+    });
+
     return result;
   };
 
-  if (loading) {
-    return (
-      <div className="thumbnail-gallery-status d-flex justify-content-center">
-        <Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority />
-      </div>
-    );
-  }
-  if (error) {
-    return <div className="thumbnail-gallery-status text-red-500" role="alert">Error: {error}</div>;
-  }
-  if (allThumbnails.length === 0 && !loading) {
-    return <div className="thumbnail-gallery-status">No photos found in this gallery.</div>;
-  }
+  if (loading) return (
+    <div className="thumbnail-gallery-status d-flex justify-content-center">
+      <Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority />
+    </div>
+  );
+  if (error)                           return <div className="thumbnail-gallery-status text-red-500">Error: {error}</div>;
+  if (!loading && !allThumbnails.length) return <div className="thumbnail-gallery-status">No photos found.</div>;
 
   return (
-    <div className="thumbnail-gallery" ref={galleryRef}>
-      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-        {/* <div className="gallery-header">
-          <div className="gallery-header-content">
-            {typeof handleShareicon === 'function' && (
-              <Image
-                src={shareIcon}
-                alt="Share"
-                className="gallery-share-icon"
-                onClick={handleShareicon}
-                width={22}
-                height={22}
-              />
-            )}
-          </div>
-        </div> */}
-        {isIOSMobile && totalPages > 1 && (
-          <div className="gallery-pagination-container">
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              inline={true}
-            />
-          </div>
-        )}
-      </div>
+    <div
+      ref={galleryRef}
+      style={{ width: '100%', overflow: 'hidden', boxSizing: 'border-box', display: 'block' }}
+    >
+      {/* Top pagination iOS */}
+      {isIOSMobile && totalPages > 1 && (
+        <div className="gallery-pagination-container" style={{ padding: '8px' }}>
+          <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
+        </div>
+      )}
 
-      {currentThumbnailsOnPage.length > 0
-        ? renderChunkedGallery()
-        : isIOSMobile && totalPages > 0 && (
-            <div className="thumbnail-gallery-status">No photos on this page.</div>
-          )
-      }
+      {/* Grid */}
+      {currentThumbnailsOnPage.length > 0 ? renderGallery() : null}
 
+      {/* Popup */}
       {selectedIndex !== null && allThumbnails[selectedIndex] && (
-        <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true" aria-labelledby="popup-title">
-          <div className="popupContent" onClick={(e) => e.stopPropagation()}>
+        <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true">
+          <div className="popupContent" onClick={e => e.stopPropagation()}>
             <div className="popupHeader">
-              <span id="popup-title" className="image-index">
-                {`${selectedIndex + 1} / ${allThumbnails.length}`}
-              </span>
-              <button className="closeButton" onClick={closePopup} aria-label="Close image viewer">
+              <span className="image-index">{selectedIndex + 1} / {allThumbnails.length}</span>
+              <button className="closeButton" onClick={closePopup} aria-label="Close">
                 <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor" />
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="white" />
                 </svg>
               </button>
             </div>
-            <Slider
-              {...sliderSettings}
-              initialSlide={selectedIndex}
-              key={`slick-slider-${selectedIndex}-${allThumbnails[selectedIndex]?.stableKey}`}
-            >
-              {allThumbnails.map((thumb, idx) => (
-                <div key={thumb.stableKey || `slide-gallery-${idx}`} className="slick-slide-item">
-                  <img
-                    src={thumb.originalUrl || thumb.url}
-                    alt={`Enlarged photo ${idx + 1}`}
-                    className="popupImage"
-                  />
+            <Slider {...sliderSettings} initialSlide={selectedIndex} key={`sl-${selectedIndex}`}>
+              {allThumbnails.map((t, i) => (
+                <div key={t.stableKey || i}>
+                  <img src={t.originalUrl || t.url} alt={`Photo ${i+1}`} className="popupImage" />
                 </div>
               ))}
             </Slider>
@@ -358,21 +302,14 @@ const ThumbnailGallery = ({
         </div>
       )}
 
-      <div className={`gallery-header ${showInternalTitle ? 'with-title' : 'no-title'}`}>
-        <div className="gallery-header-content">
-          {showInternalTitle && <div className="gallery-title-container"></div>}
-          {totalPages > 0 && (
-            <div className="gallery-pagination-container">
-              <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                inline={true}
-              />
-            </div>
-          )}
+      {/* Bottom pagination */}
+      {totalPages > 1 && (
+        <div className="gallery-header">
+          <div className="gallery-header-content">
+            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
