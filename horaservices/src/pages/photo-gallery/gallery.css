@@ -2,14 +2,14 @@
 
 /* ---- Masonry fallback (ratios load hone tak) ---- */
 .masonryGrid {
-  column-count: 3;
+  column-count: 2;   /* ✅ 2 karo */
   column-gap: 4px;
 }
 @media (min-width: 480px)  { .masonryGrid { column-count: 3; } }
 @media (min-width: 768px)  { .masonryGrid { column-count: 4; } }
 @media (min-width: 1024px) { .masonryGrid { column-count: 5; } }
 @media (min-width: 1280px) { .masonryGrid { column-count: 6; } }
-@media (max-width: 800px)  { .masonryGrid { column-count: 3; column-gap: 4px; } }
+/* @media (max-width: 800px)  { .masonryGrid { column-count: 3; column-gap: 4px; } } */
 
 .masonry-item {
   overflow: hidden;
