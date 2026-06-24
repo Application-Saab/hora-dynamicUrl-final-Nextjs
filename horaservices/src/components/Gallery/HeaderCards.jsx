@@ -109,12 +109,36 @@ const HeaderCards = ({
       .filter((sf) => sf.type === "others" && !sf.isLocker)
       .map((sf) => ({
         _id: sf._id,
-        name: sf.folderName,
+        name: sf.folderName, 
         folderDp: {
           thumbnailUrl: sf.folderDp?.thumbnailUrl,
         },
+        isPersonFolder: sf?.isPersonFolder || false,
+        personCount: sf?.personCount || 0,
       }));
-    setAlbums(mapped);
+
+    const personFolders = mapped
+      .filter((f) => f.isPersonFolder)
+      .sort((a, b) => b.personCount - a.personCount);
+
+    let personCounter = 0;
+    const namedPersonFolders = personFolders.map((f) => {
+      const hasPersonWord = f.name?.toLowerCase().includes("person");
+
+      if (hasPersonWord) {
+        personCounter++; 
+        return {
+          ...f,
+          name: `Person ${personCounter}`, 
+        };
+      } else {
+        return f;
+      }
+    });
+
+    const normalFolders = mapped.filter((f) => !f.isPersonFolder);
+
+    setAlbums([...namedPersonFolders, ...normalFolders]);
   }, [subFolders]);
 
   /* ================= FILE PICK ================= */
@@ -546,9 +570,9 @@ const HeaderCards = ({
             onClick={() => {
               setActiveTab(sf._id);
               onSelectSubFolder(sf._id);
-              setIsActualMyPhotos(false)
-              setIsRefreshShow(false)
-              setIsPrivateFolder(false)
+              setIsActualMyPhotos(false);
+              setIsRefreshShow(false);
+              setIsPrivateFolder(false);
             }}
           >
             <div className="circle-img-folder circle-img-both">
@@ -559,7 +583,7 @@ const HeaderCards = ({
                 />
               </div>
             </div>
-            <span>{sf.name}</span>
+            <span>{sf?.name || "Album"}</span> 
           </div>
         ))}
 
