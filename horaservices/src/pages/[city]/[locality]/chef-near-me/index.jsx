@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-// import { useLocation } from 'react-router-dom';
-// import { Link } from 'react-router-dom';
-// import { useParams } from "react-router-dom";
 import bannerSvgImage from '../../../../../public/assets/banner-home-bg.svg';
 import bannerDecorationImage from '../../../../assets/service-decoration.png';
 import bannerChefImage from '../../../../assets/chef-home-banner.png';
 import bannerHospitalityImage from '../../../../assets/hospitality.png';
 import bannerReturnGiftImage from '../../../../assets/return-gift-banner-home.png';
-// import bannerEntertainmentImage from '../../../../assets/entertainment-banner-home.png';
 import bannerFoodDeliveryImage from '../../../../assets/food-delivery-home-banner.png';
 import Celebrate1Image from '../../../../assets/Birthday&Celebration.png';
 import Celebrate2Image from '../../../../assets/corporate-party.png';

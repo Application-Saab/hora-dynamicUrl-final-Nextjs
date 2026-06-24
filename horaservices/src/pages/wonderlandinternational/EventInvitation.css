@@ -341,27 +341,6 @@ body {
     height: 1.25rem;
   }
 }
-/* .modal-overlay {
-    position: fixed;
-    top:0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    min-height: 80vh; 
-    height: auto; 
-    background-image: url('/pastel-purpleBallons.webp');
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
-    padding: 40px 10px;
-    overflow-y: auto;
-    
-} */
 
 .modal-content {
   padding: 30px 25px;
