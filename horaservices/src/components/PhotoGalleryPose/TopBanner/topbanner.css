@@ -50,7 +50,7 @@ margin-top: clamp(1.6px, calc((2 / 393) * 100vw), 2.4px);
 font-size: clamp(6.5px, calc((8 / 393) * 100vw), 10px);
 font-weight: 400;
   color: #000000;
-  width:90%
+  width:80%
 }
 
 .hero-social-proof {
@@ -129,11 +129,13 @@ font-weight: 400;
 .hero-image-fade {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background: linear-gradient(
-    to right,
-    #ffffff 0%,
-    rgba(255, 255, 255, 0.15) 25%,
-    rgba(255, 255, 255, 0) 50%
+    90deg,
+    #F5EDFA 0%,
+    rgba(245, 237, 250, 0.85) 20%,
+    rgba(245, 237, 250, 0.45) 40%,
+    rgba(245, 237, 250, 0) 75%
   );
 }
 

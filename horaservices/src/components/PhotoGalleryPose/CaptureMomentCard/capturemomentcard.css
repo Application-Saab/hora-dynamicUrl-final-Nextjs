@@ -6,7 +6,8 @@
   border: 1px solid #d9d4dc;
   border-radius: 16px;
   
- padding: clamp(7px, calc((9 / 393) * 100vw), 11px);
+ padding:
+  clamp(7px, calc((9 / 393) * 100vw), 11px);
   display: flex;
   align-items: center;
   gap: clamp(4px, 0.8vw, 8px);
@@ -46,7 +47,7 @@ vertical-align: middle;
 
 .capture-desc {
   margin-top: 6px;
-
+  margin-bottom: 0px;
   font-family: 'Rubik', sans-serif;
 font-weight: 300;
 

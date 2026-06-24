@@ -19,7 +19,7 @@ import Gift from "@/assets/poselink/Gift.svg";
 import Planingbanner from "@/assets/poselink/planingbanner.webp";
 import image1 from "@/assets/poselink/image1.jpeg";
 import image2 from "@/assets/poselink/image2.jpeg";
-
+import collageImage from "@/assets/poselink/collageImage.webp"
 import trustimage from "@/assets/poselink/trustedimage.webp";
 import { getBannerConfig, getPlanningCardData, getTrustedCardData } from "@/utils/bannerConfig";
 import { getPhotoCategoryUrl } from "@/utils/Getphotocategoryurl.js"; 
@@ -84,7 +84,7 @@ const bannerData = {
     />,
     <TrustedPeopleCard
   key="trusted"
-  collageImage={trustedData.collageImage}
+  collageImage={collageImage}
   title={trustedData.title}
   onClick={() => router.push(categoryUrl)}
 />,
@@ -97,7 +97,7 @@ const bannerData = {
   ];
 
   return (
-    <div className="photo-container" style={{ padding: "8px", maxWidth: "480px", margin: "auto", paddingBottom: "100px" }}>
+    <div className="photo-container" style={{ padding: "8px", maxWidth: "480px", margin: "auto", paddingBottom: "10px" }}>
  <Head>
   <title>
     {bannerConfig.title

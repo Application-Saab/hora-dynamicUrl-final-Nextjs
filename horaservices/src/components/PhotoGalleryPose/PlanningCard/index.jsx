@@ -17,7 +17,7 @@ const PlanningCard = ({
             src={icon}
             alt={title}
             fill
-            style={{ objectFit: "contain", padding: "14px" }}
+            style={{ objectFit: "contain", padding: "10px" }}
           />
         </div>
 

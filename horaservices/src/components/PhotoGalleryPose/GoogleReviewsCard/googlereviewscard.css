@@ -19,6 +19,7 @@
   margin: 0;
   font-size: 14px;
   font-weight: 700;
+  
 }
 
 .gr-rating-row {
@@ -42,10 +43,13 @@ vertical-align: bottom;
 }
 
 .gr-heading {
-  text-align: center;
-  margin: 14px 0;
-  font-size: 13px;
-  font-weight: 700;
+  font-family: "Roboto", sans-serif;
+font-weight: 500;
+font-size: clamp(13px, 4.07vw, 16px);
+line-height: 1;
+text-align: center;
+ margin: 14px 0;
+  color:#000000B2
 }
 
 /* .gr-reviews {

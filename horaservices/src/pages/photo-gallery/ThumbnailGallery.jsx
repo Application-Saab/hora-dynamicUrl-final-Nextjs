@@ -201,59 +201,49 @@ const ThumbnailGallery = ({
     let bannerIdx  = 0;
     let imgCount   = 0;
 
-    allRows.forEach((rowItems, rIdx) => {
-      if (imgCount > 0 && imgCount % bannerInterval === 0 && banners[bannerIdx]) {
-        result.push(
-          <div key={`b-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
-            {banners[bannerIdx]}
+   allRows.forEach((rowItems, rIdx) => {
+
+  // Row render
+  result.push(
+    <div key={`r-${rIdx}`} style={{ display: 'flex', gap: `${gap}px`, marginBottom: `${gap}px`, width: `${effectiveCw}px`, overflow: 'hidden' }}>
+      {rowItems.map((thumb) => {
+        const gi = allThumbnails.findIndex(t => t.stableKey === thumb.stableKey);
+        return (
+          <div key={thumb.stableKey} onClick={() => handleImageClick(gi)}
+            style={{ width: `${thumb.displayW}px`, height: `${thumb.displayH}px`, flexShrink: 0, overflow: 'hidden', borderRadius: '4px', cursor: 'pointer', backgroundColor: '#e9ecef', position: 'relative' }}>
+            <LazyImage src={thumb.thumbnailImageUrl} alt={`Photo ${gi + 1}`} wrapperClassName="smart-image-wrapper" />
           </div>
         );
-        bannerIdx++;
-      }
+      })}
+    </div>
+  );
 
-      result.push(
-        <div
-          key={`r-${rIdx}`}
-          style={{
-            display: 'flex',
-            gap: `${gap}px`,
-            marginBottom: `${gap}px`,
-            width: `${effectiveCw}px`,
-            overflow: 'hidden',
-          }}
-        >
-          {rowItems.map((thumb) => {
-            const gi = allThumbnails.findIndex(t => t.stableKey === thumb.stableKey);
-            return (
-              <div
-                key={thumb.stableKey}
-                onClick={() => handleImageClick(gi)}
-                style={{
-                  width:      `${thumb.displayW}px`,
-                  height:     `${thumb.displayH}px`,
-                  flexShrink: 0,           // ✅ squeeze nahi hogi
-                  overflow:   'hidden',
-                  borderRadius: '4px',
-                  cursor:     'pointer',
-                  backgroundColor: '#e9ecef',
-                  position:   'relative',
-                }}
-              >
-                <LazyImage
-                  src={thumb.thumbnailImageUrl}
-                  alt={`Photo ${gi + 1}`}
-                  wrapperClassName="smart-image-wrapper"
-                />
-              </div>
-            );
-          })}
-        </div>
-      );
+  // Count update
+  imgCount += rowItems.length;
 
-      imgCount += rowItems.length;
-    });
+  // Banner check
+  if (imgCount >= bannerInterval * (bannerIdx + 1) && banners[bannerIdx]) {
+    result.push(
+      <div key={`b-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
+        {banners[bannerIdx]}
+      </div>
+    );
+    bannerIdx++;
+  }
 
-    return result;
+}); // ✅ forEach yahan khatam
+
+// ✅ while loop BAHAR — forEach ke baad
+while (bannerIdx < banners.length) {
+  result.push(
+    <div key={`b-end-${bannerIdx}`} style={{ width: `${effectiveCw}px`, marginBottom: `${gap}px` }}>
+      {banners[bannerIdx]}
+    </div>
+  );
+  bannerIdx++;
+}
+
+return result;
   };
 
   if (loading) return (

@@ -74,7 +74,7 @@ export const getPlanningCardData = (folderName) => {
   const matched = folderMap[folderName];
   return {
     title: matched?.planningTitle || "Planning an Event?",
-    description: matched?.planningDesc || "See photography packages curated for your special occasion.",
+    description: "See photography packages curated for your big day .",
     chatTitle: matched?.chatTitle || "Free Event Planning Chat", 
   };
 };
