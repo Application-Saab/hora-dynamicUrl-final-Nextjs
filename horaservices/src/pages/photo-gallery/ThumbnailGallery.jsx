@@ -246,9 +246,15 @@ while (bannerIdx < banners.length) {
 return result;
   };
 
-  if (loading) return (
-    <div className="thumbnail-gallery-status d-flex justify-content-center">
-      <Image src={photogallryIcon} alt="Loading..." width={100} height={100} priority />
+ if (loading)
+  return (
+    <div className="gallery-skeleton-wrapper">
+      {[...Array(12)].map((_, index) => (
+        <div
+          key={index}
+          className={`gallery-skeleton skeleton-${(index % 4) + 1}`}
+        />
+      ))}
     </div>
   );
   if (error)                           return <div className="thumbnail-gallery-status text-red-500">Error: {error}</div>;

@@ -234,7 +234,7 @@ const bannerData = {
         transform: "translateX(-50%)",
         width: "100%",
         maxWidth: "480px",
-        zIndex: 999,
+        zIndex: 99,
         backgroundColor: "#fff",
         boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
       }}>
