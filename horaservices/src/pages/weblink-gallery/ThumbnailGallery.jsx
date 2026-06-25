@@ -20,7 +20,7 @@ import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/DeleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
-import { MEDIA_WORKER_URL } from "../../utils/apiconstants";
+import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import refreshIcon from "../../assets/refreshIcon.svg";
 import checkWithBoard from "../../assets/checkWithBoard.svg";
@@ -124,6 +124,8 @@ const ThumbnailGallery = ({
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const actionMenuRef = useRef(null);
   const [mainFolderId, setMainFolderId] = useState(null);
+  const [shortCode, setShortCode] = useState(null);
+  const generatingRef = useRef(false);
   const [isRefreshShow, setIsRefreshShow] = useState(false);
   const [isEditingDP, setIsEditingDP] = useState(false);
   const [showCameraPopup, setShowCameraPopup] = useState(false);
@@ -264,6 +266,47 @@ const showSnackbar = (message) => {
       setIsEditing(false);
     }
   }, [matchedKeys, myPhotosFolder]);
+
+
+  const handleCreateGalleryShortCode = async (retryCount = 0) => {
+    if (!mainFolderId) return;
+    if (generatingRef.current) return;
+
+    try {
+      generatingRef.current = true;
+
+      const response = await axios.post(
+        `${BASE_URL}${GENERATE_CAPSULE_LINK}/${mainFolderId}`
+      );
+
+      if (response?.data?.success) {
+        setShortCode(response?.data?.shortCode);
+        generatingRef.current = false;
+      } else {
+        throw new Error("Backend success status is false");
+      }
+
+    } catch (err) {
+      console.error("Generate gallery short code error:", err);
+
+      if (retryCount < 3) {
+        const retryDelay = (retryCount + 1) * 2000;
+        setTimeout(() => {
+          generatingRef.current = false;
+          handleCreateGalleryShortCode(retryCount + 1);
+        }, retryDelay);
+      } else {
+        generatingRef.current = false;
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!mainFolderId) return;
+    if (shortCode) return;
+
+    handleCreateGalleryShortCode();
+  }, [mainFolderId]);
 
 
   const handleImageShare = async (imageUrl, id) => {
@@ -582,6 +625,7 @@ const showSnackbar = (message) => {
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
         setDeviceTracking(data?.folders[0]?.deviceTracking || []);
+        setShortCode(data?.folders[0]?.shortCode || null)
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -1344,7 +1388,7 @@ const handleAddToLocker = async (imgData) => {
 
       <div className="banner-right">
         <button
-          onClick={() => handleShareicon(mainFolderId)}
+          onClick={() => handleShareicon(mainFolderId, shortCode)}
           className="banner-btn">
           <span><Image src={share} alt="share" height={10} width={11} /></span>
           <span>Share Event</span>
@@ -1506,7 +1550,7 @@ const handleAddToLocker = async (imgData) => {
                   <span className="add-photo-icon">+</span>
                   <span>Add Photos</span>
                 </button>
-                <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId)}>
+                <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId, shortCode)}>
                   <span className="">
                     {typeof handleShareicon === "function" && (
                       <Image src={share} alt="share" height={13} width={14} />
@@ -2000,7 +2044,7 @@ const handleAddToLocker = async (imgData) => {
             <div className="share-btn-container">
               <button
                 className="share-btn"
-                onClick={() => handleShareicon(mainFolderId)}
+                onClick={() => handleShareicon(mainFolderId, shortCode)}
               >
                 <span><Image src={share} alt="share" height={15} width={16} /></span>
                 <span> Share Event Capsule</span>
@@ -2097,7 +2141,7 @@ const handleAddToLocker = async (imgData) => {
         >
           <button
             className="share-capsule-btn2"
-            onClick={() => handleShareicon(mainFolderId)}
+            onClick={() => handleShareicon(mainFolderId, shortCode)}
             style={{
               display: "flex",
               alignItems: "center",
