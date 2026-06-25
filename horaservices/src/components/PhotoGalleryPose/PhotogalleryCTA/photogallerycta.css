@@ -1,11 +1,13 @@
 .photo-cta-card {
-  width: 100%;
+  width: 98%;
   background: #fff;
   border-radius: 12px;
   padding: clamp(10px, calc((12 / 393) * 100vw), 14px);
   box-sizing: border-box;
   max-width: 480px;
-  margin: 10px 0px auto;
+  margin: 10px auto;
+  box-shadow: 0px -4px 22px 0px #00000040;
+
 }
 
 .photo-cta-top {
