@@ -71,9 +71,13 @@ font-weight: 400;
   border: 2px solid #fff;
 
   object-fit: cover;
-  margin-left: -8px;
+  margin-left: -4px;
 }
 
+.heart-icon {
+  color: #d9042b;
+    font-size: clamp(6.5px, calc((8 / 393) * 100vw), 9.8px);
+}
 .hero-avatar-group .hero-avatar:first-child {
   margin-left: 0;
 }

@@ -46,7 +46,9 @@ const GoogleReviewsCard = ({
   return (
     <div className="gr-card">
       <div className="gr-header">
-        <Image src={googleLogo} alt="Google" width={56} height={56} />
+        <div className="gr-logo-wrap">
+    <Image src={googleLogo} alt="Google" width={30} height={30} />
+  </div>
         <div>
           <h3 className="gr-title">Google Reviews</h3>
           <div className="gr-rating-row">

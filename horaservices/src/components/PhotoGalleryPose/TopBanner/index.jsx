@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import "./topbanner.css";
+import { FaHeart } from "react-icons/fa";
 
 const TopBanner = ({
   backgroundImage,
@@ -12,8 +13,9 @@ const TopBanner = ({
     "https://i.pravatar.cc/40?img=1",
     "https://i.pravatar.cc/40?img=2",
     "https://i.pravatar.cc/40?img=3",
+    "https://i.pravatar.cc/40?img=4",
   ],
- socialProofText = "Loved by 10,000+ couples",
+ socialProofText = "Loved by 10,000+ couples ❤️",
   ctaText,
   onCtaClick,
 }) => {
@@ -45,7 +47,9 @@ const TopBanner = ({
             </div>
 
            <span className="hero-social-proof-text">
-  {socialProofText}
+
+
+    Loved by 10,000+ couples <FaHeart className="heart-icon" />
 
   {/* <Image
     src={starIcon}

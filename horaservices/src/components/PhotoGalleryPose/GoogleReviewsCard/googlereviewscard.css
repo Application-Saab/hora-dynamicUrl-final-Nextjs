@@ -7,19 +7,35 @@
 }
 
 .gr-header {
+  margin-top:5px;
   display: flex;
   align-items: center;
   gap: 12px;
   background: #f4eff7;
   border-radius: 12px;
+     border: 2px solid #a35b97;
   padding: 14px;
 }
-
+.gr-logo-wrap {
+width: clamp(40px, calc((40 / 393) * 100vw), 48px);
+height: clamp(40px, calc((40 / 393) * 100vw), 48px);
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.gr-logo-wrap img {
+  object-fit: contain;
+}
 .gr-title {
   margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  
+  font-family: 'Roboto', sans-serif;
+font-weight: 600;
+font-size: clamp(16px, calc((16 / 393) * 100vw), 20px);
+color:#a35b97;
 }
 
 .gr-rating-row {
@@ -38,15 +54,17 @@
   margin-left: 6px;
 font-family: "Roboto", sans-serif;
 font-weight: 400;
-font-size: clamp(10px, calc((12 / 393) * 100vw), 14px);
+font-size: clamp(13px, calc((13 / 393) * 100vw), 16px);
 vertical-align: bottom;
+color:#000000;
 }
 
 .gr-heading {
   font-family: "Roboto", sans-serif;
 font-weight: 500;
-font-size: clamp(13px, 4.07vw, 16px);
-line-height: 1;
+font-size: clamp(22px, calc((22 / 393) * 100vw), 26px);
+font-style: italic;
+text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 text-align: center;
  margin: 14px 0;
   color:#000000B2
@@ -100,9 +118,11 @@ text-align: center;
   text-align: right;
 }
 .gr-text {
-  margin: 4px 0 10px;
-  font-size: 10px;
-  color: #666;
+  margin: 0px 10px;
+font-family: 'Roboto', sans-serif;
+font-weight: 400;
+font-size: clamp(12px, calc((12 / 393) * 100vw), 15px);
+  color: #677181;
   line-height: 1.4;
 }
 
@@ -110,7 +130,11 @@ text-align: center;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
+  font-family: 'Roboto', sans-serif;
+font-weight: 400;
+font-size: clamp(12px, calc((12 / 393) * 100vw), 15px);
+color: #677181;
+
 }
 
 .gr-stars {

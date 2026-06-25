@@ -1,7 +1,7 @@
 .love-poses-banner {
   width: 100%;
   max-width: 480px;
-  margin:10px auto;
+  margin:6px auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -10,7 +10,7 @@
   border: 1px solid #d8d2dc;
 
   border-radius: clamp(12px, calc((16 / 393) * 100vw), 18px);
-padding: clamp(6px, calc((8 / 393) * 100vw), 10px);
+padding: clamp(16px, calc((16 / 393) * 100vw), 20px) clamp(6px, calc((8 / 393) * 100vw), 10px);
   box-sizing: border-box;
 }
 

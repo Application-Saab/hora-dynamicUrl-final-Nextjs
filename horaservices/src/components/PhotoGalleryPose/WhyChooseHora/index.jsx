@@ -1,10 +1,3 @@
-import {
-  MdPhotoLibrary,
-  MdOutlinePhotoSizeSelectActual,
-  MdAccessTime,
-  MdGroups,
-  MdSupportAgent,
-} from "react-icons/md";
 
 import "./whychoosehora.css";
 import Unlimited from "@/assets//poselink/galleryicon.svg";
@@ -48,8 +41,8 @@ export default function WhyChooseHora() {
               <Image
                 src={item.icon}
                 alt={item.title}
-                width={32}
-                height={32}
+                width={52}
+                height={52}
               />
             </div>
             <p>{item.title}</p>

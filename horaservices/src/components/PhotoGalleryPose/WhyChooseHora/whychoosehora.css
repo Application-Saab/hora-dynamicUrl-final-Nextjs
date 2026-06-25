@@ -1,5 +1,5 @@
 .whyhora-card {
-  width: 98%;
+  width: 100%;
   max-width: 480px;
   margin:10px auto;
   background: #f2edf5;
@@ -47,14 +47,11 @@ text-align: center;
 }
 
 .whyhora-icon {
-width: clamp(27.95px, calc((34.33 / 393) * 100vw), 41.93px);
-height: clamp(27.95px, calc((34.33 / 393) * 100vw), 41.93px);
-
+width: clamp(42px, calc((42 / 393) * 100vw), 50px);
+height: clamp(42px, calc((42 / 393) * 100vw), 50px);
 border-radius: clamp(33.55px, calc((41.2 / 393) * 100vw), 50.32px);
-padding: clamp(8px, calc((10 / 393) * 100vw), 12px);
+
 opacity: 1;
-  background: #eadff0;
-  color: #a45a97;
   display: flex;
   align-items: center;
   justify-content: center;

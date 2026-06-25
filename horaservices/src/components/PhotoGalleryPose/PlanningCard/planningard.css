@@ -1,7 +1,7 @@
 .planning-card {
   width: 100%;
   max-width: 480px;
-  margin:10px auto;
+  margin:6px auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,7 +16,7 @@ padding: clamp(6px, 2vw, 10px);
 
 .planning-content {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 
   gap: clamp(10px, calc((14 / 393) * 100vw), 18px);
 
@@ -54,8 +54,8 @@ vertical-align: middle;
 }
 
 .planning-text p {
-  margin: 4px 0 10px;
-
+  margin: 4px 0 4px;
+    width: 80%;
   color: #666;
 
 font-family: 'Rubik', sans-serif;

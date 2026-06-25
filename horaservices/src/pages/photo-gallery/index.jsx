@@ -199,10 +199,17 @@ const bannerData = {
         onCtaClick={() => router.push(categoryUrl)} // ✅ dynamic
       />
 
-      <ChatBanner
-      title={planningCardData.chatTitle} 
-        onChatClick={() => window.open("https://wa.me/919999999999", "_blank")}
-      />
+     <ChatBanner
+  title={planningCardData.chatTitle}
+  onChatClick={() =>
+    window.open(
+      `https://wa.me/7338584828?text=${encodeURIComponent(
+        "Hi, I'm interested in your photography services. Please share your packages, pricing, and availability."
+      )}`,
+      "_blank"
+    )
+  }
+/>
 
       <ThumbnailGallery
         folderName={folderName}
