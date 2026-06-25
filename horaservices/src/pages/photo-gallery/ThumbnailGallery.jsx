@@ -184,7 +184,7 @@ const ThumbnailGallery = ({
     const effectiveCw = actualW > 0 ? Math.min(actualW, 480) : cw;
     if (!effectiveCw || effectiveCw < 10) return null;
 
-    const gap = 3;
+    const gap = 6;
 
     // ✅ targetRowHeight — 320-480px ke liye tuned
     // Chhota value = zyada images per row (cramped)
