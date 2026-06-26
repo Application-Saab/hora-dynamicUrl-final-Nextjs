@@ -519,7 +519,7 @@ const showSnackbar = (message) => {
 
     if (!isActualMyPhotos) {
       if (isEditing) {
-        return allThumbnails;
+        return allThumbnails.filter((img) => !isLockerImage(img));
       }
     }
     if (matchedKeys.length > 0 && (isMyPhotosTabActive || isSearchActive)) {

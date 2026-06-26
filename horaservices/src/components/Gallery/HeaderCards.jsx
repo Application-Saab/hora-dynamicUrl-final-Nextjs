@@ -106,15 +106,39 @@ const HeaderCards = ({
   /* ================= ALBUM LIST ================= */
   useEffect(() => {
     const mapped = subFolders
-      .filter((sf) => sf.type === "others" && !sf.isLocker)
+      .filter((sf) => sf.type === "others" && sf.isLocker !== true && sf.isLocker !== "true")
       .map((sf) => ({
         _id: sf._id,
-        name: sf.folderName,
+        name: sf.folderName, 
         folderDp: {
           thumbnailUrl: sf.folderDp?.thumbnailUrl,
         },
+        isPersonFolder: sf?.isPersonFolder || false,
+        personCount: sf?.personCount || 0,
       }));
-    setAlbums(mapped);
+
+    const personFolders = mapped
+      .filter((f) => f.isPersonFolder)
+      .sort((a, b) => b.personCount - a.personCount);
+
+    let personCounter = 0;
+    const namedPersonFolders = personFolders.map((f) => {
+      const hasPersonWord = f.name?.toLowerCase().includes("person");
+
+      if (hasPersonWord) {
+        personCounter++; 
+        return {
+          ...f,
+          name: `Person ${personCounter}`, 
+        };
+      } else {
+        return f;
+      }
+    });
+
+    const normalFolders = mapped.filter((f) => !f.isPersonFolder);
+
+    setAlbums([...namedPersonFolders, ...normalFolders]);
   }, [subFolders]);
 
   /* ================= FILE PICK ================= */
@@ -304,13 +328,12 @@ const HeaderCards = ({
       fd.append("userId", localUserId);
       fd.append("customerId", customerId);
       fd.append("phoneNo", localPhoneNumber)
-      fd.append("isLocker", isLocker ? true : false);
+      fd.append("isLocker","false");
 
       const data = await createSubfolder(fd);
       const newFolder = data.subFolder;
 
       onSubFolderCreated(newFolder);
-      setLocalPrivateLocker(newFolder);
       setActiveTab(newFolder._id);
       onNewFolderActivate(newFolder._id);
 
@@ -546,9 +569,9 @@ const HeaderCards = ({
             onClick={() => {
               setActiveTab(sf._id);
               onSelectSubFolder(sf._id);
-              setIsActualMyPhotos(false)
-              setIsRefreshShow(false)
-              setIsPrivateFolder(false)
+              setIsActualMyPhotos(false);
+              setIsRefreshShow(false);
+              setIsPrivateFolder(false);
             }}
           >
             <div className="circle-img-folder circle-img-both">
@@ -559,7 +582,7 @@ const HeaderCards = ({
                 />
               </div>
             </div>
-            <span>{sf.name}</span>
+            <span>{sf?.name || "Album"}</span> 
           </div>
         ))}
 
