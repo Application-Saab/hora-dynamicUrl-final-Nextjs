@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from 'next/router';
 import ThumbnailGallery from './ThumbnailGallery';
 import "slick-carousel/slick/slick.css";
@@ -31,31 +31,14 @@ const PhotoGallery = () => {
   const folderName = urlParams.get('folderName');
   const customerId = urlParams.get('customerId');
   const router = useRouter();
- const [isAtBottom, setIsAtBottom] = useState(false);
-  const ctaRef = useRef(null);  
 
   const bannerConfig = getBannerConfig(folderName);
     const planningCardData = getPlanningCardData(folderName);
  const trustedData = getTrustedCardData(folderName); 
-  const categoryUrl = getPhotoCategoryUrl(folderName);
-useEffect(() => {
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        setIsAtBottom(true);  
-      } else if (entry.boundingClientRect.top > 0) {
-        setIsAtBottom(false); 
-      }
-    },
-    {
-      root: null,
-      threshold: 0.1,
-    }
-  );
 
-  if (ctaRef.current) observer.observe(ctaRef.current);
-  return () => observer.disconnect();
-}, []);
+  // ✅ Ek baar calculate karo — sabhi buttons isko use karenge
+  const categoryUrl = getPhotoCategoryUrl(folderName);
+
   const handleShareicon = async () => {
     const shareUrl = `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)
       .replace(/%20/g, "%2520")}&customerId=${customerId}`;
@@ -240,28 +223,25 @@ const bannerData = {
       onFollow={() => window.open("https://instagram.com")}
       onViewMore={() => window.open("https://instagram.com")}
     />, */}
-<div ref={ctaRef}>
+
    <GoogleReviewsCard reviews={reviewsData} />
- </div>
+ 
       {/* ✅ Sticky bottom CTA */}
-       <div style={{
-  position: isAtBottom ? "relative" : "fixed",
-  bottom: isAtBottom ? "auto" : 0,
-  left: isAtBottom ? "auto" : "50%",
-  transform: isAtBottom ? "none" : "translateX(-50%)",
-  width: "100%",
-  maxWidth: "480px",
-  zIndex: 99,
-  backgroundColor: "#fff",
-  boxShadow: isAtBottom ? "none" : "0 -2px 10px rgba(0,0,0,0.1)",
-  
-  transition: "box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease",
-  opacity: 1,
-}}>
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        maxWidth: "480px",
+        zIndex: 99,
+        backgroundColor: "#fff",
+        boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+      }}>
         <PhotogalleryCTA
           image1={image1}
           image2={image2}
-          onBookNow={() => router.push(categoryUrl)}
+          onBookNow={() => router.push(categoryUrl)} // ✅ dynamic
         />
       </div>
 
