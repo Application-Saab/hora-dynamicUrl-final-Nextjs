@@ -38,7 +38,16 @@ let category =
   product?.tag?.[0]?.name ||
   from.split("/")[2] ||
   "photography";
- const selectedAddOnProduct = router.query.selectedAddOnProduct ? JSON.parse(router.query.selectedAddOnProduct) : [];
+
+  const rawAddOns = router.query.selectedAddOnProduct
+    ? JSON.parse(router.query.selectedAddOnProduct)
+    : [];
+
+  const selectedAddOnProduct = rawAddOns.map(item => ({
+    ...item,
+    totalPrice: item.price * (item.quantity || 1),
+  }));
+
 
  const itemQuantities = router.query.itemQuantities ? JSON.parse(router.query.itemQuantities) : {};
   const [comment, setComment] = useState('');
@@ -262,10 +271,10 @@ const validateDateTime = (combinedDate) => {
   };
  const productAdvanceAmount = Number(productData?.advance_amount || 0);
 
-const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
-  const qty = itemQuantities[item.title] || 0;
-  return acc + Math.round(item.price * qty * 0.35); // agar addon ka rule same hai
-}, 0);
+  const addonAdvanceAmount = selectedAddOnProduct.reduce((acc, item) => {
+    const qty = item.quantity || 0;
+    return acc + Math.round(item.price * qty * 0.35);
+  }, 0);
 
 const advanceAmount = productAdvanceAmount + addonAdvanceAmount;
 const balanceAmount = totalAmount - advanceAmount;
@@ -659,8 +668,10 @@ const contactUsRedirection = (productName) => {
       {selectedAddOnProduct.map((item, index) => (
         <li key={index} className="addon-item">
           <span className="addon-title">{index + 1}. {item.title}</span>
-          <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
-        </li>
+          <span className="addon-price">
+            ₹{item.price} x {item.quantity} = ₹ {item.totalPrice}
+          </span>
+         </li>
       ))}
     </ul>
   </>

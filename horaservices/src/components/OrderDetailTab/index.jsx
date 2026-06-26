@@ -838,7 +838,7 @@ orderId={orderDetail?.order_id}
                               {/* {item.name || "NA"} =  ₹{item.price || "NA"} x 1 = ₹{item.price || "NA"} */}
                               {(() => {
                                 const rawTitle =
-                                  item?.name ||
+                                  item?.name || item?.title
                                   "N/A";
 
                                 const quantityMatch = rawTitle?.match(/Quantity\s*(\d+)/i);
