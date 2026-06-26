@@ -14,7 +14,6 @@ import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 
-
 const LoginModal = ({
   isOpen,
   onClose,
@@ -22,8 +21,8 @@ const LoginModal = ({
   onlyOTP = false,
   setIsVerifiedOTP,
   template = "happy_to_help_v2",
-  link=null,
-  bgColor="login-modal-content"
+  link = null,
+  bgColor = "login-modal-content",
 }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
@@ -213,51 +212,97 @@ const LoginModal = ({
   ]);
 
   // Send welcome WhatsApp message
-const sendWelcomeMessage = async (mobileNumber, link) => {
-  if (!mobileNumber) return false;
+  const sendWelcomeMessage = async (mobileNumber, link) => {
+    if (!mobileNumber) return false;
 
-  const formattedNumber = mobileNumber.toString().startsWith("+91")
-    ? mobileNumber.toString()
-    : `+91${mobileNumber}`;
+    const formattedNumber = mobileNumber.toString().startsWith("+91")
+      ? mobileNumber.toString()
+      : `+91${mobileNumber}`;
 
-  const options = {
-    method: "POST",
-    url: "https://public.doubletick.io/whatsapp/message/template",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      Authorization:
-        "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
-    },
-    data: {
-      messages: [
-        {
-          from: "+917338584828",
-          to: formattedNumber,
-          content: {
-            templateName: "guest_login_2",
-            language: "en",
-            templateData: {
-              body: {
-                placeholders: [link], 
+    const options = {
+      method: "POST",
+      url: "https://public.doubletick.io/whatsapp/message/template",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        Authorization:
+          "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
+      },
+      data: {
+        messages: [
+          {
+            from: "+917338584828",
+            to: formattedNumber,
+            content: {
+              templateName: "guest_login_2",
+              language: "en",
+              templateData: {
+                body: {
+                  placeholders: [link],
+                },
               },
             },
           },
-        },
-      ],
-    },
+        ],
+      },
+    };
+
+    try {
+      const res = await axios.request(options);
+
+      return true;
+    } catch (err) {
+      console.log("MESSAGE:", err?.message);
+
+      return false;
+    }
   };
 
-  try {
-    const res = await axios.request(options);
+  const sendWelcomeMessageWonderland = async (mobileNumber) => {
+    if (!mobileNumber) return;
+    let formattedNumber = mobileNumber.startsWith("+91")
+      ? mobileNumber
+      : "+91" + mobileNumber;
 
-    return true;
-  } catch (err) {
-    console.log("MESSAGE:", err?.message);
+    const options = {
+      method: "POST",
+      url: "https://public.doubletick.io/whatsapp/message/template",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        Authorization:
+          "key_fHOm5tEzbfSWRbC29LoZkYd0vpqaU7B22Q2iSL2vgawcN3k0D75iXNSPRen3ie7Qj3L7C6r5EhH4lLYeL1dCtPj9WyQ9wPm2abK1wltW8bYXVR5xvjLfPeQgfRld3ws1lkkRduX6tfrHbmYnbhbYnau3HSfJAylSmBso4m5qjO7vm4YjbhtqMbdkNK2EoNPXqM5SdxThyeGvSlvoA8JCVhGvL98yrocJJ7JfhBasgsEnN7qArGvPdsswdhys",
+      },
+      data: {
+        messages: [
+          {
+            content: {
+              language: "en",
+              templateData: {
+                header: {
+                  type: "VIDEO",
+                  mediaUrl:
+                    "https://data-storage.doubletick.io/org_FGdNfMoTi9/templates/55a8ba99-834e-4f1d-a05b-8ed466cd043a.mp4",
+                  filename: "55a8ba99-834e-4f1d-a05b-8ed466cd043a.mp4",
+                },
+                body: { placeholders: [] },
+              },
+              templateName: "smart_invite_reminer_1",
+            },
+            from: "+917338584828",
+            to: formattedNumber,
+          },
+        ],
+      },
+    };
 
-    return false;
-  }
-};
+    try {
+      const res = await axios.request(options);
+      console.log("WhatsApp message sent:", res.data);
+    } catch (err) {
+      console.error("WhatsApp message error:", err);
+    }
+  };
 
   // Send OTP
   const sendOtp = async () => {
@@ -315,8 +360,12 @@ const sendWelcomeMessage = async (mobileNumber, link) => {
             localStorage.setItem("token", token);
             localStorage.setItem("userID", data?._id);
 
-            if(fromCapsule){
-            sendWelcomeMessage(phone, link);
+            if (fromCapsule) {
+              sendWelcomeMessage(phone, link);
+            }
+
+            if (!fromCapsule && !isWonderlandInternational) {
+              sendWelcomeMessageWonderland(phone);
             }
 
             window.dispatchEvent(new Event("loginStateChange"));
@@ -486,9 +535,14 @@ const sendWelcomeMessage = async (mobileNumber, link) => {
         localStorage.setItem("userID", data?._id);
         localStorage.setItem("userName", data?.name);
 
-        if(fromCapsule){
-            sendWelcomeMessage(phone, link);
-            }
+        if (fromCapsule) {
+          sendWelcomeMessage(phone, link);
+        }
+
+        if (!fromCapsule && !isWonderlandInternational) {
+          sendWelcomeMessageWonderland(phone);
+        }
+
         onlyOTP && setIsVerifiedOTP(true);
         setIsOtpSent(false);
         setOtp(["", "", "", ""]);
@@ -535,9 +589,13 @@ const sendWelcomeMessage = async (mobileNumber, link) => {
       verticalCenter={false}
       body={
         <>
-          <p className="login-modal-heading">{onlyOTP ? "Access Your Locker" : "Join The Celebration!"}</p>
+          <p className="login-modal-heading">
+            {onlyOTP ? "Access Your Locker" : "Join The Celebration!"}
+          </p>
           <p className="login-modal-subheading">
-            {onlyOTP ? `Enter OTP sent to your number xxxx${phone?.slice(-4)}` : "Enter your mobile number to get started"}
+            {onlyOTP
+              ? `Enter OTP sent to your number xxxx${phone?.slice(-4)}`
+              : "Enter your mobile number to get started"}
           </p>
 
           <div className="d-flex flex-column w-100 login-input-ctn">
