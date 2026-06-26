@@ -68,21 +68,22 @@
 
 // export default useRsvpStatus;
 
-
-
-
-
-
-
-
 import { useEffect, useState, useCallback, useMemo } from "react";
 import useApi from "./useApi";
+import { useRouter } from "next/router";
 import {
   GET_GUEST_DETTAILS,
   CREATE_GUEST_BY_EVENTID,
 } from "@/utils/apiconstants";
 
 const useRsvpStatus = (eventId, skipCheck = false, refetch) => {
+  const router = useRouter();
+  const { frompanel } = router.query;
+  console.log(
+    "%c [ frompanel inside rsvp ]",
+    "font-size:13px; background:pink; color:#bf2c9f;",
+    frompanel,
+  );
   const [guestDetails, setGuestDetails] = useState(null);
 
   const { makeRequest: fetchGuestData } = useApi();
@@ -99,11 +100,10 @@ const useRsvpStatus = (eventId, skipCheck = false, refetch) => {
     if (!eventId || !userId) return;
 
     try {
-      const resp = await createGuestRequest(
-        CREATE_GUEST_BY_EVENTID,
-        "POST",
-        { eventId, userId }
-      );
+      const resp = await createGuestRequest(CREATE_GUEST_BY_EVENTID, "POST", {
+        eventId,
+        userId,
+      });
       setGuestDetails(resp?.data || null);
     } catch (err) {
       console.error("Error creating guest:", err);
@@ -119,7 +119,7 @@ const useRsvpStatus = (eventId, skipCheck = false, refetch) => {
       try {
         const resp = await fetchGuestData(
           `${GET_GUEST_DETTAILS}/${eventId}/user/${userId}`,
-          "GET"
+          "GET",
         );
 
         if (!isMounted) return;
@@ -127,7 +127,9 @@ const useRsvpStatus = (eventId, skipCheck = false, refetch) => {
         if (resp?.data?._id) {
           setGuestDetails(resp.data);
         } else {
-          registerUserToEvent();
+          if(frompanel != 'true'){
+            registerUserToEvent();
+          }
         }
       } catch (err) {
         console.error("Error fetching guest details:", err);

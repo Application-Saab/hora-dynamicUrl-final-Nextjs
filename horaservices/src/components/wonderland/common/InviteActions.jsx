@@ -27,7 +27,7 @@ const actions = [
   },
 ];
 
-const InviteActions = ({ eventData, refetchInvite }) => {
+const InviteActions = ({ eventData, refetchInvite, frompanel }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { eventid } = router.query;
@@ -42,8 +42,18 @@ const InviteActions = ({ eventData, refetchInvite }) => {
   const handleClick = (actionId) => {
     if (actionId === 1) {
       if (isWonderlandInternational) {
+        if (frompanel == "true") {
+          router.push(
+            `/wonderlandinternational/templates?eventid=${eventid}&frompanel=true`,
+          );
+        }
         router.push(`/wonderlandinternational/templates?eventid=${eventid}`);
       } else {
+        if (frompanel == "true") {
+          router.push(
+            `/wonderland/templates?eventid=${eventid}&frompanel=true`,
+          );
+        }
         router.push(`/wonderland/templates?eventid=${eventid}`);
       }
       return;
@@ -68,7 +78,7 @@ const InviteActions = ({ eventData, refetchInvite }) => {
         "POST",
         {
           fromInternational: isWonderlandInternational ? "YES" : "NO",
-        }
+        },
       );
 
       if (resp?.data) {

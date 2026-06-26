@@ -30,6 +30,7 @@ const WhosJoining = ({
   onRsvpUpdate,
   setPushRsvpClick,
   pushRsvpClick,
+  frompanel
 }) => {
   const router = useRouter();
   const { eventid: eventId } = router.query;
@@ -156,7 +157,7 @@ const WhosJoining = ({
   
   useEffect(() => {
     setTimeout(() => {
-      if (!isHost && !rsvpSubmitted) {
+      if (!isHost && !rsvpSubmitted && frompanel != 'true') {
         setShowGuestRsvpForm(true);
       } else {
         setShowGuestRsvpForm(false);
@@ -226,7 +227,7 @@ const WhosJoining = ({
               <button
                 className="list-view-btn"
                 onClick={() => {
-                  isHost
+                  (isHost || frompanel == 'true')
                     ? setShowListModal(true)
                     : rsvpSubmitted
                       ? setShowListModal(true)

@@ -45,7 +45,7 @@ const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
         `${UPDATE_EVENT_BY_ID}/${eventData?._id}`,
         "PUT",
         {
-          userId: userId,
+          userId: eventData?.userId,
           ...formData,
         },
       );
