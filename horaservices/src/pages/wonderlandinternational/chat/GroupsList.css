@@ -168,9 +168,14 @@
   z-index: 9999;
   display: flex;
   flex-direction: column;
+  position: fixed;
+  width: 100vw;
   overflow: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), 5px);
+  overscroll-behavior: none;
+  top: 0;
+  left: 0;
+  padding-bottom: 5px;
+  transition: padding-bottom 0.12s linear;
 }
 :root {
   --sat: env(safe-area-inset-top);
