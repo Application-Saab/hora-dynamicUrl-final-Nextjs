@@ -31,11 +31,12 @@ const CATEGORY_POPUP_DATA = {
     ],
     buttonText: "Get Free Consultation",
     footerText: "20000+ Events Planned Successfully..",
+    whatsappMessage: "Hi! I need help finding the decoration I'm looking for. Can you assist me?",
   },
 
   "/photography-page":  {
     title: "Confused About ",
-    highlightText: "Photography Packages?",
+    highlightText:"Photography Packages?",
     subtitle: "Not Sure What’s Included Or Which Package To Choose?",
     description: "We’ll Help You Find The Perfect Shoot — With Samples & Pricing",
     features: [
@@ -58,6 +59,7 @@ const CATEGORY_POPUP_DATA = {
     ],
     buttonText: "Get Free Consultation",
     footerText: "20000+ Events Planned Successfully..",
+    whatsappMessage: "Hi! I need help deciding the photography package I'm looking for. Can you assist me?"
   },
 };
 

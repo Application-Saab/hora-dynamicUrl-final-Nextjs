@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import "./ConsultationPopup.css";
-import ConsultationPopupimg from "@/assets/ConsultationPopupimg.webp"
+import ConsultationPopupimg from "@/assets/ConsultationPopupimg.webp";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
 import tickIcon from "@/assets/tickicon.svg";
 export default function PhotographyConsultationSheet({
@@ -11,40 +11,30 @@ export default function PhotographyConsultationSheet({
   data,
 }) {
   if (!isOpen) return null;
+const PHONE = "7338584828";
+  const openWhatsApp = () => {
+    const message = data?.whatsappMessage || "Hi! I need help with your services.";
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/${PHONE}?text=${encoded}`, "_blank");
+  };
 
   return (
     <>
       <div className="pcs-overlay" onClick={onClose} />
-
       <div className="pcs-sheet">
-        <button className="pcs-close" onClick={onClose}>
-          ✕
-        </button>
-
+        <button className="pcs-close" onClick={onClose}>✕</button>
         <div className="pcs-dragger" />
 
         <div className="pcs-header">
-          {/* Static Image */}
           <div className="pcs-image">
-            <Image
-              src={ConsultationPopupimg}
-              alt="Photography Help"
-              width={110}
-              height={110}
-            />
+            <Image src={ConsultationPopupimg} alt="Help" width={110} height={110} />
           </div>
-
-          {/* Dynamic Content */}
           <div className="pcs-content">
             <h2>
               {data?.title}
               <span>{data?.highlightText}</span>
             </h2>
-
-            <p className="pcs-subtitle">
-              {data?.subtitle}
-            </p>
-
+            <p className="pcs-subtitle">{data?.subtitle}</p>
             <h4>{data?.description}</h4>
           </div>
         </div>
@@ -52,37 +42,24 @@ export default function PhotographyConsultationSheet({
         <div className="pcs-features">
           {data?.features?.map((item, index) => (
             <div key={index} className="pcs-feature">
-             <div className="pcs-icon">
-  <Image
-    src={tickIcon}
-    alt="tick"
-    width={20}
-    height={20}
-  />
-</div>
+              <div className="pcs-icon">
+                <Image src={tickIcon} alt="tick" width={20} height={20} />
+              </div>
               <div>
                 <h5>{item.title}</h5>
                 <p>{item.description}</p>
               </div>
-
             </div>
           ))}
-           <button className="pcs-btn">
-  <Image
-    src={whatsappIcon}
-    alt="WhatsApp"
-    width={20}
-    height={20}
-  />
-  {data?.buttonText}
-</button>
+
+          {/* ✅ onClick lagaya */}
+          <button className="pcs-btn" onClick={openWhatsApp}>
+            <Image src={whatsappIcon} alt="WhatsApp" width={20} height={20} />
+            {data?.buttonText}
+          </button>
         </div>
 
-      
-
-        <p className="pcs-footer">
-          {data?.footerText}
-        </p>
+        <p className="pcs-footer">{data?.footerText}</p>
       </div>
     </>
   );
