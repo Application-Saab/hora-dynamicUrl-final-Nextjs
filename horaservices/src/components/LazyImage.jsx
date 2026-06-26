@@ -62,11 +62,11 @@ const LazyImage = ({
       )}
 
       {/* Spinner overlay: shown when in view but image not yet loaded (or failed) */}
-      {isInView && !isLoaded && (
+      {/* {isInView && !isLoaded && (
         <div className="lazy-image-spinner-container">
           <div className="lazy-image-spinner-animation"></div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

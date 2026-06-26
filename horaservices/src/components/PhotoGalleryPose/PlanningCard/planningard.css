@@ -1,0 +1,91 @@
+.planning-card {
+  width: 100%;
+  max-width: 480px;
+  margin:6px auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #F9F1FB;
+  border: 2px solid #0000001A;
+  border-radius: 16px;
+padding: clamp(6px, 2vw, 10px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.planning-content {
+  display: flex;
+  /* align-items: center; */
+
+  gap: clamp(10px, calc((14 / 393) * 100vw), 18px);
+
+  flex: 1;
+}
+
+.planning-icon {
+  position: relative;
+
+  width: clamp(40px, calc((49 / 393) * 100vw), 49px);
+height: clamp(40px, calc((49 / 393) * 100vw), 49px);
+  border-radius: 50%;
+  background: #b88db8;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.planning-icon img {
+  object-fit: contain;
+
+}
+
+.planning-text h3 {
+  margin: 0;
+
+  color: #000000;
+ font-family: 'Rubik', sans-serif;
+font-weight: 500;
+font-size: clamp(11.4px, calc((14 / 393) * 100vw), 17.1px);
+vertical-align: middle;
+}
+
+.planning-text p {
+  margin: 4px 0 4px;
+    width: 80%;
+  color: #666;
+
+font-family: 'Rubik', sans-serif;
+font-weight: 300;
+font-size: clamp(8.14px, calc((10 / 393) * 100vw), 12.21px);
+
+vertical-align: middle;
+}
+
+.planning-btn {
+  border: none;
+  background: #a35b97;
+  color: #fff;
+border-radius: clamp(5px, calc((6.24 / 393) * 100vw), 8px);
+padding: clamp(5px, calc((6.24 / 393) * 100vw), 8px);
+gap: clamp(5px, calc((6.24 / 393) * 100vw), 8px);
+  font-family: 'Rubik', sans-serif;
+font-weight: 500;
+font-size: clamp(9.77px, calc((12 / 393) * 100vw), 14.66px);
+  display: flex;
+  align-items: center;
+}
+
+.planning-image {
+  position: relative;
+    width: clamp(102px, calc((125 / 393) * 100vw), 153px);
+    height: clamp(74px, calc((91 / 393) * 100vw), 111px);
+  flex-shrink: 0;
+}
+
+.planning-image img {
+  object-fit: contain;
+}

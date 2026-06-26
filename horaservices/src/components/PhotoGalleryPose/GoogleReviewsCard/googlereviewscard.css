@@ -1,0 +1,144 @@
+.gr-card {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  max-width:480;
+  margin:auto;
+}
+
+.gr-header {
+  margin-top:5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f4eff7;
+  border-radius: 12px;
+     border: 2px solid #a35b97;
+  padding: 14px;
+}
+.gr-logo-wrap {
+width: clamp(40px, calc((40 / 393) * 100vw), 48px);
+height: clamp(40px, calc((40 / 393) * 100vw), 48px);
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.gr-logo-wrap img {
+  object-fit: contain;
+}
+.gr-title {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+font-weight: 600;
+font-size: clamp(16px, calc((16 / 393) * 100vw), 20px);
+color:#a35b97;
+}
+
+.gr-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.gr-star {
+  color: #ffb400;
+  font-size: 14px;
+}
+
+.gr-rating {
+  margin-left: 6px;
+font-family: "Roboto", sans-serif;
+font-weight: 400;
+font-size: clamp(13px, calc((13 / 393) * 100vw), 16px);
+vertical-align: bottom;
+color:#000000;
+}
+
+.gr-heading {
+  font-family: "Roboto", sans-serif;
+font-weight: 500;
+font-size: clamp(22px, calc((22 / 393) * 100vw), 26px);
+font-style: italic;
+text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+text-align: center;
+ margin: 14px 2px;
+  color:#000000B2
+}
+
+/* .gr-reviews {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+} */
+.gr-reviews {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-behavior: auto; /* smooth nahi — requestAnimationFrame handle karega */
+}
+.gr-reviews::-webkit-scrollbar {
+  display: none;
+}
+
+.gr-review-card {
+  min-width: 255px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.gr-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+
+.gr-image {
+  object-fit: cover;
+}
+
+.gr-content {
+  padding: 10px;
+}
+
+.gr-quote {
+  font-size: 22px;
+  color: #8c8c8c;
+  line-height: 1;
+}
+.gr-quote-close {
+  text-align: right;
+}
+.gr-text {
+  margin: 0px 10px;
+font-family: 'Roboto', sans-serif;
+font-weight: 400;
+font-size: clamp(12px, calc((12 / 393) * 100vw), 15px);
+  color: #677181;
+  line-height: 1.4;
+}
+
+.gr-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+font-weight: 400;
+font-size: clamp(12px, calc((12 / 393) * 100vw), 15px);
+color: #677181;
+
+}
+
+.gr-stars {
+  color: #a35b97;
+  display: flex;
+  gap: 2px;
+}

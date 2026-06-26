@@ -14,7 +14,7 @@ import pose13 from "@/assets/poseimages/pose13.png";
 export const poseGridData = [
   { title: "Wedding", image: pose1, folder: "Wedding",customerId: "6683e5d43e33c54c0ebde8f2", },
   { title: "Maternity", image: pose2, folder: "maternity poses" ,customerId: "6683e5d43e33c54c0ebde8f2"},
-  { title: "Birthday", image: pose3, folder: "birthday poses",customerId: "6683e5d43e33c54c0ebde8f2" },
+  { title: "Birthday", image: pose3, folder: "Candid",customerId: "63edb239d680d47d95870fa0" },
   { title: "Pre-Wedding", image: pose4, folder: "pre wedding",customerId: "6683e5d43e33c54c0ebde8f2" },
   { title: "Haldi/Mehndi", image: pose5, folder: "HaldiandMehendi" ,customerId: "6683e5d43e33c54c0ebde8f2"},
   { title: "Babyshower", image: pose6, folder: "baby shower" ,customerId: "6683e5d43e33c54c0ebde8f2"},

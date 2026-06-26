@@ -1,0 +1,133 @@
+.capture-card {
+  width: 100%;
+  max-width: 480px;
+ margin:6px auto;
+  background: #f3eef4;
+  border: 1px solid #d9d4dc;
+  border-radius: 16px;
+ padding: clamp(5px, calc((6 / 393) * 100vw), 7px)
+         clamp(7px, calc((9 / 393) * 100vw), 11px);
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.8vw, 8px);
+    box-sizing: border-box;
+}
+
+/* ---- LEFT ---- */
+.capture-left {
+  flex: 0.85;
+  min-width: 0;
+}
+
+.capture-tag {
+  display: block;
+
+  font-family: "Rubik", sans-serif;
+  font-weight: 500;
+
+  font-size: clamp(8px, calc((10 / 393) * 100vw), 12px);
+
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.capture-title {
+  margin: 0;
+
+font-family: 'Inter', sans-serif;
+font-weight: 600;
+
+font-size: clamp(9.92px, calc((12.19 / 393) * 100vw), 14.89px);
+
+vertical-align: middle;
+
+  color: #4b2391;
+}
+
+.capture-desc {
+  margin-top: 4px;
+  margin-bottom: 0px;
+  font-family: 'Rubik', sans-serif;
+font-weight: 300;
+line-height: 1.2;
+font-size: clamp(6.2px, calc((7.62 / 393) * 100vw), 9.3px);
+
+
+  color: #666;
+}
+
+.capture-divider {
+  width: 1px;
+  align-self: stretch;
+  background: #d0c0da;
+  flex-shrink: 0;
+}
+
+/* ---- RIGHT ---- */
+.capture-right {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.capture-price-wrap {
+  min-width: 0;
+}
+
+.capture-starting {
+  display: block;
+
+ font-family: 'Rubik', sans-serif;
+font-weight: 500;
+font-size: clamp(5.5px, calc((6.86 / 393) * 100vw), 8.5px);
+
+  color: #666;
+}
+
+.capture-price {
+  margin: 2px 0 2px;
+
+ font-family: 'Inter', sans-serif;
+font-weight: 700;
+font-size: clamp(9px, calc((11.13 / 393) * 100vw), 14px);
+
+  color: #4b2391;
+}
+
+.capture-features p {
+  margin: 3.5px 0;
+
+font-family: 'Rubik', sans-serif;
+font-weight: 300;
+
+font-size: clamp(6.2px, calc((7.62 / 393) * 100vw), 9.3px);
+
+  color: #666;
+}
+
+.capture-btn {
+  border: none;
+
+  background: #a35b97;
+  color: #fff;
+
+
+width: clamp(75px, calc((92.25 / 393) * 100vw), 113px);
+height: clamp(21px, calc((26.02 / 393) * 100vw), 32px);
+
+gap: clamp(4px, calc((4.92 / 393) * 100vw), 6px);
+
+border-radius: clamp(4px, calc((4.92 / 393) * 100vw), 6px);
+
+padding: clamp(4px, calc((4.92 / 393) * 100vw), 6px);
+
+  font-family: "Rubik", sans-serif;
+  font-weight: 600;
+
+ font-size: clamp(7.7px, calc((9.46 / 393) * 100vw), 11.6px);
+  cursor: pointer;
+  white-space: nowrap;
+}

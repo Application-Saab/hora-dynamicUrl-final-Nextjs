@@ -1,115 +1,112 @@
 /* gallery.css */
 
-/* This is the class passed as wrapperClassName to LazyImage. It's the masonry grid item. */
-.masonry-item { /* Renamed from .lazy-image-container-wrapper for clarity in component use */
-  margin-bottom: 7px; /* Or your preferred gap */
-  break-inside: avoid;
-  border-radius: 4px;  /* Consistent rounding */
-  overflow: hidden;    /* Important for child elements like absolutely positioned spinners or rounded images */
-  background-color: #e9ecef; /* Light grey background, acts as placeholder color */
-  min-height: 50px;  /* CRITICAL: Provides a minimum height before image loads. Adjust this value based on typical smallest image height or desired placeholder size. */
-  position: relative;    /* For positioning spinner overlay */
-  display: block;        /* Ensure it takes block-level layout */
-  transition: background-color 0.3s; /* Smooth transition if needed */
-}
-.masonry-item:hover {
-  /* background-color: #dee2e6; /* Optional: darker placeholder on hover */
-}
-
-
-/* Styles for the <img> tag itself within LazyImage */
-.lazy-image-actual-img {
-  display: block;        /* Remove extra space below image */
-  width: 100%;           /* Take full width of .masonry-item (column) */
-  height: auto;          /* CRITICAL: Allows image to define its own height, maintaining aspect ratio */
-  opacity: 0;            /* Start hidden */
-  transition: opacity 0.5s ease-in-out; /* Fade-in transition */
-  border-radius: inherit; /* Inherit border-radius from parent if you want rounded images too */
-}
-
-.lazy-image-actual-img.loaded {
-  opacity: 1; /* Fade in when loaded */
-}
-
-.lazy-image-actual-img.loading {
-  /* Image is loading, opacity is 0. Spinner should be visible over .masonry-item background. */
-}
-
-
-/* Spinner container and spinner animation */
-.lazy-image-spinner-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%; /* Cover the entire area of .masonry-item */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1; /* Ensure spinner is above the .masonry-item background */
-  pointer-events: none; /* Allow clicks to pass through to image if it loads under it somehow */
-}
-
-.lazy-image-spinner-animation {
-  width: 28px;   /* Size of the spinner */
-  height: 28px;
-  border: 3px solid rgba(0, 0, 0, 0.2); /* Lighter track for the spinner */
-  border-top-color: #333; /* Spinner active color, ensure contrast with placeholder bg */
-  border-radius: 50%;
-  animation: lazy-image-spin 0.7s linear infinite;
-}
-
-@keyframes lazy-image-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Masonry Grid column setup (ensure these are suitable for your design) */
+/* ---- Masonry fallback ---- */
 .masonryGrid {
   column-count: 2;
-  column-gap: 10px;
+  column-gap: 4px;
 }
-@media (min-width: 480px) { .masonryGrid { column-count: 3; } }
-@media (min-width: 768px) { .masonryGrid { column-count: 4; } }
+@media (min-width: 480px)  { .masonryGrid { column-count: 3; } }
+@media (min-width: 768px)  { .masonryGrid { column-count: 4; } }
 @media (min-width: 1024px) { .masonryGrid { column-count: 5; } }
 @media (min-width: 1280px) { .masonryGrid { column-count: 6; } }
 
-
-
-
-.gallery-header {
-  width: 100%;
+.masonry-item {
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #e9ecef;
+  position: relative;
+  display: block;
+  margin-bottom: 4px;
+  break-inside: avoid;
+  min-height: 50px;
+  transition: background-color 0.3s;
 }
+
+/* ---- Gallery wrapper ---- */
+.thumbnail-gallery {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ---- Smart Image Wrapper ---- */
+.smart-image-wrapper {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ✅ Images — cover with top positioning (faces usually at top) */
+.smart-image-wrapper img,
+.smart-image-wrapper .lazy-image-actual-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 20% !important; /* ✅ 20% se face area better show hoga */
+  display: block !important;
+  border-radius: 4px;
+}
+
+/* ---- LazyImage ---- */
+.lazy-image-actual-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  border-radius: inherit;
+}
+
+.lazy-image-actual-img.loaded {
+  opacity: 1;
+}
+
+.lazy-image-spinner-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.lazy-image-spinner-animation {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(0,0,0,0.15);
+  border-top-color: #555;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- Gallery Header ---- */
+.gallery-header { width: 100%; }
 
 .gallery-header-content {
   display: flex;
-  justify-content: flex-end; /* pushes icon to right */
+  justify-content: flex-end;
   align-items: center;
-  padding: 10px; /* optional spacing */
+  padding: 10px;
 }
 
-.gallery-share-icon {
-  cursor: pointer;
-}
-
-
-
-
+.gallery-share-icon { cursor: pointer; }
 
 .gallery-pagination-container {
   display: flex;
   align-items: center;
 }
 
-/* Popup Overlay */
+/* ---- Popup ---- */
 .popupOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 1);
+  inset: 0;
+  background-color: rgba(0,0,0,1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -117,103 +114,111 @@
 }
 
 .popupContent {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0,0,0,0.7);
   position: relative;
   max-width: 98%;
   max-height: 100%;
   overflow: hidden;
 }
 
-/* Popup Header */
-
-.popupHeader h2 {
-  margin: 0;
-}
-
 .closeButton {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 15px;
-}
-
-/* Popup Footer */
-.popupFooter {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.popupFooter a{
-  font-size: 15px;
   color: #bfbfbf;
 }
-.popupFooter img{
-    cursor: pointer;
-    filter: invert(90%) sepia(0) saturate(0) hue-rotate(0deg) brightness(90%) contrast(90%);
-    margin-left: 10px;
-}
-svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
-  height: 13px !important;
-}
-.slick-prev:before, .slick-next:before {
-  content: '' !important;
-  display: inline-block;
-  width: 0;
-  height: 0;
-}
- .slick-next:before  {
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 10px solid #e2e8f0;
-}
-.slick-prev:before {
-  border-top: 10px solid transparent; 
-  border-bottom: 10px solid transparent; 
-  border-right: 10px solid #e2e8f0; 
-}
 
-/* Optional Image Styling */
 .popupImage {
   width: 100%;
   max-height: 500px;
   object-fit: contain;
 }
-.slick-next {
-  right: 13px !important;
+
+.slick-prev:before, .slick-next:before {
+  content: '' !important;
+  display: inline-block;
+  width: 0; height: 0;
 }
-.slick-prev {
-  left: 13px !important;
+.slick-next:before {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #e2e8f0;
 }
-.slick-prev, .slick-next {
-  z-index: 111 !important;
+.slick-prev:before {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #e2e8f0;
 }
+
+.slick-next { right: 13px !important; }
+.slick-prev { left: 13px !important; }
+.slick-prev, .slick-next { z-index: 111 !important; }
+
 .slick-initialized .slick-slide {
   display: flex !important;
-    justify-content: center;
-    align-items: center;
-    height: 85vh;
-    padding: 0px;
+  justify-content: center;
+  align-items: center;
+  height: 85vh;
+  padding: 0;
 }
+
 .popupHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #bfbfbf;
-  padding: 0px 12px 0;
+  padding: 0 12px;
 }
-p.image-index {
+
+p.image-index, span.image-index {
   margin-bottom: 0;
   color: #bfbfbf;
   font-size: 13px;
 }
-/* popup css */
-  
-@media (max-width: 800px) {
-  .masonryGrid {
-    column-count: 2; 
-    column-gap: 6px;
+
+.gallery-banner-insert { width: 100%; }
+
+
+.gallery-skeleton-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+}
+
+.gallery-skeleton {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e4e4e4 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeleton-1 {
+  height: 120px;
+}
+
+.skeleton-2 {
+  height: 170px;
+}
+
+.skeleton-3 {
+  height: 140px;
+}
+
+.skeleton-4 {
+  height: 200px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

@@ -511,12 +511,12 @@ display: flex;
   display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
-.thumbnail-gallery-status{
+/* .thumbnail-gallery-status{
   margin: 20px 0px;
   display: flex;
   justify-content: center;
   color: #534E4E;
-}
+} */
 .upload-badge {
   position: absolute;
   top: 6px;

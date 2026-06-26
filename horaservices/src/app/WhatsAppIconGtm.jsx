@@ -356,7 +356,8 @@ let message = defaultMessage;
       router.asPath !== '/photo-gallery' &&
       !router.asPath.startsWith('/chat') &&
       !router.asPath.startsWith('/accounts') &&
-      !router.asPath.startsWith('/services')
+      !router.asPath.startsWith('/services')&&
+       !router.asPath.startsWith('/photo-gallery')
     );
   };
   return (

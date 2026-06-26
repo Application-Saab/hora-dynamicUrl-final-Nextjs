@@ -1,0 +1,71 @@
+.whyhora-card {
+  width: 100%;
+  max-width: 480px;
+  margin:10px auto;
+  background: #f2edf5;
+  border: 1px solid #d8d4db;
+
+  border-radius: clamp(12px, calc((16 / 393) * 100vw), 18px);
+
+ padding: clamp(6.5px, calc((8 / 393) * 100vw), 9.8px);
+  box-sizing: border-box;
+}
+
+.whyhora-title {
+  margin: 0 0 clamp(12px, calc((16 / 393) * 100vw), 20px);
+
+ font-family: 'Inter', sans-serif;
+font-weight: 600;
+font-size: clamp(11px, calc((14 / 393) * 100vw), 17px);
+text-align: center;
+  color: #000000;
+}
+
+.whyhora-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.whyhora-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding: 0 4px;
+}
+
+.whyhora-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 8px;
+
+  width: 1px;
+  height: 30px;
+
+  background: #ddd4e3;
+}
+
+.whyhora-icon {
+width: clamp(42px, calc((42 / 393) * 100vw), 50px);
+height: clamp(42px, calc((42 / 393) * 100vw), 50px);
+border-radius: clamp(33.55px, calc((41.2 / 393) * 100vw), 50.32px);
+
+opacity: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+
+.whyhora-item p {
+  margin: 0;
+
+  font-family: 'Inter', sans-serif;
+font-weight: 600;
+
+font-size: clamp(5.55px, calc((6.81 / 393) * 100vw), 8.32px);
+text-align: center;
+
+  color: #000000;
+}
