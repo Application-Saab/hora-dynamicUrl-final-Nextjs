@@ -37,7 +37,8 @@ padding:
 
   z-index: 99999;
   overflow: visible; 
-
+ touch-action: none;    
+  overscroll-behavior: none;
   animation: popupUp 0.35s ease;
 }
 
