@@ -254,3 +254,24 @@
     width: 95% !important;
   }
 }
+
+.pcs-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
