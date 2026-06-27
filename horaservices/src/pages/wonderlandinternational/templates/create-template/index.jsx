@@ -137,19 +137,21 @@ const DynamicTemplateRenderer = () => {
 
   const templateId = searchParams.get("templateId") || "";
   const eventId = searchParams.get("id");
+  const frompanel = searchParams.get("frompanel")
 
-  const loadUserId = () =>
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  // const loadUserId = () =>
+  //   typeof window !== "undefined" ? localStorage.getItem("userID") : null;
   const loadToken = () =>
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const userId = loadUserId();
+  // const userId = loadUserId();
   const token = loadToken();
 
   const [templateLoading, setTemplateLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
   const [imgBlurred, setImgBlurred] = useState(true);
+  const [hostId, setHostId] = useState('')
 
   const loading = templateLoading || !imageLoaded;
 
@@ -397,7 +399,7 @@ const DynamicTemplateRenderer = () => {
         );
         const { data } = await res.json();
         if (!active || res.status !== 200 || !data) return;
-
+        setHostId(data?.userId)
         const formattedDate = data.eventDate
           ? new Date(data.eventDate).toISOString().split("T")[0]
           : "";
@@ -676,6 +678,9 @@ const DynamicTemplateRenderer = () => {
     reader.onloadend = async () => {
       try {
         await saveTemplate(`template_${eventId}`, reader.result);
+        if(frompanel == 'true'){
+          router.replace(`/wonderlandinternational/invite?eventid=${eventId}&frompanel=true`);
+        }
         router.replace(`/wonderlandinternational/invite?eventid=${eventId}`);
       } catch (err) {
         console.error("Failed to save template in IndexedDB:", err);
@@ -685,7 +690,7 @@ const DynamicTemplateRenderer = () => {
 
     const form = new FormData();
     form.append("image", file);
-    form.append("userId", userId);
+    form.append("userId", hostId);
 
     try {
       await fetch(
@@ -704,7 +709,7 @@ const DynamicTemplateRenderer = () => {
   };
 
   const handleSave = async () => {
-    if (!userId) {
+    if (!hostId) {
       setErrorModal({ open: true, message: "User not logged in or UserId missing." });
       return;
     }
@@ -752,7 +757,7 @@ const DynamicTemplateRenderer = () => {
             Authorization: token || "",
           },
           body: JSON.stringify({
-            userId,
+            userId : hostId,
             eventType: formData.eventType,
             names: {
               one: formData.name,

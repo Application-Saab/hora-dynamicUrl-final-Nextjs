@@ -18,6 +18,7 @@ const TemplateRenderer = ({
   templatewrapperclass,
   isHost,
   isVenue = false,
+  frompanel
 }) => {
   const textRef = useRef(null);
   const templateRef = useRef(null);
@@ -150,7 +151,7 @@ const TemplateRenderer = ({
         if (
           !eventDetails?.externalTemplateImageUrl &&
           mediaUrl === DefaultTemplate.src &&
-          isHost &&
+          (isHost || frompanel == 'true') &&
           imageLoaded
         ) {
           handleDownload();

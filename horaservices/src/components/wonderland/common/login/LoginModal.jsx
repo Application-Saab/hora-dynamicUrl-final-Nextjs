@@ -23,6 +23,7 @@ const LoginModal = ({
   template = "happy_to_help_v2",
   link = null,
   bgColor = "login-modal-content",
+  frompanel = 'false'
 }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();

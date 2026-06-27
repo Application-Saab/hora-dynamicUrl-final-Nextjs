@@ -16,7 +16,7 @@ import useRsvpStatus from "@/hooks/useRsvpStatus";
 
 const InvitesPage = () => {
   const router = useRouter();
-  const { eventid: queryEventId } = router.query;
+  const { eventid: queryEventId, frompanel } = router.query;
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [eventDetails, setEventDetails] = useState(null);
   const [userData, setUserData] = useState({});
@@ -124,7 +124,7 @@ const InvitesPage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (eventDetails && eventDetails.userId === loggedinUserId) {
+      if (eventDetails && eventDetails.userId === loggedinUserId || frompanel == 'true') {
         setShowHostActionSection(true);
       } else {
         setShowHostActionSection(false);
@@ -151,6 +151,7 @@ const InvitesPage = () => {
                 eventDetails={eventDetails}
                 orderDetails={eventDetails}
                 isHost={eventDetails?.userId === loggedinUserId}
+                frompanel={frompanel}
               />
             )}
           </div>
@@ -169,6 +170,7 @@ const InvitesPage = () => {
               <InviteActions
                 refetchInvite={() => refetchEventInvite()}
                 eventData={eventDetails}
+                frompanel={frompanel}
               />
             </div>
           )}
@@ -184,6 +186,7 @@ const InvitesPage = () => {
               setPushRsvpClick={setPushRsvpClick}
               pushRsvpClick={pushRsvpClick}
               onRsvpUpdate={() => setRsvpRefetch((prev) => prev + 1)}
+              frompanel={frompanel}
             />
           </div>
           <div className="event-wall-container">
@@ -193,6 +196,7 @@ const InvitesPage = () => {
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={rsvpSubmitted}
               isHost={eventDetails?.userId === loggedinUserId}
+              frompanel={frompanel}
             />
           </div>
         </div>
@@ -204,6 +208,7 @@ const InvitesPage = () => {
       <LoginModal
         isOpen={showGuestLoginModal}
         onClose={() => setShowGuestLoginModal(false)}
+        frompanel={frompanel}
       />
     </>
   );

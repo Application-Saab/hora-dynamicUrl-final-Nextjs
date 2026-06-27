@@ -19,7 +19,7 @@ import { saveFileToOPFS } from "@/utils/eventWallHelpers";
 
 export default function NoteDetails() {
   const router = useRouter();
-  const { NoteId } = router.query;
+  const { NoteId, frompanel } = router.query;
   const [note, setNote] = useState(null);
   const [userName, setUserName] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -178,6 +178,9 @@ export default function NoteDetails() {
     });
 
     // instant navigation
+    if(frompanel == 'true'){
+      router.push(`/wonderlandinternational/invite?eventid=${eventid}&frompanel=true`);
+    }
     router.push(`/wonderlandinternational/invite?eventid=${eventid}`);
 
     setUploading(false);

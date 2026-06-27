@@ -8,8 +8,11 @@ import {notesData} from "@/utils/ThankyounotesData.js"
 
 const EventNotes = () => {
   const router = useRouter();
-  const { eventid } = router.query;
+  const { eventid, frompanel } = router.query;
   const handleNoteClick = (noteId) => {
+    if(frompanel == 'true'){
+      router.push(`/wonderlandinternational/Thankyou-note/Create-note/${noteId}?eventid=${eventid}&frompanel=true`);
+    }
     router.push(`/wonderlandinternational/Thankyou-note/Create-note/${noteId}?eventid=${eventid}`);
   };
   return (

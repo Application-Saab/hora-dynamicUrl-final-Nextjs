@@ -14,6 +14,7 @@ const TemplatesPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventid");
+  const frompanel = searchParams.get("frompanel");
 
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -111,6 +112,11 @@ const TemplatesPage = () => {
     if (!eventId) {
       alert("Missing event ID.");
       return;
+    }
+    if (frompanel == "true") {
+      router.push(
+        `/wonderlandinternational/templates/create-template?id=${eventId}&templateId=${templateId}&frompanel=true`,
+      );
     }
     router.push(
       `/wonderlandinternational/templates/create-template?id=${eventId}&templateId=${templateId}`,

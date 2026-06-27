@@ -58,6 +58,7 @@ const EventwallSection = ({
   rsvpSubmitted,
   setPushRsvpClick,
   isHost,
+  frompanel,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -167,33 +168,33 @@ const EventwallSection = ({
     imagesRef.current = allImages;
   }, [allImages]);
 
-useEffect(() => {
-  if (!userId || !eventid) return;
+  useEffect(() => {
+    if (!userId || !eventid) return;
 
-  const fetchLikes = async () => {
-    try {
-      const initialLikes = {};
+    const fetchLikes = async () => {
+      try {
+        const initialLikes = {};
 
-      const resp = await getAllLikes(
-        `${LIKED_POST_BY_EVENT_AND_USERID}/${eventid}/${userId}`,
-        "GET",
-      );
+        const resp = await getAllLikes(
+          `${LIKED_POST_BY_EVENT_AND_USERID}/${eventid}/${userId}`,
+          "GET",
+        );
 
-      resp?.posts?.forEach((post) => {
-        initialLikes[post._id] = true;
-      });
+        resp?.posts?.forEach((post) => {
+          initialLikes[post._id] = true;
+        });
 
-      setLikedImages((prev) => ({
-        ...prev,
-        ...initialLikes,
-      }));
-    } catch (error) {
-      console.error("Failed to fetch likes", error);
-    }
-  };
+        setLikedImages((prev) => ({
+          ...prev,
+          ...initialLikes,
+        }));
+      } catch (error) {
+        console.error("Failed to fetch likes", error);
+      }
+    };
 
-  fetchLikes();
-}, [eventid, userId]);
+    fetchLikes();
+  }, [eventid, userId]);
 
   useEffect(() => {
     if (!eventid) return;
@@ -346,7 +347,9 @@ useEffect(() => {
     if (!Array.isArray(current) || current.length === 0) return;
 
     const updatedList = current.map((item) =>
-      item.id === id ? { ...item, postUrl, postWebpUrl: thumbnailUrl, _id : imageId } : item,
+      item.id === id
+        ? { ...item, postUrl, postWebpUrl: thumbnailUrl, _id: imageId }
+        : item,
     );
 
     // UI updates immediately
@@ -399,7 +402,12 @@ useEffect(() => {
         );
 
         const post = posts[0];
-        await updateUploadedUrls(item.id, post.postUrl, post.postWebpUrl, post?._id);
+        await updateUploadedUrls(
+          item.id,
+          post.postUrl,
+          post.postWebpUrl,
+          post?._id,
+        );
         updateStatus(item.id, "done");
 
         await removeFromQueue(item.id);
@@ -491,10 +499,17 @@ useEffect(() => {
     {
       label: "Notes",
       icon: NotesButtonIcon.src,
-      onClick: () =>
-        router.push(
-          `${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`,
-        ),
+      onClick: () => {
+        if (frompanel != "true") {
+          router.push(
+            `${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}`,
+          );
+        } else {
+          router.push(
+            `${isWonderlandInternational ? "/wonderlandinternational" : "/wonderland"}/Thankyou-note?eventid=${eventid}&frompanel=true`,
+          );
+        }
+      },
     },
     {
       label: "Post Badge",
@@ -889,7 +904,7 @@ useEffect(() => {
                 key={index}
                 className={`event-wall-action-btn event-wall-action-btn-${index}`}
                 onClick={() => {
-                  isHost
+                  isHost || frompanel == "true"
                     ? onClick()
                     : rsvpSubmitted
                       ? onClick()
@@ -910,7 +925,8 @@ useEffect(() => {
       </div>
 
       <div>
-        {allImages.length === 0 || (!rsvpSubmitted && !isHost) ? (
+        {allImages.length === 0 ||
+        (!rsvpSubmitted && !isHost && frompanel != "true") ? (
           <div className="eventwall-nopost-ctn">
             <div className="nopost-box d-flex justify-content-center align-items-center flex-column">
               <img src={NopostCamera.src} alt="No Post Camera" className="" />
@@ -1062,6 +1078,7 @@ useEffect(() => {
                               <span>Share</span>
                             </div>
                             {(isHost ||
+                              frompanel == "true" ||
                               String(currentImage?.postById) ===
                                 String(userId)) && (
                               <div
