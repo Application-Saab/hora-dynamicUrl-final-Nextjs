@@ -100,6 +100,7 @@ useEffect(() => {
     sliderRef.current.slickGoTo(selectedIndex, true);
   }
 }, [selectedIndex]);
+
   const getItemsPerPage = useCallback(() => {
     if (typeof window === 'undefined') return 12;
     if (isIOSMobile) return window.innerWidth >= 400 ? 15 : 9;
@@ -162,9 +163,31 @@ useEffect(() => {
   const handleImageClick = useCallback((i) => {
     if (i >= 0 && i < allThumbnails.length) setSelectedIndex(i);
   }, [allThumbnails.length]);
+useEffect(() => {
+  const handlePopState = () => {
+    if (selectedIndex !== null) {
+      setSelectedIndex(null);
+    }
+  };
 
-  const closePopup = useCallback(() => setSelectedIndex(null), []);
+  window.addEventListener("popstate", handlePopState);
 
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, [selectedIndex]);
+useEffect(() => {
+  if (selectedIndex !== null) {
+    window.history.pushState({ galleryPopup: true }, "");
+  }
+}, [selectedIndex]);
+ const closePopup = useCallback(() => {
+  if (window.history.state?.galleryPopup) {
+    window.history.back();
+  } else {
+    setSelectedIndex(null);
+  }
+}, []);
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
     setTimeout(() => {
