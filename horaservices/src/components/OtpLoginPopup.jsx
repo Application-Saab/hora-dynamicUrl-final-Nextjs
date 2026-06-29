@@ -62,7 +62,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
               from: "+917338584828",
               to: formatted,
               content: {
-                templateName: "happy_to_help_v2",
+                templateName: "happy_to_help_v4",
                 language: "en",
                 templateData: {
                   header: {
