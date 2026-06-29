@@ -12,11 +12,22 @@ export default function PhotographyConsultationSheet({
 }) {
   if (!isOpen) return null;
 const PHONE = "7338584828";
-  const openWhatsApp = () => {
-    const message = data?.whatsappMessage || "Hi! I need help with your services.";
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${PHONE}?text=${encoded}`, "_blank");
-  };
+ const openWhatsApp = () => {
+  // GTM Event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "consultation_whatsapp_click",
+    button_name: data?.buttonText,
+    popup_type: data?.highlightText,
+  });
+
+  const message =
+    data?.whatsappMessage ;
+
+  const encoded = encodeURIComponent(message);
+
+  window.open(`https://wa.me/${PHONE}?text=${encoded}`, "_blank");
+};
 
   return (
     <>
