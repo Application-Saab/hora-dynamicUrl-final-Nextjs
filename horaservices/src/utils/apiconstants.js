@@ -79,3 +79,5 @@ export const GET_VENUE_DETAILS_BY_ID = '/api/party-venue/venue-details';
 export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages-by-venue';
 export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'
 export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'
+
+export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code"
