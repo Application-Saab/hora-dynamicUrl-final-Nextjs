@@ -62,7 +62,7 @@ color:#000000;
 .gr-heading {
   font-family: "Roboto", sans-serif;
 font-weight: 500;
-font-size: clamp(22px, calc((22 / 393) * 100vw), 26px);
+font-size: clamp(14px, calc((18 / 393) * 100vw), 18px);
 font-style: italic;
 text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 text-align: center;

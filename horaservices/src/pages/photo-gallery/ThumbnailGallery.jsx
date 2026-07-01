@@ -77,7 +77,7 @@ const ThumbnailGallery = ({
   const [isIOSMobile,    setIsIOSMobile]    = useState(false);
   const [cw,             setCw]             = useState(320); // default 320, update hoga measure se
   const galleryRef = useRef(null);
-
+  const sliderRef = useRef(null);
   // ── Container width — actual rendered px ──
   useEffect(() => {
     const measure = () => {
@@ -95,6 +95,11 @@ const ThumbnailGallery = ({
     if (typeof navigator !== 'undefined')
       setIsIOSMobile(/iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
   }, []);
+useEffect(() => {
+  if (selectedIndex !== null && sliderRef.current) {
+    sliderRef.current.slickGoTo(selectedIndex, true);
+  }
+}, [selectedIndex]);
 
   const getItemsPerPage = useCallback(() => {
     if (typeof window === 'undefined') return 12;
@@ -158,9 +163,31 @@ const ThumbnailGallery = ({
   const handleImageClick = useCallback((i) => {
     if (i >= 0 && i < allThumbnails.length) setSelectedIndex(i);
   }, [allThumbnails.length]);
+useEffect(() => {
+  const handlePopState = () => {
+    if (selectedIndex !== null) {
+      setSelectedIndex(null);
+    }
+  };
 
-  const closePopup = useCallback(() => setSelectedIndex(null), []);
+  window.addEventListener("popstate", handlePopState);
 
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, [selectedIndex]);
+useEffect(() => {
+  if (selectedIndex !== null) {
+    window.history.pushState({ galleryPopup: true }, "");
+  }
+}, [selectedIndex]);
+ const closePopup = useCallback(() => {
+  if (window.history.state?.galleryPopup) {
+    window.history.back();
+  } else {
+    setSelectedIndex(null);
+  }
+}, []);
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
     setTimeout(() => {
@@ -169,11 +196,19 @@ const ThumbnailGallery = ({
     }, 100);
   }, []);
 
-  const sliderSettings = useMemo(() => ({
-    dots: false, infinite: allThumbnails.length > 1,
-    speed: 300, slidesToShow: 1, slidesToScroll: 1,
-    lazyLoad: 'ondemand', adaptiveHeight: true,
-  }), [allThumbnails.length]);
+ const sliderSettings = useMemo(() => ({
+  dots: false,
+  infinite: allThumbnails.length > 1,
+  speed: 300,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  lazyLoad: "ondemand",
+  adaptiveHeight: true,
+
+  afterChange: (current) => {
+    setSelectedIndex(current);
+  },
+}), [allThumbnails.length]);
 
   // ── Grid render ──
   const renderGallery = () => {
@@ -277,25 +312,42 @@ return result;
 
       {/* Popup */}
       {selectedIndex !== null && allThumbnails[selectedIndex] && (
-        <div className="popupOverlay" onClick={closePopup} role="dialog" aria-modal="true">
-          <div className="popupContent" onClick={e => e.stopPropagation()}>
-            <div className="popupHeader">
-              <span className="image-index">{selectedIndex + 1} / {allThumbnails.length}</span>
-              <button className="closeButton" onClick={closePopup} aria-label="Close">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="white" />
-                </svg>
-              </button>
-            </div>
-            <Slider {...sliderSettings} initialSlide={selectedIndex} key={`sl-${selectedIndex}`}>
-              {allThumbnails.map((t, i) => (
-                <div key={t.stableKey || i}>
-                  <img src={t.originalUrl || t.url} alt={`Photo ${i+1}`} className="popupImage" />
-                </div>
-              ))}
-            </Slider>
-          </div>
+       <div className="popupOverlay" onClick={closePopup}>
+  <div
+    className="popupContent"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <div className="popupHeader">
+      <span className="image-index">
+        {selectedIndex + 1} / {allThumbnails.length}
+      </span>
+
+      <button
+        className="closeButton"
+        onClick={closePopup}
+        aria-label="Close"
+      >
+        ✕
+      </button>
+    </div>
+
+    <Slider
+      ref={sliderRef}
+      {...sliderSettings}
+      initialSlide={selectedIndex}
+    >
+      {allThumbnails.map((t, i) => (
+        <div key={t.stableKey || i} className="popupSlide">
+          <img
+            src={t.originalUrl || t.url}
+            alt={`Photo ${i + 1}`}
+            className="popupImage"
+          />
         </div>
+      ))}
+    </Slider>
+  </div>
+</div>
       )}
 
       {/* Bottom pagination */}
