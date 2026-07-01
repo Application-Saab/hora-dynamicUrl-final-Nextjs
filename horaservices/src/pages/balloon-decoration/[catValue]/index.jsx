@@ -56,12 +56,15 @@ import HighPriceProduct from "@/components/Highpriceproduct";
 import NationPride from "@/assets/categories/NationPride.jpeg";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import SeoHead from "@/utils/SeoHead";
+import ThemeSelector from "@/components/Themeselector";
+
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-    const pathname = usePathname();
+  const pathname = usePathname();
   const [city, setCity] = useState("");
   const [catValue, setCatValue] = useState("");
+
   useEffect(() => {
     if (router.isReady) {
       const { catValue: queryCatValue, city: queryCity } = router.query;
@@ -72,7 +75,6 @@ const DecorationCatPage = ({ locality }) => {
 
       if (queryCity) {
         setCity(queryCity);
-
       }
     } else {
       const path = window.location.pathname;
@@ -81,11 +83,11 @@ const DecorationCatPage = ({ locality }) => {
       setCatValue(dynamicValue);
     }
   }, [router.isReady, router.query]);
+
   const altTagCatValue = catValue.replace(/-/g, " ");
   const [orderType, setOrderType] = useState(1);
   const hasCityPageParam = city ? true : false;
   const containerRef = useRef(null);
-  //   const { catValue } = useParams();
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState("");
   const [showAll, setShowAll] = useState(false);
@@ -94,28 +96,74 @@ const DecorationCatPage = ({ locality }) => {
   );
   const { theme } = router.query;
   const [loading, setLoading] = useState(true);
-  const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
-  const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
+  const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
   const [discountDifference, setDiscountDifference] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [catalogueData, setCatalogueData] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
-  //   const navigate = useNavigate();
-  const [priceFilter, setPriceFilter] = useState("all"); // Default: Show all
-  const [themeFilter, setThemeFilter] = useState("all"); // Default: Show all
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [themeFilter, setThemeFilter] = useState("all");
   const [sortFilter, setSortFilter] = useState("asc");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
   const searchParams = useSearchParams();
   const selectedTheme = searchParams.get("theme");
   const isThemePage = !!selectedTheme;
-  
+
+  // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
+  const [selectedPriceTheme, setSelectedPriceTheme] = useState(null); // { id, label, priceRange, ... } | null
+
+  const handleSelectPriceTheme = (theme) => {
+    setSelectedPriceTheme(theme); // theme = null clears the filter, otherwise the full theme object
+  };
+
+  // Only show the price-range theme selector on these two category pages
+  const isPriceThemeSelectorPage =
+    catValue?.toLowerCase() === "kids-birthday-decoration" ||
+    catValue?.toLowerCase() === "birthday-decoration";
+
+  const isPriceThemeActive = !!selectedPriceTheme;
+
+  // ---- Sort state (New Arrival / Popularity / Price Low-High / Price High-Low) ----
+  const [sortOption, setSortOption] = useState("popularity");
+
+  const handleSortChange = (id) => {
+    setSortOption(id);
+  };
+
+  // ---- Search: "Matching Categories" source ----
+  // Theme-category suggestions only exist for these two category pages
+  // (they're the only ones with a defined set of theme filters).
+  const searchCategoryList = useMemo(() => {
+    const lowerCatValue = catValue?.toLowerCase();
+
+    if (lowerCatValue === "kids-birthday-decoration") {
+      return themeFilters.map((item) => ({
+        id: item.value,
+        label: item.label,
+        image: item.image,
+        value: item.value,
+      }));
+    }
+
+    if (lowerCatValue === "naming-ceremony-decoration") {
+      return NamingCeremonyThemes.map((item) => ({
+        id: item.value,
+        label: item.label,
+        image: item.image,
+        value: item.value,
+      }));
+    }
+
+    return [];
+  }, [catValue]);
 
   function getSubCategory(catValue) {
     if (!catValue) {
-      const path = window.location.pathname; 
-      const parts = path.split("/"); 
+      const path = window.location.pathname;
+      const parts = path.split("/");
       const dynamicValue = parts[2];
       return dynamicValue;
     }
@@ -136,29 +184,26 @@ const DecorationCatPage = ({ locality }) => {
       return "PremiumDecoration";
     } else if (catValue === "bachelorette-decoration") {
       return "bachelorette";
-    }else if (catValue === "naming-ceremony-decoration") {
+    } else if (catValue === "naming-ceremony-decoration") {
       return "NamingCeremony";
-    }else if (catValue === "coorporate-showrooms-decoration"){
+    } else if (catValue === "coorporate-showrooms-decoration") {
       return "Coorporateshowrooms"
-    }else if (catValue === "car-decoration"){
+    } else if (catValue === "car-decoration") {
       return "CarDecoration"
-    }else if (catValue === "festivals-decoration"){
+    } else if (catValue === "festivals-decoration") {
       return "Festivals"
-    }else if (catValue === "pet-animals-decoration") {
+    } else if (catValue === "pet-animals-decoration") {
       return "PetAnimalsDecoration";
-    }
-    else if  (catValue === "engagement-decoration"){
+    } else if (catValue === "engagement-decoration") {
       return "Engagementdecoration"
-    }
-
-     else {
-      const parts = catValue.split("-"); 
+    } else {
+      const parts = catValue.split("-");
       return parts
-        .slice(0, 2) 
+        .slice(0, 2)
         .map(
           (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
         )
-        .join(""); 
+        .join("");
     }
   }
 
@@ -166,28 +211,30 @@ const DecorationCatPage = ({ locality }) => {
     (state) => state.state || {}
   );
   const subCategory = getSubCategory(catValue) || stateSubCategory;
-  const imgAlt = stateImgAlt || "default alt text"; 
+  const imgAlt = stateImgAlt || "default alt text";
+
   const getRandomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-   const getRandomRating = () => {
+  const getRandomRating = () => {
     return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
   };
+
   useEffect(() => {
     if (theme) {
-      setThemeFilter(theme); 
+      setThemeFilter(theme);
     } else {
       setThemeFilter("all");
     }
   }, [theme]);
+
   useEffect(() => {
     addSpaces(subCategory);
     getSubCatId(subCategory);
   }, [subCategory]);
 
   useEffect(() => {
-   
     const handleStickyScroll = () => {
       const filterElement = document.querySelector(".filterdropdown");
       if (filterElement) {
@@ -199,14 +246,11 @@ const DecorationCatPage = ({ locality }) => {
     return () => window.removeEventListener("scroll", handleStickyScroll);
   }, []);
 
-
-
   const sentinelRef = useRef(null);
 
   useEffect(() => {
     if (loading || !hasMore) return;
 
-    
     const isMobile = window.innerWidth <= 768;
     const rootMargin = isMobile ? "400px" : "1000px";
 
@@ -234,16 +278,11 @@ const DecorationCatPage = ({ locality }) => {
     };
   }, [loading, hasMore]);
 
-
   useEffect(() => {
-   
     if (catValue && currentPage !== 1) {
       getSubCatItems(currentPage);
     }
   }, [currentPage]);
-
-
-
 
   useEffect(() => {
     if (catValue) {
@@ -256,8 +295,13 @@ const DecorationCatPage = ({ locality }) => {
   useEffect(() => {
     if (catValue) {
       const content = DecorationCatDescriptionData[catValue] || [];
-          setCurrentCategoryContent(content);
+      setCurrentCategoryContent(content);
     }
+  }, [catValue]);
+
+  // Reset the price-range theme filter whenever the category changes
+  useEffect(() => {
+    setSelectedPriceTheme(null);
   }, [catValue]);
 
   function addSpaces(subCategory) {
@@ -272,22 +316,20 @@ const DecorationCatPage = ({ locality }) => {
     setSelCat(result);
   }
 
- 
   const getSubCatId = async (subCategory) => {
     try {
       const response = await axios.get(
         BASE_URL + GET_DECORATION_CAT_ID + subCategory
       );
       const categoryId = response.data.data?._id;
-     
+
       if (categoryId) {
-        setCatId(categoryId); 
+        setCatId(categoryId);
       }
     } catch (error) {
-    
+
     }
   };
-
 
   const getDiscountedPrice = (price) => {
     let discount;
@@ -310,9 +352,7 @@ const DecorationCatPage = ({ locality }) => {
     }
   }, [catId, themeFilter, priceFilter]);
 
-  
   const getSubCatItems = async (page) => {
-  
     if (!catId) return;
 
     try {
@@ -332,15 +372,17 @@ const DecorationCatPage = ({ locality }) => {
       const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM
         }v2/${catId}?limit=1000&priceFilter=${newPriceFilter}&sortBy=${newSortFilter}&theme=${themeFilter}`;
 
-
       const response = await axios.get(apiUrl);
 
       if (response.status === API_SUCCESS_CODE) {
         const decoratedData = response.data.data.map((item) => {
+          // Normalize price to a Number so range comparisons (>=, <=) work reliably
+          const numericPrice = Number(item.price);
           const { discount, discountedPrice, discountDifference } =
-            getDiscountedPrice(item.price);
+            getDiscountedPrice(numericPrice);
           return {
             ...item,
+            price: numericPrice,
             rating: getRandomRating(),
             userCount: getRandomNumber(20, 500),
             discountPercentage: discount,
@@ -348,14 +390,14 @@ const DecorationCatPage = ({ locality }) => {
             discountDifference,
           };
         });
-      
+
         setCatalogueData((prevData) =>
           page === 1 ? decoratedData : [...prevData, ...decoratedData]
         );
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
-        } finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -371,7 +413,7 @@ const DecorationCatPage = ({ locality }) => {
     "haldi-mehendi-decoration": haldimehndiBanner,
     "Wedding": WeddingBanner,
     "bachelorette-decoration": BacheloretteBanner,
-    "naming-ceremony-decoration":NamingCeremonyBanner,
+    "naming-ceremony-decoration": NamingCeremonyBanner,
     "Nation-Pride-decoration": NationPride,
     "House-Warming-decoration": HouseWarming,
     "coorporate-showrooms-decoration": showroomBanner,
@@ -391,7 +433,7 @@ const DecorationCatPage = ({ locality }) => {
   const normalizeCatValue = (val) => {
     if (!val) return "";
 
-     const exactMatch = Object.keys(categoryBannerMap).find(
+    const exactMatch = Object.keys(categoryBannerMap).find(
       (key) => key.toLowerCase() === val.toLowerCase()
     );
 
@@ -402,71 +444,134 @@ const DecorationCatPage = ({ locality }) => {
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
 
   const shouldHideBanner = (name) => {
-    const hideFor = ["Wedding", "haldi-mehendi-decoration"]; // jinke liye hide karna hai
+    const hideFor = ["Wedding", "haldi-mehendi-decoration"];
     return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
   };
 
+  const handleViewDetails = (item) => {
+    if (!item?.slug && !item?.product_slug && !item?.name) return;
 
-const handleViewDetails = (item) => {
-  if (!item?.slug && !item?.product_slug && !item?.name) return;
+    const productSlug =
+      item.slug ||
+      item.product_slug ||
+      item.name.toLowerCase().replace(/\s+/g, "-");
 
-  const productSlug =
-    item.slug ||
-    item.product_slug ||
-    item.name.toLowerCase().replace(/\s+/g, "-");
+    const categorySlug = getCategorySlugFromPath(
+      pathname,
+      city,
+      locality
+    );
 
-  // 🔥 category slug nikaalo properly
-  const categorySlug = getCategorySlugFromPath(
-    pathname,
-    city,
-    locality
-  );
+    if (!categorySlug || !catValue) {
+      console.warn("Missing categorySlug or catValue", {
+        categorySlug,
+        catValue,
+      });
+      return;
+    }
 
-  if (!categorySlug || !catValue) {
-    console.warn("Missing categorySlug or catValue", {
-      categorySlug,
-      catValue,
-    });
-    return;
-  }
+    let base = "";
+    if (city) base += `/${city.toLowerCase()}`;
+    if (locality) base += `/${locality.toLowerCase()}`;
 
-  // 🔥 same pattern as DecorSlider
-  let base = "";
-  if (city) base += `/${city.toLowerCase()}`;
-  if (locality) base += `/${locality.toLowerCase()}`;
+    const finalPath = `${base}/${categorySlug}/${catValue}/product/${productSlug}`;
 
-  const finalPath = `${base}/${categorySlug}/${catValue}/product/${productSlug}`;
+    router.push(finalPath);
+  };
 
-  router.push(finalPath);
-};
+  // Navigates to the themed variant of the current category page (?theme=...).
+  // Used by CategoryTabs (kids-birthday / naming-ceremony) and by the
+  // "Matching Categories" results in the search dropdown.
+  const openCatItems = (item) => {
+    if (!item?.value || !catValue) return;
+
+    const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+
+    let base = "";
+    if (city) base += `/${city.toLowerCase()}`;
+    if (locality) base += `/${locality.toLowerCase()}`;
+
+   const finalPath = `${base}/${categorySlug}/${catValue}/${item.value}`;
+    router.push(finalPath);
+  };
 
   const toggleShowAll = () => {
     setShowAll((prev) => !prev);
   };
 
+  // ---- Sorting ----
+  // Field names match the actual API response:
+  // - creation date lives inside featured_images[0].createdAt
+  // - popularity comes from the top-level "popularity_score" field
+  const sortedCatalogueData = useMemo(() => {
+    const data = [...catalogueData];
 
-  const highPriceProducts = catalogueData.filter(item => item.price > 11000);
+    switch (sortOption) {
+      case "newArrival":
+        // Latest products first — descending by creation date.
+        return data.sort((a, b) => {
+          const dateA = new Date(
+            a.featured_images?.[0]?.createdAt || a.createdAt || a.created_at || 0
+          ).getTime();
+          const dateB = new Date(
+            b.featured_images?.[0]?.createdAt || b.createdAt || b.created_at || 0
+          ).getTime();
+          return dateB - dateA;
+        });
+
+     case "popularity":
+  // Descending order — highest popularity_score first.
+  return data.sort((a, b) => {
+    const scoreA = Number(a.popularity_score ?? a.popularityScore ?? 0);
+    const scoreB = Number(b.popularity_score ?? b.popularityScore ?? 0);
+    return scoreB - scoreA;
+  });
+
+      case "lowToHigh":
+        return data.sort((a, b) => Number(a.price) - Number(b.price));
+
+      case "highToLow":
+        return data.sort((a, b) => Number(b.price) - Number(a.price));
+
+      default:
+        return data;
+    }
+  }, [catalogueData, sortOption]);
+const shouldShowSearchBar =
+  isPriceThemeSelectorPage ||
+  catValue?.toLowerCase() === "naming-ceremony-decoration";
+  // ---- Price-range filtering derived data (built on top of the sorted list) ----
+  const priceThemeFilteredData = useMemo(() => {
+    if (!selectedPriceTheme) return sortedCatalogueData;
+    const { min, max } = selectedPriceTheme.priceRange;
+    return sortedCatalogueData.filter((item) => {
+      const price = Number(item.price);
+      return price >= min && price <= max;
+    });
+  }, [sortedCatalogueData, selectedPriceTheme]);
+
+  const highPriceProducts = sortedCatalogueData.filter((item) => Number(item.price) > 11000);
 
   return (
     <div className="decCatPage">
-<SeoHead
-  catValue={normalizedCat}
-  city={city}
-  locality={locality}
-  theme={theme}
-/>
+      <SeoHead
+        catValue={normalizedCat}
+        city={city}
+        locality={locality}
+        theme={theme}
+      />
 
-   {loading ? (
-  <div className="skeleton-wrapper">
-    {Array.from({ length: 6 }).map((_, index) => (
-      <CardSkeleton key={index} />
-    ))}
-  </div>
-) : catalogueData.length === 0 ? (
-  <div className="noProductsWrapper">
-    <h2>No products found</h2>
-  </div>
-) : (
+      {loading ? (
+        <div className="skeleton-wrapper">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <CardSkeleton key={index} />
+          ))}
+        </div>
+      ) : catalogueData.length === 0 ? (
+        <div className="noProductsWrapper">
+          <h2>No products found</h2>
+        </div>
+      ) : (
         <>
           {!isThemePage && (
             <>
@@ -480,7 +585,20 @@ const handleViewDetails = (item) => {
                   priority
                 />
               </section>
-
+         {shouldShowSearchBar && (
+  <ThemeSelector
+    onSelectTheme={handleSelectPriceTheme}
+    selectedThemeId={selectedPriceTheme?.id || null}
+    sortOption={sortOption}
+    onSortChange={handleSortChange}
+    showThemeGrid={isPriceThemeSelectorPage}
+    searchCategoryList={searchCategoryList}
+    products={sortedCatalogueData}
+    onCategorySelect={(item) => openCatItems(item, themeFilter)}
+    onProductSelect={handleViewDetails}
+    
+  />
+)}
               {catValue?.toLowerCase() === "kids-birthday-decoration" && (
                 <div className="category-tabs-outer">
                   <CategoryTabs
@@ -500,150 +618,170 @@ const handleViewDetails = (item) => {
                   />
                 </div>
               )}
-{catValue?.toLowerCase() === "naming-ceremony-decoration" && (
-  <div className="category-tabs-outer">
-    <CategoryTabs
-      data={NamingCeremonyThemes.map((item) => ({
-        id: item.value,
-        name: item.label,
-        image: item.image,
-        value: item.value,
-        catValue: "naming-ceremony-decoration",
-      }))}
-      onSelect={(item) => openCatItems(item, themeFilter)}
-      city={city}
-      hasCityPageParam={hasCityPageParam}
-      locality={locality}
-      variant="grid"
-      catValue="naming-ceremony-decoration"
-    />
-  </div>
-)}
 
-              <ProductGrid data={catalogueData.slice(0, 4)}   onCardClick={handleViewDetails}  catValue={catValue} />
-
-              <HighPriceProduct
-                data={highPriceProducts.slice(0, 1)}
-                onCardClick={handleViewDetails}
-              />
-              <div className="filterBar">
-                <div className="filterBarInner">
-                  <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
+              {catValue?.toLowerCase() === "naming-ceremony-decoration" && (
+                <div className="category-tabs-outer">
+                  <CategoryTabs
+                    data={NamingCeremonyThemes.map((item) => ({
+                      id: item.value,
+                      name: item.label,
+                      image: item.image,
+                      value: item.value,
+                      catValue: "naming-ceremony-decoration",
+                    }))}
+                    onSelect={(item) => openCatItems(item, themeFilter)}
+                    city={city}
+                    hasCityPageParam={hasCityPageParam}
+                    locality={locality}
+                    variant="grid"
+                    catValue="naming-ceremony-decoration"
+                  />
                 </div>
-              </div>
-              <section className="decorationBanner">
-                <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-              </section>
-
-              <ProductGrid data={catalogueData.slice(4, 10)}  onCardClick={handleViewDetails} catValue={catValue} />
-
-              <HighPriceProduct
-                data={highPriceProducts.slice(1, 2)}
-                onCardClick={handleViewDetails}
-              />
-              {!shouldHideBanner("DidyouKnow") && (
-                <section className="decorationBanner">
-                  <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-                </section>
               )}
 
-              <ProductGrid data={catalogueData.slice(10, 14)}  onCardClick={handleViewDetails} catValue={catValue} />
-              <HighPriceProduct
-                data={highPriceProducts.slice(2, 3)}
-                onCardClick={handleViewDetails}
-              />
-              {!shouldHideBanner("makeItMemorable") && (
-                <section className="decorationBanner">
-                  <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-                </section>
+              {/* Price-range Theme Selector: only on birthday & kids-birthday pages */}
+   
+
+              {isPriceThemeActive ? (
+                // ---- PRICE-RANGE FILTER ACTIVE: show only the matching products ----
+                <>
+                  {priceThemeFilteredData.length > 0 ? (
+                    <ProductGrid
+                      data={priceThemeFilteredData}
+                      onCardClick={handleViewDetails}
+                      catValue={catValue}
+                    />
+                  ) : (
+                    <div className="noProductsWrapper">
+                      <h2>No products found in this price range</h2>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // ---- DEFAULT LAYOUT: banners interspersed with product grids ----
+                <>
+                  <ProductGrid data={sortedCatalogueData.slice(0, 4)} onCardClick={handleViewDetails} catValue={catValue} />
+
+                  <HighPriceProduct
+                    data={highPriceProducts.slice(0, 1)}
+                    onCardClick={handleViewDetails}
+                  />
+                  <div className="filterBar">
+                    <div className="filterBarInner">
+                      <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
+                    </div>
+                  </div>
+                  <section className="decorationBanner">
+                    <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                  </section>
+
+                  <ProductGrid data={sortedCatalogueData.slice(4, 10)} onCardClick={handleViewDetails} catValue={catValue} />
+
+                  <HighPriceProduct
+                    data={highPriceProducts.slice(1, 2)}
+                    onCardClick={handleViewDetails}
+                  />
+                  {!shouldHideBanner("DidyouKnow") && (
+                    <section className="decorationBanner">
+                      <Image src={DidyouKnow} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                    </section>
+                  )}
+
+                  <ProductGrid data={sortedCatalogueData.slice(10, 14)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <HighPriceProduct
+                    data={highPriceProducts.slice(2, 3)}
+                    onCardClick={handleViewDetails}
+                  />
+                  {!shouldHideBanner("makeItMemorable") && (
+                    <section className="decorationBanner">
+                      <Image src={makeItMemorable} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                    </section>
+                  )}
+
+                  <ProductGrid data={sortedCatalogueData.slice(14, 20)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <HighPriceProduct
+                    data={highPriceProducts.slice(3, 4)}
+                    onCardClick={handleViewDetails}
+                  />
+                  <section className="decorationBanner">
+                    <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                  </section>
+
+                  <ProductGrid data={sortedCatalogueData.slice(20, 26)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <HighPriceProduct
+                    data={highPriceProducts.slice(4, 5)}
+                    onCardClick={handleViewDetails}
+                  />
+                  {!shouldHideBanner("makeitmemorablebanner") && (
+                    <section className="decorationBanner">
+                      <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
+                    </section>
+                  )}
+
+                  <ProductGrid data={sortedCatalogueData.slice(26, 32)} onCardClick={handleViewDetails} catValue={catValue} />
+                  <HighPriceProduct
+                    data={highPriceProducts.slice(5, 6)}
+                    onCardClick={handleViewDetails}
+                  />
+                  <div className="highlight-wrapper">
+                    <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
+                    <div className="highlight-cards">
+                      <div className="highlight-card">
+                        <Image src={googleRating} alt="Google Rating" width={60} height={60} />
+                        <p>4.7+ GOOGLE RATING</p>
+                      </div>
+                      <div className="highlight-card">
+                        <Image src={ontime} alt="On Time Completion" width={60} height={60} />
+                        <p>ON TIME COMPLETION</p>
+                      </div>
+                      <div className="highlight-card">
+                        <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
+                        <p>100% FULL FILL GUARANTEE</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
-
-              <ProductGrid data={catalogueData.slice(14, 20)}  onCardClick={handleViewDetails} catValue={catValue} />
-              <HighPriceProduct
-                data={highPriceProducts.slice(3, 4)}
-               onCardClick={handleViewDetails}
-              />
-              <section className="decorationBanner">
-                <Image src={steps} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-              </section>
-
-              <ProductGrid data={catalogueData.slice(20, 26)}  onCardClick={handleViewDetails} catValue={catValue} />
-              <HighPriceProduct
-                data={highPriceProducts.slice(4, 5)}
-                 onCardClick={handleViewDetails}
-              />
-              {!shouldHideBanner("makeitmemorablebanner") && (
-                <section className="decorationBanner">
-                  <Image src={makeitmemorablebanner} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-                </section>
-              )}
-
-              <ProductGrid data={catalogueData.slice(26, 32)}  onCardClick={handleViewDetails} catValue={catValue} />
-              <HighPriceProduct
-                data={highPriceProducts.slice(5, 6)}
-                 onCardClick={handleViewDetails}
-              />
-              <div className="highlight-wrapper">
-                <h3 className="highlight-title">Excellence Backed by Happy Customers</h3>
-                <div className="highlight-cards">
-                  <div className="highlight-card">
-                    <Image src={googleRating} alt="Google Rating" width={60} height={60} />
-                    <p>4.7+ GOOGLE RATING</p>
-                  </div>
-                  <div className="highlight-card">
-                    <Image src={ontime} alt="On Time Completion" width={60} height={60} />
-                    <p>ON TIME COMPLETION</p>
-                  </div>
-                  <div className="highlight-card">
-                    <Image src={Gurantee} alt="100% Full Fill Guarantee" width={60} height={60} />
-                    <p>100% FULL FILL GUARANTEE</p>
-                  </div>
-                </div>
-              </div>
             </>
           )}
-          {/* 
-          <ProductGrid
-            data={catalogueData.slice(isThemePage ? 0 : 32)}
-            onCardClick={(item) => handleViewDetails(subCategory, catValue, item)}
-            catValue={catValue}
-          /> */}
-{Array.from(
-  {
-    length: Math.ceil(
-      catalogueData.slice(isThemePage ? 0 : 32).length / 6
-    ),
-  },
-  (_, groupIndex) => {
-    const start = (isThemePage ? 0 : 32) + groupIndex * 6;
-    const end = start + 6;
-    const groupProducts = catalogueData.slice(start, end);
 
-    // highPrice index only when NOT theme
-    const highPriceIndex = groupIndex + 6;
+          {/* Grouped "load more" section — skipped while a price-range filter is active
+              to avoid showing the full catalogue underneath the filtered results */}
+          {!isPriceThemeActive &&
+            Array.from(
+              {
+                length: Math.ceil(
+                  sortedCatalogueData.slice(isThemePage ? 0 : 32).length / 6
+                ),
+              },
+              (_, groupIndex) => {
+                const start = (isThemePage ? 0 : 32) + groupIndex * 6;
+                const end = start + 6;
+                const groupProducts = sortedCatalogueData.slice(start, end);
 
-    return (
-      <React.Fragment key={groupIndex}>
-        <ProductGrid
-          data={groupProducts}
-         onCardClick={handleViewDetails}
-          catValue={catValue}
-        />
+                const highPriceIndex = groupIndex + 6;
 
-        {/* Agar theme page hai to skip kare */}
-        {!isThemePage && highPriceProducts[highPriceIndex] && (
-          <HighPriceProduct
-            data={highPriceProducts.slice(
-              highPriceIndex,
-              highPriceIndex + 1
+                return (
+                  <React.Fragment key={groupIndex}>
+                    <ProductGrid
+                      data={groupProducts}
+                      onCardClick={handleViewDetails}
+                      catValue={catValue}
+                    />
+
+                    {!isThemePage && highPriceProducts[highPriceIndex] && (
+                      <HighPriceProduct
+                        data={highPriceProducts.slice(
+                          highPriceIndex,
+                          highPriceIndex + 1
+                        )}
+                        onCardClick={handleViewDetails}
+                      />
+                    )}
+                  </React.Fragment>
+                );
+              }
             )}
-            onCardClick={handleViewDetails}
-          />
-        )}
-      </React.Fragment>
-    );
-  }
-)}
 
           <div className="category-content">
             {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
@@ -672,10 +810,6 @@ const handleViewDetails = (item) => {
       )}
     </div>
   );
-
-
 }
-
-
 
 export default DecorationCatPage;
