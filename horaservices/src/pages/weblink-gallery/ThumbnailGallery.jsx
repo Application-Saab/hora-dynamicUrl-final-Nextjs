@@ -30,7 +30,7 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder, getSubFolders } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
 import { filterThumbnails } from "@/utils/filterThumbnails";
@@ -144,6 +144,8 @@ const ThumbnailGallery = ({
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
 const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [headerLoading, setHeaderLoading] = useState(true);
+
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
@@ -591,6 +593,30 @@ const showSnackbar = (message) => {
     selectedIndex !== null ? popupImages[selectedIndex] : null;
 
 
+  useEffect(() => {
+    const fetchFolders = async () => {
+      if (!folderName) return;
+
+      setHeaderLoading(true);
+
+      try {
+        const data = await getSubFolders({ folderName });
+
+        setSubFolders(data?.folder?.subFolders || []);
+        setMainFolderId(data.folder?._id || null);
+        setViewedBy(data?.folder?.viewedBy || []);
+        setGuestData(data?.guestDetails || []);
+      } catch (err) {
+        console.error("Folder fetch error:", err);
+      } finally {
+        setHeaderLoading(false);
+      }
+    };
+
+    fetchFolders();
+  }, [folderName]);
+
+
   console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
   console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
@@ -620,12 +646,6 @@ const showSnackbar = (message) => {
           folderName,
           customerId,
         });
-        setSubFolders(data?.folders[0]?.subFolders || []);
-        setMainFolderId(data?.folders[0]?._id || null)
-        setViewedBy(data?.folders[0]?.viewedBy || []);
-        setGuestData(data?.folders[0]?.guestDetails || []);
-        setDeviceTracking(data?.folders[0]?.deviceTracking || []);
-        setShortCode(data?.folders[0]?.shortCode || null)
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
