@@ -139,12 +139,18 @@ const ThumbnailGallery = ({
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [isIOSMobile, setIsIOSMobile] = useState(true);
   const [deviceTracking, setDeviceTracking] = useState(null);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
-const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [pendingLockerImage, setPendingLockerImage] = useState(null);
   const [headerLoading, setHeaderLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const observerRef = useRef(null);
+  const [totalPages2, setTotalPages] = useState(10);
+  const [totalImages, setTotalImages] = useState(0);
 
   const [snackbar, setSnackbar] = useState({
     show: false,
@@ -185,7 +191,7 @@ const showSnackbar = (message) => {
       }
       return false;
     };
-    setIsIOSMobile(detectIOSMobile());
+    // setIsIOSMobile(detectIOSMobile());
   }, []);
 
   // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
@@ -606,6 +612,7 @@ const showSnackbar = (message) => {
         setMainFolderId(data.folder?._id || null);
         setViewedBy(data?.folder?.viewedBy || []);
         setGuestData(data?.guestDetails || []);
+        setDeviceTracking(data?.deviceTracking || null);
       } catch (err) {
         console.error("Folder fetch error:", err);
       } finally {
@@ -636,43 +643,177 @@ const showSnackbar = (message) => {
   }, [activeSubFolderId, allThumbnails]);
 
   useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+  }, [folderName, customerId, activeSubFolderId]);
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setIsFetchingMore(false);
+  }, [folderName, customerId, activeSubFolderId]);
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setIsFetchingMore(false);
+  }, [folderName, customerId, activeSubFolderId]);
+
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+  }, [activeSubFolderId, isEditing]);
+
+  useEffect(() => {
+    console.log("🔥 PRELOAD EFFECT");
+    console.log({
+      selectedIndex,
+      popupLength: popupImages.length,
+      page,
+      totalPages2,
+      loading,
+      isFetchingMore,
+      isIOSMobile,
+    });
+
+    if (
+      selectedIndex == null ||
+      isFetchingMore ||
+      loading
+    ) {
+      return;
+    }
+
+    if (selectedIndex >= popupImages.length - 8) {
+      console.log("🚀 NEXT PAGE");
+
+      setIsFetchingMore(true);
+      setPage((p) => p + 1);
+    }
+  }, [
+    selectedIndex,
+    popupImages.length,
+    page,
+    totalPages2,
+    isFetchingMore,
+    loading,
+    isIOSMobile,
+  ]);
+
+  useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
         setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
       }
-      setLoading(true); setError(null);
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setIsFetchingMore(true);
+      }
+       setError(null);
       try {
         const data = await getImagesbyFolderName({
           folderName,
           customerId,
+          subFolderId: activeSubFolderId ? activeSubFolderId : null,
+          page: page,
+          limit: ITEMS_PER_PAGE,
         });
         const fetchedThumbnails = (data.thumbnails || [])
-
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
-        setAllThumbnails(fetchedThumbnails);
+
+        setTotalImages(data?.pagination?.totalItems);
+        setTotalPages(data?.pagination?.totalPages)
+
+        setAllThumbnails((prev) => {
+          if (isIOSMobile) {
+            return fetchedThumbnails;
+          }
+
+          const existingIds = new Set(prev.map(item => item._id));
+
+          const newItems = fetchedThumbnails.filter(
+            item => !existingIds.has(item._id)
+          );
+
+          return [...prev, ...newItems];
+        });
+
+        if (fetchedThumbnails.length < ITEMS_PER_PAGE) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
       } catch (fetchError) {
         console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
-      } finally { setLoading(false); }
+      } finally {
+        setLoading(false);
+        setIsFetchingMore(false);
+      }
     };
     fetchThumbnails();
-  }, [folderName, customerId]);
+  }, [folderName, customerId, page,
+    activeSubFolderId
+]);
+
+  useEffect(() => {
+    const currentObserver = observerRef.current;
+    if (!currentObserver) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+
+        const first = entries[0];
+        if (
+          !isIOSMobile &&
+          first.isIntersecting &&
+          hasMore &&
+          !loading &&
+          !isFetchingMore
+        ) {
+          setIsFetchingMore(true);
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        rootMargin: "400px",
+      }
+    );
+
+    observer.observe(currentObserver);
+    return () => {
+      if (currentObserver) {
+        observer.unobserve(currentObserver);
+      }
+      observer.disconnect();
+    };
+  }, [
+    hasMore,
+    loading,
+    isFetchingMore,
+    activeSubFolderId,
+    visibleThumbnails.length,
+  ]);
 
   // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
-  const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+  const { currentThumbnailsOnPage } = useMemo(() => {
     if (isIOSMobile) {
-      const total = Math.ceil(visibleThumbnails.length / ITEMS_PER_PAGE);
-      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      const endIndex = startIndex + ITEMS_PER_PAGE;
-      const currentItems = visibleThumbnails.slice(startIndex, endIndex);
-      return { currentThumbnailsOnPage: currentItems, totalPages: total };
-    } else {
-      // Not iOS mobile: show all thumbnails, no pagination UI
-      return { currentThumbnailsOnPage: visibleThumbnails, totalPages: 1 };
+      return {
+        currentThumbnailsOnPage: visibleThumbnails,
+      };
     }
-  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+
+    return {
+      currentThumbnailsOnPage: visibleThumbnails,
+    };
+  }, [visibleThumbnails, isIOSMobile]);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
+    setPage(pageNumber);
     // Scroll to top of gallery header after a short delay to allow UI to update
     setTimeout(() => {
       const galleryHeader = document.querySelector('.gallery-header');
@@ -1132,13 +1273,6 @@ const showSnackbar = (message) => {
       </div>
     );
   }
-  if (allThumbnails.length === 0 && !loading) {
-    return (
-      <div className="thumbnail-gallery-status">
-        No photos found in this gallery.
-      </div>
-    );
-  }
   if (!authChecked) {
     return null;
   }
@@ -1466,7 +1600,7 @@ const handleAddToLocker = async (imgData) => {
     <div className="thumbnail-gallery">
 
       <div className="">
-        {loading ? (
+        {headerLoading ? (
           <HeaderCardsFlashLoader />
         ) : (
           <>
@@ -1699,9 +1833,9 @@ const handleAddToLocker = async (imgData) => {
 
           <div>
             {/* ================= LOADING SKELETON ================= */}
-            {loading && (
+            {loading && (isIOSMobile || page === 1) && (
               <div className="gallery-image-grid">
-                {[...Array(6)].map((_, index) => {
+                {[...Array(24)].map((_, index) => {
                   const type = getBlockType(index);
                   return (
                     <div key={index} className={`grid-item ${type}`}>
@@ -1800,6 +1934,25 @@ const handleAddToLocker = async (imgData) => {
                   setSelectedImages={setSelectedImages}
                 />
               )}
+
+              {/* ================= PAGINATION DUMMY GRID ================= */}
+              {!isIOSMobile && hasMore && page > 1 && isFetchingMore && (
+                <div className="gallery-image-grid">
+                  {[...Array(24)].map((_, index) => {
+                    const type = getBlockType(index);
+
+                    return (
+                      <div key={`dummy-${index}`} className={`grid-item ${type}`}>
+                        <div className="event-masonry-item">
+                          <div className="event-lazy-image-spinner-container placeholder-glow">
+                            <div className="placeholder w-100 h-100"></div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1817,13 +1970,14 @@ const handleAddToLocker = async (imgData) => {
               /> */}
               </div>
             )}
+            <div ref={observerRef} style={{ height: "10px" }} />
 
             {/* Conditional Pagination Rendering */}
-            {isIOSMobile && totalPages > 1 && (
+            {isIOSMobile && totalPages2 > 1 && (
               <div className="">
                 <PaginationControls
                   currentPage={currentPage}
-                  totalPages={totalPages}
+                  totalPages={totalPages2}
                   onPageChange={handlePageChange}
                   inline={true} // Keep compact style
                 />
@@ -2029,6 +2183,7 @@ const handleAddToLocker = async (imgData) => {
             </div>
           );
         }}
+        totalImages={totalImages}
       />
 
 
