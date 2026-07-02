@@ -19,7 +19,6 @@ import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/DeleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
-import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import refreshIcon from "../../assets/refreshIcon.svg";
@@ -33,7 +32,6 @@ import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder, getSubFolders } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
-import { filterThumbnails } from "@/utils/filterThumbnails";
 import PaginationControls from "./capsulePagination";
 import { IoIosCloudDone } from "react-icons/io";
 import Lock from '../../assets/Lock.svg'
@@ -74,7 +72,6 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
-  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -88,7 +85,6 @@ const ThumbnailGallery = ({
   const [authChecked, setAuthChecked] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const prevLoginOpenRef = useRef(isLoginOpen);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [number, setNumber] = useState("");
   const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
@@ -105,20 +101,17 @@ const ThumbnailGallery = ({
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
-  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const privateLocker = useMemo(
     () =>
       subFolders.find(
         (sf) =>
           sf.type === "others" &&
-          // sf.userId === localUserId &&
           sf.isLocker === true,
       ),
     [subFolders, localUserId],
   );
-  const isMyPhotosTabActive =
-    activeTab === (myPhotosFolder?._id || "my-photos");
+  const isMyPhotosTabActive = activeTab === (myPhotosFolder?._id || "my-photos");
   const isSearchActive = isMyPhotosTabActive && isSearching;
   const [isStreamSearching, setIsStremSearching] = useState(false);
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
@@ -131,7 +124,6 @@ const ThumbnailGallery = ({
   const [showCameraPopup, setShowCameraPopup] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [likedImages, setLikedImages] = useState({});
-  const [myPhotoSearchResults, setMyPhotoSearchResults] = useState([]);
   const [viewedBy, setViewedBy] = useState([]);
   const [showExitPopup, setShowExitPopup] = useState(false);
   const [showGuestModal, setShowGuestModal] = useState(false);
@@ -139,8 +131,8 @@ const ThumbnailGallery = ({
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isIOSMobile, setIsIOSMobile] = useState(true);
-  const [deviceTracking, setDeviceTracking] = useState(null);
+  const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [deviceTracking, setDeviceTracking] = useState([]);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
   const [pendingLockerImage, setPendingLockerImage] = useState(null);
@@ -158,25 +150,25 @@ const ThumbnailGallery = ({
   });
 
 
- const snackbarTimeout = useRef(null);
+  const snackbarTimeout = useRef(null);
 
-const showSnackbar = (message) => {
-  setSnackbar({
-    show: true,
-    message,
-  });
-
-  if (snackbarTimeout.current) {
-    clearTimeout(snackbarTimeout.current);
-  }
-
-  snackbarTimeout.current = setTimeout(() => {
+  const showSnackbar = (message) => {
     setSnackbar({
-      show: false,
-      message: "",
+      show: true,
+      message,
     });
-  }, 5000);
-};
+
+    if (snackbarTimeout.current) {
+      clearTimeout(snackbarTimeout.current);
+    }
+
+    snackbarTimeout.current = setTimeout(() => {
+      setSnackbar({
+        show: false,
+        message: "",
+      });
+    }, 5000);
+  };
 
 
   // iOS Mobile Detection
@@ -517,13 +509,13 @@ const showSnackbar = (message) => {
 
   const visibleThumbnails = useMemo(() => {
     const normalize = (val) => {
-  return String(val ?? "").trim().toLowerCase();
-};
+      return String(val ?? "").trim().toLowerCase();
+    };
 
     const lockerId = privateLocker?._id;
 
     const isLockerImage = (img) =>
-  lockerId && img.folderIds?.includes(lockerId);
+      lockerId && img.folderIds?.includes(lockerId);
 
     if (!isActualMyPhotos) {
       if (isEditing) {
@@ -545,12 +537,12 @@ const showSnackbar = (message) => {
     }
 
     if (activeSubFolderId && activeSubFolderId !== lockerId) {
-  return allThumbnails.filter(
-    (img) =>
-      img.folderIds?.includes(activeSubFolderId) &&
-      !isLockerImage(img)
-  );
-}
+      return allThumbnails.filter(
+        (img) =>
+          img.folderIds?.includes(activeSubFolderId) &&
+          !isLockerImage(img)
+      );
+    }
 
     if (activeTab === "all" && lockerId) {
       return allThumbnails.filter((img) => !img.folderIds?.includes(lockerId));
@@ -562,20 +554,12 @@ const showSnackbar = (message) => {
     }
 
     if (isMyPhotosTabActive && myPhotosFolder) {
-  return allThumbnails.filter(
-    (img) =>
-      img.folderIds?.includes(myPhotosFolder._id) &&
-      !isLockerImage(img)
-  );
-}
-
-    if (activeSubFolderId) {
-  return allThumbnails.filter(
-    (img) =>
-      img.folderIds?.includes(activeSubFolderId) &&
-      !isLockerImage(img)
-  );
-}
+      return allThumbnails.filter(
+        (img) =>
+          img.folderIds?.includes(myPhotosFolder._id) &&
+          !isLockerImage(img)
+      );
+    }
 
     return allThumbnails;
   }, [
@@ -592,8 +576,8 @@ const showSnackbar = (message) => {
   ]);
 
   const popupImages = useMemo(() => {
-  return visibleThumbnails;
-}, [visibleThumbnails]); 
+    return visibleThumbnails;
+  }, [visibleThumbnails]);
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
@@ -612,7 +596,7 @@ const showSnackbar = (message) => {
         setMainFolderId(data.folder?._id || null);
         setViewedBy(data?.folder?.viewedBy || []);
         setGuestData(data?.guestDetails || []);
-        setDeviceTracking(data?.deviceTracking || null);
+        setDeviceTracking(data?.deviceTracking || []);
       } catch (err) {
         console.error("Folder fetch error:", err);
       } finally {
@@ -623,13 +607,26 @@ const showSnackbar = (message) => {
     fetchFolders();
   }, [folderName]);
 
-
-  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
-  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
-
   const usableFolders = subFolders.filter(
     (sf) => sf.type !== "my_photos" && !sf.isLocker,
   );
+
+
+  useEffect(() => {
+    console.log("PAGE:", page);
+  }, [page]);
+
+  useEffect(() => {
+    console.log("activeSubFolderId:", activeSubFolderId);
+  }, [activeSubFolderId]);
+
+  useEffect(() => {
+    console.log("isEditing:", isEditing);
+  }, [isEditing]);
+
+  useEffect(() => {
+    console.log("selectedIndex:", selectedIndex);
+  }, [selectedIndex]);
 
   useEffect(() => {
     if (activeSubFolderId) {
@@ -643,83 +640,53 @@ const showSnackbar = (message) => {
   }, [activeSubFolderId, allThumbnails]);
 
   useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-  }, [folderName, customerId, activeSubFolderId]);
-
-  useEffect(() => {
-    setPage(1);
-    setAllThumbnails([]);
-    setHasMore(true);
-    setIsFetchingMore(false);
-  }, [folderName, customerId, activeSubFolderId]);
-
-  useEffect(() => {
-    setPage(1);
-    setAllThumbnails([]);
-    setHasMore(true);
-    setIsFetchingMore(false);
-  }, [folderName, customerId, activeSubFolderId]);
-
-
-  useEffect(() => {
-    setPage(1);
-    setAllThumbnails([]);
-    setHasMore(true);
-  }, [activeSubFolderId, isEditing]);
-
-  useEffect(() => {
-    console.log("🔥 PRELOAD EFFECT");
-    console.log({
-      selectedIndex,
-      popupLength: popupImages.length,
-      page,
-      totalPages2,
-      loading,
-      isFetchingMore,
-      isIOSMobile,
+    console.log("RESET EFFECT CALLED", {
+      folderName,
+      customerId,
+      activeSubFolderId,
     });
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setIsFetchingMore(false);
+  }, [folderName, customerId, activeSubFolderId]);
 
-    if (
-      selectedIndex == null ||
-      isFetchingMore ||
-      loading
-    ) {
-      return;
+
+  const prevEditingRef = useRef(isEditing);
+
+  useEffect(() => {
+
+    console.log("EDIT EFFECT", isEditing);
+
+    if (!prevEditingRef.current && isEditing) {
+      setPage(1);
+      setAllThumbnails([]);
+      setHasMore(true);
     }
 
-    if (selectedIndex >= popupImages.length - 8) {
-      console.log("🚀 NEXT PAGE");
-
-      setIsFetchingMore(true);
-      setPage((p) => p + 1);
-    }
-  }, [
-    selectedIndex,
-    popupImages.length,
-    page,
-    totalPages2,
-    isFetchingMore,
-    loading,
-    isIOSMobile,
-  ]);
+    prevEditingRef.current = isEditing;
+  }, [activeSubFolderId, isEditing]);
 
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
+        setAllThumbnails([]);
+        setLoading(false);
+        setError("Folder name or customer ID is missing.");
+        return;
       }
       if (page === 1) {
         setLoading(true);
       } else {
         setIsFetchingMore(true);
       }
-       setError(null);
+      setError(null);
+
       try {
         const data = await getImagesbyFolderName({
           folderName,
           customerId,
-          subFolderId: activeSubFolderId ? activeSubFolderId : null,
+          subFolderId: isEditing ? null : activeSubFolderId,
           page: page,
           limit: ITEMS_PER_PAGE,
         });
@@ -727,7 +694,7 @@ const showSnackbar = (message) => {
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
 
         setTotalImages(data?.pagination?.totalItems);
-        setTotalPages(data?.pagination?.totalPages)
+        setTotalPages(data?.pagination?.totalPages);
 
         setAllThumbnails((prev) => {
           if (isIOSMobile) {
@@ -735,11 +702,7 @@ const showSnackbar = (message) => {
           }
 
           const existingIds = new Set(prev.map(item => item._id));
-
-          const newItems = fetchedThumbnails.filter(
-            item => !existingIds.has(item._id)
-          );
-
+          const newItems = fetchedThumbnails.filter(item => !existingIds.has(item._id));
           return [...prev, ...newItems];
         });
 
@@ -749,23 +712,66 @@ const showSnackbar = (message) => {
           setHasMore(true);
         }
       } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
+        setError(fetchError.message);
       } finally {
         setLoading(false);
         setIsFetchingMore(false);
       }
     };
     fetchThumbnails();
-  }, [folderName, customerId, page,
-    activeSubFolderId
-]);
+  }, [folderName, customerId, page, activeSubFolderId, isEditing]);
+
+
+  const hasTriggeredNextRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      selectedIndex == null ||
+      isFetchingMore ||
+      loading ||
+      !popupImages ||
+      popupImages.length === 0
+    ) {
+      return;
+    }
+
+    if (isIOSMobile) {
+      // Agar user bilkul last image par aa gaya hai
+      if (
+        selectedIndex === popupImages.length - 1 &&
+        hasMore &&
+        !hasTriggeredNextRef.current &&
+        !isFetchingMore
+      ) {
+        console.log("Fetching next batch...");
+        hasTriggeredNextRef.current = true; // Lock lagao
+        setPage((p) => p + 1);
+      }
+
+      // Lock tabhi khulega jab fetching khatam ho chuki ho aur array bada ho gaya ho
+      if (selectedIndex < popupImages.length - 1 && !isFetchingMore) {
+        hasTriggeredNextRef.current = false;
+      }
+    } else {
+      // Non-iOS standard continuous scroll
+      if (selectedIndex >= popupImages.length - 4 && hasMore && !isFetchingMore) {
+        setPage((p) => p + 1);
+      }
+    }
+  }, [
+    selectedIndex,
+    popupImages.length,
+    loading,
+    isFetchingMore,
+    hasMore,
+    isIOSMobile
+  ]);
 
   useEffect(() => {
     const currentObserver = observerRef.current;
     if (!currentObserver) return;
     const observer = new IntersectionObserver(
       (entries) => {
-
         const first = entries[0];
         if (
           !isIOSMobile &&
@@ -778,9 +784,7 @@ const showSnackbar = (message) => {
           setPage((prev) => prev + 1);
         }
       },
-      {
-        rootMargin: "400px",
-      }
+      { rootMargin: "400px" }
     );
 
     observer.observe(currentObserver);
@@ -790,22 +794,32 @@ const showSnackbar = (message) => {
       }
       observer.disconnect();
     };
-  }, [
-    hasMore,
-    loading,
-    isFetchingMore,
-    activeSubFolderId,
-    visibleThumbnails.length,
-  ]);
+  }, [hasMore, loading, isFetchingMore, activeSubFolderId, visibleThumbnails.length, isIOSMobile]);
 
-  // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
+
+  const closePopup = () => {
+    if (isIOSMobile && selectedIndex !== null && popupImages && popupImages.length > 0) {
+      const currentPopupImage = popupImages[selectedIndex];
+
+      if (currentPopupImage) {
+        const targetPage = page;
+        setPage(targetPage);
+        if (typeof setCurrentPage === "function") {
+          setCurrentPage(targetPage);
+        }
+        setSelectedIndex(null);
+        return;
+      }
+    }
+    setSelectedIndex(null);
+  };
+
   const { currentThumbnailsOnPage } = useMemo(() => {
     if (isIOSMobile) {
       return {
         currentThumbnailsOnPage: visibleThumbnails,
       };
     }
-
     return {
       currentThumbnailsOnPage: visibleThumbnails,
     };
@@ -814,7 +828,6 @@ const showSnackbar = (message) => {
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
     setPage(pageNumber);
-    // Scroll to top of gallery header after a short delay to allow UI to update
     setTimeout(() => {
       const galleryHeader = document.querySelector('.gallery-header');
       if (galleryHeader) {
@@ -881,40 +894,40 @@ const showSnackbar = (message) => {
   }, [mainFolderId, localUserId, viewedBy, customerId]);
 
   useEffect(() => {
-  if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
+    if (!mainFolderId || !localUserId || deviceTracking.length >= 2) return;
 
-  const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
     const fromPanel = params.get("fromPanel");
 
     if (fromPanel === "true") return;
 
-  const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
+    const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
 
-  if (sessionStorage.getItem(sessionKey)) return;
+    if (sessionStorage.getItem(sessionKey)) return;
 
     const getDeviceType = () => {
-    if (typeof navigator !== 'undefined') {
-      const ua = navigator.userAgent;
-    if (/iPhone|iPad|iPod/i.test(ua)) {
-      return "ios";
-    }
-    }
-    
-    return "android";
-  };
+      if (typeof navigator !== 'undefined') {
+        const ua = navigator.userAgent;
+        if (/iPhone|iPad|iPod/i.test(ua)) {
+          return "ios";
+        }
+      }
 
-  trackDevice({
-    mainFolderId,
-    userId: localUserId,
-    deviceType: getDeviceType(),
-  })
-    .then(() => {
-      sessionStorage.setItem(sessionKey, "true");
+      return "android";
+    };
+
+    trackDevice({
+      mainFolderId,
+      userId: localUserId,
+      deviceType: getDeviceType(),
     })
-    .catch((err) => {
-      console.error("Device tracking failed:", err);
-    });
-}, [mainFolderId, localUserId]);
+      .then(() => {
+        sessionStorage.setItem(sessionKey, "true");
+      })
+      .catch((err) => {
+        console.error("Device tracking failed:", err);
+      });
+  }, [mainFolderId, localUserId]);
 
   useEffect(() => {
     const logClick = async () => {
@@ -968,17 +981,11 @@ const showSnackbar = (message) => {
     setSelectedIndex(indexInDisplayedList);
   }, []);
 
-  const closePopup = useCallback(() => {
-    setSelectedIndex(null);
-  }, []);
-
   const handleSearchResults = (matches) => {
-    console.log('%c [ matches ]-402', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
     if (!Array.isArray(matches)) return;
     const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
     setIsSearching(true);
-    setMyPhotoSearchResults(keys);
   };
 
   const hasChanges = useMemo(() => {
@@ -1277,8 +1284,8 @@ const showSnackbar = (message) => {
     return null;
   }
 
-const currentUrl =
-  typeof window !== "undefined" ? window.location.href : "";
+  const currentUrl =
+    typeof window !== "undefined" ? window.location.href : "";
 
 
   const handleSubFolderSelect = (id) => {
@@ -1287,7 +1294,6 @@ const currentUrl =
     setSelectedImages([]);
 
     setIsSearching(false);
-    setMyPhotoSearchResults([]);
 
     if (activeTab !== "my-photos") {
       setIsEditing(false);
@@ -1429,6 +1435,8 @@ const currentUrl =
     );
   };
 
+
+
   const ensurePrivateLocker = async () => {
     if (privateLocker) return privateLocker;
 
@@ -1447,60 +1455,60 @@ const currentUrl =
     return created;
   };
 
-const handleAddToLocker = async (imgData) => {
-  if (!imgData?._id || !localUserId || isAddingToLocker) return;
+  const handleAddToLocker = async (imgData) => {
+    if (!imgData?._id || !localUserId || isAddingToLocker) return;
 
-  const previousFolderIds = imgData.folderIds || [];
-  const existingLockerId = privateLocker?._id;
+    const previousFolderIds = imgData.folderIds || [];
+    const existingLockerId = privateLocker?._id;
 
-  if (
-    existingLockerId &&
-    previousFolderIds.length === 1 &&
-    previousFolderIds[0] === existingLockerId
-  ) {
-    return;
-  }
-
-  const lockerAlreadyExists = !!privateLocker;
-
-  setIsAddingToLocker(true);
-
-  try {
-    const locker = await ensurePrivateLocker();
-
-    await assignImageToLockerExclusive(
-      imgData._id,
-      locker._id,
-      previousFolderIds
-    );
-
-    // FIRST TIME locker create hua
-    if (!lockerAlreadyExists) {
-      setSelectedIndex(null);
-      setShowActionMenu(false);
+    if (
+      existingLockerId &&
+      previousFolderIds.length === 1 &&
+      previousFolderIds[0] === existingLockerId
+    ) {
       return;
     }
 
-    // Locker pehle se tha
-    const isLastImage =
-      selectedIndex >= popupImages.length - 1;
+    const lockerAlreadyExists = !!privateLocker;
 
-    if (popupImages.length <= 1) {
-      setSelectedIndex(null);
-    } else if (isLastImage) {
-      setSelectedIndex(selectedIndex - 1);
-    } else {
-      setSelectedIndex(selectedIndex);
+    setIsAddingToLocker(true);
+
+    try {
+      const locker = await ensurePrivateLocker();
+
+      await assignImageToLockerExclusive(
+        imgData._id,
+        locker._id,
+        previousFolderIds
+      );
+
+      // FIRST TIME locker create hua
+      if (!lockerAlreadyExists) {
+        setSelectedIndex(null);
+        setShowActionMenu(false);
+        return;
+      }
+
+      // Locker pehle se tha
+      const isLastImage =
+        selectedIndex >= popupImages.length - 1;
+
+      if (popupImages.length <= 1) {
+        setSelectedIndex(null);
+      } else if (isLastImage) {
+        setSelectedIndex(selectedIndex - 1);
+      } else {
+        setSelectedIndex(selectedIndex);
+      }
+
+      setShowActionMenu(false);
+    } catch (err) {
+      console.error("Add to locker failed:", err);
+      alert("Failed to add image to locker");
+    } finally {
+      setIsAddingToLocker(false);
     }
-
-    setShowActionMenu(false);
-  } catch (err) {
-    console.error("Add to locker failed:", err);
-    alert("Failed to add image to locker");
-  } finally {
-    setIsAddingToLocker(false);
-  }
-};
+  };
 
   const handleDownloadImage = async (currentImage) => {
     try {
@@ -1515,18 +1523,18 @@ const handleAddToLocker = async (imgData) => {
 
 
   const lockerBanner = (
-  <div className="locker-banner" key="locker-banner">
-    <div className="">
-      <Image
-        src={lockerBannerimage.src} // apni new image
-        alt="LockerBanner"
-        width={150}
-        height={58}
-        className="banner-side-image"
-      />
+    <div className="locker-banner" key="locker-banner">
+      <div className="">
+        <Image
+          src={lockerBannerimage.src} // apni new image
+          alt="LockerBanner"
+          width={150}
+          height={58}
+          className="banner-side-image"
+        />
+      </div>
     </div>
-  </div>
-);
+  );
 
   const banners = [
     <div className="custom-banner" key="banner-2">
@@ -1604,9 +1612,6 @@ const handleAddToLocker = async (imgData) => {
           <HeaderCardsFlashLoader />
         ) : (
           <>
-            {console.log("LOADING STATE:", loading)}
-            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
               <Image
                 src={capsuleTopBanner}
@@ -1694,7 +1699,6 @@ const handleAddToLocker = async (imgData) => {
                 </div>
               )}
             </div>
-            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
             {!loading && (activeTab === "all" || activeTab === privateLocker?._id) && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
@@ -1833,7 +1837,7 @@ const handleAddToLocker = async (imgData) => {
 
           <div>
             {/* ================= LOADING SKELETON ================= */}
-            {loading && (isIOSMobile || page === 1) && (
+            {(loading || isFetchingMore) && (isIOSMobile || page === 1) && (
               <div className="gallery-image-grid">
                 {[...Array(24)].map((_, index) => {
                   const type = getBlockType(index);
@@ -1889,11 +1893,10 @@ const handleAddToLocker = async (imgData) => {
               </div>
             )}
 
-            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
-
             {/* ================= MAIN IMAGE GRID ================= */}
             <div style={{ minHeight: "500px" }}>
-                {isPrivateFolder && lockerBanner}
+              {isPrivateFolder && lockerBanner}
+
               {imageChunks.map((chunk, index) => (
                 <React.Fragment key={index}>
                   <ImageGrid
@@ -1901,9 +1904,15 @@ const handleAddToLocker = async (imgData) => {
                     loading={loading}
                     isEventWall={false}
                     handleSelectImage={handleSelectImage}
-                    handleImageClick={(indexOnPage) =>
-                      handleImageClick(pageOffset + index * 6 + indexOnPage)
-                    }
+                    handleImageClick={(indexOnPage) => {
+                      if (isIOSMobile) {
+                        const clickedImageId = chunk[indexOnPage]?._id;
+                        const actualIndex = allThumbnails.findIndex(img => img._id === clickedImageId);
+                        handleImageClick(actualIndex >= 0 ? actualIndex : indexOnPage);
+                      } else {
+                        handleImageClick(pageOffset + (index * 6) + indexOnPage);
+                      }
+                    }}
                     isEditing={isEditing}
                     isSearchMode={isSearchMode}
                     activeSubFolderId={activeSubFolderId}
@@ -1911,21 +1920,25 @@ const handleAddToLocker = async (imgData) => {
                     selectedImages={selectedImages}
                     setSelectedImages={setSelectedImages}
                   />
-                {!isPrivateFolder &&
-                (!isIOSMobile || currentPage === 1) &&
-                banners[index]}
+                  {!isPrivateFolder && (!isIOSMobile || currentPage === 1) && banners[index]}
                 </React.Fragment>
               ))}
 
-              {remainingImages.length > 0 && (
+              {remainingImages && remainingImages.length > 0 && (
                 <ImageGrid
                   data={remainingImages}
                   loading={loading}
                   isEventWall={false}
                   handleSelectImage={handleSelectImage}
-                  handleImageClick={(indexOnPage) =>
-                    handleImageClick(pageOffset + 18 + indexOnPage)
-                  }
+                  handleImageClick={(indexOnPage) => {
+                    if (isIOSMobile) {
+                      const clickedImageId = remainingImages[indexOnPage]?._id;
+                      const actualIndex = allThumbnails.findIndex(img => img._id === clickedImageId);
+                      handleImageClick(actualIndex >= 0 ? actualIndex : indexOnPage);
+                    } else {
+                      handleImageClick(pageOffset + 18 + indexOnPage);
+                    }
+                  }}
                   isEditing={isEditing}
                   isSearchMode={isSearchMode}
                   activeSubFolderId={activeSubFolderId}
@@ -1935,14 +1948,12 @@ const handleAddToLocker = async (imgData) => {
                 />
               )}
 
-              {/* ================= PAGINATION DUMMY GRID ================= */}
-              {!isIOSMobile && hasMore && page > 1 && isFetchingMore && (
+              {(isFetchingMore && page > 1) && (!isIOSMobile) && (
                 <div className="gallery-image-grid">
                   {[...Array(24)].map((_, index) => {
                     const type = getBlockType(index);
-
                     return (
-                      <div key={`dummy-${index}`} className={`grid-item ${type}`}>
+                      <div key={index} className={`grid-item ${type}`}>
                         <div className="event-masonry-item">
                           <div className="event-lazy-image-spinner-container placeholder-glow">
                             <div className="placeholder w-100 h-100"></div>
@@ -1959,19 +1970,7 @@ const handleAddToLocker = async (imgData) => {
 
         <div className={`}`}>
           <div className="">
-            {showInternalTitle && (
-              <div>
-                {/* <h1 className="gallery-title">Your Photos</h1> */}
-                {/* <Image
-                src={shareIcon}
-                alt="Info"
-                style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
-                onClick={handleShareicon}
-              /> */}
-              </div>
-            )}
             <div ref={observerRef} style={{ height: "10px" }} />
-
             {/* Conditional Pagination Rendering */}
             {isIOSMobile && totalPages2 > 1 && (
               <div className="">
@@ -2002,6 +2001,7 @@ const handleAddToLocker = async (imgData) => {
 
       <CommonImagePopup
         images={popupImages}
+        startIndexOffset={(page - 1) * ITEMS_PER_PAGE}
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
         onClose={closePopup}
@@ -2122,64 +2122,57 @@ const handleAddToLocker = async (imgData) => {
         )}
         renderFooter={(currentImage, index) => {
           const imageId = currentImage?._id;
-
-
-      console.log("isPrivateFolder ---------------", isPrivateFolder)
-
-
-
           const isLiked = likedImages[imageId];
-// && currentImage?.orderById === customerId
           return (
             <div className="imagepopup-footer">
               <div className="imagepopup-footer-left">
-              <div>
-                <Image
-                  src={isLiked ? like : unLike}
-                  alt="Like"
-                  width={30}
-                  height={32}
-                  style={{ filter: "none", cursor: "pointer" }}
-                  onClick={() => handleLikeToggle(imageId)}
-                />
+                <div>
+                  <Image
+                    src={isLiked ? like : unLike}
+                    alt="Like"
+                    width={30}
+                    height={32}
+                    style={{ filter: "none", cursor: "pointer" }}
+                    onClick={() => handleLikeToggle(imageId)}
+                  />
+                </div>
+
+                <div>
+                  <Image
+                    src={whiteShareIcon}
+                    alt="Share"
+                    width={30}
+                    height={32}
+                    style={{ filter: "none", cursor: "pointer" }}
+                    onClick={() => {
+                      if (!currentImage) return;
+                      handleImageShare(currentImage?.originalUrl, currentImage?._id);
+                    }}
+                  />
+                </div>
               </div>
 
-              <div>
-                <Image
-                  src={whiteShareIcon}
-                  alt="Share"
-                  width={30}
-                  height={32}
-                  style={{ filter: "none", cursor: "pointer" }}
-                  onClick={() => {
-                    if (!currentImage) return;
-                    handleImageShare(currentImage?.originalUrl, currentImage?._id);
-                  }}
-                />
-              </div>
-              </div>
-
-               {(localUserId === customerId && !isPrivateFolder ) && (
+              {(localUserId === customerId && !isPrivateFolder) && (
                 <div>
                   <button
                     className="add-locker-btn"
                     onClick={() => {
-  if (!privateLocker) {
-    setPendingLockerImage(currentImage);
-    setShowLockerPopup(true);
-    return;
-  }
+                      if (!privateLocker) {
+                        setPendingLockerImage(currentImage);
+                        setShowLockerPopup(true);
+                        return;
+                      }
 
-  handleAddToLocker(currentImage);
-}}
+                      handleAddToLocker(currentImage);
+                    }}
                     disabled={isAddingToLocker}
-                >
-                  <span className="add-locker-icon">
-                    <img src={Lock.src} alt="" />
-                  </span>
-                  <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
-                </button>
-              </div>)}
+                  >
+                    <span className="add-locker-icon">
+                      <img src={Lock.src} alt="" />
+                    </span>
+                    <span>{isAddingToLocker ? "Adding..." : "Add To Locker"}</span>
+                  </button>
+                </div>)}
             </div>
           );
         }}
@@ -2304,7 +2297,7 @@ const handleAddToLocker = async (imgData) => {
       )}
 
 
-      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex == null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin && !showLockerPopup)  && (
+      {(showFloatingBtn && !showGuestModal && !showExitPopup && selectedIndex == null && !showAddToFolderPopup && !showCameraPopup && !showCreateFolderPopup && !isLoginOpen && isLogin && !showLockerPopup) && (
         <div
           style={{
             position: "fixed",
@@ -2339,26 +2332,26 @@ const handleAddToLocker = async (imgData) => {
       )}
 
       {showLockerPopup && (
-  <LockerPopup
-    onClose={() => {
-      setShowLockerPopup(false);
-      setPendingLockerImage(null);
-    }}
-    onMoveToLocker={async () => {
-      try {
-        setShowLockerPopup(false);
+        <LockerPopup
+          onClose={() => {
+            setShowLockerPopup(false);
+            setPendingLockerImage(null);
+          }}
+          onMoveToLocker={async () => {
+            try {
+              setShowLockerPopup(false);
 
-        if (pendingLockerImage) {
-          await handleAddToLocker(pendingLockerImage);
-        }
+              if (pendingLockerImage) {
+                await handleAddToLocker(pendingLockerImage);
+              }
 
-        setPendingLockerImage(null);
-      } catch (err) {
-        console.error(err);
-      }
-    }}
-  />
-)}
+              setPendingLockerImage(null);
+            } catch (err) {
+              console.error(err);
+            }
+          }}
+        />
+      )}
 
       <LoginModal
         isOpen={isLoginOpen && !isLogin}

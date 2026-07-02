@@ -17,7 +17,7 @@ export const getImagesbyFolderName = async ({ folderName, customerId, subFolderI
       params.append("subFolderId", subFolderId);
     }
 
-    const url = `${BASE_URL}/api/internal/weblink-gallery-images?${params.toString()}`;
+    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?${params.toString()}`;
 
     const response = await fetch(url);
 

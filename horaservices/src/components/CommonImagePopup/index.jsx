@@ -36,6 +36,7 @@ const CommonImagePopup = ({
   renderFooter,
   isEventWall = false,
   totalImages = 0,
+  startIndexOffset = 0,
 }) => {
   const sliderSettings = {
     dots: false,
@@ -48,6 +49,10 @@ const CommonImagePopup = ({
     nextArrow: <NextArrow />,
     beforeChange: (current, next) => {
       pauseAllVideos();
+      if (next >= images.length) {
+        return;
+      }
+      setImageNumber(next + startIndexOffset + 1);
       setImageNumber(next + 1);
       setSelectedIndex(next);
     },
@@ -82,6 +87,14 @@ const CommonImagePopup = ({
   const sliderRef = useRef(null);
   const [imageNumber, setImageNumber] = useState(0);
   const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      setImageNumber(selectedIndex + startIndexOffset + 1);
+      setTimeout(() => {
+        playActiveVideo();
+      }, 0);
+    }
+  }, [selectedIndex, startIndexOffset]);
 
   useEffect(() => {
     if (selectedIndex !== null) {
@@ -153,7 +166,6 @@ const CommonImagePopup = ({
 
           {renderActions && renderActions(images[selectedIndex], selectedIndex)}
         </div>
-
         {/* Slider */}
         <div className="popupSliderWrapper">
           <Slider
