@@ -20,7 +20,7 @@ const themes = [
     bgImage: budgetfriendlyBg,
     width: "clamp(53px, 16.5vw, 79px)",
     height: "clamp(40px, 12.5vw, 60px)",
-    gap: "clamp(10px, 3.05vw, 15px)",
+     gap: "clamp(10px, calc((12 / 393) * 100vw), 12px)",
     priceRange: { min: 0, max: 4000 },
     accentColor: "#C77DBF",
   },
@@ -31,7 +31,7 @@ const themes = [
     bgImage: valueformoneyBg,
     width: "clamp(46px, 14.2vw, 68px)",
     height: "clamp(48px, 15vw, 72px)",
-    gap: "clamp(11px, 3.56vw, 17px)",
+   gap: "clamp(11px, calc((14 / 393) * 100vw), 14px)",
     priceRange: { min: 4200, max: 7000 },
     accentColor: "#7C6CF2",
   },
@@ -42,7 +42,7 @@ const themes = [
     bgImage: photogenicdecorationBg,
     width: "clamp(64px, 20.1vw, 96px)",
     height: "clamp(43px, 13.5vw, 64px)",
-    gap: "clamp(8px, 2.5vw, 12px)",
+   gap: "clamp(8px, calc((10 / 393) * 100vw), 10px)",
     priceRange: { min: 7001, max: 12000 },
     accentColor: "#D4A93A",
   },
@@ -53,7 +53,7 @@ const themes = [
     bgImage: stagedecorationBg,
     width: "clamp(106px, 33.08vw, 159px)",
     height: "clamp(41px, 13vw, 62px)",
-    gap: "clamp(-10px, -2.04vw, -7px)",
+     gap: "clamp(-8px, calc((-8 / 393) * 100vw), -6px)",
     priceRange: { min: 12001, max: Infinity },
     accentColor: "#E8698A",
   },
@@ -89,15 +89,6 @@ function ThemeCard({ theme, isActive, onSelect }) {
   );
 }
 
-/**
- * ThemeSelector — renders ONLY the 4 price-range cards
- * (Budget / Value / Photogenic / Stage). Rendered only on
- * "birthday-decoration" and "kids-birthday-decoration" pages.
- *
- * Props:
- * - onSelectTheme(theme | null): fired when a card is tapped (null clears filter)
- * - selectedThemeId: currently active price-range theme id
- */
 export default function ThemeSelector({ onSelectTheme, selectedThemeId }) {
   const handleSelect = (theme) => {
     if (selectedThemeId === theme.id) {
