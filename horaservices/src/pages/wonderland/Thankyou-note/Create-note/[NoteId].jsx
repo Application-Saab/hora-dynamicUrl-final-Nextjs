@@ -12,7 +12,7 @@ import {
 } from "@/utils/apiconstants";
 import NoteSkeleton from "@/components/wonderland/NoteSkeleton";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
-import { addToQueue, uploadImage } from "@/utils/handleMediaUpload";
+import { addToQueue } from "@/utils/handleMediaUpload";
 import useApi from "@/hooks/useApi";
 import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 import { saveFileToOPFS } from "@/utils/eventWallHelpers";
