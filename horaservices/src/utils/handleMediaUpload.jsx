@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-import imageCompression from "browser-image-compression";
 import { createPendingUploadsDb } from "./pendingUploadsDb";
 const { BASE_URL, MEDIA_WORKER_URL } = require("./apiconstants");
 
@@ -130,59 +129,6 @@ export async function convertToWebP(file) {
       );
     };
   });
-}
-
-export async function uploadImage(
-  file,
-  userId,
-  eventId,
-  folderName,
-  onProgress,
-  isNotes = false,
-) {
-  // STEP 1: compression
-  const thumb = await imageCompression(file, {
-    // maxSizeMB: 0.25,
-    // maxWidthOrHeight: 400,
-    maxSizeMB: 0.6, // size
-    maxWidthOrHeight: 800, // better resolution
-    initialQuality: 0.9,
-    useWebWorker: true,
-  });
-
-  // STEP 2: convert to WebP
-  let webpThumbnail;
-  try {
-    if (!isNotes) {
-      webpThumbnail = await convertToWebP(thumb);
-    } else {
-      webpThumbnail = await convertToWebP(file);
-    }
-  } catch (error) {
-    console.error("WebP conversion failed, using original thumb", error);
-    webpThumbnail = thumb;
-  }
-
-  // STEP 3: presigned URLs
-  const [origSigned, thumbSigned] = await Promise.all([
-    getPresignedUrl(file, userId, eventId, folderName),
-    getPresignedUrl(webpThumbnail, userId, eventId, folderName),
-  ]);
-
-  // STEP 4: upload main + webp thumbnail
-  await uploadToS3WithProgress(file, origSigned.uploadURL, onProgress);
-  await uploadToS3(webpThumbnail, thumbSigned.uploadURL);
-
-  const originalUrl = `https://photography-hora.s3.eu-north-1.amazonaws.com/${origSigned.key}`;
-  const thumbnailUrl = `https://photography-hora.s3.eu-north-1.amazonaws.com/${thumbSigned.key}`;
-
-  return {
-    success: true,
-    originalKey: origSigned.key,
-    thumbnailKey: thumbSigned.key,
-    originalUrl,
-    thumbnailUrl,
-  };
 }
 
 export async function uploadVideo(
