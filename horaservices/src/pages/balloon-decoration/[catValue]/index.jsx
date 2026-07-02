@@ -33,30 +33,13 @@ import googleRating from "../../../assets/goglerating.png";
 import Gurantee from "../../../assets/gurantee.jpg";
 import ontime from "../../../assets/ontime.png"
 import CategoryTabs from "@/components/CategoryTabs/index.jsx";
-import birthdayBanner from "@/assets/categories/BIRTHDAY.webp";
-import premiumBanner from "@/assets/categories/PREMIUMDECORATION.webp";
-import kidsBanner from "@/assets/categories/KIDSDECORATION.Webp"
-import welcomeBanner from "@/assets/categories/WELCOMEBABY.webp"
-import babyshowerBanner from "@/assets/categories/BABYSHOWWER.webp"
-import anniversaryBanner from "@/assets/categories/ANNVERSARY.webp"
-import firstNightBanner from "@/assets/categories/FIRSTNIGHT.webp";
-import haldimehndiBanner from "@/assets/categories/HALDIMEHNDIBANNER.webp";
-import WeddingBanner from "@/assets/categories/WeddingBanner.webp";
-import BacheloretteBanner from "@/assets/categories/BacheloretteBanner.webp";
-import NamingCeremonyBanner from "@/assets/categories/NamingCeremonyBanner.webp";
-import HouseWarming from "@/assets/categories/HouseWarming.webp";
-import PetAnimalBanner from "@/assets/categories/petanimal.webp";
-import showroomBanner from "@/assets/categories/showroom.webp"; 
-import festivalBanner from "@/assets/categories/festivals.webp";
-import carDecoration from "@/assets/categories/car.webp";
-import Engagementdecoration from "@/assets/categories/Engagementdecoration.webp";
-import { decCat } from "@/utils/decorationCategories";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
-import NationPride from "@/assets/categories/NationPride.jpeg";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 import SeoHead from "@/utils/SeoHead";
 import ThemeSelector from "@/components/Themeselector";
+import SearchSortBar from "@/components/SearchSortBar";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
 
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
@@ -402,27 +385,6 @@ const DecorationCatPage = ({ locality }) => {
     }
   };
 
-  const categoryBannerMap = {
-    "birthday-decoration": birthdayBanner,
-    "premium-decoration": premiumBanner,
-    "kids-birthday-decoration": kidsBanner,
-    "welcome-baby-decoration": welcomeBanner,
-    "baby-shower-decoration": babyshowerBanner,
-    "anniversary-decoration": anniversaryBanner,
-    "first-night-decoration": firstNightBanner,
-    "haldi-mehendi-decoration": haldimehndiBanner,
-    "Wedding": WeddingBanner,
-    "bachelorette-decoration": BacheloretteBanner,
-    "naming-ceremony-decoration": NamingCeremonyBanner,
-    "Nation-Pride-decoration": NationPride,
-    "House-Warming-decoration": HouseWarming,
-    "coorporate-showrooms-decoration": showroomBanner,
-    "festivals-decoration": festivalBanner,
-    "car-decoration": carDecoration,
-    "pet-animals-decoration": PetAnimalBanner,
-    "engagement-decoration": Engagementdecoration,
-  };
-
   function trimText(text) {
     if (text.length > 60) {
       return text.slice(0, 60) + "...";
@@ -432,19 +394,13 @@ const DecorationCatPage = ({ locality }) => {
 
   const normalizeCatValue = (val) => {
     if (!val) return "";
-
-    const exactMatch = Object.keys(categoryBannerMap).find(
-      (key) => key.toLowerCase() === val.toLowerCase()
-    );
-
-    return exactMatch || val.toLowerCase().replace(/ /g, "-");
+    return val.toLowerCase().replace(/ /g, "-");
   };
 
   const normalizedCat = normalizeCatValue(catValue);
-  const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
 
   const shouldHideBanner = (name) => {
-    const hideFor = ["Wedding", "haldi-mehendi-decoration"];
+    const hideFor = ["wedding", "haldi-mehendi-decoration"];
     return hideFor.includes(normalizedCat) && ["makeItMemorable", "DidyouKnow", "makeitmemorablebanner"].includes(name);
   };
 
@@ -575,28 +531,23 @@ const shouldShowSearchBar =
         <>
           {!isThemePage && (
             <>
-              <section className="decorationBanner">
-                <Image
-                  src={bannerToShow}
-                  alt="Decoration Banner"
-                  width={1200}
-                  height={400}
-                  className="decorationBanner-image"
-                  priority
-                />
+              <section >
+                <DecorationBanner category={normalizedCat} />
               </section>
-         {shouldShowSearchBar && (
+  <SearchSortBar
+  sortOption={sortOption}
+  onSortChange={handleSortChange}
+  searchCategoryList={searchCategoryList}
+  products={sortedCatalogueData}
+  onCategorySelect={(item) => openCatItems(item, themeFilter)}
+  onProductSelect={handleViewDetails}
+/>
+
+{/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe */}
+{isPriceThemeSelectorPage && (
   <ThemeSelector
     onSelectTheme={handleSelectPriceTheme}
     selectedThemeId={selectedPriceTheme?.id || null}
-    sortOption={sortOption}
-    onSortChange={handleSortChange}
-    showThemeGrid={isPriceThemeSelectorPage}
-    searchCategoryList={searchCategoryList}
-    products={sortedCatalogueData}
-    onCategorySelect={(item) => openCatItems(item, themeFilter)}
-    onProductSelect={handleViewDetails}
-    
   />
 )}
               {catValue?.toLowerCase() === "kids-birthday-decoration" && (
@@ -666,11 +617,6 @@ const shouldShowSearchBar =
                     data={highPriceProducts.slice(0, 1)}
                     onCardClick={handleViewDetails}
                   />
-                  <div className="filterBar">
-                    <div className="filterBarInner">
-                      <FilterBar priceFilter={priceFilter} setPriceFilter={setPriceFilter} />
-                    </div>
-                  </div>
                   <section className="decorationBanner">
                     <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
                   </section>
