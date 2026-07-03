@@ -139,7 +139,7 @@ const ThumbnailGallery = ({
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [isIOSMobile, setIsIOSMobile] = useState(true);
   const [deviceTracking, setDeviceTracking] = useState(null);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
@@ -183,7 +183,7 @@ const showSnackbar = (message) => {
       }
       return false;
     };
-    setIsIOSMobile(detectIOSMobile());
+    // setIsIOSMobile(detectIOSMobile());
   }, []);
 
   // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
@@ -1765,7 +1765,7 @@ const handleAddToLocker = async (imgData) => {
 
               {remainingImages.length > 0 && (
                 <ImageGrid
-                  data={remainingImages}
+                  data={isIOSMobile ? remainingImages.slice(0, Math.max(0, ITEMS_PER_PAGE - 18)) : remainingImages}
                   loading={loading}
                   isEventWall={false}
                   handleSelectImage={handleSelectImage}

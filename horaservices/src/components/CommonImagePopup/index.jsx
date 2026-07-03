@@ -19,14 +19,6 @@ const NextArrow = ({ className, onClick }) => (
   </div>
 );
 
-const pauseAllVideos = () => {
-  const videos = document.querySelectorAll(".popupContent video");
-  videos.forEach((video) => {
-    video.pause();
-    video.currentTime = 0;
-  });
-};
-
 const CommonImagePopup = ({
   images = [],
   selectedIndex,
@@ -36,97 +28,64 @@ const CommonImagePopup = ({
   renderFooter,
   isEventWall = false,
 }) => {
+  const sliderRef = useRef(null);
+  const [imageNumber, setImageNumber] = useState(0);
+  const activeVideoRef = useRef(null);
+
+  // 1. वर्चुअल स्लाइड्स का डेटा तैयार करें (ताकि DOM में केवल 3 आइटम्स रहें)
+  const virtualSlides = React.useMemo(() => {
+    if (selectedIndex === null || !images.length) return [];
+    return images
+      .map((item, idx) => {
+        const isVisible = Math.abs(idx - selectedIndex) <= 1;
+        if (!isVisible) return null;
+        return { item, originalIndex: idx };
+      })
+      .filter(Boolean);
+  }, [images, selectedIndex]);
+
+  // वर्चुअल स्लाइड्स एरे के अंदर वर्तमान एक्टिव स्लाइड का इंडेक्स खोजना
+  const currentVirtualIndex = React.useMemo(() => {
+    return virtualSlides.findIndex(slide => slide.originalIndex === selectedIndex);
+  }, [virtualSlides, selectedIndex]);
+
+  // 2. स्लाइडर सेटिंग्स (जिसमें वर्चुअल स्लाइड्स का सही इस्तेमाल हो रहा है)
   const sliderSettings = {
     dots: false,
-    infinite: images.length > 1,
-    speed: 300,
+    infinite: false,
+    speed: 250,
     slidesToShow: 1,
     slidesToScroll: 1,
     adaptiveHeight: true,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     beforeChange: (current, next) => {
-      pauseAllVideos();
-      setImageNumber(next + 1);
-      setSelectedIndex(next);
-    },
-
-    afterChange: () => {
-      playActiveVideo();
+      // स्लाइड बदलने से पहले पुराने वीडियो को पॉज करें
+      if (activeVideoRef.current) {
+        try { activeVideoRef.current.pause(); } catch (e) { }
+      }
+      const targetSlide = virtualSlides[next];
+      if (targetSlide) {
+        setImageNumber(targetSlide.originalIndex + 1);
+        setSelectedIndex(targetSlide.originalIndex);
+      }
     },
   };
-  useEffect(() => {
-    if (selectedIndex === null) {
-      pauseAllVideos();
-    }
-  }, [selectedIndex]);
 
-  const playActiveVideo = () => {
-    const activeVideo = document.querySelector(".slick-current video");
-    if (!activeVideo) return;
-
-    activeVideo.currentTime = 0;
-
-    const playWhenReady = () => {
-      activeVideo.play().catch(console.error);
-    };
-
-    if (activeVideo.readyState >= 2) {
-      playWhenReady();
-    } else {
-      activeVideo.addEventListener("loadeddata", playWhenReady, { once: true });
-    }
-  };
-
-  const sliderRef = useRef(null);
-  const [imageNumber, setImageNumber] = useState(0);
-  const isVideoFile = (url = "") => /\.(mp4|mov|avi|mkv|webm|ogg)$/i.test(url);
-
+  // 3. बॉडी स्क्रॉल लॉक करने और पहली बार ओपन होने पर सही इमेज नंबर सेट करने के लिए
   useEffect(() => {
     if (selectedIndex !== null) {
       setImageNumber(selectedIndex + 1);
-      // Slight delay to ensure slider is mounted and classes are applied
-      setTimeout(() => {
-        playActiveVideo();
-      }, 0);
-    }
-  }, [selectedIndex]);
-
-  useEffect(() => {
-    if (selectedIndex === null) {
-      pauseAllVideos();
-    }
-  }, [selectedIndex]);
-
-  useEffect(() => {
-    if (!sliderRef.current) return;
-
-    const videos = sliderRef.current.querySelectorAll("video");
-
-    videos.forEach((video) => {
-      const isActive = video
-        .closest(".slick-slide")
-        ?.classList.contains("slick-current");
-
-      if (isActive) {
-        video.muted = false;
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-        video.currentTime = 0;
-        video.muted = true;
-      }
-    });
-  }, [selectedIndex]);
-
-  useEffect(() => {
-    if (selectedIndex !== null) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
+      if (activeVideoRef.current) {
+        try { activeVideoRef.current.pause(); } catch (e) { }
+      }
     }
-
-    return () => (document.body.style.overflow = "");
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [selectedIndex]);
 
   if (selectedIndex === null || !images[selectedIndex]) return null;
@@ -157,48 +116,33 @@ const CommonImagePopup = ({
         <div className="popupSliderWrapper">
           <Slider
             {...sliderSettings}
-            initialSlide={selectedIndex}
-            key="eventwall-slider"
+            initialSlide={currentVirtualIndex >= 0 ? currentVirtualIndex : 0}
+            key={`eventwall-slider-${selectedIndex}`}
+            ref={sliderRef}
           >
-            {images.map((item, idx) => {
-              const isVisible = Math.abs(idx - selectedIndex) <= 1;
-
-              if (!isVisible) {
-                return <div key={idx} />;
-              }
-
+            {virtualSlides.map(({ item, originalIndex }) => {
               const isVideo = item.type === "video";
+              const isActive = originalIndex === selectedIndex;
 
               return (
-                <div key={item._id || idx} className="slick-slide-item">
+                <div key={item._id || originalIndex} className="slick-slide-item">
                   {isVideo ? (
                     <video
-                      src={ isEventWall ? item?.postUrl : item.originalUrl}
+                      ref={(el) => { if (isActive) activeVideoRef.current = el; }}
+                      src={isEventWall ? item?.postUrl : item.originalUrl}
                       controls
                       playsInline
-                      muted={false}
                       preload="metadata"
-                      style={{
-                        maxHeight: "80vh",
-                        width: "100%",
-                        objectFit: "contain",
-                        background: "#000",
-                      }}
+                      autoPlay={isActive}
+                      muted={false}
+                      style={{ maxHeight: "80vh", width: "100%", objectFit: "contain", background: "#000" }}
                     />
                   ) : (
                     <img
-                      src={
-                        isEventWall
-                          ? item?.postWebpUrl || item?.postUrl
-                          : item.thumbnailImageUrl || item.originalUrl
-                      }
-                      loading="lazy"
-                      alt={`Media ${idx + 1}`}
-                      style={{
-                        maxHeight: "80vh",
-                        width: "100%",
-                        objectFit: "contain",
-                      }}
+                      src={isEventWall ? item?.postWebpUrl || item?.postUrl : item.thumbnailImageUrl || item.originalUrl}
+                      loading="eager"
+                      alt={`Media ${originalIndex + 1}`}
+                      style={{ maxHeight: "80vh", width: "100%", objectFit: "contain" }}
                     />
                   )}
                 </div>
@@ -206,6 +150,7 @@ const CommonImagePopup = ({
             })}
           </Slider>
         </div>
+
         <div className="popupFooter">
           {renderFooter && renderFooter(images[selectedIndex], selectedIndex)}
         </div>
