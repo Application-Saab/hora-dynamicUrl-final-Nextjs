@@ -183,7 +183,7 @@ const ThumbnailGallery = ({
       }
       return false;
     };
-    // setIsIOSMobile(detectIOSMobile());
+    setIsIOSMobile(detectIOSMobile());
   }, []);
 
   // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
