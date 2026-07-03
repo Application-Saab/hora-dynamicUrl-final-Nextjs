@@ -1,0 +1,266 @@
+/* ==========================================================================
+   PinCodeBottomSheet.css
+   Styles for the PIN code bottom-sheet component
+   Designed for mobile viewports between 320px - 480px
+   ========================================================================== */
+
+:root {
+  --purple: #9c4a8c;
+  --purple-dark: #7d3a70;
+  --purple-focus-ring: rgba(156, 74, 140, 0.12);
+  --pink-bg: #f3e3f1;
+  --text-dark: #1a1a1a;
+  --text-gray: #6b6b76;
+  --border-color: #e3e1e6;
+  --error-color: #c0392b;
+  --success-color: #1a7d3a;
+}
+
+/* ---------- Device / demo frame ---------- */
+.pcs-device {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  min-width: 320px;
+  height: 720px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+/* ---------- Backdrop page (theme carousel behind the sheet) ---------- */
+.pcs-backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+}
+
+.pcs-theme-row {
+  display: flex;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.pcs-theme-item {
+  width: 76px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.pcs-theme-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.pcs-theme-item p {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+}
+
+/* ---------- Overlay ---------- */
+.pcs-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+
+/* ---------- Close button ---------- */
+.pcs-close-btn {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.pcs-close-btn:hover {
+  background: #f5f5f5;
+}
+
+.pcs-close-btn:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+/* ---------- Bottom sheet ---------- */
+.pcs-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  padding: 40px 24px 28px;
+  max-height: 82%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+  animation: pcs-slide-up 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes pcs-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Icon badge ---------- */
+.pcs-icon-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--pink-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* ---------- Text ---------- */
+.pcs-sheet h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-dark);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.pcs-subtitle {
+  font-size: 14.5px;
+  color: var(--text-gray);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  max-width: 300px;
+}
+
+.pcs-privacy-note {
+  font-size: 13.5px;
+  color: var(--text-gray);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  max-width: 280px;
+}
+
+/* ---------- PIN input ---------- */
+.pcs-pin-input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color: var(--text-dark);
+  outline: none;
+  background: #fff;
+  margin-bottom: 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pcs-pin-input::placeholder {
+  color: #9a98a3;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.pcs-pin-input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px var(--purple-focus-ring);
+}
+
+.pcs-pin-input.pcs-input-error {
+  border-color: var(--error-color);
+}
+
+/* ---------- Check availability button ---------- */
+.pcs-check-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.pcs-check-btn:hover {
+  background: var(--purple-dark);
+}
+
+.pcs-check-btn:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Status / error message ---------- */
+.pcs-message {
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 16px;
+  text-align: center;
+}
+
+.pcs-message.pcs-error {
+  color: var(--error-color);
+}
+
+.pcs-message.pcs-success {
+  color: var(--success-color);
+}
+
+/* ---------- Reopen button (demo helper) ---------- */
+.pcs-reopen-btn {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  z-index: 20;
+}
+
+/* ---------- Small screens (320px) ---------- */
+@media (max-width: 359px) {
+  .pcs-sheet {
+    padding: 32px 18px 24px;
+  }
+
+  .pcs-sheet h1 {
+    font-size: 21px;
+  }
+}
