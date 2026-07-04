@@ -86,9 +86,8 @@ const DecorationCatPage = ({ locality }) => {
   const [catalogueData, setCatalogueData] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [priceFilter, setPriceFilter] = useState("all");
   const [themeFilter, setThemeFilter] = useState("all");
-  const [sortFilter, setSortFilter] = useState("asc");
+  const [searchQuery, setSearchQuery] = useState("");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
   const searchParams = useSearchParams();
@@ -114,6 +113,11 @@ const DecorationCatPage = ({ locality }) => {
 
   const handleSortChange = (id) => {
     setSortOption(id);
+  };
+
+  // Search box (e.g. "barbie") -> forwarded to the API as `search`
+  const handleSearchChange = (query) => {
+    setSearchQuery(query || "");
   };
 
   // ---- Search: "Matching Categories" source ----
@@ -269,14 +273,6 @@ const DecorationCatPage = ({ locality }) => {
 
   useEffect(() => {
     if (catValue) {
-      setCatalogueData([]);
-      setCurrentPage(1);
-      getSubCatItems(1);
-    }
-  }, [catValue, priceFilter, themeFilter]);
-
-  useEffect(() => {
-    if (catValue) {
       const content = DecorationCatDescriptionData[catValue] || [];
       setCurrentCategoryContent(content);
     }
@@ -329,11 +325,16 @@ const DecorationCatPage = ({ locality }) => {
     return { discount, discountedPrice, discountDifference };
   };
 
+  // Re-fetch page 1 whenever anything that changes the *query* (as opposed to
+  // just the page number) changes: category, theme, sort order, the
+  // price-range theme (Budget/Value/Photogenic/Stage), or a text search.
   useEffect(() => {
     if (catId) {
+      setCatalogueData([]);
+      setCurrentPage(1);
       getSubCatItems(1);
     }
-  }, [catId, themeFilter, priceFilter]);
+  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
 
   const getSubCatItems = async (page) => {
     if (!catId) return;
@@ -341,20 +342,43 @@ const DecorationCatPage = ({ locality }) => {
     try {
       setLoading(true);
 
-      let newPriceFilter = priceFilter;
-      let newSortFilter = "asc";
+      const params = new URLSearchParams();
+      params.set("limit", "10");
+      params.set("page", String(page));
 
-      if (priceFilter === "lowToHigh") {
-        newPriceFilter = "";
-        newSortFilter = "asc";
-      } else if (priceFilter === "highToLow") {
-        newPriceFilter = "";
-        newSortFilter = "desc";
+      // Popularity is the API's default ordering, so it needs no sortBy param.
+      if (sortOption === "newArrival") {
+        params.set("sortBy", "newArrival");
+      } else if (sortOption === "lowToHigh") {
+        params.set("sortBy", "lowToHigh");
+      } else if (sortOption === "highToLow") {
+        params.set("sortBy", "highToLow");
+      }
+
+      if (themeFilter && themeFilter !== "all") {
+        params.set("theme", themeFilter);
+      }
+
+      // Price-range theme (Budget Friendly / Value For Money / Photogenic / Stage Decoration)
+      if (selectedPriceTheme?.priceRange) {
+        const { min, max } = selectedPriceTheme.priceRange;
+        if (min !== undefined && min !== null) {
+          params.set("minPrice", String(min));
+        }
+        // Stage Decoration is open-ended at the top, so maxPrice is omitted for it.
+        if (max !== undefined && max !== null) {
+          params.set("maxPrice", String(max));
+        }
+      }
+
+      if (searchQuery) {
+        params.set("search", searchQuery);
       }
 
       const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM
-        }v2/${catId}?limit=1000&priceFilter=${newPriceFilter}&sortBy=${newSortFilter}&theme=${themeFilter}`;
+        }v2/${catId}?${params.toString()}`;
 
+  
       const response = await axios.get(apiUrl);
 
       if (response.status === API_SUCCESS_CODE) {
@@ -455,56 +479,16 @@ const DecorationCatPage = ({ locality }) => {
     setShowAll((prev) => !prev);
   };
 
-  // ---- Sorting ----
-  // Field names match the actual API response:
-  // - creation date lives inside featured_images[0].createdAt
-  // - popularity comes from the top-level "popularity_score" field
-  const sortedCatalogueData = useMemo(() => {
-    const data = [...catalogueData];
+  // Sorting and price-range filtering now happen server-side (sortBy /
+  // minPrice / maxPrice query params in getSubCatItems), so `catalogueData`
+  // arriving from the API is already in the right order and already
+  // restricted to the selected price range.
+  const sortedCatalogueData = catalogueData;
+  const priceThemeFilteredData = catalogueData;
 
-    switch (sortOption) {
-      case "newArrival":
-        // Latest products first — descending by creation date.
-        return data.sort((a, b) => {
-          const dateA = new Date(
-            a.featured_images?.[0]?.createdAt || a.createdAt || a.created_at || 0
-          ).getTime();
-          const dateB = new Date(
-            b.featured_images?.[0]?.createdAt || b.createdAt || b.created_at || 0
-          ).getTime();
-          return dateB - dateA;
-        });
-
-     case "popularity":
-  // Descending order — highest popularity_score first.
-  return data.sort((a, b) => {
-    const scoreA = Number(a.popularity_score ?? a.popularityScore ?? 0);
-    const scoreB = Number(b.popularity_score ?? b.popularityScore ?? 0);
-    return scoreB - scoreA;
-  });
-
-      case "lowToHigh":
-        return data.sort((a, b) => Number(a.price) - Number(b.price));
-
-      case "highToLow":
-        return data.sort((a, b) => Number(b.price) - Number(a.price));
-
-      default:
-        return data;
-    }
-  }, [catalogueData, sortOption]);
 const shouldShowSearchBar =
   isPriceThemeSelectorPage ||
   catValue?.toLowerCase() === "naming-ceremony-decoration";
-  // ---- Price-range filtering derived data (built on top of the sorted list) ----
-  const priceThemeFilteredData = useMemo(() => {
-    if (!selectedPriceTheme) return sortedCatalogueData;
-    const { min, max } = selectedPriceTheme.priceRange;
-    return sortedCatalogueData.filter((item) => {
-      const price = Number(item.price);
-      return price >= min && price <= max;
-    });
-  }, [sortedCatalogueData, selectedPriceTheme]);
 
   const highPriceProducts = sortedCatalogueData.filter((item) => Number(item.price) > 11000);
 
@@ -541,6 +525,7 @@ const shouldShowSearchBar =
   products={sortedCatalogueData}
   onCategorySelect={(item) => openCatItems(item, themeFilter)}
   onProductSelect={handleViewDetails}
+  onSearchChange={handleSearchChange}
 />
 
 {/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe */}
@@ -594,7 +579,7 @@ const shouldShowSearchBar =
    
 
               {isPriceThemeActive ? (
-                // ---- PRICE-RANGE FILTER ACTIVE: show only the matching products ----
+                // ---- PRICE-RANGE FILTER ACTIVE: server already returned only the matching products ----
                 <>
                   {priceThemeFilteredData.length > 0 ? (
                     <ProductGrid
