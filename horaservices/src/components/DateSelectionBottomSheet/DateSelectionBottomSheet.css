@@ -1,0 +1,270 @@
+.dsb-device {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.dsb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 10, 30, 0.45);
+  z-index: 1000;
+}
+
+.dsb-close-btn {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dsb-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+    top: 140px;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  z-index: 1001;
+
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.dsb-header {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  overflow: hidden;
+  margin:0;
+}
+
+.dsb-header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;   /* illustration left me rahegi */
+  z-index: 1;
+}
+
+.dsb-header-text {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  max-width: 55%;
+  text-align: left;
+  z-index: 2;                     /* text image ke upar (z-index se) */
+}
+
+.dsb-header-text h1 {
+  color: #000000;
+  margin: 0 0 6px;
+
+  font-family: "Inter", sans-serif;
+font-weight: 700;
+font-size: clamp(16px, calc((20.48 / 393) * 100vw), 20.48px);
+text-transform: none;
+}
+
+.dsb-subtitle {
+  color: #000000;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+font-weight: 300;
+font-size: clamp(11px, 3.26vw, 12.8px);
+line-height: clamp(14px, 4.3vw, 16.9px);
+letter-spacing: 0;
+}
+.dsb-calendar-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px 16px;
+  box-shadow: 0 4px 20px rgba(120, 90, 150, 0.1);
+  flex: 1;
+  margin: auto auto 20px auto;
+  width:95%;
+  border: 1.28px solid #0000001A;
+  box-shadow: 0px 5.12px 5.12px 0px #0000001F;
+
+
+}
+
+.dsb-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 16px;
+}
+
+.dsb-nav-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #4A5660;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dsb-nav-btn:hover {
+  background: #f3e9f8;
+}
+
+.dsb-month-label {
+
+ color: #4A5660;
+font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(15px, 4.56vw, 17.92px);
+
+text-align: center;
+text-transform: uppercase;
+
+}
+
+.dsb-day-names {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.dsb-day-name {
+  color: #424242;
+
+  font-family: "Inter", sans-serif;
+font-weight: 800;
+font-size: clamp(9px, 2.55vw, 10.04px);
+line-height: clamp(5px, 1.2vw, 4.71px);
+letter-spacing: clamp(0.4px, 0.15vw, 0.59px);
+text-align: center;
+text-transform: uppercase;
+}
+
+.dsb-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 6px;
+}
+
+.dsb-day-cell {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(15px, 4.33vw, 17px);
+  line-height: 1;
+  color: #2b2b2b;
+
+  padding: 0;
+  margin: 0 auto;
+}
+
+.dsb-day-selected {
+  background: #97538C !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+.dsb-day-cell:hover:not(.dsb-day-empty) {
+  background: #f3e9f8;
+}
+
+.dsb-day-empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+
+
+.dsb-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 74px;
+  background: #EFECFB;
+  border-top: 1px solid #ece6f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  z-index: 1002;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.dsb-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dsb-footer-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dsb-footer-label {
+  font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(12px, calc((13.86 / 393) * 100vw), 13.86px);
+
+  color: #000000;
+  margin: 0 0 2px;
+}
+
+.dsb-footer-date {
+ font-family: "Inter", sans-serif;
+font-weight: 500;
+font-size: clamp(12px, calc((13.86 / 393) * 100vw), 13.86px);
+ color: #000000;
+  margin: 0;
+}
+
+.dsb-confirm-btn {
+  background: #97538C;
+  color: #ffffff;
+  border: none;
+  border-radius: clamp(11px, calc((12.8 / 393) * 100vw), 12.8px);
+  padding:10px;
+  font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(13px, calc((15.36 / 393) * 100vw), 15.36px);
+  cursor: pointer;
+}
+
+.dsb-confirm-btn:hover {
+  background: #6a2f96;
+}
