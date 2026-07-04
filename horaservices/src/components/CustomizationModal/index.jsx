@@ -32,13 +32,37 @@ const customizationItems = [
 
 ];
 
-const CustomizationModal = ({ open, onClose, image, whatsappNumber = "911234567890" }) => {
+const CustomizationModal = ({ open, onClose, image, whatsappNumber = "917338584828",  product,catValue, }) => {
   if (!open) return null;
 
-  const handleConsultation = () => {
-    const msg = encodeURIComponent("Hi, I'd like a free consultation for customizing my decoration.");
-    window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, "_blank");
-  };
+const handleConsultation = () => {
+  if (!product) return;
+
+  const pageUrl = window.location.href;
+
+  const message = `🎈 *Looking for a Custom Decoration?*
+
+Our support team is ready to help.
+
+*Product Details*
+
+🎉 Product: ${product?.name || "N/A"}
+💰 Price: ₹${product?.discountedPrice || product?.price || "N/A"}
+📂 Category: ${catValue || "N/A"}
+
+🖼️ Product Image:
+${image || "N/A"}
+
+🔗 Product Page:
+${pageUrl}
+
+I would like to customize this decoration. Please assist me. 😊`;
+
+  window.open(
+    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
 
   return (
     <div className="customModalOverlay" onClick={onClose}>

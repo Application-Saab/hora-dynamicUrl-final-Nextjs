@@ -6,7 +6,7 @@ import fallbackImg from "@/assets/fallback-image.png";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
 import customizationIcon from "@/assets/customizatiton/Custmaizationicon.webp"
-const ProductGrid = ({ data = [], onCardClick, categoryType }) => {
+const ProductGrid = ({ data = [], onCardClick, categoryType ,catValue}) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const getImageUrl = (item) =>
@@ -111,6 +111,8 @@ const ProductGrid = ({ data = [], onCardClick, categoryType }) => {
         ))}
 
       <CustomizationModal
+        product={selectedItem}
+  catValue={catValue}
         open={!!selectedItem}
         onClose={() => setSelectedItem(null)}
         image={selectedItem ? getImageUrl(selectedItem) : null}
