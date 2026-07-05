@@ -58,11 +58,6 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
     document.body
   );
 }
-/**
- * Search dropdown — shows "Matching Categories" (theme suggestions, only present
- * on pages that have a searchCategoryList) and "Matching Products" (filtered
- * from already-fetched catalogue data by product name).
- */
 function SearchDropdown({
   query,
   searchCategoryList,
@@ -218,6 +213,7 @@ export default function SearchSortBar({
   categoryType,
   onCategorySelect,
   onProductSelect,
+  onSearchChange, // ✅ FIX: was missing from the destructured props entirely
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -226,11 +222,11 @@ export default function SearchSortBar({
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
+  const debounceRef = useRef(null);
 
   // Fixed-on-scroll behavior
   useEffect(() => {
     const getTriggerOffset = () => {
-      // Original position of the bar from the top of the document
       return placeholderRef.current
         ? placeholderRef.current.getBoundingClientRect().top + window.scrollY
         : 0;
@@ -273,6 +269,13 @@ export default function SearchSortBar({
     };
   }, []);
 
+  // Clean up any pending debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
   const handleSortSelect = (id) => {
     onSortChange?.(id);
     setIsSortOpen(false);
@@ -282,17 +285,24 @@ export default function SearchSortBar({
     const value = e.target.value;
     setQuery(value);
     setIsDropdownOpen(value.trim().length > 0);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      onSearchChange?.(value.trim());
+    }, 350);
   };
 
   const handleCategoryClick = (cat) => {
     setIsDropdownOpen(false);
     setQuery("");
+    onSearchChange?.(""); 
     onCategorySelect?.(cat);
   };
 
   const handleProductClick = (product) => {
     setIsDropdownOpen(false);
     setQuery("");
+    onSearchChange?.(""); 
     onProductSelect?.(product);
   };
 

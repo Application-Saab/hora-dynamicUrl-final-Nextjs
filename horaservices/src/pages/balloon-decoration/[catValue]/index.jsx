@@ -79,6 +79,7 @@ const DecorationCatPage = ({ locality }) => {
   );
   const { theme } = router.query;
   const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
   const [discountDifference, setDiscountDifference] = useState(0);
@@ -376,9 +377,8 @@ const DecorationCatPage = ({ locality }) => {
       }
 
       const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM
-        }v2/${catId}?${params.toString()}`;
+        }v3/${catId}?${params.toString()}`;
 
-  
       const response = await axios.get(apiUrl);
 
       if (response.status === API_SUCCESS_CODE) {
@@ -406,6 +406,8 @@ const DecorationCatPage = ({ locality }) => {
     } catch (error) {
     } finally {
       setLoading(false);
+     
+      setIsInitialLoad(false);
     }
   };
 
@@ -501,13 +503,13 @@ const shouldShowSearchBar =
         theme={theme}
       />
 
-      {loading ? (
+      {isInitialLoad && loading ? (
         <div className="skeleton-wrapper">
           {Array.from({ length: 6 }).map((_, index) => (
             <CardSkeleton key={index} />
           ))}
         </div>
-      ) : catalogueData.length === 0 ? (
+      ) : catalogueData.length === 0 && !loading ? (
         <div className="noProductsWrapper">
           <h2>No products found</h2>
         </div>
