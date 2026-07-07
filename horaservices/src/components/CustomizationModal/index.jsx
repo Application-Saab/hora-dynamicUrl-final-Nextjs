@@ -5,6 +5,7 @@ import balloonIcon from "@/assets/customizatiton/BalloonColors.webp";
 import neonIcon from "@/assets/customizatiton/NeonLights.webp";
 import numberIcon from "@/assets/customizatiton/Numbers.webp";
 import themeIcon from "@/assets/customizatiton/Changetheme.webp";
+import balloonTitleIcon from "@/assets/customizatiton/titleBallons.webp";
 const customizationItems = [
   {
     icon: balloonIcon,
@@ -71,7 +72,11 @@ I would like to customize this decoration. Please assist me. 😊`;
 
         <div className="customModalBody">
           <div className="customModalHeading">
-            <span className="customModalHeadingEmoji">🎈</span>
+          <Image
+  src={balloonTitleIcon}
+  alt="Balloon"
+  className="customModalHeadingEmoji"
+/>
             <h2>Customize Your Decoration !</h2>
           </div>
           <p className="customModalSubtext">Make It Exactly The Way You Want!</p>

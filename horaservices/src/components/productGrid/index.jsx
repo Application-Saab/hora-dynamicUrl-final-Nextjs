@@ -5,12 +5,14 @@ import "./productGrid.css";
 import fallbackImg from "@/assets/fallback-image.png";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
-import customizationIcon from "@/assets/customizatiton/Custmaizationicon.webp"
-const ProductGrid = ({ data = [], onCardClick, categoryType ,catValue}) => {
+import customizationIcon from "@/assets/customizatiton/Custmaizationicon.webp";
+
+const ProductGrid = ({ data = [], onCardClick, categoryType, catValue }) => {
   const [selectedItem, setSelectedItem] = useState(null);
+  const isPhotography = categoryType === "photography";
 
   const getImageUrl = (item) =>
-    categoryType === "photography"
+    isPhotography
       ? item.featured_image
         ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_image.split(".")[0]}.webp`
         : fallbackImg
@@ -47,13 +49,18 @@ const ProductGrid = ({ data = [], onCardClick, categoryType ,catValue}) => {
               />
 
               <div className="watermark">
-                <Image src={logo} alt="logo" width={18} height={18} />
+                <Image
+                  src={logo}
+                  alt="logo"
+                  width={isPhotography ? 28 : 18}
+                  height={isPhotography ? 28 : 18}
+                />
               </div>
             </div>
 
             <div className="cardContent">
               <p className="productname">
-                {categoryType === "photography"
+                {isPhotography
                   ? item.name
                   : item.name.length > 15
                   ? `${item.name.slice(0, 15)}...`
@@ -68,55 +75,74 @@ const ProductGrid = ({ data = [], onCardClick, categoryType ,catValue}) => {
                 </div>
               </div>
 
-              <div
-                className="customizationBox"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedItem(item);
-                }}
-              >
-              <span className="customizationIcon">
-  <Image
-    src={customizationIcon}
-    alt="Customization"
-    width={18}
-    height={18}
-  />
-</span>
-                <div className="customizationTextWrap">
-                  <p className="customizationTitle">Customization Available</p>
-                  <p className="customizationSub">Personalize it your way</p>
-                </div>
-               <span className="customizationChevron">&gt;</span>
-              </div>
+              {isPhotography ? (
+                <>
+                  <p className="customization">Customization Available</p>
+                  <p className="viewMore">View More</p>
+                </>
+              ) : (
+                <>
+                  <div
+                    className="customizationBox"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedItem(item);
+                    }}
+                  >
+                    <span className="customizationIcon">
+                      <Image
+                        src={customizationIcon}
+                        alt="Customization"
+                        width={18}
+                        height={18}
+                      />
+                    </span>
+                    <div className="customizationTextWrap">
+                      <p className="customizationTitle">
+                        Customization Available
+                      </p>
+                      <p className="customizationSub">
+                        Personalize it your way
+                      </p>
+                    </div>
+                    <span className="customizationChevron">&gt;</span>
+                  </div>
 
-              <hr className="cardDivider" />
+                  <hr className="cardDivider" />
 
-              <div className="viewMoreRow">
-                <p className="viewMore">View More</p>
-                <div className="viewMoreArrow">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M5 12h14M13 6l6 6-6 6"
-                      stroke="#fff"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
+                  <div className="viewMoreRow">
+                    <p className="viewMore">View More</p>
+                    <div className="viewMoreArrow">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 12h14M13 6l6 6-6 6"
+                          stroke="#fff"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         ))}
 
-      <CustomizationModal
-        product={selectedItem}
-  catValue={catValue}
-        open={!!selectedItem}
-        onClose={() => setSelectedItem(null)}
-        image={selectedItem ? getImageUrl(selectedItem) : null}
-      />
+      {!isPhotography && (
+        <CustomizationModal
+          product={selectedItem}
+          catValue={catValue}
+          open={!!selectedItem}
+          onClose={() => setSelectedItem(null)}
+          image={selectedItem ? getImageUrl(selectedItem) : null}
+        />
+      )}
     </div>
   );
 };

@@ -24,11 +24,7 @@
     0
     0;
 
-padding:
-  clamp(14px, 4.6vw, 18px)
-  clamp(14px, 4.6vw, 18px)
-  clamp(4px, 1.3vw, 5px)
-  clamp(14px, 4.6vw, 18px);
+
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
 
   z-index: 99999;
@@ -37,7 +33,12 @@ padding:
   overscroll-behavior: none;
   animation: popupUp 0.35s ease;
 }
+.customModalHeadingEmoji {
 
+  width: clamp(46px, 14.5vw, 57px);
+  height: clamp(46px, 14.5vw, 57px);
+  object-fit: cover;
+}
 @keyframes slideUp {
   from { transform: translateY(40px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -84,7 +85,7 @@ padding:  clamp(16px, calc((20 / 393) * 100vw), 20px)
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: -6px;
 }
 
 .customModalHeadingEmoji {
