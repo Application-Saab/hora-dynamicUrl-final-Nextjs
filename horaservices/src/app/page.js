@@ -14,13 +14,51 @@ import HomeContent from "@/components/HomeContent";
 import { useLayoutEffect } from "react";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
-
+import { useState } from "react";
+import CitySelector from "@/components/Venue/CitySelector";
 export default function Home() {
   const router = useRouter();
 const pathname = usePathname();
   const schemaOrg = getHomeOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
+const [showCityModal, setShowCityModal] = useState(false);
 
+const cityNameToSlug = {
+  Delhi: "delhi",
+  Mumbai: "mumbai",
+
+  Bangalore: "bengaluru",
+  Bengaluru: "bengaluru",
+
+  Noida: "noida",
+
+  Ghaziabad: "ghaziabad",
+
+  Gurgaon: "gurugram",
+  Gurugram: "gurugram",
+
+  Faridabad: "faridabad",
+
+  Hyderabad: "hyderabad",
+
+  Chennai: "chennai",
+
+  Kolkata: "kolkata",
+
+  Lucknow: "lucknow",
+
+  Kanpur: "kanpur",
+
+  Indore: "indore",
+
+  Surat: "surat",
+
+  Bhopal: "bhopal",
+
+  Goa: "goa",
+
+  Pune: "pune",
+};
   useEffect(() => {
   const checkPaymentStatus = async (transactionId) => {
     try {
@@ -134,10 +172,34 @@ const pathname = usePathname();
   
       console.log("scrolling page");
     }, [pathname]);
-  
+    useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const savedCity = sessionStorage.getItem("selectedCity");
+
+  if (!savedCity) {
+    setShowCityModal(true);
+  }
+}, []);
+  const handleCitySelect = (city) => {
+  setShowCityModal(false);
+
+  if (!city || city === "Others") {
+    sessionStorage.removeItem("selectedCity");
+    return;
+  }
+
+  const slug = cityNameToSlug[city] || city.toLowerCase();
+
+  sessionStorage.setItem("selectedCity", slug);
+
+  router.push(`/${slug}`);
+};
   return (
     <>
-  
+    {showCityModal && (
+      <CitySelector onSelect={handleCitySelect} />
+    )}
       <HomeContent />
        <div>
         <VisitorTracker/>

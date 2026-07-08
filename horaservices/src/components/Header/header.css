@@ -175,6 +175,7 @@
   height:18px;
   color: #96528d;
   cursor: pointer;
+  margin:0px !important;
 }
 
 /* =========================
@@ -283,4 +284,27 @@
   .header-logo {
     width: 50px;
   }
+}
+.mobile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.citySelectorPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid #9d4a93;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.citySelectorPill-text {
+  color: #9d4a93;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
 }
