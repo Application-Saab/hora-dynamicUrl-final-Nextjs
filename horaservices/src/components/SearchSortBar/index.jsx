@@ -213,7 +213,7 @@ export default function SearchSortBar({
   categoryType,
   onCategorySelect,
   onProductSelect,
-  onSearchChange, // ✅ FIX: was missing from the destructured props entirely
+  onSearchChange,
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -295,14 +295,14 @@ export default function SearchSortBar({
   const handleCategoryClick = (cat) => {
     setIsDropdownOpen(false);
     setQuery("");
-    onSearchChange?.(""); 
+    onSearchChange?.("");
     onCategorySelect?.(cat);
   };
 
   const handleProductClick = (product) => {
     setIsDropdownOpen(false);
     setQuery("");
-    onSearchChange?.(""); 
+    onSearchChange?.("");
     onProductSelect?.(product);
   };
 

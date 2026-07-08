@@ -24,7 +24,7 @@ import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import "./catvaluedecor.css"
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
-import customize from "../../../assets/customize.jpg";
+import customize from "../../../assets/Customizetationbanner.webp";
 import DidyouKnow from "../../../assets/didyouknow.jpg";
 import makeItMemorable from "../../../assets/makeitmemorable.png";
 import steps from "../../../assets/steps.webp";
@@ -40,7 +40,7 @@ import SeoHead from "@/utils/SeoHead";
 import ThemeSelector from "@/components/Themeselector";
 import SearchSortBar from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
-
+import customiseIcon from "@/assets/customiselcon.webp";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -85,6 +85,7 @@ const DecorationCatPage = ({ locality }) => {
   const [discountDifference, setDiscountDifference] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [catalogueData, setCatalogueData] = useState([]);
+  const [defaultCatalogueData, setDefaultCatalogueData] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [themeFilter, setThemeFilter] = useState("all");
@@ -100,6 +101,30 @@ const DecorationCatPage = ({ locality }) => {
 
   const handleSelectPriceTheme = (theme) => {
     setSelectedPriceTheme(theme); // theme = null clears the filter, otherwise the full theme object
+
+    // Ek time par sirf EK filter active rahega: ya toh CategoryTabs wala
+    // theme (jaise Cocomelon) ya phir ye price-range segmentation
+    // (Budget Friendly / Value For Money / Photogenic / Stage).
+    if (theme) {
+      setThemeFilter("all");
+
+      // `theme` yahan URL ka ek query-string value nahi, balki dynamic
+      // route ka path SEGMENT hai (…/[catValue]/[theme]). Isliye query
+      // object se hataya nahi ja sakta (router.replace with the same
+      // bracketed pathname throws an interpolation error). Agar hum
+      // abhi kisi themed URL par khade hain, to seedha non-themed base
+      // listing URL par navigate kar dete hain.
+      if (router.query?.theme && catValue) {
+        const categorySlug = getCategorySlugFromPath(pathname, city, locality);
+
+        let base = "";
+        if (city) base += `/${city.toLowerCase()}`;
+        if (locality) base += `/${locality.toLowerCase()}`;
+
+        const basePath = `${base}/${categorySlug}/${catValue}`;
+        router.push(basePath);
+      }
+    }
   };
 
   // Only show the price-range theme selector on these two category pages
@@ -116,9 +141,22 @@ const DecorationCatPage = ({ locality }) => {
     setSortOption(id);
   };
 
-  // Search box (e.g. "barbie") -> forwarded to the API as `search`
+  // ---- Search: whether a free-text search is currently active ----
+  const isSearchActive = !!searchQuery.trim();
+
+  // Search box (e.g. "barbie") -> forwarded to the API as `search`.
+  // Jab search active ho jaye, baaki filters (theme tabs, price-range theme,
+  // sort) ko reset kar dete hain taaki search sirf naam/tag se match kare,
+  // kisi pehle se lage filtered subset ke upar nahi.
   const handleSearchChange = (query) => {
-    setSearchQuery(query || "");
+    const trimmed = query?.trim() || "";
+    setSearchQuery(trimmed);
+
+    if (trimmed) {
+      setThemeFilter("all");
+      setSortOption("popularity");
+      setSelectedPriceTheme(null);
+    }
   };
 
   // ---- Search: "Matching Categories" source ----
@@ -210,12 +248,18 @@ const DecorationCatPage = ({ locality }) => {
   };
 
   useEffect(() => {
+    // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
+    // CategoryTabs theme (jaise Cocomelon) ek saath active nahi ho sakte.
+    // Agar price-range theme already selected hai, to URL ke ?theme= ko
+    // ignore kar dete hain taaki dono filter combine na ho jayein.
+    if (selectedPriceTheme) return;
+
     if (theme) {
       setThemeFilter(theme);
     } else {
       setThemeFilter("all");
     }
-  }, [theme]);
+  }, [theme, selectedPriceTheme]);
 
   useEffect(() => {
     addSpaces(subCategory);
@@ -344,7 +388,7 @@ const DecorationCatPage = ({ locality }) => {
       setLoading(true);
 
       const params = new URLSearchParams();
-      params.set("limit", "10");
+      params.set("limit", "1000");
       params.set("page", String(page));
 
       // Popularity is the API's default ordering, so it needs no sortBy param.
@@ -401,12 +445,17 @@ const DecorationCatPage = ({ locality }) => {
         setCatalogueData((prevData) =>
           page === 1 ? decoratedData : [...prevData, ...decoratedData]
         );
+        if (!searchQuery) {
+          setDefaultCatalogueData((prevData) =>
+            page === 1 ? decoratedData : [...prevData, ...decoratedData]
+          );
+        }
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
     } finally {
       setLoading(false);
-     
+
       setIsInitialLoad(false);
     }
   };
@@ -467,13 +516,18 @@ const DecorationCatPage = ({ locality }) => {
   const openCatItems = (item) => {
     if (!item?.value || !catValue) return;
 
+    // CategoryTabs se koi theme (jaise Cocomelon) select ho raha hai —
+    // isliye price-range segmentation (Budget/Value/Photogenic/Stage)
+    // clear kar dete hain, dono ek saath active nahi rehne chahiye.
+    setSelectedPriceTheme(null);
+
     const categorySlug = getCategorySlugFromPath(pathname, city, locality);
 
     let base = "";
     if (city) base += `/${city.toLowerCase()}`;
     if (locality) base += `/${locality.toLowerCase()}`;
 
-   const finalPath = `${base}/${categorySlug}/${catValue}/${item.value}`;
+    const finalPath = `${base}/${categorySlug}/${catValue}/${item.value}`;
     router.push(finalPath);
   };
 
@@ -488,12 +542,31 @@ const DecorationCatPage = ({ locality }) => {
   const sortedCatalogueData = catalogueData;
   const priceThemeFilteredData = catalogueData;
 
-const shouldShowSearchBar =
-  isPriceThemeSelectorPage ||
-  catValue?.toLowerCase() === "naming-ceremony-decoration";
+  const shouldShowSearchBar =
+    isPriceThemeSelectorPage ||
+    catValue?.toLowerCase() === "naming-ceremony-decoration";
 
   const highPriceProducts = sortedCatalogueData.filter((item) => Number(item.price) > 11000);
 
+  // Small reusable skeleton block used whenever we're (re)fetching after a
+  // filter/theme/sort/search change, so the UI never has to guess "empty" vs
+  // "still loading" — it always knows which one it is.
+  const FilterLoadingSkeleton = () => (
+    <div className="skeleton-wrapper">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <CardSkeleton key={index} />
+      ))}
+    </div>
+  );
+const handleWhatsAppClick = () => {
+  const PHONE = "7338584828";
+  const message = `Looking for a Custom Decoration? Our support team is ready to help!`;
+
+  window.open(
+    `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`,
+    "_blank"
+  );
+};
   return (
     <div className="decCatPage">
       <SeoHead
@@ -509,10 +582,6 @@ const shouldShowSearchBar =
             <CardSkeleton key={index} />
           ))}
         </div>
-      ) : catalogueData.length === 0 && !loading ? (
-        <div className="noProductsWrapper">
-          <h2>No products found</h2>
-        </div>
       ) : (
         <>
           {!isThemePage && (
@@ -520,24 +589,25 @@ const shouldShowSearchBar =
               <section >
                 <DecorationBanner category={normalizedCat} />
               </section>
-  <SearchSortBar
-  sortOption={sortOption}
-  onSortChange={handleSortChange}
-  searchCategoryList={searchCategoryList}
-  products={sortedCatalogueData}
-  onCategorySelect={(item) => openCatItems(item, themeFilter)}
-  onProductSelect={handleViewDetails}
-  onSearchChange={handleSearchChange}
-/>
+              <SearchSortBar
+                sortOption={sortOption}
+                onSortChange={handleSortChange}
+                searchCategoryList={searchCategoryList}
+                products={sortedCatalogueData}
+                onCategorySelect={(item) => openCatItems(item, themeFilter)}
+                onProductSelect={handleViewDetails}
+                onSearchChange={handleSearchChange}
+              />
 
-{/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe */}
-{isPriceThemeSelectorPage && (
-  <ThemeSelector
-    onSelectTheme={handleSelectPriceTheme}
-    selectedThemeId={selectedPriceTheme?.id || null}
-  />
-)}
-              {catValue?.toLowerCase() === "kids-birthday-decoration" && (
+              {/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe,
+                  aur search active hote hi hide ho jate hain */}
+              {isPriceThemeSelectorPage && !isSearchActive && (
+                <ThemeSelector
+                  onSelectTheme={handleSelectPriceTheme}
+                  selectedThemeId={selectedPriceTheme?.id || null}
+                />
+              )}
+              {catValue?.toLowerCase() === "kids-birthday-decoration" && !isSearchActive && (
                 <div className="category-tabs-outer">
                   <CategoryTabs
                     data={themeFilters.map((item) => ({
@@ -557,7 +627,7 @@ const shouldShowSearchBar =
                 </div>
               )}
 
-              {catValue?.toLowerCase() === "naming-ceremony-decoration" && (
+              {catValue?.toLowerCase() === "naming-ceremony-decoration" && !isSearchActive && (
                 <div className="category-tabs-outer">
                   <CategoryTabs
                     data={NamingCeremonyThemes.map((item) => ({
@@ -577,24 +647,52 @@ const shouldShowSearchBar =
                 </div>
               )}
 
-              {/* Price-range Theme Selector: only on birthday & kids-birthday pages */}
-   
-
-              {isPriceThemeActive ? (
-                // ---- PRICE-RANGE FILTER ACTIVE: server already returned only the matching products ----
+              {(isPriceThemeActive || isSearchActive) ? (
+                // ---- PRICE-RANGE FILTER OR SEARCH ACTIVE ----
+                // FIX: pehle `loading` check karo. Filter/search change hote hi
+                // `catalogueData` turant `[]` ho jata hai (upar wale useEffect
+                // mein `setCatalogueData([])`), lekin naya API response aane
+                // mein thoda time lagta hai. Us gap mein agar hum seedha
+                // `priceThemeFilteredData.length > 0` check karte to "0 hai"
+                // maan kar "No products found" flash kar deta — jabki asal
+                // mein data abhi load ho hi raha tha. Ab jab tak `loading`
+                // true hai tab tak skeleton dikhayenge, "No products found"
+                // sirf tabhi dikhega jab fetch complete ho chuka ho aur
+                // result genuinely empty ho.
                 <>
-                  {priceThemeFilteredData.length > 0 ? (
+                  {loading ? (
+                    <FilterLoadingSkeleton />
+                  ) : priceThemeFilteredData.length > 0 ? (
                     <ProductGrid
                       data={priceThemeFilteredData}
                       onCardClick={handleViewDetails}
                       catValue={catValue}
                     />
+                  ) : isSearchActive ? (
+                    // Koi search result nahi mila — piche default list dikhayenge, blank nahi
+                    defaultCatalogueData.length > 0 ? (
+                      <ProductGrid
+                        data={defaultCatalogueData}
+                        onCardClick={handleViewDetails}
+                        catValue={catValue}
+                      />
+                    ) : null
                   ) : (
                     <div className="noProductsWrapper">
                       <h2>No products found in this price range</h2>
                     </div>
                   )}
                 </>
+              ) : loading ? (
+                // ---- No filter/search active, but a re-fetch is in flight
+                // (e.g. theme tab switch, sort change) — show skeleton
+                // instead of flashing "No products found" for an instant. ----
+                <FilterLoadingSkeleton />
+              ) : sortedCatalogueData.length === 0 ? (
+                // ---- Category ke paas abhi koi product nahi (filter/search ki wajah se nahi) ----
+                <div className="noProductsWrapper">
+                  <h2>No products found</h2>
+                </div>
               ) : (
                 // ---- DEFAULT LAYOUT: banners interspersed with product grids ----
                 <>
@@ -604,9 +702,43 @@ const shouldShowSearchBar =
                     data={highPriceProducts.slice(0, 1)}
                     onCardClick={handleViewDetails}
                   />
-                  <section className="decorationBanner">
-                    <Image src={customize} alt="Decoration-Banner" width={1200} height={400} className="decorationBanner-image" priority />
-                  </section>
+      <section
+  className="makeItYoursBanner"
+  onClick={handleWhatsAppClick}
+  style={{ cursor: "pointer" }}
+>
+  <Image
+    src={customize}
+    alt="Decoration-Banner"
+    width={1200}
+    height={400}
+    className="makeItYoursBanner-img"
+    priority
+  />
+
+  <button
+    className="makeItYoursCta"
+    onClick={(e) => {
+      e.stopPropagation(); // parent click dobara na fire ho
+      handleWhatsAppClick();
+    }}
+  >
+    <span className="makeItYourImg-icon">
+      <Image src={customiseIcon} alt="Customize" width={25} height={25} />
+    </span>
+
+    <span className="makeItYoursCta-text">
+      <span className="makeItYoursCta-title">Customize Design</span>
+      <span className="makeItYoursCta-subtitle">Make it unique &amp; personal</span>
+    </span>
+
+    <span className="makeItYoursCta-arrow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  </button>
+</section>
 
                   <ProductGrid data={sortedCatalogueData.slice(4, 10)} onCardClick={handleViewDetails} catValue={catValue} />
 
@@ -678,9 +810,10 @@ const shouldShowSearchBar =
             </>
           )}
 
-          {/* Grouped "load more" section — skipped while a price-range filter is active
-              to avoid showing the full catalogue underneath the filtered results */}
-          {!isPriceThemeActive &&
+          {/* Grouped "load more" section — skipped while a price-range filter
+              OR a search is active, to avoid showing the full catalogue
+              underneath the filtered/search results */}
+          {!isPriceThemeActive && !isSearchActive &&
             Array.from(
               {
                 length: Math.ceil(

@@ -20,9 +20,10 @@ const themes = [
     bgImage: budgetfriendlyBg,
     width: "clamp(53px, 16.5vw, 79px)",
     height: "clamp(40px, 12.5vw, 60px)",
-     gap: "clamp(10px, calc((12 / 393) * 100vw), 12px)",
+   gap: "clamp(14px, calc((18 / 393) * 100vw), 22px)",
     priceRange: { min: 0, max: 4000 },
     accentColor: "#C77DBF",
+paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
   },
   {
     id: "value",
@@ -34,6 +35,7 @@ const themes = [
    gap: "clamp(11px, calc((14 / 393) * 100vw), 14px)",
     priceRange: { min: 4200, max: 7000 },
     accentColor: "#7C6CF2",
+paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
   },
   {
     id: "photogenic",
@@ -45,6 +47,7 @@ const themes = [
    gap: "clamp(8px, calc((10 / 393) * 100vw), 10px)",
     priceRange: { min: 7001, max: 12000 },
     accentColor: "#D4A93A",
+    
   },
   {
     id: "stage",
@@ -69,7 +72,13 @@ function ThemeCard({ theme, isActive, onSelect }) {
       style={{ "--card-accent": theme.accentColor }}
     >
       <Image src={theme.bgImage} alt="" fill priority className="theme-card-bg" />
-      <div className="theme-card-overlay" style={{ "--card-gap": theme.gap }}>
+   <div
+  className="theme-card-overlay"
+  style={{
+    "--card-gap": theme.gap,
+    "--card-paddingRight": theme.paddingRight,
+  }}
+>
         <h3 className="theme-card-label">{theme.label}</h3>
         <div className="theme-card-art">
           <Image
