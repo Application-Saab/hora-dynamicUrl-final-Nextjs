@@ -40,7 +40,12 @@ const LazyVideo = ({
     observer.observe(currentVideo);
 
     return () => {
-      if (currentVideo) observer.unobserve(currentVideo);
+      if (currentVideo) {
+        observer.unobserve(currentVideo);
+        currentVideo.removeAttribute("src");
+        currentVideo.src = "";
+        currentVideo.load();
+      }
     };
   }, []);
 
@@ -53,6 +58,12 @@ const LazyVideo = ({
     video.onloadedmetadata = () => {
       const dur = video.duration;
       if (!isNaN(dur)) setDuration(formatDuration(dur));
+    };
+
+    return () => {
+      video.removeAttribute("src");
+      video.src = "";
+      video.load();
     };
   }, [fullVideoSrc]);
 
