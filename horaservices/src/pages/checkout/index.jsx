@@ -41,6 +41,8 @@ import Infoicon from "../../assets/info-icon.png"
 import "./checkout.css"
 import UrgentBookingModal from "@/components/UrgentBookingModal";
 import { contactUsRedirect } from "@/components/CheckoutWhatsAppSummary";
+import { formatDate } from "../../utils/formateDate";
+
 const Checkout = () => {
   const router = useRouter();
 
@@ -327,7 +329,7 @@ const onContinueClick = async () => {
         fromId: storedUserID,
         is_discount: "0",
         addressId: addressID,
-        order_date: selectedDate.toDateString(),
+        order_date: formatDate(selectedDate),
         no_of_burner: 0,
         order_locality: city,
         total_amount: totalAmount,

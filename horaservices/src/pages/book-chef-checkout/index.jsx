@@ -23,6 +23,7 @@ import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
+import {formatDate} from "../../utils/formateDate"
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -332,7 +333,7 @@ const contactUsRedirection = () => {
                 "fromId": storedUserID,
                 "is_discount": "0",
                 "addressId": addressID,
-                "order_date": selectedDate.toDateString(),
+                "order_date": formatDate(selectedDate),
                 "no_of_burner": 0,
                 "order_locality": city,
                 "total_amount": totalPrice,

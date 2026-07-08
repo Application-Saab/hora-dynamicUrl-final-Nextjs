@@ -26,6 +26,8 @@ import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 import UrgentBookingModal from '@/components/UrgentBookingModal';
 import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
+import { formatDate } from "../../utils/formateDate";
+
 const Checkout = () => {
   const router = useRouter();
    const schemaOrg = getPhotographyOrganizationSchema();
@@ -318,7 +320,7 @@ const balanceAmount = totalAmount - advanceAmount;
         "fromId": storedUserID,
         "is_discount": "0",
         "addressId": addressID,
-        "order_date": selectedDate.toDateString(),
+        "order_date": formatDate(selectedDate),
         "no_of_burner": 0,
         "order_locality": city,
         "total_amount": totalAmount,
