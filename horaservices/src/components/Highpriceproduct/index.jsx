@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-
+import fallbackImg from "@/assets/fallback-image.png";
 import "./highpriceproduct.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 
@@ -32,17 +32,17 @@ const HighPriceProduct = ({ data, onCardClick }) => {
             </div>
           )}
 
-          <Image
-            src={
-              highest.featured_images?.[0]?.fileName
-                ? `${COMPRESSED_WEBP_IMG_URL}${highest.featured_images[0].fileName.split(".")[0]}.webp`
-                : "/fallback-image.png"
-            }
-            alt={highest.name}
-            className="highPriceImage"
-            width={300} 
-            height={300}
-          />
+        <Image
+  src={
+    highest.featured_images?.[0]?.fileName
+      ? `${COMPRESSED_WEBP_IMG_URL}${highest.featured_images[0].fileName.split(".")[0]}.webp`
+      : fallbackImg
+  }
+  alt={highest.name}
+  className="highPriceImage"
+  width={300}
+  height={300}
+/>
         </div>
 
         <div className="highPriceContent">

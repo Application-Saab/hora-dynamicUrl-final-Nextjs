@@ -57,6 +57,7 @@ import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
 import pencil from "@/assets/pencil.svg";
 import AddOnsList from "@/components/AddOnsList";
+import fallbackImg from "@/assets/fallback-image.png";
 const SkeletonLoader = () => {
   return (
     <div
@@ -797,16 +798,16 @@ const generateSlug = (name) => {
 
             <div>
               <Image
-                 src={
-                 product?.featured_images?.[0]?.fileName
-                 ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
-                  : "/fallback-image.png"
-                 }
-                 alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
-                style={{ width: "100%", height: "auto" }}
-                width={300}
-                height={300}
-              />
+  src={
+    product?.featured_images?.[0]?.fileName
+      ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
+      : fallbackImg
+  }
+  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+  style={{ width: "100%", height: "auto" }}
+  width={300}
+  height={300}
+/>
               <div
                 style={{
                   position: "absolute",
