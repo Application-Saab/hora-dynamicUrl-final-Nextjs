@@ -6,10 +6,18 @@ import "./LazyVideo.css";
 const LazyVideo = ({
   previewSrc,
   fullVideoSrc,
-  className
+  className,
+  duration: initialDuration,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [duration, setDuration] = useState(null);
+  const [duration, setDuration] = useState(initialDuration || null);
+
+  useEffect(() => {
+    if (initialDuration) {
+      setDuration(initialDuration);
+    }
+  }, [initialDuration]);
+
   const videoRef = useRef(null);
 
   // Format video duration
@@ -51,6 +59,7 @@ const LazyVideo = ({
 
   // Load video metadata (duration)
   useEffect(() => {
+    if (initialDuration) return;
     if (!fullVideoSrc) return;
     const video = document.createElement("video");
     video.src = fullVideoSrc;
@@ -65,7 +74,7 @@ const LazyVideo = ({
       video.src = "";
       video.load();
     };
-  }, [fullVideoSrc]);
+  }, [fullVideoSrc, initialDuration]);
 
   return (
     <div
