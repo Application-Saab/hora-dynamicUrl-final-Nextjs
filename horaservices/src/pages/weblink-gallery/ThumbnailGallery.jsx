@@ -139,7 +139,7 @@ const ThumbnailGallery = ({
   const [showFloatingBtn, setShowFloatingBtn] = useState(false);
   const buttonsRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isIOSMobile, setIsIOSMobile] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
   const [deviceTracking, setDeviceTracking] = useState(null);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
@@ -171,36 +171,29 @@ const showSnackbar = (message) => {
 };
 
 
-  // iOS Mobile Detection
+  // Mobile or Tablet Detection (including iOS devices, iPads, and Android)
   useEffect(() => {
-    const detectIOSMobile = () => {
+    const detectMobileOrTablet = () => {
       if (typeof navigator !== 'undefined') {
-        // Basic check for iPhone, iPad, iPod.
-        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
-        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
-        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
-        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const ua = navigator.userAgent;
+        const isTouch = navigator.maxTouchPoints > 0;
+        const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+        const isIPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        return isMobileUA || isIPadOS || isTouch;
       }
       return false;
     };
-    setIsIOSMobile(detectIOSMobile());
+    setIsMobileOrTablet(detectMobileOrTablet());
   }, []);
 
-  // Dynamic ITEMS_PER_PAGE (will primarily affect iOS mobile due to conditional pagination)
+  // Dynamic ITEMS_PER_PAGE (primarily for mobile/tablets due to pagination)
   const getItemsPerPage = useCallback(() => {
     if (typeof window === 'undefined') return 12; // Default for SSR or if window is not available
-    // For iOS mobile, a smaller number might be better, e.g. 12-15.
-    // For other devices (where pagination is hidden), this number doesn't directly limit display
-    // but affects the `totalPages` calculation if we were to show it.
-    // Let's adjust: more items for wider screens if pagination *were* shown.
-    // If only for iOS mobile, maybe a fixed number like 12 or 15 is fine.
-    // Given the new requirement, this dynamic ITEMS_PER_PAGE is mostly for iOS.
-    if (isIOSMobile) {
-      return 24; // Example: more items on larger iPhones
+    if (isMobileOrTablet) {
+      return 24;
     }
-    return 24; // Fallback for general calculation (though UI is hidden)
-
-  }, [isIOSMobile]); // Re-evaluate if isIOSMobile changes (though it won't after mount)
+    return 24; // Fallback
+  }, [isMobileOrTablet]); // Re-evaluate if isMobileOrTablet changes
 
 
   const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
@@ -209,11 +202,11 @@ const showSnackbar = (message) => {
     const handleResize = () => {
       setItemsPerPage(getItemsPerPage());
     };
-    if (isIOSMobile) { // Only listen to resize for ITEMS_PER_PAGE if on iOS mobile
+    if (isMobileOrTablet) { // Only listen to resize if on mobile/tablet
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }
-  }, [isIOSMobile, getItemsPerPage]);
+  }, [isMobileOrTablet, getItemsPerPage]);
 
   const getInitial = (guest) => {
     const name =
@@ -637,19 +630,19 @@ const showSnackbar = (message) => {
     fetchThumbnails();
   }, [folderName, customerId]);
 
-  // Adjust currentThumbnailsOnPage and totalPages based on isIOSMobile
+  // Adjust currentThumbnailsOnPage and totalPages based on isMobileOrTablet
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
-    if (isIOSMobile) {
+    if (isMobileOrTablet) {
       const total = Math.ceil(visibleThumbnails.length / ITEMS_PER_PAGE);
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
       const currentItems = visibleThumbnails.slice(startIndex, endIndex);
       return { currentThumbnailsOnPage: currentItems, totalPages: total };
     } else {
-      // Not iOS mobile: show all thumbnails, no pagination UI
+      // Desktop: show all thumbnails
       return { currentThumbnailsOnPage: visibleThumbnails, totalPages: 1 };
     }
-  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isMobileOrTablet]);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
@@ -1216,11 +1209,11 @@ const currentUrl =
     }
   };
 
-  const pageOffset = isIOSMobile
+  const pageOffset = isMobileOrTablet
     ? (currentPage - 1) * ITEMS_PER_PAGE
     : 0;
 
-  const thumbnailsToRender = isIOSMobile
+  const thumbnailsToRender = isMobileOrTablet
     ? currentThumbnailsOnPage
     : visibleThumbnails;
 
@@ -1758,7 +1751,7 @@ const handleAddToLocker = async (imgData) => {
                     setSelectedImages={setSelectedImages}
                   />
                 {!isPrivateFolder &&
-                (!isIOSMobile || currentPage === 1) &&
+                (!isMobileOrTablet || currentPage === 1) &&
                 banners[index]}
                 </React.Fragment>
               ))}
@@ -1799,7 +1792,7 @@ const handleAddToLocker = async (imgData) => {
             )}
 
             {/* Conditional Pagination Rendering */}
-            {isIOSMobile && totalPages > 1 && (
+            {isMobileOrTablet && totalPages > 1 && (
               <div className="">
                 <PaginationControls
                   currentPage={currentPage}

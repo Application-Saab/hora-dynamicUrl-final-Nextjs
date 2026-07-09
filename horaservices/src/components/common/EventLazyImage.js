@@ -66,6 +66,7 @@ const EventLazyImage = ({
             src={src}
             alt={alt}
             decoding="async"
+            loading="lazy"
             className={`event-lazy-image-actual-img ${className || ""} ${
               isLoaded ? "loaded" : "loading"
             }`}
