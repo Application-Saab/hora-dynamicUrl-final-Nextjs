@@ -69,6 +69,7 @@ const ImageGrid = ({
                         alt="liked"
                         width={16}
                         height={16}
+                        unoptimized={true}
                       />
                     </div>
                   )}
