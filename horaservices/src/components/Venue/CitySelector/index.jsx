@@ -14,7 +14,7 @@ import Image from "next/image";
 const cities = [
   { name: "Mumbai", image: mumbai },
   { name: "Delhi", image: delhi },
-  { name: "bengaluru", image: bengaluru },
+  { name: "Bengaluru", image: bengaluru },
   { name: "Gurgaon", image: gurgaon },
   { name: "Ghaziabad", image: ghaziabad },
   { name: "Hyderabad", image: hydrabad },

@@ -160,23 +160,23 @@ const Header = () => {
             <div className="mobile-only mobile-header">
               {/* CITY SELECTOR PILL */}
               <div className="citySelectorPill" onClick={() => setShowCityModal(true)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginBottom: "2px" }}>
                   <path
                     d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"
-                    stroke="#9d4a93"
+                    stroke="#97538C"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  <circle cx="12" cy="10" r="2.5" stroke="#9d4a93" strokeWidth="2" />
+                  <circle cx="12" cy="10" r="2.5" stroke="#97538C" strokeWidth="2" />
                 </svg>
                 <span className="citySelectorPill-text">
                   {selectedCity || "Select City"}
                 </span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <svg width="16" height="18" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M6 9l6 6 6-6"
-                    stroke="#9d4a93"
+                    stroke="#97538C"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
