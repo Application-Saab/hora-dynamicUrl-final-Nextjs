@@ -7,7 +7,7 @@ import gurgaon from "@/assets/city/gurgaon.webp";
 import hydrabad from "@/assets/city/hyderabad.webp";
 import faridabad from "@/assets/city/faridabad.webp";
 import noida from "@/assets/city/noida.webp";
-import ghaziabad from "@/assets/ghaziabad.webp";
+import ghaziabad from "@/assets/city/Ghaziabad.webp";
 import others from "@/assets/others.webp";
 import Image from "next/image";
 

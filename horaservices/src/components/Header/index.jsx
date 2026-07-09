@@ -42,7 +42,7 @@ const Header = () => {
   ];
 
   const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
-  const isCityPage = CITY_PATH_REGEX.test(pathname);
+  const isCityPage = pathname ? CITY_PATH_REGEX.test(pathname) : false;
 
   const isHomeLikePage = homeLikeRoutes.includes(pathname) || isCityPage;
   const isInnerPage = !isHomeLikePage;
@@ -86,12 +86,35 @@ const Header = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [showCityModal, setShowCityModal] = useState(false);
 
+  // ✅ agar sessionStorage mein city save hai (popup se select ki hui) use wahi dikhao
+  // ✅ warna, agar user seedha kisi city-route par aaya hai (jaise /bengaluru/balloon-decoration),
+  //    URL se hi city nikal ke "Select City" ki jagah wahi dikhao
   useEffect(() => {
     const savedCity = sessionStorage.getItem("selectedCity");
     if (savedCity) {
       setSelectedCity(savedCity);
+      return;
     }
-  }, []);
+
+    if (!pathname) {
+      setSelectedCity("");
+      return;
+    }
+
+    const match = pathname.match(CITY_PATH_REGEX);
+    if (match && match[1]) {
+      const citySlugFromUrl = match[1].toLowerCase();
+      setSelectedCity(citySlugFromUrl);
+    } else {
+      setSelectedCity("");
+    }
+  }, [pathname]);
+
+  // ✅ display ke liye pehla letter capital, baaki lowercase (routing/slug par koi asar nahi)
+  const toDisplayCity = (value) => {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  };
 
   const handleCitySelect = (city) => {
     const selected = city === "Others" ? "" : city;
@@ -103,7 +126,7 @@ const Header = () => {
     sessionStorage.setItem("selectedCity", selected);
 
     // pathname se PURANI city hamesha strip karo (agar hai toh)
-    const restOfPath = pathname.replace(CITY_PATH_REGEX, "");
+    const restOfPath = pathname ? pathname.replace(CITY_PATH_REGEX, "") : "";
 
     if (selected) {
       const citySlug = selected.toLowerCase().trim().replace(/\s+/g, "-");
@@ -171,7 +194,7 @@ const Header = () => {
                   <circle cx="12" cy="10" r="2.5" stroke="#97538C" strokeWidth="2" />
                 </svg>
                 <span className="citySelectorPill-text">
-                  {selectedCity || "Select City"}
+                  {toDisplayCity(selectedCity) || "Select City"}
                 </span>
                 <svg width="16" height="18" viewBox="0 0 24 24" fill="none">
                   <path

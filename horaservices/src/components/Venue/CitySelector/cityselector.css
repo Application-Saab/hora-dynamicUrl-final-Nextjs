@@ -6,12 +6,13 @@
   align-items: center;
   justify-content: center;
   z-index: 999;
+  margin: auto;
 }
 
 .city-modal {
   background: #fff;
   border-radius: 20px;
-  padding:  clamp(10px, 3.05vw, 12px) clamp(8px, 2.54vw, 10px);
+padding: clamp(10px, calc((12 / 393) * 100vw), 15px);
   width: clamp(300px, 90vw, 420px);
   max-height: 90vh;
   overflow-y: auto;
@@ -44,7 +45,8 @@ text-transform: uppercase;
   background: #fff;
 border: 1.24px solid #00000026;
   border-radius: 12px;
-  padding: 6px;
+  padding: clamp(7px, calc((9 / 393) * 100vw), 11px)
+         clamp(5px, calc((6 / 393) * 100vw), 7px);
 box-shadow: 0px 4.94px 11.12px 0px #00000026;
 
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -56,8 +58,8 @@ box-shadow: 0px 4.94px 11.12px 0px #00000026;
 }
 
 .city-img-wrap {
- width: clamp(72px, 20.1vw, 79px);
-height: clamp(58px, 16.3vw, 64px);
+ width: 100%;
+height: clamp(57px, calc((70 / 393) * 100vw), 86px);
 border-radius: clamp(5px, 1.57vw, 6.18px);
   overflow: hidden;
   background: #f5f5f5;

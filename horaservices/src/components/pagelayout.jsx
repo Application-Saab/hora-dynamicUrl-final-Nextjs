@@ -55,7 +55,7 @@ const PageLayout = ({ children }) => {
     // current path se PURANI city (agar hai) strip karo, baaki path preserve karo
     const restOfPath = pathname.replace(CITY_PATH_REGEX, "");
 
-    router.push(`/${slug}${restOfPath}`);
+    router.push(`/${slug}${restOfPath}`, { scroll: false });
   };
 
   const showBottomNav =

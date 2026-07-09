@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -12,15 +12,12 @@ import { getHomeOrganizationSchema } from "@/utils/schema";
 import HomeContent from "@/components/HomeContent";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
-import CitySelector from "@/components/Venue/CitySelector";
-import cityNameToSlug from "@/utils/cityNameToSlug";
 
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
   const schemaOrg = getHomeOrganizationSchema();
   const scriptTag = JSON.stringify(schemaOrg);
-  const [showCityModal, setShowCityModal] = useState(false);
 
   useEffect(() => {
     const checkPaymentStatus = async (transactionId) => {
@@ -109,34 +106,8 @@ export default function Home() {
     console.log("scrolling page");
   }, [pathname]);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const savedCity = sessionStorage.getItem("selectedCity");
-
-    if (!savedCity) {
-      setShowCityModal(true);
-    }
-  }, []);
-
-  const handleCitySelect = (city) => {
-    setShowCityModal(false);
-
-    if (!city || city === "Others") {
-      sessionStorage.removeItem("selectedCity");
-      return;
-    }
-
-    const slug = cityNameToSlug[city] || city.toLowerCase();
-
-    sessionStorage.setItem("selectedCity", slug);
-
-    router.push(`/${slug}`);
-  };
-
   return (
     <>
-      {showCityModal && <CitySelector onSelect={handleCitySelect} />}
       <HomeContent />
       <div>
         <VisitorTracker />
