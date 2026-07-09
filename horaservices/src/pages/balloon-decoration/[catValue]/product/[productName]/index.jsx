@@ -1,5 +1,6 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import checkImage from "../../../../../assets/tick.svg";
 import "./Decorproduct.css"
 import {
@@ -218,7 +219,6 @@ function DecorationCatDetails({ city, locality }) {
   const [passCategoryId, setPassCategoryId] = useState("");
   const [openProductUrl, setOpenProductUrl] = useState("");
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
-  const searchParams = useSearchParams();
   const [allProducts, setAllProducts] = useState([]);
 const [similarByTheme, setSimilarByTheme] = useState([]);
 const [levelUp1000, setLevelUp1000] = useState([]);

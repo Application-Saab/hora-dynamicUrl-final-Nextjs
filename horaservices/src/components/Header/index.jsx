@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import "./header.css";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import loginImg from "../../assets/profile_picture.png";
@@ -20,7 +20,6 @@ const CITY_LIST = Object.values(cityNameToSlug);
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const [showDrawer, setShowDrawer] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
