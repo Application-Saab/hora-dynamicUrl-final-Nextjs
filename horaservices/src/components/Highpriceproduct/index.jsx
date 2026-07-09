@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
-
+import fallbackImg from "@/assets/fallback-image.png";
 import "./highpriceproduct.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
@@ -35,13 +35,17 @@ const HighPriceProduct = ({ data, onCardClick, catValue }) => {
             <div className="highDesignBadge">On {designKey}</div>
           )}
 
-          <Image
-            src={getImageUrl(highest)}
-            alt={highest.name}
-            className="highPriceImage"
-            width={300}
-            height={300}
-          />
+        <Image
+  src={
+    highest.featured_images?.[0]?.fileName
+      ? `${COMPRESSED_WEBP_IMG_URL}${highest.featured_images[0].fileName.split(".")[0]}.webp`
+      : fallbackImg
+  }
+  alt={highest.name}
+  className="highPriceImage"
+  width={300}
+  height={300}
+/>
         </div>
 
         <div className="highPriceContent">

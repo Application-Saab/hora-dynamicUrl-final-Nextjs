@@ -139,8 +139,8 @@
 }
 
 .category-tabs-circle {
- width: clamp(80px, 26vw, 102px);
-height: clamp(80px, 26vw, 102px);
+width: clamp(60px, 20.61vw, 81px);
+height: clamp(60px, 20.61vw, 81px);
 
   border-radius: 50%;
   background-size: cover;
