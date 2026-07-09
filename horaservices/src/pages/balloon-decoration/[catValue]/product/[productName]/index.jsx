@@ -223,6 +223,9 @@ function DecorationCatDetails({ city, locality }) {
 const [similarByTheme, setSimilarByTheme] = useState([]);
 const [levelUp1000, setLevelUp1000] = useState([]);
 const [levelUp2000, setLevelUp2000] = useState([]);
+  const [addonIds, setAddonIds] = useState([]);
+  const [addonData, setAddonData] = useState([]);
+
 
   const router = useRouter();
   const params = useParams();
@@ -299,6 +302,7 @@ const fetchDecorationDetails = async () => {
     if (fetchedProduct?.price) {
       setDiscountInfo(getDiscountedPrice(fetchedProduct.price));
     }
+    setAddonIds(fetchedProduct?.addons)
 
     setLoading(false);
   } catch (error) {
@@ -707,7 +711,34 @@ const generateSlug = (name) => {
     );
   };
 
+  useEffect(() => {
+    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
 
+    const getAddons = async () => {
+      try {
+        const query = new URLSearchParams();
+        addonIds.forEach(id => {
+          if (id) query.append("ids", id);
+        });
+
+        if ([...query].length === 0) return; // no valid IDs
+
+        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch addons");
+        }
+
+        setAddonData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching addons:", error);
+      }
+    };
+
+    getAddons();
+  }, [addonIds]);
 
  const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
   if (loading) {
@@ -963,7 +994,7 @@ const generateSlug = (name) => {
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
-              addOnProducts={addOnProductsData.addOnProducts}
+              addOnProducts={addonData}
               itemQuantities={itemQuantities}
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}

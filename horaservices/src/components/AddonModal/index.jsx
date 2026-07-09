@@ -36,7 +36,9 @@ const AddonModal = ({
             <div className="modalcard-container">
               {addOnProducts.map((item, index) => (
                 <div key={index} className="modalcard">
-                  <img src={item.image} alt={item.title} className="model-image" />
+                  <img
+                    src={`https://horaservices.com/api/uploads/compressed_webp/${item.image}`}
+                    alt={item.title} className="model-image" />
                   <h3>{item.title}</h3>
                   {/* <p className="Addon-description">{item.description}</p> */}
 

@@ -21,6 +21,7 @@ import logo from "@/assets/new_logo_light.png";
 import "./productDetails.css";
 import {
   BASE_URL,
+  GET_ADDON_BY_ID,
 } from "@/utils/apiconstants";
 import FAQSection from '@/components/FAQSection';
 import BrandBanner from '@/components/BrandBanner';
@@ -190,6 +191,8 @@ const ProductDetails = () => {
   const customizationRef = useRef(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const similarRef = useRef(null);
+  const [addonData, setAddonData] = useState([]);
+  const [addonIds, setAddonIds] = useState([]);
   
 
   const brandItems = [
@@ -398,7 +401,7 @@ const ProductDetails = () => {
 
         const data = res.data?.data;
         if (!data) throw new Error("No product found");
-       
+        setAddonIds(data?.addons)
 
         const { discount, discountedPrice, discountDifference } =
           getDiscountedPrice(Number(data.price));
@@ -460,6 +463,36 @@ const ProductDetails = () => {
       console.log("Share cancelled");
     }
   };
+
+  useEffect(() => {
+    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
+
+    const getAddons = async () => {
+      try {
+        const query = new URLSearchParams();
+        addonIds.forEach(id => {
+          if (id) query.append("ids", id);
+        });
+
+        if ([...query].length === 0) return; // no valid IDs
+
+        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch addons");
+        }
+
+        setAddonData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching addons:", error);
+      }
+    };
+
+    getAddons();
+  }, [addonIds]);
+
   if (loading) {
     return <SkeletonLoader />
   }
@@ -640,7 +673,7 @@ const ProductDetails = () => {
     <AddonModal 
     isopen={isModalOpen}
     setIsOpen={setIsModalOpen}
-    addOnProducts={photographyAddOns.addOnProducts}
+    addOnProducts={addonData}
     itemQuantities={itemQuantities}
     onAdd={handleAddToCartAndScrollBack}
     onRemove={handleRemoveFromCart}
