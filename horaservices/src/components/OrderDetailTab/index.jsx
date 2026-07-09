@@ -1072,7 +1072,7 @@ orderId={orderDetail?.order_id}
                           style={{ marginRight: 8 }}
                         />
                         <div>
-                          {item?.title || "NA"} – ₹{item?.price || 0}
+                          {item?.title || "NA"}  = ₹{item?.price} x {item?.quantity} = ₹{item?.totalPrice || item?.price * item?.quantity || "N/A"}
                         </div>
                       </div>
                     ))
