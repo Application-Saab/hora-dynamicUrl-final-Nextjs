@@ -33,7 +33,7 @@ const PHONE = "7338584828";
     <>
       <div className="pcs-overlay" onClick={onClose} />
       <div className="pcs-sheet">
-        <button className="pcs-close" onClick={onClose}>✕</button>
+        <button className="customModal-close" onClick={onClose}>✕</button>
         <div className="pcs-dragger" />
 
         <div className="pcs-header">
