@@ -302,7 +302,7 @@ const DecorationCatCITYPage = () => {
 
 
   return (
-    <div style={{ backgroundColor: "#EDEDED" }} className="decCatPage">
+    <div className="decCatPage">
     <DecorationCatPage city={city} locality={locality}/>
    </div>)}
 

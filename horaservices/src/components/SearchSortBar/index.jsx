@@ -6,6 +6,7 @@ import { Search, SlidersHorizontal, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
@@ -15,6 +16,9 @@ const sortOptions = [
 ];
 
 function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
+  // Sort sheet open hote hi background scroll lock ho jayega
+  useLockBodyScroll(isOpen);
+
   if (typeof window === "undefined") return null;
 
   return createPortal(

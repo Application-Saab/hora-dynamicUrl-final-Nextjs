@@ -12,7 +12,7 @@
 .theme-card {
   position: relative;
   width: 100%;
-  height: clamp(53px, calc((65 / 393) * 100vw), 80px);
+ height: clamp(57px, calc((70 / 393) * 100vw), 85.5px);
   border-radius: clamp(12px, calc((16 / 393) * 100vw), 18px);
   border: none;
   border-radius: clamp(14px, 4vw, 18px);

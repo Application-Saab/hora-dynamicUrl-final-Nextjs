@@ -278,7 +278,7 @@ height: 46px;
 
   .header-wrapper,
   .headerContainerinner {
-    padding: 5px 0px;
+    padding: 6px 0px;
   }
 
 
@@ -288,7 +288,6 @@ height: 46px;
   align-items: center;
   gap: 20px;
 }
-
 .citySelectorPill {
   display: flex;
   align-items: center;
@@ -298,13 +297,15 @@ height: 46px;
   padding: 4px;
   cursor: pointer;
   background: #fff;
+  text-transform: uppercase;
 }
 
 .citySelectorPill-text {
   color: #97538C;
   font-family: "Inter", sans-serif;
-font-weight: 600;
-font-size: clamp(8px, 2.54vw, 10px);
-text-align: center;
+  font-weight: 600;
+  font-size: clamp(9.77px, calc((12 / 393) * 100vw), 14.66px);
+  text-align: center;
   white-space: nowrap;
+  cursor: pointer; /* added */
 }

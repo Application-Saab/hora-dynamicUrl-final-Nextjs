@@ -185,7 +185,7 @@
 
 .sort-divider {
   border: none;
-  border-top: 1px solid #e6e6e6;
+  border-top: 1px solid #7E7E7E;
   margin: 0 0 clamp(4px, 1.5vw, 8px);
 }
 
@@ -193,7 +193,7 @@
   display: flex;
   align-items: center;
   gap: clamp(12px, 3.6vw, 16px);
-  padding: clamp(12px, 3.6vw, 16px) 0;
+ padding: clamp(6.51px, calc((8 / 393) * 100vw), 9.77px) 0;
   cursor: pointer;
 }
 

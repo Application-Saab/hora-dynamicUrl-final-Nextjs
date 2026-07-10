@@ -5,17 +5,16 @@ import Footer from "./Footer";
 import BottomNav from "./BottomNav";
 import "../app/globals.css";
 import Head from "next/head";
-import { usePathname, useRouter } from "next/navigation";
-// ✅ import karo
+import { usePathname } from "next/navigation";
 import ConsultationPopupProvider from "@/components/ConsultationPopupProvider";
 import CitySelector from "@/components/Venue/CitySelector";
-import cityNameToSlug from "@/utils/cityNameToSlug";
+import { CityProvider, useCity } from "@/utils/cityContext";
 
-const PageLayout = ({ children }) => {
+// 👇 inner component, kyunki useCity() sirf CityProvider ke andar chalega
+const LayoutInner = ({ children }) => {
   const pathname = usePathname();
-  const router = useRouter();
   const [userId, setUserId] = useState("");
-  const [showCityModal, setShowCityModal] = useState(false);
+  const { showCityModal, selectCity } = useCity();
 
   useEffect(() => {
     const storedId = localStorage.getItem("userID");
@@ -23,40 +22,6 @@ const PageLayout = ({ children }) => {
       setUserId(storedId);
     }
   }, []);
-
-  // ✅ city popup ab yaha se control hoga — jis bhi page par user direct aaye
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const savedCity = sessionStorage.getItem("selectedCity");
-
-    if (!savedCity) {
-      setShowCityModal(true);
-    } else {
-      setShowCityModal(false);
-    }
-  }, []);
-
-  const CITY_LIST = Object.values(cityNameToSlug);
-  const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
-
-  const handleCitySelect = (city) => {
-    setShowCityModal(false);
-
-    if (!city || city === "Others") {
-      sessionStorage.removeItem("selectedCity");
-      return;
-    }
-
-    const slug = cityNameToSlug[city] || city.toLowerCase();
-
-    sessionStorage.setItem("selectedCity", slug);
-
-    // current path se PURANI city (agar hai) strip karo, baaki path preserve karo
-    const restOfPath = pathname.replace(CITY_PATH_REGEX, "");
-
-    router.push(`/${slug}${restOfPath}`, { scroll: false });
-  };
 
   const showBottomNav =
     pathname === "/wonderland" ||
@@ -79,15 +44,14 @@ const PageLayout = ({ children }) => {
     pathname?.startsWith("/wonderlandinternational");
 
   return (
-    // ✅ ConsultationPopupProvider se wrap karo — bas itna hi karna tha
     <ConsultationPopupProvider>
       <div className="page-container container-fluid p-0">
         <Head>
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
 
-        {/* ✅ city selector ab har page par (agar city save nahi hai) */}
-        {showCityModal && <CitySelector onSelect={handleCitySelect} />}
+        {/* ✅ SIRF EK modal — Header aur PageLayout dono isi state ko control karte hain */}
+        {showCityModal && <CitySelector onSelect={selectCity} />}
 
         {pathname !== "/services" && <Header />}
         <main className="page-main row m-0">
@@ -105,6 +69,14 @@ const PageLayout = ({ children }) => {
         )}
       </div>
     </ConsultationPopupProvider>
+  );
+};
+
+const PageLayout = ({ children }) => {
+  return (
+    <CityProvider>
+      <LayoutInner>{children}</LayoutInner>
+    </CityProvider>
   );
 };
 

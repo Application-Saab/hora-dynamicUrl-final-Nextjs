@@ -10,6 +10,7 @@ import noida from "@/assets/city/noida.webp";
 import ghaziabad from "@/assets/city/Ghaziabad.webp";
 import others from "@/assets/others.webp";
 import Image from "next/image";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 
 const cities = [
   { name: "Mumbai", image: mumbai },
@@ -24,6 +25,10 @@ const cities = [
 ];
 
 const CitySelector = ({ onSelect }) => {
+  // ✅ jab tak ye component mounted hai (yaani popup open hai),
+  // background scroll lock rahega aur exact position par pin rahega
+  useLockBodyScroll(true);
+
   const handleClick = (cityName) => {
     if (cityName === "Others") {
       window.location.href = "https://horaservices.com/";
