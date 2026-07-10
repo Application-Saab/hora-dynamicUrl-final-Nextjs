@@ -1,33 +1,38 @@
 .city-overlay {
   position: fixed;
   inset: 0;
+  height: 100vh;
+  height: 100dvh; /* ✅ mobile browsers (address bar show/hide) ke liye stable height, dvh unsupported browsers 100vh par fallback karenge */
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
-  margin: auto;
+  overscroll-behavior: contain; /* ✅ overlay ke peeche scroll chain hone se roke */
+  touch-action: none; /* ✅ overlay ke background hisse par touch-drag se page na hile */
 }
 
 .city-modal {
   background: #fff;
   border-radius: 20px;
-padding: clamp(10px, calc((12 / 393) * 100vw), 15px);
+  padding: clamp(10px, calc((12 / 393) * 100vw), 15px);
   width: clamp(300px, 90vw, 420px);
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
+  overscroll-behavior: contain; /* ✅ modal ke andar scroll khatam hone par bahar scroll na chale */
+  touch-action: pan-y; /* ✅ modal ke andar normal vertical scroll allow rahe */
 }
 
 .city-title {
   font-family: "Inter", sans-serif;
-font-weight: 700;
-font-size: clamp(16px, 5.03vw, 19.78px);
-
-color: #1a1a1a;
+  font-weight: 700;
+  font-size: clamp(16px, 5.03vw, 19.78px);
+  color: #1a1a1a;
   margin: 0 0 12px;
-text-align: center;
-vertical-align: middle;
-text-transform: uppercase;
+  text-align: center;
+  vertical-align: middle;
+  text-transform: uppercase;
 }
 
 .city-grid {
@@ -43,12 +48,11 @@ text-transform: uppercase;
   cursor: pointer;
   gap: 4px;
   background: #fff;
-border: 1.24px solid #00000026;
+  border: 1.24px solid #00000026;
   border-radius: 12px;
   padding: clamp(7px, calc((9 / 393) * 100vw), 11px)
          clamp(5px, calc((6 / 393) * 100vw), 7px);
-box-shadow: 0px 4.94px 11.12px 0px #00000026;
-
+  box-shadow: 0px 4.94px 11.12px 0px #00000026;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -58,9 +62,9 @@ box-shadow: 0px 4.94px 11.12px 0px #00000026;
 }
 
 .city-img-wrap {
- width: 100%;
-height: clamp(57px, calc((70 / 393) * 100vw), 86px);
-border-radius: clamp(5px, 1.57vw, 6.18px);
+  width: 100%;
+  height: clamp(57px, calc((70 / 393) * 100vw), 86px);
+  border-radius: clamp(5px, 1.57vw, 6.18px);
   overflow: hidden;
   background: #f5f5f5;
   display: flex;
@@ -75,13 +79,12 @@ border-radius: clamp(5px, 1.57vw, 6.18px);
 }
 
 .city-name {
-font-family: "Inter", sans-serif;
-font-weight: 500;
-font-size: clamp(12px, 3.77vw, 14.83px);
-
-text-align: center;
-vertical-align: middle;
-text-transform: capitalize;
- color: #595959;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(12px, 3.77vw, 14.83px);
+  text-align: center;
+  vertical-align: middle;
+  text-transform: capitalize;
+  color: #595959;
   margin: 0;
 }

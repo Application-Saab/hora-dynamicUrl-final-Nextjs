@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import "./CustomizationModal.css";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import balloonIcon from "@/assets/customizatiton/BalloonColors.webp";
 import neonIcon from "@/assets/customizatiton/NeonLights.webp";
 import numberIcon from "@/assets/customizatiton/Numbers.webp";
@@ -34,6 +35,8 @@ const customizationItems = [
 ];
 
 const CustomizationModal = ({ open, onClose, image, whatsappNumber = "917338584828",  product,catValue, }) => {
+ useLockBodyScroll(open);
+
   if (!open) return null;
 
 const handleConsultation = () => {
