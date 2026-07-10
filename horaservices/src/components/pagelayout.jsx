@@ -8,12 +8,13 @@ import Head from "next/head";
 import { usePathname } from "next/navigation";
  // ✅ import karo
 import ConsultationPopupProvider from "@/components/ConsultationPopupProvider"
+import { safeGetItem } from "@/utils/safeStorage";
 const PageLayout = ({ children }) => {
   const pathname = usePathname();
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    const storedId = localStorage.getItem("userID");
+    const storedId = safeGetItem("userID");
     if (storedId) {
       setUserId(storedId);
     }
