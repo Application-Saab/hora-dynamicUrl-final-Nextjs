@@ -167,11 +167,15 @@ const Header = () => {
                   onClick={() => setShowDrawer(true)}
                 />
               ) : (
-                <FontAwesomeIcon
-                  icon={faBars}
-                  className="menu-icon"
-                  onClick={toggleDrawer}
-                />
+                <>
+                  <div className="mobile-only mobile-header">
+                    <FontAwesomeIcon
+                      icon={faBars}
+                      className="menu-icon"
+                      onClick={toggleDrawer}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}

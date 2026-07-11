@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 // import { useParams } from "react-router-dom";
 import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM, API_SUCCESS_CODE } from '../../../../utils/apiconstants';
 import axios from 'axios';
@@ -13,37 +13,72 @@ import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { useRouter } from "next/router";
 import DecorationCatPage from "@/pages/balloon-decoration/[catValue]";
 
+// URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration/..." -> "hyderabad"
+function getCitySlugFromPath(pathname) {
+  if (!pathname) return "";
+  const parts = pathname.split("/").filter(Boolean);
+  return parts[0] || "";
+}
 
 const DecorationCatCITYPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-   let {  locality} = router.query;
-    // let { city } = useParams();
-    const [city, setCity] = useState('');
+  let { locality } = router.query;
+
+  // Yeh state hamesha ASLI browser URL se derive hoti hai — chahe
+  // navigation Next.js router.push se hua ho, ya CityContext ke
+  // window.history.pushState (silent URL change) se — dono cases handle honge.
+  const [citySlug, setCitySlug] = useState("");
   const [catValue, setCatValue] = useState('');
+
+  const syncCityFromUrl = useCallback(() => {
+    if (typeof window === "undefined") return;
+    setCitySlug(getCitySlugFromPath(window.location.pathname));
+  }, []);
+
+  // Pehla mount — SSR/hydration ke baad turant sync karo
+  useEffect(() => {
+    syncCityFromUrl();
+  }, [syncCityFromUrl]);
+
+  // Jab Next.js Pages Router khud se route change kare (Link click, router.push)
+  useEffect(() => {
+    router.events.on("routeChangeComplete", syncCityFromUrl);
+    return () => router.events.off("routeChangeComplete", syncCityFromUrl);
+  }, [router.events, syncCityFromUrl]);
+
+  // Jab CityContext silently URL change kare (city popup se select karne par)
+  useEffect(() => {
+    window.addEventListener("city:changed", syncCityFromUrl);
+    return () => window.removeEventListener("city:changed", syncCityFromUrl);
+  }, [syncCityFromUrl]);
+
+  // Browser back/forward button
+  useEffect(() => {
+    window.addEventListener("popstate", syncCityFromUrl);
+    return () => window.removeEventListener("popstate", syncCityFromUrl);
+  }, [syncCityFromUrl]);
+
+  const city = citySlug
+    ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1)
+    : "";
+
+  // catValue router.query se (ya fallback me path se)
   useEffect(() => {
     if (router.isReady) {
-      const { catValue: queryCatValue, city: queryCity } = router.query;
-
+      const { catValue: queryCatValue } = router.query;
       if (queryCatValue) {
         setCatValue(queryCatValue);
-        //alert(`catValue: ${queryCatValue}`);
       }
-
-      if (queryCity) {
-        setCity(queryCity);
-        ///alert(`city: ${queryCity}`);
-      }
-    }
-    else {
+    } else {
       const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
       const parts = path.split('/'); // Split by '/'
       const dynamicValue = parts[2];
 
       setCatValue(dynamicValue);
-
     }
   }, [router.isReady, router.query]);
+
   const altTagCatValue = catValue.replace(/-/g, ' ');
   const [orderType, setOrderType] = useState(1);
   const hasCityPageParam = city ? true : false;

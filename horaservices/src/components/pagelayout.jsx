@@ -14,7 +14,7 @@ import { CityProvider, useCity } from "@/utils/cityContext";
 const LayoutInner = ({ children }) => {
   const pathname = usePathname();
   const [userId, setUserId] = useState("");
-  const { showCityModal, selectCity } = useCity();
+  const { showCityModal, selectCity, isCityDisabledRoute } = useCity();
 
   useEffect(() => {
     const storedId = localStorage.getItem("userID");
@@ -51,7 +51,9 @@ const LayoutInner = ({ children }) => {
         </Head>
 
         {/* ✅ SIRF EK modal — Header aur PageLayout dono isi state ko control karte hain */}
-        {showCityModal && <CitySelector onSelect={selectCity} />}
+        {/* ✅ isCityDisabledRoute ka extra guard — un routes (popup-excluded + pill-hidden) par
+            popup kabhi render hi nahi hoga, chahe showCityModal state kisi wajah se true ho */}
+        {showCityModal && !isCityDisabledRoute && <CitySelector onSelect={selectCity} />}
 
         {pathname !== "/services" && <Header />}
         <main className="page-main row m-0">

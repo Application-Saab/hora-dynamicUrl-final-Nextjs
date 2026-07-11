@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 // import { useParams } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
 import { MessageCircle, Plus , ArrowDown , ArrowUp} from 'lucide-react';
@@ -19,6 +19,13 @@ import faqData from '../../../../../../utils/faqData.json'
 import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
 import DecorationCatDetails from "@/pages/balloon-decoration/[catValue]/product/[productName]";
+
+// URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration/..." -> "hyderabad"
+function getCitySlugFromPath(pathname) {
+  if (!pathname) return "";
+  const parts = pathname.split("/").filter(Boolean);
+  return parts[0] || "";
+}
 
 // Skeleton Loader Component
 const SkeletonLoader = () => {
@@ -48,7 +55,6 @@ const SkeletonLoader = () => {
 
 function DecorationCatCityDetails() {
   const [selCat, setSelCat] = useState("");
-  const [city, setCity] = useState("");
   const [isArrowDown, setIsArrowDown] = useState(true);
   const [orderType, setOrderType] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -68,15 +74,51 @@ function DecorationCatCityDetails() {
 
    let {  locality} = router.query;
 
-   // Use useEffect to handle router query
+  // Yeh state hamesha ASLI browser URL se derive hoti hai — chahe
+  // navigation Next.js router.push se hua ho, ya CityContext ke
+  // window.history.pushState (silent URL change) se — dono cases handle honge.
+  const [citySlug, setCitySlug] = useState("");
+
+  const syncCityFromUrl = useCallback(() => {
+    if (typeof window === "undefined") return;
+    setCitySlug(getCitySlugFromPath(window.location.pathname));
+  }, []);
+
+  // Pehla mount — SSR/hydration ke baad turant sync karo
+  useEffect(() => {
+    syncCityFromUrl();
+  }, [syncCityFromUrl]);
+
+  // Jab Next.js Pages Router khud se route change kare (Link click, router.push)
+  useEffect(() => {
+    router.events.on("routeChangeComplete", syncCityFromUrl);
+    return () => router.events.off("routeChangeComplete", syncCityFromUrl);
+  }, [router.events, syncCityFromUrl]);
+
+  // Jab CityContext silently URL change kare (city popup se select karne par)
+  useEffect(() => {
+    window.addEventListener("city:changed", syncCityFromUrl);
+    return () => window.removeEventListener("city:changed", syncCityFromUrl);
+  }, [syncCityFromUrl]);
+
+  // Browser back/forward button
+  useEffect(() => {
+    window.addEventListener("popstate", syncCityFromUrl);
+    return () => window.removeEventListener("popstate", syncCityFromUrl);
+  }, [syncCityFromUrl]);
+
+  const city = citySlug
+    ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1)
+    : "";
+
+   // Use useEffect to handle router query (catValue, subCategory, productName)
    useEffect(() => {
     if (router.isReady) {
-      const { subCategory: urlSubCategory, catValue: urlCatValue, productName , city } = router.query;
+      const { subCategory: urlSubCategory, catValue: urlCatValue, productName } = router.query;
       const formattedProduct = productName ? productName.replace(/-/g, ' ') : '';
       setApiProduct(formattedProduct);
       setSubCategory(urlSubCategory || '');
       setCatValue(urlCatValue || '');
-      setCity(city)
     }
   }, [router.isReady, router.query]);
 
