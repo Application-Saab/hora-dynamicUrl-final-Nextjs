@@ -6,10 +6,18 @@ import "./LazyVideo.css";
 const LazyVideo = ({
   previewSrc,
   fullVideoSrc,
-  className
+  className,
+  duration: initialDuration,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [duration, setDuration] = useState(null);
+  
+  useEffect(() => {
+    if (initialDuration) {
+      setDuration(initialDuration);
+    }
+  }, [initialDuration]);
+
   const videoRef = useRef(null);
 
   // Format video duration
@@ -40,12 +48,18 @@ const LazyVideo = ({
     observer.observe(currentVideo);
 
     return () => {
-      if (currentVideo) observer.unobserve(currentVideo);
+      if (currentVideo) {
+        observer.unobserve(currentVideo);
+        currentVideo.removeAttribute("src");
+        currentVideo.src = "";
+        currentVideo.load();
+      }
     };
   }, []);
 
   // Load video metadata (duration)
   useEffect(() => {
+    if (initialDuration) return;
     if (!fullVideoSrc) return;
     const video = document.createElement("video");
     video.src = fullVideoSrc;
@@ -54,7 +68,13 @@ const LazyVideo = ({
       const dur = video.duration;
       if (!isNaN(dur)) setDuration(formatDuration(dur));
     };
-  }, [fullVideoSrc]);
+    
+    return () => {
+      video.removeAttribute("src");
+      video.src = "";
+      video.load();
+    };
+  }, [fullVideoSrc, initialDuration]);
 
   return (
     <div

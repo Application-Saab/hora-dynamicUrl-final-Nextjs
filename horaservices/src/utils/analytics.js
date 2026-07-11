@@ -1,8 +1,10 @@
+import { safeGetItem, safeSetItem } from "./safeStorage";
+
 export function getVisitorId() {
-  let id = localStorage.getItem("VISITOR_ID");
+  let id = safeGetItem("VISITOR_ID");
   if (!id) {
     id = crypto.randomUUID();
-    localStorage.setItem("VISITOR_ID", id);
+    safeSetItem("VISITOR_ID", id);
   }
   return id;
 }

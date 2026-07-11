@@ -63,6 +63,9 @@ const CATEGORY_POPUP_DATA = {
   },
 };
 
+
+import { safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
+
 const DELAY_MS = 60 * 1000; // 1 minute
 
 export default function ConsultationPopupProvider({ children }) {
@@ -84,14 +87,14 @@ export default function ConsultationPopupProvider({ children }) {
     const storageKey = `popup_shown_${matchedKey.replace("/", "")}`;
     // Example: "popup_shown_balloon-decoration", "popup_shown_photography-page"
 
-    const alreadyShown = sessionStorage.getItem(storageKey);
+    const alreadyShown = safeGetSessionItem(storageKey);
     if (alreadyShown) return;
 
     timerStarted.current = true;
 
     const timer = setTimeout(() => {
       setIsOpen(true);
-      sessionStorage.setItem(storageKey, "true");
+      safeSetSessionItem(storageKey, "true");
     }, DELAY_MS);
 
     return () => clearTimeout(timer);
