@@ -7,6 +7,7 @@ import "../app/globals.css";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
 import ConsultationPopupProvider from "@/components/ConsultationPopupProvider";
+import { safeGetItem } from "@/utils/safeStorage";
 import CitySelector from "@/components/Venue/CitySelector";
 import { CityProvider, useCity } from "@/utils/cityContext";
 
@@ -17,7 +18,7 @@ const LayoutInner = ({ children }) => {
   const { showCityModal, selectCity, isCityDisabledRoute } = useCity();
 
   useEffect(() => {
-    const storedId = localStorage.getItem("userID");
+    const storedId = safeGetItem("userID");
     if (storedId) {
       setUserId(storedId);
     }

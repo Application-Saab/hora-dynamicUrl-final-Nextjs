@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
 import { BASE_URL } from "./utils/apiconstants";
+import { safeGetItem } from "./utils/safeStorage";
 
 let socket = null;
 
@@ -29,7 +30,7 @@ export const connectSocket = (userId) => {
 
 // Initial connect on app load
 if (typeof window !== "undefined") {
-  const userId = localStorage.getItem("userID");
+  const userId = safeGetItem("userID");
   if (userId && !socket) {
     connectSocket(userId);
   }
