@@ -7,6 +7,7 @@ import Image from "next/image";
 import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
+import { trackSearch } from "@/utils/track";
 
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
@@ -218,6 +219,7 @@ export default function SearchSortBar({
   onCategorySelect,
   onProductSelect,
   onSearchChange,
+  userId = null,
 }) {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -293,10 +295,22 @@ export default function SearchSortBar({
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       onSearchChange?.(value.trim());
+    trackSearch({
+        searchTerm: value,
+        userId,
+      });
     }, 350);
   };
 
   const handleCategoryClick = (cat) => {
+  trackSearch({
+      searchTerm: query,
+      clickedItemId: cat.id,
+      clickedTitle: cat.label,
+      clickedType: "category",
+      userId,
+    });
+
     setIsDropdownOpen(false);
     setQuery("");
     onSearchChange?.("");
@@ -304,6 +318,14 @@ export default function SearchSortBar({
   };
 
   const handleProductClick = (product) => {
+    trackSearch({
+      searchTerm: query,
+      clickedItemId: product._id || product.id,
+      clickedTitle: product.name,
+      clickedType: "product",
+      userId,
+    });
+
     setIsDropdownOpen(false);
     setQuery("");
     onSearchChange?.("");
