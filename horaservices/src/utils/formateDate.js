@@ -4,5 +4,7 @@ export const formatDate = (dateString) => {
 
     if (isNaN(date.getTime())) return null;
 
+    date.setUTCHours(0, 0, 0, 0);
+
     return date.toISOString();
 };
