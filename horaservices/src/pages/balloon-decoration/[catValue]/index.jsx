@@ -240,6 +240,9 @@ const DecorationCatPage = ({ locality }) => {
   const subCategory = getSubCategory(catValue) || stateSubCategory;
   const imgAlt = stateImgAlt || "default alt text";
 
+  // Search tracking ke liye — apni actual redux auth slice ke naam se adjust kar lena
+  const { userId } = useSelector((state) => state.auth || {});
+
   const getRandomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -598,6 +601,7 @@ const handleWhatsAppClick = () => {
                 onCategorySelect={(item) => openCatItems(item, themeFilter)}
                 onProductSelect={handleViewDetails}
                 onSearchChange={handleSearchChange}
+                userId={userId}
               />
 
               {/* Price-range theme cards — SIRF birthday & kids-birthday-decoration pe,
