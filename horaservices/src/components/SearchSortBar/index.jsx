@@ -282,7 +282,18 @@ export default function SearchSortBar({
     };
   }, []);
 
-  const handleSortSelect = (id) => {
+const handleSortSelect = (id) => {
+    const selectedOption = sortOptions.find((opt) => opt.id === id);
+
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: `sort_by_${id}`, 
+        sort_id: id,
+        sort_label: selectedOption?.label || "",
+      });
+    }
+
     onSortChange?.(id);
     setIsSortOpen(false);
   };
@@ -368,10 +379,20 @@ export default function SearchSortBar({
           />
         )}
 
-        <button type="button" className="sort-btn" onClick={() => setIsSortOpen(true)}>
-          <SlidersHorizontal className="sort-icon" strokeWidth={2} />
-          Sort by
-        </button>
+        <button
+  type="button"
+  className="sort-btn"
+  onClick={() => {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "sort_sheet_open" });
+    }
+    setIsSortOpen(true);
+  }}
+>
+  <SlidersHorizontal className="sort-icon" strokeWidth={2} />
+  Sort by
+</button>
       </div>
 
       <SortSheet
