@@ -1,12 +1,8 @@
 "use client";
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Slider from "react-slick";
-import Image from 'next/image';
-
 import './gallery.css';
-import photogallryIcon from '../../assets/gallry-loading.gif';
 import LazyImage from '../../components/LazyImage';
-import PaginationControls from '../../components/PaginationControls';
 import { BASE_URL } from "@/utils/apiconstants";
 
 const getImageDimensions = (url) =>
@@ -73,8 +69,7 @@ const ThumbnailGallery = ({
   const [loading,        setLoading]        = useState(true);
   const [error,          setError]          = useState(null);
   const [selectedIndex,  setSelectedIndex]  = useState(null);
-  const [currentPage,    setCurrentPage]    = useState(1);
-  const [isIOSMobile,    setIsIOSMobile]    = useState(false);
+  const [isIOSMobile,    setIsIOSMobile]    = useState(true);
   const [cw,             setCw]             = useState(320); // default 320, update hoga measure se
   const galleryRef = useRef(null);
   const sliderRef = useRef(null);
@@ -133,7 +128,6 @@ useEffect(() => {
           stableKey: t.id || t.uniqueKey || t.url || `t-${i}`,
         }));
         setAllThumbnails(basic);
-        setCurrentPage(1);
         setLoading(false);
 
         // Step 2 — actual dims background mein load karo
@@ -152,13 +146,12 @@ useEffect(() => {
   }, [folderName, customerId]);
 
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+    // iOS Mobile पर भी अब Pagination नहीं होगा, सारे थंबनेल एक साथ दिखेंगे
     if (isIOSMobile) {
-      const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
-      const start = (currentPage - 1) * ITEMS_PER_PAGE;
-      return { currentThumbnailsOnPage: allThumbnails.slice(start, start + ITEMS_PER_PAGE), totalPages: total };
+      return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
     }
     return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
-  }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
+  }, [allThumbnails, isIOSMobile]);
 
   const handleImageClick = useCallback((i) => {
     if (i >= 0 && i < allThumbnails.length) setSelectedIndex(i);
@@ -188,13 +181,7 @@ useEffect(() => {
     setSelectedIndex(null);
   }
 }, []);
-  const handlePageChange = useCallback((page) => {
-    setCurrentPage(page);
-    setTimeout(() => {
-      const el = document.querySelector('.gallery-header');
-      (el ? el.scrollIntoView({ behavior:'smooth', block:'start' }) : window.scrollTo({ top:0, behavior:'smooth' }));
-    }, 100);
-  }, []);
+
 
  const sliderSettings = useMemo(() => ({
   dots: false,
@@ -300,12 +287,7 @@ return result;
       ref={galleryRef}
       style={{ width: '100%', overflow: 'hidden', boxSizing: 'border-box', display: 'block' }}
     >
-      {/* Top pagination iOS */}
-      {isIOSMobile && totalPages > 1 && (
-        <div className="gallery-pagination-container" style={{ padding: '8px' }}>
-          <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
-        </div>
-      )}
+
 
       {/* Grid */}
       {currentThumbnailsOnPage.length > 0 ? renderGallery() : null}
@@ -351,13 +333,7 @@ return result;
       )}
 
       {/* Bottom pagination */}
-      {totalPages > 1 && (
-        <div className="gallery-header">
-          <div className="gallery-header-content">
-            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };
