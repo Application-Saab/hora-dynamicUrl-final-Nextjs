@@ -17,6 +17,7 @@ import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from '../../components/OtpLoginPopup';
+import {formatDate} from "../../utils/formateDate";
 
 const FoodDeliveryCheckout = () => {
 
@@ -503,7 +504,7 @@ const FoodDeliveryCheckout = () => {
                 "fromId": storedUserID,
                 "is_discount": "0",
                 "addressId": addressID,
-                "order_date": selectedDate.toDateString(),
+                "order_date": formatDate(selectedDate),
                 "no_of_burner": includeDisposable,
                 "order_locality": city,
                 "total_amount": total,

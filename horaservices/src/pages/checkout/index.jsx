@@ -41,6 +41,8 @@ import Infoicon from "../../assets/info-icon.png"
 import "./checkout.css"
 import UrgentBookingModal from "@/components/UrgentBookingModal";
 import { contactUsRedirect } from "@/components/CheckoutWhatsAppSummary";
+import { formatDate } from "../../utils/formateDate";
+
 const Checkout = () => {
   const router = useRouter();
 
@@ -56,9 +58,13 @@ const Checkout = () => {
   const productSlugFromUrl = router.query.slug;
   const urlParams = new URLSearchParams(window.location.search);
   const category = urlParams.get("catValue");
-  const selectedAddOnProduct = router.query.selectedAddOnProduct
+  const rawAddOns = router.query.selectedAddOnProduct
     ? JSON.parse(router.query.selectedAddOnProduct)
     : [];
+  const selectedAddOnProduct = rawAddOns.map(item => ({
+    ...item,
+    totalPrice: item.price * (item.quantity || 1),
+  }));
 
 
   const itemQuantities = router.query.itemQuantities
@@ -327,7 +333,7 @@ const onContinueClick = async () => {
         fromId: storedUserID,
         is_discount: "0",
         addressId: addressID,
-        order_date: selectedDate.toDateString(),
+        order_date: formatDate(selectedDate),
         no_of_burner: 0,
         order_locality: city,
         total_amount: totalAmount,
@@ -659,7 +665,9 @@ const onContinueClick = async () => {
                         {selectedAddOnProduct.map((item, index) => (
                           <li key={index} className="addon-item">
                             <span className="addon-title">{index + 1}. {item.title}</span>
-                            <span className="addon-price">₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}</span>
+                            <span className="addon-price">
+                              ₹{item.price} x {item.quantity} = ₹ {item.totalPrice}
+                            </span>
                           </li>
                         ))}
                       </ul>

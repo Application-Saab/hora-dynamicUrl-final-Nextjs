@@ -7,6 +7,9 @@ import {
   UNREAD_MESSAGE_COUNT,
 } from "@/utils/apiconstants";
 
+import { safeGetItem } from "@/utils/safeStorage";
+
+
 export const sortRooms = (rooms) => {
   return [...rooms].sort((a, b) => {
     const aTime = a.lastMessageAt
@@ -24,7 +27,7 @@ const ChatProviderMain = ({ children }) => {
     useChatStore();
   const userID =
     typeof window !== "undefined"
-      ? localStorage.getItem("userID") ||
+      ? safeGetItem("userID") ||
         new URLSearchParams(window.location.search).get("id")
       : null;
 

@@ -38,16 +38,16 @@ useEffect(() => {
 
   if (queryCity) {
     setSelectedCity(queryCity);
-    sessionStorage.setItem("selectedCity", queryCity);
+    localStorage.setItem("selectedCity", queryCity); // ✅ sessionStorage → localStorage
   } else {
-    const savedCity = sessionStorage.getItem("selectedCity") || "";
+    const savedCity = localStorage.getItem("selectedCity") || ""; // ✅ sessionStorage → localStorage
     setSelectedCity(savedCity);
   }
 }, [router.isReady, router.query.city]);
 
  useEffect(() => {
-  const alreadyShown = sessionStorage.getItem("cityModalShown");
-  const savedCity = sessionStorage.getItem("selectedCity");
+  const alreadyShown = localStorage.getItem("cityModalShown"); // ✅ sessionStorage → localStorage
+  const savedCity = localStorage.getItem("selectedCity"); // ✅ sessionStorage → localStorage
 
   if (!alreadyShown && !savedCity) {
     const timer = setTimeout(() => {
@@ -65,8 +65,8 @@ useEffect(() => {
   setSelectedCity(selected);
   setShowCityModal(false);
 
-  sessionStorage.setItem("cityModalShown", "true");
-  sessionStorage.setItem("selectedCity", selected);
+  localStorage.setItem("cityModalShown", "true"); // ✅ sessionStorage → localStorage
+  localStorage.setItem("selectedCity", selected); // ✅ sessionStorage → localStorage
 
   const newQuery = { ...router.query };
 

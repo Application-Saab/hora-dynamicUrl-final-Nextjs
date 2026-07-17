@@ -81,3 +81,5 @@ export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/cate
 export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'
 
 export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code"
+
+export const GET_ADDON_BY_ID = "/api/addon/get"

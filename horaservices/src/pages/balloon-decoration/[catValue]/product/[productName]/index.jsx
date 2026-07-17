@@ -1,5 +1,6 @@
+"use client";
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import checkImage from "../../../../../assets/tick.svg";
 import "./Decorproduct.css"
 import {
@@ -57,6 +58,7 @@ import VideoTestimonial from "@/components/VideoTestimonial";
 import VideoClint from "@/assets/ourclientvideo.mp4"
 import pencil from "@/assets/pencil.svg";
 import AddOnsList from "@/components/AddOnsList";
+import fallbackImg from "@/assets/fallback-image.png";
 const SkeletonLoader = () => {
   return (
     <div
@@ -217,11 +219,13 @@ function DecorationCatDetails({ city, locality }) {
   const [passCategoryId, setPassCategoryId] = useState("");
   const [openProductUrl, setOpenProductUrl] = useState("");
   const pathname = usePathname(); // Gives you /balloon-decoration/KidsBirthday
-  const searchParams = useSearchParams();
   const [allProducts, setAllProducts] = useState([]);
 const [similarByTheme, setSimilarByTheme] = useState([]);
 const [levelUp1000, setLevelUp1000] = useState([]);
 const [levelUp2000, setLevelUp2000] = useState([]);
+  const [addonIds, setAddonIds] = useState([]);
+  const [addonData, setAddonData] = useState([]);
+
 
   const router = useRouter();
   const params = useParams();
@@ -298,6 +302,7 @@ const fetchDecorationDetails = async () => {
     if (fetchedProduct?.price) {
       setDiscountInfo(getDiscountedPrice(fetchedProduct.price));
     }
+    setAddonIds(fetchedProduct?.addons)
 
     setLoading(false);
   } catch (error) {
@@ -706,7 +711,34 @@ const generateSlug = (name) => {
     );
   };
 
+  useEffect(() => {
+    if (!addonIds || addonIds.length === 0) return; // wait until addonIds is available
 
+    const getAddons = async () => {
+      try {
+        const query = new URLSearchParams();
+        addonIds.forEach(id => {
+          if (id) query.append("ids", id);
+        });
+
+        if ([...query].length === 0) return; // no valid IDs
+
+        const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.message || "Failed to fetch addons");
+        }
+
+        setAddonData(data.data || []);
+      } catch (error) {
+        console.error("Error fetching addons:", error);
+      }
+    };
+
+    getAddons();
+  }, [addonIds]);
 
  const kidsCategories = ["kids-birthday-decoration", "kidsbirthday"];
   if (loading) {
@@ -797,16 +829,16 @@ const generateSlug = (name) => {
 
             <div>
               <Image
-                 src={
-                 product?.featured_images?.[0]?.fileName
-                 ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
-                  : "/fallback-image.png"
-                 }
-                 alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
-                style={{ width: "100%", height: "auto" }}
-                width={300}
-                height={300}
-              />
+  src={
+    product?.featured_images?.[0]?.fileName
+      ? `${COMPRESSED_WEBP_IMG_URL}${product.featured_images[0].fileName.split(".")[0]}.webp`
+      : fallbackImg
+  }
+  alt={`balloon decoration ${altTagCatValue} ${product?.name || ""} ${product?.price || ""}`}
+  style={{ width: "100%", height: "auto" }}
+  width={300}
+  height={300}
+/>
               <div
                 style={{
                   position: "absolute",
@@ -962,7 +994,7 @@ const generateSlug = (name) => {
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
-              addOnProducts={addOnProductsData.addOnProducts}
+              addOnProducts={addonData}
               itemQuantities={itemQuantities}
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}

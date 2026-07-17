@@ -12,6 +12,15 @@ const EventLazyImage = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const wrapperRef = useRef(null);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (imgRef.current) {
+        imgRef.current.src = "";
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const currentRef = wrapperRef.current;
@@ -53,8 +62,11 @@ const EventLazyImage = ({
       {isInView && (
         <>
           <img
+            ref={imgRef}
             src={src}
             alt={alt}
+            decoding="async"
+            loading="lazy"
             className={`event-lazy-image-actual-img ${className || ""} ${
               isLoaded ? "loaded" : "loading"
             }`}

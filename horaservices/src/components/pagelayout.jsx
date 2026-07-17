@@ -6,14 +6,19 @@ import BottomNav from "./BottomNav";
 import "../app/globals.css";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
- // ✅ import karo
-import ConsultationPopupProvider from "@/components/ConsultationPopupProvider"
-const PageLayout = ({ children }) => {
+import ConsultationPopupProvider from "@/components/ConsultationPopupProvider";
+import { safeGetItem } from "@/utils/safeStorage";
+import CitySelector from "@/components/Venue/CitySelector";
+import { CityProvider, useCity } from "@/utils/cityContext";
+
+// 👇 inner component, kyunki useCity() sirf CityProvider ke andar chalega
+const LayoutInner = ({ children }) => {
   const pathname = usePathname();
   const [userId, setUserId] = useState("");
+  const { showCityModal, selectCity, isCityDisabledRoute } = useCity();
 
   useEffect(() => {
-    const storedId = localStorage.getItem("userID");
+    const storedId = safeGetItem("userID");
     if (storedId) {
       setUserId(storedId);
     }
@@ -40,12 +45,16 @@ const PageLayout = ({ children }) => {
     pathname?.startsWith("/wonderlandinternational");
 
   return (
-    // ✅ ConsultationPopupProvider se wrap karo — bas itna hi karna tha
     <ConsultationPopupProvider>
       <div className="page-container container-fluid p-0">
         <Head>
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
+
+        {/* ✅ SIRF EK modal — Header aur PageLayout dono isi state ko control karte hain */}
+        {/* ✅ isCityDisabledRoute ka extra guard — un routes (popup-excluded + pill-hidden) par
+            popup kabhi render hi nahi hoga, chahe showCityModal state kisi wajah se true ho */}
+        {showCityModal && !isCityDisabledRoute && <CitySelector onSelect={selectCity} />}
 
         {pathname !== "/services" && <Header />}
         <main className="page-main row m-0">
@@ -63,6 +72,14 @@ const PageLayout = ({ children }) => {
         )}
       </div>
     </ConsultationPopupProvider>
+  );
+};
+
+const PageLayout = ({ children }) => {
+  return (
+    <CityProvider>
+      <LayoutInner>{children}</LayoutInner>
+    </CityProvider>
   );
 };
 

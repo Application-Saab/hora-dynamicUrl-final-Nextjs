@@ -40,7 +40,6 @@ import Candyland from "@/assets/Candyland.webp";
 import peppaPigImg from "@/assets/Pig.webp";
 import Kpop from "@/assets/Kpop.webp";
 export const themeFilters = [
-  { label: "Select Theme", value: "all", image: "" },
   { label: "Astronaut space ", value: "Astronaut-space", image: astronautImg },
   { label: "Super Hero ", value: "Hero", image: heroImg },
   { label: "Boss baby ", value: "Boss", image: bossBabyImg },

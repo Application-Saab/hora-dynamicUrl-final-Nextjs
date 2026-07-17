@@ -14,6 +14,7 @@ const EventwallGalleryItem = ({
   imageUrl,
   previewSrc,
   isLoading,
+  duration
 }) => {
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -28,6 +29,7 @@ const EventwallGalleryItem = ({
           fullVideoSrc={fullVideoSrc}
           isEventWall={isEventWall}
           progress={progress}
+          duration={duration}
         />
       ) : (
         <EventLazyImage
@@ -88,6 +90,7 @@ export const EventwallGalleryItemWonderland = ({
           fullVideoSrc={fullVideoSrc}
           isEventWall={isEventWall}
           progress={thumbnail.progress || null}
+          duration={thumbnail.duration}
         />
       ) : (
         <EventLazyImage

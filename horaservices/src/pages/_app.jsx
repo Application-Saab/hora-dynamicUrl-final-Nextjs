@@ -18,13 +18,14 @@ import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
+import { safeGetItem } from "@/utils/safeStorage";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const pathname = usePathname();
   const [currentUrl, setCurrentUrl] = useState("");
   const [loggedinUserId, setLoggedinUserId] = useState(
-    (typeof window !== "undefined" && localStorage.getItem("userID")) || "",
+    (typeof window !== "undefined" && safeGetItem("userID")) || "",
   );
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
@@ -139,7 +140,7 @@ function MyApp({ Component, pageProps }) {
   // Listen local storage changes for login state
   useEffect(() => {
     const syncLoginState = () => {
-      setLoggedinUserId(localStorage.getItem("userID") || "");
+      setLoggedinUserId(safeGetItem("userID") || "");
     };
 
     window.addEventListener("storage", syncLoginState);
