@@ -66,8 +66,7 @@ const CATEGORY_POPUP_DATA = {
 
 import { safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
 
-const DELAY_MS = 60 * 1000; // 1 minute
-
+const DELAY_MS = 2 * 60 * 1000; // 2 minutes
 export default function ConsultationPopupProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const timerStarted = useRef(false);

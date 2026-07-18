@@ -1,20 +1,75 @@
-import React, { useState } from "react";
-import { X, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import "./DateSelectionBottomSheet.css";
 import Image from "next/image";
-import calendarBgimage from "@/assets/calendarBgimage.png"
+import calendarBgimage from "@/assets/calendarBgimage.png";
+import { BASE_URL } from "@/utils/apiconstants";
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
-
 const DAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const toISODateOnly = (date) => {
+  return new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  ).toISOString();
+};
 
-export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm }) {
+export default function DateSelectionBottomSheet({
+  isOpen,
+  onClose,
+  onConfirm,
+  userId,
+  visitorId,
+  pincode,
+  eventTitle = "",
+}) {
   const today = new Date();
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState(today);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [resolvedMode, setResolvedMode] = useState(null); // "create" | "add"
+  const [isCheckingExisting, setIsCheckingExisting] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setError(null);
+    setResolvedMode(null);
+
+    if (!userId && !visitorId) return;
+
+    let cancelled = false;
+    setIsCheckingExisting(true);
+
+    const params = new URLSearchParams();
+    if (userId) params.append("userId", userId);
+    if (visitorId) params.append("visitorId", visitorId);
+
+    fetch(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (cancelled) return;
+        const events = json?.data?.eventDates || [];
+        setResolvedMode(events.length > 0 ? "add" : "create");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to check existing events:", err);
+        setResolvedMode("create");
+      })
+      .finally(() => {
+        if (!cancelled) setIsCheckingExisting(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, userId, visitorId]);
 
   if (!isOpen) return null;
 
@@ -38,11 +93,60 @@ export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm })
 
   const handleDateClick = (day) => {
     setSelectedDate(new Date(viewYear, viewMonth, day));
+    setError(null);
   };
 
-  const handleConfirm = () => {
-    if (onConfirm) onConfirm(selectedDate);
-    onClose();
+  const handleConfirm = async () => {
+    if (!userId && !visitorId) {
+      setError("Missing userId/visitorId — can't save this date.");
+      return;
+    }
+    if (isCheckingExisting) {
+      setError("Please wait, checking your existing events...");
+      return;
+    }
+    if (!resolvedMode) {
+      setError("Couldn't determine create/add mode — please try again.");
+      return;
+    }
+    // ✅ Pincode ab optional hai — na mile to bhi request block nahi hogi
+
+    const endpoint =
+      resolvedMode === "add"
+        ? `${BASE_URL}/api/event-dates/add-date`
+        : `${BASE_URL}/api/event-dates`;
+
+    const payload = {
+      ...(userId && { userId }),
+      ...(visitorId && { visitorId }),
+      ...(resolvedMode === "create" && pincode && { pincode }),
+      date: toISODateOnly(selectedDate), // ✅ timezone-safe ISO date
+      ...(eventTitle && { eventTitle }),
+    };
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: resolvedMode === "add" ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.message || `Request failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      if (onConfirm) onConfirm(selectedDate, data);
+      onClose();
+    } catch (err) {
+      setError(err.message || "Something went wrong saving this date.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // ---- Calendar grid build ----
@@ -50,12 +154,8 @@ export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm })
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
   const calendarCells = [];
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarCells.push(null);
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    calendarCells.push(day);
-  }
+  for (let i = 0; i < firstDayOfMonth; i++) calendarCells.push(null);
+  for (let day = 1; day <= daysInMonth; day++) calendarCells.push(day);
 
   const isSelected = (day) =>
     day &&
@@ -69,7 +169,6 @@ export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm })
     month: "short",
     year: "numeric",
   });
-  // "Monday, 17 May 2026" style -> tweak to match "Monday , 17 May 2026"
   const [weekdayPart, ...rest] = formattedSelectedDate.split(", ");
   const displayDate = `${weekdayPart} , ${rest.join(", ")}`;
 
@@ -82,43 +181,30 @@ export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm })
       </button>
 
       <div className="dsb-sheet">
-<div className="dsb-header">
- 
-  <Image src={calendarBgimage} alt="" className="dsb-header-bg" />
-  <div className="dsb-header-text">
-    <h1>Select Event Date</h1>
-    <p className="dsb-subtitle">
-      Choose the date of your event to check availability.
-    </p>
-  </div>
-</div>
+        <div className="dsb-header">
+          <Image src={calendarBgimage} alt="" className="dsb-header-bg" />
+          <div className="dsb-header-text">
+            <h1>Select Event Date</h1>
+            <p className="dsb-subtitle">
+              Choose the date of your event to check availability.
+            </p>
+          </div>
+        </div>
 
         <div className="dsb-calendar-card">
           <div className="dsb-month-nav">
-            <button
-              className="dsb-nav-btn"
-              onClick={handlePrevMonth}
-              aria-label="Previous month"
-            >
+            <button className="dsb-nav-btn" onClick={handlePrevMonth} aria-label="Previous month">
               <ChevronLeft size={20} strokeWidth={2.4} />
             </button>
-            <span className="dsb-month-label">
-              {MONTH_NAMES[viewMonth].toUpperCase()}
-            </span>
-            <button
-              className="dsb-nav-btn"
-              onClick={handleNextMonth}
-              aria-label="Next month"
-            >
+            <span className="dsb-month-label">{MONTH_NAMES[viewMonth].toUpperCase()}</span>
+            <button className="dsb-nav-btn" onClick={handleNextMonth} aria-label="Next month">
               <ChevronRight size={20} strokeWidth={2.4} />
             </button>
           </div>
 
           <div className="dsb-day-names">
             {DAY_NAMES.map((d) => (
-              <span key={d} className="dsb-day-name">
-                {d}
-              </span>
+              <span key={d} className="dsb-day-name">{d}</span>
             ))}
           </div>
 
@@ -138,6 +224,8 @@ export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm })
             )}
           </div>
         </div>
+
+        {error && <p className="dsb-error">{error}</p>}
       </div>
 
       <div className="dsb-footer">
@@ -150,8 +238,16 @@ export default function DateSelectionBottomSheet({ isOpen, onClose, onConfirm })
             <p className="dsb-footer-date">{displayDate}</p>
           </div>
         </div>
-        <button className="dsb-confirm-btn" onClick={handleConfirm}>
-          Confirm Date
+        <button
+          className="dsb-confirm-btn"
+          onClick={handleConfirm}
+          disabled={isSubmitting || isCheckingExisting}
+        >
+          {isSubmitting || isCheckingExisting ? (
+            <Loader2 size={16} className="dsb-spinner" />
+          ) : (
+            "Confirm Date"
+          )}
         </button>
       </div>
     </div>
