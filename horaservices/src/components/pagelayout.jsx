@@ -13,6 +13,7 @@ import { CityProvider, useCity } from "@/utils/cityContext";
 import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
 import EventReminderPopup from "@/components/EventReminderPopup";
 import { BASE_URL } from "@/utils/apiconstants";
+import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 
 const DATE_SHEET_DELAY_MS = 60 * 1000; // 1 minute
 
@@ -21,6 +22,9 @@ const DATE_SHEET_DELAY_MS = 60 * 1000; // 1 minute
 // popup mat dikhao — 3 din ka buffer poora hone par (yani 21 ko) hi
 // wapas date-sheet popup dikhega.
 const DATE_SHEET_REASK_BUFFER_DAYS = 3;
+
+// ✅ Date-sheet / reminder logic sirf in paths par chalega
+const DATE_SHEET_ALLOWED_PATH = "/balloon-decoration";
 
 const getOrCreateVisitorId = () => {
   if (typeof window === "undefined") return "";
@@ -66,7 +70,7 @@ const daysBetween = (targetDate) => {
 //  4 din se zyada  -> "planner"     (RIGHT popup)
 //  0 ya negative   -> null (aaj hi hai ya expire ho chuki -> reminder nahi)
 const getVariantForDaysLeft = (daysLeft) => {
-  if (daysLeft <= 0) return null;
+  if (daysLeft < 0) return null;
   if (daysLeft <= 4) return "approaching";
   return "planner";
 };
@@ -77,6 +81,7 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const { showCityModal, selectCity, isCityDisabledRoute } = useCity();
+  const { setDateResolved } = useDateGate();
 
   const [showDateSheet, setShowDateSheet] = useState(false);
   const [reminderVariant, setReminderVariant] = useState(null);
@@ -85,6 +90,8 @@ const LayoutInner = ({ children }) => {
   const checkStarted = useRef(false);
   const dateSheetTimerRef = useRef(null);
 
+  // ✅ Date-sheet/reminder logic sirf balloon-decoration path pe hi chalega
+  const isDateSheetAllowedPath = /(^|\/)balloon-decoration(\/|$)/.test(pathname || "");
   useEffect(() => {
     const storedId = safeGetItem("userID");
     if (storedId) setUserId(storedId);
@@ -121,9 +128,11 @@ const LayoutInner = ({ children }) => {
           daysLeft: daysBetween(ev.date),
         }));
 
-        const futureEvents = eventsWithDays
-          .filter((ev) => ev.daysLeft > 0)
-          .sort((a, b) => a.daysLeft - b.daysLeft);
+    
+const futureEvents = eventsWithDays
+  .filter((ev) => ev.daysLeft >= 0)   // aaj (0) bhi is bucket me
+  .sort((a, b) => a.daysLeft - b.daysLeft);
+
 
         console.log("[EventReminder] futureEvents with daysLeft:", futureEvents);
 
@@ -141,17 +150,16 @@ const LayoutInner = ({ children }) => {
             setShowReminder(true);
             safeSetSessionItem(flagKey, "true");
           }
+
+          // ✅ Future event mil gaya -> date-sheet nahi dikhega -> gate khol do
+          setDateResolved(true);
           return; // ✅ future date hai -> date-sheet ka timer schedule bilkul mat karo
         }
 
-        // ✅ Koi future event nahi hai. Ab check karo ki koi past/expired event
-        // hai kya, aur agar hai to uske expire hue kitne din ho chuke hain.
-        // Jab tak DATE_SHEET_REASK_BUFFER_DAYS poora na ho jaaye, date-sheet
-        // popup wapas nahi dikhega.
-        const pastEvents = eventsWithDays
-          .filter((ev) => ev.daysLeft <= 0)
-          .sort((a, b) => b.daysLeft - a.daysLeft); // sabse recent expiry pehle (0, -1, -2 ...)
-
+   
+const pastEvents = eventsWithDays
+  .filter((ev) => ev.daysLeft < 0)    // sirf sach me expire ho chuki
+  .sort((a, b) => b.daysLeft - a.daysLeft);
         if (pastEvents.length > 0) {
           const daysSinceExpiry = -pastEvents[0].daysLeft; // 0,1,2,3...
           console.log(
@@ -164,26 +172,38 @@ const LayoutInner = ({ children }) => {
           if (daysSinceExpiry < DATE_SHEET_REASK_BUFFER_DAYS) {
             // Buffer abhi khatam nahi hua -> date-sheet popup mat dikhao
             if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+            // ✅ Date-sheet ki zaroorat nahi -> consultation popup gate hata do
+            setDateResolved(true);
             return;
           }
         }
 
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+        // ✅ Date-sheet thodi der me dikhne wala hai -> consultation popup ko gate karo
+        setDateResolved(false);
         dateSheetTimerRef.current = setTimeout(() => {
           setShowDateSheet(true);
         }, DATE_SHEET_DELAY_MS);
       } catch (err) {
         console.error("Failed to check existing event dates:", err);
         if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+        setDateResolved(false);
         dateSheetTimerRef.current = setTimeout(() => {
           setShowDateSheet(true);
         }, DATE_SHEET_DELAY_MS);
       }
     },
-    [userId, visitorId]
+    [userId, visitorId, setDateResolved]
   );
 
   useEffect(() => {
+    // ✅ Balloon-decoration ke alawa kahi bhi date-sheet/reminder trigger
+    // nahi hoga — aur consultation popup ke liye gate turant hata do
+    if (!isDateSheetAllowedPath) {
+      setDateResolved(true);
+      return;
+    }
+
     if (!userId && !visitorId) return;
     if (checkStarted.current) return;
     checkStarted.current = true;
@@ -193,7 +213,7 @@ const LayoutInner = ({ children }) => {
     return () => {
       if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
     };
-  }, [userId, visitorId, checkAndSchedule]);
+  }, [userId, visitorId, checkAndSchedule, isDateSheetAllowedPath, setDateResolved]);
 
   const showBottomNav =
     pathname === "/wonderland" ||
@@ -224,13 +244,20 @@ const LayoutInner = ({ children }) => {
 
         {showCityModal && !isCityDisabledRoute && <CitySelector onSelect={selectCity} />}
 
-        {showDateSheet && (
+        {isDateSheetAllowedPath && showDateSheet && (
           <DateSelectionBottomSheet
             isOpen={showDateSheet}
-            onClose={() => setShowDateSheet(false)}
+            onClose={() => {
+              setShowDateSheet(false);
+              // ✅ User ne date-sheet close kar di (bina confirm kiye) ->
+              // ab consultation popup ka gate hata do
+              setDateResolved(true);
+            }}
             onConfirm={(date, apiData) => {
               console.log("Event date saved:", date, apiData);
               setShowDateSheet(false);
+              // ✅ User ne response de diya -> gate hata do
+              setDateResolved(true);
               checkAndSchedule({ skipShownFlag: true });
             }}
             userId={userId}
@@ -239,7 +266,7 @@ const LayoutInner = ({ children }) => {
           />
         )}
 
-        {showReminder && (
+        {isDateSheetAllowedPath && showReminder && (
           <EventReminderPopup
             isOpen={showReminder}
             onClose={() => setShowReminder(false)}
@@ -269,7 +296,9 @@ const LayoutInner = ({ children }) => {
 const PageLayout = ({ children }) => {
   return (
     <CityProvider>
-      <LayoutInner>{children}</LayoutInner>
+      <DateGateProvider>
+        <LayoutInner>{children}</LayoutInner>
+      </DateGateProvider>
     </CityProvider>
   );
 };

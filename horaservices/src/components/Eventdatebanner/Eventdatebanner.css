@@ -1,0 +1,137 @@
+.edb-banner {
+  position: relative;
+  width: 100%;
+  height: clamp(105.85px, calc((130 / 393) * 100vw), 158.88px);
+  display: flex;
+  align-items: center;
+}
+
+/* Background image wrapper */
+.edb-banner-image-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: clamp(16.26px, calc((20 / 393) * 100vw), 24.43px);
+  overflow: hidden;
+  box-shadow: 0 clamp(3.25px, calc((4 / 393) * 100vw), 4.89px)
+    clamp(11.4px, calc((14 / 393) * 100vw), 17.1px)
+    rgba(124, 58, 173, 0.15);
+}
+
+.edb-banner-bg {
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+/* Edit button */
+.edb-edit-btn {
+  position: absolute;
+
+  right: clamp(
+    24.41px,
+    calc((30 / 393) * 100vw),
+    36.64px
+  );
+
+  top: 50%;
+  transform: translateY(-50%);
+
+  z-index: 2;
+
+  width: clamp(
+    24.41px,
+    calc((30 / 393) * 100vw),
+    36.64px
+  );
+
+  height: clamp(
+    24.41px,
+    calc((30 / 393) * 100vw),
+    36.64px
+  );
+
+  border: none;
+
+  border-radius: clamp(
+    7.32px,
+    calc((9 / 393) * 100vw),
+    10.98px
+  );
+
+  background: #97538c;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 clamp(2.44px, calc((3 / 393) * 100vw), 3.66px)
+    clamp(6.51px, calc((8 / 393) * 100vw), 9.77px)
+    rgba(124, 58, 173, 0.4);
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+.edb-edit-btn:hover {
+  background: #6a2f96;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.edb-edit-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Banner content */
+.edb-banner-content {
+  position: relative;
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* Event Date text */
+.edb-banner-text {
+  display: flex;
+  align-items: center;
+
+  gap: clamp(4.88px, calc((6 / 393) * 100vw), 7.33px);
+
+  white-space: nowrap;
+
+  font-family: Roboto, sans-serif;
+  font-weight: 600;
+
+  text-align: center;
+  text-transform: capitalize;
+
+  font-size: clamp(
+    20.33px,
+    calc((25 / 393) * 100vw),
+    30.53px
+  );
+
+  line-height: 100%;
+  letter-spacing: 0;
+
+  color: #ffffff;
+
+ text-shadow:
+  0 1px 2px #3b1a40,
+  0 0 4px #5a285f,
+  0 0 8px #5a285f,
+  0 0 16px #7b3f78,
+  0 0 28px #97538c,
+  0 0 42px rgba(151, 83, 140, 0.75);}
+
+.edb-banner-text-label,
+.edb-banner-text-date {
+  line-height: 1.2;
+}
