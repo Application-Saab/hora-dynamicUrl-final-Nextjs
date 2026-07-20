@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import PhotographyConsultationSheet from "../ConsultationPopup";
+import { safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
+import { useDateGate } from "@/utils/dateGateContext";
 
-// ✅ Har category ka apna alag data — path ke hisaab se match hoga
 const CATEGORY_POPUP_DATA = {
   "/balloon-decoration": {
     title: "Need A",
@@ -34,9 +35,9 @@ const CATEGORY_POPUP_DATA = {
     whatsappMessage: "Hi! I need help finding the decoration I'm looking for. Can you assist me?",
   },
 
-  "/photography-page":  {
+  "/photography-page": {
     title: "Confused About ",
-    highlightText:"Photography Packages?",
+    highlightText: "Photography Packages?",
     subtitle: "Not Sure What’s Included Or Which Package To Choose?",
     description: "We’ll Help You Find The Perfect Shoot — With Samples & Pricing",
     features: [
@@ -59,34 +60,38 @@ const CATEGORY_POPUP_DATA = {
     ],
     buttonText: "Get Free Consultation",
     footerText: "20000+ Events Planned Successfully..",
-    whatsappMessage: "Hi! I need help deciding the photography package I'm looking for. Can you assist me?"
+    whatsappMessage: "Hi! I need help deciding the photography package I'm looking for. Can you assist me?",
   },
 };
 
+const ALLOWED_POPUP_PATHS = ["/balloon-decoration"];
 
-import { safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
-
-const DELAY_MS = 60 * 1000; // 1 minute
+// ✅ FIX: 2 minute (120000 ms) se 1 minute 30 second (90000 ms) kar diya
+const DELAY_MS = 90 * 1000; // 1 minute 30 seconds
 
 export default function ConsultationPopupProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const timerStarted = useRef(false);
   const pathname = usePathname();
+  const { dateResolved } = useDateGate();
 
   const matchedKey = Object.keys(CATEGORY_POPUP_DATA).find((key) =>
     pathname?.startsWith(key)
   );
 
-  const popupData = matchedKey ? CATEGORY_POPUP_DATA[matchedKey] : null;
+  const popupData =
+    matchedKey && ALLOWED_POPUP_PATHS.includes(matchedKey)
+      ? CATEGORY_POPUP_DATA[matchedKey]
+      : null;
 
   useEffect(() => {
     if (!popupData || !matchedKey) return;
+
+    if (!dateResolved) return;
+
     if (timerStarted.current) return;
 
-    // ✅ Har category ka apna alag storage key
     const storageKey = `popup_shown_${matchedKey.replace("/", "")}`;
-    // Example: "popup_shown_balloon-decoration", "popup_shown_photography-page"
-
     const alreadyShown = safeGetSessionItem(storageKey);
     if (alreadyShown) return;
 
@@ -98,19 +103,26 @@ export default function ConsultationPopupProvider({ children }) {
     }, DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [popupData, matchedKey]);
-const handleClose = () => {
-  setIsOpen(false);
-  document.body.style.overflow = "";      // ← scroll wapas enable
-};
-  useEffect(() => {
-  if (isOpen) {
-    document.body.style.overflow = "hidden";   // ← popup open hote hi scroll band
-  }
-  return () => {
-    document.body.style.overflow = "";         // ← cleanup on unmount
+  }, [popupData, matchedKey, dateResolved]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    document.body.style.overflow = "";
   };
-}, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  if (!popupData) {
+    return <>{children}</>;
+  }
+
   return (
     <>
       {children}

@@ -1,0 +1,79 @@
+.erp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  pointer-events: auto;
+}
+
+.erp-card {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px 24px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.erp-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1a1a1a;
+}
+
+.erp-illustration {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin: 0 auto 10px;
+  display: block;
+}
+
+.erp-title {
+  margin: 0 0 8px;
+  font-family: Inter;
+font-weight: 600;
+font-size: 20.48px;
+text-align: center;
+color: #000000;
+
+}
+
+.erp-description {
+font-family: Inter;
+font-weight: 300;
+font-size: clamp(10.41px, calc((12.8 / 393) * 100vw), 12.8px);
+line-height: clamp(13.73px, calc((16.9 / 393) * 100vw), 16.9px);
+letter-spacing: 0;
+text-align: center;
+color: #000000;
+  margin: 0 0 20px;
+}
+
+.erp-whatsapp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #0DA64B;
+  border: none;
+  border-radius: 9px;
+  padding: 12px 16px;
+  font-family: Inter;
+font-weight: 600;
+color: #FFFFFF;
+font-size: clamp(11.4px, calc((14 / 393) * 100vw), 14px);
+line-height: clamp(16.95px, calc((20.8 / 393) * 100vw), 20.8px);
+text-transform: capitalize;
+  cursor: pointer;
+}

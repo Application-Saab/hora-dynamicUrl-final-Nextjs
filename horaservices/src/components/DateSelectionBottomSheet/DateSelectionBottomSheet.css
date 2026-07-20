@@ -1,0 +1,318 @@
+.dsb-device {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.dsb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 10, 30, 0.45);
+  z-index: 1000;
+}
+
+.dsb-close-btn {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ FIX: top se bottom tak fixed rahega (footer + safe-area tak),
+   ab calendar rows kam/zyada hone se beech me gap nahi banega */
+.dsb-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 140px;
+  bottom: 74px; /* ✅ simple fixed value — koi calc()/env() parsing risk nahi */
+  background: white;
+  border-radius: 24px 24px 0 0;
+  z-index: 1001;
+  max-width: 600px;
+  margin: auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dsb-header {
+  position: relative;
+  width: 100%;
+height: clamp(90px, calc((110 / 393) * 100vw), 110px);
+  overflow: hidden;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.dsb-header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;   /* illustration left me rahegi */
+  z-index: 1;
+}
+
+.dsb-header-text {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  max-width: 55%;
+  text-align: left;
+  z-index: 2;                     /* text image ke upar (z-index se) */
+}
+
+.dsb-header-text h1 {
+  color: #000000;
+  margin: 0 0 6px;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(16px, calc((20.48 / 393) * 100vw), 20.48px);
+  text-transform: none;
+}
+
+.dsb-subtitle {
+  color: #000000;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: clamp(11px, 3.26vw, 12.8px);
+  line-height: clamp(14px, 4.3vw, 16.9px);
+  letter-spacing: 0;
+}
+
+.dsb-calendar-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 20px rgba(120, 90, 150, 0.1);
+    margin: 0px 16px 16px 16px;
+  border: 1.28px solid #0000001A;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dsb-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.dsb-nav-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #4A5660;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dsb-nav-btn:hover {
+  background: #f3e9f8;
+}
+
+.dsb-month-label {
+  color: #4A5660;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(15px, 4.56vw, 17.92px);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.dsb-day-names {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.dsb-day-name {
+  color: #424242;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: clamp(9px, 2.55vw, 10.04px);
+  line-height: clamp(5px, 1.2vw, 4.71px);
+  letter-spacing: clamp(0.4px, 0.15vw, 0.59px);
+  text-align: center;
+  text-transform: uppercase;
+}
+.dsb-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(var(--total-rows, 6), auto); 
+  align-content: center;  
+  flex: 1;
+  min-height: 0;
+  row-gap: 8px; 
+}
+
+.dsb-day-cell {
+  aspect-ratio: 1 / 1;     
+  width: 100%;
+  height: auto;             
+  max-height: 44px;        
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(13px, 4vw, 17px);
+  line-height: 1;
+  color: #2b2b2b;
+
+  padding: 0;
+  margin: 0 auto;  
+}
+.dsb-day-selected {
+  background: #97538C !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.dsb-day-cell:hover:not(.dsb-day-empty) {
+  background: #f3e9f8;
+}
+
+.dsb-day-empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ✅ Past dates ke liye — dikhega lekin click/select nahi hoga */
+.dsb-day-disabled {
+  color: #c7c7c7 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.dsb-day-disabled:hover {
+  background: transparent !important;
+}
+
+.dsb-error {
+  margin: 0 16px 16px;
+  color: #c0392b;
+  font-family: "Inter", sans-serif;
+  font-size: clamp(12px, 3.2vw, 13px);
+  text-align: center;
+}
+
+.dsb-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 74px;
+   padding-top: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #EFECFB;
+  border-top: 1px solid #ece6f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 18px;
+  padding-right: 18px;
+  z-index: 1002;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+  max-width: 600px;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+.dsb-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dsb-footer-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dsb-footer-label {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(12px, calc((13.86 / 393) * 100vw), 13.86px);
+  color: #000000;
+  margin: 0 0 2px;
+}
+
+.dsb-footer-date {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(12px, calc((13.86 / 393) * 100vw), 13.86px);
+  color: #000000;
+  margin: 0;
+}
+
+.dsb-confirm-btn {
+  background: #97538C;
+  color: #ffffff;
+  border: none;
+  border-radius: clamp(11px, calc((12.8 / 393) * 100vw), 12.8px);
+  padding: 10px 16px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(13px, calc((15.36 / 393) * 100vw), 15.36px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dsb-confirm-btn:hover {
+  background: #6a2f96;
+}
+
+.dsb-confirm-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.dsb-spinner {
+  animation: dsb-spin 0.8s linear infinite;
+}
+
+@keyframes dsb-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

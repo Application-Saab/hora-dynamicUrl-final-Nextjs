@@ -42,6 +42,7 @@ import ThemeSelector from "@/components/Themeselector";
 import SearchSortBar from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import customiseIcon from "@/assets/customiselcon.webp";
+import EventDateBanner from "@/components/Eventdatebanner";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -651,19 +652,9 @@ const handleWhatsAppClick = () => {
                   />
                 </div>
               )}
-
+<EventDateBanner userId={userId} />
               {(isPriceThemeActive || isSearchActive) ? (
-                // ---- PRICE-RANGE FILTER OR SEARCH ACTIVE ----
-                // FIX: pehle `loading` check karo. Filter/search change hote hi
-                // `catalogueData` turant `[]` ho jata hai (upar wale useEffect
-                // mein `setCatalogueData([])`), lekin naya API response aane
-                // mein thoda time lagta hai. Us gap mein agar hum seedha
-                // `priceThemeFilteredData.length > 0` check karte to "0 hai"
-                // maan kar "No products found" flash kar deta — jabki asal
-                // mein data abhi load ho hi raha tha. Ab jab tak `loading`
-                // true hai tab tak skeleton dikhayenge, "No products found"
-                // sirf tabhi dikhega jab fetch complete ho chuka ho aur
-                // result genuinely empty ho.
+            
                 <>
                   {loading ? (
                     <FilterLoadingSkeleton />
