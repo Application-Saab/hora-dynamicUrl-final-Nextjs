@@ -2,13 +2,18 @@
 import React, { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
+import Head from "next/head";
 import "./Eventdatebanner.css";
 import calendarBgimage from "@/assets/calendarBgimage.webp";
+import calendarBarBgimage from "@/assets/calendarBarBgimage.webp"; // ✅ preload ke liye import
+import plannerImage from "@/assets/Planner.webp"; // ✅ preload ke liye import
+import approachingImage from "@/assets/Approaching.webp"; // ✅ preload ke liye import
 import { BASE_URL } from "@/utils/apiconstants";
 import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
 import EventReminderPopup from "../EventReminderPopup";
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -31,7 +36,7 @@ export default function EventDateBanner({
   const { dateResolved, setDateResolved } = useDateGate();
 
   const [eventDate, setEventDate] = useState(null);
-  const [eventId, setEventId] = useState(null); // ✅ latest event ka _id, edit ke liye
+  const [eventId, setEventId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
@@ -69,7 +74,6 @@ export default function EventDateBanner({
       .then((json) => {
         const events = json?.data?.eventDates || [];
         if (events.length > 0) {
-          // ✅ array ka sabse LAST (latest added) event uthao, pehla nahi
           const lastEvent = events[events.length - 1];
           setEventDate(lastEvent.date);
           setEventId(lastEvent._id);
@@ -102,7 +106,6 @@ export default function EventDateBanner({
   const handleConfirm = (newDate, apiData) => {
     if (newDate) {
       setEventDate(newDate);
-      // ✅ reminder sirf yahan open hoga
       const today = new Date();
       const selected = new Date(newDate);
       const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
@@ -119,19 +122,30 @@ export default function EventDateBanner({
 
   return (
     <>
+      {/* ✅ FIX: Bottom-sheet aur reminder-popup ki images ko preload karo
+          jaise hi banner mount hota hai — taaki jab user pencil icon click kare
+          ya date confirm kare, image already browser cache me ho, "late load"
+          na dikhe. Yeh images abhi DOM me nahi hain (conditional render hai),
+          isliye sirf <link rel="preload"> hi Next.js ko batata hai inhe
+          background me fetch kar lo. */}
+      <Head>
+        <link rel="preload" as="image" href={calendarBarBgimage.src} />
+        <link rel="preload" as="image" href={plannerImage.src} />
+        <link rel="preload" as="image" href={approachingImage.src} />
+      </Head>
+
       {showBanner && (
         <div className="edb-banner">
-          {/* ✅ CSS me .edb-banner-image-wrap hi rounded-corner + shadow
-              handle karta hai — Image ko usi wrapper ke andar rakhna zaroori hai */}
           <div className="edb-banner-image-wrap">
             <Image
               src={calendarBgimage}
               alt=""
               fill
               className="edb-banner-bg"
-              style={{ pointerEvents: "none" }} // ✅ image kabhi click intercept na kare
-              priority
-             sizes="(max-width: 600px) 100vw, 600px"
+              style={{ pointerEvents: "none" }}
+              priority // ✅ yahi ek real above-the-fold image hai, priority sahi jagah hai
+              placeholder="blur" // ✅ FIX: blank flash ki jagah instant blur-up dikhega
+              sizes="(max-width: 600px) 100vw, 600px"
               quality={90}
             />
           </div>
@@ -157,6 +171,7 @@ export default function EventDateBanner({
               width={17}
               height={16}
               className="edb-edit-icon"
+              // ✅ priority yahan se hataya — chhota icon hai, LCP candidate nahi
             />
           </button>
         </div>

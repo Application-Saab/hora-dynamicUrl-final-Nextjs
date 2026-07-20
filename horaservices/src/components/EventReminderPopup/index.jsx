@@ -39,7 +39,6 @@ export default function EventReminderPopup({
 }) {
   useLockBodyScroll(isOpen);
 
-  // ✅ 5 second baad khud close ho jaaye
   useEffect(() => {
     if (!isOpen) return;
     const timer = setTimeout(() => {
@@ -68,13 +67,21 @@ export default function EventReminderPopup({
           src={config.image}
           alt={config.title}
           className="erp-illustration"
-          priority
+          priority 
+          placeholder="blur" 
         />
         <h2 className="erp-title">{config.title}</h2>
         <p className="erp-description">{config.description}</p>
 
         <button className="erp-whatsapp-btn" onClick={handleWhatsAppClick}>
-          <Image src={whatsappIcon} alt="WhatsApp" width={20} height={20} priority />
+          <Image
+            src={whatsappIcon}
+            alt="WhatsApp"
+            width={20}
+            height={20}
+            // ✅ FIX: priority hataya — 20x20 ka chhota icon LCP candidate nahi hai,
+            // isse pehle illustration image jaldi load hoga
+          />
           Get Free Consultation
         </button>
       </div>

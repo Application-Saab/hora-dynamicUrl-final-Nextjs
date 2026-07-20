@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import "./DateSelectionBottomSheet.css";
 import Image from "next/image";
-import calendarBgimage from "@/assets/calendarBgimage.png";
+import calendarBgimage from "@/assets/calendarBarBgimage.webp";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 
@@ -35,7 +35,7 @@ export default function DateSelectionBottomSheet({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  const [resolvedMode, setResolvedMode] = useState(null); // "create" | "add"
+  const [resolvedMode, setResolvedMode] = useState(null);
   const [isCheckingExisting, setIsCheckingExisting] = useState(false);
 
   useEffect(() => {
@@ -76,7 +76,6 @@ export default function DateSelectionBottomSheet({
 
   if (!isOpen) return null;
 
-  // ✅ Aaj se pehle ki date disabled honi chahiye (sirf date compare, time ignore)
   const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const isPastDate = (day) => {
     if (!day) return false;
@@ -84,13 +83,12 @@ export default function DateSelectionBottomSheet({
     return cellDate < todayDateOnly;
   };
 
-  // ✅ Pichle month par navigate karna bhi rokna hai (agar current month/year se pehle ja rahe ho)
   const isPrevMonthDisabled =
     viewYear < today.getFullYear() ||
     (viewYear === today.getFullYear() && viewMonth <= today.getMonth());
 
   const handlePrevMonth = () => {
-    if (isPrevMonthDisabled) return; // ✅ guard
+    if (isPrevMonthDisabled) return;
     if (viewMonth === 0) {
       setViewMonth(11);
       setViewYear((y) => y - 1);
@@ -109,7 +107,7 @@ export default function DateSelectionBottomSheet({
   };
 
   const handleDateClick = (day) => {
-    if (isPastDate(day)) return; // ✅ guard — past date par click hi na ho
+    if (isPastDate(day)) return;
     setSelectedDate(new Date(viewYear, viewMonth, day));
     setError(null);
   };
@@ -127,7 +125,6 @@ export default function DateSelectionBottomSheet({
       setError("Couldn't determine create/add mode — please try again.");
       return;
     }
-    // ✅ Pincode ab optional hai — na mile to bhi request block nahi hogi
 
     const endpoint =
       resolvedMode === "add"
@@ -138,7 +135,7 @@ export default function DateSelectionBottomSheet({
       ...(userId && { userId }),
       ...(visitorId && { visitorId }),
       ...(resolvedMode === "create" && pincode && { pincode }),
-      date: toISODateOnly(selectedDate), // ✅ timezone-safe ISO date
+      date: toISODateOnly(selectedDate),
       ...(eventTitle && { eventTitle }),
     };
 
@@ -167,7 +164,6 @@ export default function DateSelectionBottomSheet({
     }
   };
 
-  // ---- Calendar grid build ----
   const firstDayOfMonth = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
@@ -175,8 +171,6 @@ export default function DateSelectionBottomSheet({
   for (let i = 0; i < firstDayOfMonth; i++) calendarCells.push(null);
   for (let day = 1; day <= daysInMonth; day++) calendarCells.push(day);
 
-  // ✅ FIX: kitni rows chahiye (5 ya 6) — cell height isi se decide hogi,
-  // taaki grid hamesha fixed available space ke andar hi fit ho, scroll na aaye
   const totalRows = Math.ceil(calendarCells.length / 7);
 
   const isSelected = (day) =>
@@ -204,7 +198,21 @@ export default function DateSelectionBottomSheet({
 
       <div className="dsb-sheet">
         <div className="dsb-header">
-          <Image src={calendarBgimage} alt="" className="dsb-header-bg" priority />
+          {/* ✅ FIX: fill + sizes diya taaki sahi resolution download ho
+              (pehle fixed intrinsic size download hota tha, CSS se stretch/shrink hota tha).
+              placeholder="blur" bhi add kiya taaki flash na dikhe.
+              Note: parent (.dsb-header) par position:relative CSS me confirm kar lena,
+              fill ke liye zaroori hai. */}
+          <Image
+            src={calendarBgimage}
+            alt=""
+            fill
+            sizes="(max-width: 500px) 100vw, 500px"
+            className="dsb-header-bg"
+            style={{ objectFit: "cover" }}
+            priority
+            placeholder="blur"
+          />
           <div className="dsb-header-text">
             <h1>Select Event Date</h1>
             <p className="dsb-subtitle">
