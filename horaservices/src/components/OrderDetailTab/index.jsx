@@ -363,7 +363,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                   />
                 </div>
 
-                <div>
+                <div className="info-text">
                   {orderDetail.comments}
                 </div>
               </div>
@@ -656,7 +656,7 @@ const showRating = [3, 4, 6].includes(orderDetail?.order_status);
                       style={{ height: 13, width: 13, marginRight: '5px' }}
                     />
                   </div>
-                  <div>
+                  <div className="info-text">
                     {orderDetail.comments}
                   </div>
                 </div>
@@ -897,7 +897,7 @@ orderId={orderDetail?.order_id}
                            />
                           </div>
 
-                       <div>{comment}</div>
+                       <div className="info-text">{comment}</div>
                       </div>
                     ))}
                   </div>
@@ -1099,7 +1099,7 @@ orderId={orderDetail?.order_id}
                            />
                           </div>
 
-                       <div>{comment}</div>
+                       <div className="info-text">{comment}</div>
                       </div>
                     ))}
                   </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Search, SlidersHorizontal, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
@@ -228,22 +228,24 @@ export default function SearchSortBar({
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
-  const debounceRef = useRef(null);
 
-  // Fixed-on-scroll behavior
+const queryRef = useRef(query);
   useEffect(() => {
-    const getTriggerOffset = () => {
-      return placeholderRef.current
+    queryRef.current = query;
+  }, [query]);
+
+  // Fixed-on-scroll behavior (unchanged) ...
+  useEffect(() => {
+    const getTriggerOffset = () =>
+      placeholderRef.current
         ? placeholderRef.current.getBoundingClientRect().top + window.scrollY
         : 0;
-    };
 
     let triggerOffset = getTriggerOffset();
 
     const handleScroll = () => {
       setIsFixed(window.scrollY > triggerOffset);
     };
-
     const handleResize = () => {
       triggerOffset = getTriggerOffset();
       handleScroll();
@@ -257,15 +259,29 @@ export default function SearchSortBar({
     };
   }, []);
 
-  // Close dropdown on outside click / Escape
+ const commitSearch = useCallback(() => {
+    const trimmed = queryRef.current.trim();
+    onSearchChange?.(trimmed);
+    trackSearch({ searchTerm: trimmed, userId });
+  }, [onSearchChange, userId]);
+
+  // Close dropdown on outside click / Escape — ab close hote hi commitSearch bhi chalega
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
+        setIsDropdownOpen((prev) => {
+          if (prev) commitSearch();
+          return false;
+        });
       }
     }
     function handleEscape(e) {
-      if (e.key === "Escape") setIsDropdownOpen(false);
+      if (e.key === "Escape") {
+        setIsDropdownOpen((prev) => {
+          if (prev) commitSearch();
+          return false;
+        });
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
@@ -273,60 +289,49 @@ export default function SearchSortBar({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [commitSearch]);
 
-  // Clean up any pending debounce timer on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, []);
-
-const handleSortSelect = (id) => {
+  const handleSortSelect = (id) => {
     const selectedOption = sortOptions.find((opt) => opt.id === id);
-
     if (typeof window !== "undefined") {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
-        event: `sort_by_${id}`, 
+        event: `sort_by_${id}`,
         sort_id: id,
         sort_label: selectedOption?.label || "",
       });
     }
-
     onSortChange?.(id);
     setIsSortOpen(false);
   };
 
-  const handleQueryChange = (e) => {
+ const handleQueryChange = (e) => {
     const value = e.target.value;
     setQuery(value);
     setIsDropdownOpen(value.trim().length > 0);
-
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      onSearchChange?.(value.trim());
-    trackSearch({
-        searchTerm: value,
-        userId,
-      });
-    }, 350);
   };
 
-  const handleCategoryClick = (cat) => {
+ const handleInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      commitSearch();
+      setIsDropdownOpen(false);
+      e.currentTarget.blur();
+    }
+  };
+
+const handleCategoryClick = (cat) => {
   trackSearch({
-      searchTerm: query,
-      clickedItemId: cat.id,
-      clickedTitle: cat.label,
-      clickedType: "category",
-      userId,
-    });
-
-    setIsDropdownOpen(false);
-    setQuery("");
-    onSearchChange?.("");
-    onCategorySelect?.(cat);
-  };
+    searchTerm: query,
+    clickedItemId: null, 
+    clickedTitle: cat.label,
+    clickedType: "category",
+    userId,
+  });
+  setIsDropdownOpen(false);
+  setQuery("");
+  onSearchChange?.("");
+  onCategorySelect?.(cat);
+};
 
   const handleProductClick = (product) => {
     trackSearch({
@@ -336,7 +341,6 @@ const handleSortSelect = (id) => {
       clickedType: "product",
       userId,
     });
-
     setIsDropdownOpen(false);
     setQuery("");
     onSearchChange?.("");
@@ -345,17 +349,12 @@ const handleSortSelect = (id) => {
 
   return (
     <div className="search-sort-wrapper" ref={wrapperRef}>
-      {/* Spacer — only takes up space once the bar goes fixed, prevents content jump */}
       <div
         ref={placeholderRef}
         className="search-sort-placeholder"
         style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
       />
-
-      <div
-        className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`}
-        ref={topBarRef}
-      >
+      <div className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`} ref={topBarRef}>
         <div className="search-box">
           <Search className="search-icons" strokeWidth={2.25} />
           <input
@@ -364,6 +363,7 @@ const handleSortSelect = (id) => {
             className="search-input"
             value={query}
             onChange={handleQueryChange}
+            onKeyDown={handleInputKeyDown}
             onFocus={() => query.trim().length > 0 && setIsDropdownOpen(true)}
           />
         </div>
@@ -380,19 +380,19 @@ const handleSortSelect = (id) => {
         )}
 
         <button
-  type="button"
-  className="sort-btn"
-  onClick={() => {
-    if (typeof window !== "undefined") {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: "sort_sheet_open" });
-    }
-    setIsSortOpen(true);
-  }}
->
-  <SlidersHorizontal className="sort-icon" strokeWidth={2} />
-  Sort by
-</button>
+          type="button"
+          className="sort-btn"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({ event: "sort_sheet_open" });
+            }
+            setIsSortOpen(true);
+          }}
+        >
+          <SlidersHorizontal className="sort-icon" strokeWidth={2} />
+          Sort by
+        </button>
       </div>
 
       <SortSheet
