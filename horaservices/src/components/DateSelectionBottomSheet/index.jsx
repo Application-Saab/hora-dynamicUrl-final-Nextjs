@@ -4,7 +4,7 @@ import "./DateSelectionBottomSheet.css";
 import Image from "next/image";
 import calendarBgimage from "@/assets/calendarBgimage.png";
 import { BASE_URL } from "@/utils/apiconstants";
-
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -25,6 +25,8 @@ export default function DateSelectionBottomSheet({
   pincode,
   eventTitle = "",
 }) {
+   useLockBodyScroll(isOpen);
+
   const today = new Date();
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [viewYear, setViewYear] = useState(today.getFullYear());

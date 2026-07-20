@@ -7,6 +7,7 @@ import approachingImage from "@/assets/Approaching.webp";
 import Image from "next/image";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
 const WHATSAPP_NUMBER = "7338584828";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll"; // 👈 naya import
 
 const VARIANTS = {
   approaching: {
@@ -36,6 +37,7 @@ export default function EventReminderPopup({
   variant = "approaching",
   autoCloseMs = 5000,
 }) {
+    useLockBodyScroll(isOpen);
   // ✅ 5 second baad khud close ho jaaye
   useEffect(() => {
     if (!isOpen) return;
