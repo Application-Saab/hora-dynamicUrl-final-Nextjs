@@ -30,12 +30,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* ✅ FIX: top se bottom tak fixed rahega (footer + safe-area tak),
+   ab calendar rows kam/zyada hone se beech me gap nahi banega */
 .dsb-sheet {
   position: fixed;
   left: 0;
   right: 0;
   top: 140px;
-  bottom: 74px; 
+  bottom: 74px; /* ✅ simple fixed value — koi calc()/env() parsing risk nahi */
   background: white;
   border-radius: 24px 24px 0 0;
   z-index: 1001;
@@ -98,20 +100,24 @@
 .dsb-calendar-card {
   background: #ffffff;
   border-radius: 20px;
-  padding: 18px 16px;
+  padding: 14px 16px;
   box-shadow: 0 4px 20px rgba(120, 90, 150, 0.1);
-  margin: auto auto 20px auto;
+    margin: 16px auto;
   width: 95%;
   border: 1.28px solid #0000001A;
-  box-shadow: 0px 5.12px 5.12px 0px #0000001F;
-  flex-shrink: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .dsb-month-nav {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .dsb-nav-btn {
@@ -143,7 +149,8 @@
 .dsb-day-names {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
 }
 
 .dsb-day-name {
@@ -160,26 +167,33 @@
 .dsb-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  row-gap: 6px;
+  grid-template-rows: repeat(var(--total-rows, 6), 1fr);
+  flex: 1;
+  min-height: 0;
+  row-gap: 2px;
 }
 
 .dsb-day-cell {
-  width: 38px;
-  height: 38px;
+   width: 100%;
+  height: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border: none;
-  border-radius: 50%;
-  background: transparent;
+  border-radius: 10px; 
+   background: transparent;
   cursor: pointer;
+
   font-family: "Inter", sans-serif;
   font-weight: 500;
-  font-size: clamp(15px, 4.33vw, 17px);
+  font-size: clamp(13px, 4vw, 17px);
   line-height: 1;
   color: #2b2b2b;
+
   padding: 0;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .dsb-day-selected {
@@ -195,6 +209,17 @@
 .dsb-day-empty {
   cursor: default;
   pointer-events: none;
+}
+
+/* ✅ Past dates ke liye — dikhega lekin click/select nahi hoga */
+.dsb-day-disabled {
+  color: #c7c7c7 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.dsb-day-disabled:hover {
+  background: transparent !important;
 }
 
 .dsb-error {

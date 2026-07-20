@@ -5,6 +5,7 @@ import Image from "next/image";
 import calendarBgimage from "@/assets/calendarBgimage.png";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -25,7 +26,7 @@ export default function DateSelectionBottomSheet({
   pincode,
   eventTitle = "",
 }) {
-   useLockBodyScroll(isOpen);
+  useLockBodyScroll(isOpen);
 
   const today = new Date();
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -75,7 +76,21 @@ export default function DateSelectionBottomSheet({
 
   if (!isOpen) return null;
 
+  // ✅ Aaj se pehle ki date disabled honi chahiye (sirf date compare, time ignore)
+  const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const isPastDate = (day) => {
+    if (!day) return false;
+    const cellDate = new Date(viewYear, viewMonth, day);
+    return cellDate < todayDateOnly;
+  };
+
+  // ✅ Pichle month par navigate karna bhi rokna hai (agar current month/year se pehle ja rahe ho)
+  const isPrevMonthDisabled =
+    viewYear < today.getFullYear() ||
+    (viewYear === today.getFullYear() && viewMonth <= today.getMonth());
+
   const handlePrevMonth = () => {
+    if (isPrevMonthDisabled) return; // ✅ guard
     if (viewMonth === 0) {
       setViewMonth(11);
       setViewYear((y) => y - 1);
@@ -94,6 +109,7 @@ export default function DateSelectionBottomSheet({
   };
 
   const handleDateClick = (day) => {
+    if (isPastDate(day)) return; // ✅ guard — past date par click hi na ho
     setSelectedDate(new Date(viewYear, viewMonth, day));
     setError(null);
   };
@@ -159,6 +175,10 @@ export default function DateSelectionBottomSheet({
   for (let i = 0; i < firstDayOfMonth; i++) calendarCells.push(null);
   for (let day = 1; day <= daysInMonth; day++) calendarCells.push(day);
 
+  // ✅ FIX: kitni rows chahiye (5 ya 6) — cell height isi se decide hogi,
+  // taaki grid hamesha fixed available space ke andar hi fit ho, scroll na aaye
+  const totalRows = Math.ceil(calendarCells.length / 7);
+
   const isSelected = (day) =>
     day &&
     selectedDate.getDate() === day &&
@@ -184,7 +204,7 @@ export default function DateSelectionBottomSheet({
 
       <div className="dsb-sheet">
         <div className="dsb-header">
-          <Image src={calendarBgimage} alt="" className="dsb-header-bg" />
+          <Image src={calendarBgimage} alt="" className="dsb-header-bg" priority />
           <div className="dsb-header-text">
             <h1>Select Event Date</h1>
             <p className="dsb-subtitle">
@@ -195,7 +215,13 @@ export default function DateSelectionBottomSheet({
 
         <div className="dsb-calendar-card">
           <div className="dsb-month-nav">
-            <button className="dsb-nav-btn" onClick={handlePrevMonth} aria-label="Previous month">
+            <button
+              className="dsb-nav-btn"
+              onClick={handlePrevMonth}
+              aria-label="Previous month"
+              disabled={isPrevMonthDisabled}
+              style={isPrevMonthDisabled ? { opacity: 0.3, cursor: "not-allowed" } : undefined}
+            >
               <ChevronLeft size={20} strokeWidth={2.4} />
             </button>
             <span className="dsb-month-label">{MONTH_NAMES[viewMonth].toUpperCase()}</span>
@@ -210,15 +236,18 @@ export default function DateSelectionBottomSheet({
             ))}
           </div>
 
-          <div className="dsb-days-grid">
+          <div className="dsb-days-grid" style={{ "--total-rows": totalRows }}>
             {calendarCells.map((day, idx) =>
               day === null ? (
                 <span key={`empty-${idx}`} className="dsb-day-cell dsb-day-empty" />
               ) : (
                 <button
                   key={day}
-                  className={`dsb-day-cell ${isSelected(day) ? "dsb-day-selected" : ""}`}
+                  className={`dsb-day-cell ${isSelected(day) ? "dsb-day-selected" : ""} ${
+                    isPastDate(day) ? "dsb-day-disabled" : ""
+                  }`}
                   onClick={() => handleDateClick(day)}
+                  disabled={isPastDate(day)}
                 >
                   {day}
                 </button>

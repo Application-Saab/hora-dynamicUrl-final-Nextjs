@@ -34,8 +34,9 @@ export default function EventDateBanner({
   const [eventId, setEventId] = useState(null); // ✅ latest event ka _id, edit ke liye
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-const [reminderOpen, setReminderOpen] = useState(false);
-const [reminderVariant, setReminderVariant] = useState("planner");
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const [reminderVariant, setReminderVariant] = useState("planner");
+
   const getIds = () => {
     if (typeof window === "undefined") {
       return { userId: userIdProp, visitorId: visitorIdProp };
@@ -88,39 +89,36 @@ const [reminderVariant, setReminderVariant] = useState("planner");
       .finally(() => setIsLoading(false));
   };
 
+  useEffect(() => {
+    fetchEventDate();
+  }, [userIdProp, visitorIdProp]);
 
+  useEffect(() => {
+    if (dateResolved) {
+      fetchEventDate();
+    }
+  }, [dateResolved]);
 
-useEffect(() => {
-  fetchEventDate(); 
-}, [userIdProp, visitorIdProp]);
-
-useEffect(() => {
-  if (dateResolved) {
-    fetchEventDate(); 
-  }
-}, [dateResolved]);
-
-const handleConfirm = (newDate, apiData) => {
-  if (newDate) {
-    setEventDate(newDate);
-    // ✅ reminder sirf yahan open hoga
-    const today = new Date();
-    const selected = new Date(newDate);
-    const diffMs = selected.setHours(0,0,0,0) - today.setHours(0,0,0,0);
-    const diffDays = Math.round(diffMs / (1000*60*60*24));
-    setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
-    setReminderOpen(true);
-  }
-  setIsSheetOpen(false);
-  fetchEventDate();
-};
+  const handleConfirm = (newDate, apiData) => {
+    if (newDate) {
+      setEventDate(newDate);
+      // ✅ reminder sirf yahan open hoga
+      const today = new Date();
+      const selected = new Date(newDate);
+      const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
+      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+      setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
+      setReminderOpen(true);
+    }
+    setIsSheetOpen(false);
+    fetchEventDate();
+  };
 
   const { userId: currentUserId, visitorId: currentVisitorId } = getIds();
   const showBanner = !isLoading && !!eventDate;
 
   return (
     <>
-  
       {showBanner && (
         <div className="edb-banner">
           {/* ✅ CSS me .edb-banner-image-wrap hi rounded-corner + shadow
@@ -133,6 +131,8 @@ const handleConfirm = (newDate, apiData) => {
               className="edb-banner-bg"
               style={{ pointerEvents: "none" }} // ✅ image kabhi click intercept na kare
               priority
+             sizes="(max-width: 600px) 100vw, 600px"
+              quality={90}
             />
           </div>
 
@@ -152,12 +152,12 @@ const handleConfirm = (newDate, apiData) => {
             aria-label="Edit event date"
           >
             <Image
-  src={PencilEditIcon}
-  alt="Edit"
-  width={17}
-  height={16}
-  className="edb-edit-icon"
-/>
+              src={PencilEditIcon}
+              alt="Edit"
+              width={17}
+              height={16}
+              className="edb-edit-icon"
+            />
           </button>
         </div>
       )}
@@ -169,14 +169,14 @@ const handleConfirm = (newDate, apiData) => {
         visitorId={currentVisitorId}
         pincode={pincode}
         eventTitle={eventTitle}
-        eventId={eventId}      
-        initialDate={eventDate} 
+        eventId={eventId}
+        initialDate={eventDate}
       />
       <EventReminderPopup
-  isOpen={reminderOpen}
-  onClose={() => setReminderOpen(false)}
-  variant={reminderVariant}
-/>
+        isOpen={reminderOpen}
+        onClose={() => setReminderOpen(false)}
+        variant={reminderVariant}
+      />
     </>
   );
 }

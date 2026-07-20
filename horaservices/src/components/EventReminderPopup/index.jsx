@@ -6,12 +6,13 @@ import plannerImage from "@/assets/Planner.webp";
 import approachingImage from "@/assets/Approaching.webp";
 import Image from "next/image";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
+import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
+
 const WHATSAPP_NUMBER = "7338584828";
-import { useLockBodyScroll } from "@/utils/Uselockbodyscroll"; // 👈 naya import
 
 const VARIANTS = {
   approaching: {
-     image: approachingImage,
+    image: approachingImage,
     illustrationClass: "erp-illustration-approaching",
     title: "Your Event is Approaching!",
     description:
@@ -20,7 +21,7 @@ const VARIANTS = {
       "Hi! My event is approaching soon, I need help with the arrangements.",
   },
   planner: {
-     image: plannerImage,
+    image: plannerImage,
     illustrationClass: "erp-illustration-planner",
     title: "You're a Great Planner!",
     description:
@@ -30,14 +31,14 @@ const VARIANTS = {
   },
 };
 
-
 export default function EventReminderPopup({
   isOpen,
   onClose,
   variant = "approaching",
   autoCloseMs = 5000,
 }) {
-    useLockBodyScroll(isOpen);
+  useLockBodyScroll(isOpen);
+
   // ✅ 5 second baad khud close ho jaaye
   useEffect(() => {
     if (!isOpen) return;
@@ -63,17 +64,17 @@ export default function EventReminderPopup({
           <X size={18} strokeWidth={2.4} />
         </button>
 
-     <Image
-  src={config.image}
-  alt={config.title}
-  className="erp-illustration"
-/>
+        <Image
+          src={config.image}
+          alt={config.title}
+          className="erp-illustration"
+          priority
+        />
         <h2 className="erp-title">{config.title}</h2>
         <p className="erp-description">{config.description}</p>
 
         <button className="erp-whatsapp-btn" onClick={handleWhatsAppClick}>
-        
-            <Image src={whatsappIcon} alt="WhatsApp" width={20} height={20} />
+          <Image src={whatsappIcon} alt="WhatsApp" width={20} height={20} priority />
           Get Free Consultation
         </button>
       </div>
