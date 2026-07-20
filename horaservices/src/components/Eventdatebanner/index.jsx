@@ -7,7 +7,8 @@ import calendarBgimage from "@/assets/calendarBgimage.webp";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
-
+import PencilEditIcon from "@/assets/pencilEdit.svg";
+import EventReminderPopup from "../EventReminderPopup";
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -33,7 +34,8 @@ export default function EventDateBanner({
   const [eventId, setEventId] = useState(null); // ✅ latest event ka _id, edit ke liye
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
+const [reminderOpen, setReminderOpen] = useState(false);
+const [reminderVariant, setReminderVariant] = useState("planner");
   const getIds = () => {
     if (typeof window === "undefined") {
       return { userId: userIdProp, visitorId: visitorIdProp };
@@ -86,40 +88,39 @@ export default function EventDateBanner({
       .finally(() => setIsLoading(false));
   };
 
-  useEffect(() => {
-    fetchEventDate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userIdProp, visitorIdProp]);
 
-  // ✅ Kahin bhi (global date-sheet ya kisi aur component se) date confirm
-  // hone par dateResolved true hota hai -> ye banner khud refetch kar le
-  useEffect(() => {
-    if (dateResolved) {
-      fetchEventDate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateResolved]);
 
-  // ✅ onConfirm ab naya date/apiData bhi receive karta hai (agar sheet dega),
-  // taaki UI turant update ho jaye — fir bhi safety ke liye refetch bhi karte hain
-  const handleConfirm = (newDate, apiData) => {
-    if (newDate) {
-      setEventDate(newDate);
-    }
-    setIsSheetOpen(false);
-    // ✅ server se confirm karne ke liye refetch bhi kar lo (latest event id sahi rahe)
-    fetchEventDate();
-  };
+useEffect(() => {
+  fetchEventDate(); 
+}, [userIdProp, visitorIdProp]);
+
+useEffect(() => {
+  if (dateResolved) {
+    fetchEventDate(); 
+  }
+}, [dateResolved]);
+
+const handleConfirm = (newDate, apiData) => {
+  if (newDate) {
+    setEventDate(newDate);
+    // ✅ reminder sirf yahan open hoga
+    const today = new Date();
+    const selected = new Date(newDate);
+    const diffMs = selected.setHours(0,0,0,0) - today.setHours(0,0,0,0);
+    const diffDays = Math.round(diffMs / (1000*60*60*24));
+    setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
+    setReminderOpen(true);
+  }
+  setIsSheetOpen(false);
+  fetchEventDate();
+};
 
   const { userId: currentUserId, visitorId: currentVisitorId } = getIds();
   const showBanner = !isLoading && !!eventDate;
 
   return (
     <>
-      {/* ✅ Banner sirf tab dikhta hai jab date load ho chuki ho aur maujood ho.
-          Lekin isse "return null" NAHI kiya — kyunki wo poore component ko
-          unmount kar deta tha, jisse edit-sheet bhi beech me band ho jaati thi
-          agar exactly usi waqt koi background refetch chal raha ho. */}
+  
       {showBanner && (
         <div className="edb-banner">
           {/* ✅ CSS me .edb-banner-image-wrap hi rounded-corner + shadow
@@ -150,13 +151,16 @@ export default function EventDateBanner({
             onClick={() => setIsSheetOpen(true)}
             aria-label="Edit event date"
           >
-            <Pencil size={16} strokeWidth={2.2} color="#ffffff" />
+            <Image
+  src={PencilEditIcon}
+  alt="Edit"
+  width={17}
+  height={16}
+  className="edb-edit-icon"
+/>
           </button>
         </div>
       )}
-
-      {/* ✅ Ye ab banner ke isLoading/eventDate state se independent hai —
-          isliye background refetch ke beech mein bhi sheet band nahi hogi */}
       <DateSelectionBottomSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
@@ -165,9 +169,14 @@ export default function EventDateBanner({
         visitorId={currentVisitorId}
         pincode={pincode}
         eventTitle={eventTitle}
-        eventId={eventId}       // ✅ isse sheet ko pata chalega ki EDIT karna hai, naya create nahi
-        initialDate={eventDate} // ✅ sheet me current date pre-select dikhega
+        eventId={eventId}      
+        initialDate={eventDate} 
       />
+      <EventReminderPopup
+  isOpen={reminderOpen}
+  onClose={() => setReminderOpen(false)}
+  variant={reminderVariant}
+/>
     </>
   );
 }

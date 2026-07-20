@@ -4,6 +4,7 @@
   height: clamp(105.85px, calc((130 / 393) * 100vw), 158.88px);
   display: flex;
   align-items: center;
+  isolation: isolate;
 }
 
 /* Background image wrapper */
@@ -36,7 +37,7 @@
   top: 50%;
   transform: translateY(-50%);
 
-  z-index: 2;
+  z-index: 4;
 
   width: clamp(
     24.41px,
@@ -83,11 +84,14 @@
 .edb-edit-btn:active {
   transform: translateY(-50%) scale(0.95);
 }
-
+.edb-edit-icon{
+margin-left: clamp(1.63px, calc((2 / 393) * 100vw), 2.44px);
+}
 /* Banner content */
 .edb-banner-content {
   position: relative;
   z-index: 3;
+  pointer-events: none;
 
   display: flex;
   align-items: center;
