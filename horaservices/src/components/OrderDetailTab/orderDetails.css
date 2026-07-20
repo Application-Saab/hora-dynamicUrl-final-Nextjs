@@ -153,3 +153,9 @@ height: clamp(15px, calc(18.81 * 100vw / 393), 23px);
   cursor: pointer;
   font-size: 13.54px;
   margin-bottom: 15px;}
+
+    .info-text {
+      flex-grow: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
