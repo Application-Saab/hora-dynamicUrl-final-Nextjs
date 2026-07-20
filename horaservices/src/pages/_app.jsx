@@ -19,6 +19,8 @@ import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 import { safeGetItem } from "@/utils/safeStorage";
+import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -117,7 +119,7 @@ function MyApp({ Component, pageProps }) {
           });
 
           if (currentToken) {
-            await fetch(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
+            await fetchWithError(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -219,7 +221,9 @@ function MyApp({ Component, pageProps }) {
             <ChatProvider>
               <ChatProviderMain>
                 <PageLayout>
-                  <Component {...pageProps} />
+                 <ErrorBoundary componentName="RootApp">
+                    <Component {...pageProps} />
+                  </ErrorBoundary>
 
                   <noscript>
                     <iframe

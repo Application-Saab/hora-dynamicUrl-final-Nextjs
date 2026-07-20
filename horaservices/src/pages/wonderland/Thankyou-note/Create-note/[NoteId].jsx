@@ -16,6 +16,7 @@ import { addToQueue } from "@/utils/handleMediaUpload";
 import useApi from "@/hooks/useApi";
 import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 import { saveFileToOPFS } from "@/utils/eventWallHelpers";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 export default function NoteDetails() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function NoteDetails() {
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${BASE_URL}${GET_USER_BY_ID}/${userId}`);
+        const res = await fetchWithError(`${BASE_URL}${GET_USER_BY_ID}/${userId}`);
         const data = await res.json();
         const u = data?.data || data?.user || {};
         setUserName(u.hostName || u.userName || u.name || "Guest");

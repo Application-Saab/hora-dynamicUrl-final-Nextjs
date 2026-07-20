@@ -13,6 +13,7 @@ import myordericon from "@/assets/Myordersicon.png";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import LogoutModal from "@/utils/LogoutModal";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,7 +62,7 @@ const AccountPage = () => {
     }
 
     try {
-      const response = await fetch(
+      const response = await fetchWithError(
         `${BASE_URL}${UPDATE_USER_BY_ID}/${userId}`,
         {
           method: "PUT",
@@ -113,7 +114,7 @@ const AccountPage = () => {
     formData.append("image", file);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithError(
         `${BASE_URL}${UPDATE_USER_AVATAR_BY_ID}/${userId}`,
         {
           method: "PUT",

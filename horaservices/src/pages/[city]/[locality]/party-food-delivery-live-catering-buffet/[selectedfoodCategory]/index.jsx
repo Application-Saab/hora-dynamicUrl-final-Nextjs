@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { Step, Label, Divider } from 'semantic-ui-react'; // Replace with actual library
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { Modal, Button, Container, Row, Col, Spinner } from 'react-bootstrap';
@@ -21,6 +20,7 @@ import InfoIcon from '../../../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import '../../../../../css/chefOrder.css';
+import axiosApi from '@/utils/axiosApi';
 
 const FoodDeliveryCreateOrder = (currentStep) => {
   const viewBottomSheetRef = useRef(null);
@@ -84,7 +84,7 @@ const FoodDeliveryCreateOrder = (currentStep) => {
         const requestData = {
           type: 'cuisine',
         };
-        const response = await axios.post(url, requestData, {
+        const response = await axiosApi.post(url, requestData, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -207,7 +207,7 @@ const FoodDeliveryCreateOrder = (currentStep) => {
         cuisineId: ["65f1b256aaba27208a89865f"],
         is_dish: is_dish,
       };
-      const response = await axios.post(url, requestData, {
+      const response = await axiosApi.post(url, requestData, {
         headers: {
           'Content-Type': 'application/json',
         },

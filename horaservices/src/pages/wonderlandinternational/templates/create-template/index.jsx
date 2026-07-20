@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BASE_URL, BG_REMOVER_URL, GET_TEMPLATES_BY_ID } from "@/utils/apiconstants";
+import { BASE_URL, BG_REMOVER_URL, GET_TEMPLATES_BY_ID, TEMPLATE_ASSESTS_URL_BASE } from "@/utils/apiconstants";
 import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "../../../../utils/dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
@@ -15,12 +15,12 @@ import { useHeroImageTransform } from "@/hooks/useHeroImageTransform";
 import ErrorPopup from "@/components/common/ErrorPopup";
 import { getCurrentTimeAMPM, formatToAMPM } from "@/utils/timeFormatters";
 import { saveTemplate } from "@/utils/indexedDB";
-import axios from "axios";
 
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
+import { fetchWithError } from "@/utils/fetchWithError";
+import axiosApi from "@/utils/axiosApi";
 
-const TEMPLATE_ASSETS_BASE =
-  "https://horaservices.com/api/template-assets/templates";
+const TEMPLATE_ASSETS_BASE = TEMPLATE_ASSESTS_URL_BASE;
 
 // ─── Image cache ───────────────────────────────────────────────────────────────
 const imageCache = new Map();
@@ -300,7 +300,7 @@ const DynamicTemplateRenderer = () => {
           setImageSrc(cachedSrc);
         }
 
-        const res = await fetch(
+        const res = await fetchWithError(
           `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
         );
         const { template, error: apiError, message } = await res.json();
@@ -388,7 +388,7 @@ const DynamicTemplateRenderer = () => {
     let active = true;
     const fetchOrder = async () => {
       try {
-        const res = await fetch(
+        const res = await fetchWithError(
           `${BASE_URL}/api/customer/event/event-invites/${eventId}`,
           {
             headers: {
@@ -693,7 +693,7 @@ const DynamicTemplateRenderer = () => {
     form.append("userId", hostId);
 
     try {
-      await fetch(
+      await fetchWithError(
         `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
         {
           method: "PUT",
@@ -748,7 +748,7 @@ const DynamicTemplateRenderer = () => {
       : formatToAMPM(new Date().toLocaleTimeString());
 
     try {
-      const res = await fetch(
+      const res = await fetchWithError(
         `${BASE_URL}/api/customer/event/event-invites/${eventId || ""}`,
         {
           method: "PUT",
@@ -825,7 +825,7 @@ const DynamicTemplateRenderer = () => {
     formDataObj.append("file", file);
 
     try {
-      const response = await axios.post(`${BG_REMOVER_URL}`, formDataObj, {
+      const response = await axiosApi.post(`${BG_REMOVER_URL}`, formDataObj, {
         responseType: "blob",
       });
       const imageUrl = URL.createObjectURL(response.data);

@@ -1,20 +1,21 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import "./photoGraphyCardgrid.css";
+import React from "react";
 
-export default function PhotoGraphyCard({
+const PhotoGraphyCard = ({
   src,
   title,
   subCategory,
   city = "",
   locality = "",
   photoCat = [],
-}) {
+}) => {
   const router = useRouter();
 
   const handleViewMore = () => {
     const categoryItem = photoCat?.find(
-      (cat) => cat.subCategory === subCategory || cat.name === subCategory
+      (cat) => cat.subCategory === subCategory || cat.name === subCategory,
     );
 
     const finalSubCategory = categoryItem?.subCategory || subCategory;
@@ -72,4 +73,6 @@ export default function PhotoGraphyCard({
       </div>
     </div>
   );
-}
+};
+
+export default React.memo(PhotoGraphyCard);

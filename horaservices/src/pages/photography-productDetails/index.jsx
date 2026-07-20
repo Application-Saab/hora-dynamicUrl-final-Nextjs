@@ -8,7 +8,7 @@ import '../../css/decoration.css';
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
-import axios from 'axios';
+import axiosApi from "@/utils/axiosApi";
 
 function PhotograpgyProdDetails() {
   const [selCat, setSelCat] = useState("");
@@ -35,7 +35,7 @@ function PhotograpgyProdDetails() {
       const fetchDecorationDetails = async () => {
         try {
           const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${product}`;
-          const response = await axios.get(url);
+          const response = await axiosApi.get(url);
           setProduct(response.data.data[0]);
           setSubCategory(getSubCategory(catValue || ''));
         } catch (error) {

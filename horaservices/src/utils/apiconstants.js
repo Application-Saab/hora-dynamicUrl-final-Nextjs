@@ -1,4 +1,4 @@
-export const BASE_URL = "https://horaservices.com";
+export const BASE_URL = "http://localhost:5000";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
@@ -46,7 +46,9 @@ export const GET_ALL_TEMPLATES = "/api/photo/templates";
 export const GET_TEMPLATES_BY_ID = "/api/photo/templates";
 export const EVENT_POST_LIKE_UNLIKE = '/api/customer/event';
 export const LIKED_POST_BY_EVENT_AND_USERID = "/api/customer/event/liked-posts"
-export const GENERATE_SHARE_CODE = '/smartinvite/share/generate-share-code'
+export const GENERATE_SHARE_CODE = '/smartinvite/share/generate-share-code';
+export const TEMPLATE_ASSESTS_URL_BASE = "https://horaservices.com/api/template-assets/templates"
+
 
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
 export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
@@ -58,7 +60,7 @@ export const CREATE_EVENT_SUBFOLDER = "/api/customer/event/create-event-subfolde
 export const ASSIGN_TO_EVENT_SUBFOLDER = "/api/customer/event/assign-to-subfolder";
 export const DELETE_EVENT_POST = "/api/customer/event/delete-post";
 export const GET_GUEST_DETTAILS = "/api/customer/event/event-guest";
-export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/all";
+export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/ll";
 export const GET_USER_BY_ID = "/api/user/user-details";
 export const GET_USER_BY_PHONE = "/api/user/user-details-by-phone";
 export const UPDATE_USER_BY_ID = "/api/user/user-details";
@@ -78,8 +80,12 @@ export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photograp
 export const GET_VENUE_DETAILS_BY_ID = '/api/party-venue/venue-details';
 export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages-by-venue';
 export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'
-export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'
+export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images';
+export const VENUE_PUBLIC_LISTING = "/api/party-venue/venues-public-list";
 
-export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code"
+export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code";
+export const CAPSULE_LIKE_TOGGLE = "/api/internal/toggle-like";
 
 export const GET_ADDON_BY_ID = "/api/addon/get"
+export const SAVE_ERROR_LOGS = "/api/error-log"
+export const VISITOR_TRACKING = "/api/analytics/track-daily-visit"

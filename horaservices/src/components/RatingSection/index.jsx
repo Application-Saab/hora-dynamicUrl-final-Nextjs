@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BASE_URL, ADD_RATING_REVIEWS } from "@/utils/apiconstants";
 import { ratingConfig } from "@/utils/ratingConfig";
 import Popup from "@/utils/popup";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const Ratingsection = ({
   orderId,
@@ -32,7 +33,7 @@ const Ratingsection = ({
 
   try {
 
-    const res = await fetch(`${BASE_URL}${ADD_RATING_REVIEWS}`, {
+    const res = await fetchWithError(`${BASE_URL}${ADD_RATING_REVIEWS}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

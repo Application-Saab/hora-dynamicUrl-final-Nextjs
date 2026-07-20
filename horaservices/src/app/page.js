@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useLayoutEffect } from "react";
-import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BASE_URL,
@@ -12,6 +11,7 @@ import { getHomeOrganizationSchema } from "@/utils/schema";
 import HomeContent from "@/components/HomeContent";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
+import axiosApi from "@/utils/axiosApi";
 
 export default function Home() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function Home() {
         const storedUserID = await localStorage.getItem("userID");
         const apiUrl = BASE_URL + PAYMENT_STATUS + "/" + transactionId;
 
-        const response = await axios.post(
+        const response = await axiosApi.post(
           apiUrl,
           {},
           {
@@ -48,7 +48,7 @@ export default function Home() {
               _id: transactionId,
             };
 
-            const response = await axios.post(url, requestData, {
+            const response = await axiosApi.post(url, requestData, {
               headers: {
                 "Content-Type": "application/json",
                 authorization: token,

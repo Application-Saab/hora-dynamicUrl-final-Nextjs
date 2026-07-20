@@ -8,6 +8,7 @@ import {
   GET_PHOTOGRAPHY_ORDER_DETAILS
 } from "../../utils/apiconstants";
 import { useRouter } from "next/router";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -51,7 +52,7 @@ const OrderDetail = () => {
   const fetchChefOrderDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
+      const response = await fetchWithError(
   BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();
@@ -65,7 +66,7 @@ const fetchPhotographyOrderDetails = async () => {
   try {
     setLoading(true);
 
-    const response = await fetch(
+    const response = await fetchWithError(
       BASE_URL + GET_PHOTOGRAPHY_ORDER_DETAILS+ "/" + orderId
     );
 
@@ -81,7 +82,7 @@ const fetchPhotographyOrderDetails = async () => {
   const fetchDecorationOrderDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
+      const response = await fetchWithError(
         BASE_URL + GET_DECORATION_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
@@ -102,7 +103,7 @@ const fetchPhotographyOrderDetails = async () => {
   const  fetchFoodDeliveryOrderDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
+      const response = await fetchWithError(
         BASE_URL + GET_FOOD_DELIVERY_DETAILS + "/" + orderId
       );
       const responseData = await response.json();
@@ -121,7 +122,7 @@ const fetchPhotographyOrderDetails = async () => {
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
+      const response = await fetchWithError(
         BASE_URL + ORDER_DETAILS_ENDPOINT + "/v1/" + apiOrderId
       );
       const responseData = await response.json();

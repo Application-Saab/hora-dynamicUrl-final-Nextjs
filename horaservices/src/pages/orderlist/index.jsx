@@ -11,6 +11,7 @@ import Popup from "../../utils/popup";
 import OtpLoginPopup from '../../components/OtpLoginPopup';
 import './orderlist.css';
 import Head from "next/head";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -47,7 +48,7 @@ const Orderlist = () => {
       try {
         setLoading(true);
         const userId = await localStorage.getItem("userID");
-        const response = await fetch(BASE_URL + ORDERLIST_ENDPOINT, {
+        const response = await fetchWithError(BASE_URL + ORDERLIST_ENDPOINT, {
           method: "POST",
           headers: { Accept: "application/json", "Content-Type": "application/json" },
           body: JSON.stringify({ page: "1", _id: userId }),
@@ -215,7 +216,7 @@ const Orderlist = () => {
 
       try {
         // Fetch executor details from the API
-        const response = await fetch(
+        const response = await fetchWithError(
           `${BASE_URL}/api/admin/getUserDetails/${orderId}`
         );
 

@@ -9,6 +9,7 @@ import {
 } from "react";
 import { sortRooms } from "./ChatProvider";
 import useApi from "./useApi";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const ChatContext = createContext(null);
 
@@ -26,7 +27,7 @@ export function ChatProvider({ children }) {
     try {
       if (!loggedinUserId) return;
 
-      const response = await fetch(
+      const response = await fetchWithError(
         `${BASE_URL}${GET_CHAT_ROOMS}/${loggedinUserId}`
       );
       const json = await response.json();

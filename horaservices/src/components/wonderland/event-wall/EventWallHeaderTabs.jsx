@@ -11,6 +11,7 @@ import imagePicker from "@/assets/imagePicker.svg";
 import captureIcon from "@/assets/captureIcon.svg";
 import selfieCapture from "@/assets/selfieCapture.png";
 import { BASE_URL, CREATE_EVENT_SUBFOLDER, FACE_FINDER_URL } from "@/utils/apiconstants";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const S3_FOLDER_NAME = "event-invites";
 
@@ -95,7 +96,7 @@ export default function EventWallHeaderTabs({
   const startSearchStream = async (formData) => {
     setIsStreamSearching(true);
     try {
-      const response = await fetch(`${FACE_FINDER_URL}/event-face-search`, {
+      const response = await fetchWithError(`${FACE_FINDER_URL}/event-face-search`, {
         method: "POST",
         body: formData,
       });
@@ -142,7 +143,7 @@ export default function EventWallHeaderTabs({
     fd.append("userId", localUserId);
     if (subFolderName) fd.append("subFolderName", subFolderName);
 
-    const res = await fetch(`${BASE_URL}${CREATE_EVENT_SUBFOLDER}/${eventId}`, {
+    const res = await fetchWithError(`${BASE_URL}${CREATE_EVENT_SUBFOLDER}/${eventId}`, {
       method: "POST",
       body: fd,
     });

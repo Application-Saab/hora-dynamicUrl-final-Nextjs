@@ -4,7 +4,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import Head from "next/head";
-import axios from 'axios';
 import { BASE_URL, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import { Form, Dropdown } from 'react-bootstrap';
@@ -27,6 +26,7 @@ import BackgorundImgDetails from "../../assets/BackgorundImgDetails.svg"
 import UrgentBookingModal from '@/components/UrgentBookingModal';
 import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
 import { formatDate } from "../../utils/formateDate";
+import axiosApi from '@/utils/axiosApi';
 
 const Checkout = () => {
   const router = useRouter();
@@ -255,7 +255,7 @@ const validateDateTime = (combinedDate) => {
         userId: userId
       };
       const token = localStorage.getItem('token');
-      const response = await axios.post(url, requestData, {
+      const response = await axiosApi.post(url, requestData, {
         headers: {
           'Content-Type': 'application/json',
           'authorization': token
@@ -346,7 +346,7 @@ const balanceAmount = totalAmount - advanceAmount;
         "status": 0
       }
       const token = await localStorage.getItem('token');
-      const response = await axios.post(url, requestData, {
+      const response = await axiosApi.post(url, requestData, {
         headers: {
           'Content-Type': 'application/json',
           'authorization': token
@@ -376,7 +376,7 @@ const balanceAmount = totalAmount - advanceAmount;
       setLoading(false);
       return; 
     }
-        const response2 = await axios.post(apiUrl, requestData2, {
+        const response2 = await axiosApi.post(apiUrl, requestData2, {
           headers: {
             'Content-Type': 'application/json',
           },

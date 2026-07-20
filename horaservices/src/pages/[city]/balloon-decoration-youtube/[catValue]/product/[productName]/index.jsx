@@ -10,7 +10,6 @@ import { getDecorationProductOrganizationSchema , getProductFAQSchemaProductDeta
 import '../../../../../../css/decoration.css';
 import { useSelector } from 'react-redux';
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
-import axios from 'axios';
 import Head from 'next/head';
 import  logo  from '../../../../../../assets/new_logo_light.png';
 import { useRouter } from "next/router";
@@ -18,6 +17,7 @@ import Image from "next/image";
 import faqData from '../../../../../../utils/faqData.json'
 import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
+import axiosApi from "@/utils/axiosApi";
 
 // Skeleton Loader Component
 const SkeletonLoader = () => {
@@ -95,7 +95,7 @@ function DecorationCatDetails() {
       const fetchDecorationDetails = async () => {
         try {
           const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
-          const response = await axios.get(url);
+          const response = await axiosApi.get(url);
           console.log("API Response:", response.data);
           
           // Assuming the product has a price property

@@ -9,6 +9,7 @@ import "./Templates.css";
 import TemplateGrid from "@/components/wonderland/TemplatesGrid";
 import UploadCustomTemplate from "@/components/wonderland/UploadCustomTemplate";
 import { INVITE_CATEGORIES } from "@/utils/constants";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const TemplatesPage = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const TemplatesPage = () => {
 
     const fetchTemplates = async () => {
       try {
-        const res = await fetch(`${BASE_URL}${GET_ALL_TEMPLATES}`);
+        const res = await fetchWithError(`${BASE_URL}${GET_ALL_TEMPLATES}`);
         const data = await res.json();
 
         if (data.error) throw new Error();

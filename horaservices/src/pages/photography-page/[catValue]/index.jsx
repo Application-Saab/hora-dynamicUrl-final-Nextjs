@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
 import Image from "next/image";
 import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
@@ -27,6 +26,7 @@ import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoCategory } from "@/utils/photoGraphyHead";
 import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
+import axiosApi from "@/utils/axiosApi";
 
 
 const getDiscountedPrice = (price = 0) => {
@@ -127,7 +127,7 @@ const intro = content.description || "";
   const preview = intro?.slice(0, 60) + "...";
   const getSubCatId = useCallback(async (subCategory) => {
     try {
-      const response = await axios.get(
+      const response = await axiosApi.get(
         `${BASE_URL}${GET_DECORATION_CAT_ID}${encodeURIComponent(subCategory)}`
       );
       const categoryId = response.data?.data?._id;
@@ -153,7 +153,7 @@ const intro = content.description || "";
     if (!categoryId) return;
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${categoryId}`);
+      const res = await axiosApi.get(`${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${categoryId}`);
       const data = res.data?.data || [];
 
       const productsWithDiscount = data.map((item) => {

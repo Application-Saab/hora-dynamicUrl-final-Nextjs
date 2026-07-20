@@ -1,3 +1,4 @@
+import { fetchWithError } from "@/utils/fetchWithError";
 import { BASE_URL } from "../utils/apiconstants"
 import { MEDIA_WORKER_URL } from "../utils/apiconstants";
 
@@ -6,7 +7,7 @@ export const getImagesbyFolderName = async ({ folderName, customerId }) => {
   try {
     const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`;
 
-    const response = await fetch(url);
+    const response = await fetchWithError(url);
 
     if (!response.ok) {
       const errorData = await response.text();
@@ -23,7 +24,7 @@ export const getImagesbyFolderName = async ({ folderName, customerId }) => {
 //create subb folder api function
 export const createSubfolder = async (formData) => {
   try {
-    const res = await fetch(`${MEDIA_WORKER_URL}/create-subfolder`, {
+    const res = await fetchWithError(`${MEDIA_WORKER_URL}/create-subfolder`, {
       method: "POST",
       body: formData,
     });
@@ -42,7 +43,7 @@ export const createSubfolder = async (formData) => {
 //update subfolder dp api fumction
 export const updateSubfolderDP = async (formData) => {
   try {
-    const res = await fetch(`${MEDIA_WORKER_URL}/update-subfolder-dp`, {
+    const res = await fetchWithError(`${MEDIA_WORKER_URL}/update-subfolder-dp`, {
       method: "PUT",
       body: formData,
     });
@@ -65,7 +66,7 @@ export const assignToSubfolder = async ({
   removeImageIds,
 }) => {
   try {
-    const res = await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+    const res = await fetchWithError(`${BASE_URL}/api/internal/assign-to-subfolder`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -90,7 +91,7 @@ export const assignToSubfolder = async ({
 export const trackActivity = async (mediaId, action) => {
   if (!mediaId) return;
   try {
-    await fetch(`${BASE_URL}/api/internal/track-activity/${mediaId}`, {
+    await fetchWithError(`${BASE_URL}/api/internal/track-activity/${mediaId}`, {
       method: "POST", 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action }), 
@@ -103,7 +104,7 @@ export const trackActivity = async (mediaId, action) => {
 //api for newly registered user
 export const trackGalleryView = async (userId, mainFolderId) => {
   try {
-    await fetch(`${BASE_URL}/api/internal/track-gallery-view`, {
+    await fetchWithError(`${BASE_URL}/api/internal/track-gallery-view`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -118,7 +119,7 @@ export const trackGalleryView = async (userId, mainFolderId) => {
 // tracking folder click function 
 export const trackFolderClick = async (mainFolderId) => { 
     try {
-      const response = await fetch(`${BASE_URL}/api/internal/track-click`, { 
+      const response = await fetchWithError(`${BASE_URL}/api/internal/track-click`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +145,7 @@ export const trackDevice = async ({
   deviceType,
 }) => {
   try {
-    const response = await fetch(
+    const response = await fetchWithError(
       `${BASE_URL}/api/internal/track-device`,
       {
         method: "POST",
@@ -174,7 +175,7 @@ export const trackDevice = async ({
 // tracking share capsule click function 
 export const trackShareCapsuleClick = async (mainFolderId) => { 
     try {
-      const response = await fetch(`${BASE_URL}/api/internal/track-capsule-share-click`, { 
+      const response = await fetchWithError(`${BASE_URL}/api/internal/track-capsule-share-click`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

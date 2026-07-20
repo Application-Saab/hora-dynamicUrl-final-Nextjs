@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import checkImage from "../../assets/tick.jpeg";
 import logo from '../../assets/new_logo_light.png';
-const axios = require("axios");
 import './orderDetails.css';
 import cancellation from '../../assets/cancellation.png';
 import checkIcon from '../../assets/checkIcon.svg';
@@ -22,6 +21,8 @@ import {getCancellationPolicy, infoList, foodDeliveryInclusionItems, cateringInc
 import CouponPopup from "../CouponPopup";
 import Ratingsection from "../RatingSection";
 import PhotographyShareBanner from "../PhotographyMyOrderEventcapsule";
+import { fetchWithError } from "@/utils/fetchWithError";
+import axiosApi from "@/utils/axiosApi";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -121,7 +122,7 @@ const OrderDetailTab = ({
     try {
       const token = await localStorage.getItem("token");
 
-      const response = await fetch(BASE_URL + ORDER_CANCEL, {
+      const response = await fetchWithError(BASE_URL + ORDER_CANCEL, {
         method: "POST",
         headers: {
           Accept: "application/json, text/plain, /",
@@ -177,7 +178,7 @@ const OrderDetailTab = ({
         const url = `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}`;
 
         try {
-          const response = await axios.get(url);
+          const response = await axiosApi.get(url);
           const apiData = response.data;
 
           if (apiData && apiData.data && apiData.data.length > 0) {

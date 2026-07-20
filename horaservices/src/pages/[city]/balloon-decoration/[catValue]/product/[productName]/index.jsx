@@ -10,7 +10,6 @@ import { getDecorationProductOrganizationSchema , getProductFAQSchemaProductDeta
 import '../../../../../../css/decoration.css';
 import { useSelector } from 'react-redux';
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
-import axios from 'axios';
 import Head from 'next/head';
 import  logo  from '../../../../../../assets/new_logo_light.png';
 import { useRouter } from "next/router";
@@ -19,6 +18,7 @@ import faqData from '../../../../../../utils/faqData.json'
 import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
 import DecorationCatDetails from "@/pages/balloon-decoration/[catValue]/product/[productName]";
+import axiosApi from "@/utils/axiosApi";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration/..." -> "hyderabad"
 function getCitySlugFromPath(pathname) {
@@ -135,7 +135,7 @@ function DecorationCatCityDetails() {
       const fetchDecorationDetails = async () => {
         try {
           const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
-          const response = await axios.get(url);
+          const response = await axiosApi.get(url);
           console.log("API Response:", response.data);
           
           // Assuming the product has a price property

@@ -8,6 +8,7 @@ import {
 } from "@/utils/apiconstants";
 
 import { safeGetItem } from "@/utils/safeStorage";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 
 export const sortRooms = (rooms) => {
@@ -192,7 +193,7 @@ const ChatProviderMain = ({ children }) => {
     if (!userID) return;
     const fetchUnreadMap = async () => {
       try {
-        const resp = await fetch(
+        const resp = await fetchWithError(
           `${BASE_URL}${UNREAD_MESSAGE_COUNT}/${userID}/unread`
         );
         const json = await resp.json();

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from 'next/head';
 // import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
 import { useParams } from "react-router-dom";

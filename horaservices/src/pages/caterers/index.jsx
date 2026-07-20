@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Head from "next/head";
 import whatsppicon from "../../assets/whatsapp-icon.png";
 import { getHomeOrganizationSchema } from "../../utils/schema";
@@ -18,6 +17,7 @@ import PhotographyIcon from "../../assets/photography_icon.png";
 import FoodIcon from "../../assets/food_icon.png";
 
 import "../../app/homepage.css";
+import axiosApi from "@/utils/axiosApi";
 // remove later
 // import homepage_entertainment1 from '../assets/homepage_entertainment1.png';
 // import homepage_entertainment2 from '../assets/homepage_entertainment2.png';
@@ -56,7 +56,7 @@ export default function Home() {
         const storedUserID = await localStorage.getItem("userID");
         const apiUrl = BASE_URL + PAYMENT_STATUS + "/" + transactionId;
 
-        const response = await axios.post(
+        const response = await axiosApi.post(
           apiUrl,
           {},
           {
@@ -79,7 +79,7 @@ export default function Home() {
               _id: transactionId,
             };
 
-            const response = await axios.post(url, requestData, {
+            const response = await axiosApi.post(url, requestData, {
               headers: {
                 "Content-Type": "application/json",
                 authorization: token,

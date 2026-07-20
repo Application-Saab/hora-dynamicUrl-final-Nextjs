@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import axios from "axios";
 import styled from "styled-components";
 import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 // import { useLocation } from 'react-router-dom';

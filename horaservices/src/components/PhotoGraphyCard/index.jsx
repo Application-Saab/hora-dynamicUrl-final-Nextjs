@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import "./photoGraphycard.css";
+import React from "react";
 
-export default function PhotoGraphyCard({
+const PhotoGraphyCard = ({
   src,
   title,
   subCategory,
@@ -10,7 +11,7 @@ export default function PhotoGraphyCard({
   locality = "",
   photoCat = [],
   hasCityPageParam = false,
-}) {
+}) => {
   const router = useRouter();
 
 const handleViewMore = () => {
@@ -67,3 +68,5 @@ const localitySlug = locality
     </div>
   );
 }
+
+export default React.memo(PhotoGraphyCard);

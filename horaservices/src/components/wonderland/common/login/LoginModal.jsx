@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import CustomButton from "../CustomButton";
 import { useTimer } from "@/utils/useTimer";
 import useApi from "@/hooks/useApi";
-import axios from "axios";
 import {
   GET_USER_BY_PHONE,
   OTP_GENERATE_END_POINT,
@@ -13,6 +12,7 @@ import CustomModal from "../CustomModal";
 import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
+import axiosApi from "@/utils/axiosApi";
 
 const LoginModal = ({
   isOpen,
@@ -249,7 +249,7 @@ const LoginModal = ({
     };
 
     try {
-      const res = await axios.request(options);
+      const res = await axiosApi.request(options);
 
       return true;
     } catch (err) {
@@ -298,7 +298,7 @@ const LoginModal = ({
     };
 
     try {
-      const res = await axios.request(options);
+      const res = await axiosApi.request(options);
       console.log("WhatsApp message sent:", res.data);
     } catch (err) {
       console.error("WhatsApp message error:", err);

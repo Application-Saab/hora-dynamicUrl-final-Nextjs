@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { usePathname } from "next/navigation";
 import cityNameToSlug from "@/utils/cityNameToSlug";
 import { BASE_URL } from "./apiconstants";
+import { fetchWithError } from "./fetchWithError";
 
 const CityContext = createContext({
   selectedCitySlug: "",
@@ -82,7 +83,7 @@ const saveCityToServer = async (cityName) => {
     const userId = localStorage.getItem("userID") || "";
     const visitorId = getOrCreateVisitorId();
 
-    await fetch(`${BASE_URL}/api/event-dates/user-city`, {
+    await fetchWithError(`${BASE_URL}/api/event-dates/user-city`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId, visitorId, cityName }),
@@ -108,7 +109,7 @@ const fetchCityFromServer = async () => {
     if (userId) params.append("userId", userId);
     if (visitorId) params.append("visitorId", visitorId);
 
-    const res = await fetch(`${BASE_URL}/api/event-dates/user-city?${params.toString()}`);
+    const res = await fetchWithError(`${BASE_URL}/api/event-dates/user-city?${params.toString()}`);
     if (!res.ok) return null;
 
     const data = await res.json();

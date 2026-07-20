@@ -1,7 +1,7 @@
-import axios from "axios";
 import { BASE_URL } from "@/utils/apiconstants";
+import axiosApi from "./axiosApi";
 
-const VISITOR_ID_KEY = "visitor_id";
+const VISITOR_ID_KEY = "VISITOR_ID";
 
 export function getVisitorId() {
   if (typeof window === "undefined") return null;
@@ -32,7 +32,7 @@ export function trackSearch({
 
   const resolvedUserId = userId || getLoggedInUserId();
 
-  axios
+  axiosApi
     .post(`${BASE_URL}/api/search-tracking`, {
       searchTerm: searchTerm.trim(),
       clickedItemId,

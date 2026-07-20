@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import Image from 'next/image';
 import photographyAddOns from "@/utils/photographyAddOns.json";
 import { faqData } from '@/utils/photographyFAQData.js'
@@ -32,6 +31,8 @@ import { SeoWork } from '@/utils/photoGraphyHead';
 import pencil from "@/assets/pencil.svg";
 import AddonModal from '@/components/AddonModal';
 import AddOnsList from '@/components/AddOnsList';
+import { fetchWithError } from '@/utils/fetchWithError';
+import axiosApi from '@/utils/axiosApi';
 const SkeletonLoader = () => {
   return (
     <div
@@ -395,7 +396,7 @@ const ProductDetails = () => {
         setLoading(true);
 
         // ✅ SINGLE API CALL
-        const res = await axios.get(
+        const res = await axiosApi.get(
           `${BASE_URL}/api/photography/details/${productId}`
         );
 
@@ -419,7 +420,7 @@ const ProductDetails = () => {
         // ✅ Fetch similar products
         const tagId = data?.tag?.[0]?._id;
         if (tagId) {
-          const similarRes = await axios.get(
+          const similarRes = await axiosApi.get(
             `${BASE_URL}/api/photography/searchByTag/${tagId}`
           );
 
@@ -477,7 +478,7 @@ const ProductDetails = () => {
         if ([...query].length === 0) return; // no valid IDs
 
         const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
-        const response = await fetch(url);
+        const response = await fetchWithError(url);
         const data = await response.json();
 
         if (!response.ok || data.error) {

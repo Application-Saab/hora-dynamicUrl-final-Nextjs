@@ -6,7 +6,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
-import axios from 'axios';
 import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import { Button, Card, Form } from 'react-bootstrap';
@@ -18,6 +17,7 @@ import Loader from '../../components/Loader'
 import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from '../../components/OtpLoginPopup';
 import {formatDate} from "../../utils/formateDate";
+import axiosApi from '@/utils/axiosApi';
 
 const FoodDeliveryCheckout = () => {
 
@@ -463,7 +463,7 @@ const FoodDeliveryCheckout = () => {
 
             const token = localStorage.getItem('token');
 
-            const response = await axios.post(url, requestData, {
+            const response = await axiosApi.post(url, requestData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': token
@@ -525,7 +525,7 @@ const FoodDeliveryCheckout = () => {
 
             const token = await localStorage.getItem('token');
 
-            const response = await axios.post(url, requestData, {
+            const response = await axiosApi.post(url, requestData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': token
@@ -551,7 +551,7 @@ const FoodDeliveryCheckout = () => {
                     alert("The selected date and time must be at least 24 hours from now.");
                     return;
                 }
-                const response2 = await axios.post(apiUrl, requestData2, {
+                const response2 = await axiosApi.post(apiUrl, requestData2, {
                     headers: {
                         'Content-Type': 'application/json',
                     },

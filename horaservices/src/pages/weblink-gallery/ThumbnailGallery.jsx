@@ -8,9 +8,8 @@ import React, {
   useRef,
 } from "react";
 import Image from "next/image";
-import axios from "axios";
 import "./gallery.css"; // Ensure this path is correct
-import { BASE_URL } from "@/utils/apiconstants";
+import { BASE_URL, CAPSULE_LIKE_TOGGLE } from "@/utils/apiconstants";
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import share from "../../assets/share.svg";
 import multiGroup from "../../assets/multiGroup.svg";
@@ -55,6 +54,8 @@ import MyPhotos2 from '../../assets/MyPhotos2.svg';
 import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
+import { fetchWithError } from "@/utils/fetchWithError";
+import axiosApi from "@/utils/axiosApi";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -268,7 +269,7 @@ const showSnackbar = (message) => {
     try {
       generatingRef.current = true;
 
-      const response = await axios.post(
+      const response = await axiosApi.post(
         `${BASE_URL}${GENERATE_CAPSULE_LINK}/${mainFolderId}`
       );
 
@@ -340,7 +341,7 @@ const showSnackbar = (message) => {
       (id) => !folderSelection.includes(id),
     );
 
-    fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+    fetchWithError(`${BASE_URL}/api/internal/assign-to-subfolder`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1022,7 +1023,7 @@ const showSnackbar = (message) => {
           formData.append("isWeblink", "true");
           formData.append("fileId", item.id);
 
-          const res = await axios.post(`${MEDIA_WORKER_URL}/upload`, formData, {
+          const res = await axiosApi.post(`${MEDIA_WORKER_URL}/upload`, formData, {
             onUploadProgress: (p) => {
               const percent = p.total
                 ? Math.round((p.loaded * 100) / p.total)
@@ -1167,7 +1168,7 @@ const currentUrl =
     );
 
     try {
-      await fetch(`https://horaservices.com/api/internal/toggle-like`, {
+      await fetchWithError(`${BASE_URL}${CAPSULE_LIKE_TOGGLE}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -1251,7 +1252,7 @@ const currentUrl =
       (id) => !newFolderIds.includes(id),
     );
 
-    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+    await fetchWithError(`${BASE_URL}/api/internal/assign-to-subfolder`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1896,7 +1897,7 @@ const handleAddToLocker = async (imgData) => {
                             return;
 
                           try {
-                            const res = await fetch(
+                            const res = await fetchWithError(
                               `${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`,
                               {
                                 method: "DELETE",

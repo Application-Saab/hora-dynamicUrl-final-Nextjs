@@ -7,7 +7,6 @@ import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import checkOutImage from "../../assets/checkout-problem.png";
-import axios from "axios";
 import {
   BASE_URL,
   GET_ADDRESS_LIST,
@@ -42,6 +41,7 @@ import "./checkout.css"
 import UrgentBookingModal from "@/components/UrgentBookingModal";
 import { contactUsRedirect } from "@/components/CheckoutWhatsAppSummary";
 import { formatDate } from "../../utils/formateDate";
+import axiosApi from "@/utils/axiosApi";
 
 const Checkout = () => {
   const router = useRouter();
@@ -272,7 +272,7 @@ const Checkout = () => {
         userId: userId,
       };
       const token = localStorage.getItem("token");
-      const response = await axios.post(url, requestData, {
+      const response = await axiosApi.post(url, requestData, {
         headers: {
           "Content-Type": "application/json",
           authorization: token,
@@ -350,7 +350,7 @@ const onContinueClick = async () => {
         status: 0,
       };
       const token = await localStorage.getItem("token");
-      const response = await axios.post(url, requestData, {
+      const response = await axiosApi.post(url, requestData, {
         headers: {
           "Content-Type": "application/json",
           authorization: token,
@@ -380,7 +380,7 @@ const onContinueClick = async () => {
       setLoading(false);
       return; 
     }
-        const response2 = await axios.post(apiUrl, requestData2, {
+        const response2 = await axiosApi.post(apiUrl, requestData2, {
           headers: {
             "Content-Type": "application/json",
           },

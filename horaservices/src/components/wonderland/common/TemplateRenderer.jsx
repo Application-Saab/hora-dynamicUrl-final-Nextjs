@@ -8,6 +8,7 @@ import { getTemplate } from "@/utils/indexedDB";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useChatStore } from "@/hooks/ChatContext";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -134,7 +135,7 @@ const TemplateRenderer = ({
       : `${BASE_URL}/api/customer/event/event-invites/external-template/${eventDetails?._id}`;
       
     try {
-      await fetch(url, {
+      await fetchWithError(url, {
         method: "PUT",
         headers: { Authorization: token || "" },
         body: form,
