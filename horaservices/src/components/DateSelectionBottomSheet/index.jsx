@@ -198,11 +198,7 @@ export default function DateSelectionBottomSheet({
 
       <div className="dsb-sheet">
         <div className="dsb-header">
-          {/* ✅ FIX: fill + sizes diya taaki sahi resolution download ho
-              (pehle fixed intrinsic size download hota tha, CSS se stretch/shrink hota tha).
-              placeholder="blur" bhi add kiya taaki flash na dikhe.
-              Note: parent (.dsb-header) par position:relative CSS me confirm kar lena,
-              fill ke liye zaroori hai. */}
+       
           <Image
             src={calendarBgimage}
             alt=""

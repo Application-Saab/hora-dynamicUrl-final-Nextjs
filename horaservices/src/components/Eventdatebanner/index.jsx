@@ -5,14 +5,15 @@ import Image from "next/image";
 import Head from "next/head";
 import "./Eventdatebanner.css";
 import calendarBgimage from "@/assets/calendarBgimage.webp";
-import calendarBarBgimage from "@/assets/calendarBarBgimage.webp"; // ✅ preload ke liye import
-import plannerImage from "@/assets/Planner.webp"; // ✅ preload ke liye import
-import approachingImage from "@/assets/Approaching.webp"; // ✅ preload ke liye import
+import calendarBarBgimage from "@/assets/calendarBarBgimage.webp";
+import plannerImage from "@/assets/Planner.webp";
+import approachingImage from "@/assets/Approaching.webp";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useDateGate } from "@/utils/dateGateContext";
 import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
 import EventReminderPopup from "../EventReminderPopup";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -25,6 +26,11 @@ const formatEventDate = (isoString) => {
   const day = String(d.getUTCDate()).padStart(2, "0");
   const month = MONTH_NAMES[d.getUTCMonth()];
   return `${day} ${month}`;
+};
+
+const toDateKey = (isoString) => {
+  const d = new Date(isoString);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 };
 
 export default function EventDateBanner({
@@ -56,9 +62,6 @@ export default function EventDateBanner({
     const { userId, visitorId } = getIds();
 
     if (!userId && !visitorId) {
-      console.warn(
-        "EventDateBanner: no userId/visitorId found (prop or localStorage) — skipping fetch."
-      );
       setIsLoading(false);
       return;
     }
@@ -106,12 +109,22 @@ export default function EventDateBanner({
   const handleConfirm = (newDate, apiData) => {
     if (newDate) {
       setEventDate(newDate);
-      const today = new Date();
-      const selected = new Date(newDate);
-      const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-      const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-      setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
-      setReminderOpen(true);
+
+      const { userId, visitorId } = getIds();
+      const identityKey = visitorId || userId || "anon";
+      const dateKey = toDateKey(newDate);
+      const flagKey = `reminder_shown_${identityKey}_${dateKey}`;
+      const alreadyShown = safeGetItem(flagKey);
+
+      if (!alreadyShown) {
+        const today = new Date();
+        const selected = new Date(newDate);
+        const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
+        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+        setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
+        setReminderOpen(true);
+        safeSetItem(flagKey, "true");
+      }
     }
     setIsSheetOpen(false);
     fetchEventDate();
@@ -122,12 +135,6 @@ export default function EventDateBanner({
 
   return (
     <>
-      {/* ✅ FIX: Bottom-sheet aur reminder-popup ki images ko preload karo
-          jaise hi banner mount hota hai — taaki jab user pencil icon click kare
-          ya date confirm kare, image already browser cache me ho, "late load"
-          na dikhe. Yeh images abhi DOM me nahi hain (conditional render hai),
-          isliye sirf <link rel="preload"> hi Next.js ko batata hai inhe
-          background me fetch kar lo. */}
       <Head>
         <link rel="preload" as="image" href={calendarBarBgimage.src} />
         <link rel="preload" as="image" href={plannerImage.src} />
@@ -143,8 +150,8 @@ export default function EventDateBanner({
               fill
               className="edb-banner-bg"
               style={{ pointerEvents: "none" }}
-              priority // ✅ yahi ek real above-the-fold image hai, priority sahi jagah hai
-              placeholder="blur" // ✅ FIX: blank flash ki jagah instant blur-up dikhega
+              priority
+              placeholder="blur"
               sizes="(max-width: 600px) 100vw, 600px"
               quality={90}
             />
@@ -171,7 +178,6 @@ export default function EventDateBanner({
               width={17}
               height={16}
               className="edb-edit-icon"
-              // ✅ priority yahan se hataya — chhota icon hai, LCP candidate nahi
             />
           </button>
         </div>

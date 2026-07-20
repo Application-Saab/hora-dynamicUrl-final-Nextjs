@@ -6,7 +6,6 @@ import PhotographyConsultationSheet from "../ConsultationPopup";
 import { safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
 import { useDateGate } from "@/utils/dateGateContext";
 
-// ✅ Har category ka apna alag data — path ke hisaab se match hoga
 const CATEGORY_POPUP_DATA = {
   "/balloon-decoration": {
     title: "Need A",
@@ -65,12 +64,10 @@ const CATEGORY_POPUP_DATA = {
   },
 };
 
-// ✅ Filhaal ye consultation popup sirf balloon-decoration path pe hi
-// chalega. Future me kisi aur path ko enable karna ho to bas yaha
-// add kar dena (e.g. "/photography-page" bhi allow karna ho to).
 const ALLOWED_POPUP_PATHS = ["/balloon-decoration"];
 
-const DELAY_MS = 2 * 60 * 1000; // 2 minutes
+// ✅ FIX: 2 minute (120000 ms) se 1 minute 30 second (90000 ms) kar diya
+const DELAY_MS = 90 * 1000; // 1 minute 30 seconds
 
 export default function ConsultationPopupProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,8 +79,6 @@ export default function ConsultationPopupProvider({ children }) {
     pathname?.startsWith(key)
   );
 
-  // ✅ Sirf allowed path (abhi sirf balloon-decoration) par hi data milega,
-  // baaki sab jagah ye popup completely disabled rahega
   const popupData =
     matchedKey && ALLOWED_POPUP_PATHS.includes(matchedKey)
       ? CATEGORY_POPUP_DATA[matchedKey]
@@ -92,10 +87,6 @@ export default function ConsultationPopupProvider({ children }) {
   useEffect(() => {
     if (!popupData || !matchedKey) return;
 
-    // ✅ Jab tak date-sheet resolve nahi hoti (user ne response diya ya
-    // popup close kiya), tab tak consultation popup ka timer start hi
-    // mat karo — ye timer restart bhi ho sakta hai jab dateResolved
-    // false se true hoga
     if (!dateResolved) return;
 
     if (timerStarted.current) return;
@@ -116,20 +107,19 @@ export default function ConsultationPopupProvider({ children }) {
 
   const handleClose = () => {
     setIsOpen(false);
-    document.body.style.overflow = ""; // scroll wapas enable
+    document.body.style.overflow = "";
   };
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden"; // popup open hote hi scroll band
+      document.body.style.overflow = "hidden";
     }
     return () => {
-      document.body.style.overflow = ""; // cleanup on unmount
+      document.body.style.overflow = "";
     };
   }, [isOpen]);
 
   if (!popupData) {
-    // ✅ Allowed path nahi hai -> sirf children render karo, popup bilkul mat mount karo
     return <>{children}</>;
   }
 
