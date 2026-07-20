@@ -1,10 +1,10 @@
 import axios from "axios";
 import { BASE_URL } from "@/utils/apiconstants";
 
-const VISITOR_ID_KEY = "visitor_id";
+const VISITOR_ID_KEY = "VISITOR_ID"; 
 
 export function getVisitorId() {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") return null
 
   let id = localStorage.getItem(VISITOR_ID_KEY);
   if (!id) {
