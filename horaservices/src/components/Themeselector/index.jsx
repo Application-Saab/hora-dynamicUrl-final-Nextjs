@@ -23,7 +23,8 @@ const themes = [
    gap: "clamp(14px, calc((18 / 393) * 100vw), 22px)",
     priceRange: { min: 0, max: 4000 },
     accentColor: "#C77DBF",
-paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
+paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)",
+gtmEvent: "theme_select_budget_friendly",
   },
   {
     id: "value",
@@ -35,7 +36,8 @@ paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
    gap: "clamp(11px, calc((14 / 393) * 100vw), 14px)",
     priceRange: { min: 4200, max: 7000 },
     accentColor: "#7C6CF2",
-paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
+paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)",
+  gtmEvent: "theme_select_value_for_money",
   },
   {
     id: "photogenic",
@@ -47,7 +49,7 @@ paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
    gap: "clamp(8px, calc((10 / 393) * 100vw), 10px)",
     priceRange: { min: 7001, max: 12000 },
     accentColor: "#D4A93A",
-    
+     gtmEvent: "theme_select_photogenic_decoration",
   },
   {
     id: "stage",
@@ -59,6 +61,7 @@ paddingRight: "clamp(44px, calc((50 / 393) * 100vw), 61px)"
      gap: "clamp(-8px, calc((-8 / 393) * 100vw), -6px)",
     priceRange: { min: 12001, max: Infinity },
     accentColor: "#E8698A",
+       gtmEvent: "theme_select_stage_decoration",
   },
 ];
 
@@ -100,6 +103,15 @@ function ThemeCard({ theme, isActive, onSelect }) {
 
 export default function ThemeSelector({ onSelectTheme, selectedThemeId }) {
   const handleSelect = (theme) => {
+    // GTM push - deselect aur select dono cases handle
+    if (typeof window !== "undefined" && window.dataLayer) {
+      window.dataLayer.push({
+        event: selectedThemeId === theme.id ? "theme_deselect" : theme.gtmEvent,
+        theme_id: theme.id,
+        theme_label: theme.label,
+      });
+    }
+
     if (selectedThemeId === theme.id) {
       onSelectTheme?.(null);
     } else {

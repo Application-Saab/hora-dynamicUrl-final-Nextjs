@@ -13,16 +13,21 @@ export default function PhotographyConsultationSheet({
   if (!isOpen) return null;
 const PHONE = "7338584828";
  const openWhatsApp = () => {
-  // GTM Event
+  // ✅ GTM Event — event name popup ke title se banega (bina "?" ke, space safely normalized)
+  // e.g. "Need A Custom Decoration Popup Button Click", "Confused About Photography Packages Popup Button Click"
+  const cleanTitle = `${data?.title || ""} ${data?.highlightText || ""}`
+    .replace(/\?/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
-    event: "consultation_whatsapp_click",
+    event: `${cleanTitle} Popup Button Click`,
+    popup_title: cleanTitle,
     button_name: data?.buttonText,
-    popup_type: data?.highlightText,
   });
 
-  const message =
-    data?.whatsappMessage ;
+  const message = data?.whatsappMessage;
 
   const encoded = encodeURIComponent(message);
 
