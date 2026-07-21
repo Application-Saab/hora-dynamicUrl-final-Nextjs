@@ -30,19 +30,21 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* ✅ FIX: top se bottom tak fixed rahega (footer + safe-area tak),
-   ab calendar rows kam/zyada hone se beech me gap nahi banega */
+/* ✅ FIX: sheet ab content ke hisaab se height leta hai,
+   top fixed nahi — bottom se hi anchor hai, taaki calendar
+   compact rahe aur neeche khali gap na bane */
 .dsb-sheet {
   position: fixed;
   left: 0;
   right: 0;
-  top: 140px;
-  bottom: 74px; /* ✅ simple fixed value — koi calc()/env() parsing risk nahi */
+  bottom: 74px; /* footer ke upar */
+  top: auto;
   background: white;
   border-radius: 24px 24px 0 0;
   z-index: 1001;
   max-width: 600px;
   margin: auto;
+  max-height: calc(100vh - 74px - 20px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -51,7 +53,7 @@
 .dsb-header {
   position: relative;
   width: 100%;
-height: clamp(90px, calc((110 / 393) * 100vw), 110px);
+  height: clamp(90px, calc((110 / 393) * 100vw), 110px);
   overflow: hidden;
   margin: 0;
   flex-shrink: 0;
@@ -97,18 +99,17 @@ height: clamp(90px, calc((110 / 393) * 100vw), 110px);
   letter-spacing: 0;
 }
 
+/* ✅ FIX: flex:1 hataya — card ab apni natural/content height
+   leta hai, poore sheet tak stretch nahi hota */
 .dsb-calendar-card {
   background: #ffffff;
   border-radius: 20px;
   padding: 14px 16px;
   box-shadow: 0 4px 20px rgba(120, 90, 150, 0.1);
-    margin: 0px 16px 16px 16px;
+  margin: 0px 16px 16px 16px;
   border: 1.28px solid #0000001A;
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .dsb-month-nav {
@@ -162,21 +163,22 @@ height: clamp(90px, calc((110 / 393) * 100vw), 110px);
   text-align: center;
   text-transform: uppercase;
 }
+
+/* ✅ FIX: flex:1 aur align-content:center hataye — ab grid
+   apni natural height leta hai, rows top se start hote hain,
+   koi forced/centered gap nahi banta */
 .dsb-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(var(--total-rows, 6), auto); 
-  align-content: center;  
-  flex: 1;
-  min-height: 0;
-  row-gap: 8px; 
+  grid-template-rows: repeat(var(--total-rows, 6), auto);
+  row-gap: 14px;
 }
 
 .dsb-day-cell {
-  aspect-ratio: 1 / 1;     
+  aspect-ratio: 1 / 1;
   width: 100%;
-  height: auto;             
-  max-height: 44px;        
+  height: auto;
+  max-height: 44px;
 
   display: flex;
   align-items: center;
@@ -194,7 +196,7 @@ height: clamp(90px, calc((110 / 393) * 100vw), 110px);
   color: #2b2b2b;
 
   padding: 0;
-  margin: 0 auto;  
+  margin: 0 auto;
 }
 .dsb-day-selected {
   background: #97538C !important;
@@ -236,7 +238,7 @@ height: clamp(90px, calc((110 / 393) * 100vw), 110px);
   right: 0;
   bottom: 0;
   min-height: 74px;
-   padding-top: 0;
+  padding-top: 0;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: #EFECFB;
   border-top: 1px solid #ece6f3;
