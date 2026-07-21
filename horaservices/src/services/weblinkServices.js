@@ -1,10 +1,23 @@
 import { BASE_URL } from "../utils/apiconstants"
 import { MEDIA_WORKER_URL } from "../utils/apiconstants";
+import axios from "axios";
 
 // get images api function 
-export const getImagesbyFolderName = async ({ folderName, customerId }) => {
+export const getImagesbyFolderName = async ({ folderName, customerId, subFolderId, page = 1, limit = 24, }) => {
   try {
-    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`;
+
+    const params = new URLSearchParams({
+      folderName,
+      customerId,
+      page,
+      limit,
+    });
+
+    if (subFolderId) {
+      params.append("subFolderId", subFolderId);
+    }
+
+    const url = `${BASE_URL}/api/photo/thumbnailsWithinProject?${params.toString()}`;
 
     const response = await fetch(url);
 
@@ -79,7 +92,7 @@ export const assignToSubfolder = async ({
       throw new Error("Failed to assign to subfolder");
     }
 
-    return await res.json(); 
+    return await res.json();
   } catch (error) {
     console.error("assignToSubfolder error:", error);
     throw error;
@@ -91,9 +104,9 @@ export const trackActivity = async (mediaId, action) => {
   if (!mediaId) return;
   try {
     await fetch(`${BASE_URL}/api/internal/track-activity/${mediaId}`, {
-      method: "POST", 
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }), 
+      body: JSON.stringify({ action }),
     });
   } catch (error) {
     console.error(`Failed to track ${action}:`, error);
@@ -116,25 +129,25 @@ export const trackGalleryView = async (userId, mainFolderId) => {
 };
 
 // tracking folder click function 
-export const trackFolderClick = async (mainFolderId) => { 
-    try {
-      const response = await fetch(`${BASE_URL}/api/internal/track-click`, { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mainFolderId }),
-      });
+export const trackFolderClick = async (mainFolderId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/internal/track-click`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mainFolderId }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error in trackFolderClick service:", error);
-      throw error;
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in trackFolderClick service:", error);
+    throw error;
+  }
 };
 
 // track device type api
@@ -172,23 +185,31 @@ export const trackDevice = async ({
 
 
 // tracking share capsule click function 
-export const trackShareCapsuleClick = async (mainFolderId) => { 
-    try {
-      const response = await fetch(`${BASE_URL}/api/internal/track-capsule-share-click`, { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mainFolderId }),
-      });
+export const trackShareCapsuleClick = async (mainFolderId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/internal/track-capsule-share-click`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mainFolderId }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error in trackShareCapsuleClick service:", error);
-      throw error;
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in trackShareCapsuleClick service:", error);
+    throw error;
   }
+}
+
+//get subfolder api function 
+export const getSubFolders = async ({ folderName }) => {
+  const res = await axios.get(`${BASE_URL}/api/internal/getSubFolders`, {
+    params: { folderName },
+  });
+  return res.data;
+};

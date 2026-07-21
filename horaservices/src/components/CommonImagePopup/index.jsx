@@ -35,6 +35,8 @@ const CommonImagePopup = ({
   onClose,
   renderFooter,
   isEventWall = false,
+  totalImages = 0,
+  startIndexOffset = 0,
 }) => {
   const sliderSettings = {
     dots: false,
@@ -131,6 +133,8 @@ const CommonImagePopup = ({
 
   if (selectedIndex === null || !images[selectedIndex]) return null;
 
+  const displayIndex = startIndexOffset + (selectedIndex + 1);
+
   return (
     <div
       className="popupOverlay"
@@ -146,7 +150,7 @@ const CommonImagePopup = ({
               <Image src={Crossicon} alt="Close" width={18} height={18} />
             </button>
             <div className="image-index">
-              {`${imageNumber} / ${images.length}`}
+              {`${displayIndex} / ${totalImages ? totalImages : images.length}`}
             </div>
           </div>
 

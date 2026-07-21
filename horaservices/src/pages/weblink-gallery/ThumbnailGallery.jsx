@@ -19,7 +19,6 @@ import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/DeleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
-import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import refreshIcon from "../../assets/refreshIcon.svg";
@@ -30,10 +29,9 @@ import like from "../../assets/like.svg";
 import { createPendingUploadsDb } from "@/utils/pendingUploadsDb";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
-import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder } from "@/services/weblinkServices";
+import { assignToSubfolder, getImagesbyFolderName, trackActivity, trackGalleryView, trackFolderClick, trackDevice, createSubfolder, getSubFolders } from "@/services/weblinkServices";
 import { downloadFile } from "@/utils/downloadFile";
 import emptyFolder from '../../assets/emptyFolder.svg';
-import { filterThumbnails } from "@/utils/filterThumbnails";
 import PaginationControls from "./capsulePagination";
 import { IoIosCloudDone } from "react-icons/io";
 import Lock from '../../assets/Lock.svg'
@@ -88,7 +86,6 @@ const ThumbnailGallery = ({
   const [authChecked, setAuthChecked] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const prevLoginOpenRef = useRef(isLoginOpen);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [number, setNumber] = useState("");
   const [showAddToFolderPopup, setShowAddToFolderPopup] = useState(false);
@@ -105,6 +102,7 @@ const ThumbnailGallery = ({
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
+  const [startIndexOffset, setStartIndexOffset] = useState(0);
   console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const privateLocker = useMemo(
@@ -143,11 +141,19 @@ const ThumbnailGallery = ({
   const [deviceTracking, setDeviceTracking] = useState(null);
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
-const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [headerLoading, setHeaderLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
   });
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const observerRef = useRef(null);
+  const [totalPages2, setTotalPages] = useState(10);
+  const [totalImages, setTotalImages] = useState(0);
 
 
  const snackbarTimeout = useRef(null);
@@ -172,18 +178,37 @@ const showSnackbar = (message) => {
 
 
   // Mobile or Tablet Detection (including iOS devices, iPads, and Android)
+  // useEffect(() => {
+  //   const detectMobileOrTablet = () => {
+  //     if (typeof navigator !== 'undefined') {
+  //       const ua = navigator.userAgent;
+  //       const isTouch = navigator.maxTouchPoints > 0;
+  //       const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  //       const isIPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  //       return isMobileUA || isIPadOS || isTouch;
+  //     }
+  //     return false;
+  //   };
+  //   setIsMobileOrTablet(detectMobileOrTablet());
+  // }, []);
+
   useEffect(() => {
     const detectMobileOrTablet = () => {
       if (typeof navigator !== 'undefined') {
         const ua = navigator.userAgent;
-        const isTouch = navigator.maxTouchPoints > 0;
+
+        // Standard mobile & tablet User Agents
         const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-        const isIPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        return isMobileUA || isIPadOS || isTouch;
+
+        // iPadOS Desktop mode detection (MacIntel + multi-touch)
+        const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
+        return isMobileUA || isIPadOS;
       }
       return false;
     };
-    setIsMobileOrTablet(detectMobileOrTablet());
+
+    // setIsMobileOrTablet(detectMobileOrTablet());
   }, []);
 
   // Dynamic ITEMS_PER_PAGE (primarily for mobile/tablets due to pagination)
@@ -584,6 +609,31 @@ const showSnackbar = (message) => {
     selectedIndex !== null ? popupImages[selectedIndex] : null;
 
 
+  useEffect(() => {
+    const fetchFolders = async () => {
+      if (!folderName) return;
+
+      setHeaderLoading(true);
+
+      try {
+        const data = await getSubFolders({ folderName });
+
+        setSubFolders(data?.folder?.subFolders || []);
+        setMainFolderId(data.folder?._id || null);
+        setViewedBy(data?.folder?.viewedBy || []);
+        setGuestData(data?.guestDetails || []);
+        setDeviceTracking(data?.deviceTracking || []);
+        setShortCode(data?.shortCode || null)
+      } catch (err) {
+        console.error("Folder fetch error:", err);
+      } finally {
+        setHeaderLoading(false);
+      }
+    };
+
+    fetchFolders();
+  }, [folderName]);
+
   console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
   console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
 
@@ -602,51 +652,184 @@ const showSnackbar = (message) => {
     }
   }, [activeSubFolderId, allThumbnails]);
 
+
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+  }, [folderName, customerId, activeSubFolderId]);
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setIsFetchingMore(false);
+  }, [folderName, customerId, activeSubFolderId]);
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+    setIsFetchingMore(false);
+  }, [folderName, customerId, activeSubFolderId]);
+
+
+  useEffect(() => {
+    setPage(1);
+    setAllThumbnails([]);
+    setHasMore(true);
+  }, [activeSubFolderId, isEditing]);
+
+  useEffect(() => {
+    if (
+      selectedIndex === null ||
+      isFetchingMore ||
+      !hasMore ||
+      allThumbnails.length === 0
+    ) {
+      return;
+    }
+
+    if (selectedIndex >= allThumbnails.length - 4) {
+      setIsFetchingMore(true);
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [selectedIndex, allThumbnails.length, isFetchingMore, hasMore]);
+  
   useEffect(() => {
     const fetchThumbnails = async () => {
       if (!folderName || !customerId) {
-        setAllThumbnails([]); setLoading(false); setError("Folder name or customer ID is missing."); return;
+        setAllThumbnails([]);
+        setLoading(false);
+        setError("Folder name or customer ID is missing.");
+        return;
       }
-      setLoading(true); setError(null);
+
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setIsFetchingMore(true);
+      }
+      setError(null);
+
       try {
         const data = await getImagesbyFolderName({
           folderName,
           customerId,
+          subFolderId: activeSubFolderId ? activeSubFolderId : null,
+          page: page,
+          limit: ITEMS_PER_PAGE,
         });
-        setSubFolders(data?.folders[0]?.subFolders || []);
-        setMainFolderId(data?.folders[0]?._id || null)
-        setViewedBy(data?.folders[0]?.viewedBy || []);
-        setGuestData(data?.folders[0]?.guestDetails || []);
-        setDeviceTracking(data?.folders[0]?.deviceTracking || []);
-        setShortCode(data?.folders[0]?.shortCode || null)
-        const fetchedThumbnails = (data.thumbnails || [])
 
-          .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
-        setAllThumbnails(fetchedThumbnails);
+        const fetchedThumbnails = (data.thumbnails || []).map((thumb, index) => ({
+          ...thumb,
+          stableKey: thumb._id || `${page}-${index}`,
+        }));
+
+        setTotalImages(data?.pagination?.totalItems);
+        setTotalPages(data?.pagination?.totalPages);
+
+        setAllThumbnails((prev) => {
+          if (isMobileOrTablet && selectedIndex === null) {
+            return fetchedThumbnails;
+          }
+
+          const existingIds = new Set(prev.map((item) => item._id));
+          const newUniqueItems = fetchedThumbnails.filter(
+            (item) => !existingIds.has(item._id)
+          );
+
+          if (isMobileOrTablet && selectedIndex !== null) {
+            const combined = [...prev, ...newUniqueItems];
+            const MAX_IOS_ITEMS = ITEMS_PER_PAGE * 2;
+
+            if (combined.length > MAX_IOS_ITEMS) {
+              const overflowCount = combined.length - MAX_IOS_ITEMS;
+
+              setStartIndexOffset((prevOffset) => prevOffset + overflowCount);
+
+              setSelectedIndex((prevIndex) =>
+                prevIndex !== null ? Math.max(0, prevIndex - overflowCount) : null
+              );
+
+              return combined.slice(overflowCount);
+            }
+            return combined;
+          }
+
+          return [...prev, ...newUniqueItems];
+        });
+
+        if (fetchedThumbnails.length < ITEMS_PER_PAGE) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
       } catch (fetchError) {
-        console.error("Fetch thumbnails error:", fetchError); setError(fetchError.message);
-      } finally { setLoading(false); }
+        console.error("Fetch thumbnails error:", fetchError);
+        setError(fetchError.message);
+      } finally {
+        setLoading(false);
+        setIsFetchingMore(false);
+      }
     };
-    fetchThumbnails();
-  }, [folderName, customerId]);
 
-  // Adjust currentThumbnailsOnPage and totalPages based on isMobileOrTablet
-  const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+    fetchThumbnails();
+  }, [folderName, customerId, page, activeSubFolderId]);
+
+
+  useEffect(() => {
+    const currentObserver = observerRef.current;
+    if (!currentObserver) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+
+        const first = entries[0];
+        if (
+          !isMobileOrTablet &&
+          first.isIntersecting &&
+          hasMore &&
+          !loading &&
+          !isFetchingMore
+        ) {
+          setIsFetchingMore(true);
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        rootMargin: "400px",
+      }
+    );
+
+    observer.observe(currentObserver);
+    return () => {
+      if (currentObserver) {
+        observer.unobserve(currentObserver);
+      }
+      observer.disconnect();
+    };
+  }, [
+    hasMore,
+    loading,
+    isFetchingMore,
+    activeSubFolderId,
+    visibleThumbnails.length,
+  ]);
+
+  const { currentThumbnailsOnPage } = useMemo(() => {
     if (isMobileOrTablet) {
-      const total = Math.ceil(visibleThumbnails.length / ITEMS_PER_PAGE);
-      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-      const endIndex = startIndex + ITEMS_PER_PAGE;
-      const currentItems = visibleThumbnails.slice(startIndex, endIndex);
-      return { currentThumbnailsOnPage: currentItems, totalPages: total };
-    } else {
-      // Not iOS mobile: show all thumbnails, no pagination UI
-      return { currentThumbnailsOnPage: visibleThumbnails, totalPages: 1 };
+      return {
+        currentThumbnailsOnPage: visibleThumbnails,
+      };
     }
-  }, [visibleThumbnails, currentPage, ITEMS_PER_PAGE, isMobileOrTablet]);
+
+    return {
+      currentThumbnailsOnPage: visibleThumbnails,
+    };
+  }, [visibleThumbnails, isMobileOrTablet]);
 
   const handlePageChange = useCallback((pageNumber) => {
     setCurrentPage(pageNumber);
-    // Scroll to top of gallery header after a short delay to allow UI to update
+    setPage(pageNumber);
     setTimeout(() => {
       const galleryHeader = document.querySelector('.gallery-header');
       if (galleryHeader) {
@@ -657,6 +840,40 @@ const showSnackbar = (message) => {
     }, 100);
   }, []);
 
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      return;
+    }
+
+    if (
+      isFetchingMore ||
+      loading ||
+      !hasMore ||
+      !popupImages ||
+      popupImages.length === 0
+    ) {
+      return;
+    }
+
+    if (!isMobileOrTablet) {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY;
+
+      if (windowHeight + scrollTop >= documentHeight - 300) {
+        if (!isFetchingMore && hasMore) {
+          setPage((prev) => prev + 1);
+        }
+      }
+    }
+  }, [
+    selectedIndex,
+    loading,
+    isFetchingMore,
+    hasMore,
+    isMobileOrTablet,
+    popupImages
+  ]);
   useEffect(() => {
     const handleLoginChange = () => {
       const loggedIn = localStorage.getItem("isLoggedIn");
@@ -802,6 +1019,7 @@ const showSnackbar = (message) => {
 
   const closePopup = useCallback(() => {
     setSelectedIndex(null);
+    setStartIndexOffset(0);
   }, []);
 
   const handleSearchResults = (matches) => {
@@ -1105,13 +1323,7 @@ const showSnackbar = (message) => {
       </div>
     );
   }
-  if (allThumbnails.length === 0 && !loading) {
-    return (
-      <div className="thumbnail-gallery-status">
-        No photos found in this gallery.
-      </div>
-    );
-  }
+
   if (!authChecked) {
     return null;
   }
@@ -1439,7 +1651,7 @@ const handleAddToLocker = async (imgData) => {
     <div className="thumbnail-gallery">
 
       <div className="">
-        {loading ? (
+        {headerLoading ? (
           <HeaderCardsFlashLoader />
         ) : (
           <>
@@ -1672,9 +1884,9 @@ const handleAddToLocker = async (imgData) => {
 
           <div>
             {/* ================= LOADING SKELETON ================= */}
-            {loading && (
+            {loading && (isMobileOrTablet || page === 1) && (
               <div className="gallery-image-grid">
-                {[...Array(6)].map((_, index) => {
+                {[...Array(24)].map((_, index) => {
                   const type = getBlockType(index);
                   return (
                     <div key={index} className={`grid-item ${type}`}>
@@ -1741,7 +1953,7 @@ const handleAddToLocker = async (imgData) => {
                     isEventWall={false}
                     handleSelectImage={handleSelectImage}
                     handleImageClick={(indexOnPage) =>
-                      handleImageClick(pageOffset + index * 6 + indexOnPage)
+                      handleImageClick(index + index * 6 + indexOnPage)
                     }
                     isEditing={isEditing}
                     isSearchMode={isSearchMode}
@@ -1763,7 +1975,7 @@ const handleAddToLocker = async (imgData) => {
                   isEventWall={false}
                   handleSelectImage={handleSelectImage}
                   handleImageClick={(indexOnPage) =>
-                    handleImageClick(pageOffset + 18 + indexOnPage)
+                    handleImageClick(imageChunks.length + 18 + indexOnPage)
                   }
                   isEditing={isEditing}
                   isSearchMode={isSearchMode}
@@ -1772,6 +1984,25 @@ const handleAddToLocker = async (imgData) => {
                   selectedImages={selectedImages}
                   setSelectedImages={setSelectedImages}
                 />
+              )}
+
+              {/* ================= PAGINATION DUMMY GRID ================= */}
+              {!isMobileOrTablet && hasMore && page > 1 && isFetchingMore && (
+                <div className="gallery-image-grid">
+                  {[...Array(24)].map((_, index) => {
+                    const type = getBlockType(index);
+
+                    return (
+                      <div key={`dummy-${index}`} className={`grid-item ${type}`}>
+                        <div className="event-masonry-item">
+                          <div className="event-lazy-image-spinner-container placeholder-glow">
+                            <div className="placeholder w-100 h-100"></div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
@@ -1791,12 +2022,14 @@ const handleAddToLocker = async (imgData) => {
               </div>
             )}
 
+            <div ref={observerRef} style={{ height: "10px" }} />
+
             {/* Conditional Pagination Rendering */}
-            {isMobileOrTablet && totalPages > 1 && (
+            {isMobileOrTablet && totalPages2 > 1 && (
               <div className="">
                 <PaginationControls
                   currentPage={currentPage}
-                  totalPages={totalPages}
+                  totalPages={totalPages2}
                   onPageChange={handlePageChange}
                   inline={true} // Keep compact style
                 />
@@ -1821,6 +2054,8 @@ const handleAddToLocker = async (imgData) => {
 
       <CommonImagePopup
         images={popupImages}
+        totalImages={totalImages}
+        startIndexOffset={startIndexOffset} 
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
         onClose={closePopup}
