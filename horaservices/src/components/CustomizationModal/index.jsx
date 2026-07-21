@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import "./CustomizationModal.css";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
@@ -36,15 +36,38 @@ const customizationItems = [
 
 const CustomizationModal = ({ open, onClose, image, whatsappNumber = "917338584828",  product,catValue, }) => {
  useLockBodyScroll(open);
-
+ useEffect(() => {
+    if (open && product) {
+      if (typeof window !== "undefined") {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "Grid_customization_modal_open",
+          product_name: product?.name || "",
+          product_price: product?.discountedPrice || product?.price || "",
+          category: catValue || "",
+        });
+      }
+    }
+  }, [open, product, catValue]);
   if (!open) return null;
 
 const handleConsultation = () => {
-  if (!product) return;
+    if (!product) return;
 
-  const pageUrl = window.location.href;
+    // GTM push - WhatsApp CTA click
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "Grid_customization_whatsapp_click",
+        product_name: product?.name || "",
+        product_price: product?.discountedPrice || product?.price || "",
+        category: catValue || "",
+      });
+    }
 
-  const message = `🎈 *Looking for a Custom Decoration?*
+    const pageUrl = window.location.href;
+
+    const message = `🎈 *Looking for a Custom Decoration?*
 
 Our support team is ready to help.
 
@@ -68,11 +91,34 @@ I would like to customize this decoration. Please assist me. 😊`;
   );
 };
 
+// GTM push - Grid Customization Item Click
+const handleGridItemClick = (item) => {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: `Grid ${item?.title || ""} Click`,
+        item_title: item?.title || "",
+        product_name: product?.name || "",
+        category: catValue || "",
+      });
+    }
+};
+
   return (
     <div className="customModalOverlay" onClick={onClose}>
       <div className="customModalCard" onClick={(e) => e.stopPropagation()}>
-     <button className="pcs-close" onClick={onClose}>✕</button>
-
+    <button
+  className="pcs-close"
+  onClick={() => {
+    if (typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "Grid_customization_modal_close" });
+    }
+    onClose();
+  }}
+>
+  ✕
+</button>
         <div className="customModalBody">
           <div className="customModalHeading">
           <Image
@@ -86,7 +132,11 @@ I would like to customize this decoration. Please assist me. 😊`;
 
           <div className="customModalList">
             {customizationItems.map((item, idx) => (
-              <div className="customModalItem" key={idx}>
+              <div
+                className="customModalItem"
+                key={idx}
+                onClick={() => handleGridItemClick(item)}
+              >
                 <div className="customModalIcon">
   <Image
     src={item.icon}
