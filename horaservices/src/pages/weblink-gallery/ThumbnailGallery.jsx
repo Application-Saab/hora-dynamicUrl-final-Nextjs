@@ -208,7 +208,7 @@ const showSnackbar = (message) => {
       return false;
     };
 
-    // setIsMobileOrTablet(detectMobileOrTablet());
+    setIsMobileOrTablet(detectMobileOrTablet());
   }, []);
 
   // Dynamic ITEMS_PER_PAGE (primarily for mobile/tablets due to pagination)
