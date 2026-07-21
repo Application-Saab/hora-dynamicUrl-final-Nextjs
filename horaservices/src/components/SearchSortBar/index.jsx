@@ -16,6 +16,13 @@ const sortOptions = [
   { id: "highToLow", label: "Price: High To Low" },
 ];
 
+// ---- Typewriter placeholder ke liye tuning values ----
+const TYPE_SPEED = 90;          // har character type hone ki speed (ms)
+const DELETE_SPEED = 45;        // har character delete hone ki speed (ms)
+const PAUSE_AFTER_TYPE = 1300;  // word poora type hone ke baad kitni der ruke (ms)
+const PAUSE_AFTER_DELETE = 300; // word poora delete hone ke baad next word se pehle pause (ms)
+const DEFAULT_PLACEHOLDER = "Search Themes";
+
 function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
   // Sort sheet open hote hi background scroll lock ho jayega
   useLockBodyScroll(isOpen);
@@ -63,6 +70,7 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
     document.body
   );
 }
+
 function SearchDropdown({
   query,
   searchCategoryList,
@@ -225,14 +233,66 @@ export default function SearchSortBar({
   const [query, setQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState(DEFAULT_PLACEHOLDER);
+  const [isFocused, setIsFocused] = useState(false); // input focus/blur track karne ke liye
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
 
-const queryRef = useRef(query);
+  const queryRef = useRef(query);
   useEffect(() => {
     queryRef.current = query;
   }, [query]);
+
+  // ---- Typewriter placeholder words (searchCategoryList ke labels se) ----
+  const typewriterWords = useMemo(() => {
+    const words = (searchCategoryList || [])
+      .map((c) => c.label?.trim())
+      .filter(Boolean);
+    return words.length ? words : [DEFAULT_PLACEHOLDER];
+  }, [searchCategoryList]);
+
+ useEffect(() => {
+    if (query.trim().length > 0 || isFocused) {
+     return;
+    }
+
+    let wordIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let timeoutId;
+
+    const tick = () => {
+      const currentWord = typewriterWords[wordIdx % typewriterWords.length];
+
+      if (!isDeleting) {
+        charIdx++;
+        setPlaceholderText(currentWord.slice(0, charIdx));
+
+        if (charIdx === currentWord.length) {
+          isDeleting = true;
+          timeoutId = setTimeout(tick, PAUSE_AFTER_TYPE);
+          return;
+        }
+        timeoutId = setTimeout(tick, TYPE_SPEED);
+      } else {
+        charIdx--;
+        setPlaceholderText(currentWord.slice(0, charIdx));
+
+        if (charIdx === 0) {
+          isDeleting = false;
+          wordIdx++;
+          timeoutId = setTimeout(tick, PAUSE_AFTER_DELETE);
+          return;
+        }
+        timeoutId = setTimeout(tick, DELETE_SPEED);
+      }
+    };
+
+    timeoutId = setTimeout(tick, 400);
+
+    return () => clearTimeout(timeoutId);
+  }, [typewriterWords, query, isFocused]);
 
   // Fixed-on-scroll behavior (unchanged) ...
   useEffect(() => {
@@ -259,7 +319,7 @@ const queryRef = useRef(query);
     };
   }, []);
 
- const commitSearch = useCallback(() => {
+  const commitSearch = useCallback(() => {
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
     trackSearch({ searchTerm: trimmed, userId });
@@ -305,13 +365,13 @@ const queryRef = useRef(query);
     setIsSortOpen(false);
   };
 
- const handleQueryChange = (e) => {
+  const handleQueryChange = (e) => {
     const value = e.target.value;
     setQuery(value);
     setIsDropdownOpen(value.trim().length > 0);
   };
 
- const handleInputKeyDown = (e) => {
+  const handleInputKeyDown = (e) => {
     if (e.key === "Enter") {
       commitSearch();
       setIsDropdownOpen(false);
@@ -319,19 +379,19 @@ const queryRef = useRef(query);
     }
   };
 
-const handleCategoryClick = (cat) => {
-  trackSearch({
-    searchTerm: query,
-    clickedItemId: null, 
-    clickedTitle: cat.label,
-    clickedType: "category",
-    userId,
-  });
-  setIsDropdownOpen(false);
-  setQuery("");
-  onSearchChange?.("");
-  onCategorySelect?.(cat);
-};
+  const handleCategoryClick = (cat) => {
+    trackSearch({
+      searchTerm: query,
+      clickedItemId: null,
+      clickedTitle: cat.label,
+      clickedType: "category",
+      userId,
+    });
+    setIsDropdownOpen(false);
+    setQuery("");
+    onSearchChange?.("");
+    onCategorySelect?.(cat);
+  };
 
   const handleProductClick = (product) => {
     trackSearch({
@@ -359,12 +419,17 @@ const handleCategoryClick = (cat) => {
           <Search className="search-icons" strokeWidth={2.25} />
           <input
             type="text"
-            placeholder="Search Themes"
+            placeholder={placeholderText}
             className="search-input"
             value={query}
             onChange={handleQueryChange}
             onKeyDown={handleInputKeyDown}
-            onFocus={() => query.trim().length > 0 && setIsDropdownOpen(true)}
+            onFocus={() => {
+              setIsFocused(true); // focus hote hi animation ruk jayega
+              setPlaceholderText(""); // aur placeholder turant blank ho jayega
+              if (query.trim().length > 0) setIsDropdownOpen(true);
+            }}
+            onBlur={() => setIsFocused(false)} // blur hote hi wapas chalu ho jayega
           />
         </div>
 
@@ -404,4 +469,5 @@ const handleCategoryClick = (cat) => {
     </div>
   );
 }
+
 export { sortOptions };
