@@ -4,10 +4,11 @@ import confirmOrder from "../../assets/confirmOrder.png";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const Success = () => {
 const router = useRouter();
-const [mobileNumber, setMobileNumber] = useState(() => localStorage.getItem("mobileNumber") || '');
+const [mobileNumber, setMobileNumber] = useState(() => safeGetItem("mobileNumber") || '');
   const contactUsRedirection = async () => {
     try {
       window.open(

@@ -10,6 +10,7 @@ import TemplateGrid from "@/components/wonderland/TemplatesGrid";
 import UploadCustomTemplate from "@/components/wonderland/UploadCustomTemplate";
 import { INVITE_CATEGORIES } from "@/utils/constants";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem, safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
 
 const TemplatesPage = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const TemplatesPage = () => {
       return;
     }
 
-    const stored = sessionStorage.getItem("activeTemplateCategory");
+    const stored = safeGetSessionItem("activeTemplateCategory");
 
     if (stored) {
       setActiveCategory(stored);
@@ -36,16 +37,16 @@ const TemplatesPage = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    sessionStorage.setItem("activeTemplateCategory", activeCategory);
+    safeSetSessionItem("activeTemplateCategory", activeCategory);
   }, [activeCategory]);
 
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined" ? safeGetItem("userID") : null;
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    typeof window !== "undefined" ? safeGetItem("token") : null;
 
   useEffect(() => {
-    const cached = sessionStorage.getItem("allTemplates");
+    const cached = safeGetSessionItem("allTemplates");
 
     if (cached) {
       setTemplates(JSON.parse(cached));
@@ -61,7 +62,7 @@ const TemplatesPage = () => {
         if (data.error) throw new Error();
 
         setTemplates(data.templates || []);
-        sessionStorage.setItem(
+        safeSetSessionItem(
           "allTemplates",
           JSON.stringify(data.templates || []),
         );

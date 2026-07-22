@@ -12,6 +12,7 @@ import HomeContent from "@/components/HomeContent";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 export default function Home() {
   const router = useRouter();
@@ -22,7 +23,6 @@ export default function Home() {
   useEffect(() => {
     const checkPaymentStatus = async (transactionId) => {
       try {
-        const storedUserID = await localStorage.getItem("userID");
         const apiUrl = BASE_URL + PAYMENT_STATUS + "/" + transactionId;
 
         const response = await axiosApi.post(
@@ -41,7 +41,7 @@ export default function Home() {
           if (message === "PAYMENT_SUCCESS") {
             const url = BASE_URL + UPDATE_ORDER_STATUS;
 
-            const token = await localStorage.getItem("token");
+            const token =  safeGetItem("token");
 
             const requestData = {
               status: 1,

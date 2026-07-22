@@ -23,6 +23,7 @@ import Ratingsection from "../RatingSection";
 import PhotographyShareBanner from "../PhotographyMyOrderEventcapsule";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -120,7 +121,7 @@ const OrderDetailTab = ({
 
   const cancelOrder = async () => {
     try {
-      const token = await localStorage.getItem("token");
+      const token = safeGetItem("token");
 
       const response = await fetchWithError(BASE_URL + ORDER_CANCEL, {
         method: "POST",

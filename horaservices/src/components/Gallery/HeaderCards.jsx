@@ -17,6 +17,7 @@ import LockerFolderIcon from "../../assets/my_locker_folder_icon.svg";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "../wonderland/common/login/LoginModal";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const HeaderCards = ({
   folderName,
@@ -66,8 +67,8 @@ const HeaderCards = ({
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
-  const localUserId = localStorage.getItem("userID");
-  const localPhoneNumber = localStorage.getItem("mobileNumber")
+  const localUserId = safeGetItem("userID");
+  const localPhoneNumber = safeGetItem("mobileNumber")
 
   /* ================= DERIVED ================= */
   const myPhotosFolder = useMemo(

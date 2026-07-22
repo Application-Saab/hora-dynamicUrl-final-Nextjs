@@ -17,6 +17,7 @@ import useApi from "@/hooks/useApi";
 import EmojiPickerButtonNotes from "@/components/EmojiPicker/EmojiPickerNotes";
 import { saveFileToOPFS } from "@/utils/eventWallHelpers";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 export default function NoteDetails() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function NoteDetails() {
 
   const { makeRequest: createPost } = useApi();
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined" ? safeGetItem("userID") : null;
 
   // ----------- Load Note ------------
   useEffect(() => {

@@ -10,6 +10,7 @@ import {
 import { sortRooms } from "./ChatProvider";
 import useApi from "./useApi";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const ChatContext = createContext(null);
 
@@ -18,7 +19,7 @@ export function ChatProvider({ children }) {
   const [unreadCounts, setUnreadCountsContext] = useState({});
   const [totalUnread, setGlobalTotalUnread] = useState(0);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    (typeof window !== "undefined" && localStorage.getItem("userID")) || ""
+    (typeof window !== "undefined" && safeGetItem("userID")) || ""
   );
   const { makeRequest: fetchRoomsRequest, loading: roomsFetchLoading, isFetched: roomsDataFetched } = useApi();
 
@@ -52,7 +53,7 @@ export function ChatProvider({ children }) {
   // Listen local storage changes for login state
   useEffect(() => {
     const syncLoginState = () => {
-      setLoggedinUserId(localStorage.getItem("userID") || "");
+      setLoggedinUserId(safeGetItem("userID") || "");
     };
 
     window.addEventListener("storage", syncLoginState);
@@ -73,7 +74,7 @@ export function ChatProvider({ children }) {
   useEffect(() => {
     if (loggedinUserId) return;
     const id =
-      localStorage.getItem("userID") ||
+      safeGetItem("userID") ||
       new URLSearchParams(window.location.search).get("id");
     if (id) setLoggedinUserId(id);
   }, []);

@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "https://horaservices.com";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
@@ -60,7 +60,7 @@ export const CREATE_EVENT_SUBFOLDER = "/api/customer/event/create-event-subfolde
 export const ASSIGN_TO_EVENT_SUBFOLDER = "/api/customer/event/assign-to-subfolder";
 export const DELETE_EVENT_POST = "/api/customer/event/delete-post";
 export const GET_GUEST_DETTAILS = "/api/customer/event/event-guest";
-export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/ll";
+export const GET_ALL_EVENTS_BY_USERID = "/api/customer/event/event-invites/all";
 export const GET_USER_BY_ID = "/api/user/user-details";
 export const GET_USER_BY_PHONE = "/api/user/user-details-by-phone";
 export const UPDATE_USER_BY_ID = "/api/user/user-details";

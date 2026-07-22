@@ -3,6 +3,7 @@
 import { createPendingUploadsDb } from "./pendingUploadsDb";
 import { fetchWithError } from "./fetchWithError";
 import axiosApi from "./axiosApi";
+import { safeGetItem } from "./safeStorage";
 const { BASE_URL, MEDIA_WORKER_URL } = require("./apiconstants");
 
 // 3 Second Video Clip Generator
@@ -62,7 +63,7 @@ export async function create3SecClip(videoFile) {
 
 // Presigned URL
 export const getPresignedUrl = async (file, userId, eventId, folderName) => {
-  let token = localStorage.getItem("token");
+  let token = safeGetItem("token");
   const res = await fetchWithError(`${BASE_URL}/api/customer/event/get-presigned-url`, {
     method: "POST",
     headers: {
@@ -188,7 +189,7 @@ export async function uploadMedia(
   formData.append("postType", postType);
   formData.append("folder", folderName);
 
-  const token = localStorage.getItem("token");
+  const token = safeGetItem("token");
 
   const res = await axiosApi.post(
     `${MEDIA_WORKER_URL}/event/upload-event-media/${eventId}`,

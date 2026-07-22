@@ -19,6 +19,7 @@ import { saveTemplate } from "@/utils/indexedDB";
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const TEMPLATE_ASSETS_BASE = TEMPLATE_ASSESTS_URL_BASE;
 
@@ -141,9 +142,9 @@ const DynamicTemplateRenderer = () => {
   const frompanel = searchParams.get("frompanel")
 
   // const loadUserId = () =>
-  //   typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+  //   typeof window !== "undefined" ?  safeGetItem("userID") : null;
   const loadToken = () =>
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    typeof window !== "undefined" ? safeGetItem("token") : null;
 
   // const userId = loadUserId();
   const token = loadToken();

@@ -14,15 +14,16 @@ import ReviewSlider from "@/components/ReviewSection";
 import CitySelector from "@/components/Venue/CitySelector";
 import "./venue/venue.css";
 import { venueReviews } from "@/utils/veneureviews";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const venuelandMainPage = () => {
   const router = useRouter();
 
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
+    safeGetItem("isLoggedIn") === "true"
   );
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || ""
+    safeGetItem("userID") || ""
   );
   const [showHostLoginModal, setShowHostLoginModal] = useState(false);
   const [activeEvent, setActiveEvent] = useState("Birthday");
@@ -38,16 +39,16 @@ useEffect(() => {
 
   if (queryCity) {
     setSelectedCity(queryCity);
-    localStorage.setItem("selectedCity", queryCity); // ✅ sessionStorage → localStorage
+    safeSetItem("selectedCity", queryCity); // ✅ sessionStorage → localStorage
   } else {
-    const savedCity = localStorage.getItem("selectedCity") || ""; // ✅ sessionStorage → localStorage
+    const savedCity = safeGetItem("selectedCity") || ""; // ✅ sessionStorage → localStorage
     setSelectedCity(savedCity);
   }
 }, [router.isReady, router.query.city]);
 
  useEffect(() => {
-  const alreadyShown = localStorage.getItem("cityModalShown"); // ✅ sessionStorage → localStorage
-  const savedCity = localStorage.getItem("selectedCity"); // ✅ sessionStorage → localStorage
+  const alreadyShown = safeGetItem("cityModalShown"); // ✅ sessionStorage → localStorage
+  const savedCity = safeGetItem("selectedCity"); // ✅ sessionStorage → localStorage
 
   if (!alreadyShown && !savedCity) {
     const timer = setTimeout(() => {
@@ -65,8 +66,8 @@ useEffect(() => {
   setSelectedCity(selected);
   setShowCityModal(false);
 
-  localStorage.setItem("cityModalShown", "true"); // ✅ sessionStorage → localStorage
-  localStorage.setItem("selectedCity", selected); // ✅ sessionStorage → localStorage
+  safeSetItem("cityModalShown", "true"); // ✅ sessionStorage → localStorage
+  safeSetItem("selectedCity", selected); // ✅ sessionStorage → localStorage
 
   const newQuery = { ...router.query };
 
@@ -98,8 +99,8 @@ useEffect(() => {
 
   useEffect(() => {
     const syncLoginState = () => {
-      setIsUserLoggedIn(localStorage.getItem("isLoggedIn") === "true");
-      setLoggedinUserId(localStorage.getItem("userID") || "");
+      setIsUserLoggedIn(safeGetItem("isLoggedIn") === "true");
+      setLoggedinUserId(safeGetItem("userID") || "");
     };
     window.addEventListener("storage", syncLoginState);
     window.addEventListener("loginStateChange", syncLoginState);

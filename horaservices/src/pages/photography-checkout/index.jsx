@@ -27,6 +27,7 @@ import UrgentBookingModal from '@/components/UrgentBookingModal';
 import {contactUsRedirect} from '@/components/CheckoutWhatsAppSummary';
 import { formatDate } from "../../utils/formateDate";
 import axiosApi from '@/utils/axiosApi';
+import { safeGetItem } from '@/utils/safeStorage';
 
 const Checkout = () => {
   const router = useRouter();
@@ -70,7 +71,7 @@ let category =
   const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
-  const phoneNumber = localStorage.getItem("mobileNumber");
+  const phoneNumber = safeGetItem("mobileNumber");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [sendInclusion, setSendInclusion] = useState(false);
@@ -118,7 +119,7 @@ let category =
 
   useEffect(() => {
     // Check localStorage or a cookie for login status, or call an API
-    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+    const loggedInStatus = safeGetItem('isLoggedIn') === 'true'; // Check login status
     setIsLoggedIn(loggedInStatus); // Update state based on login status
     if (!loggedInStatus) {
       setIsModalOpen(true); // Open modal if not logged in
@@ -241,7 +242,7 @@ const validateDateTime = (combinedDate) => {
     try {
       const url = BASE_URL + SAVE_LOCATION_ENDPOINT;
       // Retrieve userID from localStorage
-      let userId = localStorage.getItem("userID");
+      let userId = safeGetItem("userID");
       if (!userId) {
         console.error('Error retrieving userID');
         return;
@@ -254,7 +255,7 @@ const validateDateTime = (combinedDate) => {
         city: city,
         userId: userId
       };
-      const token = localStorage.getItem('token');
+      const token = safeGetItem('token');
       const response = await axiosApi.post(url, requestData, {
         headers: {
           'Content-Type': 'application/json',
@@ -307,12 +308,12 @@ const balanceAmount = totalAmount - advanceAmount;
     setCombinedDateTimeError(false);
   }
     const apiUrl = BASE_URL + PAYMENT;
-    const storedUserID = await localStorage.getItem('userID');
-    // const phoneNumber = await localStorage.getItem('mobileNumber')
+    const storedUserID = await safeGetItem('userID');
+    // const phoneNumber = await safeGetItem('mobileNumber')
     let merchantTransactionId;
     try {
       const addressID = await saveAddress();
-      const storedUserID = await localStorage.getItem('userID');
+      const storedUserID = await safeGetItem('userID');
      
 
 
@@ -345,7 +346,7 @@ const balanceAmount = totalAmount - advanceAmount;
         "decoration_comments": getFinalComment(),
         "status": 0
       }
-      const token = await localStorage.getItem('token');
+      const token = await safeGetItem('token');
       const response = await axiosApi.post(url, requestData, {
         headers: {
           'Content-Type': 'application/json',

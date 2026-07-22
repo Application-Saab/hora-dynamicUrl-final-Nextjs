@@ -18,6 +18,7 @@ import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from '../../components/OtpLoginPopup';
 import {formatDate} from "../../utils/formateDate";
 import axiosApi from '@/utils/axiosApi';
+import { safeGetItem } from '@/utils/safeStorage';
 
 const FoodDeliveryCheckout = () => {
 
@@ -50,7 +51,7 @@ const FoodDeliveryCheckout = () => {
 
   useEffect(() => {
       // Check localStorage or a cookie for login status, or call an API
-      const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+      const loggedInStatus = safeGetItem('isLoggedIn') === 'true'; // Check login status
       setIsLoggedIn(loggedInStatus); // Update state based on login status
       if (!loggedInStatus) {
         setIsModalOpen(true); // Open modal if not logged in
@@ -445,7 +446,7 @@ const FoodDeliveryCheckout = () => {
             const url = BASE_URL + SAVE_LOCATION_ENDPOINT;
 
             // Retrieve userID from localStorage
-            let userId = localStorage.getItem("userID");
+            let userId = safeGetItem("userID");
 
             if (!userId) {
                 console.error('Error retrieving userID');
@@ -461,7 +462,7 @@ const FoodDeliveryCheckout = () => {
                 userId: userId
             };
 
-            const token = localStorage.getItem('token');
+            const token = safeGetItem('token');
 
             const response = await axiosApi.post(url, requestData, {
                 headers: {
@@ -484,8 +485,8 @@ const FoodDeliveryCheckout = () => {
     const onContinueClick = async () => {
         setLoading(true)
         const apiUrl = BASE_URL + PAYMENT;
-        const storedUserID = await localStorage.getItem('userID');
-        const phoneNumber = await localStorage.getItem('mobileNumber')
+        const storedUserID = await safeGetItem('userID');
+        const phoneNumber = await safeGetItem('mobileNumber')
         let merchantTransactionId;
         const advance = calculateAdvancePayment();
         const total = calculateFinalTotal();
@@ -493,7 +494,7 @@ const FoodDeliveryCheckout = () => {
         // console.log(selectedTimeSlot);
         try {
             const addressID = await saveAddress();
-            const storedUserID = await localStorage.getItem('userID');
+            const storedUserID = await safeGetItem('userID');
             const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
             const requestData = {
                 "toId": "",
@@ -523,7 +524,7 @@ const FoodDeliveryCheckout = () => {
             : ""
             }
 
-            const token = await localStorage.getItem('token');
+            const token = await safeGetItem('token');
 
             const response = await axiosApi.post(url, requestData, {
                 headers: {

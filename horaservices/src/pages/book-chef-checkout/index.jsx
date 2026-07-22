@@ -24,6 +24,7 @@ import { pincodes }  from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
 import {formatDate} from "../../utils/formateDate"
 import axiosApi from '@/utils/axiosApi';
+import { safeGetItem } from '@/utils/safeStorage';
 
 const ChefCheckout = () => {
     //   let { peopleCount, orderType, selectedDishDictionary, selectedDishPrice, selectedCount , selectedDishes } = useLocation().state || {}; // Accessing subCategory and itemName safely
@@ -65,7 +66,7 @@ const dishBasePrice = Number(selectedDishPrice) || 0;
 
     useEffect(() => {
         // Check localStorage or a cookie for login status, or call an API
-        const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true'; // Check login status
+        const loggedInStatus = safeGetItem('isLoggedIn') === 'true'; // Check login status
         setIsLoggedIn(loggedInStatus); // Update state based on login status
         if (!loggedInStatus) {
           setIsModalOpen(true); // Open modal if not logged in
@@ -283,7 +284,7 @@ const contactUsRedirection = () => {
         try {
             const url = BASE_URL + SAVE_LOCATION_ENDPOINT;
             // Retrieve userID from localStorage
-            let userId = localStorage.getItem("userID");
+            let userId = safeGetItem("userID");
             if (!userId) {
                 console.error('Error retrieving userID');
                 return;
@@ -296,7 +297,7 @@ const contactUsRedirection = () => {
                 city: city,
                 userId: userId
             };
-            const token = localStorage.getItem('token');
+            const token = safeGetItem('token');
             const response = await axiosApi.post(url, requestData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -315,12 +316,12 @@ const contactUsRedirection = () => {
     const onContinueClick = async () => {
         setLoading(true);
         const apiUrl = BASE_URL + PAYMENT;
-        const storedUserID = await localStorage.getItem('userID');
-        const phoneNumber = await localStorage.getItem('mobileNumber')
+        const storedUserID = safeGetItem('userID');
+        const phoneNumber = safeGetItem('mobileNumber')
         let merchantTransactionId;
         try {
             const addressID = await saveAddress();
-            const storedUserID = await localStorage.getItem('userID');
+            const storedUserID = safeGetItem('userID');
             const advanceAmount = Math.round(totalPrice * 0.35);
             const balanceAmount = totalPrice - advanceAmount;
             const url = BASE_URL + CONFIRM_ORDER_ENDPOINT;
@@ -349,7 +350,7 @@ const contactUsRedirection = () => {
                 "status": 0
             }
             alert(JSON.stringify(requestData));
-            const token = await localStorage.getItem('token');
+            const token = safeGetItem('token');
             const response = await axiosApi.post(url, requestData, {
                 headers: {
                     'Content-Type': 'application/json',

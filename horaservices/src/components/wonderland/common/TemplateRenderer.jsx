@@ -9,6 +9,7 @@ import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useChatStore } from "@/hooks/ChatContext";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -27,8 +28,7 @@ const TemplateRenderer = ({
   const { width } = useScreenSize();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [templateSizeClass, setTemplateSizeClass] = useState("");
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = safeGetItem("token") : null;
   const { refetchChatRooms } = useChatStore();
   const videoRef = useRef(null);
   const [hasPlayedOnce, setHasPlayedOnce] = useState(false);

@@ -18,6 +18,7 @@ import faqData from '../../../../../../utils/faqData.json'
 import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 // Skeleton Loader Component
 const SkeletonLoader = () => {
@@ -322,7 +323,7 @@ function DecorationCatDetails() {
       totalAmount: totalAmount,
     };
 
-    if (localStorage.getItem("isLoggedIn") !== "true") {
+    if (safeGetItem("isLoggedIn") !== "true") {
       router.push({
         pathname: '/login',
         query: {

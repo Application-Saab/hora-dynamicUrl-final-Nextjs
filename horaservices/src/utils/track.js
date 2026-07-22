@@ -1,5 +1,6 @@
 import { BASE_URL } from "@/utils/apiconstants";
 import axiosApi from "./axiosApi";
+import { safeSetItem } from "./safeStorage";
 
 const VISITOR_ID_KEY = "VISITOR_ID";
 
@@ -9,7 +10,7 @@ export function getVisitorId() {
   let id = localStorage.getItem(VISITOR_ID_KEY);
   if (!id) {
     id = crypto.randomUUID();
-    localStorage.setItem(VISITOR_ID_KEY, id);
+    safeSetItem(VISITOR_ID_KEY, id);
   }
   return id;
 }

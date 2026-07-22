@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "@/utils/apiconstants";
 import { reportError } from "@/utils/errorReporter";   // ← Import yahan add karo
+import { safeGetItem } from "@/utils/safeStorage";
 
 // Axios instance setup
 const api = axios.create({
@@ -11,7 +12,7 @@ const api = axios.create({
 // Add token interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = safeGetItem("token");
     if (token) config.headers.Authorization = `${token}`;
     return config;
   },

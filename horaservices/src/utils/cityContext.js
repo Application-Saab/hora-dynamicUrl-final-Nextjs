@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import cityNameToSlug from "@/utils/cityNameToSlug";
 import { BASE_URL } from "./apiconstants";
 import { fetchWithError } from "./fetchWithError";
+import { safeGetItem, safeSetItem } from "./safeStorage";
 
 const CityContext = createContext({
   selectedCitySlug: "",
@@ -69,10 +70,10 @@ const stripAllCitySegments = (path) => {
 // isi key ko reuse karo, alag "visitorId" key mat banao warna do sources of truth ban jayenge
 const getOrCreateVisitorId = () => {
   if (typeof window === "undefined") return "";
-  let visitorId = localStorage.getItem("VISITOR_ID");
+  let visitorId = safeGetItem("VISITOR_ID");
   if (!visitorId) {
     visitorId = crypto.randomUUID();
-    localStorage.setItem("VISITOR_ID", visitorId);
+    safeSetItem("VISITOR_ID", visitorId);
   }
   return visitorId;
 };
@@ -80,7 +81,7 @@ const getOrCreateVisitorId = () => {
 // ✅ City select hote hi DB me save — fire-and-forget, UI block nahi hoga
 const saveCityToServer = async (cityName) => {
   try {
-    const userId = localStorage.getItem("userID") || "";
+    const userId = safeGetItem("userID") || "";
     const visitorId = getOrCreateVisitorId();
 
     await fetchWithError(`${BASE_URL}/api/event-dates/user-city`, {
@@ -99,7 +100,7 @@ const saveCityToServer = async (cityName) => {
 // hisaab se neeche "data?.cityName" wali line adjust kar lena
 const fetchCityFromServer = async () => {
   try {
-    const userId = localStorage.getItem("userID") || "";
+    const userId = safeGetItem("userID") || "";
     const visitorId = getOrCreateVisitorId();
 
     // dono na hon to DB me record milne ka koi chance nahi — call hi mat karo
@@ -199,12 +200,12 @@ const isCityAllowedRoute =
       }
 
       setSelectedCitySlug(citySlugFromUrl);
-      localStorage.setItem("selectedCity", citySlugFromUrl);
+      safeSetItem("selectedCity", citySlugFromUrl);
       setShowCityModal(false);
       return;
     }
 
-    const savedSlug = localStorage.getItem("selectedCity");
+    const savedSlug = safeGetItem("selectedCity");
     if (savedSlug) {
       setSelectedCitySlug(savedSlug);
       setShowCityModal(false);
@@ -220,7 +221,7 @@ const isCityAllowedRoute =
 
       if (cityName) {
         const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
-        localStorage.setItem("selectedCity", slug);
+        safeSetItem("selectedCity", slug);
         setSelectedCitySlug(slug);
         setShowCityModal(false);
       } else {
@@ -249,7 +250,7 @@ const isCityAllowedRoute =
 
     const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
 
-    localStorage.setItem("selectedCity", slug);
+    safeSetItem("selectedCity", slug);
     setSelectedCitySlug(slug);
 
     // ✅ localStorage ke saath-saath DB me bhi city save karo (fire-and-forget)

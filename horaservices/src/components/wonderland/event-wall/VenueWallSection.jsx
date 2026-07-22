@@ -56,6 +56,7 @@ import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 const VenueWallSection = ({
   userData,
   rsvpSubmitted,
@@ -69,9 +70,8 @@ const VenueWallSection = ({
   const { makeRequest: getAllPosts } = useApi();
   const { makeRequest: getAllLikes } = useApi();
   const { makeRequest: getEventInvite } = useApi();
-  const userId = localStorage.getItem("userID") || userData?._id;
+  const userId = safeGetItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
-  console.log('%c [ allImages ]', 'font-size:13px; background:pink; color:#bf2c9f;', allImages)
   const imagesRef = useRef([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -101,7 +101,7 @@ const VenueWallSection = ({
   const [initialPopupFolders, setInitialPopupFolders] = useState([]);
   const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
   const [localPhoneNumber, setLocalPhoneNumber] = useState(
-    localStorage.getItem("mobileNumber") || "",
+      safeGetItem("mobileNumber") || "",
   );
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});

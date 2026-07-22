@@ -56,6 +56,7 @@ import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem, safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -368,7 +369,7 @@ const showSnackbar = (message) => {
   };
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn");
+    const loggedIn = safeGetItem("isLoggedIn");
 
     if (loggedIn === "true") {
       setIsLogin(true);
@@ -381,8 +382,8 @@ const showSnackbar = (message) => {
   }, []);
 
   useEffect(() => {
-    const mobileNumber = localStorage.getItem("mobileNumber");
-    const userId = localStorage.getItem("userID");
+    const mobileNumber = safeGetItem("mobileNumber");
+    const userId = safeGetItem("userID");
     setLocalPhoneNumber(mobileNumber);
     setLocalUserId(userId);
   }, []);
@@ -443,7 +444,7 @@ const showSnackbar = (message) => {
       }
 
       const exitPopupShown =
-        sessionStorage.getItem("exitPopupShown") === "true";
+        safeGetSessionItem("exitPopupShown") === "true";
 
       if (exitPopupShown) {
         window.history.back();
@@ -473,7 +474,7 @@ const showSnackbar = (message) => {
 
   const closeExitPopup = () => {
     setShowExitPopup(false);
-    sessionStorage.setItem("exitPopupShown", "true");
+    safeSetSessionItem("exitPopupShown", "true");
   };
 
 
@@ -488,7 +489,7 @@ const showSnackbar = (message) => {
 
     const currentGuest = {
       _id: localUserId,
-      name: localStorage.getItem("userName") || "",
+      name: safeGetItem("userName") || "",
       phone: localPhoneNumber || "",
       avatar: "",
     };
@@ -660,8 +661,8 @@ const showSnackbar = (message) => {
 
   useEffect(() => {
     const handleLoginChange = () => {
-      const loggedIn = localStorage.getItem("isLoggedIn");
-      const userId = localStorage.getItem("userID");
+      const loggedIn = safeGetItem("isLoggedIn");
+      const userId = safeGetItem("userID");
 
       if (loggedIn === "true" && userId) {
         setIsLogin(true);
@@ -723,7 +724,7 @@ const showSnackbar = (message) => {
 
   const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
 
-  if (sessionStorage.getItem(sessionKey)) return;
+  if (safeGetSessionItem(sessionKey)) return;
 
     const getDeviceType = () => {
     if (typeof navigator !== 'undefined') {
@@ -742,7 +743,7 @@ const showSnackbar = (message) => {
     deviceType: getDeviceType(),
   })
     .then(() => {
-      sessionStorage.setItem(sessionKey, "true");
+      safeSetSessionItem(sessionKey, "true");
     })
     .catch((err) => {
       console.error("Device tracking failed:", err);
@@ -752,13 +753,13 @@ const showSnackbar = (message) => {
   useEffect(() => {
     const logClick = async () => {
       const sessionKey = `tracked_folder_${mainFolderId}`;
-      const alreadyTracked = sessionStorage.getItem(sessionKey);
+      const alreadyTracked = safeGetSessionItem(sessionKey);
 
       if (!alreadyTracked && mainFolderId) {
         try {
           await trackFolderClick(mainFolderId);
 
-          sessionStorage.setItem(sessionKey, "true");
+          safeSetSessionItem(sessionKey, "true");
 
           console.log("Click tracked and session flag set!");
         } catch (err) {

@@ -12,6 +12,7 @@ import OtpLoginPopup from '../../components/OtpLoginPopup';
 import './orderlist.css';
 import Head from "next/head";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 // order.type is 2 for chef
 // order.type is 1 for decoration
@@ -32,7 +33,7 @@ const Orderlist = () => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const isLoggedIn = safeGetItem("isLoggedIn");
   useEffect(() => {
     const checkAuth = () => {
 
@@ -47,7 +48,7 @@ const Orderlist = () => {
     const fetchOrderList = async () => {
       try {
         setLoading(true);
-        const userId = await localStorage.getItem("userID");
+        const userId = await safeGetItem("userID");
         const response = await fetchWithError(BASE_URL + ORDERLIST_ENDPOINT, {
           method: "POST",
           headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -149,7 +150,7 @@ const Orderlist = () => {
   const getOrderId = (e) => {
     const orderId1 = 10800 + e;
     const updateOrderId = "#" + orderId1;
-    localStorage.setItem("orderId", updateOrderId);
+    safeSetItem("orderId", updateOrderId);
     return updateOrderId;
   };
 

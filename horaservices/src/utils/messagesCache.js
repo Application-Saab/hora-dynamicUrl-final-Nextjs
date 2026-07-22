@@ -2,6 +2,8 @@
 // Survives page reloads and client-side navigation.
 // Each room's messages expire after TTL_MS to ensure freshness.
 
+import { safeGetItem, safeSetItem } from "./safeStorage";
+
 const CACHE_VERSION = "v1";
 const TTL_MS = 10 * 24 * 60 * 60 * 1000; // 10 days
 const MAX_MESSAGES = 300; // limit per room to control storage size
@@ -11,7 +13,7 @@ const storageKey = (groupId) => `hora_chat_${CACHE_VERSION}_${String(groupId)}`;
 export const getCachedMessages = (groupId) => {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(storageKey(groupId));
+    const raw = safeGetItem(storageKey(groupId));
     if (!raw) return null;
     const { data, ts } = JSON.parse(raw);
     if (Date.now() - ts > TTL_MS) {
@@ -31,7 +33,7 @@ export const setCachedMessages = (groupId, messages) => {
     const toStore = messages.length > MAX_MESSAGES
       ? messages.slice(-MAX_MESSAGES)
       : messages;
-    localStorage.setItem(
+    safeSetItem(
       storageKey(groupId),
       JSON.stringify({ data: toStore, ts: Date.now() })
     );
@@ -53,7 +55,7 @@ const roomKey = (groupId) => `hora_room_v1_${String(groupId)}`;
 export const getCachedRoomDetails = (groupId) => {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(roomKey(groupId));
+    const raw = safeGetItem(roomKey(groupId));
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -63,6 +65,6 @@ export const getCachedRoomDetails = (groupId) => {
 export const setCachedRoomDetails = (groupId, details) => {
   if (typeof window === "undefined" || !details) return;
   try {
-    localStorage.setItem(roomKey(groupId), JSON.stringify(details));
+    safeSetItem(roomKey(groupId), JSON.stringify(details));
   } catch {}
 };

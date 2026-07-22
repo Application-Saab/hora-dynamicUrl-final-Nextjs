@@ -16,11 +16,12 @@ import ChatProviderMain from "@/hooks/ChatProvider";
 import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
-import { getVisitorId, getDeviceInfo  , getBrowserInfo} from "@/utils/analytics";
+import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 import { safeGetItem } from "@/utils/safeStorage";
 import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorReporter";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -29,6 +30,13 @@ function MyApp({ Component, pageProps }) {
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
   );
+
+  // ================= GLOBAL ERROR HANDLERS =================
+  useEffect(() => {
+    setupGlobalErrorHandlers();
+    startMemoryMonitoring()
+  }, []);
+
   // ================= BLOCK KEYS + CONTEXT MENU =================
   useEffect(() => {
     const blockContextMenu = (e) => {
@@ -75,7 +83,6 @@ function MyApp({ Component, pageProps }) {
     };
   }, []);
 
-
   // useEffect(() => {
   //   const visitorId = getVisitorId();
   //   console.log('visitor id' , visitorId);
@@ -85,7 +92,7 @@ function MyApp({ Component, pageProps }) {
   //       visitorId,
   //       device,
   //       os,
-  //       browser, 
+  //       browser,
   //       page: window.location.pathname, // 👈 include page path
   //     }))
 
@@ -97,12 +104,12 @@ function MyApp({ Component, pageProps }) {
   //       visitorId,
   //       device,
   //       os,
-  //       browser, 
+  //       browser,
   //       page: window.location.pathname, // 👈 include page path
   //     }),
   //   });
   // }, []);
-  
+
   const requestPermission = async () => {
     try {
       if ("Notification" in window && "serviceWorker" in navigator) {
@@ -221,7 +228,7 @@ function MyApp({ Component, pageProps }) {
             <ChatProvider>
               <ChatProviderMain>
                 <PageLayout>
-                 <ErrorBoundary componentName="RootApp">
+                  <ErrorBoundary componentName="RootApp">
                     <Component {...pageProps} />
                   </ErrorBoundary>
 
@@ -233,14 +240,14 @@ function MyApp({ Component, pageProps }) {
                       style={{ display: "none", visibility: "hidden" }}
                     ></iframe>
                   </noscript>
-{pathname !== "/weblink-gallery" && (
-                  <div className="whatsapp-container">
-                    <WhatsAppIcon router={router} />
-                  </div>
+                  {pathname !== "/weblink-gallery" && (
+                    <div className="whatsapp-container">
+                      <WhatsAppIcon router={router} />
+                    </div>
                   )}
                   <div>
-                    <VisitorTracker/>
-                  </div> 
+                    <VisitorTracker />
+                  </div>
                 </PageLayout>
               </ChatProviderMain>
             </ChatProvider>

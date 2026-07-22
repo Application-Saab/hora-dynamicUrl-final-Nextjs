@@ -1,3 +1,5 @@
+import { safeGetItem, safeSetItem } from "./safeStorage";
+
 const MAX_EVENTS = 10;
 const EXPIRY_TIME = 12 * 60 * 60 * 1000; // 12 hours
 
@@ -11,7 +13,7 @@ const eventCache = {}; // in-memory cache (fastest)
 //   eventCache[eventId] = { posts, timestamp: now };
 
 //   // Store in localStorage
-//   localStorage.setItem(
+//   safeSetItem(
 //     "event_cache_" + eventId,
 //     JSON.stringify({ posts, timestamp: now })
 //   );
@@ -30,7 +32,7 @@ export async function cacheEvent(eventId, posts) {
   eventCache[eventId] = { posts: limitedPosts, timestamp: now };
 
   // Store in localStorage
-  localStorage.setItem(
+  safeSetItem(
     "event_cache_" + eventId,
     JSON.stringify({ posts: limitedPosts, timestamp: now })
   );
@@ -41,7 +43,7 @@ export async function cacheEvent(eventId, posts) {
 
 /** Get event cache if valid */
 export function getCachedEvent(eventId) {
-  const data = localStorage.getItem("event_cache_" + eventId);
+  const data = safeGetItem("event_cache_" + eventId);
   if (!data) return null;
 
   const parsed = JSON.parse(data);
@@ -66,7 +68,7 @@ function cleanupOldEvents() {
 
   let all = keys.map((k) => ({
     key: k,
-    timestamp: JSON.parse(localStorage.getItem(k)).timestamp,
+    timestamp: JSON.parse(safeGetItem(k)).timestamp,
   }));
 
   // sort by oldest first

@@ -14,14 +14,15 @@ import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import LogoutModal from "@/utils/LogoutModal";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showOtpLogin, setShowOtpLogin] = useState(false);
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined" ? safeGetItem("userID") : null;
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    typeof window !== "undefined" ? safeGetItem("token") : null;
   const [showEditName, setShowEditName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -80,7 +81,7 @@ const AccountPage = () => {
         setEditLoading(false);
         alert("Something went wrong. Please try again.");
       } else {
-        localStorage.setItem("wonderLandUserName", editedName);
+        safeSetItem("wonderLandUserName", editedName);
         setEditLoading(false);
         refetchUser();
         setShowEditName(false);

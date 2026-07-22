@@ -12,6 +12,7 @@ import captureIcon from "@/assets/captureIcon.svg";
 import selfieCapture from "@/assets/selfieCapture.png";
 import { BASE_URL, CREATE_EVENT_SUBFOLDER, FACE_FINDER_URL } from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const S3_FOLDER_NAME = "event-invites";
 
@@ -31,12 +32,11 @@ export default function VenueWallHeaderTabs({
   setShowCreateFolderPopup: setShowCreateFolderPopupProp,
   venueImageUrl,
 }) {
-  console.log('%c [ subFolders ]', 'font-size:13px; background:pink; color:#bf2c9f;', subFolders)
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
-  const localUserId = localStorage.getItem("userID");
+  const localUserId = safeGetItem("userID");
 
   const [showCreateFolderPopupLocal, setShowCreateFolderPopupLocal] =
     useState(false);

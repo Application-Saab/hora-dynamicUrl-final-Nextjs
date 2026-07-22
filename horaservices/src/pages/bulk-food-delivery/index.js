@@ -19,6 +19,7 @@ import { sendGTMEvent  } from '@next/third-parties/google';
 
 import '../../app/homepage.css'
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 // remove later
 // import homepage_entertainment1 from '../assets/homepage_entertainment1.png';
 // import homepage_entertainment2 from '../assets/homepage_entertainment2.png';
@@ -56,7 +57,7 @@ return () => {
 useEffect(() => {
 const checkPaymentStatus = async (transactionId) => {
   try {
-    const storedUserID = await localStorage.getItem("userID");
+    const storedUserID = safeGetItem("userID");
     const apiUrl = BASE_URL + PAYMENT_STATUS + "/" + transactionId;
 
     const response = await axiosApi.post(
@@ -75,7 +76,7 @@ const checkPaymentStatus = async (transactionId) => {
       if (message === "PAYMENT_SUCCESS") {
         const url = BASE_URL + UPDATE_ORDER_STATUS;
 
-        const token = await localStorage.getItem("token");
+        const token = safeGetItem("token");
 
         const requestData = {
           status: 1,

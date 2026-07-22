@@ -19,6 +19,7 @@ import Tabs from '../../../../../../components/Tabs';
 import addOnProductsData from '../../../../../../utils/addOnProduct.json';
 import DecorationCatDetails from "@/pages/balloon-decoration/[catValue]/product/[productName]";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration/..." -> "hyderabad"
 function getCitySlugFromPath(pathname) {
@@ -362,7 +363,7 @@ function DecorationCatCityDetails() {
       totalAmount: totalAmount,
     };
 
-    if (localStorage.getItem("isLoggedIn") !== "true") {
+    if (safeGetItem("isLoggedIn") !== "true") {
       router.push({
         pathname: '/login',
         query: {

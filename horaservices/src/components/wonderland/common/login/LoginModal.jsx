@@ -13,6 +13,7 @@ import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import axiosApi from "@/utils/axiosApi";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const LoginModal = ({
   isOpen,
@@ -59,7 +60,7 @@ const LoginModal = ({
   useEffect(() => {
     if (!isOpen || !onlyOTP) return;
 
-    const storedPhone = localStorage.getItem("mobileNumber");
+    const storedPhone = safeGetItem("mobileNumber");
 
     if (!storedPhone) return;
 
@@ -356,10 +357,10 @@ const LoginModal = ({
           if (verifyResponse.status === 200) {
             const { token, data } = verifyResponse;
 
-            localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("mobileNumber", phone);
-            localStorage.setItem("token", token);
-            localStorage.setItem("userID", data?._id);
+            safeSetItem("isLoggedIn", "true");
+            safeSetItem("mobileNumber", phone);
+            safeSetItem("token", token);
+            safeSetItem("userID", data?._id);
 
             if (fromCapsule) {
               sendWelcomeMessage(phone, link);
@@ -530,11 +531,11 @@ const LoginModal = ({
 
       if (response.status === 200) {
         const { token, data } = response;
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("mobileNumber", phone);
-        localStorage.setItem("token", token);
-        localStorage.setItem("userID", data?._id);
-        localStorage.setItem("userName", data?.name);
+        safeSetItem("isLoggedIn", "true");
+        safeSetItem("mobileNumber", phone);
+        safeSetItem("token", token);
+        safeSetItem("userID", data?._id);
+        safeSetItem("userName", data?.name);
 
         if (fromCapsule) {
           sendWelcomeMessage(phone, link);

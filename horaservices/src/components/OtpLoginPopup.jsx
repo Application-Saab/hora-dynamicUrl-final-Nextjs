@@ -15,6 +15,7 @@ import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
 import axiosApi from "@/utils/axiosApi";
+import { safeSetItem } from "@/utils/safeStorage";
 
 const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false, extraVerifyData = {} }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -199,10 +200,10 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
       );
 
       if (res.data.status === API_SUCCESS_CODE) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("mobileNumber", mobileNumber);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userID", res.data.data._id);
+        safeSetItem("isLoggedIn", "true");
+        safeSetItem("mobileNumber", mobileNumber);
+        safeSetItem("token", res.data.token);
+        safeSetItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
 
         window.dispatchEvent(new Event("loginStateChange"));
