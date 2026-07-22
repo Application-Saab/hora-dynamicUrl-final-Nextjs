@@ -15,7 +15,7 @@ import BabyShower from "@/assets/photographyCategories/photography8.webp";
 import Bachelorette from "@/assets/photographyCategories/photography7.webp";
 import Maternity from "@/assets/photographyCategories/photography11.webp";
 import NewBorn from "@/assets/photographyCategories/photography12.webp"; 
-
+import { useSelector } from "react-redux";
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
@@ -27,6 +27,7 @@ import { SeoCategory } from "@/utils/photoGraphyHead";
 import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
+import EventDateBanner from "@/components/Eventdatebanner";
 
 
 const getDiscountedPrice = (price = 0) => {
@@ -109,6 +110,7 @@ const categoryToGallery = {
 export default function CatValuePage() {
   const router = useRouter();
   const { catValue } = router.query;
+  const { userId } = useSelector((state) => state.auth || {});
 
   const [catId, setCatId] = useState(null);
   const [products, setProducts] = useState([]);
@@ -287,6 +289,7 @@ const restText = words.slice(8).join(' ');
   </div>
 </div>
        </div>
+       <EventDateBanner userId={userId} />
           {products.length > 0 ? (
             <ProductGrid
               data={products}
