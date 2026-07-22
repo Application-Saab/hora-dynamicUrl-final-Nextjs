@@ -25,20 +25,18 @@ const cities = [
 ];
 
 const CitySelector = ({ onSelect }) => {
-  // ✅ jab tak ye component mounted hai (yaani popup open hai),
-  // background scroll lock rahega aur exact position par pin rahega
+
   useLockBodyScroll(true);
 
   const handleClick = (cityName) => {
-    if (cityName === "Others") {
-      window.location.href = "https://horaservices.com/";
-      return;
-    }
+
     onSelect(cityName);
   };
 
+
+
   return (
-    <div className="city-overlay">
+    <div className="city-overlay" >
       <div className="city-modal">
         <h2 className="city-title">SELECT CITY</h2>
         <div className="city-grid">

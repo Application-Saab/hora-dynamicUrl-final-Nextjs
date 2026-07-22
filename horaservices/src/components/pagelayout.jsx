@@ -63,7 +63,7 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const [idsReady, setIdsReady] = useState(false);
-  const { showCityModal, selectCity, isCityDisabledRoute } = useCity();
+ const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
   const { setDateResolved } = useDateGate();
 
   const [showDateSheet, setShowDateSheet] = useState(false);
@@ -235,7 +235,9 @@ const LayoutInner = ({ children }) => {
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
 
-        {showCityModal && !isCityDisabledRoute && <CitySelector onSelect={selectCity} />}
+       {showCityModal && !isCityDisabledRoute && (
+      <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
+        )}
 
         {isDateSheetAllowedPath && showDateSheet && (
           <DateSelectionBottomSheet
