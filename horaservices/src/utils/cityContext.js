@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef, } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import cityNameToSlug from "@/utils/cityNameToSlug";
 import { BASE_URL } from "./apiconstants";
@@ -17,25 +17,15 @@ const CityContext = createContext({
   selectCity: () => {
     console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
   },
-
   dismissCityModal: () => {
-    console.warn(
-      "useCity() called outside <CityProvider> — wrap this component in CityProvider."
-    );
+    console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
   },
 });
-
 
 const NOT_SELECTED = "NOT_SELECTED";
 const CITY_LIST = [...new Set(Object.values(cityNameToSlug))];
 
-
-
-const CITY_PATH_REGEX = new RegExp(
-  `^/(${CITY_LIST.join("|")})(?=/|$)`,
-  "i"
-);
-
+const CITY_PATH_REGEX = new RegExp(`^/(${CITY_LIST.join("|")})(?=/|$)`, "i");
 
 const slugToCityName = {
   delhi: "Delhi",
@@ -55,31 +45,27 @@ const slugToCityName = {
   bhopal: "Bhopal",
   goa: "Goa",
   pune: "Pune",
-
-
   others: "Others",
 };
 
-
+// Only these routes are allowed to carry the city segment in the URL.
+// Every other route should have the city stripped out.
 const CITY_ALLOWED_ROUTES = [
   "/balloon-decoration",
   "/photography-page",
   "/book-chef-cook-for-party",
   "/party-food-delivery-live-catering-buffet/party-food-delivery",
   "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
-    "/venue-list",
+  "/venue-list",
   "/photo-gallery",
 ];
 
-
 const stripAllCitySegments = (path) => {
   let result = path || "/";
-
   let match;
 
   while ((match = result.match(CITY_PATH_REGEX))) {
     result = result.slice(match[0].length);
-
     if (!result.startsWith("/")) {
       result = "/" + result;
     }
@@ -88,130 +74,87 @@ const stripAllCitySegments = (path) => {
   return result;
 };
 
+// Given a path with the city segment already stripped out, decide whether
+// this route is allowed to have a city segment in its URL at all.
+const isRouteCityAllowed = (strippedPath) => {
+  const p = strippedPath || "/";
+
+  return (
+    p === "/" ||
+    CITY_ALLOWED_ROUTES.some((route) => {
+      if (p.startsWith(route)) return true;
+
+      const localityPrefixed = new RegExp(`^/[^/]+${route}(?:/|$)`);
+      return localityPrefixed.test(p);
+    })
+  );
+};
 
 const getOrCreateVisitorId = () => {
-  if (typeof window === "undefined") {
-    return "";
-  }
+  if (typeof window === "undefined") return "";
 
   let visitorId = localStorage.getItem("VISITOR_ID");
-
   if (!visitorId) {
     visitorId = crypto.randomUUID();
-
-    localStorage.setItem(
-      "VISITOR_ID",
-      visitorId
-    );
+    localStorage.setItem("VISITOR_ID", visitorId);
   }
 
   return visitorId;
 };
 
-
-
 const saveCityToServer = async (cityName) => {
   try {
-    const userId =
-      localStorage.getItem("userID") || "";
+    const userId = localStorage.getItem("userID") || "";
+    const visitorId = getOrCreateVisitorId();
 
-    const visitorId =
-      getOrCreateVisitorId();
-
-    await fetch(
-      `${BASE_URL}/api/event-dates/user-city`,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          userId,
-          visitorId,
-          cityName,
-        }),
-      }
-    );
+    await fetch(`${BASE_URL}/api/event-dates/user-city`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,
+        visitorId,
+        cityName,
+      }),
+    });
   } catch (err) {
-
-    console.error(
-      "Failed to save city to server:",
-      err
-    );
+    console.error("Failed to save city to server:", err);
   }
 };
 
-
 const fetchCityFromServer = async () => {
   try {
-    const userId =
-      localStorage.getItem("userID") || "";
-
-    const visitorId =
-      getOrCreateVisitorId();
+    const userId = localStorage.getItem("userID") || "";
+    const visitorId = getOrCreateVisitorId();
 
     if (!userId && !visitorId) {
       return null;
     }
 
-    const params =
-      new URLSearchParams();
+    const params = new URLSearchParams();
+    if (userId) params.append("userId", userId);
+    if (visitorId) params.append("visitorId", visitorId);
 
-    if (userId) {
-      params.append(
-        "userId",
-        userId
-      );
-    }
-
-    if (visitorId) {
-      params.append(
-        "visitorId",
-        visitorId
-      );
-    }
-
-    const res = await fetch(
-      `${BASE_URL}/api/event-dates/user-city?${params.toString()}`
-    );
+    const res = await fetch(`${BASE_URL}/api/event-dates/user-city?${params.toString()}`);
 
     if (!res.ok) {
       return null;
     }
 
     const data = await res.json();
-
-
     return data?.cityName || null;
   } catch (err) {
-    console.error(
-      "Failed to fetch city from server:",
-      err
-    );
-
+    console.error("Failed to fetch city from server:", err);
     return null;
   }
 };
 
+export const CityProvider = ({ children }) => {
+  const nextPathname = usePathname();
+  const router = useRouter();
 
-export const CityProvider = ({
-  children,
-}) => {
-  const nextPathname =
-    usePathname();
-
-  const router =
-    useRouter();
-
-
-  const [
-    pathname,
-    setPathname,
-  ] = useState(
-    nextPathname || "/"
-  );
+  const [pathname, setPathname] = useState(nextPathname || "/");
 
   useEffect(() => {
     if (nextPathname) {
@@ -219,517 +162,226 @@ export const CityProvider = ({
     }
   }, [nextPathname]);
 
-
-
   useEffect(() => {
     const onPopState = () => {
-      setPathname(
-        window.location.pathname
-      );
+      setPathname(window.location.pathname);
     };
 
-    window.addEventListener(
-      "popstate",
-      onPopState
-    );
-
+    window.addEventListener("popstate", onPopState);
     return () => {
-      window.removeEventListener(
-        "popstate",
-        onPopState
-      );
+      window.removeEventListener("popstate", onPopState);
     };
   }, []);
 
-
   const setUrlSilently = useCallback(
-    (
-      newPath,
-      {
-        replace = false,
-      } = {}
-    ) => {
-      const navigate =
-        replace
-          ? router.replace
-          : router.push;
+    (newPath, { replace = false } = {}) => {
+      const navigate = replace ? router.replace : router.push;
 
-      navigate(
-        newPath || "/",
-        {
-          scroll: false,
-        }
-      );
-
-      setPathname(
-        newPath || "/"
-      );
+      navigate(newPath || "/", { scroll: false });
+      setPathname(newPath || "/");
 
       window.dispatchEvent(
-        new CustomEvent(
-          "city:changed",
-          {
-            detail: {
-              path: newPath,
-            },
-          }
-        )
+        new CustomEvent("city:changed", {
+          detail: { path: newPath },
+        })
       );
     },
     [router]
   );
 
+  const [selectedCitySlug, setSelectedCitySlug] = useState("");
+  const [showCityModal, setShowCityModal] = useState(false);
 
-  const [
-    selectedCitySlug,
-    setSelectedCitySlug,
-  ] = useState("");
-
-  const [
-    showCityModal,
-    setShowCityModal,
-  ] = useState(false);
-
-
-  const dbCityPromiseRef =
-    useRef(null);
-
-  const dbCityResolvedRef =
-    useRef(undefined);
-
+  const dbCityPromiseRef = useRef(null);
+  const dbCityResolvedRef = useRef(undefined);
 
   useEffect(() => {
-    dbCityPromiseRef.current =
-      fetchCityFromServer().then(
-        (cityName) => {
-          dbCityResolvedRef.current =
-            cityName || null;
-
-          return cityName;
-        }
-      );
+    dbCityPromiseRef.current = fetchCityFromServer().then((cityName) => {
+      dbCityResolvedRef.current = cityName || null;
+      return cityName;
+    });
   }, []);
 
-  const pathWithoutCity =
-    stripAllCitySegments(
-      pathname || "/"
-    );
+  const pathWithoutCity = stripAllCitySegments(pathname || "/");
+  const isCityAllowedRoute = isRouteCityAllowed(pathWithoutCity);
+  const isCityDisabledRoute = !isCityAllowedRoute;
+  const isPillHiddenRoute = !isCityAllowedRoute;
 
-  const isCityAllowedRoute =
-    pathWithoutCity === "/" ||
-    CITY_ALLOWED_ROUTES.some(
-      (route) => {
+  // When we already know the city (from localStorage or the DB) but the
+  // current URL doesn't have it yet — e.g. on first load / refresh — push
+  // it into the URL, as long as this route is allowed to carry a city.
+  const injectCityIntoUrlIfAllowed = useCallback(
+    (slug) => {
+      if (!slug || slug === NOT_SELECTED) return;
 
-        if (
-          pathWithoutCity.startsWith(
-            route
-          )
-        ) {
-          return true;
-        }
+      const stripped = stripAllCitySegments(pathname || "/");
+      if (!isRouteCityAllowed(stripped)) return;
 
-
-
-        const localityPrefixed =
-          new RegExp(
-            `^/[^/]+${route}(?:/|$)`
-          );
-
-        return localityPrefixed.test(
-          pathWithoutCity
-        );
+      const newPath = `/${slug}${stripped === "/" ? "" : stripped}`;
+      if (newPath !== (pathname || "/")) {
+        setUrlSilently(newPath, { replace: true });
       }
-    );
-
-  const isCityDisabledRoute =
-    !isCityAllowedRoute;
-
-  const isPillHiddenRoute =
-    !isCityAllowedRoute;
-
+    },
+    [pathname, setUrlSilently]
+  );
 
   useEffect(() => {
     if (!pathname) {
       return;
     }
 
+    const match = pathname.match(CITY_PATH_REGEX);
 
-    const match =
-      pathname.match(
-        CITY_PATH_REGEX
+    if (match && match[1]) {
+      const citySlugFromUrl = match[1].toLowerCase();
+      const restAfterFirstCity = pathname.slice(match[0].length);
+
+      const cleanedRest = stripAllCitySegments(
+        restAfterFirstCity.startsWith("/") ? restAfterFirstCity : "/" + restAfterFirstCity
       );
 
-    if (
-      match &&
-      match[1]
-    ) {
-      const citySlugFromUrl =
-        match[1].toLowerCase();
+      const isStacked = restAfterFirstCity !== cleanedRest;
+      const routeAllowsCity = isRouteCityAllowed(cleanedRest);
 
-      const restAfterFirstCity =
-        pathname.slice(
-          match[0].length
-        );
-
-      const cleanedRest =
-        stripAllCitySegments(
-          restAfterFirstCity.startsWith(
-            "/"
-          )
-            ? restAfterFirstCity
-            : "/" +
-            restAfterFirstCity
-        );
-
-      const isStacked =
-        restAfterFirstCity !==
-        cleanedRest;
-
-
-
-      if (isStacked) {
-        const canonicalPath =
-          `/${citySlugFromUrl}${cleanedRest === "/"
-            ? ""
-            : cleanedRest
-          }`;
-
-        setUrlSilently(
-          canonicalPath ||
-          "/",
-          {
-            replace: true,
-          }
-        );
+      if (!routeAllowsCity) {
+        // This route isn't in CITY_ALLOWED_ROUTES — city should not live in the URL here.
+        setUrlSilently(cleanedRest || "/", { replace: true });
+      } else if (isStacked) {
+        const canonicalPath = `/${citySlugFromUrl}${cleanedRest === "/" ? "" : cleanedRest}`;
+        setUrlSilently(canonicalPath || "/", { replace: true });
       }
 
-
-
-      localStorage.setItem(
-        "selectedCity",
-        citySlugFromUrl
-      );
-
-      setSelectedCitySlug(
-        citySlugFromUrl
-      );
-
-      setShowCityModal(
-        false
-      );
+      // Keep the city remembered regardless of route, so it reappears in the
+      // URL as soon as the user is back on an allowed route.
+      localStorage.setItem("selectedCity", citySlugFromUrl);
+      setSelectedCitySlug(citySlugFromUrl);
+      setShowCityModal(false);
 
       return;
     }
 
+    const savedSlug = localStorage.getItem("selectedCity");
 
-
-    const savedSlug =
-      localStorage.getItem(
-        "selectedCity"
-      );
-
-
-
-    if (
-      savedSlug &&
-      savedSlug !== NOT_SELECTED
-    ) {
-      setSelectedCitySlug(
-        savedSlug
-      );
-
-      setShowCityModal(
-        false
-      );
-
+    if (savedSlug && savedSlug !== NOT_SELECTED) {
+      setSelectedCitySlug(savedSlug);
+      setShowCityModal(false);
+      injectCityIntoUrlIfAllowed(savedSlug);
       return;
     }
-
 
     let cancelled = false;
 
-    const resolveCity =
-      async () => {
-        const cityName =
-          await (
-            dbCityPromiseRef.current ||
-            fetchCityFromServer()
-          );
+    const resolveCity = async () => {
+      const cityName = await (dbCityPromiseRef.current || fetchCityFromServer());
 
-        if (cancelled) {
-          return;
-        }
+      if (cancelled) {
+        return;
+      }
 
+      if (cityName && cityName !== NOT_SELECTED) {
+        const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
 
+        localStorage.setItem("selectedCity", slug);
+        setSelectedCitySlug(slug);
+        setShowCityModal(false);
+        dbCityResolvedRef.current = cityName;
+        injectCityIntoUrlIfAllowed(slug);
 
-        if (
-          cityName &&
-          cityName !== NOT_SELECTED
-        ) {
-          const slug =
-            cityNameToSlug[
-            cityName
-            ] ||
-            cityName.toLowerCase();
+        return;
+      }
 
-          localStorage.setItem(
-            "selectedCity",
-            slug
-          );
+      localStorage.setItem("selectedCity", NOT_SELECTED);
+      setSelectedCitySlug(NOT_SELECTED);
+      dbCityResolvedRef.current = NOT_SELECTED;
 
-          setSelectedCitySlug(
-            slug
-          );
+      await saveCityToServer(NOT_SELECTED);
 
-          setShowCityModal(
-            false
-          );
+      if (cancelled) {
+        return;
+      }
 
-          dbCityResolvedRef.current =
-            cityName;
-
-          return;
-        }
-
-
-
-        localStorage.setItem(
-          "selectedCity",
-          NOT_SELECTED
-        );
-
-        setSelectedCitySlug(
-          NOT_SELECTED
-        );
-
-        dbCityResolvedRef.current =
-          NOT_SELECTED;
-
-
-
-        await saveCityToServer(
-          NOT_SELECTED
-        );
-
-        if (cancelled) {
-          return;
-        }
-
-
-
-        setShowCityModal(
-          !isCityDisabledRoute
-        );
-      };
+      setShowCityModal(!isCityDisabledRoute);
+    };
 
     resolveCity();
 
     return () => {
       cancelled = true;
     };
-  }, [
-    pathname,
-    isCityDisabledRoute,
-    setUrlSilently,
-  ]);
+  }, [pathname, isCityDisabledRoute, setUrlSilently, injectCityIntoUrlIfAllowed]);
 
-
-  const selectCity = (
-    cityName
-  ) => {
-
-
-    setShowCityModal(
-      false
-    );
-
-
+  const selectCity = (cityName) => {
+    setShowCityModal(false);
 
     if (!cityName) {
+      localStorage.setItem("selectedCity", NOT_SELECTED);
+      setSelectedCitySlug(NOT_SELECTED);
+      dbCityResolvedRef.current = NOT_SELECTED;
 
-      localStorage.setItem(
-        "selectedCity",
-        NOT_SELECTED
-      );
+      saveCityToServer(NOT_SELECTED);
 
-      setSelectedCitySlug(
-        NOT_SELECTED
-      );
-
-      dbCityResolvedRef.current =
-        NOT_SELECTED;
-
-
-
-      saveCityToServer(
-        NOT_SELECTED
-      );
-
-
-
-      const restOfPath =
-        stripAllCitySegments(
-          pathname
-        );
-
-      setUrlSilently(
-        restOfPath || "/"
-      );
+      const restOfPath = stripAllCitySegments(pathname);
+      setUrlSilently(restOfPath || "/");
 
       return;
     }
 
+    const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
 
-    const slug =
-      cityNameToSlug[
-      cityName
-      ] ||
-      cityName.toLowerCase();
+    localStorage.setItem("selectedCity", slug);
+    setSelectedCitySlug(slug);
 
+    saveCityToServer(cityName);
+    dbCityResolvedRef.current = cityName;
 
+    const strippedPath = stripAllCitySegments(pathname);
+    const restOfPath = strippedPath.replace(new RegExp(`^/${slug}(?=/|$)`, "i"), "") || "/";
 
-    localStorage.setItem(
-      "selectedCity",
-      slug
-    );
-
-
-
-    setSelectedCitySlug(
-      slug
-    );
-
-
-
-    saveCityToServer(
-      cityName
-    );
-
-
-    dbCityResolvedRef.current =
-      cityName;
-
-
-    const strippedPath =
-      stripAllCitySegments(
-        pathname
-      );
-
-
-
-    const restOfPath =
-      strippedPath.replace(
-        new RegExp(
-          `^/${slug}(?=/|$)`,
-          "i"
-        ),
-        ""
-      ) || "/";
-
-
+    // Only put the city back into the URL if this route is allowed to have one.
+    const routeAllowsCity = isRouteCityAllowed(strippedPath);
 
     setUrlSilently(
-      `/${slug}${restOfPath === "/"
-        ? ""
-        : restOfPath
-      }`
+      routeAllowsCity ? `/${slug}${restOfPath === "/" ? "" : restOfPath}` : restOfPath
     );
   };
 
+  const dismissCityModal = useCallback(async () => {
+    const cityName =
+      dbCityResolvedRef.current !== undefined
+        ? dbCityResolvedRef.current
+        : await (dbCityPromiseRef.current || fetchCityFromServer());
 
-  const dismissCityModal =
-    useCallback(
-      async () => {
+    if (cityName && cityName !== NOT_SELECTED) {
+      const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
 
-        const cityName =
-          dbCityResolvedRef.current !==
-            undefined
-            ? dbCityResolvedRef.current
-            : await (
-              dbCityPromiseRef.current ||
-              fetchCityFromServer()
-            );
+      localStorage.setItem("selectedCity", slug);
+      setSelectedCitySlug(slug);
+      setShowCityModal(false);
+      injectCityIntoUrlIfAllowed(slug);
 
+      return;
+    }
 
+    localStorage.setItem("selectedCity", NOT_SELECTED);
+    setSelectedCitySlug(NOT_SELECTED);
+    dbCityResolvedRef.current = NOT_SELECTED;
 
-        if (
-          cityName &&
-          cityName !== NOT_SELECTED
-        ) {
-          const slug =
-            cityNameToSlug[
-            cityName
-            ] ||
-            cityName.toLowerCase();
+    saveCityToServer(NOT_SELECTED);
+    setShowCityModal(false);
+  }, [injectCityIntoUrlIfAllowed]);
 
-          localStorage.setItem(
-            "selectedCity",
-            slug
-          );
-
-          setSelectedCitySlug(
-            slug
-          );
-
-          setShowCityModal(
-            false
-          );
-
-          return;
-        }
-
-
-        localStorage.setItem(
-          "selectedCity",
-          NOT_SELECTED
-        );
-
-        setSelectedCitySlug(
-          NOT_SELECTED
-        );
-
-        dbCityResolvedRef.current =
-          NOT_SELECTED;
-
-
-
-        saveCityToServer(
-          NOT_SELECTED
-        );
-
-
-
-        setShowCityModal(
-          false
-        );
-      },
-      []
-    );
-
-
-  const selectedCityName =
-    slugToCityName[
-    selectedCitySlug
-    ] || "";
-
+  const selectedCityName = slugToCityName[selectedCitySlug] || "";
 
   return (
     <CityContext.Provider
       value={{
         selectedCitySlug,
-
         selectedCityName,
-
         showCityModal,
-
         setShowCityModal,
-
         selectCity,
-
         dismissCityModal,
-
         isCityDisabledRoute,
-
         isPillHiddenRoute,
       }}
     >
@@ -738,8 +390,4 @@ export const CityProvider = ({
   );
 };
 
-
-export const useCity = () =>
-  useContext(
-    CityContext
-  );
+export const useCity = () => useContext(CityContext);
