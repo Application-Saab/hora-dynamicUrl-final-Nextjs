@@ -20,6 +20,9 @@ const CityContext = createContext({
   dismissCityModal: () => {
     console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
   },
+  syncSelectedCity: () => {
+    console.warn("useCity() called outside <CityProvider> — wrap this component in CityProvider.");
+  },
 });
 
 const NOT_SELECTED = "NOT_SELECTED";
@@ -56,7 +59,7 @@ const CITY_ALLOWED_ROUTES = [
   // "/book-chef-cook-for-party",
   // "/party-food-delivery-live-catering-buffet/party-food-delivery",
   // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
-   "/venue-list",
+  "/venue-list",
   // "/photo-gallery",
 ];
 
@@ -370,6 +373,22 @@ export const CityProvider = ({ children }) => {
     setShowCityModal(false);
   }, [injectCityIntoUrlIfAllowed]);
 
+  // For places (e.g. Footer city links) that navigate via a plain <Link>
+  // straight to a specific city+page URL. This only keeps the selected-city
+  // state/localStorage/API in sync — it does NOT touch the URL, since the
+  // <Link> itself is already taking the user to the right place.
+  const syncSelectedCity = useCallback((cityName) => {
+    if (!cityName) return;
+
+    const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
+
+    localStorage.setItem("selectedCity", slug);
+    setSelectedCitySlug(slug);
+    dbCityResolvedRef.current = cityName;
+
+    saveCityToServer(cityName);
+  }, []);
+
   const selectedCityName = slugToCityName[selectedCitySlug] || "";
 
   return (
@@ -381,6 +400,7 @@ export const CityProvider = ({ children }) => {
         setShowCityModal,
         selectCity,
         dismissCityModal,
+        syncSelectedCity,
         isCityDisabledRoute,
         isPillHiddenRoute,
       }}
