@@ -234,36 +234,90 @@ export default function SearchSortBar({
   const [query, setQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
-  const [barHeight, setBarHeight] = useState(0);
+  const [placeholderText, setPlaceholderText] = useState(DEFAULT_PLACEHOLDER);
+  const [isFocused, setIsFocused] = useState(false); // input focus/blur track karne ke liye
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
-  const sentinelRef = useRef(null); // pehle "placeholderRef" tha
+  const placeholderRef = useRef(null);
 
   const queryRef = useRef(query);
   useEffect(() => {
     queryRef.current = query;
   }, [query]);
 
-  useEffect(() => {
-    const measure = () => {
-      if (topBarRef.current) setBarHeight(topBarRef.current.offsetHeight);
+  // ---- Typewriter placeholder words (searchCategoryList ke labels se) ----
+  const typewriterWords = useMemo(() => {
+    const words = (searchCategoryList || [])
+      .map((c) => c.label?.trim())
+      .filter(Boolean);
+    return words.length ? words : [DEFAULT_PLACEHOLDER];
+  }, [searchCategoryList]);
+
+ useEffect(() => {
+    if (query.trim().length > 0 || isFocused) {
+     return;
+    }
+
+    let wordIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let timeoutId;
+
+    const tick = () => {
+      const currentWord = typewriterWords[wordIdx % typewriterWords.length];
+
+      if (!isDeleting) {
+        charIdx++;
+        setPlaceholderText(currentWord.slice(0, charIdx));
+
+        if (charIdx === currentWord.length) {
+          isDeleting = true;
+          timeoutId = setTimeout(tick, PAUSE_AFTER_TYPE);
+          return;
+        }
+        timeoutId = setTimeout(tick, TYPE_SPEED);
+      } else {
+        charIdx--;
+        setPlaceholderText(currentWord.slice(0, charIdx));
+
+        if (charIdx === 0) {
+          isDeleting = false;
+          wordIdx++;
+          timeoutId = setTimeout(tick, PAUSE_AFTER_DELETE);
+          return;
+        }
+        timeoutId = setTimeout(tick, DELETE_SPEED);
+      }
     };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
 
+    timeoutId = setTimeout(tick, 400);
 
+    return () => clearTimeout(timeoutId);
+  }, [typewriterWords, query, isFocused]);
+
+  // Fixed-on-scroll behavior (unchanged) ...
   useEffect(() => {
-    if (!sentinelRef.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFixed(!entry.isIntersecting && entry.boundingClientRect.top < 0);
-      },
-      { threshold: 0 }
-    );
-    observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
+    const getTriggerOffset = () =>
+      placeholderRef.current
+        ? placeholderRef.current.getBoundingClientRect().top + window.scrollY
+        : 0;
+
+    let triggerOffset = getTriggerOffset();
+
+    const handleScroll = () => {
+      setIsFixed(window.scrollY > triggerOffset);
+    };
+    const handleResize = () => {
+      triggerOffset = getTriggerOffset();
+      handleScroll();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const commitSearch = useCallback(() => {
@@ -272,7 +326,7 @@ export default function SearchSortBar({
     trackSearch({ searchTerm: trimmed, userId });
   }, [onSearchChange, userId]);
 
-  // Close dropdown on outside click / Escape — commitSearch bhi chalega
+  // Close dropdown on outside click / Escape — ab close hote hi commitSearch bhi chalega
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -357,9 +411,9 @@ export default function SearchSortBar({
   return (
     <div className="search-sort-wrapper" ref={wrapperRef}>
       <div
-        ref={sentinelRef}
+        ref={placeholderRef}
         className="search-sort-placeholder"
-        style={{ height: isFixed ? barHeight : 0 }}
+        style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
       />
       <div className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`} ref={topBarRef}>
         <div className="search-box">
