@@ -17,9 +17,15 @@
   top: 0;
   left: 0;
   right: 0;
-  margin: 0;
-  padding: clamp(8px, 2.54vw, 12px);
+  margin: auto;
+  padding: clamp(9.85px, 3.05vw, 14.77px)
+         clamp(8.21px, 2.54vw, 12.31px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: #97538C;
+  border-bottom-right-radius: 10px;
+border-bottom-left-radius: 10px;
+max-width: 480px;
+
 }
 
 .search-sort-placeholder {
@@ -89,11 +95,12 @@
   border: clamp(1px, 0.26vw, 1.3px) solid #ece6e6;
   border-radius: clamp(8px, 2.58vw, 12px);
   background: #fff;
-  color: #6d4a89;
+  color: #97538C;
   font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: clamp(11px, 3.44vw, 16.5px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    gap: clamp(8px, 2.5vw, 12px);
 }
 
 .sort-icon {
@@ -230,7 +237,17 @@
 /* ============================================================
    Search Dropdown (Matching Categories / Matching Products)
    ============================================================ */
+.search-icons {
+  width: clamp(25.54px, 7.99vw, 38.08px);
+  height: clamp(24.74px, 7.74vw, 36.91px);
+  
+}
+.sort-close-icon {
+  width: clamp(21.55px, 6.74vw, 32.13px);
+  height: clamp(20.57px, 6.43vw, 30.57px);
 
+
+}
 .search-dropdown {
   position: absolute;
   top: 68px;

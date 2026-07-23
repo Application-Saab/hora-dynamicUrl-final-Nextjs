@@ -8,13 +8,21 @@ import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";
-
+import searchIcon from "@/assets/Searchbar.svg"
+import closeIcon from "@/assets/sortbar.svg"
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
   { id: "newArrival", label: "New Arrival" },
   { id: "lowToHigh", label: "Price: Low To High" },
   { id: "highToLow", label: "Price: High To Low" },
 ];
+
+// ---- Typewriter placeholder ke liye tuning values ----
+const TYPE_SPEED = 90;          // har character type hone ki speed (ms)
+const DELETE_SPEED = 45;        // har character delete hone ki speed (ms)
+const PAUSE_AFTER_TYPE = 1300;  // word poora type hone ke baad kitni der ruke (ms)
+const PAUSE_AFTER_DELETE = 300; // word poora delete hone ke baad next word se pehle pause (ms)
+const DEFAULT_PLACEHOLDER = "Search Themes";
 
 function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
   // Sort sheet open hote hi background scroll lock ho jayega
@@ -63,6 +71,7 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
     document.body
   );
 }
+
 function SearchDropdown({
   query,
   searchCategoryList,
@@ -303,13 +312,13 @@ export default function SearchSortBar({
     setIsSortOpen(false);
   };
 
- const handleQueryChange = (e) => {
+  const handleQueryChange = (e) => {
     const value = e.target.value;
     setQuery(value);
     setIsDropdownOpen(value.trim().length > 0);
   };
 
- const handleInputKeyDown = (e) => {
+  const handleInputKeyDown = (e) => {
     if (e.key === "Enter") {
       commitSearch();
       setIsDropdownOpen(false);
@@ -317,19 +326,19 @@ export default function SearchSortBar({
     }
   };
 
-const handleCategoryClick = (cat) => {
-  trackSearch({
-    searchTerm: query,
-    clickedItemId: null, 
-    clickedTitle: cat.label,
-    clickedType: "category",
-    userId,
-  });
-  setIsDropdownOpen(false);
-  setQuery("");
-  onSearchChange?.("");
-  onCategorySelect?.(cat);
-};
+  const handleCategoryClick = (cat) => {
+    trackSearch({
+      searchTerm: query,
+      clickedItemId: null,
+      clickedTitle: cat.label,
+      clickedType: "category",
+      userId,
+    });
+    setIsDropdownOpen(false);
+    setQuery("");
+    onSearchChange?.("");
+    onCategorySelect?.(cat);
+  };
 
   const handleProductClick = (product) => {
     trackSearch({
@@ -354,15 +363,24 @@ const handleCategoryClick = (cat) => {
       />
       <div className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`} ref={topBarRef}>
         <div className="search-box">
-          <Search className="search-icons" strokeWidth={2.25} />
+       <Image
+  src={searchIcon}
+  alt="Search"
+  className="search-icons"
+/>
           <input
             type="text"
-            placeholder="Search Themes"
+            placeholder={placeholderText}
             className="search-input"
             value={query}
             onChange={handleQueryChange}
             onKeyDown={handleInputKeyDown}
-            onFocus={() => query.trim().length > 0 && setIsDropdownOpen(true)}
+            onFocus={() => {
+              setIsFocused(true); // focus hote hi animation ruk jayega
+              setPlaceholderText(""); // aur placeholder turant blank ho jayega
+              if (query.trim().length > 0) setIsDropdownOpen(true);
+            }}
+            onBlur={() => setIsFocused(false)} // blur hote hi wapas chalu ho jayega
           />
         </div>
 
@@ -388,7 +406,11 @@ const handleCategoryClick = (cat) => {
             setIsSortOpen(true);
           }}
         >
-          <SlidersHorizontal className="sort-icon" strokeWidth={2} />
+             <Image
+  src={closeIcon}
+  alt="Close"
+  className="sort-close-icon"
+/>
           Sort by
         </button>
       </div>
@@ -402,4 +424,5 @@ const handleCategoryClick = (cat) => {
     </div>
   );
 }
+
 export { sortOptions };
