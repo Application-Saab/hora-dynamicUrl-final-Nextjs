@@ -53,11 +53,11 @@ const slugToCityName = {
 const CITY_ALLOWED_ROUTES = [
   "/balloon-decoration",
   "/photography-page",
-  "/book-chef-cook-for-party",
-  "/party-food-delivery-live-catering-buffet/party-food-delivery",
-  "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
-  "/venue-list",
-  "/photo-gallery",
+  // "/book-chef-cook-for-party",
+  // "/party-food-delivery-live-catering-buffet/party-food-delivery",
+  // "/party-food-delivery-live-catering-buffet/party-live-buffet-catering",
+   "/venue-list",
+  // "/photo-gallery",
 ];
 
 const stripAllCitySegments = (path) => {
