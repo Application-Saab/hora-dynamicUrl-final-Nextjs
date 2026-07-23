@@ -8,7 +8,8 @@ import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";
-
+import searchIcon from "@/assets/Searchbar.svg"
+import closeIcon from "@/assets/sortbar.svg"
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
   { id: "newArrival", label: "New Arrival" },
@@ -416,7 +417,11 @@ export default function SearchSortBar({
       />
       <div className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`} ref={topBarRef}>
         <div className="search-box">
-          <Search className="search-icons" strokeWidth={2.25} />
+       <Image
+  src={searchIcon}
+  alt="Search"
+  className="search-icons"
+/>
           <input
             type="text"
             placeholder={placeholderText}
@@ -455,7 +460,11 @@ export default function SearchSortBar({
             setIsSortOpen(true);
           }}
         >
-          <SlidersHorizontal className="sort-icon" strokeWidth={2} />
+             <Image
+  src={closeIcon}
+  alt="Close"
+  className="sort-close-icon"
+/>
           Sort by
         </button>
       </div>
