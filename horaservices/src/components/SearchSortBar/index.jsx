@@ -225,47 +225,45 @@ export default function SearchSortBar({
   const [query, setQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
+  const [barHeight, setBarHeight] = useState(0);
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
-  const placeholderRef = useRef(null);
+  const sentinelRef = useRef(null); // pehle "placeholderRef" tha
 
-const queryRef = useRef(query);
+  const queryRef = useRef(query);
   useEffect(() => {
     queryRef.current = query;
   }, [query]);
 
-  // Fixed-on-scroll behavior (unchanged) ...
   useEffect(() => {
-    const getTriggerOffset = () =>
-      placeholderRef.current
-        ? placeholderRef.current.getBoundingClientRect().top + window.scrollY
-        : 0;
-
-    let triggerOffset = getTriggerOffset();
-
-    const handleScroll = () => {
-      setIsFixed(window.scrollY > triggerOffset);
+    const measure = () => {
+      if (topBarRef.current) setBarHeight(topBarRef.current.offsetHeight);
     };
-    const handleResize = () => {
-      triggerOffset = getTriggerOffset();
-      handleScroll();
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
-    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
 
- const commitSearch = useCallback(() => {
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsFixed(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const commitSearch = useCallback(() => {
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
     trackSearch({ searchTerm: trimmed, userId });
   }, [onSearchChange, userId]);
 
-  // Close dropdown on outside click / Escape — ab close hote hi commitSearch bhi chalega
+  // Close dropdown on outside click / Escape — commitSearch bhi chalega
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -350,9 +348,9 @@ const handleCategoryClick = (cat) => {
   return (
     <div className="search-sort-wrapper" ref={wrapperRef}>
       <div
-        ref={placeholderRef}
+        ref={sentinelRef}
         className="search-sort-placeholder"
-        style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
+        style={{ height: isFixed ? barHeight : 0 }}
       />
       <div className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`} ref={topBarRef}>
         <div className="search-box">
