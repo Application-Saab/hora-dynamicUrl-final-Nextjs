@@ -126,6 +126,27 @@ const saveCityToServer = async (cityName) => {
   }
 };
 
+const extractCityNameFromMyEvents = (json) => {
+  if (!json) return null;
+
+  const data = json.data ?? json;
+
+ 
+  if (data?.cityName) return data.cityName;
+
+   if (data?.user?.cityName) return data.user.cityName;
+  if (data?.userDetails?.cityName) return data.userDetails.cityName;
+
+    if (data?.city) return data.city;
+   const events = data?.eventDates;
+  if (Array.isArray(events) && events.length > 0) {
+    const withCity = events.find((ev) => ev?.cityName || ev?.city);
+    if (withCity) return withCity.cityName || withCity.city;
+  }
+
+  return null;
+};
+
 const fetchCityFromServer = async () => {
   try {
     const userId = localStorage.getItem("userID") || "";
@@ -139,14 +160,20 @@ const fetchCityFromServer = async () => {
     if (userId) params.append("userId", userId);
     if (visitorId) params.append("visitorId", visitorId);
 
-    const res = await fetch(`${BASE_URL}/api/event-dates/user-city?${params.toString()}`);
+    const res = await fetch(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`);
 
     if (!res.ok) {
       return null;
     }
 
-    const data = await res.json();
-    return data?.cityName || null;
+    const json = await res.json();
+
+    if (json?.error) {
+      console.warn("my-events returned an error while resolving city:", json.message);
+      return null;
+    }
+
+    return extractCityNameFromMyEvents(json);
   } catch (err) {
     console.error("Failed to fetch city from server:", err);
     return null;
@@ -157,12 +184,33 @@ export const CityProvider = ({ children }) => {
   const nextPathname = usePathname();
   const router = useRouter();
 
-  const [pathname, setPathname] = useState(nextPathname || "/");
+ const getGroundTruthPath = () => {
+    if (typeof window !== "undefined") {
+      return window.location.pathname;
+    }
+    return null;
+  };
+
+  const [pathname, setPathname] = useState(() => {
+    const actual = getGroundTruthPath();
+    if (actual) return actual;
+    return nextPathname || "/";
+  });
 
   useEffect(() => {
-    if (nextPathname) {
-      setPathname(nextPathname);
-    }
+    if (!nextPathname) return;
+
+    const actualPath = getGroundTruthPath();
+
+    
+    const safePath =
+      actualPath && actualPath.length > nextPathname.length
+        ? actualPath
+        : nextPathname;
+
+ 
+
+    setPathname(safePath);
   }, [nextPathname]);
 
   useEffect(() => {
@@ -178,6 +226,8 @@ export const CityProvider = ({ children }) => {
 
   const setUrlSilently = useCallback(
     (newPath, { replace = false } = {}) => {
+   
+
       const navigate = replace ? router.replace : router.push;
 
       navigate(newPath || "/", { scroll: false });
@@ -217,11 +267,25 @@ export const CityProvider = ({ children }) => {
     (slug) => {
       if (!slug || slug === NOT_SELECTED) return;
 
-      const stripped = stripAllCitySegments(pathname || "/");
+         const actualPath = getGroundTruthPath();
+      const effectivePathname =
+        actualPath && actualPath.length > (pathname || "/").length
+          ? actualPath
+          : pathname || "/";
+
+      if (effectivePathname.match(CITY_PATH_REGEX)) {
+      
+        return;
+      }
+
+      const stripped = stripAllCitySegments(effectivePathname);
+    
+
       if (!isRouteCityAllowed(stripped)) return;
 
       const newPath = `/${slug}${stripped === "/" ? "" : stripped}`;
-      if (newPath !== (pathname || "/")) {
+  
+      if (newPath !== (effectivePathname || "/")) {
         setUrlSilently(newPath, { replace: true });
       }
     },
@@ -233,25 +297,30 @@ export const CityProvider = ({ children }) => {
       return;
     }
 
-    const match = pathname.match(CITY_PATH_REGEX);
+    const actualPath = getGroundTruthPath();
+    const effectivePath =
+      actualPath && actualPath.length > pathname.length ? actualPath : pathname;
 
+  
+    const match = effectivePath.match(CITY_PATH_REGEX);
+   
     if (match && match[1]) {
       const citySlugFromUrl = match[1].toLowerCase();
-      const restAfterFirstCity = pathname.slice(match[0].length);
-
+      const restAfterFirstCity = effectivePath.slice(match[0].length);
+     
       const cleanedRest = stripAllCitySegments(
         restAfterFirstCity.startsWith("/") ? restAfterFirstCity : "/" + restAfterFirstCity
       );
-
+   
       const isStacked = restAfterFirstCity !== cleanedRest;
       const routeAllowsCity = isRouteCityAllowed(cleanedRest);
-
+     
       if (!routeAllowsCity) {
         // This route isn't in CITY_ALLOWED_ROUTES — city should not live in the URL here.
-        setUrlSilently(cleanedRest || "/", { replace: true });
+         setUrlSilently(cleanedRest || "/", { replace: true });
       } else if (isStacked) {
         const canonicalPath = `/${citySlugFromUrl}${cleanedRest === "/" ? "" : cleanedRest}`;
-        setUrlSilently(canonicalPath || "/", { replace: true });
+         setUrlSilently(canonicalPath || "/", { replace: true });
       }
 
       // Keep the city remembered regardless of route, so it reappears in the
