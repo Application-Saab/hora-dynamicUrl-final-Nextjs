@@ -170,20 +170,19 @@ const showSnackbar = (message) => {
   }, 5000);
 };
 
-
-  // Mobile or Tablet Detection (including iOS devices, iPads, and Android)
+  // iOS Mobile Detection
   useEffect(() => {
-    const detectMobileOrTablet = () => {
+    const detectIOSMobile = () => {
       if (typeof navigator !== 'undefined') {
-        const ua = navigator.userAgent;
-        const isTouch = navigator.maxTouchPoints > 0;
-        const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-        const isIPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        return isMobileUA || isIPadOS || isTouch;
+        // Basic check for iPhone, iPad, iPod.
+        // iPadOS 13+ might report as 'MacIntel' but will have touch capabilities.
+        // For "iOS mobile", we primarily care about iPhone/iPod. iPads might be considered tablets.
+        // Sticking to a simpler check for 'iPhone' or 'iPod' for "mobile" specificity.
+        return /iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       }
       return false;
     };
-    setIsMobileOrTablet(detectMobileOrTablet());
+    setIsMobileOrTablet(detectIOSMobile());
   }, []);
 
   // Dynamic ITEMS_PER_PAGE (primarily for mobile/tablets due to pagination)
