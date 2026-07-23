@@ -5,6 +5,7 @@ import "./ConsultationPopup.css";
 import ConsultationPopupimg from "@/assets/ConsultationPopupimg.webp";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
 import tickIcon from "@/assets/tickicon.svg";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 export default function PhotographyConsultationSheet({
   isOpen,
   onClose,
@@ -13,6 +14,7 @@ export default function PhotographyConsultationSheet({
   if (!isOpen) return null;
 const PHONE = "7338584828";
  const openWhatsApp = () => {
+  trackWAClicks();
   // ✅ GTM Event — event name popup ke title se banega (bina "?" ke, space safely normalized)
   // e.g. "Need A Custom Decoration Popup Button Click", "Confused About Photography Packages Popup Button Click"
   const cleanTitle = `${data?.title || ""} ${data?.highlightText || ""}`

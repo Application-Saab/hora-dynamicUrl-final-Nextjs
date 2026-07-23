@@ -25,6 +25,7 @@ export function trackSearch({
   clickedTitle = null,
   clickedType = null,
   userId = null,
+  pageName = ''
 }) {
   if (!searchTerm?.trim()) return;
 
@@ -39,7 +40,8 @@ export function trackSearch({
       clickedTitle,
       clickedType,
       visitorId,
-      userId: resolvedUserId, 
+      userId: resolvedUserId,
+      pageName, 
     })
     .catch(() => {
     

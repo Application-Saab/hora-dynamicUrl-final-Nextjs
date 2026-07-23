@@ -1,4 +1,4 @@
-export const BASE_URL = "https://horaservices.com";
+export const BASE_URL = "http://localhost:5000";
 export const MEDIA_WORKER_URL = "https://horaservices.com/media-api";
 export const FACE_FINDER_URL = "https://horaservices.com/face-api";
 export const BG_REMOVER_URL = "https://horaservices.com/bg-remove/remove-bg";
@@ -82,4 +82,6 @@ export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'
 
 export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code"
 
-export const GET_ADDON_BY_ID = "/api/addon/get"
+export const GET_ADDON_BY_ID = "/api/addon/get";
+export const ASSIGN_USER_TO_TRACKINGS = "/api/event-dates/assign-user-history";
+export const TRACK_WHATSAPP_CLICKS = "/api/event-dates/user-city/click-count"

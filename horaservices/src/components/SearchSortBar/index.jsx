@@ -8,6 +8,7 @@ import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";
+import { useRouter } from "next/router";
 
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
@@ -228,6 +229,10 @@ export default function SearchSortBar({
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
+  const route = useRouter();
+  console.log('%c [ route ]', 'font-size:13px; background:pink; color:#bf2c9f;', route)
+  const pathname = route.asPath;
+  console.log('%c [ pathname ]', 'font-size:13px; background:pink; color:#bf2c9f;', pathname)
 
 const queryRef = useRef(query);
   useEffect(() => {
@@ -262,10 +267,10 @@ const queryRef = useRef(query);
  const commitSearch = useCallback(() => {
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
-    trackSearch({ searchTerm: trimmed, userId });
+    trackSearch({ searchTerm: trimmed, userId, pageName : pathname });
   }, [onSearchChange, userId]);
 
-  // Close dropdown on outside click / Escape — ab close hote hi commitSearch bhi chalega
+  // Close dropdown on outside click / Escape
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -326,6 +331,7 @@ const handleCategoryClick = (cat) => {
     clickedTitle: cat.label,
     clickedType: "category",
     userId,
+    pageName: pathname
   });
   setIsDropdownOpen(false);
   setQuery("");
@@ -340,6 +346,7 @@ const handleCategoryClick = (cat) => {
       clickedTitle: product.name,
       clickedType: "product",
       userId,
+      pageName : pathname
     });
     setIsDropdownOpen(false);
     setQuery("");
