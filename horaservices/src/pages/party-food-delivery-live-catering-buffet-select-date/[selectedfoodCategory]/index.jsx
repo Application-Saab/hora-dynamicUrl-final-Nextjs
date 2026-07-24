@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import axios from "axios";
 import styled from "styled-components";
 import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 // import { useLocation } from 'react-router-dom';
@@ -18,6 +17,7 @@ import PeopleIcon from "../../../assets/people.png";
 import InfoIcon from "../../../assets/info.png";
 import Image from "next/image";
 import "../../../css/chefOrder.css";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const orangeColor = "#FF6F61";
 const defaultColor = "#B0BEC5";
@@ -42,7 +42,7 @@ const FoodDeliveryselectDate = ({ history, currentStep }) => {
   const [selectedTab, setSelectedTab] = useState("Appliances");
   const [isWarningVisibleForTotalAmount, setWarningVisibleForTotalAmount] = useState(false);
   const [isEventPushed, setIsEventPushed] = useState(false);
-  const phoneNumber = localStorage.getItem('mobileNumber');
+  const phoneNumber = safeGetItem('mobileNumber');
   const [isMobile, setIsMobile] = useState(false);
   const [deliveryCharges, setDeliveryCharges] = useState(400);
 

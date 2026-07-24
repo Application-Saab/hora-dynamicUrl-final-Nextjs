@@ -1,4 +1,5 @@
 "use client";
+import { safeGetItem } from "@/utils/safeStorage";
 import React, { useEffect, useState } from "react";
 import {
   LineChart,
@@ -17,7 +18,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const raw = localStorage.getItem("DAILY_UNIQUE_VISITORS");
+    const raw = safeGetItem("DAILY_UNIQUE_VISITORS");
     if (!raw) return;
 
     const stored = JSON.parse(raw);

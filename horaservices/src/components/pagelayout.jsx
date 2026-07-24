@@ -18,22 +18,75 @@ import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 const DATE_SHEET_DELAY_MS = 30 * 1000;
 const DATE_SHEET_REASK_BUFFER_DAYS = 3;
 
+// Safari-safe UUID generator (crypto.randomUUID needs Safari 15.4+)
+const generateUUID = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    try {
+      return crypto.randomUUID();
+    } catch (e) {
+      // fall through to manual fallback
+    }
+  }
+  // RFC4122-ish fallback, good enough for a visitor id
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 const getOrCreateVisitorId = () => {
   if (typeof window === "undefined") return "";
-  let visitorId = localStorage.getItem("VISITOR_ID");
-  if (!visitorId) {
-    visitorId = crypto.randomUUID();
-    localStorage.setItem("VISITOR_ID", visitorId);
+  try {
+    let visitorId = safeGetItem("VISITOR_ID");
+    if (!visitorId) {
+      visitorId = generateUUID();
+      safeSetItem("VISITOR_ID", visitorId);
+    }
+    return visitorId;
+  } catch (e) {
+    console.error("Failed to get/create visitor id:", e);
+    // Session-only fallback so the app doesn't just die (e.g. Safari private mode quota errors)
+    return generateUUID();
   }
-  return visitorId;
+};
+
+// Safari's Date parser is strict — it chokes on non-ISO strings like
+// "2024-01-15 10:00:00" (space instead of "T") which Chrome/Firefox accept fine.
+// Normalize before parsing so Safari doesn't silently produce Invalid Date.
+const parseDateSafely = (dateInput) => {
+  if (dateInput instanceof Date) return dateInput;
+
+  if (typeof dateInput === "string") {
+    let normalized = dateInput.trim();
+
+    // "2024-01-15 10:00:00" -> "2024-01-15T10:00:00"
+    if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}(:\d{2})?/.test(normalized)) {
+      normalized = normalized.replace(" ", "T");
+    }
+
+    // "2024/01/15" -> "2024-01-15" (Safari is picky about slashes too)
+    if (/^\d{4}\/\d{2}\/\d{2}/.test(normalized)) {
+      normalized = normalized.replace(/\//g, "-");
+    }
+
+    const d = new Date(normalized);
+    if (!isNaN(d.getTime())) return d;
+
+    // Last resort: try native parse of the original string anyway
+    return new Date(dateInput);
+  }
+
+  return new Date(dateInput);
 };
 
 const getDateOnlyParts = (dateInput) => {
-  const d = new Date(dateInput);
+  const d = parseDateSafely(dateInput);
   return {
     y: d.getUTCFullYear(),
     m: d.getUTCMonth(),
     day: d.getUTCDate(),
+    valid: !isNaN(d.getTime()),
   };
 };
 
@@ -46,13 +99,19 @@ const daysBetween = (targetDate) => {
   const now = new Date();
   const todayParts = { y: now.getFullYear(), m: now.getMonth(), day: now.getDate() };
   const targetParts = getDateOnlyParts(targetDate);
+
+  if (!targetParts.valid) {
+    console.warn("daysBetween: invalid date received:", targetDate);
+    return NaN;
+  }
+
   const todayUTC = Date.UTC(todayParts.y, todayParts.m, todayParts.day);
   const targetUTC = Date.UTC(targetParts.y, targetParts.m, targetParts.day);
   return Math.round((targetUTC - todayUTC) / (1000 * 60 * 60 * 24));
 };
 
 const getVariantForDaysLeft = (daysLeft) => {
-  if (daysLeft < 0) return null;
+  if (Number.isNaN(daysLeft) || daysLeft < 0) return null;
   if (daysLeft <= 4) return "approaching";
   return "planner";
 };
@@ -63,7 +122,7 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const [idsReady, setIdsReady] = useState(false);
-  const { showCityModal, selectCity, isCityDisabledRoute } = useCity();
+ const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
   const { setDateResolved } = useDateGate();
 
   const [showDateSheet, setShowDateSheet] = useState(false);
@@ -130,10 +189,14 @@ const LayoutInner = ({ children }) => {
           events = json?.data?.eventDates || [];
         }
 
-        const eventsWithDays = events.map((ev) => ({
-          ...ev,
-          daysLeft: daysBetween(ev.date),
-        }));
+        const eventsWithDays = events
+          .map((ev) => ({
+            ...ev,
+            daysLeft: daysBetween(ev.date),
+          }))
+          // Drop anything Safari (or the API) gave us a bad date for,
+          // instead of letting NaN silently break the sort/filter logic below.
+          .filter((ev) => !Number.isNaN(ev.daysLeft));
 
         const futureEvents = eventsWithDays
           .filter((ev) => ev.daysLeft >= 0)
@@ -235,7 +298,9 @@ const LayoutInner = ({ children }) => {
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
 
-        {showCityModal && !isCityDisabledRoute && <CitySelector onSelect={selectCity} />}
+       {showCityModal && !isCityDisabledRoute && (
+      <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
+        )}
 
         {isDateSheetAllowedPath && showDateSheet && (
           <DateSelectionBottomSheet

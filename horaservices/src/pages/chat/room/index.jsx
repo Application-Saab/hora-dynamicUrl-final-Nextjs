@@ -25,6 +25,7 @@ import {
   getCachedRoomDetails,
   setCachedRoomDetails,
 } from "@/utils/messagesCache";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const getAvatarColor = (name) => {
   const colors = [
@@ -58,7 +59,7 @@ const ChatPage = () => {
       : null);
   const userId =
     typeof window !== "undefined"
-      ? localStorage.getItem("userID") ||
+      ? safeGetItem("userID") ||
       new URLSearchParams(window.location.search).get("id")
       : null;
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
@@ -92,9 +93,9 @@ const ChatPage = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [chatBg] = useState(() => {
     if (typeof window === "undefined") return chatBgImage.src;
-    const saved = localStorage.getItem("chatBgImage");
+    const saved = safeGetItem("chatBgImage");
     if (saved) return saved;
-    try { localStorage.setItem("chatBgImage", chatBgImage.src); } catch { }
+    try { safeSetItem("chatBgImage", chatBgImage.src); } catch { }
     return chatBgImage.src;
   });
   const [userData, setUserData] = useState({});
@@ -341,7 +342,7 @@ const ChatPage = () => {
           chatLayout.style.height = "";
           chatLayout.style.bottom = "";
 
-          const cached = localStorage.getItem("keyboardHeight");
+          const cached = safeGetItem("keyboardHeight");
           const kbh = cached
             ? parseFloat(cached)
             : Math.max(Math.round((window.screen?.height ?? 750) * 0.44), 280);
@@ -736,7 +737,7 @@ const ChatPage = () => {
       html: messageHTML,
       type: "text",
       senderName: userData?.name,
-      senderPhone: localStorage.getItem("mobileNumber"),
+      senderPhone: safeGetItem("mobileNumber"),
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);

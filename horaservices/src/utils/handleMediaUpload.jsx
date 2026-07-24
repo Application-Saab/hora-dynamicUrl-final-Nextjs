@@ -1,7 +1,9 @@
 "use client";
 
-import axios from "axios";
 import { createPendingUploadsDb } from "./pendingUploadsDb";
+import { fetchWithError } from "./fetchWithError";
+import axiosApi from "./axiosApi";
+import { safeGetItem } from "./safeStorage";
 const { BASE_URL, MEDIA_WORKER_URL } = require("./apiconstants");
 
 // 3 Second Video Clip Generator
@@ -61,8 +63,8 @@ export async function create3SecClip(videoFile) {
 
 // Presigned URL
 export const getPresignedUrl = async (file, userId, eventId, folderName) => {
-  let token = localStorage.getItem("token");
-  const res = await fetch(`${BASE_URL}/api/customer/event/get-presigned-url`, {
+  let token = safeGetItem("token");
+  const res = await fetchWithError(`${BASE_URL}/api/customer/event/get-presigned-url`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +85,7 @@ export const getPresignedUrl = async (file, userId, eventId, folderName) => {
 
 // Upload to S3
 export const uploadToS3 = async (file, uploadURL) => {
-  const res = await fetch(uploadURL, {
+  const res = await fetchWithError(uploadURL, {
     method: "PUT",
     headers: { "Content-Type": file.type },
     body: file,
@@ -95,7 +97,7 @@ export const uploadToS3 = async (file, uploadURL) => {
 
 //  Upload to s3 with progress tracking
 export async function uploadToS3WithProgress(file, presignedUrl, onProgress) {
-  return axios.put(presignedUrl, file, {
+  return axiosApi.put(presignedUrl, file, {
     headers: { "Content-Type": file.type },
     onUploadProgress: (p) => {
       const percent = Math.round((p.loaded * 100) / p.total);
@@ -187,9 +189,9 @@ export async function uploadMedia(
   formData.append("postType", postType);
   formData.append("folder", folderName);
 
-  const token = localStorage.getItem("token");
+  const token = safeGetItem("token");
 
-  const res = await axios.post(
+  const res = await axiosApi.post(
     `${MEDIA_WORKER_URL}/event/upload-event-media/${eventId}`,
     formData,
     {

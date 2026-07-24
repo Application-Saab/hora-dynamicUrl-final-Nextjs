@@ -11,11 +11,12 @@ import CalendarModal from "./CalendarModal";
 import TimeModal from "./TimeModal";
 import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const AddDetailsModal = ({ eventData, isOpen, onClose, refetchInvite }) => {
   if (!isOpen) return null;
   const { loading, makeRequest } = useApi();
-  const userId = localStorage.getItem("userID");
+  const userId = safeGetItem("userID");
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(

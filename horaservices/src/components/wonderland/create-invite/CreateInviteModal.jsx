@@ -8,13 +8,14 @@ import CustomModal from "../common/CustomModal";
 import { useChatStore } from "@/hooks/ChatContext";
 import { usePathname } from "next/navigation";
 import { matchInviteCategory } from "@/utils/matchInviteCategory";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const CreateInviteModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   const router = useRouter();
   const [occasion, setOccasion] = useState("");
   const { loading, makeRequest } = useApi();
-  const userId = localStorage.getItem("userID");
+  const userId = safeGetItem("userID");
   const { refetchChatRooms } = useChatStore();
   const pathname = usePathname();
   const isWonderlandInternational = pathname?.startsWith(

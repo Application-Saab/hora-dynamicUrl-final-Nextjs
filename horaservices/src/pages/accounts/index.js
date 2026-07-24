@@ -14,14 +14,16 @@ import OtpLogin from "@/components/OtpLoginPopup";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import LogoutModal from "@/utils/LogoutModal";
+import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showOtpLogin, setShowOtpLogin] = useState(false);
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined" ? safeGetItem("userID") : null;
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    typeof window !== "undefined" ? safeGetItem("token") : null;
   const [showEditName, setShowEditName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -62,7 +64,7 @@ const AccountPage = () => {
     }
 
     try {
-      const response = await fetch(
+      const response = await fetchWithError(
         `${BASE_URL}${UPDATE_USER_BY_ID}/${userId}`,
         {
           method: "PUT",
@@ -80,7 +82,7 @@ const AccountPage = () => {
         setEditLoading(false);
         alert("Something went wrong. Please try again.");
       } else {
-        localStorage.setItem("wonderLandUserName", editedName);
+        safeSetItem("wonderLandUserName", editedName);
         setEditLoading(false);
         refetchUser();
         setShowEditName(false);
@@ -114,13 +116,13 @@ const AccountPage = () => {
     formData.append("image", file);
 
     try {
-      const response = await fetch(
+      const response = await fetchWithError(
         `${BASE_URL}${UPDATE_USER_AVATAR_BY_ID}/${userId}`,
         {
           method: "PUT",
           body: formData,
           headers: {
-            Authorization: `${token || localStorage.getItem("token")}`,
+            Authorization: `${token || safeGetItem("token")}`,
           },
         }
       );

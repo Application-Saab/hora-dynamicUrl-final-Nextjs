@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BASE_URL,
@@ -16,7 +15,8 @@ import Image from "next/image";
 import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
-import { safeGetItem } from "@/utils/safeStorage";
+import axiosApi from "@/utils/axiosApi";
+import { safeSetItem } from "@/utils/safeStorage";
 
 const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false, extraVerifyData = {} }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -56,7 +56,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     let formatted = mobile.startsWith("+91") ? mobile : "+91" + mobile;
 
     try {
-      await axios.post(
+      await axiosApi.post(
         "https://public.doubletick.io/whatsapp/message/template",
         {
           messages: [
@@ -111,7 +111,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         fromWonderland: isWonderlandPath ? true : false,
         ...extraVerifyData,
       };
-      const res = await axios.post(BASE_URL + OTP_GENERATE_END_POINT, payload, {
+      const res = await axiosApi.post(BASE_URL + OTP_GENERATE_END_POINT, payload, {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -209,7 +209,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
       return;
     }
     try {
-      const res = await axios.post(
+      const res = await axiosApi.post(
         BASE_URL + OTP_VERIFY_ENDPOINT,
         {
           phone: mobileNumber,
@@ -220,10 +220,10 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
       );
 
       if (res.data.status === API_SUCCESS_CODE) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("mobileNumber", mobileNumber);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("userID", res.data.data._id);
+        safeSetItem("isLoggedIn", "true");
+        safeSetItem("mobileNumber", mobileNumber);
+        safeSetItem("token", res.data.token);
+        safeSetItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
         assignVisitorToUserId(res.data.data._id, visitorid)
 

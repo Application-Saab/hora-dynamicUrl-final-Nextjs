@@ -1,3 +1,5 @@
+import { fetchWithError } from "./fetchWithError";
+
   export const downloadFile = async (url) => {
     const fileWithExt = url.split("/").pop();
 
@@ -5,7 +7,7 @@
     const ext = parts.pop();
     const filename = parts.join("-") + "." + ext;
     try {
-      const response = await fetch(url, { mode: "cors" });
+      const response = await fetchWithError(url, { mode: "cors" });
       const blob = await response.blob();
 
       // Create a download link

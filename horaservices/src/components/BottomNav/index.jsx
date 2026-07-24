@@ -17,6 +17,7 @@ import CustomModal from "../wonderland/common/CustomModal";
 import "./bottomNav.css";
 import LoginModal from "../wonderland/common/login/LoginModal";
 import CustomButton from "../wonderland/common/CustomButton";
+import { safeGetItem } from "@/utils/safeStorage";
 
 export default function BottomNav() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function BottomNav() {
   const [noChatsPopup, setNoChatsPopup] = useState(false);
 
   const loadUserId = useCallback(() => {
-    const id = localStorage.getItem("userID") || "";
+    const id = safeGetItem("userID") || "";
     setUserId(id);
     setAuthChecked(true);
   }, []);

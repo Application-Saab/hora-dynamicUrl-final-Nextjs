@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useApi from "./useApi";
 import { GET_USER_BY_ID } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const UserDetailsContext = createContext({
   userDetails: null,
@@ -25,7 +26,7 @@ export function UserDetailsProvider({ children }) {
   //  Get userId from localStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setUserId(localStorage.getItem("userID"));
+      setUserId(safeGetItem("userID"));
     }
   }, []);
 
@@ -63,7 +64,7 @@ export function UserDetailsProvider({ children }) {
   // Sync userId across tabs via login and logout
   useEffect(() => {
     const syncUser = () => {
-      setUserId(localStorage.getItem("userID"));
+      setUserId(safeGetItem("userID"));
     };
 
     window.addEventListener("storage", syncUser);

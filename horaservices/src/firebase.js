@@ -6,20 +6,35 @@ const firebaseConfig = {
   storageBucket: "wonderland-inapp-chat.firebasestorage.app",
   messagingSenderId: "336745779010",
   appId: "1:336745779010:web:0f2125b937da40189942db",
-  measurementId: "G-QF6S6NZQL6"
+  measurementId: "G-QF6S6NZQL6",
 };
 
-import { getApp, getApps, initializeApp } from 'firebase/app';
-import { getMessaging } from 'firebase/messaging';
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getMessaging } from "firebase/messaging";
+import { reportError } from "./utils/errorReporter";
 
 // initialize Firebase
-const app = !getApps().length
-  ? initializeApp(firebaseConfig)
-  : getApp();
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 // Get Messaging
 let messaging;
-if (typeof window !== 'undefined') {
-  messaging = getMessaging(app);
+// if (typeof window !== 'undefined') {
+//   messaging = getMessaging(app);
+// }
+
+try {
+  if (typeof window !== "undefined") {
+    messaging = getMessaging(app);
+  }
+} catch (error) {
+  reportError(
+    error,
+    {},
+    {
+      type: "frontend",
+      component: "FirebaseMessaging",
+      message: "Firebase Messaging Initialization Failed",
+    },
+  );
 }
 
 export { messaging, app };

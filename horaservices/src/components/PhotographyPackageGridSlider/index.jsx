@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import "./PhotographyPackageGridSlider.css";
 import { BASE_URL, GET_PHOTOGRAPHY_BY_TAG } from "@/utils/apiconstants.js";
+import axiosApi from "@/utils/axiosApi";
 
 export default function PhotographyPackageGridSlider({
   title,
@@ -31,7 +31,7 @@ export default function PhotographyPackageGridSlider({
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
+        const res = await axiosApi.get(
           `${BASE_URL}${GET_PHOTOGRAPHY_BY_TAG}${tagId}`
         );
 
