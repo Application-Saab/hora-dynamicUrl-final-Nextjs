@@ -1475,8 +1475,8 @@ const handleAddToLocker = async (imgData) => {
                       className="bannerText"
                       style={{
                         fontSize: eventName.length > 25
-                          ? 'clamp(15px, 4vw, 20px)'  
-                          : 'clamp(18px, 5vw, 26px)'  
+                          ? 'clamp(11px, 3.2vw, 15px)' 
+                          : 'clamp(14px, 4.5vw, 16px)' 
                       }}
                     >
                       {eventName}
