@@ -1,5 +1,7 @@
 /* gallery.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&display=swap');
+
 /* This is the class passed as wrapperClassName to LazyImage. It's the masonry grid item. */
 .masonry-item { /* Renamed from .lazy-image-container-wrapper for clarity in component use */
   margin-bottom: 10px; /* Or your preferred gap */
@@ -14,6 +16,10 @@
 }
 .masonry-item:hover {
   /* background-color: #dee2e6; /* Optional: darker placeholder on hover */
+}
+
+.bannerText{
+  font-family: "Cinzel Decorative", serif;
 }
 
 
@@ -668,13 +674,55 @@ padding: 5px 4px;
     padding-inline: 4px;
   }
 }
-.top-banner-image {
-  width: 100% !important;
-  height: auto !important;
-  display: block;
-  margin-top: 10px;
+
+
+
+
+
+.top-banner-capsule {
+  display: flex;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.top-banner-capsule .banner-left {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  z-index: 1;
+}
+
+.top-banner-capsule .banner-right {
+  flex: 1.1;
+  position: relative;
+  height: 100%;
+  z-index: 2;
+  margin-left: -54px;
+  margin-right: -4px;
+}
+
+.top-banner-capsule .bannerText {
+  position: absolute;
+  top: 15%;
+  left: 28%;
+  right: 5%;
+  font-size: clamp(14px, 4.5vw, 24px);
+  font-weight: 700;
+  color: #8462ae;
+  line-height: 1.1;
+  text-transform: uppercase;
+  word-break: break-word;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.top-banner-capsule img {
   object-fit: cover;
 }
+
 .custom-banner {
   display: flex;
   align-items: center;
@@ -1106,4 +1154,33 @@ padding: 5px 4px;
 }
 .locker-banner{
 margin-bottom: 6px;
+}
+
+.banner-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  overflow: hidden;
+}
+
+.banner-event-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 55%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.banner-purple-card {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 60%;
+  height: 100%;
+  background: url('../../assets/capsuleBanner.svg') no-repeat center/cover;
+  z-index: 2;
+  padding: 20px;
 }

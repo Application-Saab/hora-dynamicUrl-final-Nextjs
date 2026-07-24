@@ -47,6 +47,7 @@ import {
   saveFileToOPFS,
 } from "@/utils/opfsUploadStore";
 import capsuleTopBanner from "../../assets/capsuleTopBanner.svg";
+import capsuleBanner from "../../assets/capsuleBanner.svg";
 import guest from "../../assets/guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
@@ -101,6 +102,8 @@ const ThumbnailGallery = ({
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [isPrivateFolder, setIsPrivateFolder] = useState(false);
+  const [bannerImageUrl,setBannerImageUrl] = useState("");
+  const [eventName, setEventName] = useState("");
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
@@ -617,7 +620,9 @@ const showSnackbar = (message) => {
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
         setDeviceTracking(data?.folders[0]?.deviceTracking || []);
-        setShortCode(data?.folders[0]?.shortCode || null)
+        setShortCode(data?.folders[0]?.shortCode || null);
+        setBannerImageUrl(data?.folders[0]?.bannerImageUrl);
+        setEventName(data?.folders[0]?.eventDetails?.hostName)
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -1446,11 +1451,39 @@ const handleAddToLocker = async (imgData) => {
             {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
             {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
-              <Image
-                src={capsuleTopBanner}
-                alt="banner"
-                className="top-banner-image"
-              />
+
+                <div className="top-banner-capsule">
+                  <div className="banner-left">
+                    <Image
+                      src={bannerImageUrl}
+                      alt="left banner"
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+
+                  <div className="banner-right">
+                    <Image
+                      src={capsuleBanner}
+                      alt="right banner"
+                      fill
+                      style={{ objectFit: 'contain' }} 
+                      priority
+                    />
+
+                    <div
+                      className="bannerText"
+                      style={{
+                        fontSize: eventName.length > 25
+                          ? 'clamp(15px, 4vw, 20px)'  
+                          : 'clamp(18px, 5vw, 26px)'  
+                      }}
+                    >
+                      {eventName}
+                    </div>
+                  </div>
+                </div>
+                
               <div className="thumbnail-gallery-content">
                 <HeaderCards
                   folderName={folderName}
