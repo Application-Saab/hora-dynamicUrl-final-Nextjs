@@ -11,10 +11,41 @@ const MONTH_NAMES = [
   "July", "August", "September", "October", "November", "December",
 ];
 const DAY_NAMES = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
 const toISODateOnly = (date) => {
   return new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
   ).toISOString();
+};
+
+const parseDateSafely = (dateInput) => {
+  if (dateInput instanceof Date) return dateInput;
+
+  if (typeof dateInput === "string") {
+    let normalized = dateInput.trim();
+
+    if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}(:\d{2})?/.test(normalized)) {
+      normalized = normalized.replace(" ", "T");
+    }
+    if (/^\d{4}\/\d{2}\/\d{2}/.test(normalized)) {
+      normalized = normalized.replace(/\//g, "-");
+    }
+
+    const d = new Date(normalized);
+    if (!isNaN(d.getTime())) return d;
+    return new Date(dateInput);
+  }
+
+  return new Date(dateInput);
+};
+const pickExistingEventDate = (events) => {
+  if (!events || events.length === 0) return null;
+
+  for (let i = events.length - 1; i >= 0; i--) {
+    const parsed = parseDateSafely(events[i].date);
+    if (!isNaN(parsed.getTime())) return parsed;
+  }
+  return null;
 };
 
 export default function DateSelectionBottomSheet({
@@ -25,6 +56,8 @@ export default function DateSelectionBottomSheet({
   visitorId,
   pincode,
   eventTitle = "",
+  initialDate = null,
+  eventId = null,
 }) {
   useLockBodyScroll(isOpen);
 
@@ -44,6 +77,15 @@ export default function DateSelectionBottomSheet({
     setError(null);
     setResolvedMode(null);
 
+ if (initialDate) {
+      const parsedInitial = parseDateSafely(initialDate);
+      if (!isNaN(parsedInitial.getTime())) {
+        setSelectedDate(parsedInitial);
+        setViewMonth(parsedInitial.getMonth());
+        setViewYear(parsedInitial.getFullYear());
+      }
+    }
+
     if (!userId && !visitorId) return;
 
     let cancelled = false;
@@ -59,6 +101,12 @@ export default function DateSelectionBottomSheet({
         if (cancelled) return;
         const events = json?.data?.eventDates || [];
         setResolvedMode(events.length > 0 ? "add" : "create");
+     const existingDate = pickExistingEventDate(events);
+        if (existingDate) {
+          setSelectedDate(existingDate);
+          setViewMonth(existingDate.getMonth());
+          setViewYear(existingDate.getFullYear());
+        }
       })
       .catch((err) => {
         if (cancelled) return;

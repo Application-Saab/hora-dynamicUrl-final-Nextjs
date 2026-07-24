@@ -7,7 +7,7 @@ import LocalitiesSection from "@/components/LocalitiesSection";
 import HomeContent from "@/components/HomeContent";
 import Head from "next/head";
 
-// URL ke pehle segment se city slug nikalo, jaise "/hyderabad" -> "hyderabad"
+
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
   const parts = pathname.split("/").filter(Boolean);
@@ -17,33 +17,31 @@ function getCitySlugFromPath(pathname) {
 export default function CityPage() {
   const router = useRouter();
 
-  // ✅ Yeh state hamesha ASLI browser URL se derive hoti hai — chahe
-  // navigation Next.js router.push se hua ho, ya CityContext ke
-  // window.history.pushState (silent URL change) se — dono cases handle honge.
-  // useParams() yahan reliable nahi tha kyunki CityProvider silent pushState
-  // karta hai jise App Router track nahi karta, isliye params.city stale reh jaata tha.
   const [citySlug, setCitySlug] = useState("");
 
-  const syncCityFromUrl = useCallback(() => {
+  const syncCityFromUrl = useCallback((overridePathname) => {
     if (typeof window === "undefined") return;
-    setCitySlug(getCitySlugFromPath(window.location.pathname));
+    const path = overridePathname || window.location.pathname;
+    setCitySlug(getCitySlugFromPath(path));
   }, []);
 
-  // Pehla mount — hydration ke baad turant sync karo
+
   useEffect(() => {
     syncCityFromUrl();
   }, [syncCityFromUrl]);
 
-  // Jab CityContext silently URL change kare (city popup se select karne par)
+
   useEffect(() => {
-    window.addEventListener("city:changed", syncCityFromUrl);
-    return () => window.removeEventListener("city:changed", syncCityFromUrl);
+    const handleCityChanged = (e) => syncCityFromUrl(e?.detail?.path);
+    window.addEventListener("city:changed", handleCityChanged);
+    return () => window.removeEventListener("city:changed", handleCityChanged);
   }, [syncCityFromUrl]);
 
-  // Browser back/forward button
+
   useEffect(() => {
-    window.addEventListener("popstate", syncCityFromUrl);
-    return () => window.removeEventListener("popstate", syncCityFromUrl);
+    const handlePopState = () => syncCityFromUrl();
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, [syncCityFromUrl]);
 
   const normalizedCity = citySlug.toLowerCase();
@@ -66,8 +64,7 @@ export default function CityPage() {
     router.push(`/${normalizedCity}/${formattedLocality}`);
   };
 
-  // ✅ Pehle render (city abhi resolve nahi hui) mein kuch mat dikhao —
-  // isse purani/galat city ka flash nahi dikhega
+
   if (!city) return null;
 
   return (
@@ -126,8 +123,7 @@ export default function CityPage() {
 
       <HomeContent />
 
-      {/* key={city} lagane se React is section ko city change hote hi
-          poori tarah remount karega — stale render kabhi nahi dikhega */}
+   
       <LocalitiesSection
         key={city}
         title={`${city} Localities`}
