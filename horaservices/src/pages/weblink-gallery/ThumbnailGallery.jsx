@@ -1452,37 +1452,45 @@ const handleAddToLocker = async (imgData) => {
             {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
 
-                <div className="top-banner-capsule">
-                  <div className="banner-left">
-                    <Image
-                      src={bannerImageUrl}
-                      alt="left banner"
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
+                {(eventName && bannerImageUrl) ? 
+                  <div className="top-banner-capsule">
+                    <div className="banner-left">
+                      <Image
+                        src={bannerImageUrl}
+                        alt="left banner"
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
 
-                  <div className="banner-right">
-                    <Image
-                      src={capsuleBanner}
-                      alt="right banner"
-                      fill
-                      style={{ objectFit: 'contain' }} 
-                      priority
-                    />
+                    <div className="banner-right">
+                      <Image
+                        src={capsuleBanner}
+                        alt="right banner"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                        priority
+                      />
 
-                    <div
-                      className="bannerText"
-                      style={{
-                        fontSize: eventName.length > 25
-                          ? 'clamp(11px, 3.2vw, 15px)' 
-                          : 'clamp(14px, 4.5vw, 16px)' 
-                      }}
-                    >
-                      {eventName}
+                      <div
+                        className="bannerText"
+                        style={{
+                          fontSize: eventName.length > 25
+                            ? 'clamp(11px, 3.2vw, 15px)'
+                            : 'clamp(14px, 4.5vw, 16px)'
+                        }}
+                      >
+                        {eventName}
+                      </div>
                     </div>
                   </div>
-                </div>
+                  :
+                  <Image
+                    src={capsuleTopBanner}
+                    alt="banner"
+                    className="top-banner-image"
+                  />
+                }
                 
               <div className="thumbnail-gallery-content">
                 <HeaderCards
