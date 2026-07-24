@@ -14,6 +14,7 @@ import OtploginPopup from "../OtpLoginPopup";
 import LogoutModal from "@/utils/LogoutModal";
 import cityNameToSlug from "@/utils/cityNameToSlug";
 import { useCity } from "@/utils/cityContext";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const CITY_LIST = Object.values(cityNameToSlug);
 
@@ -57,7 +58,7 @@ const Header = () => {
    ------------------------ */
   const isLoggedIn =
     typeof window !== "undefined" &&
-    localStorage.getItem("isLoggedIn") === "true";
+    safeGetItem("isLoggedIn") === "true";
 
   const handleLogout = () => {
     localStorage.clear();

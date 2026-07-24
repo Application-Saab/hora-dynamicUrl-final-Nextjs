@@ -12,6 +12,7 @@ import { RSVP_STATUS } from "@/utils/constants";
 import RsvpNameModal from "./RsvpNameModal";
 import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
+import { safeSetItem } from "@/utils/safeStorage";
 
 const colors = [
   "#FD8D0A",
@@ -104,7 +105,7 @@ const WhosJoining = ({
       if (response.data.error) {
         alert("Something went wrong. Please try again.");
       } else {
-        localStorage.setItem(
+        safeSetItem(
           `rsvp_submitted_${eventId}_${loggedinUserId}`,
           "true",
         );

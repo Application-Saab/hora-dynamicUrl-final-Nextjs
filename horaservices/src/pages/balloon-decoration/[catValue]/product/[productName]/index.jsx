@@ -25,7 +25,6 @@ import {
   GET_ADDON_BY_ID,
   COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
-import axios from "axios";
 import FAQSection from "@/components/FAQSection";
 import faqData from "../../../../../utils/FaqData.json";
 import Tabs from "../../../../../components/Tabs";
@@ -59,6 +58,8 @@ import VideoClint from "@/assets/ourclientvideo.mp4"
 import pencil from "@/assets/pencil.svg";
 import AddOnsList from "@/components/AddOnsList";
 import fallbackImg from "@/assets/fallback-image.png";
+import { fetchWithError } from "@/utils/fetchWithError";
+import axiosApi from "@/utils/axiosApi";
 const SkeletonLoader = () => {
   return (
     <div
@@ -274,7 +275,7 @@ const fetchDecorationDetails = async () => {
         name
       )}`;
 
-      const response = await axios.get(url);
+      const response = await axiosApi.get(url);
 
       if (response?.data?.error) return null;
 
@@ -359,7 +360,7 @@ if (productName) {
 
 const getCategoryProducts = async (categoryId) => {
   try {
-    const response = await axios.get(
+    const response = await axiosApi.get(
       `${BASE_URL}/api/Decoration/searchByTag/v2/${categoryId}?page=1&priceFilter=all&sortBy=asc&theme=all&limit=500`
     );
 
@@ -424,7 +425,7 @@ useEffect(() => {
 
   const getSubCatId = async (catSlug) => {
     try {
-      const response = await axios.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
+      const response = await axiosApi.get(`${BASE_URL}${GET_DECORATION_CAT_ID}${catSlug}`);
       const categoryData = response.data.data;
       if (categoryData) {
         setPassCategoryId(categoryData._id);
@@ -724,7 +725,7 @@ const generateSlug = (name) => {
         if ([...query].length === 0) return; // no valid IDs
 
         const url = `${BASE_URL}${GET_ADDON_BY_ID}?${query.toString()}`;
-        const response = await fetch(url);
+        const response = await fetchWithError(url);
         const data = await response.json();
 
         if (!response.ok || data.error) {

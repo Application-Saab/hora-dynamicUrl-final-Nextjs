@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
-import axios from "axios";
 import { Step, Label, Divider } from 'semantic-ui-react'; // Replace with actual library
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
@@ -26,6 +25,7 @@ import styled from 'styled-components';
 import InfoIcon from '../../../assets/info.png';
 import Image from "next/image";
 import { useRouter } from "next/router";
+import axiosApi from "@/utils/axiosApi";
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
 
@@ -134,7 +134,7 @@ const CreateOrder = ({ history, currentStep }) => {
                 const requestData = {
                     type: "cuisine",
                 };
-                const response = await axios.post(url, requestData, {
+                const response = await axiosApi.post(url, requestData, {
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -256,7 +256,7 @@ const CreateOrder = ({ history, currentStep }) => {
                 cuisineId: selectedCuisines,
                 is_dish: is_dish,
             };
-            const response = await axios.post(url, requestData, {
+            const response = await axiosApi.post(url, requestData, {
                 headers: {
                     "Content-Type": "application/json",
                 },

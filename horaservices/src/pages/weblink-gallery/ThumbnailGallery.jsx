@@ -8,9 +8,8 @@ import React, {
   useRef,
 } from "react";
 import Image from "next/image";
-import axios from "axios";
 import "./gallery.css"; // Ensure this path is correct
-import { BASE_URL } from "@/utils/apiconstants";
+import { BASE_URL, CAPSULE_LIKE_TOGGLE } from "@/utils/apiconstants";
 import HeaderCards from "@/components/Gallery/HeaderCards";
 import share from "../../assets/share.svg";
 import multiGroup from "../../assets/multiGroup.svg";
@@ -55,6 +54,9 @@ import MyPhotos2 from '../../assets/MyPhotos2.svg';
 import imageBox from "../../assets/imageBox.png";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import ArrowImg from "../../assets/backarrow.svg";
+import { fetchWithError } from "@/utils/fetchWithError";
+import axiosApi from "@/utils/axiosApi";
+import { safeGetItem, safeGetSessionItem, safeSetSessionItem } from "@/utils/safeStorage";
 
 const WEBLINK_OPFS_ROOT_DIR = "weblink-temp-uploads";
 const weblinkUploadsDb = createPendingUploadsDb({
@@ -267,7 +269,7 @@ const showSnackbar = (message) => {
     try {
       generatingRef.current = true;
 
-      const response = await axios.post(
+      const response = await axiosApi.post(
         `${BASE_URL}${GENERATE_CAPSULE_LINK}/${mainFolderId}`
       );
 
@@ -339,7 +341,7 @@ const showSnackbar = (message) => {
       (id) => !folderSelection.includes(id),
     );
 
-    fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+    fetchWithError(`${BASE_URL}/api/internal/assign-to-subfolder`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -366,7 +368,7 @@ const showSnackbar = (message) => {
   };
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn");
+    const loggedIn = safeGetItem("isLoggedIn");
 
     if (loggedIn === "true") {
       setIsLogin(true);
@@ -379,8 +381,8 @@ const showSnackbar = (message) => {
   }, []);
 
   useEffect(() => {
-    const mobileNumber = localStorage.getItem("mobileNumber");
-    const userId = localStorage.getItem("userID");
+    const mobileNumber = safeGetItem("mobileNumber");
+    const userId = safeGetItem("userID");
     setLocalPhoneNumber(mobileNumber);
     setLocalUserId(userId);
   }, []);
@@ -441,7 +443,7 @@ const showSnackbar = (message) => {
       }
 
       const exitPopupShown =
-        sessionStorage.getItem("exitPopupShown") === "true";
+        safeGetSessionItem("exitPopupShown") === "true";
 
       if (exitPopupShown) {
         window.history.back();
@@ -471,7 +473,7 @@ const showSnackbar = (message) => {
 
   const closeExitPopup = () => {
     setShowExitPopup(false);
-    sessionStorage.setItem("exitPopupShown", "true");
+    safeSetSessionItem("exitPopupShown", "true");
   };
 
 
@@ -486,7 +488,7 @@ const showSnackbar = (message) => {
 
     const currentGuest = {
       _id: localUserId,
-      name: localStorage.getItem("userName") || "",
+      name: safeGetItem("userName") || "",
       phone: localPhoneNumber || "",
       avatar: "",
     };
@@ -658,8 +660,8 @@ const showSnackbar = (message) => {
 
   useEffect(() => {
     const handleLoginChange = () => {
-      const loggedIn = localStorage.getItem("isLoggedIn");
-      const userId = localStorage.getItem("userID");
+      const loggedIn = safeGetItem("isLoggedIn");
+      const userId = safeGetItem("userID");
 
       if (loggedIn === "true" && userId) {
         setIsLogin(true);
@@ -721,7 +723,7 @@ const showSnackbar = (message) => {
 
   const sessionKey = `tracked_device_${mainFolderId}_${localUserId}`;
 
-  if (sessionStorage.getItem(sessionKey)) return;
+  if (safeGetSessionItem(sessionKey)) return;
 
     const getDeviceType = () => {
     if (typeof navigator !== 'undefined') {
@@ -740,7 +742,7 @@ const showSnackbar = (message) => {
     deviceType: getDeviceType(),
   })
     .then(() => {
-      sessionStorage.setItem(sessionKey, "true");
+      safeSetSessionItem(sessionKey, "true");
     })
     .catch((err) => {
       console.error("Device tracking failed:", err);
@@ -750,13 +752,13 @@ const showSnackbar = (message) => {
   useEffect(() => {
     const logClick = async () => {
       const sessionKey = `tracked_folder_${mainFolderId}`;
-      const alreadyTracked = sessionStorage.getItem(sessionKey);
+      const alreadyTracked = safeGetSessionItem(sessionKey);
 
       if (!alreadyTracked && mainFolderId) {
         try {
           await trackFolderClick(mainFolderId);
 
-          sessionStorage.setItem(sessionKey, "true");
+          safeSetSessionItem(sessionKey, "true");
 
           console.log("Click tracked and session flag set!");
         } catch (err) {
@@ -1021,7 +1023,7 @@ const showSnackbar = (message) => {
           formData.append("isWeblink", "true");
           formData.append("fileId", item.id);
 
-          const res = await axios.post(`${MEDIA_WORKER_URL}/upload`, formData, {
+          const res = await axiosApi.post(`${MEDIA_WORKER_URL}/upload`, formData, {
             onUploadProgress: (p) => {
               const percent = p.total
                 ? Math.round((p.loaded * 100) / p.total)
@@ -1166,7 +1168,7 @@ const currentUrl =
     );
 
     try {
-      await fetch(`https://horaservices.com/api/internal/toggle-like`, {
+      await fetchWithError(`${BASE_URL}${CAPSULE_LIKE_TOGGLE}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -1250,7 +1252,7 @@ const currentUrl =
       (id) => !newFolderIds.includes(id),
     );
 
-    await fetch(`${BASE_URL}/api/internal/assign-to-subfolder`, {
+    await fetchWithError(`${BASE_URL}/api/internal/assign-to-subfolder`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1895,7 +1897,7 @@ const handleAddToLocker = async (imgData) => {
                             return;
 
                           try {
-                            const res = await fetch(
+                            const res = await fetchWithError(
                               `${MEDIA_WORKER_URL}/delete-image/${currentImage._id}`,
                               {
                                 method: "DELETE",

@@ -5,6 +5,7 @@ import Image from "next/image";
 import emojiicon from "@/assets/Emoji.png";
 import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
 import "./emoji.css";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -89,11 +90,11 @@ export default function EmojiPickerButton({
       const height = window.innerHeight - window.visualViewport.height;
       if (height > 100) {
         setKeyboardHeight(height);
-        localStorage.setItem("keyboardHeight", height);
+        safeSetItem("keyboardHeight", height);
       }
     };
 
-    const cached = localStorage.getItem("keyboardHeight");
+    const cached = safeGetItem("keyboardHeight");
     if (cached) setKeyboardHeight(parseInt(cached));
 
     window.visualViewport.addEventListener("resize", handleResize);

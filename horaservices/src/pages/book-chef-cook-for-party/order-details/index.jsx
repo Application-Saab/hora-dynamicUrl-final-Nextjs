@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { Modal, Button, Row, Col, Spinner } from 'react-bootstrap';
 import orderWarning from "../../../assets/OrderWarning.png";

@@ -3,11 +3,12 @@ import "../../css/success.css";
 import confirmOrder from "../../assets/confirmOrder.png";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import axios from 'axios';
+import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const Success = () => {
 const router = useRouter();
-const [mobileNumber, setMobileNumber] = useState(() => localStorage.getItem("mobileNumber") || '');
+const [mobileNumber, setMobileNumber] = useState(() => safeGetItem("mobileNumber") || '');
   const contactUsRedirection = async () => {
     try {
       window.open(
@@ -66,7 +67,7 @@ const sendWelcomeMessage = async (mobileNumber) => {
   };
 
   try {
-      const response = await axios.request(options);
+      const response = await axiosApi.request(options);
       console.log('WhatsApp message response:', response.data);
   } catch (error) {
       console.error('Error sending WhatsApp message:', error);

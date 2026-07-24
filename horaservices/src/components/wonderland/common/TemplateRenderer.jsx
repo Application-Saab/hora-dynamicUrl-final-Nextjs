@@ -8,6 +8,8 @@ import { getTemplate } from "@/utils/indexedDB";
 import { captureElementAsImage } from "@/utils/captureElementAsImage";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useChatStore } from "@/hooks/ChatContext";
+import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const TemplateRenderer = ({
   fetchEventLoading,
@@ -26,8 +28,7 @@ const TemplateRenderer = ({
   const { width } = useScreenSize();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [templateSizeClass, setTemplateSizeClass] = useState("");
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token = safeGetItem("token") : null;
   const { refetchChatRooms } = useChatStore();
   const videoRef = useRef(null);
   const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
@@ -134,7 +135,7 @@ const TemplateRenderer = ({
       : `${BASE_URL}/api/customer/event/event-invites/external-template/${eventDetails?._id}`;
       
     try {
-      await fetch(url, {
+      await fetchWithError(url, {
         method: "PUT",
         headers: { Authorization: token || "" },
         body: form,
