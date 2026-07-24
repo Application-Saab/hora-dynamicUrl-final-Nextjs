@@ -1,6 +1,6 @@
-import axios from "axios";
 import { BASE_URL, TRACK_WHATSAPP_CLICKS } from "./apiconstants";
 import { safeGetItem } from "./safeStorage";
+import axiosApi from "./axiosApi";
 
 export const trackWAClicks = async (type = "whatsapp") => {
   const userId = safeGetItem("userID");
@@ -16,7 +16,7 @@ export const trackWAClicks = async (type = "whatsapp") => {
       visitorId,
       type,
     };
-    await axios.patch(BASE_URL + TRACK_WHATSAPP_CLICKS, payload, {
+    await axiosApi.patch(BASE_URL + TRACK_WHATSAPP_CLICKS, payload, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {

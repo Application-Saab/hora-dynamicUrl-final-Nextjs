@@ -1,43 +1,3 @@
-// import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
-// import { safeGetItem } from "@/utils/safeStorage";
-// import { BASE_URL, SAVE_ERROR_LOGS } from "./apiconstants";
-
-// export const reportError = async (error, errorInfo = {}, context = {}) => {
-//   try {
-//     const visitorId = getVisitorId();
-//     const { device, os } = getDeviceInfo();
-//     const browser = getBrowserInfo();
-//     const userId = safeGetItem("userID") || null;
-//     const currentUrl = typeof window !== "undefined" ? window.location.href : "";
-
-//     const payload = {
-//       type: context.type || 'frontend',
-//       message: error?.message || 'Unknown error',
-//       stack: error?.stack,
-//       component: context.component || errorInfo.componentStack,
-//       url: currentUrl,
-//       userId,
-//       visitorId,
-//       browser,
-//       device: `${device} ${os}`,
-//       payload: {
-//         ...context.payload,
-//         reactErrorInfo: errorInfo
-//       },
-//       statusCode: context.statusCode,
-//       endpoint: context.endpoint,
-//     };
-
-//     await fetch(`${BASE_URL}${SAVE_ERROR_LOGS}`, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify(payload),
-//     });
-//   } catch (e) {
-//     console.error('Failed to report error:', e);
-//   }
-// };
-
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import { safeGetItem } from "@/utils/safeStorage";
 import { BASE_URL, SAVE_ERROR_LOGS } from "./apiconstants";
@@ -139,11 +99,6 @@ export const reportError = async (error, errorInfo = {}, context = {}) => {
       endpoint: context.endpoint,
     };
 
-    // await fetch(`${BASE_URL}${SAVE_ERROR_LOGS}`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(payload),
-    // });
     // Try Beacon first (best for unload/crash)
     const beaconSent = sendWithBeacon(payload);
 

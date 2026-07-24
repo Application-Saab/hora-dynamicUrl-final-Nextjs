@@ -192,7 +192,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         userId,
         visitorId
       };
-      const res = await axios.patch(BASE_URL + ASSIGN_USER_TO_TRACKINGS, payload, {
+      const res = await axiosApi.patch(BASE_URL + ASSIGN_USER_TO_TRACKINGS, payload, {
         headers: { "Content-Type": "application/json" },
       });
     } catch(error) {
