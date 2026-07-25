@@ -6,6 +6,7 @@ import checkImage from "../../../../../../../assets/tick.jpeg";
 import { getDecorationProductOrganizationSchema } from "../../../../../../../utils/schema";
 import "../../../../../../../css/decoration.css";
 import DecorationCatDetails from "@/pages/balloon-decoration/[catValue]/product/[productName]";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 
 const DecorationLocalityCatDetails = () => {
@@ -18,7 +19,7 @@ const DecorationLocalityCatDetails = () => {
     if (router.isReady && productName) {
       const formattedProductName = productName.replace(/-/g, " ");
       // 🧠 Replace this with your actual API call:
-      fetch(`/api/getProductByName?name=${formattedProductName}`)
+      fetchWithError(`/api/getProductByName?name=${formattedProductName}`)
         .then(res => res.json())
         .then(data => {
           setProduct(data);

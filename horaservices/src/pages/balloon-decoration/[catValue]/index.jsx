@@ -8,7 +8,6 @@ import {
   GET_DECORATION_CAT_ITEM,
   API_SUCCESS_CODE,
 } from "../../../utils/apiconstants";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import Head from "next/head";
 import { useSearchParams } from "next/navigation";
@@ -42,6 +41,7 @@ import ThemeSelector from "@/components/Themeselector";
 import SearchSortBar from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import customiseIcon from "@/assets/customiselcon.webp";
+import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
@@ -347,7 +347,7 @@ const DecorationCatPage = ({ locality }) => {
 
   const getSubCatId = async (subCategory) => {
     try {
-      const response = await axios.get(
+      const response = await axiosApi.get(
         BASE_URL + GET_DECORATION_CAT_ID + subCategory
       );
       const categoryId = response.data.data?._id;
@@ -428,7 +428,7 @@ const DecorationCatPage = ({ locality }) => {
       const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM
         }v3/${catId}?${params.toString()}`;
 
-      const response = await axios.get(apiUrl);
+      const response = await axiosApi.get(apiUrl);
 
       if (response.status === API_SUCCESS_CODE) {
         const decoratedData = response.data.data.map((item) => {

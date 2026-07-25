@@ -6,6 +6,7 @@ import { BASE_URL } from "@/utils/apiconstants";
 import { saveTemplate } from "@/utils/indexedDB";
 import CustomButton from "@/components/wonderland/common/CustomButton";
 import "./UploadCustomTemplate.css";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const UploadCustomTemplate = ({
   eventId,
@@ -38,13 +39,13 @@ const UploadCustomTemplate = ({
     try {
       setUploading(true);
 
-      const blob = await fetch(imageSrc).then((r) => r.blob());
+      const blob = await fetchWithError(imageSrc).then((r) => r.blob());
 
       const formData = new FormData();
       formData.append("image", blob);
       formData.append("userId", userId);
 
-      await fetch(
+      await fetchWithError(
         `${BASE_URL}/api/customer/event/event-invites/external-template/${eventId}`,
         {
           method: "PUT",

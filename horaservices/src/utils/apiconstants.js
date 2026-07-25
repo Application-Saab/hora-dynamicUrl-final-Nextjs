@@ -46,7 +46,9 @@ export const GET_ALL_TEMPLATES = "/api/photo/templates";
 export const GET_TEMPLATES_BY_ID = "/api/photo/templates";
 export const EVENT_POST_LIKE_UNLIKE = '/api/customer/event';
 export const LIKED_POST_BY_EVENT_AND_USERID = "/api/customer/event/liked-posts"
-export const GENERATE_SHARE_CODE = '/smartinvite/share/generate-share-code'
+export const GENERATE_SHARE_CODE = '/smartinvite/share/generate-share-code';
+export const TEMPLATE_ASSESTS_URL_BASE = "https://horaservices.com/api/template-assets/templates"
+
 
 export const GET_EVENT_IMAGES = "/api/customer/event/event-images";
 export const UPLOAD_IMAGES_SELF = "/api/customer/event/event-images";
@@ -78,8 +80,12 @@ export const GET_PHOTOGRAPHY_ORDER_DETAILS = "/api/order/order_details_photograp
 export const GET_VENUE_DETAILS_BY_ID = '/api/party-venue/venue-details';
 export const GET_VENUE_PACKAGES_BY_VENUE_ID = '/api/party-venue/package/packages-by-venue';
 export const GET_VENUE_CATEGORIES_LIST = '/api/party-venue/package-category/categories-dropdown'
-export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images'
+export const GET_ALL_VENUE_IMAGES = '/api/party-venue/venue-images';
+export const VENUE_PUBLIC_LISTING = "/api/party-venue/venues-public-list";
 
-export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code"
+export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code";
+export const CAPSULE_LIKE_TOGGLE = "/api/internal/toggle-like";
 
 export const GET_ADDON_BY_ID = "/api/addon/get"
+export const SAVE_ERROR_LOGS = "/api/error-log"
+export const VISITOR_TRACKING = "/api/analytics/track-daily-visit"

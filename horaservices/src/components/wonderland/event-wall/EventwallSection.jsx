@@ -53,6 +53,8 @@ import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { fetchWithError } from "@/utils/fetchWithError";
+import { safeGetItem } from "@/utils/safeStorage";
 const EventwallSection = ({
   userData,
   rsvpSubmitted,
@@ -66,7 +68,7 @@ const EventwallSection = ({
   const { makeRequest: getAllPosts } = useApi();
   const { makeRequest: getAllLikes } = useApi();
   const { makeRequest: getEventInvite } = useApi();
-  const userId = localStorage.getItem("userID") || userData?._id;
+  const userId = safeGetItem("userID") || userData?._id;
   const [allImages, setAllImages] = useState([]);
   const imagesRef = useRef([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -97,7 +99,7 @@ const EventwallSection = ({
   const [initialPopupFolders, setInitialPopupFolders] = useState([]);
   const [showCreateFolderPopup, setShowCreateFolderPopup] = useState(false);
   const [localPhoneNumber, setLocalPhoneNumber] = useState(
-    localStorage.getItem("mobileNumber") || "",
+    safeGetItem("mobileNumber") || "",
   );
   const [rawPhoneNumber, setRawPhoneNumber] = useState(null);
   const [likedImages, setLikedImages] = useState({});
@@ -189,7 +191,7 @@ const EventwallSection = ({
           ...initialLikes,
         }));
       } catch (error) {
-        console.error("Failed to fetch likes", error);
+        console.error("Failed to fetching likes", error);
       }
     };
 
@@ -642,7 +644,7 @@ const EventwallSection = ({
     const ext = parts.pop();
     const filename = parts.join("-") + "." + ext;
     try {
-      const response = await fetch(url, { mode: "cors" });
+      const response = await fetchWithError(url, { mode: "cors" });
       const blob = await response.blob();
 
       // Create a download link
@@ -695,7 +697,7 @@ const EventwallSection = ({
     addImageIds = [],
     removeImageIds = [],
   }) => {
-    const res = await fetch(`${BASE_URL}${ASSIGN_TO_EVENT_SUBFOLDER}`, {
+    const res = await fetchWithError(`${BASE_URL}${ASSIGN_TO_EVENT_SUBFOLDER}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ subFolderId, addImageIds, removeImageIds }),
@@ -797,7 +799,7 @@ const EventwallSection = ({
     setShowActionMenu(false);
 
     try {
-      const res = await fetch(`${BASE_URL}${DELETE_EVENT_POST}/${toDeleteId}`, {
+      const res = await fetchWithError(`${BASE_URL}${DELETE_EVENT_POST}/${toDeleteId}`, {
         method: "POST",
       });
       if (!res.ok) {
@@ -852,7 +854,7 @@ const EventwallSection = ({
     );
 
     try {
-      await fetch(`${BASE_URL}${EVENT_POST_LIKE_UNLIKE}/${imageId}/like`, {
+      await fetchWithError(`${BASE_URL}${EVENT_POST_LIKE_UNLIKE}/${imageId}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

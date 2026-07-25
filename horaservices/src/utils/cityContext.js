@@ -3,6 +3,8 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { usePathname, useRouter } from "next/navigation";
 import cityNameToSlug from "@/utils/cityNameToSlug";
 import { BASE_URL } from "./apiconstants";
+import { fetchWithError } from "./fetchWithError";
+import { safeGetItem, safeSetItem } from "./safeStorage";
 
 const CityContext = createContext({
   selectedCitySlug: "",
@@ -95,11 +97,10 @@ const isRouteCityAllowed = (strippedPath) => {
 
 const getOrCreateVisitorId = () => {
   if (typeof window === "undefined") return "";
-
-  let visitorId = localStorage.getItem("VISITOR_ID");
+  let visitorId = safeGetItem("VISITOR_ID");
   if (!visitorId) {
     visitorId = crypto.randomUUID();
-    localStorage.setItem("VISITOR_ID", visitorId);
+    safeSetItem("VISITOR_ID", visitorId);
   }
 
   return visitorId;
@@ -107,10 +108,10 @@ const getOrCreateVisitorId = () => {
 
 const saveCityToServer = async (cityName) => {
   try {
-    const userId = localStorage.getItem("userID") || "";
+    const userId = safeGetItem("userID") || "";
     const visitorId = getOrCreateVisitorId();
 
-    await fetch(`${BASE_URL}/api/event-dates/user-city`, {
+    await fetchWithError(`${BASE_URL}/api/event-dates/user-city`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -149,7 +150,7 @@ const extractCityNameFromMyEvents = (json) => {
 
 const fetchCityFromServer = async () => {
   try {
-    const userId = localStorage.getItem("userID") || "";
+    const userId = safeGetItem("userID") || "";
     const visitorId = getOrCreateVisitorId();
 
     if (!userId && !visitorId) {
@@ -323,10 +324,8 @@ export const CityProvider = ({ children }) => {
          setUrlSilently(canonicalPath || "/", { replace: true });
       }
 
-      // Keep the city remembered regardless of route, so it reappears in the
-      // URL as soon as the user is back on an allowed route.
-      localStorage.setItem("selectedCity", citySlugFromUrl);
       setSelectedCitySlug(citySlugFromUrl);
+      safeSetItem("selectedCity", citySlugFromUrl);
       setShowCityModal(false);
 
       return;
@@ -352,8 +351,7 @@ export const CityProvider = ({ children }) => {
 
       if (cityName && cityName !== NOT_SELECTED) {
         const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
-
-        localStorage.setItem("selectedCity", slug);
+        safeSetItem("selectedCity", slug);
         setSelectedCitySlug(slug);
         setShowCityModal(false);
         dbCityResolvedRef.current = cityName;
@@ -400,7 +398,7 @@ export const CityProvider = ({ children }) => {
 
     const slug = cityNameToSlug[cityName] || cityName.toLowerCase();
 
-    localStorage.setItem("selectedCity", slug);
+    safeSetItem("selectedCity", slug);
     setSelectedCitySlug(slug);
 
     saveCityToServer(cityName);

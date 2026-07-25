@@ -6,6 +6,8 @@ import nonVegIcon from "@/assets/nonveg.svg";
 import locationIcon from "@/assets/venuelanding/location.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { BASE_URL, VENUE_PUBLIC_LISTING } from "@/utils/apiconstants";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const VenueList = ({ eventType, venueType, guestCapacity,city }) => {
   const [venues, setVenues] = useState([]);
@@ -25,7 +27,7 @@ useEffect(() => {
   if (guestCapacity) params.append("guestCapacity", guestCapacity);
   if (city) params.append("city", city);
 
-  fetch(`https://horaservices.com/api/party-venue/venues-public-list?${params}`)
+  fetchWithError(`${BASE_URL}${VENUE_PUBLIC_LISTING}?${params}`)
     .then((r) => r.json())
     .then((res) => {
       setVenues(res.data || []);

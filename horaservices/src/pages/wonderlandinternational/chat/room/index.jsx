@@ -19,6 +19,7 @@ import { getRoomDetails } from "@/utils/setGroupDetails";
 import { useChatStore } from "@/hooks/ChatContext";
 import socket from "@/socket";
 import { sortRooms } from "@/hooks/ChatProvider";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const getAvatarColor = (name) => {
   const colors = [
@@ -45,7 +46,7 @@ const ChatPage = () => {
   const router = useRouter();
   const { groupId } = router.query;
   const userId =
-    typeof window !== "undefined" ? localStorage.getItem("userID") : null;
+    typeof window !== "undefined" ? safeGetItem("userID") : null;
   const { chatRooms, setChatRooms, unreadCounts, setUnreadCountsContext } =
     useChatStore();
   const { makeRequest: fetchUserRequest } = useApi();
@@ -237,7 +238,7 @@ const ChatPage = () => {
           chatLayout.removeEventListener("touchmove", allowChatMessagesScroll);
           chatLayout.removeEventListener("wheel", allowChatMessagesScroll);
 
-const cached = localStorage.getItem("keyboardHeight");
+const cached = safeGetItem("keyboardHeight");
           const kbh = cached
             ? parseFloat(cached)
             : Math.max(Math.round((window.screen?.height ?? 750) * 0.44), 280);
@@ -472,14 +473,14 @@ let blurSafetyTimer = null;
   useEffect(() => {
     const saved =
       typeof window !== "undefined"
-        ? localStorage.getItem("chatBgImage")
+        ? safeGetItem("chatBgImage")
         : null;
     if (saved) {
       setChatBg(saved);
     } else {
       setChatBg(chatBgImage.src);
       if (typeof window !== "undefined") {
-        localStorage.setItem("chatBgImage", chatBgImage.src);
+        safeSetItem("chatBgImage", chatBgImage.src);
       }
     }
   }, []);
@@ -521,7 +522,7 @@ let blurSafetyTimer = null;
       html: messageHTML,
       type: "text",
       senderName: userData?.name,
-      senderPhone: localStorage.getItem("mobileNumber"),
+      senderPhone: safeGetItem("mobileNumber"),
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);

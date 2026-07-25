@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
-import axios from "axios";
 import { Step, Label, Divider } from 'semantic-ui-react'; // Replace with actual library
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import { Modal, Button, Container, Row, Col, Spinner } from "react-bootstrap";
@@ -29,6 +28,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import Popup from '../../utils/popup';
 import SearchBar from "@/components/SearchBar";
+import axiosApi from "@/utils/axiosApi";
 const orangeColor = '#FF6F61';
 const defaultColor = '#B0BEC5';
 
@@ -140,7 +140,7 @@ const suggestions = allDishes.filter((dish) =>
                 const requestData = {
                     type: "cuisine",
                 };
-                const response = await axios.post(url, requestData, {
+                const response = await axiosApi.post(url, requestData, {
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -262,7 +262,7 @@ const suggestions = allDishes.filter((dish) =>
                 cuisineId: selectedCuisines,
                 is_dish: is_dish,
             };
-            const response = await axios.post(url, requestData, {
+            const response = await axiosApi.post(url, requestData, {
                 headers: {
                     "Content-Type": "application/json",
                 },

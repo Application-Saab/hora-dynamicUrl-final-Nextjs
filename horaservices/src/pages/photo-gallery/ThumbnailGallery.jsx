@@ -8,6 +8,7 @@ import photogallryIcon from '../../assets/gallry-loading.gif';
 import LazyImage from '../../components/LazyImage';
 import PaginationControls from '../../components/PaginationControls';
 import { BASE_URL } from "@/utils/apiconstants";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const getImageDimensions = (url) =>
   new Promise((resolve) => {
@@ -122,7 +123,7 @@ useEffect(() => {
       }
       setLoading(true); setError(null);
       try {
-        const res  = await fetch(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
+        const res  = await fetchWithError(`${BASE_URL}/api/photo/thumbnailsWithinProject?folderName=${encodeURIComponent(folderName)}&customerId=${encodeURIComponent(customerId)}`);
         if (!res.ok) throw new Error(`API ${res.status}`);
         const data = await res.json();
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_URL, ORDER_INGREDIENTS } from "../../utils/apiconstants";
 import Image from "next/image";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const OrderDetailsIngre = ({ orderDetail, orderType }) => {
   const [orderIngredients, setOrderIngredients] = useState({});
@@ -8,7 +9,7 @@ const OrderDetailsIngre = ({ orderDetail, orderType }) => {
   async function fetchOrderIngredients() {
     try {
       setLoading(true);
-      const response = await fetch(
+      const response = await fetchWithError(
         BASE_URL + ORDER_INGREDIENTS + "/" + orderDetail.order_id
       );
       const responseData = await response.json();

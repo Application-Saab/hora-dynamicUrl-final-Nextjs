@@ -1,11 +1,13 @@
+import { safeGetItem, safeSetItem } from "./safeStorage";
+
 export const updateGroupUnread = (eventId, increment = 1) => {
-  const storedCounts = JSON.parse(localStorage.getItem("groupUnreadCounts") || "{}");
+  const storedCounts = JSON.parse(safeGetItem("groupUnreadCounts") || "{}");
 
   storedCounts[eventId] = (storedCounts[eventId] || 0) + increment;
-  localStorage.setItem("groupUnreadCounts", JSON.stringify(storedCounts));
+  safeSetItem("groupUnreadCounts", JSON.stringify(storedCounts));
 
   const total = Object.values(storedCounts).reduce((a, b) => a + b, 0);
-  localStorage.setItem("totalUnread", total.toString());
+  safeSetItem("totalUnread", total.toString());
   window.dispatchEvent(new Event("unreadCountChange"));
   return total;
 };

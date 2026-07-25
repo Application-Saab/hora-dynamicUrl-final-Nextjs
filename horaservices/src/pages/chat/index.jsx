@@ -11,11 +11,12 @@ import { useChatStore } from "@/hooks/ChatContext";
 import { MARK_READ_MESSAGE } from "@/utils/apiconstants";
 import useApi from "@/hooks/useApi";
 import socket from "@/socket";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const GroupsList = () => {
   const userId =
     typeof window !== "undefined"
-      ? localStorage.getItem("userID") ||
+      ? safeGetItem("userID") ||
         new URLSearchParams(window.location.search).get("id")
       : null;
   const router = useRouter();
