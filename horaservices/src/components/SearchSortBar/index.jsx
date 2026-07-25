@@ -241,10 +241,9 @@ export default function SearchSortBar({
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
   const route = useRouter();
-  console.log('%c [ route ]', 'font-size:13px; background:pink; color:#bf2c9f;', route)
-  const pathname = route.asPath;
-  console.log('%c [ pathname ]', 'font-size:13px; background:pink; color:#bf2c9f;', pathname)
 
+  const pathname = route.asPath;
+ 
   const queryRef = useRef(query);
   useEffect(() => {
     queryRef.current = query;

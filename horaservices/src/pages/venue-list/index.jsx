@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "@/components/wonderland/wonderland.css";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TopBanner from "@/components/Venue/Topbanner";
@@ -30,16 +30,28 @@ const venuelandMainPage = () => {
   const [activeVenueType, setActiveVenueType] = useState("all");
   const [guestCapacity, setGuestCapacity] = useState("");
 
-
   const { selectedCityName } = useCity();
+
+  const hasRedirectedRef = useRef(false);
 
   useLayoutEffect(() => {
     let timer;
-    if (isUserLoggedIn && loggedinUserId) {
-      timer = setTimeout(() => {
-        router.push(`/venue-list`);
-      }, 2500);
+
+    if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
+        const currentPath =
+        typeof window !== "undefined" ? window.location.pathname : "";
+      const alreadyOnVenueList = /(^|\/)venue-list(\/|$)/.test(currentPath);
+
+      if (alreadyOnVenueList) {
+        hasRedirectedRef.current = true;
+      } else {
+        timer = setTimeout(() => {
+          hasRedirectedRef.current = true;
+          router.push(`/venue-list`);
+        }, 2500);
+      }
     }
+
     return () => clearTimeout(timer);
   }, [loggedinUserId, isUserLoggedIn]);
 
