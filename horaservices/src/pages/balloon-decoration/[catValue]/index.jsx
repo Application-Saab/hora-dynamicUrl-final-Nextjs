@@ -8,6 +8,7 @@ import {
   GET_DECORATION_CAT_ITEM,
   API_SUCCESS_CODE,
 } from "../../../utils/apiconstants";
+import axios from "axios";
 import { useSelector } from "react-redux";
 import Head from "next/head";
 import { useSearchParams } from "next/navigation";
@@ -41,7 +42,6 @@ import ThemeSelector from "@/components/Themeselector";
 import SearchSortBar from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
 import customiseIcon from "@/assets/customiselcon.webp";
-import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
@@ -81,6 +81,7 @@ const DecorationCatPage = ({ locality }) => {
   );
   const { theme } = router.query;
   const [loading, setLoading] = useState(true);
+const [isPaginating, setIsPaginating] = useState(false); // 👈 naya
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
@@ -283,37 +284,16 @@ const DecorationCatPage = ({ locality }) => {
     return () => window.removeEventListener("scroll", handleStickyScroll);
   }, []);
 
-  const sentinelRef = useRef(null);
+useEffect(() => {
+  if (loading || isPaginating || !hasMore) return;
 
-  useEffect(() => {
-    if (loading || !hasMore) return;
+  const timer = setTimeout(() => {
+    setCurrentPage((prev) => prev + 1);
+  }, 1000);
 
-    const isMobile = window.innerWidth <= 768;
-    const rootMargin = isMobile ? "400px" : "1000px";
+  return () => clearTimeout(timer);
+}, [loading, isPaginating, hasMore]);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setCurrentPage((prev) => prev + 1);
-        }
-      },
-      {
-        root: null,
-        rootMargin: rootMargin,
-        threshold: 0,
-      }
-    );
-
-    if (sentinelRef.current) {
-      observer.observe(sentinelRef.current);
-    }
-
-    return () => {
-      if (sentinelRef.current) {
-        observer.unobserve(sentinelRef.current);
-      }
-    };
-  }, [loading, hasMore]);
 
   useEffect(() => {
     if (catValue && currentPage !== 1) {
@@ -347,7 +327,7 @@ const DecorationCatPage = ({ locality }) => {
 
   const getSubCatId = async (subCategory) => {
     try {
-      const response = await axiosApi.get(
+      const response = await axios.get(
         BASE_URL + GET_DECORATION_CAT_ID + subCategory
       );
       const categoryId = response.data.data?._id;
@@ -386,17 +366,23 @@ const DecorationCatPage = ({ locality }) => {
     }
   }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
 
-  const getSubCatItems = async (page) => {
+ const getSubCatItems = async (page) => {
     if (!catId) return;
 
     try {
-      setLoading(true);
+      // Page 1 (fresh filter/theme/search/category change) => poora
+      // skeleton dikhao. Page 2+ (auto-pagination) => purane products
+      // hide na ho, sirf niche ek chhota loader dikhega.
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setIsPaginating(true);
+      }
 
       const params = new URLSearchParams();
-      params.set("limit", "1000");
+      params.set("limit", "30");
       params.set("page", String(page));
 
-      // Popularity is the API's default ordering, so it needs no sortBy param.
       if (sortOption === "newArrival") {
         params.set("sortBy", "newArrival");
       } else if (sortOption === "lowToHigh") {
@@ -409,33 +395,24 @@ const DecorationCatPage = ({ locality }) => {
         params.set("theme", themeFilter);
       }
 
-      // Price-range theme (Budget Friendly / Value For Money / Photogenic / Stage Decoration)
       if (selectedPriceTheme?.priceRange) {
         const { min, max } = selectedPriceTheme.priceRange;
-        if (min !== undefined && min !== null) {
-          params.set("minPrice", String(min));
-        }
-        // Stage Decoration is open-ended at the top, so maxPrice is omitted for it.
-        if (max !== undefined && max !== null) {
-          params.set("maxPrice", String(max));
-        }
+        if (min !== undefined && min !== null) params.set("minPrice", String(min));
+        if (max !== undefined && max !== null) params.set("maxPrice", String(max));
       }
 
       if (searchQuery) {
         params.set("search", searchQuery);
       }
 
-      const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM
-        }v3/${catId}?${params.toString()}`;
+      const apiUrl = `${BASE_URL + GET_DECORATION_CAT_ITEM}v3/${catId}?${params.toString()}`;
 
-      const response = await axiosApi.get(apiUrl);
+      const response = await axios.get(apiUrl);
 
       if (response.status === API_SUCCESS_CODE) {
         const decoratedData = response.data.data.map((item) => {
-          // Normalize price to a Number so range comparisons (>=, <=) work reliably
           const numericPrice = Number(item.price);
-          const { discount, discountedPrice, discountDifference } =
-            getDiscountedPrice(numericPrice);
+          const { discount, discountedPrice, discountDifference } = getDiscountedPrice(numericPrice);
           return {
             ...item,
             price: numericPrice,
@@ -459,8 +436,11 @@ const DecorationCatPage = ({ locality }) => {
       }
     } catch (error) {
     } finally {
-      setLoading(false);
-
+      if (page === 1) {
+        setLoading(false);
+      } else {
+        setIsPaginating(false);
+      }
       setIsInitialLoad(false);
     }
   };
@@ -844,7 +824,12 @@ const handleWhatsAppClick = () => {
                 );
               }
             )}
-
+{isPaginating && (
+  <div className="skeleton-wrapper" style={{ marginTop: "12px" }}>
+    <CardSkeleton />
+    <CardSkeleton />
+  </div>
+)}
           <div className="category-content">
             {Array.isArray(currentCategoryContent) && currentCategoryContent.length > 0 && (
               <>
