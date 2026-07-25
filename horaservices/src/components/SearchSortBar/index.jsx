@@ -8,6 +8,7 @@ import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";
+import { useRouter } from "next/router";
 import searchIcon from "@/assets/Searchbar.svg"
 import closeIcon from "@/assets/sortbar.svg"
 const sortOptions = [
@@ -239,6 +240,10 @@ export default function SearchSortBar({
   const wrapperRef = useRef(null);
   const topBarRef = useRef(null);
   const placeholderRef = useRef(null);
+  const route = useRouter();
+  console.log('%c [ route ]', 'font-size:13px; background:pink; color:#bf2c9f;', route)
+  const pathname = route.asPath;
+  console.log('%c [ pathname ]', 'font-size:13px; background:pink; color:#bf2c9f;', pathname)
 
   const queryRef = useRef(query);
   useEffect(() => {
@@ -323,10 +328,10 @@ export default function SearchSortBar({
   const commitSearch = useCallback(() => {
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
-    trackSearch({ searchTerm: trimmed, userId });
+    trackSearch({ searchTerm: trimmed, userId, pageName : pathname });
   }, [onSearchChange, userId]);
 
-  // Close dropdown on outside click / Escape — ab close hote hi commitSearch bhi chalega
+  // Close dropdown on outside click / Escape
   useEffect(() => {
     function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -380,19 +385,20 @@ export default function SearchSortBar({
     }
   };
 
-  const handleCategoryClick = (cat) => {
-    trackSearch({
-      searchTerm: query,
-      clickedItemId: null,
-      clickedTitle: cat.label,
-      clickedType: "category",
-      userId,
-    });
-    setIsDropdownOpen(false);
-    setQuery("");
-    onSearchChange?.("");
-    onCategorySelect?.(cat);
-  };
+const handleCategoryClick = (cat) => {
+  trackSearch({
+    searchTerm: query,
+    clickedItemId: null, 
+    clickedTitle: cat.label,
+    clickedType: "category",
+    userId,
+    pageName: pathname
+  });
+  setIsDropdownOpen(false);
+  setQuery("");
+  onSearchChange?.("");
+  onCategorySelect?.(cat);
+};
 
   const handleProductClick = (product) => {
     trackSearch({
@@ -401,6 +407,7 @@ export default function SearchSortBar({
       clickedTitle: product.name,
       clickedType: "product",
       userId,
+      pageName : pathname
     });
     setIsDropdownOpen(false);
     setQuery("");

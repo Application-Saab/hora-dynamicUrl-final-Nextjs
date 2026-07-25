@@ -7,6 +7,7 @@ import neonIcon from "@/assets/customizatiton/NeonLights.webp";
 import numberIcon from "@/assets/customizatiton/Numbers.webp";
 import themeIcon from "@/assets/customizatiton/Changetheme.webp";
 import balloonTitleIcon from "@/assets/customizatiton/titleBallons.webp";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 const customizationItems = [
   {
     icon: balloonIcon,
@@ -53,6 +54,7 @@ const CustomizationModal = ({ open, onClose, image, whatsappNumber = "9173385848
 
 const handleConsultation = () => {
     if (!product) return;
+    trackWAClicks();
 
     // GTM push - WhatsApp CTA click
     if (typeof window !== "undefined") {

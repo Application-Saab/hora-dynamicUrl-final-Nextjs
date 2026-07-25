@@ -302,7 +302,7 @@ const DynamicTemplateRenderer = () => {
           setImageSrc(cachedSrc);
         }
 
-        const res = await fetch(
+        const res = await fetchWithError(
           `${BASE_URL}${GET_TEMPLATES_BY_ID}/${templateId}`,
         );
         const { template, error: apiError, message } = await res.json();

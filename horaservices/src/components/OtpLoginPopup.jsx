@@ -7,6 +7,7 @@ import {
   OTP_GENERATE_END_POINT,
   API_SUCCESS_CODE,
   OTP_VERIFY_ENDPOINT,
+  ASSIGN_USER_TO_TRACKINGS,
 } from "../utils/apiconstants";
 import "./login.css";
 import { useTimer } from "../utils/useTimer";
@@ -21,7 +22,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", ""]);
   const pathname = usePathname();
-
+  const visitorid = safeGetItem("VISITOR_ID")
   const isWonderland =
     pathname === "/wonderland" ||
     pathname === "/wonderland/create-invite-template" ||
@@ -180,6 +181,25 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
     }
   };
 
+  const assignVisitorToUserId = async (userId, visitorId) => {
+    if (!userId || !visitorId) {
+      console.log("userId and visitorId are required");
+      return;
+    }
+
+    try {
+      let payload = {
+        userId,
+        visitorId
+      };
+      const res = await axiosApi.patch(BASE_URL + ASSIGN_USER_TO_TRACKINGS, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch(error) {
+      console.log('%c [ error ]', 'font-size:13px; background:pink; color:#bf2c9f;', error)
+    }
+  };
+
   /* ---------------- VERIFY OTP (OLD LOGIC) ---------------- */
   const verifyOtp = async () => {
     const finalOtp = otp.join("");
@@ -205,6 +225,7 @@ const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false
         safeSetItem("token", res.data.token);
         safeSetItem("userID", res.data.data._id);
         sendWelcomeMessage(mobileNumber);
+        assignVisitorToUserId(res.data.data._id, visitorid)
 
         window.dispatchEvent(new Event("loginStateChange"));
 

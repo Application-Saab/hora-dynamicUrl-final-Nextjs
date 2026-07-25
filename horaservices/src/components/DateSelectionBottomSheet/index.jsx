@@ -5,6 +5,7 @@ import Image from "next/image";
 import calendarBgimage from "@/assets/calendarBarBgimage.webp";
 import { BASE_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -95,7 +96,7 @@ export default function DateSelectionBottomSheet({
     if (userId) params.append("userId", userId);
     if (visitorId) params.append("visitorId", visitorId);
 
-    fetch(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
+    fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
       .then((res) => res.json())
       .then((json) => {
         if (cancelled) return;
@@ -191,7 +192,7 @@ export default function DateSelectionBottomSheet({
     setError(null);
 
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetchWithError(endpoint, {
         method: resolvedMode === "add" ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

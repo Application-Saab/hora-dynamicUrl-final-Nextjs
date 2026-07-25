@@ -14,6 +14,7 @@ import DateSelectionBottomSheet from "../DateSelectionBottomSheet";
 import PencilEditIcon from "@/assets/pencilEdit.svg";
 import EventReminderPopup from "../EventReminderPopup";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -72,7 +73,7 @@ export default function EventDateBanner({
 
     setIsLoading(true);
 
-    fetch(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
+    fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
       .then((res) => res.json())
       .then((json) => {
         const events = json?.data?.eventDates || [];

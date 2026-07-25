@@ -14,6 +14,7 @@ import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
 import EventReminderPopup from "@/components/EventReminderPopup";
 import { BASE_URL } from "@/utils/apiconstants";
 import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const DATE_SHEET_DELAY_MS = 30 * 1000;
 const DATE_SHEET_REASK_BUFFER_DAYS = 3;
@@ -179,7 +180,7 @@ const LayoutInner = ({ children }) => {
         if (userId) params.append("userId", userId);
         if (visitorId) params.append("visitorId", visitorId);
 
-        const res = await fetch(
+        const res = await fetchWithError(
           `${BASE_URL}/api/event-dates/my-events?${params.toString()}`
         );
 
