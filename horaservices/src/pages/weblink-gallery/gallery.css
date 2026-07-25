@@ -680,13 +680,11 @@ padding: 5px 4px;
   top: 20%;
   left: 62%;
   transform: translate(-50%, -50%);
-  width: 65%;
+  width: 75%;
   max-width: 220px;
-  text-align: center;
   font-weight: 700;
   color: #8462ae;
   line-height: 1.15;
-  text-transform: uppercase;
   word-break: break-word;
   z-index: 10;
 
@@ -1200,7 +1198,7 @@ margin-bottom: 6px;
   top: 0;
   width: 55%;
   height: 100%;
-  background: url('../../assets/capsuleBanner.svg') no-repeat center/cover;
+  background: url('../../assets/capsuleBanner.webp') no-repeat center/cover;
   z-index: 2;
   padding: 20px;
 }

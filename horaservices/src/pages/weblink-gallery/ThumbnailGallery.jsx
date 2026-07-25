@@ -47,7 +47,7 @@ import {
   saveFileToOPFS,
 } from "@/utils/opfsUploadStore";
 import capsuleTopBanner from "../../assets/capsuleTopBanner.svg";
-import capsuleBanner from "../../assets/capsuleBanner.svg";
+import capsuleBanner from "../../assets/capsuleBanner.webp";
 import guest from "../../assets/guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
@@ -1452,7 +1452,7 @@ const handleAddToLocker = async (imgData) => {
             {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
 
-                {(eventName && bannerImageUrl) ? 
+                {(bannerImageUrl) ? 
                   <div className="top-banner-capsule">
                     <div className="banner-left">
                       <Image
@@ -1475,12 +1475,13 @@ const handleAddToLocker = async (imgData) => {
                       <div
                         className="bannerText"
                         style={{
-                          fontSize: eventName.length > 25
-                            ? 'clamp(11px, 3.2vw, 15px)'
-                            : 'clamp(14px, 4.5vw, 16px)'
+                          // fontSize: eventName.length > 25
+                          //   ? 'clamp(11px, 3.2vw, 15px)'
+                          //   : 'clamp(14px, 4.5vw, 16px)'
+                          fontSize: "20px"
                         }}
                       >
-                        {eventName}
+                        {"Sunny and Neha’s Engagement" || "N/A"}
                       </div>
                     </div>
                   </div>
