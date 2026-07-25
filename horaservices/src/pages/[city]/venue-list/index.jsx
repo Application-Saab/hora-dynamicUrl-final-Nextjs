@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useLayoutEffect, useState, useCallback } from "react";
+import React, { useEffect, useLayoutEffect, useState, useCallback, useRef } from "react";
 import "@/components/wonderland/wonderland.css";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TopBanner from "@/components/Venue/Topbanner";
@@ -11,11 +11,10 @@ import VenueList from "@/components/venueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import ReviewSlider from "@/components/ReviewSection";
-import "@/pages/venue-list/venue/venue.css"; 
+import "@/pages/venue-list/venue/venue.css";
 import { venueReviews } from "@/utils/veneureviews";
 import { safeGetItem } from "@/utils/safeStorage";
 
-// ✅ balloon-decoration jaisa hi helper — URL ke pehle segment se city slug nikalo
 function getCitySlugFromPath(pathname) {
   if (!pathname) return "";
   const parts = pathname.split("/").filter(Boolean);
@@ -25,9 +24,6 @@ function getCitySlugFromPath(pathname) {
 function VenuelandCityPage() {
   const router = useRouter();
 
-  // ✅ Yeh state hamesha ASLI browser URL se derive hoti hai — chahe
-  // navigation Next.js router.push se hua ho, ya CityContext ke
-  // window.history.pushState (silent URL change) se — dono cases handle honge.
   const [citySlug, setCitySlug] = useState("");
 
   const syncCityFromUrl = useCallback(() => {
@@ -35,24 +31,20 @@ function VenuelandCityPage() {
     setCitySlug(getCitySlugFromPath(window.location.pathname));
   }, []);
 
-  // Pehla mount — SSR/hydration ke baad turant sync karo
   useEffect(() => {
     syncCityFromUrl();
   }, [syncCityFromUrl]);
 
-  // Jab Next.js Pages Router khud se route change kare (Link click, router.push)
   useEffect(() => {
     router.events.on("routeChangeComplete", syncCityFromUrl);
     return () => router.events.off("routeChangeComplete", syncCityFromUrl);
   }, [router.events, syncCityFromUrl]);
 
-  // Jab CityContext silently URL change kare (city popup se select karne par)
   useEffect(() => {
     window.addEventListener("city:changed", syncCityFromUrl);
     return () => window.removeEventListener("city:changed", syncCityFromUrl);
   }, [syncCityFromUrl]);
 
-  // Browser back/forward button
   useEffect(() => {
     window.addEventListener("popstate", syncCityFromUrl);
     return () => window.removeEventListener("popstate", syncCityFromUrl);
@@ -62,7 +54,6 @@ function VenuelandCityPage() {
     ? citySlug.charAt(0).toUpperCase() + citySlug.slice(1)
     : "";
 
-  // --- Baaki original venue-list logic waisa ka waisa ---
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
     safeGetItem("isLoggedIn") === "true"
   );
@@ -74,14 +65,12 @@ function VenuelandCityPage() {
   const [activeVenueType, setActiveVenueType] = useState("all");
   const [guestCapacity, setGuestCapacity] = useState("");
 
+  const hasRedirectedRef = useRef(false);
+
   useLayoutEffect(() => {
-    let timer;
-    if (isUserLoggedIn && loggedinUserId) {
-      timer = setTimeout(() => {
-        router.push(`/venue-list`);
-      }, 2500);
+    if (isUserLoggedIn && loggedinUserId && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
     }
-    return () => clearTimeout(timer);
   }, [loggedinUserId, isUserLoggedIn]);
 
   useEffect(() => {
@@ -97,8 +86,6 @@ function VenuelandCityPage() {
     };
   }, []);
 
-  // ✅ balloon-decoration jaisa hi — city resolve hone se pehle kuch mat dikhao,
-  // isse purani/galat city ka flash nahi dikhega
   if (!city) return null;
 
   return (
