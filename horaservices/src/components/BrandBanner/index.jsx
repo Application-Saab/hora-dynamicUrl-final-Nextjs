@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import "./BrandBanner.css";
+import React from "react";
 
 const BrandBanner = ({ title, items }) => {
   return (
@@ -25,4 +26,4 @@ const BrandBanner = ({ title, items }) => {
   );
 };
 
-export default BrandBanner;
+export default React.memo(BrandBanner);

@@ -30,6 +30,7 @@ import TermsModal from "@/components/TermsModal";
 import VenueAddressSection from "@/components/VenueCommon/VenueAddressSection";
 // import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const VenuePage = () => {
   const router = useRouter();
@@ -42,7 +43,7 @@ const VenuePage = () => {
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [showHostActionSection, setShowHostActionSection] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || "",
+    safeGetItem("userID") || "",
   );
   const [openCreateInviteModal, setOpenCreateInviteModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -158,7 +159,7 @@ const VenuePage = () => {
 
   useEffect(() => {
     const syncLoginState = () =>
-      setLoggedinUserId(localStorage.getItem("userID") || "");
+      setLoggedinUserId(safeGetItem("userID") || "");
     window.addEventListener("storage", syncLoginState);
     window.addEventListener("loginStateChange", syncLoginState);
     return () => {

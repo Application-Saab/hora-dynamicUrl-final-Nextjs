@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
 import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM, API_SUCCESS_CODE } from '../../../../utils/apiconstants';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import Head from 'next/head';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +15,7 @@ import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
+import axiosApi from "@/utils/axiosApi";
 
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
@@ -202,7 +202,7 @@ const DecorationCatPage = () => {
 
   const getSubCatId = async (subCategory) => {
     try {
-      const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
+      const response = await axiosApi.get(BASE_URL + GET_DECORATION_CAT_ID + subCategory);
       const categoryId = response.data.data?._id;
       setCatId(categoryId);
     } catch (error) {
@@ -231,7 +231,7 @@ const DecorationCatPage = () => {
   const getSubCatItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ITEM + catId);
+      const response = await axiosApi.get(BASE_URL + GET_DECORATION_CAT_ITEM + catId);
       if (response.status === API_SUCCESS_CODE) {
         const decoratedData = response.data.data.map(item => {
           const { discount, discountedPrice , discountDifference} = getDiscountedPrice(item.price); // Destructure the return value

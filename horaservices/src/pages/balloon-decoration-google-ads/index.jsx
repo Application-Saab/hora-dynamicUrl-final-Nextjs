@@ -3,7 +3,6 @@ import Head from 'next/head';
 // import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
-import axios from 'axios';
 import { useParams } from "react-router-dom";
 import { BASE_URL, GET_DECORATION_CAT_ID, GET_DECORATION_CAT_ITEM } from '../../utils/apiconstants';
 import { getDecorationOrganizationSchema } from '../../utils/schema';
@@ -24,6 +23,7 @@ import decorationLandingWhatsapp from '../../assets/wahtsapp-decoration-redirect
 import 'slick-carousel/slick/slick-theme.css';
 import dec1 from '../../assets/dec1.png';
 import dec2 from '../../assets/dec3.png';
+import axiosApi from "@/utils/axiosApi";
 
 const decCat = [
     { id: '2', image: "https://horaservices.com/api/uploads/compressed_images/Birthday_dec_cat.webp", name: 'Birthday', subCategory: "Birthday", catValue: "birthday-decoration", imgAlt: "A Gorgeous Candy Birthday Decoration Surprise!" },
@@ -814,9 +814,9 @@ const Decoration = () => {
 export async function getStaticProps() {
     try {
         const catalogueData = await Promise.all(decCat.map(async (item) => {
-            const response = await axios.get(BASE_URL + GET_DECORATION_CAT_ID + item.subCategory);
+            const response = await axiosApi.get(BASE_URL + GET_DECORATION_CAT_ID + item.subCategory);
             const categoryId = response.data.data._id;
-            const result = await axios.get(BASE_URL + GET_DECORATION_CAT_ITEM + categoryId);
+            const result = await axiosApi.get(BASE_URL + GET_DECORATION_CAT_ITEM + categoryId);
             return {
                 ...item,
                 data: result.data.data,

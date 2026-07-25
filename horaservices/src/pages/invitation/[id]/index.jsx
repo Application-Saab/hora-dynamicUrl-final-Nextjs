@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import "../invitation.css";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 const products = [
   {
@@ -90,7 +91,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (product) {
-      fetch(product.image)
+      fetchWithError(product.image)
         .then((response) => response.text())
         .then((data) => setSvgContent(data))
         .catch((error) => console.error("Error loading SVG:", error));

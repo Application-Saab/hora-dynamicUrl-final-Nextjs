@@ -23,7 +23,7 @@ const InvitesPage = () => {
   const [fullPageLoader, setFullPageLoader] = useState(true);
   const [showGuestLoginModal, setShowGuestLoginModal] = useState(false);
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || "",
+    safeGetItem("userID") || "",
   );
   const [skipRsvpCheck, setSkipRsvpCheck] = useState(true);
   const [rsvpRefetch, setRsvpRefetch] = useState(0);
@@ -108,7 +108,7 @@ const InvitesPage = () => {
   // Listen local storage changes for login state
   useEffect(() => {
     const syncLoginState = () => {
-      setLoggedinUserId(localStorage.getItem("userID") || "");
+      setLoggedinUserId(safeGetItem("userID") || "");
     };
 
     window.addEventListener("storage", syncLoginState);

@@ -13,8 +13,8 @@ import VenueFeatures from "@/components/Venue/VenueFeatures";
 import ReviewSlider from "@/components/ReviewSection";
 import "./venue/venue.css";
 import { venueReviews } from "@/utils/veneureviews";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import { useCity } from "@/utils/cityContext";
-import { safeGetItem } from "@/utils/safeStorage";
 
 const venuelandMainPage = () => {
   const router = useRouter();

@@ -1,4 +1,5 @@
 import { BASE_URL, GET_MEAL_DISH_ENDPOINT } from "@/utils/apiconstants";
+import { fetchWithError } from "@/utils/fetchWithError";
 
 // 🔥 Fetch Meal Types
 export const getMealTypes = async (foodType) => {
@@ -10,7 +11,7 @@ export const getMealTypes = async (foodType) => {
       is_dish: foodType === "non-veg" ? 0 : 1,
     };
 
-    const res = await fetch(url, {
+    const res = await fetchWithError(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +37,7 @@ export const getPackages = async (packageType, foodType) => {
       url += `&foodType=${foodType}`;
     }
 
-    const res = await fetch(url);
+    const res = await fetchWithError(url);
     const result = await res.json();
 
     return result?.data || [];

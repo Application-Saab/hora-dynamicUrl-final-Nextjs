@@ -13,10 +13,11 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import logo from '../../../../../assets/new_logo_light.png';
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";
-import axios from 'axios';
 import faqData from '../../../../../utils/faqData.json'
 import Tabs from '../../../../../components/Tabs';
 import addOnProductsData from '../../../../../utils/addOnProduct.json';
+import axiosApi from "@/utils/axiosApi";
+import { safeGetItem } from "@/utils/safeStorage";
 
 
 // Skeleton Loader Component
@@ -90,7 +91,7 @@ function DecorationCatDetails() {
       const fetchDecorationDetails = async () => {
         try {
           const url = `${BASE_URL}${GET_DECORATION_BY_NAME}${apiProduct}`;
-          const response = await axios.get(url);
+          const response = await axiosApi.get(url);
     
           
           // Assuming the product has a price property
@@ -314,7 +315,7 @@ function DecorationCatDetails() {
       totalAmount: totalAmount,
     };
 
-    if (localStorage.getItem("isLoggedIn") !== "true") {
+    if (safeGetItem("isLoggedIn") !== "true") {
       router.push({
         pathname: '/login',
         query: {

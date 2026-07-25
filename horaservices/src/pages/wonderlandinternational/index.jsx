@@ -14,14 +14,15 @@ import HowItWorks from "@/components/HowItWorks";
 import CheerChatBanner from "@/components/CheerChatBanner";
 import GuestListBanner from "@/components/GuestListBanner";
 import InviteSlider from "@/components/InviteSlider";
+import { safeGetItem } from "@/utils/safeStorage";
 
 const WonderlandMainPage = () => {
   const router = useRouter();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
+    safeGetItem("isLoggedIn") === "true"
   );
   const [loggedinUserId, setLoggedinUserId] = useState(
-    localStorage.getItem("userID") || ""
+    safeGetItem("userID") || ""
   );
   const [showHostLoginModal, setShowHostLoginModal] = useState(false);
 
@@ -39,14 +40,14 @@ const WonderlandMainPage = () => {
   }, [loggedinUserId, isUserLoggedIn]);
 
 const createInviteClick = () => {
-  const userId = localStorage.getItem("userID") || "";
-  const mobileNumber = localStorage.getItem("mobileNumber") || "";
-  const isLoggedIn = localStorage.getItem("isLoggedIn") || "false";
+  const userId = safeGetItem("userID") || "";
+  const mobileNumber = safeGetItem("mobileNumber") || "";
+  const isLoggedIn = safeGetItem("isLoggedIn") || "false";
 
   let userName = "";
 
   try {
-    const token = localStorage.getItem("token");
+    const token = safeGetItem("token");
 
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -81,8 +82,8 @@ const createInviteClick = () => {
 };
   useEffect(() => {
     const syncLoginState = () => {
-      setIsUserLoggedIn(localStorage.getItem("isLoggedIn") === "true");
-      setLoggedinUserId(localStorage.getItem("userID") || "");
+      setIsUserLoggedIn(safeGetItem("isLoggedIn") === "true");
+      setLoggedinUserId(safeGetItem("userID") || "");
     };
 
     window.addEventListener("storage", syncLoginState);
