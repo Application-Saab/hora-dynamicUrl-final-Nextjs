@@ -16,7 +16,7 @@ import loginImage from "../assets/sucesslogin.svg";
 import loginBgImage from "../assets/bgimage.svg";
 import ArrowImg from "../assets/arrow.svg";
 import axiosApi from "@/utils/axiosApi";
-import { safeSetItem } from "@/utils/safeStorage";
+import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 
 const OtpLogin = ({ setIsModalOpen, fromCheckout = false, backIconHidden = false, extraVerifyData = {} }) => {
   const [mobileNumber, setMobileNumber] = useState("");
