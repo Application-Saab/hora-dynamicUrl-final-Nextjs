@@ -86,6 +86,8 @@ export const VENUE_PUBLIC_LISTING = "/api/party-venue/venues-public-list";
 export const GENERATE_CAPSULE_LINK = "/api/internal/generate-gallery-code";
 export const CAPSULE_LIKE_TOGGLE = "/api/internal/toggle-like";
 
-export const GET_ADDON_BY_ID = "/api/addon/get"
+export const GET_ADDON_BY_ID = "/api/addon/get";
+export const ASSIGN_USER_TO_TRACKINGS = "/api/event-dates/assign-user-history";
+export const TRACK_WHATSAPP_CLICKS = "/api/event-dates/user-city/click-count"
 export const SAVE_ERROR_LOGS = "/api/error-log"
 export const VISITOR_TRACKING = "/api/analytics/track-daily-visit"

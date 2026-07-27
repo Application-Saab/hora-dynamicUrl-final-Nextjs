@@ -161,7 +161,7 @@ const fetchCityFromServer = async () => {
     if (userId) params.append("userId", userId);
     if (visitorId) params.append("visitorId", visitorId);
 
-    const res = await fetch(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`);
+    const res = await fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`);
 
     if (!res.ok) {
       return null;

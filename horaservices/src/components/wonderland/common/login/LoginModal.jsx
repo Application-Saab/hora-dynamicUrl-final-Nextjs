@@ -4,6 +4,8 @@ import CustomButton from "../CustomButton";
 import { useTimer } from "@/utils/useTimer";
 import useApi from "@/hooks/useApi";
 import {
+  ASSIGN_USER_TO_TRACKINGS,
+  BASE_URL,
   GET_USER_BY_PHONE,
   OTP_GENERATE_END_POINT,
   OTP_VERIFY_ENDPOINT,
@@ -24,7 +26,7 @@ const LoginModal = ({
   template = "happy_to_help_v2",
   link = null,
   bgColor = "login-modal-content",
-  frompanel = 'false'
+  frompanel = "false",
 }) => {
   const modalRef = useRef(null);
   const pathname = usePathname();
@@ -51,6 +53,7 @@ const LoginModal = ({
   } = useApi();
 
   const inputsRef = useRef([]);
+  const visitorid = safeGetItem("VISITOR_ID")
 
   const isWonderlandInternational = pathname?.startsWith(
     "/wonderlandinternational",
@@ -306,6 +309,33 @@ const LoginModal = ({
     }
   };
 
+  const assignVisitorToUserId = async (userId, visitorId) => {
+    if (!userId || !visitorId) {
+      console.log("userId and visitorId are required");
+      return;
+    }
+
+    try {
+      let payload = {
+        userId,
+        visitorId,
+      };
+      await axios.patch(
+        BASE_URL + ASSIGN_USER_TO_TRACKINGS,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    } catch (error) {
+      console.log(
+        "%c [ error ]",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        error,
+      );
+    }
+  };
+
   // Send OTP
   const sendOtp = async () => {
     let newError = { name: "", phone: "" };
@@ -361,6 +391,7 @@ const LoginModal = ({
             safeSetItem("mobileNumber", phone);
             safeSetItem("token", token);
             safeSetItem("userID", data?._id);
+            assignVisitorToUserId(data?._id, visitorid);
 
             if (fromCapsule) {
               sendWelcomeMessage(phone, link);

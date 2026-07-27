@@ -163,16 +163,18 @@ function MyApp({ Component, pageProps }) {
     };
   }, []);
 
+  // ================= TRACK CURRENT URL ON ROUTE CHANGE =================
   useEffect(() => {
     setCurrentUrl(router.asPath);
-    // Google Tag Manager script
+  }, [router.asPath]);
+
+  // ================= GOOGLE TAG MANAGER (LOADS ONLY ONCE) =================
+  useEffect(() => {
     (function (w, d, s, l, i) {
-      console.log("run", router.pathname);
       w[l] = w[l] || [];
       w[l].push({
         "gtm.start": new Date().getTime(),
         event: "gtm.js",
-        pageName: router.pathname,
       });
       var f = d.getElementsByTagName(s)[0],
         j = d.createElement(s),
@@ -182,8 +184,7 @@ function MyApp({ Component, pageProps }) {
       f.parentNode.insertBefore(j, f);
       console.log("GTM Script Loaded"); // Debugging log
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
-  }, [router.asPath]);
-
+  }, []); 
   useLayoutEffect(() => {
     // reset any scroll lock
     document.body.style.position = "";

@@ -2,11 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import "./whatsapp.css";
-import whatsappIcon from "@/assets/whatsapp-icon.png"
-export default function WhatsAppFloat({
-  shouldShow,
-  handleWhatsAppClick,
-}) {
+import whatsappIcon from "@/assets/whatsapp-icon.png";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
+export default function WhatsAppFloat({ shouldShow, handleWhatsAppClick }) {
   const texts = ["Customer Support", "Customization", "Book Now"];
   const [index, setIndex] = useState(0);
   const bubbleRef = useRef(null);
@@ -31,19 +29,17 @@ export default function WhatsAppFloat({
     <div className="wa-wrapper">
       <div
         className="wa-btn"
-        onClick={() => handleWhatsAppClick(texts[index])}
+        onClick={() => {
+          handleWhatsAppClick(texts[index]);
+          trackWAClicks();
+        }}
       >
         <div className="wa-bubble" ref={bubbleRef}>
           <div className="wa-text">{texts[index]}</div>
         </div>
 
         <div className="what-icon">
-          <Image
-            src={whatsappIcon}
-            alt="whatsapp"
-            width={55}
-            height={55}
-          />
+          <Image src={whatsappIcon} alt="whatsapp" width={55} height={55} />
         </div>
       </div>
     </div>

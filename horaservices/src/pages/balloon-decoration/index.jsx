@@ -69,6 +69,7 @@ import {
 } from "../../utils/DecorationData.js";
 import { usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const stats = [
   {
@@ -246,6 +247,7 @@ const Decoration = ({ city, locality }) => {
   };
 
   const handleWhatsApp = () => {
+    trackWAClicks();
     const phoneNumber = "7338584828";
     const message = encodeURIComponent("I want to customize a decoration");
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");

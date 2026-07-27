@@ -7,6 +7,7 @@ import approachingImage from "@/assets/Approaching.webp";
 import Image from "next/image";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
+import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 
 const WHATSAPP_NUMBER = "7338584828";
 
@@ -52,6 +53,7 @@ export default function EventReminderPopup({
   const config = VARIANTS[variant] || VARIANTS.approaching;
 
   const handleWhatsAppClick = () => {
+    trackWAClicks();
     const encodedMsg = encodeURIComponent(config.whatsappMessage);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`, "_blank");
   };
