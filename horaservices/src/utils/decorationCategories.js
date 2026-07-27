@@ -127,15 +127,15 @@ export const decCat = [
   imgAlt:
     "Beautiful festival decoration services for Diwali, Holi, Christmas, New Year, Navratri, and other special celebrations",
 },
-//  {
-//     id: "3",
-//     image:
-//       "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
-//     name: "NationPride",
-//     subCategory: "NationPride",
-//     catValue: "Nation-Pride-decoration",
-//   imgAlt: "Nation Pride patriotic theme decoration"
-//   },
+ {
+    id: "3",
+    image:
+      "https://horaservices.com/api/uploads/compressed_webp/NationsPride.webp",
+    name: "NationPride",
+    subCategory: "NationPride",
+    catValue: "Nation-Pride-decoration",
+  imgAlt: "Nation Pride patriotic theme decoration"
+  },
 
   {
     id: "11",
