@@ -45,10 +45,7 @@ import {
   getPreviewFromOPFS,
   saveFileToOPFS,
 } from "@/utils/opfsUploadStore";
-// 👇 NAYA IMPORT — html2canvas wrapper, ISME KUCH CHANGE NAHI KIYA
-import { captureElementAsImage } from "@/utils/captureElementAsImage"; 
 import capsuleTopBanner from "../../assets/capsuleTopBanner.svg";
-import capsuleBanner from "../../assets/capsuleBanner.webp";
 import guest from "../../assets/guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
@@ -106,17 +103,6 @@ const ThumbnailGallery = ({
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [isPrivateFolder, setIsPrivateFolder] = useState(false);
-  const [bannerImageUrl,setBannerImageUrl] = useState("");
-  const [eventName, setEventName] = useState("");
-
-  // ---- Capsule top-banner: server-generated static image state ----
-  // `capsuleBannerImageUrl` = final flattened PNG (once generated & saved).
-  // `topBannerRef` = wraps the LIVE overlay markup so it can be captured.
-  // `bannerCaptureRef` = guards against firing the capture more than once
-  // per mount (StrictMode double-effect / re-renders safe).
-  const [capsuleBannerImageUrl, setCapsuleBannerImageUrl] = useState(null);
-  const topBannerRef = useRef(null);
-  const bannerCaptureRef = useRef(false);
 
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
@@ -161,6 +147,7 @@ const ThumbnailGallery = ({
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
 const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [capsuleBannerImageurl, setCapsulebannerImageurl] = useState("");
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
@@ -635,12 +622,7 @@ const showSnackbar = (message) => {
         setGuestData(data?.folders[0]?.guestDetails || []);
         setDeviceTracking(data?.folders[0]?.deviceTracking || []);
         setShortCode(data?.folders[0]?.shortCode || null);
-        setBannerImageUrl(data?.folders[0]?.bannerImageUrl);
-        // 👇 NAYA — agar backend ne pehle se ek generated/flattened banner
-        // image save kar rakhi hai to seedha wahi use hogi, live overlay
-        // capture dobara nahi chalega. Backend field ka naam confirm kar lena.
-        setCapsuleBannerImageUrl(data?.folders[0]?.capsuleBannerImageUrl || null);
-        setEventName(data?.folders[0]?.eventDetails?.hostName)
+        setCapsulebannerImageurl(data?.folders[0]?.capsuleBannerImageUrl);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -651,117 +633,6 @@ const showSnackbar = (message) => {
     };
     fetchThumbnails();
   }, [folderName, customerId]);
-
-  // ---- Capture the LIVE overlay banner into a flat PNG, ONE TIME ONLY ----
-  // Chalega sirf tab jab:
-  //   1. mainFolderId mil chuka hai (folder resolve ho gaya)
-  //   2. capsuleBannerImageUrl abhi tak backend se NAHI aayi (matlab kabhi
-  //      generate/save hi nahi hui iss folder ke liye)
-  //   3. is session mein ek baar bhi try nahi kiya (bannerCaptureRef guard)
-  //   4. topBannerRef DOM mein mount ho chuka hai (live overlay render ho
-  //      chuka hai — isi ko hum capture karenge)
-  //
-  // User ko is process ka koi alag "converting..." state nahi dikhega —
-  // wahi live overlay jo already render ho raha hai, wahi background mein
-  // silently capture ho kar upload ho jayega. Agle kisi bhi user/refresh
-  // ke liye seedha static image milegi.
-  useEffect(() => {
-    if (!mainFolderId) return;
-    if (capsuleBannerImageUrl) return;
-    if (bannerCaptureRef.current) return;
-    if (!topBannerRef.current) return;
-
-    bannerCaptureRef.current = true;
-
-    const generateAndDownloadCapsuleBanner = async () => {
-      try {
-        // Images/fonts ko paint hone ke liye thoda time do, warna
-        // html2canvas blank/half-loaded banner capture kar sakta hai
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        const el = topBannerRef.current;
-        if (!el) {
-          bannerCaptureRef.current = false;
-          return;
-        }
-
-        // 👇 STRETCH + QUALITY FIX — Part 1 👇
-        // Agar banner ke andar ki <img> tags (bannerImageUrl, capsuleBanner)
-        // abhi tak fully load nahi hui hain, to unka on-screen box size
-        // galat/0 hota hai us waqt — isse hi stretch hoti hai, aur agar
-        // koi partially-loaded/low-res version capture ho jaye to quality
-        // bhi kharab lagti hai. Isliye capture se pehle explicitly wait
-        // karte hain ki har <img> ka naturalWidth/naturalHeight aa chuka ho.
-        const imgs = Array.from(el.querySelectorAll("img"));
-        await Promise.all(
-          imgs.map((img) => {
-            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-            return new Promise((resolve) => {
-              const done = () => resolve();
-              img.addEventListener("load", done, { once: true });
-              img.addEventListener("error", done, { once: true });
-              // Safety timeout — kabhi kabhi load event miss ho jaata hai
-              setTimeout(done, 3000);
-            });
-          }),
-        );
-
-        // Ek aur frame skip karo taaki layout fully settle ho jaye
-        // (images load hone ke baad box resize hota hai, uska reflow)
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-        await new Promise((resolve) => setTimeout(resolve, 50));
-
-        // 👇 STRETCH FIX — Part 2 👇
-        // `next/image fill` wale children (position:absolute) apne parent
-        // ki height mein contribute nahi karte. Isliye html2canvas capture
-        // ke waqt element ki height/width galat measure kar sakta hai,
-        // jisse final image stretch/squish ho jaati hai. Fix: capture se
-        // theek pehle current on-screen pixel size ko inline lock kar do,
-        // taaki html2canvas ko exactly wahi dimensions milein jo screen pe
-        // dikh rahe hain — capture ke baad wapas original style restore.
-        const originalWidth = el.style.width;
-        const originalHeight = el.style.height;
-        const lockedWidth = el.offsetWidth;
-        const lockedHeight = el.offsetHeight;
-        el.style.width = `${lockedWidth}px`;
-        el.style.height = `${lockedHeight}px`;
-
-        let blob;
-        try {
-          blob = await captureElementAsImage(el);
-        } finally {
-          el.style.width = originalWidth;
-          el.style.height = originalHeight;
-        }
-
-        if (!blob) {
-          bannerCaptureRef.current = false; // agli render pe retry ho sake
-          return;
-        }
-
-        // 👇 IMAGE KO SEEDHA USER KE DEVICE PE DOWNLOAD KARO 👇
-        // Koi server upload nahi, koi backend save nahi — bas Blob se ek
-        // temporary object URL banate hain, ek invisible <a download> tag
-        // banake usko click karte hain, browser file ko Downloads folder
-        // mein save kar deta hai, aur turant object URL revoke kar dete
-        // hain taaki memory leak na ho.
-        const downloadUrl = URL.createObjectURL(blob);
-        const downloadLink = document.createElement("a");
-        downloadLink.href = downloadUrl;
-        downloadLink.download = `capsule-banner-${mainFolderId}.png`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-        URL.revokeObjectURL(downloadUrl);
-      } catch (err) {
-        console.error("Capsule banner capture/download failed:", err);
-        bannerCaptureRef.current = false; // fail hua to dobara try ho sake
-      }
-    };
-
-    generateAndDownloadCapsuleBanner();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mainFolderId, capsuleBannerImageUrl, bannerImageUrl]);
 
   // Adjust currentThumbnailsOnPage and totalPages based on isMobileOrTablet
   const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
@@ -1581,71 +1452,13 @@ const handleAddToLocker = async (imgData) => {
             {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
 
-                {/*
-                  ---- TOP CAPSULE BANNER ----
-                  3 possible states, in priority order:
-                  1) capsuleBannerImageUrl exists  -> server-generated flat
-                     PNG. Render as a plain <Image>, NO overlay, NO
-                     html2canvas work happens for this visitor at all.
-                  2) bannerImageUrl exists (but no flat PNG yet) -> render
-                     the LIVE overlay (wrapped in topBannerRef). This is
-                     what the background effect above captures & uploads,
-                     completely silently — visitor just sees this overlay,
-                     same as before.
-                  3) neither exists -> fallback static default banner.
-                */}
-                {capsuleBannerImageUrl ? (
-                  <Image
-                    src={capsuleBannerImageUrl}
-                    alt="banner"
-                    className="top-banner-image"
-                    width={1200}
-                    height={400}
-                    priority
-                    unoptimized
-                  />
-                ) : bannerImageUrl ? (
-                  <div className="top-banner-capsule" ref={topBannerRef}>
-                    <div className="banner-left">
-                      <Image
-                        src={bannerImageUrl}
-                        alt="left banner"
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        unoptimized
-                      />
-                    </div>
-
-                    <div className="banner-right">
-                      <Image
-                        src={capsuleBanner}
-                        alt="right banner"
-                        fill
-                        style={{ objectFit: 'contain' }}
-                        priority
-                        unoptimized
-                      />
-
-                      <div
-                        className="bannerText"
-                        style={{
-                          // fontSize: eventName.length > 25
-                          //   ? 'clamp(11px, 3.2vw, 15px)'
-                          //   : 'clamp(14px, 4.5vw, 16px)'
-                          fontSize: "20px"
-                        }}
-                      >
-                        {"Sunny and Neha’s Engagement" || "N/A"}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <Image
-                    src={capsuleTopBanner}
-                    alt="banner"
-                    className="top-banner-image"
-                  />
-                )}
+                <Image
+                  src={capsuleBannerImageurl || capsuleTopBanner}
+                  alt="banner"
+                  className="top-banner-image"
+                  width={12}
+                  height={12}
+                />
                 
               <div className="thumbnail-gallery-content">
                 <HeaderCards
