@@ -426,3 +426,71 @@ flex-shrink: 0;
   object-fit: contain;
 }
 
+
+
+
+
+.rating-bought-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #333;
+  margin: 4px 0 8px;
+}
+.rating-star { font-size: 14px; }
+.rating-value { font-weight: 700; color: #222; }
+.rating-reviews { color: #777; }
+.rating-sep { color: #ccc; }
+.bought-info { display: flex; align-items: center; gap: 4px; color: #333; }
+
+.action-buttons-row {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.customize-design-btn,
+.view-similar-btn-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  min-width: 150px;
+  text-align: left;
+}
+
+.customize-design-btn {
+  background: linear-gradient(90deg, #d6249f, #9d4a93);
+  color: #fff;
+}
+
+.view-similar-btn-new {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.btn-text-col {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.btn-title {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.btn-subtitle {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.view-icon { font-size: 16px; }

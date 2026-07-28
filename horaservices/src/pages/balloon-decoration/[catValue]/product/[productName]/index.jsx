@@ -60,6 +60,7 @@ import AddOnsList from "@/components/AddOnsList";
 import fallbackImg from "@/assets/fallback-image.png";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
+import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 const SkeletonLoader = () => {
   return (
     <div
@@ -871,68 +872,50 @@ const generateSlug = (name) => {
           <div
             className="decDetailsRight"
           >
-            <div
+         <div
               style={{
                 padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0"
               }}
-
             >
               <div className="breadcrumb-row">
                 <h2 className="breadcrumb-text">
                   <a className="breadcrumb-link" href="/">
                     Home
                   </a>
-
                   {" > "}
                   <a
                     className="breadcrumb-link"
                     href={`/balloon-decoration/${catValue}`}
                   >
-
                     {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                   </a>
                   {" > "}
                 </h2>
-
-            <button
-  onClick={() => {
-    // GTM Event
-    window.dataLayer = window.dataLayer || [];
-   window.dataLayer.push({
-  event: "view_similar_click",
-  eventCategory: "Product Details Page",
-  eventAction: "View Similar Button Click",
-  eventLabel: product?.name,
-  product_name: product?.name,
-  category: catValue,
-  price: product?.price,
-});
-
-    // Scroll
-    similarRef?.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }}
-  className="view-similar-btn"
->
-  View Similar
-</button>
               </div>
 
               <h1 className="product-title">
                 {product.name}
               </h1>
-              <div className="price-share-row">
 
+              {/* ⭐ Rating + Bought this month row */}
+              <div className="rating-bought-row">
+                <span className="rating-star">⭐</span>
+                <span className="rating-value">{product?.rating || "4.6"}</span>
+                <span className="rating-reviews">({product?.reviewCount || 120} reviews)</span>
+                <span className="rating-sep">|</span>
+                <span className="bought-info">
+                  <span className="bought-icon">👥</span> {product?.boughtCount || "2K+"} bought this month
+                </span>
+              </div>
+
+              <div className="price-share-row">
                 <div className="pro-details-price">
                   <p className="product-price">
                     ₹ {product.price}
                   </p>
-
                   <p className="product-old-price">
                     ₹ {Math.floor(discountInfo?.discountedPrice)}
                   </p>
-
                   <div className="product-discount">
                     ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
                   </div>
@@ -945,14 +928,61 @@ const generateSlug = (name) => {
                   />
                 </div>
               </div>
-              <div className='addon-container' ref={customizationRef}>
 
-                        <AddOnsList
-  selectedAddOnProduct={selectedAddOnProduct}
-  itemQuantities={itemQuantities}
-  showAddOnmodal={showAddOnmodal}
-  pencil={pencil}
-/>
+              {/* 🎨 Two action buttons row - Customize Design + View Similar */}
+              <div className="action-buttons-row">
+                <button
+                  className="customize-design-btn"
+                  onClick={() => handleCustomise(catValue, cityName)}
+                >
+                  <Image
+                    src={customiseIcon}
+                    alt="Customisation Icon"
+                    width={16}
+                    height={16}
+                  />
+                  <span className="btn-text-col">
+                    <span className="btn-title">Customize Design</span>
+                    <span className="btn-subtitle">Make it unique & personal</span>
+                  </span>
+                </button>
+
+                <button
+                  className="view-similar-btn-new"
+                  onClick={() => {
+                    // GTM Event
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({
+                      event: "view_similar_click",
+                      eventCategory: "Product Details Page",
+                      eventAction: "View Similar Button Click",
+                      eventLabel: product?.name,
+                      product_name: product?.name,
+                      category: catValue,
+                      price: product?.price,
+                    });
+
+                    // Scroll
+                    similarRef?.current?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                >
+                  <span className="view-icon">🔍</span>
+                  <span className="btn-text-col">
+                    <span className="btn-title">View Simlar</span>
+                    <span className="btn-subtitle">See similar decoration ideas</span>
+                  </span>
+                </button>
+              </div>
+
+              <div className='addon-container' ref={customizationRef}>
+                <AddOnsList
+                  selectedAddOnProduct={selectedAddOnProduct}
+                  itemQuantities={itemQuantities}
+                  showAddOnmodal={showAddOnmodal}
+                  pencil={pencil}
+                />
               </div>
 
             </div>
@@ -963,7 +993,7 @@ const generateSlug = (name) => {
             >
               {getItemInclusion(product.inclusion)}
 
-              <section className="relative custom-banner-section">
+              {/* <section className="relative custom-banner-section">
                 <Image
                   src={BannerImage}
                   alt="Change Something Banner"
@@ -985,9 +1015,9 @@ const generateSlug = (name) => {
                     />
                   </button>
                 </div>
-              </section>
+              </section> */}
 
-
+<MakeItYoursBanner/>
             </div>
 
 
