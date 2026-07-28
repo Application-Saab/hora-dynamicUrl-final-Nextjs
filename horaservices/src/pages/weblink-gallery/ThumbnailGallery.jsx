@@ -76,7 +76,6 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
-  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -108,7 +107,6 @@ const ThumbnailGallery = ({
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
-  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const privateLocker = useMemo(
     () =>
@@ -585,11 +583,6 @@ const showSnackbar = (message) => {
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
-
-
-  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
-  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
-
   const usableFolders = subFolders.filter(
     (sf) => sf.type !== "my_photos" && !sf.isLocker,
   );
@@ -760,12 +753,9 @@ const showSnackbar = (message) => {
       if (!alreadyTracked && mainFolderId) {
         try {
           await trackFolderClick(mainFolderId);
-
           safeSetSessionItem(sessionKey, "true");
-
-          console.log("Click tracked and session flag set!");
         } catch (err) {
-          console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
+          console.log("Tracking failed", err);
         }
       }
     };
@@ -809,7 +799,6 @@ const showSnackbar = (message) => {
   }, []);
 
   const handleSearchResults = (matches) => {
-    console.log('%c [ matches ]-402', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
     if (!Array.isArray(matches)) return;
     const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
@@ -1447,9 +1436,6 @@ const handleAddToLocker = async (imgData) => {
           <HeaderCardsFlashLoader />
         ) : (
           <>
-            {console.log("LOADING STATE:", loading)}
-            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
 
                 <Image
@@ -1541,7 +1527,6 @@ const handleAddToLocker = async (imgData) => {
                 </div>
               )}
             </div>
-            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
             {!loading && (activeTab === "all" || activeTab === privateLocker?._id) && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
@@ -1736,7 +1721,6 @@ const handleAddToLocker = async (imgData) => {
               </div>
             )}
 
-            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <div style={{ minHeight: "500px" }}>
@@ -1949,12 +1933,6 @@ const handleAddToLocker = async (imgData) => {
         )}
         renderFooter={(currentImage, index) => {
           const imageId = currentImage?._id;
-
-
-      console.log("isPrivateFolder ---------------", isPrivateFolder)
-
-
-
           const isLiked = likedImages[imageId];
 // && currentImage?.orderById === customerId
           return (
