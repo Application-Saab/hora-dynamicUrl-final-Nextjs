@@ -9,9 +9,10 @@ const DateGateContext = createContext({
 export const DateGateProvider = ({ children }) => {
  
   const [dateResolved, setDateResolved] = useState(false);
-
+const [dateConfirmedAt, setDateConfirmedAt] = useState(null);
   return (
-    <DateGateContext.Provider value={{ dateResolved, setDateResolved }}>
+   
+      <DateGateContext.Provider value={{ dateResolved, setDateResolved, dateConfirmedAt, setDateConfirmedAt }}>
       {children}
     </DateGateContext.Provider>
   );

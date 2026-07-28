@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
 import Image from "next/image";
 import Head from "next/head";
 import "./Eventdatebanner.css";
@@ -20,6 +19,50 @@ const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
+
+// PageLayout.js ke DATE_SHEET_REASK_BUFFER_DAYS ke sath match hona chahiye
+const DATE_SHEET_REASK_BUFFER_DAYS = 1;
+
+const parseDateSafely = (dateInput) => {
+  if (dateInput instanceof Date) return dateInput;
+
+  if (typeof dateInput === "string") {
+    let normalized = dateInput.trim();
+    if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}(:\d{2})?/.test(normalized)) {
+      normalized = normalized.replace(" ", "T");
+    }
+    if (/^\d{4}\/\d{2}\/\d{2}/.test(normalized)) {
+      normalized = normalized.replace(/\//g, "-");
+    }
+    const d = new Date(normalized);
+    if (!isNaN(d.getTime())) return d;
+    return new Date(dateInput);
+  }
+
+  return new Date(dateInput);
+};
+
+const getDateOnlyParts = (dateInput) => {
+  const d = parseDateSafely(dateInput);
+  return {
+    y: d.getUTCFullYear(),
+    m: d.getUTCMonth(),
+    day: d.getUTCDate(),
+    valid: !isNaN(d.getTime()),
+  };
+};
+
+const daysBetween = (targetDate) => {
+  const now = new Date();
+  const todayParts = { y: now.getFullYear(), m: now.getMonth(), day: now.getDate() };
+  const targetParts = getDateOnlyParts(targetDate);
+
+  if (!targetParts.valid) return NaN;
+
+  const todayUTC = Date.UTC(todayParts.y, todayParts.m, todayParts.day);
+  const targetUTC = Date.UTC(targetParts.y, targetParts.m, targetParts.day);
+  return Math.round((targetUTC - todayUTC) / (1000 * 60 * 60 * 24));
+};
 
 const formatEventDate = (isoString) => {
   if (!isoString) return "";
@@ -59,78 +102,112 @@ export default function EventDateBanner({
     return { userId, visitorId };
   };
 
-  const fetchEventDate = () => {
-    const { userId, visitorId } = getIds();
+const fetchEventDate = () => {
+  const { userId, visitorId } = getIds();
 
-    if (!userId && !visitorId) {
-      setIsLoading(false);
-      return;
-    }
+  if (!userId && !visitorId) {
+    setIsLoading(false);
+    return;
+  }
 
-    const params = new URLSearchParams();
-    if (userId) params.append("userId", userId);
-    if (visitorId) params.append("visitorId", visitorId);
+  const params = new URLSearchParams();
+  if (userId) params.append("userId", userId);
+  if (visitorId) params.append("visitorId", visitorId);
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    fetchWithError(`${BASE_URL}/api/event-dates/my-events?${params.toString()}`)
-      .then((res) => res.json())
-      .then((json) => {
-        const events = json?.data?.eventDates || [];
-        if (events.length > 0) {
-          const lastEvent = events[events.length - 1];
+  fetchWithError(
+    `${BASE_URL}/api/event-dates/my-events?${params.toString()}`
+  )
+    .then((res) => res.json())
+    .then((json) => {
+      const events = json?.data?.eventDates || [];
+
+      if (events.length > 0) {
+        // ✅ Array ka last event use hoga
+        const lastEvent = events[events.length - 1];
+        const daysLeft = daysBetween(lastEvent.date);
+
+        if (!Number.isNaN(daysLeft) && daysLeft >= 0) {
+          // Date aaj ya future mein hai — banner dikhao
           setEventDate(lastEvent.date);
           setEventId(lastEvent._id);
           setDateResolved(true);
-        } else {
-          setEventDate(null);
-          setEventId(null);
-          setDateResolved(false);
+          setIsLoading(false);
+          return;
         }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch event date:", err);
+
+        // ❌ Last event ki date expire ho chuki hai (past) — banner hatao
         setEventDate(null);
         setEventId(null);
-        setDateResolved(false);
-      })
-      .finally(() => setIsLoading(false));
-  };
+        setDateResolved(false); // isse PageLayout popup dobara khol dega
+        setIsLoading(false);
+        return;
+      }
+
+      // ❌ Koi event date nahi mili
+      setEventDate(null);
+      setEventId(null);
+      setDateResolved(false);
+      setIsLoading(false);
+    })
+    .catch((err) => {
+      console.error("Failed to fetch event date:", err);
+      setEventDate(null);
+      setEventId(null);
+      setDateResolved(false);
+      setIsLoading(false);
+    });
+};
 
   useEffect(() => {
     fetchEventDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userIdProp, visitorIdProp]);
 
   useEffect(() => {
     if (dateResolved) {
       fetchEventDate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateResolved]);
 
-  const handleConfirm = (newDate, apiData) => {
-    if (newDate) {
-      setEventDate(newDate);
+  // const handleConfirm = (newDate, apiData) => {
+  //   if (newDate) {
+  //     setEventDate(newDate);
 
-      const { userId, visitorId } = getIds();
-      const identityKey = visitorId || userId || "anon";
-      const dateKey = toDateKey(newDate);
-      const flagKey = `reminder_shown_${identityKey}_${dateKey}`;
-      const alreadyShown = safeGetItem(flagKey);
+  //     const { userId, visitorId } = getIds();
+  //     const identityKey = visitorId || userId || "anon";
+  //     const dateKey = toDateKey(newDate);
+  //     const flagKey = `reminder_shown_${identityKey}_${dateKey}`;
+  //     const alreadyShown = safeGetItem(flagKey);
 
-      if (!alreadyShown) {
-        const today = new Date();
-        const selected = new Date(newDate);
-        const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
-        setReminderOpen(true);
-        safeSetItem(flagKey, "true");
-      }
-    }
-    setIsSheetOpen(false);
-    fetchEventDate();
-  };
+  //     if (!alreadyShown) {
+  //       const today = new Date();
+  //       const selected = new Date(newDate);
+  //       const diffMs = selected.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
+  //       const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  //       setReminderVariant(diffDays >= 0 && diffDays <= 4 ? "approaching" : "planner");
+  //       setReminderOpen(true);
+  //       safeSetItem(flagKey, "true");
+  //     }
+  //   }
+  //   setIsSheetOpen(false);
+  //   fetchEventDate();
+  // };
+const handleConfirm = (newDate, apiData) => {
+  if (newDate) {
+    setEventDate(newDate);
 
+    // ✅ Har confirm ke baad turant reminder dikhao — koi localStorage flag/check nahi
+    const daysLeft = daysBetween(newDate);
+    const variant = daysLeft >= 0 && daysLeft <= 4 ? "approaching" : "planner";
+    setReminderVariant(variant);
+    setReminderOpen(true);
+  }
+  setIsSheetOpen(false);
+  fetchEventDate();
+};
   const { userId: currentUserId, visitorId: currentVisitorId } = getIds();
   const showBanner = !isLoading && !!eventDate;
 

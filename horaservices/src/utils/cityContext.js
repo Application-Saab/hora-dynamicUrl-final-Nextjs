@@ -53,8 +53,6 @@ const slugToCityName = {
   others: "Others",
 };
 
-// Only these routes are allowed to carry the city segment in the URL.
-// Every other route should have the city stripped out.
 const CITY_ALLOWED_ROUTES = [
   "/balloon-decoration",
   "/photography-page",
@@ -79,8 +77,6 @@ const stripAllCitySegments = (path) => {
   return result;
 };
 
-// Given a path with the city segment already stripped out, decide whether
-// this route is allowed to have a city segment in its URL at all.
 const isRouteCityAllowed = (strippedPath) => {
   const p = strippedPath || "/";
 
@@ -132,14 +128,12 @@ const extractCityNameFromMyEvents = (json) => {
 
   const data = json.data ?? json;
 
- 
   if (data?.cityName) return data.cityName;
-
-   if (data?.user?.cityName) return data.user.cityName;
+  if (data?.user?.cityName) return data.user.cityName;
   if (data?.userDetails?.cityName) return data.userDetails.cityName;
+  if (data?.city) return data.city;
 
-    if (data?.city) return data.city;
-   const events = data?.eventDates;
+  const events = data?.eventDates;
   if (Array.isArray(events) && events.length > 0) {
     const withCity = events.find((ev) => ev?.cityName || ev?.city);
     if (withCity) return withCity.cityName || withCity.city;
@@ -185,33 +179,16 @@ export const CityProvider = ({ children }) => {
   const nextPathname = usePathname();
   const router = useRouter();
 
- const getGroundTruthPath = () => {
+  const [pathname, setPathname] = useState(() => {
     if (typeof window !== "undefined") {
       return window.location.pathname;
     }
-    return null;
-  };
-
-  const [pathname, setPathname] = useState(() => {
-    const actual = getGroundTruthPath();
-    if (actual) return actual;
     return nextPathname || "/";
   });
 
   useEffect(() => {
     if (!nextPathname) return;
-
-    const actualPath = getGroundTruthPath();
-
-    
-    const safePath =
-      actualPath && actualPath.length > nextPathname.length
-        ? actualPath
-        : nextPathname;
-
- 
-
-    setPathname(safePath);
+    setPathname(nextPathname);
   }, [nextPathname]);
 
   useEffect(() => {
@@ -227,16 +204,14 @@ export const CityProvider = ({ children }) => {
 
   const setUrlSilently = useCallback(
     (newPath, { replace = false } = {}) => {
-   
-
+      const target = newPath || "/";
       const navigate = replace ? router.replace : router.push;
 
-      navigate(newPath || "/", { scroll: false });
-      setPathname(newPath || "/");
+      navigate(target, { scroll: false });
 
       window.dispatchEvent(
         new CustomEvent("city:changed", {
-          detail: { path: newPath },
+          detail: { path: target },
         })
       );
     },
@@ -261,32 +236,23 @@ export const CityProvider = ({ children }) => {
   const isCityDisabledRoute = !isCityAllowedRoute;
   const isPillHiddenRoute = !isCityAllowedRoute;
 
-  // When we already know the city (from localStorage or the DB) but the
-  // current URL doesn't have it yet — e.g. on first load / refresh — push
-  // it into the URL, as long as this route is allowed to carry a city.
   const injectCityIntoUrlIfAllowed = useCallback(
     (slug) => {
       if (!slug || slug === NOT_SELECTED) return;
 
-         const actualPath = getGroundTruthPath();
-      const effectivePathname =
-        actualPath && actualPath.length > (pathname || "/").length
-          ? actualPath
-          : pathname || "/";
+      const currentPath = pathname || "/";
 
-      if (effectivePathname.match(CITY_PATH_REGEX)) {
-      
+      if (currentPath.match(CITY_PATH_REGEX)) {
         return;
       }
 
-      const stripped = stripAllCitySegments(effectivePathname);
-    
+      const stripped = stripAllCitySegments(currentPath);
 
       if (!isRouteCityAllowed(stripped)) return;
 
       const newPath = `/${slug}${stripped === "/" ? "" : stripped}`;
-  
-      if (newPath !== (effectivePathname || "/")) {
+
+      if (newPath !== currentPath) {
         setUrlSilently(newPath, { replace: true });
       }
     },
@@ -298,30 +264,24 @@ export const CityProvider = ({ children }) => {
       return;
     }
 
-    const actualPath = getGroundTruthPath();
-    const effectivePath =
-      actualPath && actualPath.length > pathname.length ? actualPath : pathname;
+    const match = pathname.match(CITY_PATH_REGEX);
 
-  
-    const match = effectivePath.match(CITY_PATH_REGEX);
-   
     if (match && match[1]) {
       const citySlugFromUrl = match[1].toLowerCase();
-      const restAfterFirstCity = effectivePath.slice(match[0].length);
-     
+      const restAfterFirstCity = pathname.slice(match[0].length);
+
       const cleanedRest = stripAllCitySegments(
         restAfterFirstCity.startsWith("/") ? restAfterFirstCity : "/" + restAfterFirstCity
       );
-   
+
       const isStacked = restAfterFirstCity !== cleanedRest;
       const routeAllowsCity = isRouteCityAllowed(cleanedRest);
-     
+
       if (!routeAllowsCity) {
-        // This route isn't in CITY_ALLOWED_ROUTES — city should not live in the URL here.
-         setUrlSilently(cleanedRest || "/", { replace: true });
+        setUrlSilently(cleanedRest || "/", { replace: true });
       } else if (isStacked) {
         const canonicalPath = `/${citySlugFromUrl}${cleanedRest === "/" ? "" : cleanedRest}`;
-         setUrlSilently(canonicalPath || "/", { replace: true });
+        setUrlSilently(canonicalPath || "/", { replace: true });
       }
 
       setSelectedCitySlug(citySlugFromUrl);
@@ -407,7 +367,6 @@ export const CityProvider = ({ children }) => {
     const strippedPath = stripAllCitySegments(pathname);
     const restOfPath = strippedPath.replace(new RegExp(`^/${slug}(?=/|$)`, "i"), "") || "/";
 
-    // Only put the city back into the URL if this route is allowed to have one.
     const routeAllowsCity = isRouteCityAllowed(strippedPath);
 
     setUrlSilently(
@@ -440,10 +399,6 @@ export const CityProvider = ({ children }) => {
     setShowCityModal(false);
   }, [injectCityIntoUrlIfAllowed]);
 
-  // For places (e.g. Footer city links) that navigate via a plain <Link>
-  // straight to a specific city+page URL. This only keeps the selected-city
-  // state/localStorage/API in sync — it does NOT touch the URL, since the
-  // <Link> itself is already taking the user to the right place.
   const syncSelectedCity = useCallback((cityName) => {
     if (!cityName) return;
 

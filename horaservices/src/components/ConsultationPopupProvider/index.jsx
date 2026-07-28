@@ -64,17 +64,15 @@ const CATEGORY_POPUP_DATA = {
   },
 };
 
-const ALLOWED_POPUP_PATHS = ["/balloon-decoration"];
-
-// ✅ FIX: 2 minute (120000 ms) se 1 minute 30 second (90000 ms) kar diya
-const DELAY_MS = 90 * 1000; // 1 minute 30 seconds
+const ALLOWED_POPUP_PATHS = ["/balloon-decoration", "/photography-page"];
+const DELAY_MS = 60 * 1000; // 1 minute
 
 export default function ConsultationPopupProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const timerStarted = useRef(false);
   const pathname = usePathname();
-  const { dateResolved } = useDateGate();
 
+const { dateConfirmedAt } = useDateGate();
   const matchedKey = Object.keys(CATEGORY_POPUP_DATA).find((key) =>
     pathname?.startsWith(key)
   );
@@ -84,27 +82,25 @@ export default function ConsultationPopupProvider({ children }) {
       ? CATEGORY_POPUP_DATA[matchedKey]
       : null;
 
-  useEffect(() => {
-    if (!popupData || !matchedKey) return;
+ 
+useEffect(() => {
+  if (!popupData || !matchedKey) return;
+  if (!dateConfirmedAt) return;          
+  if (timerStarted.current) return;
 
-    if (!dateResolved) return;
+  const storageKey = `popup_shown_${matchedKey.replace("/", "")}`;
+  const alreadyShown = safeGetSessionItem(storageKey);
+  if (alreadyShown) return;
 
-    if (timerStarted.current) return;
+  timerStarted.current = true;
 
-    const storageKey = `popup_shown_${matchedKey.replace("/", "")}`;
-    const alreadyShown = safeGetSessionItem(storageKey);
-    if (alreadyShown) return;
+  const timer = setTimeout(() => {
+    setIsOpen(true);
+    safeSetSessionItem(storageKey, "true");
+  }, DELAY_MS);
 
-    timerStarted.current = true;
-
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-      safeSetSessionItem(storageKey, "true");
-    }, DELAY_MS);
-
-    return () => clearTimeout(timer);
-  }, [popupData, matchedKey, dateResolved]);
-
+  return () => clearTimeout(timer);
+}, [popupData, matchedKey, dateConfirmedAt]);
   const handleClose = () => {
     setIsOpen(false);
     document.body.style.overflow = "";

@@ -17,7 +17,6 @@ import { DateGateProvider, useDateGate } from "@/utils/dateGateContext";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const DATE_SHEET_DELAY_MS = 30 * 1000;
-const DATE_SHEET_REASK_BUFFER_DAYS = 3;
 
 // Safari-safe UUID generator (crypto.randomUUID needs Safari 15.4+)
 const generateUUID = () => {
@@ -28,7 +27,6 @@ const generateUUID = () => {
       // fall through to manual fallback
     }
   }
-  // RFC4122-ish fallback, good enough for a visitor id
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -47,26 +45,21 @@ const getOrCreateVisitorId = () => {
     return visitorId;
   } catch (e) {
     console.error("Failed to get/create visitor id:", e);
-    // Session-only fallback so the app doesn't just die (e.g. Safari private mode quota errors)
     return generateUUID();
   }
 };
 
-// Safari's Date parser is strict — it chokes on non-ISO strings like
-// "2024-01-15 10:00:00" (space instead of "T") which Chrome/Firefox accept fine.
-// Normalize before parsing so Safari doesn't silently produce Invalid Date.
+// Safari's Date parser is strict — normalize before parsing so it doesn't
+// silently produce Invalid Date on non-ISO strings.
 const parseDateSafely = (dateInput) => {
   if (dateInput instanceof Date) return dateInput;
 
   if (typeof dateInput === "string") {
     let normalized = dateInput.trim();
 
-    // "2024-01-15 10:00:00" -> "2024-01-15T10:00:00"
     if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}(:\d{2})?/.test(normalized)) {
       normalized = normalized.replace(" ", "T");
     }
-
-    // "2024/01/15" -> "2024-01-15" (Safari is picky about slashes too)
     if (/^\d{4}\/\d{2}\/\d{2}/.test(normalized)) {
       normalized = normalized.replace(/\//g, "-");
     }
@@ -74,7 +67,6 @@ const parseDateSafely = (dateInput) => {
     const d = new Date(normalized);
     if (!isNaN(d.getTime())) return d;
 
-    // Last resort: try native parse of the original string anyway
     return new Date(dateInput);
   }
 
@@ -123,9 +115,9 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const [idsReady, setIdsReady] = useState(false);
- const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
-  const { setDateResolved } = useDateGate();
+  const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
 
+const { setDateResolved, setDateConfirmedAt } = useDateGate();
   const [showDateSheet, setShowDateSheet] = useState(false);
   const [reminderVariant, setReminderVariant] = useState(null);
   const [showReminder, setShowReminder] = useState(false);
@@ -168,90 +160,60 @@ const LayoutInner = ({ children }) => {
     return visitorId || userId || "anon";
   }, [visitorId, userId]);
 
-  const checkAndSchedule = useCallback(
-    async (opts = {}) => {
-      const { skipShownFlag = false } = opts;
+const checkAndSchedule = useCallback(async () => {
+  if (!idsReady) return;
+  if (!userId && !visitorId) return;
 
-      if (!idsReady) return;
-      if (!userId && !visitorId) return;
+  try {
+    const params = new URLSearchParams();
+    if (userId) params.append("userId", userId);
+    if (visitorId) params.append("visitorId", visitorId);
 
-      try {
-        const params = new URLSearchParams();
-        if (userId) params.append("userId", userId);
-        if (visitorId) params.append("visitorId", visitorId);
+    const res = await fetchWithError(
+      `${BASE_URL}/api/event-dates/my-events?${params.toString()}`
+    );
 
-        const res = await fetchWithError(
-          `${BASE_URL}/api/event-dates/my-events?${params.toString()}`
-        );
+    let events = [];
+    if (res.ok) {
+      const json = await res.json();
+      events = json?.data?.eventDates || [];
+    }
 
-        let events = [];
-        if (res.ok) {
-          const json = await res.json();
-          events = json?.data?.eventDates || [];
-        }
+    if (events.length === 0) {
+      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+      setDateResolved(false);
+      dateSheetTimerRef.current = setTimeout(() => {
+        setShowDateSheet(true);
+      }, DATE_SHEET_DELAY_MS);
+      return;
+    }
 
-        const eventsWithDays = events
-          .map((ev) => ({
-            ...ev,
-            daysLeft: daysBetween(ev.date),
-          }))
-          // Drop anything Safari (or the API) gave us a bad date for,
-          // instead of letting NaN silently break the sort/filter logic below.
-          .filter((ev) => !Number.isNaN(ev.daysLeft));
+    // ✅ Array ka last event use hoga
+    const lastEvent = events[events.length - 1];
+    const daysLeft = daysBetween(lastEvent.date);
 
-        const futureEvents = eventsWithDays
-          .filter((ev) => ev.daysLeft >= 0)
-          .sort((a, b) => a.daysLeft - b.daysLeft);
+    if (!Number.isNaN(daysLeft) && daysLeft >= 0) {
+      // Valid future date hai — popup ki zaroorat nahi
+      if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+      setDateResolved(true);
+      return;
+    }
 
-        if (futureEvents.length > 0) {
-          const nearest = futureEvents[0];
-          const variant = getVariantForDaysLeft(nearest.daysLeft);
-
-          const identityKey = getIdentityKey();
-          const dateKey = toDateKey(nearest.date);
-          const flagKey = `reminder_shown_${identityKey}_${dateKey}`;
-          const alreadyShown = safeGetItem(flagKey);
-
-          if (variant && (skipShownFlag || !alreadyShown)) {
-            setReminderVariant(variant);
-            setShowReminder(true);
-            safeSetItem(flagKey, "true");
-          }
-
-          setDateResolved(true);
-          return;
-        }
-
-        const pastEvents = eventsWithDays
-          .filter((ev) => ev.daysLeft < 0)
-          .sort((a, b) => b.daysLeft - a.daysLeft);
-
-        if (pastEvents.length > 0) {
-          const daysSinceExpiry = -pastEvents[0].daysLeft;
-
-          if (daysSinceExpiry < DATE_SHEET_REASK_BUFFER_DAYS) {
-            if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-            setDateResolved(true);
-            return;
-          }
-        }
-
-        if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-        setDateResolved(false);
-        dateSheetTimerRef.current = setTimeout(() => {
-          setShowDateSheet(true);
-        }, DATE_SHEET_DELAY_MS);
-      } catch (err) {
-        console.error("Failed to check existing event dates:", err);
-        if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
-        setDateResolved(false);
-        dateSheetTimerRef.current = setTimeout(() => {
-          setShowDateSheet(true);
-        }, DATE_SHEET_DELAY_MS);
-      }
-    },
-    [userId, visitorId, idsReady, getIdentityKey, setDateResolved]
-  );
+    // ❌ Last event expire ho chuka hai — date-sheet dobara schedule karo
+    if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+    setDateResolved(false);
+    dateSheetTimerRef.current = setTimeout(() => {
+      setShowDateSheet(true);
+    }, DATE_SHEET_DELAY_MS);
+  } catch (err) {
+    console.error("Failed to check existing event dates:", err);
+    if (dateSheetTimerRef.current) clearTimeout(dateSheetTimerRef.current);
+    setDateResolved(false);
+    dateSheetTimerRef.current = setTimeout(() => {
+      setShowDateSheet(true);
+    }, DATE_SHEET_DELAY_MS);
+  }
+}, [userId, visitorId, idsReady, setDateResolved]);
 
   useEffect(() => {
     if (!isDateSheetAllowedPath) {
@@ -299,26 +261,35 @@ const LayoutInner = ({ children }) => {
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
 
-       {showCityModal && !isCityDisabledRoute && (
-      <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
+        {showCityModal && !isCityDisabledRoute && (
+          <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
         )}
 
         {isDateSheetAllowedPath && showDateSheet && (
-          <DateSelectionBottomSheet
-            isOpen={showDateSheet}
-            onClose={() => {
-              setShowDateSheet(false);
-              setDateResolved(true);
-            }}
-            onConfirm={(date, apiData) => {
-              setShowDateSheet(false);
-              setDateResolved(true);
-              checkAndSchedule({ skipShownFlag: true });
-            }}
-            userId={userId}
-            visitorId={visitorId}
-            pincode={pincode}
-          />
+       <DateSelectionBottomSheet
+  isOpen={showDateSheet}
+  onClose={() => {
+    setShowDateSheet(false);
+    checkAndSchedule();
+  }}
+  onConfirm={(date, apiData) => {
+    setShowDateSheet(false);
+    setDateResolved(true);
+ setDateConfirmedAt(Date.now());
+    // ✅ Har confirm ke baad turant reminder — background check ka intezaar nahi
+    const daysLeft = daysBetween(date);
+    const variant = getVariantForDaysLeft(daysLeft);
+    if (variant) {
+      setReminderVariant(variant);
+      setShowReminder(true);
+    }
+
+    checkAndSchedule();
+  }}
+  userId={userId}
+  visitorId={visitorId}
+  pincode={pincode}
+/>
         )}
 
         {isDateSheetAllowedPath && showReminder && (
