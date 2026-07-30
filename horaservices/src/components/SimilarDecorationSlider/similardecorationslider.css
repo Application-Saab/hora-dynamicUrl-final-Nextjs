@@ -1,0 +1,136 @@
+.similar-slide-decor-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+ margin-bottom: clamp(6.51px, 2.04vw, 9.77px);
+border-radius: clamp(9.77px, 3.05vw, 14.66px);
+}
+
+/* left icon badge */
+.similar-slide-decor-icon {
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.similar-slide-decor-header h2 {
+  /* flex: 1; */
+  font-family: "Rubik", sans-serif;
+font-weight: 500;
+font-size: 14px;
+color:#05052B;
+margin:0;
+}
+
+/* right sparkle decoration */
+.similar-slide-decor-sparkle {
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  object-fit: contain;
+}
+.similar-slide-decor-header a {
+  font-weight: 600;
+  color: #97538C;
+  text-decoration: underline;
+}
+
+.similar-scroll-wrapper {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+   scrollbar-width: none;     
+  -ms-overflow-style: none; 
+}
+
+.similar-card {
+width: clamp(116.39px, 36.39vw, 174.66px);
+height: clamp(192.16px, 60.05vw, 288.24px);
+    display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: clamp(6px, 1.9vw, 10px);
+ box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.14);
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+   
+
+ .similar-img-wrapper{
+  position: relative;
+ width: clamp(116.39px, 36.39vw, 174.66px);
+  height: clamp(116.39px, 36.39vw, 174.66px);
+}
+
+.similar-img{
+  object-fit: cover;
+  border-radius: 10px 0 0 0;
+}
+.similar-discount {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+
+  background: #ffa600;
+  color: #fff;
+
+ width: clamp(44.78px, 13.99vw, 67.18px);
+  height: clamp(17px, 5.45vw, 26px);
+
+  border-radius: clamp(6px, 1.9vw, 10px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(8px, 2.3vw, 11px);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.similar-content {
+  padding: clamp(6px, 1.5vw, 10px) clamp(6px, 1.5vw, 10px) 0 clamp(6px, 1.5vw, 10px);
+}
+.similar-title {
+font-family: "Rubik", sans-serif;
+font-weight: 500;
+font-size: clamp(11.40px, 3.56vw, 17.10px);
+    color: #97538C;
+    margin-bottom: 0px;
+  min-height: clamp(34.20px, 10.69vw, 51.30px);
+}
+
+.similar-price-wrapper {
+       display: flex;
+    align-items: start;
+    gap: 0.5rem;
+    text-align: start;
+    justify-content: flex-start;
+     /* margin-top: auto;   */
+    padding: 0 clamp(6px, 1.5vw, 10px) clamp(6px, 1.5vw, 10px) clamp(6px, 1.5vw, 10px);
+}
+
+.similar-price {
+font-family: "Rubik", sans-serif;
+font-weight: 500;
+font-size: clamp(13.76px, 4.30vw, 20.63px);
+  color: #97538C;
+}
+
+.similar-original {
+  font-family: "Rubik", sans-serif;
+font-weight: 500;
+font-size: clamp(13.76px, 4.30vw, 20.63px);
+  color: #000;
+  text-decoration: line-through;
+}
+
+

@@ -45,25 +45,34 @@ const GoogleReviewsCard = ({
 
   return (
     <div className="gr-card">
-      <div className="gr-header">
-        <div className="gr-logo-wrap">
-    <Image src={googleLogo} alt="Google" width={30} height={30} />
+   <div className="gr-header">
+  <div className="gr-logo-wrap">
+    <Image
+      src={googleLogo}
+      alt="Google"
+      width={30}
+      height={30}
+    />
   </div>
-        <div>
-          <h3 className="gr-title">Google Reviews</h3>
-          <div className="gr-rating-row">
-            {[...Array(5)].map((_, i) => (
-              <FaStar key={i} className="gr-star" />
-            ))}
-            <span className="gr-rating">
-              {rating} ({totalReviews})
-            </span>
-          </div>
-        </div>
-      </div>
 
-      <h4 className="gr-heading">{heading}</h4>
+  <div>
+    <h3 className="gr-title">Google Reviews</h3>
 
+    <div className="gr-rating-row">
+      {[...Array(5)].map((_, i) => (
+        <FaStar key={i} className="gr-star" />
+      ))}
+
+      <span className="gr-rating">
+        {rating} ({totalReviews})
+      </span>
+    </div>
+  </div>
+</div>
+
+<h4 className="gr-heading">
+  {heading}
+</h4>
       <div className="gr-reviews" ref={scrollRef}>
         {reviews.map((item, index) => (
           <div className="gr-review-card" key={index}>

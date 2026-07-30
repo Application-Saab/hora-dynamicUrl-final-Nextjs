@@ -1,73 +1,115 @@
 .gr-card {
   width: 100%;
-  max-width: 480px;
+  max-width: 600px;
+  margin: auto;
   background: #fff;
-  max-width:480;
-  margin:auto;
 }
 
+/* Top Google Review section */
 .gr-header {
-  margin-top:5px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #f4eff7;
-  border-radius: 12px;
-     border: 2px solid #a35b97;
-  padding: 14px;
+  gap: clamp(10px, 2.54vw, 12px);
+
+  margin: 0;
+  padding:
+    clamp(10px, 2.54vw, 12px)
+    clamp(18px, 4.58vw, 22px);
+
+  background: #f5f5f5;
+  border-radius: 0;
 }
+
+/* Google logo circle */
 .gr-logo-wrap {
-width: clamp(40px, calc((40 / 393) * 100vw), 48px);
-height: clamp(40px, calc((40 / 393) * 100vw), 48px);
-  border-radius: 50%;
-  background: #fff;
+  width: clamp(42px, 10.69vw, 50px);
+  height: clamp(42px, 10.69vw, 50px);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-.gr-logo-wrap img {
-  object-fit: contain;
-}
-.gr-title {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-font-weight: 600;
-font-size: clamp(16px, calc((16 / 393) * 100vw), 20px);
-color:#a35b97;
+
+  background: #fff;
+  border: 1px solid #a35b97;
+  border-radius: 50%;
+
+  box-shadow: none;
 }
 
+.gr-logo-wrap img {
+  width: clamp(27px, 6.87vw, 32px);
+  height: clamp(27px, 6.87vw, 32px);
+  object-fit: contain;
+}
+
+/* Google Reviews */
+.gr-title {
+  margin: 0;
+
+font-family: "Roboto", sans-serif;
+font-weight: 500;
+font-size: clamp(14.66px, 4.58vw, 21.98px);
+
+line-height: 100%;
+letter-spacing: 0;
+vertical-align: middle;
+  color: #242424;
+}
+
+/* Stars + rating */
 .gr-rating-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 4px;
+
+  gap: clamp(3px, 1.02vw, 5px);
+  margin-top: clamp(5px, 1.27vw, 6px);
 }
 
 .gr-star {
-  color: #ffb400;
-  font-size: 14px;
+  color: #f5a623;
+  font-size: clamp(13px, 3.31vw, 16px);
+  flex-shrink: 0;
 }
 
 .gr-rating {
-  margin-left: 6px;
-font-family: "Roboto", sans-serif;
-font-weight: 400;
-font-size: clamp(13px, calc((13 / 393) * 100vw), 16px);
-vertical-align: bottom;
-color:#000000;
+  margin-left: clamp(4px, 1.02vw, 5px);
+
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: clamp(10px, 2.54vw, 12px);
+  line-height: 100%;
+
+  color: #3f3f3f;
+  white-space: nowrap;
 }
 
+/* Bottom italic heading */
 .gr-heading {
-  font-family: "Roboto", sans-serif;
-font-weight: 500;
-font-size: clamp(14px, calc((18 / 393) * 100vw), 18px);
+  margin: 0;
+  padding:
+    0 clamp(20.36px, 6.36vw, 30.53px) clamp(8.14px, 2.54vw, 12.21px); ;
+
+  background: #f5f5f5;
+
+    font-family: "Roboto", sans-serif;
+font-weight: 600;
 font-style: italic;
-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-text-align: center;
- margin: 14px 2px;
-  color:#000000B2
+font-size: clamp(12.21px, 3.82vw, 18.32px);
+line-height: 100%;
+letter-spacing: 0;
+
+  letter-spacing: 0;
+  text-align: justify;
+
+  color: #8c628b;
+
+  text-shadow: none;
+
+
+
+
 }
 
 /* .gr-reviews {

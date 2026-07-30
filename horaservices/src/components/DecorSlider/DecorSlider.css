@@ -4,16 +4,21 @@
 
 }
 
+
 .premium-slide-decor-header {
   display: flex;
-  justify-content: space-between;
-
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+  margin-bottom:clamp(12px, 3.5vw, 16px);
+  border-radius: 12px;
 }
+
 
 .premium-slide-decor-header h2 {
   font-size: clamp(16px, calc(16px + (20 - 16) * ((100vw - 320px) / 160)), 20px);
 font-weight: 700;
 color: #97538C;
+margin:0px;
 }
 
 .premium-slide-decor-header a {

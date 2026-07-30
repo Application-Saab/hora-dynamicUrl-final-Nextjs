@@ -595,7 +595,7 @@ const handleWhatsAppClick = () => {
                 />
               )}
               {catValue?.toLowerCase() === "kids-birthday-decoration" && !isSearchActive && (
-                <div className="category-tabs-outer">
+                <div className="category-tabs-container">
                   <CategoryTabs
                     data={themeFilters.map((item) => ({
                       id: item.value,

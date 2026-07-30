@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
 .decCatPage {
       margin-top: 10px;
     max-width:480px;
@@ -168,7 +169,9 @@
 .item-content ul li{
   list-style:none
 }
-
+.category-tabs-container{
+   padding: 0px 0px 0px 10px ;
+}
 @media only screen and (max-width: 600px) {
   .category-content {
     padding: 15px;

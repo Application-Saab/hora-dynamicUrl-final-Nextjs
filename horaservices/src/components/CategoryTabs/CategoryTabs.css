@@ -80,10 +80,19 @@
     white-space: normal;
     z-index: 2;
 }
+.category-slide-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+margin-bottom: clamp(6.51px, 2.04vw, 9.77px);
+border-radius: clamp(9.77px, 3.05vw, 14.66px);
+}
 .category-tabs-heading{
-  font-size: 18px;
-    font-weight: 700;
-    color: #97538C;
+  font-family: "Rubik", sans-serif;
+font-weight: 500;
+font-size: 14px;
+color:#05052B ;
+margin: 0px;
 }
 
 .category-tabs__no-image {
@@ -102,13 +111,13 @@
 
 /* ------------------------------------------------------------------------------------------------------------ */
 .category-tabs-outer.has-bg {
-  background-color: #fbe6d3;
-  padding: 16px;
+  background-color: white;
+ padding: 10px 0px 10px 10px;
  
 }
 .category-tabs-grid {
   gap: 10px;
-  padding: 10px 0px 10px 5px;
+
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -139,9 +148,8 @@
 }
 
 .category-tabs-circle {
-width: clamp(60px, 20.61vw, 81px);
-height: clamp(60px, 20.61vw, 81px);
-
+width: clamp(73.28px, 22.90vw, 109.92px);
+height: clamp(73.28px, 22.90vw, 109.92px);
   border-radius: 50%;
   background-size: cover;
   background-position: center;
@@ -151,15 +159,15 @@ height: clamp(60px, 20.61vw, 81px);
 }
 
 .category-tabs-title {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;              
-  font-size: 12px;
-  line-height: 100%;             
-  letter-spacing: 0;
+  font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(8.96px, 2.80vw, 13.44px);
   text-align: center;
   vertical-align: middle;
-  color: #97538C;
+  color: #000000;
   white-space: normal;
+
+  
 }
 
 .category-tabs-slider-wrap {
@@ -197,7 +205,12 @@ height: clamp(60px, 20.61vw, 81px);
 .category-tabs-arrow-right {
   right: -6px;
 }
-
+.category-slide-decor-icon {
+    flex-shrink: 0;
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+}
 .ctabs-wrap {
   display: flex;
   gap: clamp(8px, 2.5vw, 16px);

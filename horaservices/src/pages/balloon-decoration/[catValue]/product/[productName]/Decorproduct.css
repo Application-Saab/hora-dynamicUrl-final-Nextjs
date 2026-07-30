@@ -1,4 +1,4 @@
-
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
  .decDetails{
     max-width:600px;
     margin:auto;
@@ -113,45 +113,65 @@ font-size: clamp(15px, 4.6vw, 21px);
   width:fit-content;
 }
 /* Heading */
-.inclusion-section{
-padding: 0 clamp(8px, 2.5vw, 10px) 0;
+.inclusion-sections {
+padding: clamp(8.14px, 2.54vw, 12.21px);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #0000000D;
+  box-shadow: 0 clamp(3.26px, 1.02vw, 4.89px)
+               clamp(3.26px, 1.02vw, 4.89px)
+               0
+               rgba(0, 0, 0, 0.14);
+  margin:10px;
+
 }
-.inclusion-heading{
+
+.inclusion-heading {
   font-family: Inter, sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(18px, 5.3vw, 21px);
-  margin-bottom: clamp(8px, 2.5vw, 10px);
+  color: #1a1a1a;
+  margin-bottom: clamp(4.07px, 1.27vw, 6.11px);
   padding-bottom: 3px;
 }
 
-/* list container */
-.inclusion-list{
-  padding-left: 0;
-  margin: 0;
+
+.inclusion-list {
   list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4.07px, 1.27vw, 6.11px);
 }
 
-/* list item */
-.inclusionstyle{
-  font-family: Inter, sans-serif;
-  font-weight: 400;
-  font-size: clamp(12px, 3.6vw, 14px); /* 320→12px | 393→14px */
-  line-height: clamp(22px, 6vw, 27.32px);
+.inclusionstyle {
   display: flex;
   align-items: flex-start;
- gap: clamp(4px, 1.5vw, 6px); 
+  gap: clamp(8px, 2.5vw, 10px);
+
+  margin: 0;
+  padding: 0;
+
+font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(11.40px, 3.56vw, 17.10px);
+  color: #2b2b2b;
 }
 
-/* icon */
-.inclusionstyle img,
-.inclusionstyle svg{
-  width: clamp(16px, 5vw, 20px);
-  height: clamp(16px, 5vw, 20px);
+.inclusion-check {
+  width: clamp(16.28px, 5.09vw, 24.43px);
+height: clamp(16.28px, 5.09vw, 24.43px);
   flex-shrink: 0;
-  margin-top: 4px; 
+  margin-top: 2px;
 }
 
-
+.inclusion-text {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
 
 
 
@@ -202,6 +222,7 @@ padding: 0 clamp(8px, 2.5vw, 10px) 0;
   width: 100%;
   display: flex;
   justify-content: center;
+  
 }
 
 .decorke-banner-img {
@@ -435,62 +456,18 @@ flex-shrink: 0;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(10.58px, 3.31vw, 15.88px);
+
   color: #333;
   margin: 4px 0 8px;
+
+
+  
 }
 .rating-star { font-size: 14px; }
 .rating-value { font-weight: 700; color: #222; }
 .rating-reviews { color: #777; }
 .rating-sep { color: #ccc; }
 .bought-info { display: flex; align-items: center; gap: 4px; color: #333; }
-
-.action-buttons-row {
-  display: flex;
-  gap: 10px;
-  margin: 12px 0;
-  flex-wrap: wrap;
-}
-
-.customize-design-btn,
-.view-similar-btn-new {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  flex: 1;
-  min-width: 150px;
-  text-align: left;
-}
-
-.customize-design-btn {
-  background: linear-gradient(90deg, #d6249f, #9d4a93);
-  color: #fff;
-}
-
-.view-similar-btn-new {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  color: #333;
-}
-
-.btn-text-col {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.btn-title {
-  font-weight: 700;
-  font-size: 13px;
-}
-
-.btn-subtitle {
-  font-size: 10px;
-  opacity: 0.8;
-}
-
-.view-icon { font-size: 16px; }

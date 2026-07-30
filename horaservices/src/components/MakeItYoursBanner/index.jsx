@@ -7,8 +7,7 @@ import customiseIcon from "@/assets/customiselcon.webp";
 const MakeItYoursBanner = ({  phone = "7338584828",  }) => {
   const handleWhatsAppClick = () => {
     const PHONE = phone;
-    const text =
-      message || `Looking for a Custom Decoration? Our support team is ready to help!`;
+    const text = `Looking for a Custom Decoration? Our support team is ready to help!`;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({

@@ -42,7 +42,6 @@ import "../../../../../components/CategoryTabs/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
 import { allReviewsData } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
-import customiseIcon from "@/assets/customisationicon.svg"
 import AdditionalServices from "@/components/AdditionalServices";
 import ShareIcon from "@/assets/shareIcon.svg";
 import BannerImage from "../../../../../assets/customised.jpg";
@@ -61,6 +60,14 @@ import fallbackImg from "@/assets/fallback-image.png";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
+import SimiliarThemes from "@/assets/SimilarThemes.svg";
+import StarIcon from "@/assets/Staricon.svg";
+import fireIcon from "@/assets/fireIcon.svg";
+import hearticon from "@/assets/hearticon.svg";
+import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import { reviewsData } from "@/utils/poselinkreviews";
+
+import ActionButtons from "@/components/Actionbuttons";
 const SkeletonLoader = () => {
   return (
     <div
@@ -237,7 +244,7 @@ const [levelUp2000, setLevelUp2000] = useState([]);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
   const cityName = params?.city;
-
+  const reviewsRef    = useRef(null);
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -694,22 +701,27 @@ const generateSlug = (name) => {
     const inclusionItems = statements.flatMap((statement) =>
       statement.split("-").filter((item) => item.trim() !== "")
     );
-  const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        <Image src={checkImage} alt="Info" />
-        {item.trim()}
-      </li>
-    ));
+ 
     return (
-      <div className="inclusion-section">
-        <div className="inclusion-heading">
-          Inclusions
-        </div>
+   <div className="inclusion-sections">
+  <div className="inclusion-heading">Inclusions</div>
 
-        <ul className="inclusion-list">
-          {inclusionList}
-        </ul>
-      </div>
+  <ul className="inclusion-list">
+    {inclusionItems.map((item, index) => (
+      <li className="inclusionstyle" key={index}>
+        <Image
+          src={checkImage}
+          alt="check"
+          className="inclusion-check"
+        />
+
+        <span className="inclusion-text">
+          {item.trim()}
+        </span>
+      </li>
+    ))}
+  </ul>
+</div>
     );
   };
 
@@ -898,7 +910,7 @@ const generateSlug = (name) => {
               </h1>
 
               {/* ⭐ Rating + Bought this month row */}
-              <div className="rating-bought-row">
+              {/* <div className="rating-bought-row">
                 <span className="rating-star">⭐</span>
                 <span className="rating-value">{product?.rating || "4.6"}</span>
                 <span className="rating-reviews">({product?.reviewCount || 120} reviews)</span>
@@ -906,7 +918,7 @@ const generateSlug = (name) => {
                 <span className="bought-info">
                   <span className="bought-icon">👥</span> {product?.boughtCount || "2K+"} bought this month
                 </span>
-              </div>
+              </div> */}
 
               <div className="price-share-row">
                 <div className="pro-details-price">
@@ -930,52 +942,13 @@ const generateSlug = (name) => {
               </div>
 
               {/* 🎨 Two action buttons row - Customize Design + View Similar */}
-              <div className="action-buttons-row">
-                <button
-                  className="customize-design-btn"
-                  onClick={() => handleCustomise(catValue, cityName)}
-                >
-                  <Image
-                    src={customiseIcon}
-                    alt="Customisation Icon"
-                    width={16}
-                    height={16}
-                  />
-                  <span className="btn-text-col">
-                    <span className="btn-title">Customize Design</span>
-                    <span className="btn-subtitle">Make it unique & personal</span>
-                  </span>
-                </button>
-
-                <button
-                  className="view-similar-btn-new"
-                  onClick={() => {
-                    // GTM Event
-                    window.dataLayer = window.dataLayer || [];
-                    window.dataLayer.push({
-                      event: "view_similar_click",
-                      eventCategory: "Product Details Page",
-                      eventAction: "View Similar Button Click",
-                      eventLabel: product?.name,
-                      product_name: product?.name,
-                      category: catValue,
-                      price: product?.price,
-                    });
-
-                    // Scroll
-                    similarRef?.current?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }}
-                >
-                  <span className="view-icon">🔍</span>
-                  <span className="btn-text-col">
-                    <span className="btn-title">View Simlar</span>
-                    <span className="btn-subtitle">See similar decoration ideas</span>
-                  </span>
-                </button>
-              </div>
-
+        <ActionButtons
+  product={product}
+  catValue={catValue}
+  cityName={cityName}
+  similarRef={similarRef}
+  handleCustomise={handleCustomise}
+/>
               <div className='addon-container' ref={customizationRef}>
                 <AddOnsList
                   selectedAddOnProduct={selectedAddOnProduct}
@@ -993,29 +966,6 @@ const generateSlug = (name) => {
             >
               {getItemInclusion(product.inclusion)}
 
-              {/* <section className="relative custom-banner-section">
-                <Image
-                  src={BannerImage}
-                  alt="Change Something Banner"
-                  className="custom-banner-image"
-                />
-
-                <div className="absolute inset-0 flex items-center justify-center">
-
-                  <button
-                    className="customise-btn d-flex align-items-center gap-1"
-                    onClick={() => handleCustomise(catValue, cityName)}
-                  >
-                    CUSTOMISATION
-                    <Image
-                      src={customiseIcon}
-                      alt="Customisation Icon"
-                      width={14}
-                      height={14}
-                    />
-                  </button>
-                </div>
-              </section> */}
 
 <MakeItYoursBanner/>
             </div>
@@ -1031,24 +981,7 @@ const generateSlug = (name) => {
               onRemove={handleRemoveFromCart}
             />
 
-            <div className="decorke-why-section">
-              <h2 className="decorke-why-title">Why Hora Decoration</h2>
-
-              <div className="decorke-why-features">
-                <div className="decorke-why-item">
-                  <Image src={ExpertsDecoration} alt="Experts Decoration" className="decorke-why-icon" />
-                  <p className="decorke-why-text">EXPERTS<br />DECORATION</p>
-                </div>
-                <div className="decorke-why-item">
-                  <Image src={SecureTransactions} alt="Secure Transactions" className="decorke-why-icon" />
-                  <p className="decorke-why-text">SECURE<br />TRANSACTIONS</p>
-                </div>
-                <div className="decorke-why-item">
-                  <Image src={ServiceGuarantee} alt="Service Guarantee" className="decorke-why-icon" />
-                  <p className="decorke-why-text">100% SERVICE<br />GUARANTEED</p>
-                </div>
-              </div>
-            </div>
+          
             <div ref={similarRef}>
               <SimilarDecorationSlider
                 title="Similar Decorations"
@@ -1059,6 +992,9 @@ const generateSlug = (name) => {
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
                 catValue={router.query.catValue} 
+                  icon={StarIcon}
+                  sparkleIcon={SimiliarThemes}
+                   
               />
             </div>
           
@@ -1082,6 +1018,8 @@ const generateSlug = (name) => {
                   catValue="KidsBirthday"
                   heading="Other Popular Themes"
                   hasBg={true}
+                  icon={StarIcon}
+                  fireIcon={fireIcon}
                 />
               </div>
             )}
@@ -1095,7 +1033,9 @@ const generateSlug = (name) => {
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
                 catValue={router.query.catValue}   // 🔑 SLUG ONLY
-
+                 icon={StarIcon}
+                  sparkleIcon={hearticon}
+                   
               />
             )}
 
@@ -1107,34 +1047,43 @@ const generateSlug = (name) => {
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
                 catValue={router.query.catValue}   // 🔑 SLUG ONLY
-
+              
               />
             )}
 
+  <div className="decorke-why-section">
+              <h2 className="decorke-why-title">Why Hora Decoration</h2>
 
+              <div className="decorke-why-features">
+                <div className="decorke-why-item">
+                  <Image src={ExpertsDecoration} alt="Experts Decoration" className="decorke-why-icon" />
+                  <p className="decorke-why-text">EXPERTS<br />DECORATION</p>
+                </div>
+                <div className="decorke-why-item">
+                  <Image src={SecureTransactions} alt="Secure Transactions" className="decorke-why-icon" />
+                  <p className="decorke-why-text">SECURE<br />TRANSACTIONS</p>
+                </div>
+                <div className="decorke-why-item">
+                  <Image src={ServiceGuarantee} alt="Service Guarantee" className="decorke-why-icon" />
+                  <p className="decorke-why-text">100% SERVICE<br />GUARANTEED</p>
+                </div>
+              </div>
+            </div>
 
-            <div className="decorke-celebrate-banner">
+  
+          <div ref={reviewsRef}>
+        <GoogleReviewsCard reviews={reviewsData} />
+      </div>
+            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+  <VideoTestimonial videoSrc={VideoClint} />
+
+              <div className="decorke-celebrate-banner">
               <Image
                 src={HowitWork}
                 alt="Customize Your Celebration"
                 className="decorke-banner-img"
               />
             </div>
-
-            <div className="media-section">
-              <h2 className="media-heading">Hora in Media</h2>
-              <div className="media-logos">
-                <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
-              </div>
-            </div>
-
-
-
-            <VideoTestimonial videoSrc={VideoClint} />
-
-            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
-
-
             <AdditionalServices />
 
             <div className="tab-section-details-productpage">

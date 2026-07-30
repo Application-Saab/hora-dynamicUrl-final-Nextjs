@@ -72,7 +72,9 @@
 
 import React, { useRef } from "react";
 import "./Addon.css"
-
+import giftIcon from "@/assets/giftIcon.svg";
+import StarIcon from "@/assets/Staricon.svg";
+import Image from "next/image";
 const AddonModal = ({
   setIsOpen,
   addOnProducts = [],
@@ -89,11 +91,21 @@ const AddonModal = ({
           className="modal-content11"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="party-addon-heading" ref={addonRef}>
-            <span className="party-addon-icon">🎁</span>
-            <h2 className="party-addon-title">Party Add-ons</h2>
-            <span className="party-addon-sparkle">✨</span>
-          </div>
+         <div className="party-addon-heading" ref={addonRef}>
+  <Image
+    src={giftIcon}
+    alt="Gift"
+    className="party-addon-icon"
+  />
+
+  <h2 className="party-addon-title">Party Add-ons</h2>
+
+  <Image
+    src={StarIcon}
+    alt="Sparkle"
+    className="party-addon-sparkle"
+  />
+</div>
 
           <div className="modalcard-scroll-container">
             {addOnProducts.map((item, index) => (
@@ -106,8 +118,11 @@ const AddonModal = ({
 
                 <div className="modalcard-body">
                   <h3>{item.title}</h3>
-                  <p className="Addon-description">{item.description}</p>
-
+                 {item.description?.trim() && (
+  <p className="Addon-description">
+    {item.description}
+  </p>
+)}
                   <div className="price-container-addon">
                     <span className="prices">
                       {typeof item.price === "number" ? `₹${item.price}` : "Included"}

@@ -12,9 +12,11 @@ const CategoryTabs = ({
   city = "",
   locality = "",
   variant = "grid",
-  catValue, // sub-category slug
+  catValue, 
   heading,
   hasBg = false,
+  icon,        
+  fireIcon,
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -138,7 +140,29 @@ const CategoryTabs = ({
 
   return variant === "grid" ? (
     <div className={`category-tabs-outer ${hasBg ? "has-bg" : ""}`}>
-      {heading && <h3 className="category-tabs-heading">{heading}</h3>}
+      {heading &&    <div className="category-slide-header">
+          {fireIcon && (
+            <Image
+              src={fireIcon}
+              alt=""
+              className="category-slide-decor-icon"
+              width={40}
+              height={40}
+            />
+          )}
+
+          <h3 className="category-tabs-heading">{heading}</h3>
+
+          {icon && (
+            <Image
+              src={icon}
+              alt=""
+              className="premium-slide-decor-sparkle"
+              width={26}
+              height={26}
+            />
+          )}
+        </div>}
 
       <div className="category-tabs-slider-wrap">
         {canScrollLeft && (

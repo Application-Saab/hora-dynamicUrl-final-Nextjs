@@ -1,148 +1,3 @@
-/* 
-.modal-top-box11 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #FFF3DB;
-  height: 60px;
-  margin-bottom: 0;
-}
-
-.select-heading-sec {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 100%;
-  letter-spacing: 0;
-  text-align: center;
-  vertical-align: middle;
-  color:#97538C;
-  margin: 0;
-}
-
-.modalcard-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-
-  gap: clamp(8px, 3vw, 12px);
-
-  background-color: #FFF3DB;
-  margin: auto;
-
-  padding: clamp(8px, 2.5vw, 10px);
-}
-
-.modal-middle-box {
-  flex: 1 1;
-  overflow-y: auto;
-  padding: 0px !important;
-  background-color: #FFF3DB;
-}
-
-.modalcard {
-    display: flex;
-  flex-direction: column;
-
-  border: clamp(1px, 0.5vw, 2px) solid #ddd;
-  border-radius: clamp(6px, 2vw, 8px);
-
-  background: #fff;
-  overflow: hidden;
-  
-}
-
-
-.modalcard img {
-  width: 100%;
-  height: clamp(120px, 37vw, 200px);
-  object-fit: cover;
-
-  border-top-left-radius: clamp(8px, 2.5vw, 10px);
-  border-top-right-radius: clamp(8px, 2.5vw, 10px);
-
-  image-rendering: -webkit-optimize-contrast;
-}
-.modalcard h3 {
-  font-family: Inter, sans-serif;
-  font-weight: 600;
-
-  font-size: clamp(11px, 3.3vw, 15px);
-
-  color: #222;
-  padding: clamp(6px, 2vw, 8px) clamp(8px, 2.5vw, 10px) clamp(6px, 2vw, 8px) clamp(8px, 2.5vw, 10px);
-
-  margin: 0;
-  text-align: left;
-  line-height: 100%;
-  letter-spacing: 0%;
-}
-
-.price-container-addon {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 10px 10px 10px;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: auto;
-}
-
-.prices {
-  font-family: "Instrument Sans", sans-serif;
-  font-weight: 500;
-  font-size: clamp(13px, 4.1vw, 18px);
-  line-height: 100%;
-  letter-spacing: 0%;
-  color: #000;
-}
-.Addon-description {
-  padding: 12px;
-  font-size: 10px;
-  margin-bottom: 0px;
-}
-
-.quantitycontrols {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  justify-content: center;
-}
-
-.addbutton,
-.quantitybutton {
-  background-color: rgb(157, 74, 147) !important;
-  color: #fff;
-  border: none;
-  padding: clamp(2px, 0.8vw, 3px) clamp(8px, 2.5vw, 10px);
-  border-radius: clamp(3px, 1vw, 4px);
-  font-size: clamp(11px, 3.3vw, 13px);
-  font-weight: 500;
-  cursor: pointer;
-}
-.addon-prices {
-  display: flex;
-  flex-direction: column;
-}
-
-
-
-.add-on-prices p {
-  margin: 0;
-}
-.addon-container li {
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  flex-direction: column;
-}
-
-ul.decoration-addons {
-  margin: 10px 0 17px !important;
-  padding: 13px !important;
-  background-color: #fff;
-} */
-
 .modal-overlay11 {
   background-color: #fff;
   margin: auto;
@@ -161,17 +16,13 @@ ul.decoration-addons {
   background-color: #fff;
 }
 
-.party-addon-icon {
-  font-size: clamp(16px, 4vw, 20px);
-  background: #f3e8f1;
-  border-radius: 8px;
-  padding: 4px 8px;
-}
+
 
 .party-addon-title {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: clamp(15px, 4vw, 18px);
+font-family: "Rubik", sans-serif;
+font-weight: 500;
+font-size: clamp(11.40px, 3.56vw, 17.10px);
+
   color: #2b2b2b;
   margin: 0;
 }
@@ -183,11 +34,12 @@ ul.decoration-addons {
 /* Horizontal scroll container */
 .modalcard-scroll-container {
   display: flex;
-  gap: clamp(10px, 3vw, 14px);
+gap: clamp(4.89px, 1.53vw, 7.33px);
   overflow-x: auto;
-  padding: 0 clamp(10px, 3vw, 14px) clamp(12px, 3vw, 16px);
+  padding: 0 clamp(6px, 1.8vw, 8px) clamp(12px, 3vw, 16px);
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  margin-left:10px;
 }
 
 .modalcard-scroll-container::-webkit-scrollbar {
@@ -196,20 +48,20 @@ ul.decoration-addons {
 
 .modalcard {
   flex: 0 0 auto;
-  width: clamp(150px, 42vw, 190px);
+width: clamp(129.32px, 40.43vw, 194.05px);
   display: flex;
   flex-direction: column;
-  border: 1px solid #eee;
-  border-radius: 12px;
+  border: 1px solid #0000000D;
+  border-radius:clamp(7.18px, 2.25vw, 10.80px);
   background: #fff;
   overflow: hidden;
   scroll-snap-align: start;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+ box-shadow: 0px 4px 4px 0px #00000012;
 }
 
 .modalcard img {
-  width: 100%;
-  height: clamp(110px, 32vw, 150px);
+ width: clamp(129.32px, 40.43vw, 194.05px);
+height: clamp(104.44px, 32.66vw, 156.73px);
   object-fit: cover;
 }
 
@@ -221,12 +73,14 @@ ul.decoration-addons {
 }
 
 .modalcard h3 {
-  font-family: Inter, sans-serif;
-  font-weight: 700;
-  font-size: clamp(12px, 3.3vw, 14px);
+  font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(9.34px, 2.92vw, 14.01px);
   color: #222;
   margin: 0 0 4px;
   line-height: 1.2;
+
+
 }
 
 .Addon-description {
@@ -246,16 +100,17 @@ ul.decoration-addons {
 }
 
 .prices {
-  font-family: "Instrument Sans", sans-serif;
-  font-weight: 600;
-  font-size: clamp(13px, 3.6vw, 16px);
-  color: #d6249f;
+    font-family: "Instrument Sans", sans-serif;
+font-weight: 500;
+font-size: clamp(11.41px, 3.57vw, 17.12px);
+
+  color: #000000;
 }
 
 .quantitycontrols {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: clamp(4.07px, 1.27vw, 6.11px);
 }
 
 .addbutton,
@@ -263,15 +118,19 @@ ul.decoration-addons {
   background-color: rgb(157, 74, 147) !important;
   color: #fff;
   border: none;
-  padding: clamp(4px, 1.2vw, 6px) clamp(12px, 3vw, 16px);
-  border-radius: 8px;
+ padding:
+  clamp(3.26px, 1.02vw, 4.89px)
+  clamp(6.51px, 2.04vw, 9.78px);
+  border-radius: clamp(2.56px, 0.80vw, 3.84px);
   font-size: clamp(11px, 3vw, 13px);
   font-weight: 600;
   cursor: pointer;
 }
 
 .quantitybutton {
-  padding: clamp(4px, 1.2vw, 6px) clamp(8px, 2vw, 10px);
+  padding:
+  clamp(3.26px, 1.02vw, 4.89px)
+  clamp(6.51px, 2.04vw, 9.78px);
 }
 
 .qunatity-title {

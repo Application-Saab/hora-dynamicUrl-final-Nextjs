@@ -1,6 +1,6 @@
 .services-section {
   text-align: center;
-  margin-top: clamp(18px, calc(9.2px + 3.25vw), 26px);
+ margin-top: clamp(6.5px, 2.04vw, 9.8px);
   padding: clamp(12px, calc(3.2px + 2.25vw), 16px) 0;
   background-color: #FCFFF4;
 }
