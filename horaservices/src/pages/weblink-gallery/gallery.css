@@ -668,13 +668,8 @@ padding: 5px 4px;
     padding-inline: 4px;
   }
 }
-.top-banner-image {
-  width: 100% !important;
-  height: auto !important;
-  display: block;
-  margin-top: 10px;
-  object-fit: cover;
-}
+
+
 .custom-banner {
   display: flex;
   align-items: center;
@@ -1106,4 +1101,11 @@ padding: 5px 4px;
 }
 .locker-banner{
 margin-bottom: 6px;
+}
+.top-banner-image {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin-top: 10px;
+  object-fit: cover;
 }

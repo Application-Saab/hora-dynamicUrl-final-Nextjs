@@ -76,7 +76,6 @@ const ThumbnailGallery = ({
   handleShareicon,
 }) => {
   const [allThumbnails, setAllThumbnails] = useState([]);
-  console.log('%c [ allThumbnails ]-59', 'font-size:13px; background:pink; color:#bf2c9f;', allThumbnails)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -103,11 +102,11 @@ const ThumbnailGallery = ({
   const [matchedKeys, setMatchedKeys] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [isPrivateFolder, setIsPrivateFolder] = useState(false);
+
   const isMyPhotosTab =
     subFolders.find((sf) => sf._id === activeTab)?.type === "my_photos";
   const isSearchMode = isSearching && matchedKeys.length > 0;
   const [isActualMyPhotos, setIsActualMyPhotos] = useState(false);
-  console.log('%c [ isActualMyPhotos ]-87', 'font-size:13px; background:pink; color:#bf2c9f;', isActualMyPhotos)
   const myPhotosFolder = subFolders.find((sf) => sf.type === "my_photos");
   const privateLocker = useMemo(
     () =>
@@ -146,6 +145,7 @@ const ThumbnailGallery = ({
   const [isAddingToLocker, setIsAddingToLocker] = useState(false);
   const [showLockerPopup, setShowLockerPopup] = useState(false);
 const [pendingLockerImage, setPendingLockerImage] = useState(null);
+  const [capsuleBannerImageurl, setCapsulebannerImageurl] = useState("");
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
@@ -583,11 +583,6 @@ const showSnackbar = (message) => {
 
   const currentImage =
     selectedIndex !== null ? popupImages[selectedIndex] : null;
-
-
-  console.log('%c [ matchedKeys ]-277', 'font-size:13px; background:pink; color:#bf2c9f;', matchedKeys)
-  console.log('%c [ visibleThumbnails ]-240', 'font-size:13px; background:pink; color:#bf2c9f;', visibleThumbnails)
-
   const usableFolders = subFolders.filter(
     (sf) => sf.type !== "my_photos" && !sf.isLocker,
   );
@@ -619,7 +614,8 @@ const showSnackbar = (message) => {
         setViewedBy(data?.folders[0]?.viewedBy || []);
         setGuestData(data?.folders[0]?.guestDetails || []);
         setDeviceTracking(data?.folders[0]?.deviceTracking || []);
-        setShortCode(data?.folders[0]?.shortCode || null)
+        setShortCode(data?.folders[0]?.shortCode || null);
+        setCapsulebannerImageurl(data?.folders[0]?.capsuleBannerImageUrl);
         const fetchedThumbnails = (data.thumbnails || [])
 
           .map((thumb, index) => ({ ...thumb, stableKey: thumb._id || index }));
@@ -757,12 +753,9 @@ const showSnackbar = (message) => {
       if (!alreadyTracked && mainFolderId) {
         try {
           await trackFolderClick(mainFolderId);
-
           safeSetSessionItem(sessionKey, "true");
-
-          console.log("Click tracked and session flag set!");
         } catch (err) {
-          console.log("Tracking failed. Session flag not set, will retry on refresh.", err);
+          console.log("Tracking failed", err);
         }
       }
     };
@@ -806,7 +799,6 @@ const showSnackbar = (message) => {
   }, []);
 
   const handleSearchResults = (matches) => {
-    console.log('%c [ matches ]-402', 'font-size:13px; background:pink; color:#bf2c9f;', matches)
     if (!Array.isArray(matches)) return;
     const keys = matches.map((m) => m?.file);
     setMatchedKeys(keys);
@@ -1444,15 +1436,16 @@ const handleAddToLocker = async (imgData) => {
           <HeaderCardsFlashLoader />
         ) : (
           <>
-            {console.log("LOADING STATE:", loading)}
-            {console.log("ALL THUMBNAILS LENGTH:", allThumbnails.length)}
-            {console.log("VISIBLE THUMBNAILS LENGTH:", visibleThumbnails?.length)}
             <div>
-              <Image
-                src={capsuleTopBanner}
-                alt="banner"
-                className="top-banner-image"
-              />
+
+                <Image
+                  src={capsuleBannerImageurl || capsuleTopBanner}
+                  alt="banner"
+                  className="top-banner-image"
+                  width={12}
+                  height={12}
+                />
+                
               <div className="thumbnail-gallery-content">
                 <HeaderCards
                   folderName={folderName}
@@ -1534,7 +1527,6 @@ const handleAddToLocker = async (imgData) => {
                 </div>
               )}
             </div>
-            {console.log("------------------------------------BUTTON DEBUG → loading:", loading, "activeTab:", activeTab)}
             {!loading && (activeTab === "all" || activeTab === privateLocker?._id) && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
@@ -1729,7 +1721,6 @@ const handleAddToLocker = async (imgData) => {
               </div>
             )}
 
-            {console.log("visibleThumbnails inside returned code", visibleThumbnails)}
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <div style={{ minHeight: "500px" }}>
@@ -1942,12 +1933,6 @@ const handleAddToLocker = async (imgData) => {
         )}
         renderFooter={(currentImage, index) => {
           const imageId = currentImage?._id;
-
-
-      console.log("isPrivateFolder ---------------", isPrivateFolder)
-
-
-
           const isLiked = likedImages[imageId];
 // && currentImage?.orderById === customerId
           return (
