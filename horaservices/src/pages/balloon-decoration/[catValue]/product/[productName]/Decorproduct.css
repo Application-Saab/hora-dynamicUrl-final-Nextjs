@@ -108,7 +108,9 @@ font-size: clamp(15px, 4.6vw, 21px);
   font-weight:600;
   color:#fff;
   background: rgb(249, 158, 31);
-  padding: clamp(2px,1vw,4px) clamp(6px,2vw,8px);
+  padding:
+  clamp(3.26px, 1.02vw, 4.89px)
+  clamp(14.66px, 4.58vw, 21.98px);
   border-radius:6px;
   width:fit-content;
 }
@@ -157,6 +159,7 @@ padding: clamp(8.14px, 2.54vw, 12.21px);
 font-family: "Inter", sans-serif;
 font-weight: 400;
 font-size: clamp(11.40px, 3.56vw, 17.10px);
+
   color: #2b2b2b;
 }
 

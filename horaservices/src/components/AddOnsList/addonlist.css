@@ -2,7 +2,11 @@
 padding: 0 clamp(8px, 2.5vw, 10px) 0;
 }
 .photodetails-inclusions{
-margin: 10px 0px;
+margin:
+  clamp(8.14px, 2.54vw, 12.21px)
+  0;
+
+padding: clamp(4.07px, 1.27vw, 6.11px);
 }
 .photodetalis-heading{
     display: inline-flex;
@@ -23,12 +27,14 @@ margin-bottom: 12px;
   cursor: pointer;
 }
 .itemline{
-  font-family: Poppins, sans-serif;
+font-family: "Poppins", sans-serif;
 font-weight: 500;
-  font-size: clamp(
-    12px,
-    calc(12px + ((100vw - 320px) / 160) * 4),
-    16px
-  );
+font-size: clamp(11.40px, 3.56vw, 17.10px);
+
 color: #212529;
+}
+.photodetails-inclusions ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
 }

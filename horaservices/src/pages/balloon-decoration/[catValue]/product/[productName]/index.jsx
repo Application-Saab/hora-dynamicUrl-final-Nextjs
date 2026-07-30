@@ -971,7 +971,7 @@ const generateSlug = (name) => {
             </div>
 
 
-
+           <div ref={addonRef}>
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
@@ -980,7 +980,7 @@ const generateSlug = (name) => {
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}
             />
-
+            </div>
           
             <div ref={similarRef}>
               <SimilarDecorationSlider

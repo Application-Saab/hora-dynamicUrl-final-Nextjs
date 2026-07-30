@@ -25,15 +25,17 @@ const AddOnsList = ({ selectedAddOnProduct, itemQuantities, showAddOnmodal, penc
         />
       </span>
 
-      <ul>
-        {selectedAddOnProduct.map((item, index) => (
-          <li key={index}>
-            <div className="itemline">
-              {index + 1}. {item.title} = ₹ {item.price} x {itemQuantities[item.title]} = ₹ {item.price * itemQuantities[item.title]}
-            </div>
-          </li>
-        ))}
-      </ul>
+    <ul>
+  {selectedAddOnProduct.map((item, index) => (
+    <li key={index}>
+      <div className="itemline">
+        {index + 1}. {item.title} = ₹ {item.price} x{" "}
+        {itemQuantities[item.title]} = ₹{" "}
+        {item.price * itemQuantities[item.title]}
+      </div>
+    </li>
+  ))}
+</ul>
     </div>
   );
 };
