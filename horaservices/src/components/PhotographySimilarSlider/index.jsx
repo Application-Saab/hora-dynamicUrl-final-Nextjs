@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/router";
-import "./photographyslider.css";
+import "./PhotographySimilarSlider.css";
 
 const getDiscountedDifference = (price) => {
   const numericPrice = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
@@ -13,7 +13,7 @@ const getDiscountedDifference = (price) => {
 };
 
 
-const Photographyslider = ({
+const PhotographySimilarSlider = ({
   title = "",
   viewAllLink = "",
   data = [],
@@ -126,4 +126,4 @@ const Photographyslider = ({
   );
 };
 
-export default Photographyslider;
+export default PhotographySimilarSlider;
