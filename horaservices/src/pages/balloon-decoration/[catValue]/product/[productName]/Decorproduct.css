@@ -236,53 +236,6 @@ height: clamp(16.28px, 5.09vw, 24.43px);
 }
 
 
-.decorke-why-section {
-    background-color: #F7E7C7;
-    text-align: center;
-   padding: clamp(18px, 6.4vw, 30px) 0;
-}
-
-.decorke-why-title {
-
-  font-family: Inter, sans-serif;
-  font-weight: 700;
-
-  font-size: clamp(20px, 6.4vw, 28px);
- margin-bottom: clamp(14px, 4.8vw, 22px);
-  color: #97538C;
-  line-height: 100%;
-  letter-spacing: 0%;
-  text-align: center;
-
-}
-
-.decorke-why-features {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.decorke-why-item {
-  flex: 1 1 120px;
-  max-width: 150px;
-}
-
-.decorke-why-icon {
-    width: clamp(36px, 10.7vw, 50px);
-  height: clamp(32px, 9.7vw, 46px);
-
-  margin-bottom: clamp(8px, 3vw, 12px);
-}
-
-.decorke-why-text {
-  color: #97538C;
-  font-family: Inter, sans-serif;
-font-weight: 500;
-font-size: clamp(10.5px, 3.2vw, 14px);
-line-height: 1.4;
-letter-spacing: 0%;
-text-align: center;
-}
 
 
 

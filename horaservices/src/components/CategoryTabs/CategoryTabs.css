@@ -83,7 +83,7 @@
 .category-slide-header {
   display: flex;
   align-items: center;
-  gap: clamp(8px, 2.5vw, 12px);
+ gap: clamp(3px, 1.27vw, 5px);
 margin-bottom: clamp(6.51px, 2.04vw, 9.77px);
 border-radius: clamp(9.77px, 3.05vw, 14.66px);
 }
@@ -207,9 +207,13 @@ font-size: clamp(8.96px, 2.80vw, 13.44px);
 }
 .category-slide-decor-icon {
     flex-shrink: 0;
-    width: 25px;
-    height: 25px;
+   width: clamp(20px, 6.36vw, 25px);
+height: clamp(20px, 6.36vw, 25px);
     object-fit: contain;
+}
+.category-slide-decor-sparkle{
+  width: clamp(15px, 4.83vw, 19px);
+height: clamp(15px, 4.83vw, 19px);
 }
 .ctabs-wrap {
   display: flex;

@@ -32,9 +32,7 @@ import addOnProductsData from "../../../../../utils/addOnProduct.json";
 import HowitWork from "../../../../../assets/howitwork.jpg"
 import { useParams } from "next/navigation";
 import Brand from "../../../../../assets/Brand.png"
-import ExpertsDecoration from "../../../../../assets/ExpertsDecoration.png";
-import SecureTransactions from "../../../../../assets/SecureTransactions.png";
-import ServiceGuarantee from "../../../../../assets/ServiceGuarantee.png";
+
 import { PremiumData } from "@/utils/DecorationData";
 import CategoryTabs from "../../../../../components/CategoryTabs/index.jsx";
 import { decCat } from "@/utils/decorationCategories";
@@ -68,6 +66,7 @@ import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
 import { reviewsData } from "@/utils/poselinkreviews";
 
 import ActionButtons from "@/components/Actionbuttons";
+import WhyHoraSection from "@/components/WhyHoraSection";
 const SkeletonLoader = () => {
   return (
     <div
@@ -909,17 +908,7 @@ const generateSlug = (name) => {
                 {product.name}
               </h1>
 
-              {/* ⭐ Rating + Bought this month row */}
-              {/* <div className="rating-bought-row">
-                <span className="rating-star">⭐</span>
-                <span className="rating-value">{product?.rating || "4.6"}</span>
-                <span className="rating-reviews">({product?.reviewCount || 120} reviews)</span>
-                <span className="rating-sep">|</span>
-                <span className="bought-info">
-                  <span className="bought-icon">👥</span> {product?.boughtCount || "2K+"} bought this month
-                </span>
-              </div> */}
-
+             
               <div className="price-share-row">
                 <div className="pro-details-price">
                   <p className="product-price">
@@ -1051,25 +1040,8 @@ const generateSlug = (name) => {
               />
             )}
 
-  <div className="decorke-why-section">
-              <h2 className="decorke-why-title">Why Hora Decoration</h2>
-
-              <div className="decorke-why-features">
-                <div className="decorke-why-item">
-                  <Image src={ExpertsDecoration} alt="Experts Decoration" className="decorke-why-icon" />
-                  <p className="decorke-why-text">EXPERTS<br />DECORATION</p>
-                </div>
-                <div className="decorke-why-item">
-                  <Image src={SecureTransactions} alt="Secure Transactions" className="decorke-why-icon" />
-                  <p className="decorke-why-text">SECURE<br />TRANSACTIONS</p>
-                </div>
-                <div className="decorke-why-item">
-                  <Image src={ServiceGuarantee} alt="Service Guarantee" className="decorke-why-icon" />
-                  <p className="decorke-why-text">100% SERVICE<br />GUARANTEED</p>
-                </div>
-              </div>
-            </div>
-
+ 
+               <WhyHoraSection/>
   
           <div ref={reviewsRef}>
         <GoogleReviewsCard reviews={reviewsData} />

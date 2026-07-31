@@ -157,7 +157,7 @@ const CategoryTabs = ({
             <Image
               src={icon}
               alt=""
-              className="premium-slide-decor-sparkle"
+              className="category-slide-decor-sparkle"
               width={26}
               height={26}
             />
