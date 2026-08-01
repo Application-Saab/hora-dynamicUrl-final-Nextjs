@@ -445,7 +445,33 @@ useEffect(() => {
     }
   };
 
+// naya useEffect: jab product load ho jaye, saved addons restore karo
+useEffect(() => {
+  if (!product?._id) return;
+  try {
+    const saved = sessionStorage.getItem(`addons_${product._id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
+      setItemQuantities(parsed.itemQuantities || {});
+    }
+  } catch (e) {
+    console.error("Error restoring addons:", e);
+  }
+}, [product?._id]);
 
+// jab bhi addons change ho, save karo
+useEffect(() => {
+  if (!product?._id) return;
+  try {
+    sessionStorage.setItem(
+      `addons_${product._id}`,
+      JSON.stringify({ selectedAddOnProduct, itemQuantities })
+    );
+  } catch (e) {
+    console.error("Error saving addons:", e);
+  }
+}, [selectedAddOnProduct, itemQuantities, product?._id]);
 
   // 6️⃣ Category Navigation Click (Same as before)
   const openCatItems = (item) => {

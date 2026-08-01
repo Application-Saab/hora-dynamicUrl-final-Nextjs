@@ -493,7 +493,33 @@ const ProductDetails = () => {
 
     getAddons();
   }, [addonIds]);
+// productId available hote hi saved addons restore karo
+useEffect(() => {
+  if (!productId) return;
+  try {
+    const saved = sessionStorage.getItem(`photo_addons_${productId}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
+      setItemQuantities(parsed.itemQuantities || {});
+    }
+  } catch (e) {
+    console.error("Error restoring addons:", e);
+  }
+}, [productId]);
 
+// jab bhi addons change ho, sessionStorage mein save karo
+useEffect(() => {
+  if (!productId) return;
+  try {
+    sessionStorage.setItem(
+      `photo_addons_${productId}`,
+      JSON.stringify({ selectedAddOnProduct, itemQuantities })
+    );
+  } catch (e) {
+    console.error("Error saving addons:", e);
+  }
+}, [selectedAddOnProduct, itemQuantities, productId]);
   if (loading) {
     return <SkeletonLoader />
   }
@@ -671,6 +697,7 @@ const ProductDetails = () => {
               <b className="Duration">Duration:</b> {work?.event_duration || work?.duration || "Duration not available"}
             </p>
           </div>
+            <div ref={addonRef}>
     <AddonModal 
     isopen={isModalOpen}
     setIsOpen={setIsModalOpen}
@@ -679,7 +706,7 @@ const ProductDetails = () => {
     onAdd={handleAddToCartAndScrollBack}
     onRemove={handleRemoveFromCart}
         />
-
+</div>
      
           <div className="whyHoraSec">
             <h2 className="whyHoraHeading">Why Hora Photography</h2>

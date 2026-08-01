@@ -5,7 +5,7 @@ import Image from "next/image";
 import arrowIcon from "@/assets/ArrowIcons.svg";
 import searchIcon from "@/assets/searchIcon.svg";
 import customiseStar from "@/assets/customistaionStar.svg"
-import customiseBg from "@/assets/custombg.svg";
+import customiseBg from "@/assets/custombg.webp";
 
 export default function ActionButtons({
   handleCustomise,
