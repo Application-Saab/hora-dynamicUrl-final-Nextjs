@@ -25,7 +25,7 @@ import {
 import FAQSection from '@/components/FAQSection';
 import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
-import Photographyslider from '@/components/photoslidersection';
+import PhotographySimilarSlider from '@/components/PhotographySimilarSlider';
 import { SeoWork } from '@/utils/photoGraphyHead';
 
 import pencil from "@/assets/pencil.svg";
@@ -700,7 +700,7 @@ const ProductDetails = () => {
           </div>
 
           <div ref={similarRef}>
-            <Photographyslider
+            <PhotographySimilarSlider
               title="Similar Photography"
               data={similarProducts}
               showDiscount={true}

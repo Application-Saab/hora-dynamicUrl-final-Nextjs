@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import "./photographyslider.css";
+import { useRouter } from "next/router";
+import "./PhotographySimilarSlider.css";
 
 const getDiscountedDifference = (price) => {
   const numericPrice = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
@@ -13,7 +13,7 @@ const getDiscountedDifference = (price) => {
 };
 
 
-const Photographyslider = ({
+const PhotographySimilarSlider = ({
   title = "",
   viewAllLink = "",
   data = [],
@@ -23,7 +23,7 @@ const Photographyslider = ({
   hasCityPageParam = false,
   decCat = [],
   locality = "",
-  catValue =""
+  catValue = "",
 }) => {
   const router = useRouter();
 
@@ -35,15 +35,23 @@ const Photographyslider = ({
     const slug = slugify(work.name);
     const categorySlug = slugify(catValue || "photography");
 
+    // Base path without city
+    let path = `/photography-page/${categorySlug}/product/${slug}`;
+
+    // Prepend city if this is a city-scoped page (matches your live URL structure)
+    if (hasCityPageParam && city) {
+      path = `/${slugify(city)}${path}`;
+    }
+
     router.push({
-      pathname: `/photography-page/${categorySlug}/product/${slug}`,
+      pathname: path,
       query: { id: work._id },
     });
   };
 
   return (
     <section  style={{
-    padding: '10px',
+    padding: "10px",
      background: "#fbe6d3",
   }}>
       <div className="premium-slide-decor-header">
@@ -118,4 +126,4 @@ const Photographyslider = ({
   );
 };
 
-export default Photographyslider;
+export default PhotographySimilarSlider;
