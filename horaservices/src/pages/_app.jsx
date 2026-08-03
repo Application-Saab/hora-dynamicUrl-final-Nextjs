@@ -8,12 +8,12 @@ import { store, persistor } from "../store/store";
 import { useRouter } from "next/router";
 import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
 import Head from "next/head";
-import { getToken } from "firebase/messaging";
-import { messaging } from "../firebase";
+// import { getToken } from "firebase/messaging";
+// import { messaging } from "../firebase";
 import { ChatProvider } from "@/hooks/ChatContext";
 import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
-import { FIREBASE_VAPID_KEY } from "@/utils/constants";
+// import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
 import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
@@ -110,41 +110,41 @@ function MyApp({ Component, pageProps }) {
   //   });
   // }, []);
 
-  const requestPermission = async () => {
-    try {
-      if ("Notification" in window && "serviceWorker" in navigator) {
-        const swRegistration = await navigator.serviceWorker.register(
-          "/firebase-messaging-sw.js",
-        );
+  // const requestPermission = async () => {
+  //   try {
+  //     if ("Notification" in window && "serviceWorker" in navigator) {
+  //       const swRegistration = await navigator.serviceWorker.register(
+  //         "/firebase-messaging-sw.js",
+  //       );
 
-        const permission = await Notification.requestPermission();
+  //       const permission = await Notification.requestPermission();
 
-        if (permission === "granted") {
-          const currentToken = await getToken(messaging, {
-            vapidKey: FIREBASE_VAPID_KEY,
-            serviceWorkerRegistration: swRegistration,
-          });
+  //       if (permission === "granted") {
+  //         const currentToken = await getToken(messaging, {
+  //           vapidKey: FIREBASE_VAPID_KEY,
+  //           serviceWorkerRegistration: swRegistration,
+  //         });
 
-          if (currentToken) {
-            await fetchWithError(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: loggedinUserId,
-                fcmToken: currentToken,
-              }),
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.error("FCM error:", error);
-    }
-  };
+  //         if (currentToken) {
+  //           await fetchWithError(`${BASE_URL}${SUBSCRIBE_NOTIFICATION}`, {
+  //             method: "POST",
+  //             headers: { "Content-Type": "application/json" },
+  //             body: JSON.stringify({
+  //               userId: loggedinUserId,
+  //               fcmToken: currentToken,
+  //             }),
+  //           });
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("FCM error:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (loggedinUserId) requestPermission();
-  }, [loggedinUserId]);
+  // useEffect(() => {
+  //   if (loggedinUserId) requestPermission();
+  // }, [loggedinUserId]);
 
   // Listen local storage changes for login state
   useEffect(() => {

@@ -127,23 +127,23 @@ define(["./workbox-e43f5367"], function (workbox) {
   });
 
   // Handle notification click
-  self.addEventListener("notificationclick", function (event) {
-    const data = event.notification.data || {};
-    const urlToOpen = data.url || `/chat?room=${data.roomId}`;
+  // self.addEventListener("notificationclick", function (event) {
+  //   const data = event.notification.data || {};
+  //   const urlToOpen = data.url || `/chat?room=${data.roomId}`;
 
-    event.notification.close();
+  //   event.notification.close();
 
-    event.waitUntil(
-      clients
-        .matchAll({ type: "window", includeUncontrolled: true })
-        .then((clientList) => {
-          for (const client of clientList) {
-            if (client.url === urlToOpen && "focus" in client) {
-              return client.focus();
-            }
-          }
-          if (clients.openWindow) return clients.openWindow(urlToOpen);
-        })
-    );
-  });
+  //   event.waitUntil(
+  //     clients
+  //       .matchAll({ type: "window", includeUncontrolled: true })
+  //       .then((clientList) => {
+  //         for (const client of clientList) {
+  //           if (client.url === urlToOpen && "focus" in client) {
+  //             return client.focus();
+  //           }
+  //         }
+  //         if (clients.openWindow) return clients.openWindow(urlToOpen);
+  //       })
+  //   );
+  // });
 });
