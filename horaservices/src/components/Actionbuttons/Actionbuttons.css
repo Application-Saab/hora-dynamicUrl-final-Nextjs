@@ -1,0 +1,110 @@
+.rating-star { font-size: 14px; }
+.rating-value { font-weight: 700; color: #222; }
+.rating-reviews { color: #777; }
+.rating-sep { color: #ccc; }
+.bought-info { display: flex; align-items: center; gap: 4px; color: #333; }
+
+.action-buttons-row {
+  display: flex;
+  gap: clamp(5.70px, 1.78vw, 8.55px);
+  margin: 10px 0px;
+}
+
+.customize-design-btn,
+.view-similar-btn-new {
+  display: flex;
+  align-items: center;
+
+gap: clamp(4.89px, 1.53vw, 7.33px);
+  padding:
+   clamp(7.33px, 2.29vw, 10.99px)
+    clamp(4.07px, 1.27vw, 6.11px);
+border-radius: clamp(4.52px, 1.41vw, 6.78px);
+  flex: 1;
+  border: none;
+  cursor: pointer;
+
+  justify-content: flex-start;
+
+box-shadow: 0px 4px 4px 0px #00000033;
+
+}
+
+.customize-design-btn {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+}
+
+/* JSX में लगाई गई background <Image> के लिए */
+.customize-bg-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  object-fit: cover;
+}
+
+/* button के content (icon, text, arrow) को image के ऊपर रखने के लिए */
+.customize-design-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.view-similar-btn-new {
+  background: #fff;
+  border: 1px solid #e9d5ff;
+  color: #333;
+}
+
+.icon-circle {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.button-main-icon {
+    width: clamp(17.91px, 5.60vw, 26.87px);
+    height: clamp(17.91px, 5.60vw, 26.87px);
+  object-fit: contain;
+}
+
+.btn-text-col {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  flex: 1;
+}
+
+.btn-title {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(10.53px, 3.29vw, 15.80px);
+  color: #97538C;
+}
+.customize-design-btn .btn-title { color: white; }
+
+.btn-subtitle {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(6.15px, 1.92vw, 7.55px);
+  color: #858585;
+}
+.customize-design-btn .btn-subtitle { color: white; }
+
+.arrow-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* width: clamp(12.03px, 3.76vw, 18.06px);
+  height: clamp(12.03px, 3.76vw, 18.06px); */
+  flex-shrink: 0;
+}
+
+.button-arrow-icon {
+width: clamp(12.04px, 3.77vw, 18.07px);
+height: clamp(12.04px, 3.77vw, 18.07px);
+
+  object-fit: contain;
+}

@@ -32,9 +32,7 @@ import addOnProductsData from "../../../../../utils/addOnProduct.json";
 import HowitWork from "../../../../../assets/howitwork.jpg"
 import { useParams } from "next/navigation";
 import Brand from "../../../../../assets/Brand.png"
-import ExpertsDecoration from "../../../../../assets/ExpertsDecoration.png";
-import SecureTransactions from "../../../../../assets/SecureTransactions.png";
-import ServiceGuarantee from "../../../../../assets/ServiceGuarantee.png";
+
 import { PremiumData } from "@/utils/DecorationData";
 import CategoryTabs from "../../../../../components/CategoryTabs/index.jsx";
 import { decCat } from "@/utils/decorationCategories";
@@ -42,7 +40,6 @@ import "../../../../../components/CategoryTabs/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
 import { allReviewsData } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";
-import customiseIcon from "@/assets/customisationicon.svg"
 import AdditionalServices from "@/components/AdditionalServices";
 import ShareIcon from "@/assets/shareIcon.svg";
 import BannerImage from "../../../../../assets/customised.jpg";
@@ -60,6 +57,16 @@ import AddOnsList from "@/components/AddOnsList";
 import fallbackImg from "@/assets/fallback-image.png";
 import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
+import MakeItYoursBanner from "@/components/MakeItYoursBanner";
+import SimiliarThemes from "@/assets/SimilarThemes.svg";
+import StarIcon from "@/assets/Staricon.svg";
+import fireIcon from "@/assets/fireIcon.svg";
+import hearticon from "@/assets/hearticon.svg";
+import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
+import { reviewsData } from "@/utils/poselinkreviews";
+
+import ActionButtons from "@/components/Actionbuttons";
+import WhyHoraSection from "@/components/WhyHoraSection";
 const SkeletonLoader = () => {
   return (
     <div
@@ -236,7 +243,7 @@ const [levelUp2000, setLevelUp2000] = useState([]);
   const altTagCatValue = catValue.replace(/-/g, " ");
   const hasCityPageParam = city ? true : false;
   const cityName = params?.city;
-
+  const reviewsRef    = useRef(null);
   const brandItems = [
     { img: HappyCustomerIMG, alt: "Happy Customers", bold: "1L+HAPPY ", sub: "CUSTOMERS" },
     { img: GoogleRatingIMG, alt: "Google Rating", bold: "4.8+ GOOGLE", sub: "RATING" },
@@ -438,7 +445,33 @@ useEffect(() => {
     }
   };
 
+// naya useEffect: jab product load ho jaye, saved addons restore karo
+useEffect(() => {
+  if (!product?._id) return;
+  try {
+    const saved = sessionStorage.getItem(`addons_${product._id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setSelectedAddOnProduct(parsed.selectedAddOnProduct || []);
+      setItemQuantities(parsed.itemQuantities || {});
+    }
+  } catch (e) {
+    console.error("Error restoring addons:", e);
+  }
+}, [product?._id]);
 
+// jab bhi addons change ho, save karo
+useEffect(() => {
+  if (!product?._id) return;
+  try {
+    sessionStorage.setItem(
+      `addons_${product._id}`,
+      JSON.stringify({ selectedAddOnProduct, itemQuantities })
+    );
+  } catch (e) {
+    console.error("Error saving addons:", e);
+  }
+}, [selectedAddOnProduct, itemQuantities, product?._id]);
 
   // 6️⃣ Category Navigation Click (Same as before)
   const openCatItems = (item) => {
@@ -693,22 +726,27 @@ const generateSlug = (name) => {
     const inclusionItems = statements.flatMap((statement) =>
       statement.split("-").filter((item) => item.trim() !== "")
     );
-  const inclusionList = inclusionItems.map((item, index) => (
-      <li key={index} className="inclusionstyle">
-        <Image src={checkImage} alt="Info" />
-        {item.trim()}
-      </li>
-    ));
+ 
     return (
-      <div className="inclusion-section">
-        <div className="inclusion-heading">
-          Inclusions
-        </div>
+   <div className="inclusion-sections">
+  <div className="inclusion-heading">Inclusions</div>
 
-        <ul className="inclusion-list">
-          {inclusionList}
-        </ul>
-      </div>
+  <ul className="inclusion-list">
+    {inclusionItems.map((item, index) => (
+      <li className="inclusionstyle" key={index}>
+        <Image
+          src={checkImage}
+          alt="check"
+          className="inclusion-check"
+        />
+
+        <span className="inclusion-text">
+          {item.trim()}
+        </span>
+      </li>
+    ))}
+  </ul>
+</div>
     );
   };
 
@@ -871,68 +909,40 @@ const generateSlug = (name) => {
           <div
             className="decDetailsRight"
           >
-            <div
+         <div
               style={{
                 padding: "clamp(8px, 2.5vw, 10px) clamp(8px, 2.5vw, 10px) 0"
               }}
-
             >
               <div className="breadcrumb-row">
                 <h2 className="breadcrumb-text">
                   <a className="breadcrumb-link" href="/">
                     Home
                   </a>
-
                   {" > "}
                   <a
                     className="breadcrumb-link"
                     href={`/balloon-decoration/${catValue}`}
                   >
-
                     {catValue.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                   </a>
                   {" > "}
                 </h2>
-
-            <button
-  onClick={() => {
-    // GTM Event
-    window.dataLayer = window.dataLayer || [];
-   window.dataLayer.push({
-  event: "view_similar_click",
-  eventCategory: "Product Details Page",
-  eventAction: "View Similar Button Click",
-  eventLabel: product?.name,
-  product_name: product?.name,
-  category: catValue,
-  price: product?.price,
-});
-
-    // Scroll
-    similarRef?.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }}
-  className="view-similar-btn"
->
-  View Similar
-</button>
               </div>
 
               <h1 className="product-title">
                 {product.name}
               </h1>
-              <div className="price-share-row">
 
+             
+              <div className="price-share-row">
                 <div className="pro-details-price">
                   <p className="product-price">
                     ₹ {product.price}
                   </p>
-
                   <p className="product-old-price">
                     ₹ {Math.floor(discountInfo?.discountedPrice)}
                   </p>
-
                   <div className="product-discount">
                     ₹ {Math.floor(discountInfo?.discountDifference || 0)} off
                   </div>
@@ -945,14 +955,22 @@ const generateSlug = (name) => {
                   />
                 </div>
               </div>
-              <div className='addon-container' ref={customizationRef}>
 
-                        <AddOnsList
-  selectedAddOnProduct={selectedAddOnProduct}
-  itemQuantities={itemQuantities}
-  showAddOnmodal={showAddOnmodal}
-  pencil={pencil}
+              {/* 🎨 Two action buttons row - Customize Design + View Similar */}
+        <ActionButtons
+  product={product}
+  catValue={catValue}
+  cityName={cityName}
+  similarRef={similarRef}
+  handleCustomise={handleCustomise}
 />
+              <div className='addon-container' ref={customizationRef}>
+                <AddOnsList
+                  selectedAddOnProduct={selectedAddOnProduct}
+                  itemQuantities={itemQuantities}
+                  showAddOnmodal={showAddOnmodal}
+                  pencil={pencil}
+                />
               </div>
 
             </div>
@@ -963,35 +981,12 @@ const generateSlug = (name) => {
             >
               {getItemInclusion(product.inclusion)}
 
-              <section className="relative custom-banner-section">
-                <Image
-                  src={BannerImage}
-                  alt="Change Something Banner"
-                  className="custom-banner-image"
-                />
 
-                <div className="absolute inset-0 flex items-center justify-center">
-
-                  <button
-                    className="customise-btn d-flex align-items-center gap-1"
-                    onClick={() => handleCustomise(catValue, cityName)}
-                  >
-                    CUSTOMISATION
-                    <Image
-                      src={customiseIcon}
-                      alt="Customisation Icon"
-                      width={14}
-                      height={14}
-                    />
-                  </button>
-                </div>
-              </section>
-
-
+<MakeItYoursBanner/>
             </div>
 
 
-
+           <div ref={addonRef}>
             <AddonModal
               isOpen={isModalOpen}
               setIsOpen={setIsModalOpen}
@@ -1000,25 +995,8 @@ const generateSlug = (name) => {
               onAdd={handleAddToCartAndScrollBack}
               onRemove={handleRemoveFromCart}
             />
-
-            <div className="decorke-why-section">
-              <h2 className="decorke-why-title">Why Hora Decoration</h2>
-
-              <div className="decorke-why-features">
-                <div className="decorke-why-item">
-                  <Image src={ExpertsDecoration} alt="Experts Decoration" className="decorke-why-icon" />
-                  <p className="decorke-why-text">EXPERTS<br />DECORATION</p>
-                </div>
-                <div className="decorke-why-item">
-                  <Image src={SecureTransactions} alt="Secure Transactions" className="decorke-why-icon" />
-                  <p className="decorke-why-text">SECURE<br />TRANSACTIONS</p>
-                </div>
-                <div className="decorke-why-item">
-                  <Image src={ServiceGuarantee} alt="Service Guarantee" className="decorke-why-icon" />
-                  <p className="decorke-why-text">100% SERVICE<br />GUARANTEED</p>
-                </div>
-              </div>
             </div>
+          
             <div ref={similarRef}>
               <SimilarDecorationSlider
                 title="Similar Decorations"
@@ -1029,6 +1007,9 @@ const generateSlug = (name) => {
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
                 catValue={router.query.catValue} 
+                  icon={StarIcon}
+                  sparkleIcon={SimiliarThemes}
+                   
               />
             </div>
           
@@ -1052,6 +1033,8 @@ const generateSlug = (name) => {
                   catValue="KidsBirthday"
                   heading="Other Popular Themes"
                   hasBg={true}
+                  icon={StarIcon}
+                  fireIcon={fireIcon}
                 />
               </div>
             )}
@@ -1065,7 +1048,9 @@ const generateSlug = (name) => {
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
                 catValue={router.query.catValue}   // 🔑 SLUG ONLY
-
+                 icon={StarIcon}
+                  sparkleIcon={hearticon}
+                   
               />
             )}
 
@@ -1077,34 +1062,26 @@ const generateSlug = (name) => {
                 hasCityPageParam={hasCityPageParam}
                 locality={locality}
                 catValue={router.query.catValue}   // 🔑 SLUG ONLY
-
+              
               />
             )}
 
+ 
+               <WhyHoraSection/>
+  
+          <div ref={reviewsRef}>
+        <GoogleReviewsCard reviews={reviewsData} />
+      </div>
+            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
+  <VideoTestimonial videoSrc={VideoClint} />
 
-
-            <div className="decorke-celebrate-banner">
+              <div className="decorke-celebrate-banner">
               <Image
                 src={HowitWork}
                 alt="Customize Your Celebration"
                 className="decorke-banner-img"
               />
             </div>
-
-            <div className="media-section">
-              <h2 className="media-heading">Hora in Media</h2>
-              <div className="media-logos">
-                <Image src={Brand} alt="Hora Featured Media" className="media-logos-img" />
-              </div>
-            </div>
-
-
-
-            <VideoTestimonial videoSrc={VideoClint} />
-
-            <BrandBanner title="Excellence Backed by Happy Customers" items={brandItems} />
-
-
             <AdditionalServices />
 
             <div className="tab-section-details-productpage">

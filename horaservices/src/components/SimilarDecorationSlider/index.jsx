@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter,usePathname } from "next/navigation";
 import "@/components/DecorSlider/DecorSlider.css";
-
+import "./similardecorationslider.css"
 const getDiscountedDifference = (price) => {
   const numericPrice =
     parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
@@ -23,6 +23,9 @@ const SimilarDecorationSlider = ({
   city = "",
   locality = "",
   catValue = "", // ✅ MUST be slug like "baby-shower-decoration"
+  icon,           // 🔑 naya prop
+  sparkleIcon, 
+
 }) => {
   const router = useRouter();
 const pathname = usePathname();
@@ -65,20 +68,36 @@ const handleCardClick = (item) => {
 
 
   return (
-    <section style={{     padding: "10px 0px 10px 10px", background: "#F4D7C6" }}>
-      <div className="premium-slide-decor-header">
-        {title && <h2 style={{ padding: "10px"}}>{title}</h2>}
-        {viewAllLink && (
-          <span
-            onClick={() => router.push(viewAllLink)}
-            style={{ cursor: "pointer", color: "#0070f3" }}
-          >
-            View All
-          </span>
-        )}
-      </div>
+     <section style={{ padding: "10px 0px 10px 10px"}}>
+    {title && (
+      <div className="similar-slide-decor-header">
+        <Image
+          src={sparkleIcon}
+          alt=""
+          className="similar-slide-decor-icon"
+        />
 
-      <div className="premium-scroll-wrapper">
+        <h2>{title}</h2>
+
+        <Image
+          src={icon}
+          alt=""
+          className="similar-slide-decor-sparkle"
+        />
+      </div>
+    )}
+
+    {viewAllLink && (
+      <span
+        onClick={() => router.push(viewAllLink)}
+        style={{ cursor: "pointer", color: "#0070f3" }}
+      >
+        View All
+      </span>
+    )}
+      
+
+      <div className="similar-scroll-wrapper">
         {Array.isArray(data) && data.length > 0 ? (
           data.map((item, index) => {
             const price =
@@ -102,39 +121,39 @@ const handleCardClick = (item) => {
             return (
               <div
                 key={index}
-                className="premium-card"
+                className="similar-card"
                 onClick={() => handleCardClick(item)}
                 style={{ cursor: "pointer" }}
               >
-                <div className="premium-img-wrapper">
+                <div className="similar-img-wrapper">
   <Image
     src={imageUrl}
     alt={titleText}
-    className="premium-img"
+    className="similar-img"
     fill
     sizes="(max-width:480px) 100vw"
   />
 
 
                   {showDiscount && discountDiff > 0 && (
-                    <div className="premium-discount">
+                    <div className="similar-discount">
                       ₹{discountDiff} off
                     </div>
                   )}
                 </div>
 
-                <div className="premium-content">
-                  <p className="premium-title">
+                <div className="similar-content">
+                  <p className="similar-title">
                     {titleText.length > 20
                       ? `${titleText.slice(0, 20)}...`
                       : titleText}
                   </p>
                 </div>
 
-                <div className="premium-price-wrapper">
-                  <span className="premium-price">₹{price}</span>
+                <div className="similar-price-wrapper">
+                  <span className="similar-price">₹{price}</span>
                   {showDiscount && (
-                    <span className="premium-original">
+                    <span className="similar-original">
                       ₹{originalPrice}
                     </span>
                   )}

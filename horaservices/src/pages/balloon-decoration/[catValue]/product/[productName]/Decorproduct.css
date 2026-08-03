@@ -1,4 +1,4 @@
-
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
  .decDetails{
     max-width:600px;
     margin:auto;
@@ -108,50 +108,73 @@ font-size: clamp(15px, 4.6vw, 21px);
   font-weight:600;
   color:#fff;
   background: rgb(249, 158, 31);
-  padding: clamp(2px,1vw,4px) clamp(6px,2vw,8px);
+  padding:
+  clamp(3.26px, 1.02vw, 4.89px)
+  clamp(14.66px, 4.58vw, 21.98px);
   border-radius:6px;
   width:fit-content;
 }
 /* Heading */
-.inclusion-section{
-padding: 0 clamp(8px, 2.5vw, 10px) 0;
+.inclusion-sections {
+padding: clamp(8.14px, 2.54vw, 12.21px);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #0000000D;
+  box-shadow: 0 clamp(3.26px, 1.02vw, 4.89px)
+               clamp(3.26px, 1.02vw, 4.89px)
+               0
+               rgba(0, 0, 0, 0.14);
+  margin:10px;
+
 }
-.inclusion-heading{
+
+.inclusion-heading {
   font-family: Inter, sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(18px, 5.3vw, 21px);
-  margin-bottom: clamp(8px, 2.5vw, 10px);
+  color: #1a1a1a;
+  margin-bottom: clamp(4.07px, 1.27vw, 6.11px);
   padding-bottom: 3px;
 }
 
-/* list container */
-.inclusion-list{
-  padding-left: 0;
-  margin: 0;
+
+.inclusion-list {
   list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4.07px, 1.27vw, 6.11px);
 }
 
-/* list item */
-.inclusionstyle{
-  font-family: Inter, sans-serif;
-  font-weight: 400;
-  font-size: clamp(12px, 3.6vw, 14px); /* 320→12px | 393→14px */
-  line-height: clamp(22px, 6vw, 27.32px);
+.inclusionstyle {
   display: flex;
   align-items: flex-start;
- gap: clamp(4px, 1.5vw, 6px); 
+  gap: clamp(8px, 2.5vw, 10px);
+
+  margin: 0;
+  padding: 0;
+
+font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(11.40px, 3.56vw, 17.10px);
+
+  color: #2b2b2b;
 }
 
-/* icon */
-.inclusionstyle img,
-.inclusionstyle svg{
-  width: clamp(16px, 5vw, 20px);
-  height: clamp(16px, 5vw, 20px);
+.inclusion-check {
+  width: clamp(16.28px, 5.09vw, 24.43px);
+height: clamp(16.28px, 5.09vw, 24.43px);
   flex-shrink: 0;
-  margin-top: 4px; 
+  margin-top: 2px;
 }
 
-
+.inclusion-text {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
 
 
 
@@ -202,6 +225,7 @@ padding: 0 clamp(8px, 2.5vw, 10px) 0;
   width: 100%;
   display: flex;
   justify-content: center;
+  
 }
 
 .decorke-banner-img {
@@ -212,53 +236,6 @@ padding: 0 clamp(8px, 2.5vw, 10px) 0;
 }
 
 
-.decorke-why-section {
-    background-color: #F7E7C7;
-    text-align: center;
-   padding: clamp(18px, 6.4vw, 30px) 0;
-}
-
-.decorke-why-title {
-
-  font-family: Inter, sans-serif;
-  font-weight: 700;
-
-  font-size: clamp(20px, 6.4vw, 28px);
- margin-bottom: clamp(14px, 4.8vw, 22px);
-  color: #97538C;
-  line-height: 100%;
-  letter-spacing: 0%;
-  text-align: center;
-
-}
-
-.decorke-why-features {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.decorke-why-item {
-  flex: 1 1 120px;
-  max-width: 150px;
-}
-
-.decorke-why-icon {
-    width: clamp(36px, 10.7vw, 50px);
-  height: clamp(32px, 9.7vw, 46px);
-
-  margin-bottom: clamp(8px, 3vw, 12px);
-}
-
-.decorke-why-text {
-  color: #97538C;
-  font-family: Inter, sans-serif;
-font-weight: 500;
-font-size: clamp(10.5px, 3.2vw, 14px);
-line-height: 1.4;
-letter-spacing: 0%;
-text-align: center;
-}
 
 
 
@@ -426,3 +403,27 @@ flex-shrink: 0;
   object-fit: contain;
 }
 
+
+
+
+
+.rating-bought-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-family: "Inter", sans-serif;
+font-weight: 400;
+font-size: clamp(10.58px, 3.31vw, 15.88px);
+
+  color: #333;
+  margin: 4px 0 8px;
+
+
+  
+}
+.rating-star { font-size: 14px; }
+.rating-value { font-weight: 700; color: #222; }
+.rating-reviews { color: #777; }
+.rating-sep { color: #ccc; }
+.bought-info { display: flex; align-items: center; gap: 4px; color: #333; }

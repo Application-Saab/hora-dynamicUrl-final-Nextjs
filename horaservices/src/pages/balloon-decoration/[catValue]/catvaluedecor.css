@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
 .decCatPage {
       margin-top: 10px;
     max-width:480px;
@@ -168,7 +169,9 @@
 .item-content ul li{
   list-style:none
 }
-
+.category-tabs-container{
+   padding: 0px 0px 0px 10px ;
+}
 @media only screen and (max-width: 600px) {
   .category-content {
     padding: 15px;
@@ -237,75 +240,3 @@
   background: #fff;
   z-index: 999;
 }
-.makeItYoursBanner {
-  position: relative;
-  width: 100%;
-}
-
-.makeItYoursBanner-img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.makeItYoursCta {
-  position: absolute;
-  left: 13px;
-  bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: transparent;
-  border: 1px solid #FFFFFF;
-  border-radius: clamp(4.5px, calc((5.55 / 393) * 100vw), 6.8px);
- padding:
-         
-         clamp(3px, calc((4 / 393) * 100vw), 5px);
-  cursor: pointer;
-  max-width: 90%;
-  box-shadow: 0px 4px 4px 0px #00000040;
-
-}
-
-.makeItYourImg-icon {
-width: clamp(20px, calc((24 / 393) * 100vw), 30px);
-height: clamp(20px, calc((24 / 393) * 100vw), 30px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.makeItYoursCta-text {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.makeItYoursCta-title {
-   font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-size: clamp(11px, calc((12.94 / 393) * 100vw), 16px);
-  color:#FFFFFF;
-}
-
-.makeItYoursCta-subtitle {
-  color: rgba(255, 255, 255, 0.85);
-font-family: "Inter", sans-serif;
-font-weight: 500;
-font-size: clamp(6.5px, calc((7.55 / 393) * 100vw), 9.2px);
-}
-
-.makeItYoursCta-arrow {
-width: clamp(12px, calc((15 / 393) * 100vw), 18px);
-height: clamp(12px, calc((15 / 393) * 100vw), 18px);
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #9b4a93;
-  flex-shrink: 0;
-  margin-left: 6px;
-}
-

@@ -40,9 +40,10 @@ import SeoHead from "@/utils/SeoHead";
 import ThemeSelector from "@/components/Themeselector";
 import SearchSortBar from "@/components/SearchSortBar";
 import DecorationBanner from "@/components/CategoryDecorationBanner";
-import customiseIcon from "@/assets/customiselcon.webp";
+
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
+import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -594,7 +595,7 @@ const handleWhatsAppClick = () => {
                 />
               )}
               {catValue?.toLowerCase() === "kids-birthday-decoration" && !isSearchActive && (
-                <div className="category-tabs-outer">
+                <div className="category-tabs-container">
                   <CategoryTabs
                     data={themeFilters.map((item) => ({
                       id: item.value,
@@ -678,7 +679,7 @@ const handleWhatsAppClick = () => {
                     data={highPriceProducts.slice(0, 1)}
                     onCardClick={handleViewDetails}
                   />
-      <section
+      {/* <section
   className="makeItYoursBanner"
   onClick={handleWhatsAppClick}
   style={{ cursor: "pointer" }}
@@ -714,8 +715,8 @@ const handleWhatsAppClick = () => {
       </svg>
     </span>
   </button>
-</section>
-
+</section> */}
+<MakeItYoursBanner/>
                   <ProductGrid data={sortedCatalogueData.slice(4, 10)} onCardClick={handleViewDetails} catValue={catValue} />
 
                   <HighPriceProduct
