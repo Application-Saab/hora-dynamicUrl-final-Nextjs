@@ -508,7 +508,7 @@ function CelebrationBoosterDetails({ city, locality }) {
         <meta property="og:type" content="website" />
       </Head>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "480px", margin: "auto" }}>
         <div className="decDetails">
           <div className="decDetailsLeft">
             <div style={{ position: "relative" }}>
