@@ -148,7 +148,7 @@ const CelebrationBoosterPage = () => {
   }, [catalogueData, sortOption, searchQuery, isSearchActive]);
 
   return (
-    <div className="celebrationBoosterPage">
+    <div className="celebrationBoosterSection">
       <SeoHead catValue={CATEGORY_SLUG} />
    <section className="celebrationBoosterBanner">
         <Image
