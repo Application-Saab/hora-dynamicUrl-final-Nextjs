@@ -146,6 +146,29 @@ const ThumbnailGallery = ({
   const [showLockerPopup, setShowLockerPopup] = useState(false);
 const [pendingLockerImage, setPendingLockerImage] = useState(null);
   const [capsuleBannerImageurl, setCapsulebannerImageurl] = useState("");
+  const [isBannerLoading, setIsBannerLoading] = useState(true);
+  const bannerRef = useRef(null);
+
+  const bannerSrc = capsuleBannerImageurl || capsuleTopBanner;
+  useEffect(() => {
+    if (bannerSrc) {
+      setIsBannerLoading(true);
+    }
+    if (bannerRef.current && bannerRef.current.complete) {
+      setIsBannerLoading(false);
+    }
+
+    const timer = setTimeout(() => {
+      setIsBannerLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [bannerSrc]);
+
+  const handleImageLoad = () => {
+    setIsBannerLoading(false);
+  };
+  
   const [snackbar, setSnackbar] = useState({
     show: false,
     message: "Image downloaded successfully",
@@ -1430,22 +1453,25 @@ const handleAddToLocker = async (imgData) => {
 
   return (
     <div className="thumbnail-gallery">
-
       <div className="">
-        {loading ? (
-          <HeaderCardsFlashLoader />
-        ) : (
-          <>
-            <div>
+        <div>
+          {(loading || isBannerLoading) && <HeaderCardsFlashLoader />}
 
-                <Image
-                  src={capsuleBannerImageurl || capsuleTopBanner}
-                  alt="banner"
-                  className="top-banner-image"
-                  width={12}
-                  height={12}
-                />
-                
+          <div style={{ display: loading || isBannerLoading ? "none" : "block" }}>
+            <div>
+              <Image
+                ref={bannerRef}
+                src={bannerSrc}
+                alt="banner"
+                className="top-banner-image"
+                width={800} 
+                height={200}
+                onLoad={handleImageLoad}
+                onLoadingComplete={handleImageLoad}
+                onError={handleImageLoad} 
+                priority 
+              />
+
               <div className="thumbnail-gallery-content">
                 <HeaderCards
                   folderName={folderName}
@@ -1480,10 +1506,10 @@ const handleAddToLocker = async (imgData) => {
                 />
               </div>
             </div>
-          </>
-        )}
-        <div className="thumbnail-gallery-content">
+          </div>
+        </div>
 
+        <div className="thumbnail-gallery-content">
           <div>
             <div>
               {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
@@ -1586,7 +1612,8 @@ const handleAddToLocker = async (imgData) => {
               </div>
             )}
           </div>
-          {/* Hidden file input – Add More Images */}
+
+          {/* Hidden file input */}
           <input
             type="file"
             id="addMoreImagesInput"
@@ -1604,7 +1631,6 @@ const handleAddToLocker = async (imgData) => {
               }
 
               const now = Date.now();
-
               const optimistic = [];
 
               for (const file of files) {
@@ -1710,21 +1736,22 @@ const handleAddToLocker = async (imgData) => {
               )}
 
             {/* ================= NO SEARCH RESULT ================= */}
-            {(visibleThumbnails.length === 0 && activeSubFolderId && !isStreamSearching && !isSearching) && (
-              <div className="weblink-emptyFolder-container">
-                <Image
-                  src={emptyFolder}
-                  alt="no images select"
-                />
-                <p className="label">No Photos Yet!</p>
-                <p className="sub-label" style={{ color: "#8F939C" }}>Start adding photos to build your album</p>
-              </div>
-            )}
-
+            {visibleThumbnails.length === 0 &&
+              activeSubFolderId &&
+              !isStreamSearching &&
+              !isSearching && (
+                <div className="weblink-emptyFolder-container">
+                  <Image src={emptyFolder} alt="no images select" />
+                  <p className="label">No Photos Yet!</p>
+                  <p className="sub-label" style={{ color: "#8F939C" }}>
+                    Start adding photos to build your album
+                  </p>
+                </div>
+              )}
 
             {/* ================= MAIN IMAGE GRID ================= */}
             <div style={{ minHeight: "500px" }}>
-                {isPrivateFolder && lockerBanner}
+              {isPrivateFolder && lockerBanner}
               {imageChunks.map((chunk, index) => (
                 <React.Fragment key={index}>
                   <ImageGrid
@@ -1742,9 +1769,9 @@ const handleAddToLocker = async (imgData) => {
                     selectedImages={selectedImages}
                     setSelectedImages={setSelectedImages}
                   />
-                {!isPrivateFolder &&
-                (!isMobileOrTablet || currentPage === 1) &&
-                banners[index]}
+                  {!isPrivateFolder &&
+                    (!isMobileOrTablet || currentPage === 1) &&
+                    banners[index]}
                 </React.Fragment>
               ))}
 
@@ -1769,34 +1796,23 @@ const handleAddToLocker = async (imgData) => {
           </div>
         </div>
 
-        <div className={`}`}>
-          <div className="">
-            {showInternalTitle && (
-              <div>
-                {/* <h1 className="gallery-title">Your Photos</h1> */}
-                {/* <Image
-                src={shareIcon}
-                alt="Info"
-                style={{ height: 20, width: 20, marginLeft: 10, cursor: 'pointer' }}
-                onClick={handleShareicon}
-              /> */}
-              </div>
-            )}
+        <div>
+          <div>
+            {showInternalTitle && <div></div>}
 
             {/* Conditional Pagination Rendering */}
             {isMobileOrTablet && totalPages > 1 && (
-              <div className="">
+              <div>
                 <PaginationControls
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={handlePageChange}
-                  inline={true} // Keep compact style
+                  inline={true}
                 />
               </div>
             )}
           </div>
         </div>
-
       </div>
 
       <AddToFolderPopup
