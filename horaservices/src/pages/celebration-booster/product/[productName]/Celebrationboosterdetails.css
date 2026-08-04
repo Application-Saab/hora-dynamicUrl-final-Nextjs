@@ -1,0 +1,424 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
+
+
+ .celebrationboosterDetails{
+    max-width:600px;
+    margin:auto;
+ }
+
+img.hora-watermark-image {
+  width: clamp(36px, calc(36px + 8 * ((100vw - 320px) / 160)), 44px);
+  height: clamp(45px, calc(45px + 10 * ((100vw - 320px) / 160)), 55px);
+}
+
+.decDetailsImage {
+  width: 100%;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  position: relative;
+}
+
+.breadcrumb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.breadcrumb-text {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: clamp(11px, 3.3vw, 13px);
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #222;
+  margin: clamp(6px, 2vw, 8px) 0;
+}
+
+.breadcrumb-link {
+  color: #97538c;
+  text-decoration: none;
+  font-size: clamp(11px, 3.3vw, 13px);
+}
+
+.view-similar-btn {
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  font-size: clamp(11px, 3.3vw, 13px);
+  color: #97538c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.8vw, 6.9px);
+  padding: clamp(4px, 1.8vw, 6.9px);
+  background: none;
+  border-radius: 5px;
+  border: 1px solid #97538c;
+  line-height: 100%;
+  text-align: center;
+  box-shadow: 0px 4px 4px 0px #00000029;
+  cursor: pointer;
+}
+
+.product-title {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: clamp(16px, 4.6vw, 18px);
+  line-height: clamp(22px, 6.3vw, 25px);
+  letter-spacing: 0%;
+  color: #000000;
+}
+
+.pro-details-price {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+}
+
+.product-price {
+  font-family: Inter, sans-serif;
+  font-size: clamp(15px, 4.6vw, 21px);
+  font-weight: 600;
+  color: #97538c;
+  line-height: clamp(22px, 6vw, 25px);
+  margin: 0;
+}
+
+.product-old-price {
+  font-family: Inter, sans-serif;
+  color: #444;
+  font-weight: 600;
+  font-size: clamp(16px, 4.6vw, 18px);
+  text-decoration: line-through;
+  margin: clamp(5px, 1.8vw, 7px) 0;
+}
+
+.product-discount {
+  font-family: Inter, sans-serif;
+  font-size: clamp(12px, 3.5vw, 14px);
+  font-weight: 600;
+  color: #fff;
+  background: rgb(249, 158, 31);
+  padding: clamp(3.26px, 1.02vw, 4.89px) clamp(14.66px, 4.58vw, 21.98px);
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.inclusion-sections {
+  padding: clamp(8.14px, 2.54vw, 12.21px);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #0000000d;
+  box-shadow: 0 clamp(3.26px, 1.02vw, 4.89px) clamp(3.26px, 1.02vw, 4.89px) 0
+    rgba(0, 0, 0, 0.14);
+  margin: 10px;
+}
+
+.inclusion-heading {
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 5.3vw, 21px);
+  color: #1a1a1a;
+  margin-bottom: clamp(4.07px, 1.27vw, 6.11px);
+  padding-bottom: 3px;
+}
+
+.inclusion-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4.07px, 1.27vw, 6.11px);
+}
+
+.inclusionstyle {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(8px, 2.5vw, 10px);
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(11.4px, 3.56vw, 17.1px);
+  color: #2b2b2b;
+}
+
+.inclusion-check {
+  width: clamp(16.28px, 5.09vw, 24.43px);
+  height: clamp(16.28px, 5.09vw, 24.43px);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.inclusion-text {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.confirm-button-wrapper {
+  position: fixed;
+  bottom: 1px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  z-index: 999;
+  pointer-events: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  gap: 20px;
+}
+
+.confirm-button {
+  background-color: rgb(157, 74, 147);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 10px;
+  border: none;
+  border-radius: 10px;
+  pointer-events: auto;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  min-width: 120px;
+}
+
+.confirm-button-wrapper::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: -1;
+}
+
+.decorke-celebrate-banner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.decorke-banner-img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.customisation-box {
+  border: 1px solid #97538c;
+  background-color: #e8ccff;
+  margin: 13px auto 7px;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.customisation-heading {
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 20px;
+  color: #97538c;
+  text-align: center;
+}
+
+.customisation-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 12px;
+  color: #97538c;
+}
+
+.customisation-icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 8px;
+}
+
+.customisation-button-wrap {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.customisation-button {
+  background-color: rgb(157, 74, 147);
+  color: white;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  font-size: 13px;
+}
+
+.customisation-button:hover {
+  background-color: rgb(137, 64, 127);
+}
+
+/* ---- Booster-specific: WhatsApp enquire + View Similar buttons row ---- */
+.booster-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.booster-action-buttons .customisation-button {
+  padding: clamp(8px, 2.2vw, 10px) clamp(14px, 3.5vw, 18px);
+}
+
+.media-section {
+  text-align: center;
+  background: white;
+  margin: 20px 0px 20px 0px;
+}
+
+.media-heading {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: clamp(15px, calc(9px + 2.2vw), 20px);
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  color: #97538c;
+  margin-bottom: 20px;
+}
+
+.media-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fdeef9;
+  border-radius: 8px;
+}
+
+.media-logos-img {
+  max-width: 100%;
+  height: auto;
+}
+
+.custom-banner-section {
+  position: relative;
+}
+
+.custom-banner-section .custom-banner-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 15px;
+}
+
+.custom-banner-section button {
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  font-size: 12px;
+  padding: 5px 10px !important;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 3px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #97538c !important;
+  font-family: "Jost", sans-serif;
+  font-style: normal;
+  line-height: 100%;
+  letter-spacing: 0;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-offset: 0;
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: auto;
+  gap: 10px;
+}
+
+.custom-banner-section button:hover {
+  background: #fff;
+}
+
+.share-btn {
+  width: clamp(28px, 8.5vw, 33px);
+  height: clamp(28px, 8.5vw, 33px);
+  border-radius: clamp(6px, 1.8vw, 7px);
+  border: 1px solid #34c759;
+  padding: clamp(4px, 1.2vw, 5px);
+  background: #ecfdf3;
+  box-shadow: 0px 4px 4px 0px #221b1b69;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.price-share-row {
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  padding-right: 25px;
+  white-space: nowrap;
+}
+
+.share-icon-img {
+  width: clamp(14px, 4vw, 18px);
+  height: clamp(14px, 4vw, 18px);
+  object-fit: contain;
+}
+
+.rating-bought-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: clamp(10.58px, 3.31vw, 15.88px);
+  color: #333;
+  margin: 4px 0 8px;
+}
+
+.rating-star {
+  font-size: 14px;
+}
+
+.rating-value {
+  font-weight: 700;
+  color: #222;
+}
+
+.rating-reviews {
+  color: #777;
+}
+
+.rating-sep {
+  color: #ccc;
+}
+
+.bought-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #333;
+}
+
+.boosterNotFound {
+  max-width: 1200px;
+  margin: 60px auto;
+  text-align: center;
+  color: #6b6b6b;
+}
