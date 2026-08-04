@@ -179,7 +179,7 @@ export default function HomeContent() {
           <button
             onClick={(e) => {
               goTo(
-                "/party-food-delivery-live-catering-buffet/party-food-delivery",
+                "/party-food-delivery-live-catering-buffet",
               );
             }}
           >
