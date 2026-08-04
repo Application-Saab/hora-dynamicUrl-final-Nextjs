@@ -162,14 +162,7 @@ const CelebrationBoosterPage = () => {
       </section>
       
 
-      <SearchSortBar
-        sortOption={sortOption}
-        onSortChange={handleSortChange}
-        searchCategoryList={[]}
-        products={catalogueData}
-        onProductSelect={handleViewDetails}
-        onSearchChange={handleSearchChange}
-      />
+     
 
       {loading ? (
         <div className="skeleton-wrapper">

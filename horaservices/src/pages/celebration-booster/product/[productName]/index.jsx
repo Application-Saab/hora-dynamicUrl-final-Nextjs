@@ -571,14 +571,7 @@ function CelebrationBoosterDetails({ city, locality }) {
                 </div>
               </div>
 
-              {/* Enquire on WhatsApp + jump to similar boosters — same component as decoration page */}
-              <ActionButtons
-                product={product}
-                catValue={CATEGORY_SLUG}
-                cityName={cityName}
-                similarRef={similarRef}
-                handleCustomise={handleCustomise}
-              />
+             
 
           
             </div>
@@ -595,7 +588,6 @@ function CelebrationBoosterDetails({ city, locality }) {
 
            
             </div>
-   <MakeItYoursBanner />
             {/* <div ref={addonRef}>
               <AddonModal
                 isOpen={isModalOpen}
