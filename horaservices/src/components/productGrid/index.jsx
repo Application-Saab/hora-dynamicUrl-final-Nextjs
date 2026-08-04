@@ -11,15 +11,27 @@ const ProductGrid = ({ data = [], onCardClick, categoryType, catValue }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const isPhotography = categoryType === "photography";
 
-  const getImageUrl = (item) =>
-    isPhotography
-      ? item.featured_image
-        ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_image.split(".")[0]}.webp`
-        : fallbackImg
-      : item.featured_images?.[0]?.fileName
-      ? `${COMPRESSED_WEBP_IMG_URL}${item.featured_images[0].fileName.split(".")[0]}.webp`
-      : fallbackImg;
+const getImageUrl = (item) => {
+    let fileName = null;
 
+    if (item.featured_image && typeof item.featured_image === "string") {
+      fileName = item.featured_image;
+    } else if (Array.isArray(item.featured_image) && item.featured_image.length > 0) {
+      fileName = item.featured_image[0]?.fileName || item.featured_image[0];
+    } else if (item.featured_images?.[0]?.fileName) {
+      fileName = item.featured_images[0].fileName;
+    }
+
+    if (!fileName) return fallbackImg;
+
+    // Already a full URL (e.g. celebration boosters serve raw uploads
+    // directly, not through the compressed-webp CDN) — use as-is.
+    if (/^https?:\/\//i.test(fileName)) {
+      return fileName;
+    }
+
+    return `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
+  };
   return (
     <div className="decContainer">
       {data.length > 0 &&
