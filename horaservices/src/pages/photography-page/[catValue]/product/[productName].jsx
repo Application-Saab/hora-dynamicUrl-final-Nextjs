@@ -27,7 +27,7 @@ import BrandBanner from '@/components/BrandBanner';
 import AdditionalServices from '@/components/AdditionalServices';
 import PhotographySimilarSlider from '@/components/PhotographySimilarSlider';
 import { SeoWork } from '@/utils/photoGraphyHead';
-
+import fallbackImg from "@/assets/fallback-image.png";
 import pencil from "@/assets/pencil.svg";
 import AddonModal from '@/components/AddonModal';
 import AddOnsList from '@/components/AddOnsList';
@@ -540,7 +540,7 @@ useEffect(() => {
                 src={
                   work.featured_image
                     ? `https://horaservices.com/api/uploads/compressed_webp/${work.featured_image.split(".")[0]}.webp`
-                    : "/default.jpg"
+                    : fallbackImg
                 }
                 alt={`${work?.name || "Product"} image`}
                 style={{ width: "100%", height: "auto" }}

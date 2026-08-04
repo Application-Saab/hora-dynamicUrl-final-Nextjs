@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import "./PhotographySimilarSlider.css";
-
+import fallbackImg from "@/assets/fallback-image.png";
 const getDiscountedDifference = (price) => {
   const numericPrice = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;
   if (numericPrice <= 0) return 0;
@@ -80,7 +80,7 @@ const PhotographySimilarSlider = ({
                 ? `https://horaservices.com/api/uploads/compressed_webp/${
                     item.featured_image.split(".")[0]
                   }.webp`
-                : "/default.png");
+               : fallbackImg);
 
             const titleText = item.title || item.name || "Decoration";
 
