@@ -32,7 +32,7 @@ export default function Document() {
         <NextScript />
 
         {/* Register service worker for A2HS */}
-        <script
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
@@ -44,7 +44,7 @@ export default function Document() {
               }
             `,
           }}
-        />
+        /> */}
       </body>
     </Html>
   );
