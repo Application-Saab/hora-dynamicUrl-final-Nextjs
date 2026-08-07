@@ -28,6 +28,7 @@ import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
+import PhotoPackageGrid from "@/components/PhotoPackageGrid";
 
 
 const getDiscountedPrice = (price = 0) => {
@@ -291,11 +292,7 @@ const restText = words.slice(8).join(' ');
        </div>
        <EventDateBanner userId={userId} />
           {products.length > 0 ? (
-            <ProductGrid
-              data={products}
-              onCardClick={handleViewMore}
-              categoryType="photography"
-            />
+            <PhotoPackageGrid data={products} onCardClick={handleViewMore} />
           ) : (
             <div className="skeleton-wrapper">
               {Array.from({ length: 6 }).map((_, index) => (
