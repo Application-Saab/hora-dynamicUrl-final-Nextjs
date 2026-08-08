@@ -15,7 +15,7 @@ import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 // import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 import { safeGetItem } from "@/utils/safeStorage";
@@ -25,7 +25,7 @@ import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorRe
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = router.asPath;
   const [currentUrl, setCurrentUrl] = useState("");
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
@@ -185,17 +185,14 @@ function MyApp({ Component, pageProps }) {
       console.log("GTM Script Loaded"); // Debugging log
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, []); 
-  useLayoutEffect(() => {
-    // reset any scroll lock
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.overflow = "";
+useLayoutEffect(() => {
+  if (typeof window === "undefined") return;   // ← yeh line add karo
 
-    // force scroll to top
-    window.scrollTo(0, 0);
-
-    console.log("scrolling app");
-  }, [pathname]);
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.overflow = "";
+  window.scrollTo(0, 0);
+}, [pathname]);
 
   return (
     <>
@@ -225,7 +222,7 @@ function MyApp({ Component, pageProps }) {
 
       <Provider store={store}>
         <UserDetailsProvider>
-          <PersistGate loading={null} persistor={persistor}>
+          {/* <PersistGate loading={null} persistor={persistor}> */}
             <ChatProvider>
               <ChatProviderMain>
                 <PageLayout>
@@ -252,7 +249,7 @@ function MyApp({ Component, pageProps }) {
                 </PageLayout>
               </ChatProviderMain>
             </ChatProvider>
-          </PersistGate>
+          {/* </PersistGate> */}
         </UserDetailsProvider>
       </Provider>
     </>
