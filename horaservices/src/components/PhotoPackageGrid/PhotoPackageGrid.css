@@ -1,7 +1,7 @@
 .photoPkgContainer {
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 3vw, 20px);
+ gap: clamp(11px, 3.56vw, 17px) clamp(4px, 1.27vw, 6px);
   padding: clamp(8px, 2vw, 12px);
   max-width: 480px;
   margin: 0 auto;
@@ -31,9 +31,7 @@
 .photoPkgCardRight {
   flex: 1;
   min-width: 0;
- padding:
-  clamp(4.07px, 1.27vw, 6.11px)
-  clamp(5.70px, 1.78vw, 8.55px);
+ padding: clamp(7px, 2.04vw, 10px) clamp(4px, 1.27vw, 6px);
   display: flex;
   flex-direction: column;
 }
@@ -104,7 +102,7 @@ text-transform: capitalize;
 .photoPkgPriceRow {
   display: flex;
   align-items: center;
-  gap: clamp(4px, 1.5vw, 8px);
+gap: clamp(3px, 0.89vw, 4.3px);
   flex-wrap: wrap;
   margin-bottom: clamp(6px, 2vw, 10px);
 }

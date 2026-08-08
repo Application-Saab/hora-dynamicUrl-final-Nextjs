@@ -29,7 +29,39 @@ import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
 import PhotoPackageGrid from "@/components/PhotoPackageGrid";
+import ChooseYourMoment from "@/components/Chooseyourmoment";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
+import PreWeddingImg from "@/assets/pre-wedding.webp";
+import HaldiMahandiImg from "@/assets/haldi-mahandi.webp";
+import Weddings from "@/assets/wedding.webp";
 
+const isWeddingCategory = (category) => {
+  if (typeof category !== "string") return false;
+  const val = category.trim();
+  return /(^|-)wedding(-|$)/i.test(val) && !/(^|-)pre-wedding(-|$)/i.test(val);
+};
+
+
+const MOMENT_SLUG_TO_KEY = {
+  "pre-wedding": "pre-wedding",
+  "haldi-mehndi": "haldi-mahandi",
+  "wedding": "wedding",
+};
+
+
+const MOMENT_KEY_TO_SLUG = {
+  "pre-wedding": "pre-wedding",
+  "haldi-mahandi": "haldi-mehndi",
+  "wedding": "wedding",
+};
+
+
+const MOMENT_NAME_FILTERS = {
+  "pre-wedding": (name) => /pre[\s-]?wedding/i.test(name),
+  "haldi-mahandi": (name) => /haldi|mehandi|mehndi|mahandi|sangeet/i.test(name),
+  "wedding": (name) =>
+    /wedding/i.test(name) && !/pre[\s-]?wedding/i.test(name),
+};
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78; 
@@ -123,9 +155,16 @@ export default function CatValuePage() {
   let { city } = router.query;
   let { locality } = router.query;
   const [open, setOpen] = useState(false);
-  const content = seoData?.[catValue] || {};
+  const [activeMoment, setActiveMoment] = useState(null);
 
-const title = content.h1 || catValue?.replace(/-/g, " ");
+
+  const effectiveCatValue =
+    typeof catValue === "string" && MOMENT_SLUG_TO_KEY[catValue]
+      ? "Wedding-Photography"
+      : catValue;
+
+  const content = seoData?.[effectiveCatValue] || {};
+const title = content.h1 || effectiveCatValue?.replace(/-/g, " ");
 const intro = content.description || "";
   const preview = intro?.slice(0, 60) + "...";
   const getSubCatId = useCallback(async (subCategory) => {
@@ -145,12 +184,20 @@ const intro = content.description || "";
   }, []);
 
   useEffect(() => {
-    if (catValue) {
-      getSubCatId(catValue);
-      const gallery = categoryToGallery[catValue] || null;
+    if (typeof catValue === "string" && MOMENT_SLUG_TO_KEY[catValue]) {
+      setActiveMoment(MOMENT_SLUG_TO_KEY[catValue]);
+    } else {
+      setActiveMoment(null);
+    }
+  }, [catValue]);
+
+  useEffect(() => {
+    if (effectiveCatValue) {
+      getSubCatId(effectiveCatValue);
+      const gallery = categoryToGallery[effectiveCatValue] || null;
       setGalleryData(gallery);
     }
-  }, [catValue, getSubCatId]);
+  }, [effectiveCatValue, getSubCatId]);
 
   const fetchProducts = useCallback(async (categoryId) => {
     if (!categoryId) return;
@@ -182,7 +229,7 @@ const intro = content.description || "";
 
 const handleViewMore = (work) => {
   const slug = slugify(work.name);
-  const categorySlug = slugify(catValue || "photography");
+  const categorySlug = slugify(effectiveCatValue || "photography");
 
   // router.query se nahi, asPath se parse karo
   const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
@@ -210,17 +257,36 @@ const handleViewMore = (work) => {
     query: { id: work._id },
   });
 };
+
+
+  const handleSelectMoment = (key) => {
+    const slug = MOMENT_KEY_TO_SLUG[key] || "Wedding-Photography";
+    const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
+    const photoIndex = pathParts.findIndex((p) => p === "photography-page");
+    if (photoIndex === -1) return;
+
+    pathParts[photoIndex + 1] = slug;
+    const newPath = "/" + pathParts.join("/");
+    router.push(newPath);
+  };
  
   
- const normalizedCat = normalizeCatValue(catValue);
+ const normalizedCat = normalizeCatValue(effectiveCatValue);
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
+  const showMomentPicker = isWeddingCategory(normalizedCat);
+
+
+  const displayedProducts =
+    showMomentPicker && activeMoment && MOMENT_NAME_FILTERS[activeMoment]
+      ? products.filter((item) => MOMENT_NAME_FILTERS[activeMoment](item.name || ""))
+      : products;
 
 const words = intro.split(' ');
 const firstLine = words.slice(0, 8).join(' ');         // ~1 line
 const restText = words.slice(8).join(' ');  
   return (
     <div className="featured-photo-works">
-         <SeoCategory city={city} locality={locality} catValue={catValue} scriptTag={scriptTag} seoData={seoData} />
+         <SeoCategory city={city} locality={locality} catValue={effectiveCatValue} scriptTag={scriptTag} seoData={seoData} />
       {loading ? (
        
          <SkeletonGrid count={6} />
@@ -229,18 +295,37 @@ const restText = words.slice(8).join(' ');
       ) : (
         <>
   
-  <div style={{padding:"10px"}}>
-               <section className="cc-banner" >
-        <Image
-          src={bannerToShow}
-          alt={title}
-          fill
-          className="cc-banner-img"
-          priority
+  <div style={{padding: "clamp(5.7px, 1.78vw, 8.6px)"}}>
+     
+      {showMomentPicker ? (
+        <DecorationBanner category={normalizedCat} title="Choose Your Moment" />
+      ) : (
+        <section className="cc-banner" >
+          <Image
+            src={bannerToShow}
+            alt={title}
+            fill
+            className="cc-banner-img"
+            priority
+          />
+          <div className="cc-banner-overlay" />
+          <h1 className="cc-banner-title"   style={{ color: content?.color || "#fff" }}>{title}</h1>
+        </section>
+      )}
+
+      {/* Wedding category: show the moment picker below the decoration banner. */}
+      {showMomentPicker ? (
+        <ChooseYourMoment
+          category={normalizedCat}
+          activeMoment={activeMoment}
+          onSelectMoment={handleSelectMoment}
+          moments={[
+            { key: "pre-wedding", label: "Pre Wedding", image: PreWeddingImg, accent: "purple" },
+            { key: "haldi-mahandi", label: "Haldi & Mahandi", image: HaldiMahandiImg, accent: "amber" },
+            { key: "wedding", label: "Wedding", image: Weddings, accent: "rose" },
+          ]}
         />
-        <div className="cc-banner-overlay" />
-        <h1 className="cc-banner-title"   style={{ color: content?.color || "#fff" }}>{title}</h1>
-      </section>
+      ) : null}
 
       {/* Stats */}
      <div className="cc-stats">
@@ -291,8 +376,12 @@ const restText = words.slice(8).join(' ');
 </div>
        </div>
        <EventDateBanner userId={userId} />
-          {products.length > 0 ? (
-            <PhotoPackageGrid data={products} onCardClick={handleViewMore} />
+          {displayedProducts.length > 0 ? (
+            <PhotoPackageGrid data={displayedProducts} onCardClick={handleViewMore} />
+          ) : showMomentPicker && activeMoment ? (
+            <p className="cc-no-results">
+              No packages found for this moment yet.
+            </p>
           ) : (
             <div className="skeleton-wrapper">
               {Array.from({ length: 6 }).map((_, index) => (
