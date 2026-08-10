@@ -62,6 +62,8 @@ const TAG_RULES = [
   { words: ["premium", "prop"], title: "Premium", subtitle: "Prop", icon: premiumProp},
   { words: ["maternity", "prop"], title: "Maternity", subtitle: "Prop", icon: maternityProp },
   { words: ["save the date"], title: "Save the Date", subtitle: "Reel", icon: saveTheDateReel },
+    { words: ["twin", "collage"], title: "Twin Mega Collage", subtitle: "Prints", icon: album },
+{ words: ["cinematic"], title: "Cinematic", subtitle: "Video", icon: traditionalVideo },
 ];
 
 // Returns ALL tags that match a given line (a line can contain multiple
@@ -136,22 +138,26 @@ const getCrewCounts = (inclusion) => {
 
   let photographers = null;
   let videographers = null;
+  let assistants = null;
 
   rawItems.forEach((text) => {
     const lower = text.toLowerCase();
     const num = extractLeadingNumber(text);
     if (!num) return;
 
-    // "videographer" is checked first since a line could otherwise also
-    // contain "photo"/"camera" wording — order avoids double counting.
-    if (photographers === null && /photographer/.test(lower)) {
-      photographers = num;
-    } else if (videographers === null && /videographer/.test(lower)) {
+    if (
+      videographers === null &&
+      (/videographer/.test(lower) || /cinematographer/.test(lower))
+    ) {
       videographers = num;
+    } else if (photographers === null && /photographer/.test(lower)) {
+      photographers = num;
+    } else if (assistants === null && /assistant/.test(lower)) {
+      assistants = num;
     }
   });
 
-  return { photographers, videographers };
+  return { photographers, videographers, assistants };
 };
 
 // Extracts just the time part from a duration string, e.g.
@@ -174,21 +180,30 @@ const PhotoPackageCard = ({ item, onClick }) => {
   // Prefer counts parsed from the inclusion text; fall back to explicit
   // item.photographers / item.videographers fields if the backend ever
   // sends those directly and the inclusion text doesn't mention a count.
-  const { photographers: parsedPhotographers, videographers: parsedVideographers } =
+ const { photographers: parsedPhotographers, videographers: parsedVideographers, assistants: parsedAssistants } =
     getCrewCounts(item.inclusion);
-  const photographerCount = parsedPhotographers ?? item.photographers ?? null;
-  const videographerCount = parsedVideographers ?? item.videographers ?? null;
-
+const photographerCount = parsedPhotographers ?? item.photographers ?? null;
+const videographerCount = parsedVideographers ?? item.videographers ?? null;
+const assistantCount = parsedAssistants ?? item.assistants ?? null;
   return (
     <div className="photoPkgCard" onClick={() => onClick?.(item)}>
-      <div className="photoPkgCardLeft">
-        <Image
-          src={getImageUrl(item)}
-          alt={item.name}
-          fill
-          className="photoPkgCardImg"
-        />
-      </div>
+    <div className="photoPkgCardLeft">
+  {/* Blurred background fill */}
+  <Image
+    src={getImageUrl(item)}
+    alt=""
+    fill
+    aria-hidden="true"
+    className="photoPkgCardImgBlur"
+  />
+  {/* Actual image, fully visible, no crop */}
+  <Image
+    src={getImageUrl(item)}
+    alt={item.name}
+    fill
+    className="photoPkgCardImg"
+  />
+</div>
 
       <div className="photoPkgCardRight">
         <h3 className="photoPkgCardTitle">{item.name}</h3>
@@ -220,10 +235,11 @@ const PhotoPackageCard = ({ item, onClick }) => {
         )}
 
         <p className="photoPkgMeta">
-          Duration: {getDurationText(item.event_duration || item.duration)}
-          {photographerCount ? `  |  ${photographerCount} Photographer${photographerCount > 1 ? "s" : ""}` : ""}
-          {videographerCount ? `  |  ${videographerCount} Videographer${videographerCount > 1 ? "s" : ""}` : ""}
-        </p>
+  Duration: {getDurationText(item.event_duration || item.duration)}
+  {photographerCount ? `  |  ${photographerCount} Photographer${photographerCount > 1 ? "s" : ""}` : ""}
+  {videographerCount ? `  |  ${videographerCount} Videographer${videographerCount > 1 ? "s" : ""}` : ""}
+  {assistantCount ? `  |  ${assistantCount} Assistant${assistantCount > 1 ? "s" : ""}` : ""}
+</p>
 
         <div className="photoPkgPriceRow">
           <span className="photoPkgFinalPrice">₹{item.price}/-</span>

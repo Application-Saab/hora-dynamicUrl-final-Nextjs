@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap');
 .photoPkgContainer {
   display: flex;
   flex-direction: column;
@@ -19,7 +20,7 @@ box-shadow: 0px 4px 4px 0px #00000026;
   width: 100%;
 }
 
-.photoPkgCardLeft {
+/* .photoPkgCardLeft {
   position: relative;
   width: clamp(130.18px, 40.71vw, 195.42px);
   flex-shrink: 0;
@@ -27,8 +28,26 @@ box-shadow: 0px 4px 4px 0px #00000026;
 
 .photoPkgCardImg {
   object-fit: cover;
+} */
+.photoPkgCardLeft {
+  position: relative;
+  width: clamp(130.18px, 40.71vw, 195.42px);
+  flex-shrink: 0;
+  overflow: hidden; /* blur ke edges bahar na jhalke */
 }
 
+/* peeche wali blurred copy — poora box cover karegi, chahe crop ho jaye */
+.photoPkgCardImgBlur {
+  object-fit: cover;
+  filter: blur(18px);
+  transform: scale(1.2); /* blur ke edge ka transparent/halka area chhupane ke liye */
+  opacity: 0.9;
+}
+
+/* upar wali asli image — kabhi crop nahi hogi, poori dikhegi */
+.photoPkgCardImg {
+  object-fit: contain;
+}
 .photoPkgCardRight {
   flex: 1;
   min-width: 0;
