@@ -20,7 +20,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Link from "next/link";
 import cityData from '../../../utils/cityData';
-import '../../../app/homepage.css'
+import '../../../app_backup/homepage.css'
 
 
 const Decoration = () => {

@@ -19,7 +19,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 
-import '../../../../app/homepage.css';
+import '../../../../app_backup/homepage.css';
 
 import cityData from '../../../../utils/cityData';
 
