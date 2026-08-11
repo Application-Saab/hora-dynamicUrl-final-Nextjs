@@ -1,5 +1,5 @@
 // pages/_app.tsx
-import "../styles/globals.css";
+import "../styles/customGlobal.css";
 import '../styles/home.css';
 import '../styles/homepage.css';
 import React, { useEffect, useState, useLayoutEffect } from "react";
