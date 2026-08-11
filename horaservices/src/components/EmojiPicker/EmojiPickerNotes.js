@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import emojiicon from "@/assets/wonderland/EmojiIconPicker.svg";
-import ThankYouKeyboard from "@/assets/wonderland/KeyboardIconPicker.svg";
+import ThankYouKeyboard from "../../assets/wonderland/KeyboardiconPicker.svg";
 import "./emoji.css";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });

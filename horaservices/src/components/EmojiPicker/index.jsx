@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import emojiicon from "@/assets/Emoji.png";
-import ThankYouKeyboard from "@/assets/ThankYouKeyboard.png";
+import ThankYouKeyboard from "../../assets/ThankyouKeyboard.png";
 import "./emoji.css";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 

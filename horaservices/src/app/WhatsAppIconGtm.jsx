@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import whatsppicon from "../assets/whatsapp-new.webp";
-import cityNameToSlug from "@/utils/cityNameToSlug";
+import cityNameToSlug from "@/utils/Citynametoslug.json";
 
 import {
   messagesByCategory,

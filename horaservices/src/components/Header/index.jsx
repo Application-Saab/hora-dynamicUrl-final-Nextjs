@@ -12,7 +12,7 @@ import MobileDrawer from "./MobileDrawer";
 import DesktopMenu from "./DesktopMenu";
 import OtploginPopup from "../OtpLoginPopup";
 import LogoutModal from "@/utils/LogoutModal";
-import cityNameToSlug from "@/utils/cityNameToSlug";
+import cityNameToSlug from "../../utils/Citynametoslug.json";
 import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
 
