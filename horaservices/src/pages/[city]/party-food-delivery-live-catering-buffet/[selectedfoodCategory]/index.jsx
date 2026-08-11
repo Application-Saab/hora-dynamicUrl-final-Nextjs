@@ -7,7 +7,7 @@ import { getHomeOrganizationSchema } from "../../../../utils/schema";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
-import styles from "../../../../app/page.module.css";
+// import styles from "../../../../app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../../../app_backup/globals.css';
 import Slider from 'react-slick';

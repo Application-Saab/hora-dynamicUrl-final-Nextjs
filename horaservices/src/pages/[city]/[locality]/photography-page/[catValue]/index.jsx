@@ -2,7 +2,7 @@ import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";
-import "@/app/homepage.css";
+import "../../../../../app_backup/homepage.css";
 import CatValuePage from "@/pages/photography-page/[catValue]";
 
 const PhotographyCityPage = () => {
