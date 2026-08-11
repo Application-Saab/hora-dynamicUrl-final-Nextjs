@@ -1,5 +1,5 @@
 // import ImportantIcon from "@/assets/ThankyouNote-icon/importanticon.png";
-// import ThankyounotePin from "@/assets/ThankyouNote-icon/ThankyounotePin.png";
+// import ThankyounotePin from "@/assets/ThankyouNote-icon/thankyounotePin.png";
 // import FoodInfo from "@/assets/ThankyouNote-icon/Foodinfo.png";
 import host from "@/assets/wonderland/HostNoteImage.svg";
 import guestIcon from "@/assets/wonderland/guestIcon.svg";

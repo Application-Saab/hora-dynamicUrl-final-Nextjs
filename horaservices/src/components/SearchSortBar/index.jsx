@@ -9,7 +9,7 @@ import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";
 import { useRouter } from "next/router";
-import searchIcon from "@/assets/Searchbar.svg"
+import searchIcon from "@/assets/searchbar.svg"
 import closeIcon from "@/assets/sortbar.svg"
 const sortOptions = [
   { id: "popularity", label: "Popularity" },

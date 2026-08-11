@@ -4,7 +4,7 @@ import Image from "next/image";
 import "../GroupsList.css";
 import EmojiPickerButton from "@/components/EmojiPicker";
 import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
-import keyboardIcon from "@/assets/wonderland/chat/KeyboardIcon.svg";
+import keyboardIcon from "@/assets/wonderland/chat/keyboardIcon.svg";
 import sendIcon from "@/assets/wonderland/chat/sendicon.png";
 import chatBgImage from "@/assets/wonderland/chat/chatbackground.jpg";
 import backIcon from "@/assets/wonderland/chat/BackIcon.png";

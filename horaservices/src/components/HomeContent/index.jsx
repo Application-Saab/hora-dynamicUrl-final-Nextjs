@@ -20,7 +20,7 @@ import Homevideo from "../../../public/assets/HomeVideo.mp4";
 import Photographybanner from "@/assets/Home/Photographybanner.webp";
 import decorationbanner from "@/assets/Home/decorationbanner.webp";
 import chefforparty from "@/assets/Home/chefforparty.webp";
-import chef from "@/assets/Home/chef.webp";
+import chef from "@/assets/Home/Chef.webp";
 import partyfood from "@/assets/Home/partyfood.webp";
 import photo1 from "@/assets/Home/photo1.svg";
 import photo2 from "@/assets/Home/photo2.svg";

@@ -546,29 +546,22 @@
 
 
 
-
 /**
- * Next.js Static Asset Case Sensitivity Auto-Fixer
- *
- * What it does:
- * 1. Scans all source files
- * 2. Finds imports/references with wrong casing
- * 3. Automatically updates the source code to match the real file casing on disk
- * 4. Reports missing files (cannot auto-create them)
+ * Next.js / React - Aggressive Case Sensitivity Auto-Fixer
+ * Fixes wrong casing in imports of images, css, fonts, videos etc.
  *
  * Usage:
- *   node fix-case-sensitive-assets.js
- *
- * Optional flags:
- *   --dry-run     Only show what would be changed (no file writes)
- *   --verbose     Show more details
+ *   node fix-case-assets.js              → real fix
+ *   node fix-case-assets.js --dry-run    → only show changes
+ *   node fix-case-assets.js --verbose    → detailed logs
  */
 
 const fs = require("fs");
 const path = require("path");
 
-// ====================== CONFIG ======================
 const PROJECT_ROOT = process.cwd();
+const DRY_RUN = process.argv.includes("--dry-run");
+const VERBOSE = process.argv.includes("--verbose");
 
 const IGNORE_DIRS = new Set([
   "node_modules",
@@ -581,606 +574,445 @@ const IGNORE_DIRS = new Set([
   "coverage",
   ".vercel",
   ".turbo",
+  "public", // we still resolve / paths into public, but don't scan public as source
 ]);
 
 const SOURCE_EXTENSIONS = new Set([
-  ".js",
-  ".jsx",
-  ".ts",
-  ".tsx",
-  ".mjs",
-  ".cjs",
-  ".css",
-  ".scss",
-  ".sass",
-  ".less",
-  ".html",
+  ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
+  ".css", ".scss", ".sass", ".less",
+  ".html", ".mdx",
 ]);
 
-const STATIC_EXTENSIONS = new Set([
-  ".png",
-  ".jpg",
-  ".jpeg",
-  ".gif",
-  ".webp",
-  ".svg",
-  ".ico",
-  ".bmp",
-  ".avif",
-  ".mp4",
-  ".webm",
-  ".mov",
-  ".avi",
-  ".mkv",
-  ".mp3",
-  ".wav",
-  ".ogg",
-  ".m4a",
-  ".woff",
-  ".woff2",
-  ".ttf",
-  ".otf",
-  ".eot",
-]);
+const STATIC_EXTENSIONS = [
+  ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".bmp", ".avif",
+  ".mp4", ".webm", ".mov", ".avi", ".mkv",
+  ".mp3", ".wav", ".ogg", ".m4a",
+  ".woff", ".woff2", ".ttf", ".otf", ".eot",
+  ".css", ".scss", ".sass", ".less",
+  ".json",
+];
 
-// CLI flags
-const args = process.argv.slice(2);
-const DRY_RUN = args.includes("--dry-run");
-const VERBOSE = args.includes("--verbose");
+// ========== HELPERS ==========
 
-// ====================== STATE ======================
-const results = {
-  caseMismatch: [],
-  missing: [],
-  fixed: [],
-  failed: [],
-};
+function getAllSourceFiles(dir, list = []) {
+  if (!fs.existsSync(dir)) return list;
 
-const checked = new Set();
-
-// ====================== HELPERS ======================
-
-function getFiles(dir) {
-  const files = [];
-  if (!fs.existsSync(dir)) return files;
-
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    if (IGNORE_DIRS.has(entry.name)) continue;
-
-    const fullPath = path.join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      files.push(...getFiles(fullPath));
-    } else {
-      files.push(fullPath);
-    }
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return list;
   }
 
-  return files;
+  for (const entry of entries) {
+    if (IGNORE_DIRS.has(entry.name) || entry.name.startsWith(".")) continue;
+
+    const full = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      getAllSourceFiles(full, list);
+    } else if (SOURCE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+      list.push(full);
+    }
+  }
+  return list;
 }
 
 /**
- * Resolve path case-insensitively and return the real path with correct casing.
+ * Walk the filesystem and return the real path with correct casing.
+ * Works correctly even on Windows (case-insensitive FS).
  */
-function resolveCaseInsensitive(targetPath) {
-  const absoluteTarget = path.resolve(targetPath);
+function getRealPath(inputPath) {
+  const absolute = path.resolve(inputPath);
+  const root = path.parse(absolute).root;
 
-  let current = path.parse(absoluteTarget).root;
-  const relativeParts = path
-    .relative(current, absoluteTarget)
-    .split(path.sep)
-    .filter(Boolean);
+  let current = root;
+  const parts = path.relative(root, absolute).split(path.sep).filter(Boolean);
 
-  for (const part of relativeParts) {
+  for (const part of parts) {
     if (!fs.existsSync(current)) return null;
 
-    const entries = fs.readdirSync(current);
-
-    // Prefer exact match first
-    const exact = entries.find((e) => e === part);
-    if (exact) {
-      current = path.join(current, exact);
-      continue;
+    let entries;
+    try {
+      entries = fs.readdirSync(current);
+    } catch {
+      return null;
     }
 
-    // Fallback to case-insensitive
-    const match = entries.find(
-      (e) => e.toLowerCase() === part.toLowerCase()
-    );
+    // exact match first
+    let found = entries.find((e) => e === part);
+    if (!found) {
+      // case-insensitive match
+      found = entries.find((e) => e.toLowerCase() === part.toLowerCase());
+    }
 
-    if (!match) return null;
-    current = path.join(current, match);
+    if (!found) return null;
+    current = path.join(current, found);
   }
 
   return current;
 }
 
-function hasExactCase(requestedPath, actualPath) {
-  const requested = path.resolve(requestedPath);
-  const actual = path.resolve(actualPath);
-
-  const requestedRelative = path.relative(PROJECT_ROOT, requested);
-  const actualRelative = path.relative(PROJECT_ROOT, actual);
-
-  return requestedRelative === actualRelative;
-}
-
 function getBaseUrl() {
-  const possibleConfigs = ["jsconfig.json", "tsconfig.json"];
-
-  for (const configName of possibleConfigs) {
-    const configPath = path.join(PROJECT_ROOT, configName);
-    if (!fs.existsSync(configPath)) continue;
-
+  for (const name of ["jsconfig.json", "tsconfig.json"]) {
+    const p = path.join(PROJECT_ROOT, name);
+    if (!fs.existsSync(p)) continue;
     try {
-      const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-      if (config.compilerOptions?.baseUrl) {
-        return path.resolve(PROJECT_ROOT, config.compilerOptions.baseUrl);
+      const cfg = JSON.parse(fs.readFileSync(p, "utf8"));
+      if (cfg.compilerOptions?.baseUrl) {
+        return path.resolve(PROJECT_ROOT, cfg.compilerOptions.baseUrl);
       }
-    } catch (e) {
-      // ignore
-    }
+    } catch {}
   }
-
+  // common Next.js / src structure
+  if (fs.existsSync(path.join(PROJECT_ROOT, "src"))) {
+    return path.join(PROJECT_ROOT, "src");
+  }
   return PROJECT_ROOT;
 }
 
 const BASE_URL = getBaseUrl();
 
-function resolveReference(reference, sourceFile) {
-  let cleanReference = reference.trim();
-  cleanReference = cleanReference.split("?")[0].split("#")[0];
+/**
+ * Resolve an import string to absolute path candidates
+ */
+function resolveCandidates(ref, sourceFile) {
+  let clean = ref.trim().split("?")[0].split("#")[0];
 
-  // Ignore absolute URLs and data URIs
+  // skip remote / data / packages
   if (
-    cleanReference.startsWith("http://") ||
-    cleanReference.startsWith("https://") ||
-    cleanReference.startsWith("//") ||
-    cleanReference.startsWith("data:")
+    clean.startsWith("http://") ||
+    clean.startsWith("https://") ||
+    clean.startsWith("//") ||
+    clean.startsWith("data:") ||
+    clean.startsWith("blob:")
   ) {
-    return null;
+    return [];
   }
 
-  // Ignore package imports
+  // skip pure package imports (no relative, no @/, no /)
   if (
-    !cleanReference.startsWith(".") &&
-    !cleanReference.startsWith("@/") &&
-    !cleanReference.startsWith("/")
+    !clean.startsWith(".") &&
+    !clean.startsWith("@/") &&
+    !clean.startsWith("/") &&
+    !clean.startsWith("~/")
   ) {
-    return null;
+    return [];
   }
 
-  let resolvedBase;
+  let base;
 
-  if (cleanReference.startsWith("@/")) {
-    resolvedBase = path.join(BASE_URL, cleanReference.substring(2));
-  } else if (cleanReference.startsWith("/")) {
+  if (clean.startsWith("@/")) {
+    base = path.join(BASE_URL, clean.slice(2));
+  } else if (clean.startsWith("~/")) {
+    base = path.join(PROJECT_ROOT, clean.slice(2));
+  } else if (clean.startsWith("/")) {
     // public folder
-    resolvedBase = path.join(PROJECT_ROOT, "public", cleanReference.substring(1));
+    base = path.join(PROJECT_ROOT, "public", clean.slice(1));
   } else {
-    resolvedBase = path.resolve(path.dirname(sourceFile), cleanReference);
+    // relative
+    base = path.resolve(path.dirname(sourceFile), clean);
   }
 
-  return resolvedBase;
-}
+  const candidates = [base];
 
-function getPossiblePaths(basePath) {
-  const candidates = [basePath];
-
-  if (!path.extname(basePath)) {
+  // if no extension, try common static extensions
+  if (!path.extname(base)) {
     for (const ext of STATIC_EXTENSIONS) {
-      candidates.push(basePath + ext);
+      candidates.push(base + ext);
     }
-    candidates.push(path.join(basePath, "index.js"));
-    candidates.push(path.join(basePath, "index.jsx"));
-    candidates.push(path.join(basePath, "index.ts"));
-    candidates.push(path.join(basePath, "index.tsx"));
+    // also try index files
+    candidates.push(path.join(base, "index.js"));
+    candidates.push(path.join(base, "index.jsx"));
+    candidates.push(path.join(base, "index.ts"));
+    candidates.push(path.join(base, "index.tsx"));
   }
 
   return candidates;
 }
 
 /**
- * Build the corrected reference string that should replace the old one.
- * Keeps the original style (@/, ./, ../, /)
+ * Build the corrected import string keeping original style
  */
-function buildCorrectedReference(originalReference, requestedPath, actualPath) {
-  const original = originalReference.trim().split("?")[0].split("#")[0];
-
-  // Calculate relative path from the "requested" base to actual
-  // We need to preserve the import style used in the source.
-
-  if (original.startsWith("@/")) {
-    // @/assets/Home/chef.webp  →  @/assets/home/Chef.webp
-    const relativeFromBase = path
-      .relative(BASE_URL, actualPath)
-      .split(path.sep)
-      .join("/");
-    return "@/ " + relativeFromBase.replace(/^\/+/, "");
-  }
-
-  if (original.startsWith("/")) {
-    // /assets/... → public folder
-    const relativeFromPublic = path
-      .relative(path.join(PROJECT_ROOT, "public"), actualPath)
-      .split(path.sep)
-      .join("/");
-    return "/" + relativeFromPublic.replace(/^\/+/, "");
-  }
-
-  // Relative import (./ or ../)
-  // We need the correct relative path from the source file's directory
-  // But we don't have sourceFile here easily for relative calculation in all cases.
-  // Instead we compute the difference in casing only on the parts that differ.
-
-  // Safer approach: replace only the mismatched path segments while keeping the original prefix structure.
-  const requestedNorm = path.resolve(requestedPath);
-  const actualNorm = path.resolve(actualPath);
-
-  const requestedParts = requestedNorm.split(path.sep);
-  const actualParts = actualNorm.split(path.sep);
-
-  // Find from the end how much is different
-  let i = requestedParts.length - 1;
-  let j = actualParts.length - 1;
-
-  const correctedParts = [];
-  while (i >= 0 && j >= 0) {
-    if (requestedParts[i].toLowerCase() === actualParts[j].toLowerCase()) {
-      correctedParts.unshift(actualParts[j]); // use real casing
-    } else {
-      // structure mismatch – fallback
-      break;
-    }
-    i--;
-    j--;
-  }
-
-  // For relative imports we rebuild using the original reference's directory structure
-  // but with correct casing of the filename + folders that exist.
-
-  // Simplest reliable way for relative:
-  // Take the original reference and replace the last path segments with the correctly cased ones.
-  const originalParts = original.replace(/\\/g, "/").split("/");
-  const actualFileParts = path
-    .relative(path.dirname(requestedPath), actualPath)
-    .split(path.sep);
-
-  // If the original was just a filename or simple relative, we can rebuild
-  if (original.startsWith("./") || original.startsWith("../")) {
-    // Compute correct relative from source later – we will do it in the fix function
-    // where we have sourceFile.
-    return null; // signal that we need sourceFile-aware fix
-  }
-
-  return null;
-}
-
-/**
- * More reliable corrected reference builder (used during fix)
- */
-function getCorrectedImportString(originalReference, sourceFile, actualPath) {
-  let clean = originalReference.trim().split("?")[0].split("#")[0];
+function buildCorrectedRef(originalRef, sourceFile, realAbsolutePath) {
+  const clean = originalRef.trim().split("?")[0].split("#")[0];
 
   if (clean.startsWith("@/")) {
-    const rel = path
-      .relative(BASE_URL, actualPath)
-      .split(path.sep)
-      .join("/");
+    const rel = path.relative(BASE_URL, realAbsolutePath).split(path.sep).join("/");
     return "@/" + rel;
+  }
+
+  if (clean.startsWith("~/")) {
+    const rel = path.relative(PROJECT_ROOT, realAbsolutePath).split(path.sep).join("/");
+    return "~/" + rel;
   }
 
   if (clean.startsWith("/")) {
     const rel = path
-      .relative(path.join(PROJECT_ROOT, "public"), actualPath)
+      .relative(path.join(PROJECT_ROOT, "public"), realAbsolutePath)
       .split(path.sep)
       .join("/");
     return "/" + rel;
   }
 
-  // Relative
-  const relative = path
-    .relative(path.dirname(sourceFile), actualPath)
+  // relative
+  let rel = path
+    .relative(path.dirname(sourceFile), realAbsolutePath)
     .split(path.sep)
     .join("/");
 
-  // Ensure it starts with ./ if it doesn't go up
-  if (!relative.startsWith(".") && !relative.startsWith("/")) {
-    return "./" + relative;
+  if (!rel.startsWith(".") && !path.isAbsolute(rel)) {
+    rel = "./" + rel;
   }
-  return relative;
+  return rel;
 }
 
-// ====================== SCAN ======================
+/**
+ * Extract all possible path-like strings from file content
+ * (very aggressive)
+ */
+function extractAllPossibleRefs(content) {
+  const found = new Set();
 
-function checkReference(reference, sourceFile, lineNumber, content) {
-  const resolvedBase = resolveReference(reference, sourceFile);
-  if (!resolvedBase) return;
+  // 1. classic import / export from
+  const importRe =
+    /(?:import|export)\s+(?:[\s\S]*?\s+from\s+)?["'`]([^"'`]+)["'`]/g;
 
-  const possiblePaths = getPossiblePaths(resolvedBase);
+  // 2. require()
+  const requireRe = /require\s*\(\s*["'`]([^"'`]+)["'`]\s*\)/g;
 
-  let actualPath = null;
-  let existingCandidate = null;
+  // 3. dynamic import()
+  const dynImportRe = /import\s*\(\s*["'`]([^"'`]+)["'`]\s*\)/g;
 
-  for (const candidate of possiblePaths) {
-    const caseInsensitive = resolveCaseInsensitive(candidate);
-    if (caseInsensitive) {
-      actualPath = caseInsensitive;
-      existingCandidate = candidate;
-      break;
+  // 4. css url()
+  const cssUrlRe = /url\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/g;
+
+  // 5. src= href= poster= etc (jsx / html)
+  const attrRe =
+    /(?:src|href|poster|data-src|data-image|data-bg|content)\s*=\s*['"`]([^'"`]+)['"`]/gi;
+
+  // 6. Next.js Image / any object with src: "..."
+  const srcPropRe = /(?:src|url|image|poster|backgroundImage)\s*:\s*['"`]([^'"`]+)['"`]/gi;
+
+  // 7. template literals that look like paths (basic)
+  const templateRe = /[`'"](\.?\.?\/?@?\/?[\w\-./]+\.(?:png|jpe?g|gif|webp|svg|ico|mp4|webm|woff2?|ttf|otf|eot|css|scss))[`'"]/gi;
+
+  const regexes = [
+    importRe,
+    requireRe,
+    dynImportRe,
+    cssUrlRe,
+    attrRe,
+    srcPropRe,
+    templateRe,
+  ];
+
+  for (const re of regexes) {
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      const val = m[1].trim();
+      if (val && val.length > 1) {
+        found.add(val);
+      }
     }
   }
 
-  const key = `${sourceFile}|${reference}`;
-  if (checked.has(key)) return;
-  checked.add(key);
+  return [...found];
+}
 
-  if (!actualPath) {
-    results.missing.push({
-      sourceFile,
-      lineNumber,
-      reference,
-      expectedPath: resolvedBase,
-    });
+function getLineNumber(content, str) {
+  const idx = content.indexOf(str);
+  if (idx === -1) return "?";
+  return content.slice(0, idx).split("\n").length;
+}
+
+// ========== MAIN SCAN + FIX ==========
+
+const fixed = [];
+const missing = [];
+const skipped = [];
+const filesModified = new Set();
+
+function processFile(filePath) {
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8");
+  } catch {
     return;
   }
 
-  if (!hasExactCase(existingCandidate, actualPath)) {
-    results.caseMismatch.push({
-      sourceFile,
-      lineNumber,
-      reference,
-      requestedPath: existingCandidate,
-      actualPath,
-      content, // keep original content for later fix
-    });
-  }
-}
+  const originalContent = content;
+  const refs = extractAllPossibleRefs(content);
 
-function extractReferences(content) {
-  const references = [];
+  let fileChanged = false;
 
-  const importRegex =
-    /(?:import\s+(?:[\s\S]*?\s+from\s+)?|export\s+(?:[\s\S]*?\s+from\s+)?)["'`]([^"'`]+)["'`]/g;
+  // longer refs first to avoid partial replace issues
+  refs.sort((a, b) => b.length - a.length);
 
-  const requireRegex = /require\s*\(\s*["'`]([^"'`]+)["'`]\s*\)/g;
-  const cssUrlRegex = /url\s*\(\s*["']?([^"')]+)["']?\s*\)/g;
-  const htmlAttributeRegex =
-    /(?:src|href|poster|data-src|data-image)\s*=\s*["']([^"']+)["']/gi;
+  for (const ref of refs) {
+    const candidates = resolveCandidates(ref, filePath);
+    if (candidates.length === 0) continue;
 
-  let match;
+    let realPath = null;
+    let matchedCandidate = null;
 
-  while ((match = importRegex.exec(content))) {
-    references.push(match[1]);
-  }
-  while ((match = requireRegex.exec(content))) {
-    references.push(match[1]);
-  }
-  while ((match = cssUrlRegex.exec(content))) {
-    references.push(match[1]);
-  }
-  while ((match = htmlAttributeRegex.exec(content))) {
-    references.push(match[1]);
-  }
+    for (const cand of candidates) {
+      const real = getRealPath(cand);
+      if (real) {
+        realPath = real;
+        matchedCandidate = cand;
+        break;
+      }
+    }
 
-  return [...new Set(references)];
-}
-
-function getLineNumber(content, reference) {
-  const index = content.indexOf(reference);
-  if (index === -1) return "?";
-  return content.substring(0, index).split("\n").length;
-}
-
-function scan() {
-  console.log("\n==============================================");
-  console.log("  Next.js Asset Case Sensitivity Auto-Fixer");
-  console.log("==============================================\n");
-
-  if (DRY_RUN) {
-    console.log("🔍 DRY-RUN mode — no files will be modified\n");
-  }
-
-  console.log(`Project : ${PROJECT_ROOT}`);
-  console.log(`Base URL: ${BASE_URL}\n`);
-
-  const files = getFiles(PROJECT_ROOT).filter((file) =>
-    SOURCE_EXTENSIONS.has(path.extname(file).toLowerCase())
-  );
-
-  console.log(`Scanning ${files.length} source files...\n`);
-
-  for (const file of files) {
-    let content;
-    try {
-      content = fs.readFileSync(file, "utf8");
-    } catch {
+    if (!realPath) {
+      // only report if it looks like a static asset
+      const lower = ref.toLowerCase();
+      if (
+        STATIC_EXTENSIONS.some((ext) => lower.endsWith(ext)) ||
+        lower.includes("/assets/") ||
+        lower.includes("/images/") ||
+        lower.includes("/img/") ||
+        lower.includes("/public/")
+      ) {
+        missing.push({
+          file: filePath,
+          line: getLineNumber(content, ref),
+          ref,
+        });
+      }
       continue;
     }
 
-    const references = extractReferences(content);
+    // Check if casing is different
+    const requestedNorm = path.resolve(matchedCandidate);
+    const realNorm = path.resolve(realPath);
 
-    for (const reference of references) {
-      checkReference(
-        reference,
-        file,
-        getLineNumber(content, reference),
-        content
-      );
-    }
-  }
-}
+    // Compare the relative paths as strings (this catches casing differences)
+    const reqRel = path.relative(PROJECT_ROOT, requestedNorm);
+    const realRel = path.relative(PROJECT_ROOT, realNorm);
 
-// ====================== AUTO FIX ======================
-
-function fixFile(sourceFile, mismatches) {
-  let content = fs.readFileSync(sourceFile, "utf8");
-  let originalContent = content;
-  let changeCount = 0;
-
-  // Sort by reference length descending so longer paths are replaced first
-  // (avoids partial replacements)
-  const sorted = [...mismatches].sort(
-    (a, b) => b.reference.length - a.reference.length
-  );
-
-  for (const item of sorted) {
-    const corrected = getCorrectedImportString(
-      item.reference,
-      sourceFile,
-      item.actualPath
-    );
-
-    if (!corrected || corrected === item.reference) {
+    if (reqRel === realRel) {
+      // exact match already
       continue;
     }
 
-    // Replace all occurrences of the exact old reference string
-    // We need to be careful with quotes
-    const patterns = [
-      `"${item.reference}"`,
-      `'${item.reference}'`,
-      `\`${item.reference}\``,
+    // casing is different → fix it
+    const corrected = buildCorrectedRef(ref, filePath, realPath);
+
+    if (!corrected || corrected === ref) {
+      skipped.push({ file: filePath, ref, reason: "could not build corrected path" });
+      continue;
+    }
+
+    // Now replace in content carefully
+    // We replace the exact string that appeared in the source
+    const before = content;
+
+    // Try all common quote styles
+    const variants = [
+      [`"${ref}"`, `"${corrected}"`],
+      [`'${ref}'`, `'${corrected}'`],
+      [`\`${ref}\``, `\`${corrected}\``],
+      // unquoted (css url etc)
+      [ref, corrected],
     ];
 
     let replaced = false;
-
-    for (const oldQuoted of patterns) {
-      if (content.includes(oldQuoted)) {
-        const newQuoted = oldQuoted.replace(item.reference, corrected);
-        content = content.split(oldQuoted).join(newQuoted);
+    for (const [oldStr, newStr] of variants) {
+      if (content.includes(oldStr)) {
+        // replace all occurrences
+        content = content.split(oldStr).join(newStr);
         replaced = true;
       }
     }
 
-    // Also handle unquoted cases (rare, mostly CSS url())
-    if (!replaced && content.includes(item.reference)) {
-      // Only replace if it looks like a path reference
-      content = content.split(item.reference).join(corrected);
-      replaced = true;
-    }
-
-    if (replaced) {
-      changeCount++;
-      results.fixed.push({
-        sourceFile,
-        old: item.reference,
+    if (replaced && content !== before) {
+      fileChanged = true;
+      fixed.push({
+        file: filePath,
+        line: getLineNumber(originalContent, ref),
+        old: ref,
         new: corrected,
-        line: item.lineNumber,
       });
 
       if (VERBOSE) {
-        console.log(`  ✓ ${path.relative(PROJECT_ROOT, sourceFile)}`);
-        console.log(`    ${item.reference}`);
-        console.log(`    → ${corrected}\n`);
+        console.log(`  ✓ ${path.relative(PROJECT_ROOT, filePath)}`);
+        console.log(`      ${ref}`);
+        console.log(`   →  ${corrected}\n`);
       }
     }
   }
 
-  if (changeCount > 0 && content !== originalContent) {
+  if (fileChanged && content !== originalContent) {
+    filesModified.add(filePath);
     if (!DRY_RUN) {
       try {
-        fs.writeFileSync(sourceFile, content, "utf8");
+        fs.writeFileSync(filePath, content, "utf8");
       } catch (err) {
-        results.failed.push({
-          sourceFile,
-          error: err.message,
-        });
-        return false;
+        console.error(`Failed to write ${filePath}:`, err.message);
       }
     }
-    return true;
-  }
-
-  return false;
-}
-
-function applyFixes() {
-  if (results.caseMismatch.length === 0) {
-    console.log("✅ No case mismatches found. Nothing to fix.\n");
-    return;
-  }
-
-  console.log(
-    `\n🔧 Found ${results.caseMismatch.length} case mismatch(es). Applying fixes...\n`
-  );
-
-  // Group by source file
-  const byFile = new Map();
-
-  for (const item of results.caseMismatch) {
-    if (!byFile.has(item.sourceFile)) {
-      byFile.set(item.sourceFile, []);
-    }
-    byFile.get(item.sourceFile).push(item);
-  }
-
-  let filesChanged = 0;
-
-  for (const [sourceFile, mismatches] of byFile) {
-    const changed = fixFile(sourceFile, mismatches);
-    if (changed) filesChanged++;
-  }
-
-  console.log("==============================================");
-  console.log("                 FIX SUMMARY");
-  console.log("==============================================\n");
-
-  console.log(`Files scanned     : ${byFile.size}`);
-  console.log(`Case mismatches   : ${results.caseMismatch.length}`);
-  console.log(`Successfully fixed: ${results.fixed.length}`);
-  console.log(`Files modified    : ${filesChanged}${DRY_RUN ? " (dry-run)" : ""}`);
-  console.log(`Failed            : ${results.failed.length}`);
-  console.log(`Missing (skipped) : ${results.missing.length}\n`);
-
-  if (results.fixed.length > 0) {
-    console.log("------ Fixed References ------\n");
-    results.fixed.forEach((f, i) => {
-      console.log(`${i + 1}. ${path.relative(PROJECT_ROOT, f.sourceFile)}:${f.line}`);
-      console.log(`   Old: ${f.old}`);
-      console.log(`   New: ${f.new}\n`);
-    });
-  }
-
-  if (results.failed.length > 0) {
-    console.log("------ Failed to write ------\n");
-    results.failed.forEach((f) => {
-      console.log(`✗ ${path.relative(PROJECT_ROOT, f.sourceFile)} → ${f.error}`);
-    });
-    console.log("");
-  }
-
-  if (results.missing.length > 0) {
-    console.log("------ Missing files (not auto-fixed) ------\n");
-    results.missing.slice(0, 30).forEach((m, i) => {
-      console.log(
-        `${i + 1}. ${path.relative(PROJECT_ROOT, m.sourceFile)}:${m.lineNumber}`
-      );
-      console.log(`   ${m.reference}`);
-      console.log(
-        `   Expected: ${path.relative(PROJECT_ROOT, m.expectedPath)}\n`
-      );
-    });
-
-    if (results.missing.length > 30) {
-      console.log(`... and ${results.missing.length - 30} more missing references\n`);
-    }
-  }
-
-  if (DRY_RUN) {
-    console.log("💡 This was a dry-run. Run without --dry-run to apply changes.\n");
-  } else {
-    console.log("✅ Done! Case mismatches have been fixed in source files.\n");
   }
 }
 
-// ====================== MAIN ======================
+// ========== RUN ==========
 
-scan();
-applyFixes();
+console.log("\n==============================================");
+console.log("  Aggressive Case-Sensitivity Auto Fixer");
+console.log("==============================================\n");
 
-if (results.caseMismatch.length > 0 || results.missing.length > 0) {
+if (DRY_RUN) console.log("🔍 DRY-RUN mode (no files will be written)\n");
+
+console.log(`Project root : ${PROJECT_ROOT}`);
+console.log(`Base URL     : ${BASE_URL}\n`);
+
+const files = getAllSourceFiles(PROJECT_ROOT);
+console.log(`Scanning ${files.length} source files...\n`);
+
+for (const file of files) {
+  processFile(file);
+}
+
+// ========== REPORT ==========
+
+console.log("\n==============================================");
+console.log("                 RESULTS");
+console.log("==============================================\n");
+
+console.log(`Files scanned        : ${files.length}`);
+console.log(`Case mismatches fixed: ${fixed.length}`);
+console.log(`Files modified       : ${filesModified.size}${DRY_RUN ? " (dry-run)" : ""}`);
+console.log(`Missing assets       : ${missing.length}`);
+console.log(`Skipped              : ${skipped.length}\n`);
+
+if (fixed.length > 0) {
+  console.log("---------- FIXED ----------\n");
+  fixed.forEach((f, i) => {
+    console.log(`${i + 1}. ${path.relative(PROJECT_ROOT, f.file)}:${f.line}`);
+    console.log(`   Old → ${f.old}`);
+    console.log(`   New → ${f.new}\n`);
+  });
+}
+
+if (missing.length > 0) {
+  console.log("---------- MISSING (not fixed) ----------\n");
+  // show max 50
+  missing.slice(0, 50).forEach((m, i) => {
+    console.log(`${i + 1}. ${path.relative(PROJECT_ROOT, m.file)}:${m.line}`);
+    console.log(`   ${m.ref}\n`);
+  });
+  if (missing.length > 50) {
+    console.log(`... and ${missing.length - 50} more\n`);
+  }
+}
+
+if (DRY_RUN) {
+  console.log("💡 Dry-run finished. Run without --dry-run to apply changes.\n");
+} else {
+  console.log("✅ Done.\n");
+}
+
+if (fixed.length > 0 || missing.length > 0) {
   process.exitCode = 1;
 }

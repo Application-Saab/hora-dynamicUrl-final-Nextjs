@@ -5,16 +5,16 @@ import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
 import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
 import CardSkeleton from "@/components/CardSkeleton";
-import Engagement from "@/assets/photographyCategories/photography9.webp";
-import Wedding from "@/assets/photographyCategories/photography10.webp";
-import Anniversary from "@/assets/photographyCategories/photography5.webp";
+import Engagement from "@/assets/photographyCategories/Photography9.webp";
+import Wedding from "@/assets/photographyCategories/Photography10.webp";
+import Anniversary from "@/assets/photographyCategories/Photography5.webp";
 import Birthday from "@/assets/photographyCategories/birthdaybackground.webp";
-import HouseWarming from "@/assets/photographyCategories/photography6.webp";
-import NamingCeremony from "@/assets/photographyCategories/photography4.webp";
-import BabyShower from "@/assets/photographyCategories/photography8.webp";
-import Bachelorette from "@/assets/photographyCategories/photography7.webp";
-import Maternity from "@/assets/photographyCategories/photography11.webp";
-import NewBorn from "@/assets/photographyCategories/photography12.webp"; 
+import HouseWarming from "@/assets/photographyCategories/Photography6.webp";
+import NamingCeremony from "@/assets/photographyCategories/Photography4.webp";
+import BabyShower from "@/assets/photographyCategories/Photography8.webp";
+import Bachelorette from "@/assets/photographyCategories/Photography7.webp";
+import Maternity from "@/assets/photographyCategories/Photography11.webp";
+import NewBorn from "@/assets/photographyCategories/Photography12.webp"; 
 import { useSelector } from "react-redux";
 import {
   BASE_URL,

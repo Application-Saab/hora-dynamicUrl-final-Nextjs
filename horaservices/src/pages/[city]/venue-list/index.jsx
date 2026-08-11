@@ -5,7 +5,7 @@ import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TopBanner from "@/components/Venue/Topbanner";
 import VenueCategories from "@/components/Venue/VenueCategories";
 import venueTopBanner from "@/assets/venuelanding/Topbanner.webp";
-import VenueBannertitle from "@/components/Venue/venuetitle";
+import VenueBannertitle from "@/components/Venue/Venuetitle";
 import VenueCircle from "@/components/Venue/VenueCircle";
 import VenueList from "@/components/venueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";

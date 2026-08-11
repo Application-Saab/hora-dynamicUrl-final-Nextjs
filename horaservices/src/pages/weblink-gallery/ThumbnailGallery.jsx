@@ -10,14 +10,14 @@ import React, {
 import Image from "next/image";
 import "./gallery.css"; // Ensure this path is correct
 import { BASE_URL, CAPSULE_LIKE_TOGGLE } from "@/utils/apiconstants";
-import HeaderCards from "@/components/Gallery/HeaderCards";
+import HeaderCards from "@/components/Gallery/headerCards.css";
 import share from "../../assets/share.svg";
 import multiGroup from "../../assets/multiGroup.svg";
 import plusVector from "../../assets/plusVector.svg";
 import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/deleteVector.svg";
-import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
+import HeaderCardsFlashLoader from "@/components/Gallery/headerCards.cssFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";

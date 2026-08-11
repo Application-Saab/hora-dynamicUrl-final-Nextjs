@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import cityNameToSlug from "@/utils/cityNameToSlug";
+import cityNameToSlug from "@/utils/Citynametoslug.json";
 import { BASE_URL } from "./apiconstants";
 import { fetchWithError } from "./fetchWithError";
 import { safeGetItem, safeSetItem } from "./safeStorage";

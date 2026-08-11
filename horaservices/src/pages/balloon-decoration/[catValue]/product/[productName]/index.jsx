@@ -59,7 +59,7 @@ import { fetchWithError } from "@/utils/fetchWithError";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
 import SimiliarThemes from "@/assets/SimilarThemes.svg";
-import StarIcon from "@/assets/Staricon.svg";
+import StarIcon from "@/assets/StarIcon.svg";
 import fireIcon from "@/assets/fireIcon.svg";
 import hearticon from "@/assets/hearticon.svg";
 import GoogleReviewsCard from "@/components/PhotoGalleryPose/GoogleReviewsCard";
