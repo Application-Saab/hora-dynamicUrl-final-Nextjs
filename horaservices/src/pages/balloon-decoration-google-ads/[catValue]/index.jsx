@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import Head from 'next/head';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
-import { CardSkeleton } from "../../../components/CardSkeleton";
+import CardSkeleton from "../../../components/CardSkeleton";
 import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
 import '../../../css/decoration.css';
 import { setState } from '../../../actions/action';
