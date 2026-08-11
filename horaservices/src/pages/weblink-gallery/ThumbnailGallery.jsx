@@ -17,7 +17,7 @@ import plusVector from "../../assets/plusVector.svg";
 import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
 import deleteVector from "../../assets/deleteVector.svg";
-import HeaderCardsFlashLoader from "@/components/Gallery/headerCards.cssFlashLoader";
+import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
 import CommonImagePopup from "@/components/CommonImagePopup";

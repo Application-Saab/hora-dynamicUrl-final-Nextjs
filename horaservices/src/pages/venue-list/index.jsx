@@ -7,7 +7,7 @@ import VenueCategories from "@/components/Venue/VenueCategories";
 import venueTopBanner from "@/assets/venuelanding/Topbanner.webp";
 import VenueBannertitle from "@/components/Venue/Venuetitle";
 import VenueCircle from "@/components/Venue/VenueCircle";
-import VenueList from "@/components/venueCommon/InvitesListing";
+import VenueList from "@/components/VenueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import ReviewSlider from "@/components/ReviewSection";
