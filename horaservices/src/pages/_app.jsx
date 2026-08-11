@@ -1,6 +1,8 @@
 // pages/_app.tsx
+import "../styles/globals.css";
+import '../styles/home.css';
+import '../styles/homepage.css';
 import React, { useEffect, useState, useLayoutEffect } from "react";
-import "../app_backup/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";

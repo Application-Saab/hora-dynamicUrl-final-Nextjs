@@ -1,6 +1,6 @@
 import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
-import "../../../../app_backup/homepage.css";
+import "../../../../styles/homepage.css";
 
 
 

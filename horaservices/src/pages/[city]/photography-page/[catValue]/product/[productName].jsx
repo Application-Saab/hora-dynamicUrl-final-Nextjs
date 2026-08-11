@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import cityData from "@/utils/cityData";
-import "../../../../../app_backup/homepage.css";
+import "../../../../../styles/homepage.css";
 import ProductDetails from "@/pages/photography-page/[catValue]/product/[productName]";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/photography-page/..." -> "hyderabad"
