@@ -1,5 +1,5 @@
 // pages/_app.tsx
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -30,6 +30,25 @@ function MyApp({ Component, pageProps }) {
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
   );
+
+  // ================= SCROLL RESTORATION: track back/forward vs normal nav =================
+  const isPopRef = useRef(false);
+
+  // ================= DISABLE BROWSER'S NATIVE SCROLL RESTORATION =================
+  // Yeh zaroori hai - browser khud bhi popstate par scroll restore karne ki
+  // koshish karta hai, jo humare manual restore se takra kar "top phir sahi
+  // position" wala double-jump/flicker banata hai. Isse off karke sirf hum
+  // control karenge.
+  useEffect(() => {
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    return () => {
+      if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "auto";
+      }
+    };
+  }, []);
 
   // ================= GLOBAL ERROR HANDLERS =================
   useEffect(() => {
@@ -168,6 +187,30 @@ function MyApp({ Component, pageProps }) {
     setCurrentUrl(router.asPath);
   }, [router.asPath]);
 
+  // ================= DETECT BACK/FORWARD NAVIGATION (vs normal link click) =================
+  useEffect(() => {
+    router.beforePopState(() => {
+      isPopRef.current = true;
+      return true;
+    });
+  }, [router]);
+
+  // ================= SAVE SCROLL POSITION BEFORE LEAVING A ROUTE =================
+  useEffect(() => {
+    const saveScroll = () => {
+      sessionStorage.setItem(
+        `scrollPos:${router.asPath}`,
+        String(window.scrollY)
+      );
+    };
+    router.events.on("routeChangeStart", saveScroll);
+    window.addEventListener("beforeunload", saveScroll);
+    return () => {
+      router.events.off("routeChangeStart", saveScroll);
+      window.removeEventListener("beforeunload", saveScroll);
+    };
+  }, [router]);
+
   // ================= GOOGLE TAG MANAGER (LOADS ONLY ONCE) =================
   useEffect(() => {
     (function (w, d, s, l, i) {
@@ -184,19 +227,93 @@ function MyApp({ Component, pageProps }) {
       f.parentNode.insertBefore(j, f);
       console.log("GTM Script Loaded"); // Debugging log
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
-  }, []); 
-  useLayoutEffect(() => {
-    // reset any scroll lock
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.overflow = "";
+  }, []);
 
-    // force scroll to top
-    window.scrollTo(0, 0);
+// ================= SCROLL: restore on back/forward, top on normal nav =================
+useLayoutEffect(() => {
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.overflow = "";
 
-    console.log("scrolling app");
-  }, [pathname]);
+  const wasPop = isPopRef.current;
+  isPopRef.current = false;
 
+  document.documentElement.style.visibility = "hidden";
+
+  const instantScrollTo = (y) => {
+    window.scrollTo({ top: y, left: 0, behavior: "instant" });
+  };
+
+  if (wasPop) {
+    const saved = sessionStorage.getItem(`scrollPos:${router.asPath}`);
+    const targetY = saved ? parseInt(saved, 10) : 0;
+
+    let revealed = false;
+    let done = false;
+    const startTime = Date.now();
+    const maxDuration = 6000; // API-heavy pages ke liye generous cap
+
+    // sirf visibility dikhane ke liye — CORRECTION yeh nahi rokta
+    const reveal = () => {
+      if (!revealed) {
+        revealed = true;
+        document.documentElement.style.visibility = "visible";
+      }
+    };
+
+    // pehla sync jump
+    instantScrollTo(targetY);
+
+    let settleTimer = null;
+
+    // ResizeObserver: jab bhi content height badle (API data/images load
+    // hone se), scroll ko wapas targetY par correct karo. Yeh tab tak
+    // CHALTA rahega jab tak height 300ms tak stable na ho jaaye — chahe
+    // visibility already reveal ho chuki ho.
+    const ro = new ResizeObserver(() => {
+      if (done) return;
+      instantScrollTo(targetY);
+      reveal();
+
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        done = true;
+        ro.disconnect();
+      }, 300);
+
+      if (Date.now() - startTime > maxDuration) {
+        done = true;
+        ro.disconnect();
+      }
+    });
+
+    ro.observe(document.body);
+
+    // Yeh SIRF visibility reveal karne ke liye hai (taaki blank screen
+    // zyada der na dikhe) — yeh observer ko DISCONNECT nahi karta.
+    const revealFallback = setTimeout(() => {
+      instantScrollTo(targetY);
+      reveal();
+    }, 300);
+
+    // Hard stop — sirf worst-case ke liye (data kabhi na aaye / height
+    // kabhi stable na ho), taaki observer hamesha ke liye na chalta rahe.
+    const hardStop = setTimeout(() => {
+      done = true;
+      ro.disconnect();
+    }, maxDuration);
+
+    return () => {
+      ro.disconnect();
+      clearTimeout(settleTimer);
+      clearTimeout(revealFallback);
+      clearTimeout(hardStop);
+    };
+  } else {
+    instantScrollTo(0);
+    document.documentElement.style.visibility = "visible";
+  }
+}, [router.asPath]);
   return (
     <>
       <Head>
