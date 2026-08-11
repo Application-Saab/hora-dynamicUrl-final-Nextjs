@@ -17,7 +17,7 @@ import "./photographyCheckout.css";
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
 import BackgroundDetails from "../../assets/BackgroundDetails.svg";
 import productsData from '../../utils/photoGraphyImages.js';
-import CommentIcon from "../../assets/commenticon.png";
+import CommentIcon from "../../assets/commentIcon.png";
 import locationIcon from "../../assets/locationIcon.png";
 import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";

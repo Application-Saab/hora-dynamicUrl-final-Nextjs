@@ -7,7 +7,7 @@ import "./photo.css";
 import PhotoBanner from "../../assets/PhotoBanner.jpg";
 import Banner1 from "../../assets/banner1.webp";
 import Banner2 from "../../assets/Banner2.webp";
-import Banner3 from "../../assets/banner3.webp";
+import Banner3 from "../../assets/Banner3.webp";
 import BrandBannerIMG from "../../assets/BrandBannerIMG.webp";
 import HappyCustomerIMG from "../../assets/HappyCustomerIMG.jpg";
 import GoogleRatingIMG from "../../assets/GoogleRatingIMG4.png";

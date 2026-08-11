@@ -30,7 +30,7 @@ import OtpLoginPopup from "../../components/OtpLoginPopup";
 import BackgroundBase from "../../assets/BackgroundBase.jpg";
 import BackgroundDetails from "../../assets/BackgroundDetails2.jpg";
 import productsData from '../../utils/photoGraphyImages.js';
-import CommentIcon from "../../assets/commenticon.png";
+import CommentIcon from "../../assets/commentIcon.png";
 import locationIcon from "../../assets/locationIcon.png";
 import CityIcon from "../../assets/CityIcon.png";
 import PinIcon from "../../assets/Pincode.jpeg";

@@ -25,7 +25,7 @@ import DecorGrid from "@/components/DecorGrid";
 import WhyHoraIMG from "../../assets/WhyHoraIMG.webp";
 import DecorationBannerIMG from "../../assets/DecorationBannerIMG.webp";
 import decorCollageIMG from "../../assets/decorCollageIMG.webp";
-import HappyBirthdayImg from "../../assets/HappyBirthdayIMG.png";
+import HappyBirthdayImg from "../../assets/HappyBirthdayImg.png";
 import BabyShowerImg from "../../assets/BabyShowerIMG.webp";
 import kidsBirthdayImg from "../../assets/KidsBirthdayIMG.png";
 import BabyWelcomeImg from "../../assets/WelcomBabyIMG.webp";

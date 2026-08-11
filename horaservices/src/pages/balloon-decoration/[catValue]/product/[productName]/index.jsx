@@ -26,7 +26,7 @@ import {
   COMPRESSED_WEBP_IMG_URL,
 } from "@/utils/apiconstants";
 import FAQSection from "@/components/FAQSection";
-import faqData from "../../../../../utils/FaqData.json";
+import faqData from "../../../../../utils/faqData.json";
 import Tabs from "../../../../../components/Tabs";
 import addOnProductsData from "../../../../../utils/addOnProduct.json";
 import HowitWork from "../../../../../assets/howitwork.jpg"

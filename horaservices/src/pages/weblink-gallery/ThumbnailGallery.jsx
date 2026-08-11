@@ -16,7 +16,7 @@ import multiGroup from "../../assets/multiGroup.svg";
 import plusVector from "../../assets/plusVector.svg";
 import downloadVector from "../../assets/downloadVector.svg";
 import shareVector from "../../assets/shareVector.svg";
-import deleteVector from "../../assets/DeleteVector.svg";
+import deleteVector from "../../assets/deleteVector.svg";
 import HeaderCardsFlashLoader from "@/components/Gallery/HeaderCardsFlashLoader";
 import user2 from "../../assets/user2.svg";
 import { MEDIA_WORKER_URL, GENERATE_CAPSULE_LINK } from "../../utils/apiconstants";
@@ -46,7 +46,7 @@ import {
   saveFileToOPFS,
 } from "@/utils/opfsUploadStore";
 import capsuleTopBanner from "../../assets/capsuleTopBanner.svg";
-import guest from "../../assets/guest.svg";
+import guest from "../../assets/Guest.svg";
 import GuestBanner from "../../assets/GuestBanner.svg";
 import FolderBanner from "../../assets/FolderBanner.svg";
 import FaceRecognitionBanner from "../../assets/FaceRecognitionBanner.svg";

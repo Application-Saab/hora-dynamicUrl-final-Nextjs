@@ -1,5 +1,5 @@
 import traditionalPhoto from "../assets/traditionalPhotos.webp";
-import candidPhoto from "../assets/candidPhoto.webp";
+import candidPhoto from "../assets/CandidPhoto.webp";
 import proPhoto from "../assets/Prophoto.webp";
 import videoPhoto from "../assets/videophoto.webp";
 import WeddingAffair from "../assets/WeddingAffairImg.svg";

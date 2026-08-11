@@ -16,7 +16,7 @@ import PhotoGraphy from "@/assets/Home/Photography.webp";
 import BulkFoodDelivery from "@/assets/Home/BulkFoodDelivery.webp";
 import Entertainment from "@/assets/Home/Entertainment.webp";
 import LiveCatering from "@/assets/Home/LiveCatering.webp";
-import Homevideo from "../../../public/assets/Homevideo.mp4";
+import Homevideo from "../../../public/assets/HomeVideo.mp4";
 import Photographybanner from "@/assets/Home/Photographybanner.webp";
 import decorationbanner from "@/assets/Home/decorationbanner.webp";
 import chefforparty from "@/assets/Home/chefforparty.webp";
