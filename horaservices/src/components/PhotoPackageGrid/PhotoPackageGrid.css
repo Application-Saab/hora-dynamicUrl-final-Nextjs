@@ -1,20 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap');
+
 .photoPkgContainer {
   display: flex;
   flex-direction: column;
  gap: clamp(11px, 3.56vw, 17px) clamp(4px, 1.27vw, 6px);
   padding: clamp(8px, 2vw, 12px);
   max-width: 480px;
+  box-shadow: 0px 4px 4px 0px #00000026;
   margin: 0 auto;
 }
 
 .photoPkgCard {
   display: flex;
-  border: 1px solid #0000004F;
+
   border-radius: clamp(10px, 3vw, 14px);
   overflow: hidden;
 box-shadow: 0px 4px 4px 0px #00000026;
-
+border: 1px solid #0000001A; 
   background: #fff;
   cursor: pointer;
   width: 100%;
@@ -87,7 +89,7 @@ color: #000000;
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(4px, 1.5vw, 8px);
   margin:0px;
-  border: 0.3px solid #00000080;
+ border:0.2px solid rgb(0 0 0 / 19%);
   border-radius: 6px;
   padding:
   clamp(8.14px, 2.54vw, 12.21px)
@@ -105,7 +107,7 @@ color: #000000;
   position: relative;   /* zaroori hai fill ke liye */
   width: clamp(24px, 7vw, 30px);
   height: clamp(24px, 7vw, 30px);
-  margin: 0 auto clamp(2px, 1vw, 4px);
+  margin: 0 auto ;
 }
 
 .photoPkgIconImg {
@@ -126,7 +128,7 @@ font-weight: 400;
 font-size: clamp(4.89px, 1.53vw, 7.33px);
 text-transform: capitalize;
   color: #000000;
-  margin: clamp(2px, 1vw, 4px) 0  clamp(3.18px, 0.99vw, 4.77px);
+  margin: clamp(7px, 2.29vw, 9px) 0 ;
 }
 
 .photoPkgPriceRow {

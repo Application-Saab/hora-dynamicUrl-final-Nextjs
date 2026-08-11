@@ -19,10 +19,13 @@ import uniqueThemes from "@/assets/inclusionIcons/uniqueThemes.svg";
 import heavyProps from "@/assets/inclusionIcons/heavyProps.svg";
 import digitalTheme from "@/assets/inclusionIcons/digitalTheme.svg";
 import themeBackdrop from "@/assets/inclusionIcons/themeBackdrop.svg";
-import premiumGrows from "@/assets/inclusionIcons/premiumProp.svg";
+import premiumGrows from "@/assets/inclusionIcons/Premiumgown.svg";
 import premiumProp from "@/assets/inclusionIcons/premiumProp.svg";
 import maternityProp from "@/assets/inclusionIcons/maternityProp.svg";
 import arrowicon from "@/assets/arrowicon.svg";
+import  cinematic from "@/assets/inclusionIcons/CinematicVideo.svg";
+import twin from "@/assets/inclusionIcons/Twinmegacollageprints.svg";
+
 const getImageUrl = (item) => {
   let fileName = null;
 
@@ -62,8 +65,8 @@ const TAG_RULES = [
   { words: ["premium", "prop"], title: "Premium", subtitle: "Prop", icon: premiumProp},
   { words: ["maternity", "prop"], title: "Maternity", subtitle: "Prop", icon: maternityProp },
   { words: ["save the date"], title: "Save the Date", subtitle: "Reel", icon: saveTheDateReel },
-    { words: ["twin", "collage"], title: "Twin Mega Collage", subtitle: "Prints", icon: album },
-{ words: ["cinematic"], title: "Cinematic", subtitle: "Video", icon: traditionalVideo },
+  { words: ["twin", "collage"], title: "Twin Mega Collage", subtitle: "Prints", icon: twin },
+  { words: ["cinematic"], title: "Cinematic", subtitle: "Video", icon: cinematic },
 ];
 
 // Returns ALL tags that match a given line (a line can contain multiple

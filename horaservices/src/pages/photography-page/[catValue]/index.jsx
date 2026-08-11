@@ -295,7 +295,7 @@ const restText = words.slice(8).join(' ');
       ) : (
         <>
   
-  <div style={{padding: "clamp(5.7px, 1.78vw, 8.6px)"}}>
+  <div style={{padding: "clamp(4px, 1.27vw, 5px)"}}>
      
       {showMomentPicker ? (
         <DecorationBanner category={normalizedCat} title="Choose Your Moment" />

@@ -59,29 +59,27 @@ const CameraIcon = () => (
 
 const MomentCard = ({ moment, isActive, onSelect }) => {
   return (
-   <button
-    type="button"
-    className={`momentCard momentCard--${moment.accent}${isActive ? " momentCard--active" : ""}`}
-    onClick={() => onSelect?.(moment)}
-    aria-pressed={isActive}
-  >
-      <span className="momentCard__imageWrap">
-        <Image
-          src={moment.image}
-          alt={moment.label}
-          fill
-          sizes="(max-width: 640px) 33vw, 220px"
-          className="momentCard__image"
-        />
-        <span className="momentCard__gradient" aria-hidden="true" />
-      </span>
+  <div
+  className={`momentCard momentCard--${moment.accent}${isActive ? " momentCard--active" : ""}`}
+  onClick={() => onSelect?.(moment)}
+>
+  <span className="momentCard__imageWrap">
+    <Image
+      src={moment.image}
+      alt={moment.label}
+      fill
+      sizes="(max-width: 640px) 33vw, 220px"
+      className="momentCard__image"
+    />
+    <span className="momentCard__gradient" aria-hidden="true" />
+  </span>
 
-      <span className="momentCard__badge">
-        <CameraIcon />
-      </span>
+  <span className="momentCard__badge">
+    <CameraIcon />
+  </span>
 
-      <span className="momentCard__label">{moment.label}</span>
-    </button>
+  <span className="momentCard__label">{moment.label}</span>
+</div>
   );
 };
 
