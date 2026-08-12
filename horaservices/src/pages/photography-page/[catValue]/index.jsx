@@ -28,6 +28,7 @@ import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
+import PhotoGallery from "@/pages/photo-gallery";
 
 
 const getDiscountedPrice = (price = 0) => {
@@ -316,15 +317,15 @@ const restText = words.slice(8).join(' ');
           </div>
 
           {/* Gallery Section */}
-          {galleryData && galleryData.folderName && galleryData.customerId && (
-            <div className="photo-gallery-wrapper" style={{padding:"10px"}}>
-              <ThumbnailGallery
-                folderName={galleryData.folderName}
-                customerId={galleryData.customerId}
-                disablePopup={true}
-              />
-            </div>
-          )}
+         {galleryData && galleryData.folderName && galleryData.customerId && (
+  <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
+    <PhotoGallery
+      folderName={galleryData.folderName}
+      customerId={galleryData.customerId}
+      embedded={true}
+    />
+  </div>
+)}
         </>
       )}
     </div>
