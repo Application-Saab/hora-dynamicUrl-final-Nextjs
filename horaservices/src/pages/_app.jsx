@@ -132,7 +132,7 @@ import "./wonderland/EventInvitation.css";
 import "./wonderland/Thankyou-note/Create-note/createNote.css";
 import "./wonderland/Thankyou-note/thankyounote.css";
 import "./wonderland/invite/invite.css";
-import "./wonderland/templates/Templates.css";
+// import "./wonderland/templates/Templates.css";
 import "./wonderland/templates/create-template/DynamicTemplateRenderer.css";
 import "./wonderlandinternational/EventInvitation.css";
 import "./wonderlandinternational/Thankyou-note/Create-note/createNote.css";
@@ -141,7 +141,7 @@ import "./wonderlandinternational/accounts/AccountsPage.css";
 import "./wonderlandinternational/chat/GroupsList.css";
 import "./wonderlandinternational/invite/invite.css";
 import "./wonderlandinternational/templates/Templates.css";
-import "./wonderlandinternational/templates/create-template/DynamicTemplateRenderer.css";
+// import "./wonderlandinternational/templates/create-template/DynamicTemplateRenderer.css";
 import "../utils/logoutmodal.css";
 // pages/_app.tsx
 import "../styles/customGlobal.css";
