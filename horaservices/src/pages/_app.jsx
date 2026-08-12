@@ -251,9 +251,8 @@ useLayoutEffect(() => {
     let revealed = false;
     let done = false;
     const startTime = Date.now();
-    const maxDuration = 6000; // API-heavy pages ke liye generous cap
+    const maxDuration = 20000;
 
-    // sirf visibility dikhane ke liye — CORRECTION yeh nahi rokta
     const reveal = () => {
       if (!revealed) {
         revealed = true;
@@ -261,46 +260,68 @@ useLayoutEffect(() => {
       }
     };
 
-    // pehla sync jump
+    const stopCorrecting = () => {
+      if (done) return;
+      done = true;
+      ro.disconnect();
+      reveal();
+      clearTimeout(settleTimer);
+      clearTimeout(revealFallback);
+      clearTimeout(hardStop);
+      removeUserInteractionListeners();
+    };
+
+    const userInteractionEvents = ["wheel", "touchstart", "pointerdown", "keydown"];
+    const handleUserInteraction = () => stopCorrecting();
+    const addUserInteractionListeners = () => {
+      userInteractionEvents.forEach((evt) =>
+        window.addEventListener(evt, handleUserInteraction, { passive: true })
+      );
+    };
+    const removeUserInteractionListeners = () => {
+      userInteractionEvents.forEach((evt) =>
+        window.removeEventListener(evt, handleUserInteraction)
+      );
+    };
+    addUserInteractionListeners();
+
     instantScrollTo(targetY);
 
-    let settleTimer = null;
+    const isTallEnough = () =>
+      document.documentElement.scrollHeight - window.innerHeight >= targetY;
 
-    // ResizeObserver: jab bhi content height badle (API data/images load
-    // hone se), scroll ko wapas targetY par correct karo. Yeh tab tak
-    // CHALTA rahega jab tak height 300ms tak stable na ho jaaye — chahe
-    // visibility already reveal ho chuki ho.
+    let settleTimer = null;
+    const SETTLE_MS = 1500;
+
     const ro = new ResizeObserver(() => {
       if (done) return;
       instantScrollTo(targetY);
-      reveal();
+
+      if (isTallEnough()) {
+        reveal();
+      }
 
       clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
-        done = true;
-        ro.disconnect();
-      }, 300);
+        if (isTallEnough()) {
+          stopCorrecting();
+        }
+      }, SETTLE_MS);
 
       if (Date.now() - startTime > maxDuration) {
-        done = true;
-        ro.disconnect();
+        stopCorrecting();
       }
     });
 
     ro.observe(document.body);
 
-    // Yeh SIRF visibility reveal karne ke liye hai (taaki blank screen
-    // zyada der na dikhe) — yeh observer ko DISCONNECT nahi karta.
     const revealFallback = setTimeout(() => {
       instantScrollTo(targetY);
       reveal();
-    }, 300);
+    }, 800);
 
-    // Hard stop — sirf worst-case ke liye (data kabhi na aaye / height
-    // kabhi stable na ho), taaki observer hamesha ke liye na chalta rahe.
     const hardStop = setTimeout(() => {
-      done = true;
-      ro.disconnect();
+      stopCorrecting();
     }, maxDuration);
 
     return () => {
@@ -308,6 +329,7 @@ useLayoutEffect(() => {
       clearTimeout(settleTimer);
       clearTimeout(revealFallback);
       clearTimeout(hardStop);
+      removeUserInteractionListeners();
     };
   } else {
     instantScrollTo(0);
