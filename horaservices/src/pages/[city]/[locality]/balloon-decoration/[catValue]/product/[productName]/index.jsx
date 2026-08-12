@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import checkImage from "../../../../../../../assets/tick.jpeg";
 import { getDecorationProductOrganizationSchema } from "../../../../../../../utils/schema";
-import "../../../../../../../css/decoration.css";
 import DecorationCatDetails from "@/pages/balloon-decoration/[catValue]/product/[productName]";
 import { fetchWithError } from "@/utils/fetchWithError";
 

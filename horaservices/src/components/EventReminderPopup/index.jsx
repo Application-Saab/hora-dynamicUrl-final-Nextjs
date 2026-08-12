@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
-import "./EventReminderPopup.css";
 import plannerImage from "@/assets/Planner.webp";
 import approachingImage from "@/assets/Approaching.webp";
 import Image from "next/image";

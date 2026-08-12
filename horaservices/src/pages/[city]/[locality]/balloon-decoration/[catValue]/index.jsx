@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getDecorationCatOrganizationSchema } from "../../../../../utils/schema";
-import "../../../../../css/decoration.css";
 import DecorationCatPage from "@/pages/balloon-decoration/[catValue]";
 // import DecorationCatPage from "@/components/DecorationCatPage"; // Move component from pages to components if needed
 

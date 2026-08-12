@@ -1,7 +1,5 @@
 import React, { useState,useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
-import "./searchbar.css";
-
 const SearchBar = ({ searchTerm, setSearchTerm, suggestions, onSelect, onFocus,isSearching }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 useEffect(() => {

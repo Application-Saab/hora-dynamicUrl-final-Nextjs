@@ -4,7 +4,6 @@ import TimeIcon from "@/assets/wonderland/TimeGradientIcon.svg";
 import LocationIcon from "@/assets/wonderland/LocationGradientIcon.svg";
 import MapIcon from "@/assets/wonderland/MapGradientIcon.svg";
 import Image from "next/image";
-import "./CreateInviteModal.css";
 import useApi from "@/hooks/useApi";
 import { UPDATE_EVENT_BY_ID } from "@/utils/apiconstants";
 import CalendarModal from "./CalendarModal";

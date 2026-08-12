@@ -1,7 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import "./CustomButton.css";
-
 const CustomButton = ({
   title,
   icon: Icon, // React icon component

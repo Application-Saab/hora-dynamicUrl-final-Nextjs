@@ -4,7 +4,6 @@
 
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import "./DecorSlider.css";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 
 const getDiscountedDifference = (price) => {

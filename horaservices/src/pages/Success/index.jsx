@@ -1,5 +1,4 @@
 import React, { useEffect , useState } from "react";
-import "../../css/success.css";
 import confirmOrder from "../../assets/confirmOrder.png";
 import { useRouter } from "next/router";
 import Image from "next/image";

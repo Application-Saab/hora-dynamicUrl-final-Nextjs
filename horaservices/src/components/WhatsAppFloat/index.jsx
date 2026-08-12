@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import "./whatsapp.css";
 import whatsappIcon from "@/assets/whatsapp-icon.png";
 import { trackWAClicks } from "@/utils/storeWhatsappClicks";
 export default function WhatsAppFloat({ shouldShow, handleWhatsAppClick }) {

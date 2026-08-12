@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import CustomButton from "@/components/wonderland/common/CustomButton";
-import "./CategoryTabs.css";
-
 const CategoryTabs = ({ categories, selectedCategory, onSelectCategory }) => {
   return (
     <div className="category-tabs-scroll">

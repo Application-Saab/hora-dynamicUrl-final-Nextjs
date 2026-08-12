@@ -6,7 +6,6 @@ import wonderlandBanner from "@/assets/wonderlandBanner1.webp";
 import howitworks from "@/assets/howitworks2.jpg";
 import hostandGuest from "@/assets/hostandGuest.webp";
 import yourcelebration from "@/assets/yourcelebration.png";
-import "@/components/wonderland/wonderland.css";
 import InvitesListing from "@/components/wonderland/InvitesListing";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import CelebrationSection from "@/components/wonderland/wonderlandBanner1";

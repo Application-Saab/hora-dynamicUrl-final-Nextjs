@@ -2,8 +2,6 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 import Placeholder from "react-bootstrap/Placeholder";
 import dummyImage from "../../assets/dummyPlaceholder.webp";
-import '../../css/chefcardskeleton.css';
-
 const ChefCardSkeleton = ({ ...props }) => {
     return (
         <div className="chef-card-container" {...props}>

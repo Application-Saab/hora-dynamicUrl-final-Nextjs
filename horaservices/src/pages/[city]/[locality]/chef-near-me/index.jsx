@@ -19,8 +19,6 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 
-import '../../../../styles/homepage.css';
-
 import cityData from '../../../../utils/cityData';
 
 

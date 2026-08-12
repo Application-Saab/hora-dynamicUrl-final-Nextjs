@@ -36,7 +36,6 @@ import {
   GET_ALL_POSTS,
   LIKED_POST_BY_EVENT_AND_USERID,
 } from "@/utils/apiconstants";
-import "../../common/EventLazyImage.css";
 import EventWallHeaderTabs from "./EventWallHeaderTabs";
 import {
   deleteFromOPFS,
@@ -47,7 +46,6 @@ import {
 } from "@/utils/eventWallHelpers";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../../../pages/weblink-gallery/gallery.css";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";

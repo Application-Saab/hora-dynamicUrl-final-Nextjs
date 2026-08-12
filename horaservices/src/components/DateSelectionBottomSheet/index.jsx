@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { X, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import "./DateSelectionBottomSheet.css";
 import Image from "next/image";
 import calendarBgimage from "@/assets/calendarBarBgimage.webp";
 import { BASE_URL } from "@/utils/apiconstants";

@@ -11,8 +11,6 @@ import googleIcon from "@/assets/review/google.svg";
 import { ratingConfig } from "@/utils/ratingConfig";
 import ReviewButton from "@/components/ReviewButton";
 
-import "./coupon.css";
-
 const CouponPopup = ({ selectedRating, couponCode }) => {
 
   const selectedConfig = ratingConfig.find(

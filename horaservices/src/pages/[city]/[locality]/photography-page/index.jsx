@@ -1,9 +1,5 @@
 import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
-import "../../../../styles/homepage.css";
-
-
-
 const PhotographyCityPage = () => {
   const router = useRouter();
   let { locality } = router.query;

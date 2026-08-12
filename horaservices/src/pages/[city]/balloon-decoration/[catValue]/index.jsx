@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import Head from 'next/head';
 
 import { getDecorationCatOrganizationSchema } from "../../../../utils/schema";
-import '../../../../css/decoration.css';
 import { setState } from '../../../../actions/action';
 import { useDispatch } from 'react-redux';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";

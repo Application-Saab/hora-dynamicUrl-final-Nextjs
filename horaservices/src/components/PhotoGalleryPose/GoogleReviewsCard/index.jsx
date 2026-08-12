@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef } from "react";
-import "./googlereviewscard.css";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import googleLogo from "@/assets/review/google.svg";

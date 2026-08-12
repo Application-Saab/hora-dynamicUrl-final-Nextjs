@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import "./localities.css";
 const LocalitiesSection = ({ title, localities, handleClick }) => {
   return (
     <div className="container">

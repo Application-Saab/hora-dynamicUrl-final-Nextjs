@@ -1,6 +1,5 @@
 
 import React, { useRef } from "react";
-import "./Addon.css"
 import giftIcon from "@/assets/giftIcon.svg";
 import StarIcon from "../../assets/StarIcon.svg";
 import Image from "next/image";

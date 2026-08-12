@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import './ReadinessList.css';
-
 const ReadinessListt = () => {
     const [showAll, setShowAll] = useState(false);
 

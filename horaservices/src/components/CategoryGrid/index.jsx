@@ -3,8 +3,6 @@
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
-import "./CategoryGrid.css";
-
 const CategoryGrid = ({ cardsData = [], city = "", locality = "" }) => {
   const router = useRouter();
   const pathname = usePathname();

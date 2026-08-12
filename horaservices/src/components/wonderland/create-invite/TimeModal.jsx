@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import CustomModal from "../common/CustomModal";
-import "./CreateInviteModal.css";
-
 const ITEM_HEIGHT = 50;
 
 const TimeModal = ({ show, onClose, selectedTime, setSelectedTime }) => {

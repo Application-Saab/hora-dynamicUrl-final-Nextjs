@@ -1,7 +1,6 @@
 import Image from "next/image";
 import WillTryIcon from "@/assets/wonderland/RsvpListWillTry.svg";
 import WillComeIcon from "@/assets/wonderland/RsvpListWillCome.svg";
-import "./RsvpListModal.css";
 import CustomModal from "../common/CustomModal";
 import useScreenSize from "@/hooks/useScreenSize";
 import { mobileBreakPoints, RSVP_STATUS } from "@/utils/constants.js";

@@ -15,8 +15,6 @@ import MinusIcon from "../../../../assets/minus.png";
 import PlusIcon from "../../../../assets/plus.png";
 import warningImage from "../../../../assets/Group.png";
 import SkeletonLoader from "../../../../utils/chefSkeleton";
-import '../../../../css/Toggle.css';
-import '../../../../css/chefOrder.css';
 import SelectDishes from "../../../../assets/selectDish.png";
 import SelectDateTime from "../../../../assets/event.png";
 import SelectConfirmOrder from "../../../../assets/confirm_order.png";

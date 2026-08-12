@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useRouter } from "next/router";
-import "./PhotographySimilarSlider.css";
 import fallbackImg from "@/assets/fallback-image.png";
 const getDiscountedDifference = (price) => {
   const numericPrice = parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;

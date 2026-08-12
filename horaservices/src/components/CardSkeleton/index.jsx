@@ -1,7 +1,5 @@
 import Image from "next/image";
 import dummyImage from "../../assets/dummyPlaceholder.webp";
-import "./CardSkeleton.css";
-
 const CardSkeleton = () => {
   return (
     <div className="card-skeleton">

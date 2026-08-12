@@ -1,5 +1,4 @@
 import { eventBanners } from "@/utils/venueheadingbanner";
-import "./venuetitle.css";
 import Image from "next/image";
 
 const VenueBannertitle = ({ eventType = "birthday" }) => {

@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import "./AdditionalServices.css";
 import Image from "next/image";
 import PHOTOGRAPHY from "../../assets/PHOTOGRAPHY.png";
 import CATERING from "../../assets/CATERING.png";

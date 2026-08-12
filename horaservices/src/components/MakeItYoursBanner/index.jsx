@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import "./makeItYoursBanner.css";
 import customize from "@/assets/Customizetationbanner.webp";
 import customiseIcon from "@/assets/customiselcon.webp";
 const MakeItYoursBanner = ({  phone = "7338584828",  }) => {

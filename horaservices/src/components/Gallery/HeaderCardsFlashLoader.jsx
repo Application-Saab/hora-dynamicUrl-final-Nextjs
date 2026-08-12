@@ -1,6 +1,4 @@
 import React from "react";
-import "./headerCards.css";
-
 const HeaderCardsFlashLoader = () => {
   return (
     <>

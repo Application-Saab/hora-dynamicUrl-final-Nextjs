@@ -1,8 +1,6 @@
 import React from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import '../css/ske.css';
-
 const SkeletonLoader = () => {
     const dishSkeletons = Array(7).fill(null).map((_, index) => (
         <div key={index} className="dish-skeleton">

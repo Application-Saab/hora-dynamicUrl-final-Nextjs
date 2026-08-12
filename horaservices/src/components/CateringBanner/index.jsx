@@ -1,5 +1,4 @@
 import React from "react";
-import "./cateringBanner.css";
 import Image from "next/image";
 const CateringBanner = ({ image }) => {
   return (

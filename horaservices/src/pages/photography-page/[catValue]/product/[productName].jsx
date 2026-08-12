@@ -17,7 +17,6 @@ import SocialMediaIMG from "@/assets/ourSocialmediaIMG.png";
 import TopBrandIMg from "@/assets/TpBrandsIMG.png";
 import checkImage from "@/assets/tick.svg";
 import logo from "@/assets/new_logo_light.png";
-import "./productDetails.css";
 import {
   BASE_URL,
   GET_ADDON_BY_ID,

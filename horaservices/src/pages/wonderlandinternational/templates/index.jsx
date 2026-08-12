@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CategoryTabs from "@/components/wonderland/CategoryTabs";
 import TemplateSkeleton from "@/components/wonderland/TemplateSkeleton";
 import { BASE_URL, GET_ALL_TEMPLATES } from "@/utils/apiconstants";
-import "./Templates.css";
 import TemplateGrid from "@/components/wonderland/TemplatesGrid";
 import UploadCustomTemplate from "@/components/wonderland/UploadCustomTemplate";
 import { INVITE_CATEGORIES } from "@/utils/constants";

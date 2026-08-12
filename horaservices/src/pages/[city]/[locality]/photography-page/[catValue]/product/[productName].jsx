@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import cityData from "@/utils/cityData";
-import "../../../../../../styles/homepage.css";
 import ProductDetails from "@/pages/photography-page/[catValue]/product/[productName]";
 
 const PhotographyCityPage = () => {

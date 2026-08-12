@@ -4,8 +4,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import emojiicon from "@/assets/wonderland/EmojiIconPicker.svg";
 import ThankYouKeyboard from "../../assets/wonderland/KeyboardiconPicker.svg";
-import "./emoji.css";
-
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
 if (typeof window !== "undefined") import("emoji-picker-react");

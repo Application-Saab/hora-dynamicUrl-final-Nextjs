@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import checkImage from "../../../../../assets/tick.svg";
-import "./Decorproduct.css"
 import {
   getDecorationProductOrganizationSchema,
   getProductFAQSchemaProductDetails,
@@ -13,7 +12,6 @@ import {
   filterLevelUpProducts,
   getMappedCatValue
 } from "../../../../../utils/similarProductUtils";
-import "../../../../../css/decoration.css";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -36,7 +34,6 @@ import Brand from "../../../../../assets/Brand.png"
 import { PremiumData } from "@/utils/DecorationData";
 import CategoryTabs from "../../../../../components/CategoryTabs/index.jsx";
 import { decCat } from "@/utils/decorationCategories";
-import "../../../../../components/CategoryTabs/CategoryTabs.css"
 import { themeFilters } from "@/utils/themeFilters";
 import { allReviewsData } from "@/utils/ReviewsData";
 import AddonModal from "@/components/AddonModal";

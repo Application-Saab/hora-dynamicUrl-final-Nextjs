@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { decCat } from "@/utils/decorationCategories";
 import Image from "next/image";
-import "./decoration.css";
 import whypeople1 from "../../assets/whypeople1.jpg";
 import whypeople2 from "../../assets/whypeople2.jpg";
 import whypeople3 from "../../assets/whypeople3.jpg";

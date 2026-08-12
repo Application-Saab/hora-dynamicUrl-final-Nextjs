@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import "./commonpop.css";
 import Image from "next/image";
 import backarrow from "../../assets/backarrow.svg";
 

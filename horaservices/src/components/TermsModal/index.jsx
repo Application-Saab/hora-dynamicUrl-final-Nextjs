@@ -1,8 +1,6 @@
 "use client";
 
 import React from "react";
-import "./TermsModal.css";
-
 const TermsModal = ({ isOpen, onClose, data }) => {
   if (!isOpen) return null;
   return (

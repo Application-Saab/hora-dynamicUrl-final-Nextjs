@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import "./VenueFoodCard.css";
 import Image from "next/image";
 
 const VenueFoodCard = ({ item, onView }) => {

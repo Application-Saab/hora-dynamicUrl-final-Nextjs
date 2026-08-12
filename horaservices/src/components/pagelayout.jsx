@@ -3,7 +3,6 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import BottomNav from "./BottomNav";
-import "../styles/customGlobal.css";
 import Head from "next/head";
 import { usePathname } from "next/navigation";
 import ConsultationPopupProvider from "@/components/ConsultationPopupProvider";

@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import "@/components/wonderland/wonderland.css";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
 import TopBanner from "@/components/Venue/Topbanner";
 import VenueCategories from "@/components/Venue/VenueCategories";
@@ -11,7 +10,6 @@ import VenueList from "@/components/VenueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
 import ReviewSlider from "@/components/ReviewSection";
-import "./venue/venue.css";
 import { venueReviews } from "@/utils/veneureviews";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import { useCity } from "@/utils/cityContext";

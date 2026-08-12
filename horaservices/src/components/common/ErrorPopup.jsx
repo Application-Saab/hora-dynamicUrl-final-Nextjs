@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "@/pages/wonderland/invite/invite.css"
 const ErrorPopup = ({
 isOpen,
 onClose,

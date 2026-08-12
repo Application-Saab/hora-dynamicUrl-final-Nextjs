@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import checkImage from "../../assets/tick.jpeg";
 import logo from '../../assets/new_logo_light.png';
-import './orderDetails.css';
 import cancellation from '../../assets/cancellation.png';
 import checkIcon from '../../assets/checkIcon.svg';
 import inviteGuest from '../../assets/inviteGuest.svg';

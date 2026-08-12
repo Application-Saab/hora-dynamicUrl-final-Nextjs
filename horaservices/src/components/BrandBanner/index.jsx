@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import "./BrandBanner.css";
 import React from "react";
 
 const BrandBanner = ({ title, items }) => {

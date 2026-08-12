@@ -1,6 +1,5 @@
 import React from 'react';
 import Slider from 'react-slick';
-import './decorationladingslider.css';
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

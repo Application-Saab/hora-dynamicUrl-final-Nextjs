@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./CreateInviteModal.css";
 import CustomModal from "../common/CustomModal";
 
 const CalendarModal = ({ show, onClose, selectedDate, setSelectedDate }) => {

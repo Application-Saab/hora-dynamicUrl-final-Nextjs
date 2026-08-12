@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "./loveposesbanner.css";
 import heart from "@/assets/poselink/heart.svg";
 const LovePosesBanner = ({
   title = "Love these poses?",

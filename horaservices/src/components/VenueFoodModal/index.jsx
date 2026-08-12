@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import "./VenueFoodModal.css";
 import Image from "next/image";
 import vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";

@@ -8,9 +8,8 @@ import React, {
   useRef,
 } from "react";
 import Image from "next/image";
-import "./gallery.css"; // Ensure this path is correct
+// Ensure this path is correct
 import { BASE_URL, CAPSULE_LIKE_TOGGLE } from "@/utils/apiconstants";
-import HeaderCards from "@/components/Gallery/headerCards.css";
 import share from "../../assets/share.svg";
 import multiGroup from "../../assets/multiGroup.svg";
 import plusVector from "../../assets/plusVector.svg";

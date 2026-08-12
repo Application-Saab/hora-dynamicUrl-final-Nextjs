@@ -1,5 +1,4 @@
 import React from "react";
-import "./howItWorks.css";
 import Image from "next/image";
 import IMG1 from "@/assets/wonderland/img1.webp";
 import IMG2 from "@/assets/wonderland/img2.webp";

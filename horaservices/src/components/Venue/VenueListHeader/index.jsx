@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import "./venuelistheader.css";
 import guestIcon from "@/assets/venuelanding/users.svg";
 import Image from "next/image";
 const CAPACITIES = [

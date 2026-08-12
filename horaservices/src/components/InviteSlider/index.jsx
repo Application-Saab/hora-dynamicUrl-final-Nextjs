@@ -1,5 +1,4 @@
 import React from "react";
-import "./inviteslider.css";
 import invite1 from "@/assets/wonderland/inviteslider/invite1.jpeg";
 import invite2 from "@/assets/wonderland/inviteslider/invite2.jpeg";
 import invite3 from "@/assets/wonderland/inviteslider/invite3.jpeg";

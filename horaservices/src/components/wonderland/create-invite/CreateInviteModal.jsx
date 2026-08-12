@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./CreateInviteModal.css";
 import useApi from "@/hooks/useApi";
 import { CREATE_EVENT_INVITE } from "@/utils/apiconstants";
 import { useRouter } from "next/router";

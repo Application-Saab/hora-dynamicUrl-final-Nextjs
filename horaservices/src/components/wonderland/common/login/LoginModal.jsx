@@ -11,7 +11,6 @@ import {
   OTP_VERIFY_ENDPOINT,
 } from "@/utils/apiconstants";
 import CustomModal from "../CustomModal";
-import "./LoginModal.css";
 import { usePathname } from "next/navigation";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import axiosApi from "@/utils/axiosApi";

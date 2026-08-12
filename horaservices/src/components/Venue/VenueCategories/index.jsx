@@ -1,6 +1,4 @@
 import Image from "next/image";
-import "./venuecategories.css";
-
 import birthdayIcon from "@/assets/venuelanding/cake.png";
 import babyshowerIcon from "@/assets/venuelanding/baby-shower.png";
 import engagementIcon from "@/assets/venuelanding/wedding-ring.png";

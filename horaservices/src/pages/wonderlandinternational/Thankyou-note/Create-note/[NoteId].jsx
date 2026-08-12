@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
-import "./createNote.css";
 import { notesData } from "@/utils/ThankyounotesData.js";
 import CustomButton from "@/components/wonderland/common/CustomButton";
 import Image from "next/image";

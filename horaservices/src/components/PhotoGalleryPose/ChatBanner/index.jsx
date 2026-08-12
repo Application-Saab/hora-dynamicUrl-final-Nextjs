@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "./chatbanner.css";
 import whatsappIcon from "@/assets/whatsapp-icon.svg"
 const ChatBanner = ({
   title = "Free Wedding Planning Chat",

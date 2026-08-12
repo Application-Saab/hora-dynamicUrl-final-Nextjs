@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import "./vegToggle.css";
-
 const VegToggle = ({ value = "veg", onChange }) => {
 
   const handleChange = (value) => {

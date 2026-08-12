@@ -2,7 +2,6 @@
 
 
 import React from "react";
-import "./SequentialLoader.css";
 import loader1 from "@/assets/loaderImage/loader1.svg"
 import loader2 from "@/assets/loaderImage/loader2.svg"
 import loader3 from "@/assets/loaderImage/loader3.svg"

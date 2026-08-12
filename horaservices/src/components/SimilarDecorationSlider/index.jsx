@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import { useRouter,usePathname } from "next/navigation";
-import "@/components/DecorSlider/DecorSlider.css";
-import "./similardecorationslider.css"
 const getDiscountedDifference = (price) => {
   const numericPrice =
     parseFloat(price?.toString().replace(/[^0-9.-]+/g, "")) || 0;

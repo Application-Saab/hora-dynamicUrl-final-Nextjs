@@ -1,4 +1,3 @@
-import "./Actionbuttons.css";
 import Image from "next/image";
 
 

@@ -21,7 +21,6 @@ import Link from "next/link";
 import logo from "../../../assets/new_logo_light.png";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
-import "./catvaluedecor.css"
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
 import customize from "../../../assets/Customizetationbanner.webp";

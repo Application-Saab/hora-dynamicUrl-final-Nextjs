@@ -1,5 +1,4 @@
 import React from "react";
-import "./Eventcapsule.css";
 import backgroundImage from "@/assets/EventCapsuleBg.webp";
 import Image from "next/image";
 import NoteTcon from "../../../public/new_logo_light.png";

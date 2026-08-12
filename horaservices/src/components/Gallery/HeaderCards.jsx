@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import "./headerCards.css";
-
 import myPhoto from "../../assets/myPhotos.svg";
 import allPhotos from "../../assets/allPhotos.svg";
 import captureIcon from "../../assets/captureIcon.svg";

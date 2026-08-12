@@ -1,7 +1,5 @@
 import React, { Suspense, lazy } from "react";
 import { Spinner } from "react-bootstrap";
-import '../../css/chefcardskeleton.css';
-
 const ChefCardSkeleton = lazy(() => import('./ChefCardSkeletonLazy'));
 
 export const CardSkeletonGrid = ({ loading = false }) => {

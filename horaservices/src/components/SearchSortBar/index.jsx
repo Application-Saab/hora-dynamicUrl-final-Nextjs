@@ -4,7 +4,6 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Search, SlidersHorizontal, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
-import "./SearchSortBar.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";

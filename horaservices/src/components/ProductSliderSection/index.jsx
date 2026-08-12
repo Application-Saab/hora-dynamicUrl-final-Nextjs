@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import logo from "../../assets/new_logo_light.png";
-import "./ProductSliderSection.css";
 import { decCat } from "@/utils/decorationCategories";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
 

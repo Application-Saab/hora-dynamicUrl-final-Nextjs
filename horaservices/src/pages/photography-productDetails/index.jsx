@@ -4,7 +4,6 @@ import buynowImage1 from '../../assets/secured.png';
 import buynowImage2 from '../../assets/service.png';
 import checkImage from '../../assets/tick.jpeg';
 import { getDecorationProductOrganizationSchema } from "../../utils/schema";
-import '../../css/decoration.css';
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { BASE_URL, GET_DECORATION_BY_NAME } from "@/utils/apiconstants";

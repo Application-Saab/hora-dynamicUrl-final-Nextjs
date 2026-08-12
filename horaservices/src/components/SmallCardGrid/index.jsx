@@ -4,8 +4,6 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import smallcardBackground from "@/assets/small-cardBackground.png";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
-import "./SmallCardGrid.css";
-
 const SmallCardGrid = ({ city = "", locality = "", decCat = [], categories = [] }) => {
   const router = useRouter();
   const pathname = usePathname();

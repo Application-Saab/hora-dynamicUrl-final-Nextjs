@@ -14,7 +14,6 @@ import accountIcon from "../../assets/nav_icon/account.svg";
 import accountIconFill from "@/assets/nav_icon/fillaccount.svg";
 import { useChatStore } from "@/hooks/ChatContext";
 import CustomModal from "../wonderland/common/CustomModal";
-import "./bottomNav.css";
 import LoginModal from "../wonderland/common/login/LoginModal";
 import CustomButton from "../wonderland/common/CustomButton";
 import { safeGetItem } from "@/utils/safeStorage";

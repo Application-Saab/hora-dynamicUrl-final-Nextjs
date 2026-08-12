@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./rating.css";
 import Image from "next/image";
 
 import { BASE_URL, ADD_RATING_REVIEWS } from "@/utils/apiconstants";

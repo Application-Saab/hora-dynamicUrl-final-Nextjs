@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import "./cheerchatbanner.css";
 import phoneImg from "@/assets/wonderland/cherrchatbanner1.webp";
 import arrowIcon from "@/assets/arrowicon.svg";
 const CheerChatBanner = ({onCreateInvite}) => {

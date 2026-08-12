@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./cateringTabs.css";
 import bulkIcon from "@/assets/bulk.svg";
 import liveIcon from "@/assets/live.svg";
 import Image from "next/image";

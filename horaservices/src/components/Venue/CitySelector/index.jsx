@@ -1,5 +1,4 @@
 import React from "react";
-import "./cityselector.css";
 import mumbai from "@/assets/city/mumbai.webp";
 import delhi from "@/assets/city/delhi.webp";
 import bengaluru from "@/assets/city/bengluru.webp";

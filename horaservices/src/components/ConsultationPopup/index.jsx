@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import "./ConsultationPopup.css";
 import ConsultationPopupimg from "@/assets/ConsultationPopupimg.webp";
 import whatsappIcon from "@/assets/whatsapp-icon.svg";
 import tickIcon from "@/assets/tickicon.svg";

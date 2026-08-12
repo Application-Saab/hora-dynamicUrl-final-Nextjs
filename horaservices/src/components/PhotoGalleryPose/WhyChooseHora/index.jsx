@@ -1,5 +1,4 @@
 
-import "./whychoosehora.css";
 import Unlimited from "@/assets//poselink/galleryicon.svg";
 import HDicon from "@/assets/poselink/hdedit.svg";
 import clock from "@/assets/poselink/clock.svg";

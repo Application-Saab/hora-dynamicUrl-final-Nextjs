@@ -1,4 +1,3 @@
-import "./venueamenitybar.css";
 import Image from "next/image";
 import { getVenueAmenityChips } from "@/utils/venueAmenityChips";
 

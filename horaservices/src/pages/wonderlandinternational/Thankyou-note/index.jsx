@@ -1,8 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import "./thankyounote.css";
-
 import Head from "next/head";
 import {notesData} from "@/utils/ThankyounotesData.js"
 

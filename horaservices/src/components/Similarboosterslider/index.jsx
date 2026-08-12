@@ -2,9 +2,6 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import "@/components/DecorSlider/DecorSlider.css";
-import "./Similarboosterslider.css";
-
 const BOOSTER_IMAGE_BASE_URL = "https://horaservices.com/api/uploads/";
 const BOOSTER_CATEGORY_SLUG = "celebration-booster"; // ⚠️ confirm singular/plural matches your route
 

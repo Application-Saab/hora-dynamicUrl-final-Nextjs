@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Image from "next/image";
-import "./invitation.css";
 import { FaEdit } from "react-icons/fa";
 import template1 from "../../assets/outside svg/template1.svg";
 import template13 from "../../assets/outside svg/template13.svg";

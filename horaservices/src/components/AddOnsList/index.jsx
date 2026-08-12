@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "./addonlist.css";
 const AddOnsList = ({ selectedAddOnProduct, itemQuantities, showAddOnmodal, pencil }) => {
   if (!selectedAddOnProduct || selectedAddOnProduct.length === 0) return null;
 

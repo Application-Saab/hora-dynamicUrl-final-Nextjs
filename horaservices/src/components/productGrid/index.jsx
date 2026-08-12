@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import logo from "../../assets/new_logo_light.png";
-import "./productGrid.css";
 import fallbackImg from "@/assets/fallback-image.png";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";

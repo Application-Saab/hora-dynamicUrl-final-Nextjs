@@ -11,8 +11,6 @@ import InstagramIcon from "@/assets/wonderland/ShareInviteInstagram.svg";
 import SnapchatIcon from "@/assets/wonderland/ShareInviteSnapchat.svg";
 import MessangerIcon from "@/assets/wonderland/ShareInviteMessanger.svg";
 import LinkedinIcon from "@/assets/wonderland/ShareInviteLinkedin.svg";
-import "./ShareInviteModal.css";
-
 import { formateDateInDMDFormat } from "@/utils/dateFormatters";
 import CustomModal from "./CustomModal";
 import TemplateRenderer from "./TemplateRenderer";

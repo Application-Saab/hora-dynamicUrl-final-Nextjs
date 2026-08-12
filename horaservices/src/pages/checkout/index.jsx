@@ -20,7 +20,6 @@ import {
 } from "../../utils/apiconstants";
 import { Button, Card, Form } from "react-bootstrap";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import "../../css/decoration.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import InfoIcon from "../../assets/info.png";
@@ -37,7 +36,6 @@ import PinIcon from "../../assets/Pincode.jpeg";
 import cancellation from "../../assets/Cancellation.svg"
 import BackgorundImgDetails from "../../assets/DecorBackgorundImgDetails.png"
 import Infoicon from "../../assets/info-icon.png"
-import "./checkout.css"
 import UrgentBookingModal from "@/components/UrgentBookingModal";
 import { contactUsRedirect } from "@/components/CheckoutWhatsAppSummary";
 import { formatDate } from "../../utils/formateDate";

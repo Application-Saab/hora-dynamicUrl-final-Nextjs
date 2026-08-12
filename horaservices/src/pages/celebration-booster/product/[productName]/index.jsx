@@ -37,8 +37,6 @@ import { reviewsData } from "@/utils/poselinkreviews";
 import ActionButtons from "@/components/Actionbuttons";
 import { filterLevelUpProducts } from "@/utils/similarProductUtils";
 
-import "./Celebrationboosterdetails.css";
-
 // Ideally move these to utils/apiconstants.js alongside your other endpoints
 const CELEBRATION_BOOSTER_API =
   "https://horaservices.com/api/celebration-booster/celebrationBoostersList";

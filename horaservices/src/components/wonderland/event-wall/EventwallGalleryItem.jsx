@@ -1,6 +1,5 @@
 import LazyVideo from "../../common/LazyVideo";
 import EventLazyImage from "../../common/EventLazyImage";
-import "../../common/EventLazyImage.css";
 import CircularLoader from "@/components/Gallery/CircularLoader";
 
 const EventwallGalleryItem = ({

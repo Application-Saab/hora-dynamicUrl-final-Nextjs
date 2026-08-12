@@ -1,7 +1,7 @@
 // src/components/PaginationControls.js
 "use client";
 import React from 'react';
-import './pagination.css'; // Assuming CSS is imported by ThumbnailGallery or globally
+// Assuming CSS is imported by ThumbnailGallery or globally
 
 const PaginationControls = ({ currentPage, totalPages, onPageChange, inline = false }) => {
   if (totalPages <= 1) {

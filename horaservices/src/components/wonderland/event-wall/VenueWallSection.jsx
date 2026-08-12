@@ -38,7 +38,6 @@ import {
   GET_ALL_VENUE_IMAGES,
   GET_VENUE_DETAILS_BY_ID,
 } from "@/utils/apiconstants";
-import "../../common/EventLazyImage.css";
 import VenueWallHeaderTabs from "./VenueWallHeaderTabs";
 import {
   deleteFromOPFS,
@@ -49,7 +48,6 @@ import {
 } from "@/utils/eventWallHelpers";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "../../../pages/weblink-gallery/gallery.css";
 import ImageGrid from "@/components/image-galleries/ImageGrid";
 import CommonImagePopup from "@/components/CommonImagePopup";
 import AddToFolderPopup from "@/components/image-galleries/AddToFolderPopup";

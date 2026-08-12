@@ -7,13 +7,11 @@ import Head from "next/head";
 import { BASE_URL, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPOINT } from '../../utils/apiconstants';
 import { PAYMENT, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import { Form, Dropdown } from 'react-bootstrap';
-import '../../css/decoration.css';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Loader from '../../components/Loader'
 import { pincodes } from "../../utils/pincodes.js"
 import OtpLoginPopup from "@/components/OtpLoginPopup";
-import "./photographyCheckout.css";
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
 import BackgroundDetails from "../../assets/BackgroundDetails.svg";
 import productsData from '../../utils/photoGraphyImages.js';

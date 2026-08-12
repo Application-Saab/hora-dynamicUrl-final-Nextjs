@@ -1,5 +1,4 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import "./invite.css";
 import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import InviteActions from "@/components/wonderland/common/InviteActions";
 import WhosJoining from "@/components/wonderland/rsvp/WhosJoining";

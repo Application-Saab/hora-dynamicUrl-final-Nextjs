@@ -2,7 +2,6 @@
 
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
-import "./Themeselector.css";
 import budgetfriendly from "@/assets/themeselector/budget-friendly.webp";
 import valueformoney from "@/assets/themeselector/value-for-money.webp";
 import photogenicdecoration from "@/assets/themeselector/photogenic-decoration.webp";

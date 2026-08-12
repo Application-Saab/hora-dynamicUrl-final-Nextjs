@@ -1,4 +1,3 @@
-import "./planningard.css";
 import Image from "next/image";
 
 const PlanningCard = ({

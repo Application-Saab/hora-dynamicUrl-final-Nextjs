@@ -5,8 +5,6 @@ import logoutImage from "@/assets/logouticon.svg";
 import ArrowImg from "@/assets/arrow.svg";
 import successImage from "@/assets/sucesslogin.svg";
 
-import "./logoutmodal.css";
-
 const LogoutModal = ({ isOpen, onClose, onLogoutConfirm }) => {
   const [step, setStep] = useState("confirm"); // confirm | success
 

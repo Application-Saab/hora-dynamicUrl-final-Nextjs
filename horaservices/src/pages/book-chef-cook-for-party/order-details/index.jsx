@@ -3,7 +3,6 @@ import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { Modal, Button, Row, Col, Spinner } from 'react-bootstrap';
 import orderWarning from "../../../assets/OrderWarning.png";
 import Popup from '../../../utils/popup';
-import '../../../css/chefOrder.css';
 import styled from 'styled-components';
 import SelectDishes from "../../../assets/selectDish.png";
 import SelectDateTime from "../../../assets/event2.png";

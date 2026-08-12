@@ -10,8 +10,6 @@ import CardSkeleton from "@/components/CardSkeleton";
 import SearchSortBar from "@/components/SearchSortBar";
 import SeoHead from "@/utils/SeoHead";
 import boosterBanner from "@/assets/celebrationboosters.webp"
-import "./celebrationbooster.css";
-
 // Ideally move this to utils/apiconstants.js alongside your other endpoints
 // (BASE_URL, GET_DECORATION_CAT_ITEM, etc.) instead of hardcoding it here.
 const CELEBRATION_BOOSTER_API =

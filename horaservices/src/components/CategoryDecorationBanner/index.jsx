@@ -4,8 +4,6 @@
 import Image from "next/image";
 import starSparkle from "@/assets/star-sparkle.svg";
 import heartStarGroup from "@/assets/heart-star-group.svg";
-import "./CategoryDecorationBanner.css";
-
 const categoryTitleMap = {
   "birthday-decoration": "Birthday Decoration",
   "premium-decoration": "Premium Decoration",

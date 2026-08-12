@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BASE_URL, BG_REMOVER_URL, GET_TEMPLATES_BY_ID, TEMPLATE_ASSESTS_URL_BASE } from "@/utils/apiconstants";
-import "./DynamicTemplateRenderer.css";
 import { dateFormatter } from "../../../../utils/dateTimeFormatters";
 import DefaultImageBgCircle from "../../../../../public/assets/templates/DefaultImageBgCircle.png";
 import CalendarModal from "@/components/wonderland/create-invite/CalendarModal";

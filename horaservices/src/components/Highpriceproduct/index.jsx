@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import fallbackImg from "@/assets/fallback-image.png";
-import "./highpriceproduct.css";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import CustomizationModal from "../CustomizationModal";
 import customizationIcon from "@/assets/customizatiton/Custmaizationicon.webp";

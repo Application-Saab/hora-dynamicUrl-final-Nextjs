@@ -1,4 +1,3 @@
-import "./instagramgalleryCTA.css";
 import Image from "next/image";
 import { FaInstagram, FaPlay } from "react-icons/fa";
 import video from "@/assets/poselink/video.mp4"

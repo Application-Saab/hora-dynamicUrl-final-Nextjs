@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "./whyHoraSection.css";
 import ExpertsDecoration from "@/assets/ExpertsDecoration.png";
 import SecureTransactions from "@/assets/SecureTransactions.png";
 import ServiceGuarantee from "@/assets/ServiceGuarantee.png";

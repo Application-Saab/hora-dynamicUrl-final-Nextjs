@@ -19,7 +19,6 @@ import separator from "../../../assets/separator.png";
 import InfoIcon from '../../../assets/info.png';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import '../../../css/chefOrder.css';
 import Head from 'next/head';
 import axiosApi from '@/utils/axiosApi';
 

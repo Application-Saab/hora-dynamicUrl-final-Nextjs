@@ -1,5 +1,5 @@
 import React from "react";
-import "./VideoTestimonial.css"; // CSS file
+// CSS file
 
 const VideoTestimonial = ({ title = "What Our Clients Say", videoSrc }) => {
   return (

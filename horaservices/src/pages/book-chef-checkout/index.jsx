@@ -11,7 +11,6 @@ import { BASE_URL, GET_ADDRESS_LIST, CONFIRM_ORDER_ENDPOINT, SAVE_LOCATION_ENDPO
 import { PAYMENT, PAYMENT_STATUS, API_SUCCESS_CODE } from '../../utils/apiconstants';
 import { Button, Card, Form } from 'react-bootstrap';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import '../../css/chefOrder.css';
 import SelectDishes from "../../assets/selectDish.png";
 import SelectDateTime from "../../assets/event2.png";
 import InfoIcon from '../../assets/info.png'

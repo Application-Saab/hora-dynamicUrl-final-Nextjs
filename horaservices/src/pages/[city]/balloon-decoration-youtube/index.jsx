@@ -14,15 +14,11 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import logo from '../../../assets/new_logo_light.png';
 import { useDispatch } from "react-redux";
-import '../../../css/decoration.css'
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Link from "next/link";
 import cityData from '../../../utils/cityData';
-import '../../../styles/homepage.css'
-
-
 const Decoration = () => {
 
 

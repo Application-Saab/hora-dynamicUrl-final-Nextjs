@@ -3,8 +3,6 @@ import DirectionsImage from "@/assets/wonderland/addressLocationIcon.svg";
 import Image from "next/image";
 import AlertIcon from "@/assets/wonderland/AlertIcon.svg";
 import ErrorPopup from "@/components/common/ErrorPopup";
-import "./VenueAddressSection.css";
-
 const VenueAddressSection = ({ eventData }) => {
   const [openLocationAlertModal, setOpenLocationAlertModal] = useState(false);
 

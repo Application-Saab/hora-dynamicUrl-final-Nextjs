@@ -8,7 +8,6 @@ import { faStar } from "@fortawesome/free-solid-svg-icons"
 import logo from '../../../../assets/new_logo_light.png';
 import CardSkeleton from "../../../../components/CardSkeleton";
 import { getDecorationCatOrganizationSchema } from "../../../../utils/schema";
-import '../../../../css/decoration.css';
 import { setState } from '../../../../actions/action';
 import { useDispatch } from 'react-redux';
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";

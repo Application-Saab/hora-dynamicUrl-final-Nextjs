@@ -1,6 +1,5 @@
 // src/CookingTimeIndicator.js
 import React from 'react';
-import './CookingTimeIndicator.css';
 import Image from 'next/image';
 
 const CookingTimeIndicator = ({ time }) => {

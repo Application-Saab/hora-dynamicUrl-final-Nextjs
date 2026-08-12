@@ -9,7 +9,6 @@ import {
   OTP_VERIFY_ENDPOINT,
   ASSIGN_USER_TO_TRACKINGS,
 } from "../utils/apiconstants";
-import "./login.css";
 import { useTimer } from "../utils/useTimer";
 import Image from "next/image";
 import loginImage from "../assets/sucesslogin.svg";

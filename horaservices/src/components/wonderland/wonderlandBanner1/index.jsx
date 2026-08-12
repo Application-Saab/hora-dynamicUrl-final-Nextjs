@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "./wonderlandbanner1.css"
 import WonderlandbannerImg from "@/assets/wonderland/wonderlandimagebanner.webp";
 import arrowIcon from "@/assets/arrowicon.svg";
 export default function CelebrationSection({onCreateInvite}) {

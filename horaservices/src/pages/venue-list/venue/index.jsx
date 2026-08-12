@@ -7,7 +7,6 @@
 // export default VenuePage;
 
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import "./venue.css";
 import InviteActions from "@/components/wonderland/common/InviteActions";
 import CreateInviteModal from "@/components/wonderland/create-invite/CreateInviteModal";
 import VenueWallSection from "@/components/wonderland/event-wall/VenueWallSection";

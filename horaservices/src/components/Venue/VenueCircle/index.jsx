@@ -1,5 +1,4 @@
 import Image from "next/image";
-import "./venuecircle.css";
 import { venueData } from "@/utils/venueCircleData.js";
 
 const VenueCircle = ({ active, onSelect }) => {

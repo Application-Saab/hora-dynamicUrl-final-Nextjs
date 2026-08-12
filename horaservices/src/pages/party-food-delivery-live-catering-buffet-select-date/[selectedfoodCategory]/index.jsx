@@ -16,7 +16,6 @@ import MinusIcon from "../../../assets/ic_minus.png";
 import PeopleIcon from "../../../assets/people.png";
 import InfoIcon from "../../../assets/info.png";
 import Image from "next/image";
-import "../../../css/chefOrder.css";
 import { safeGetItem } from "@/utils/safeStorage";
 
 const orangeColor = "#FF6F61";

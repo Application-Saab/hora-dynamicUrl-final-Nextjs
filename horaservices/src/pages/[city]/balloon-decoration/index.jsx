@@ -8,7 +8,6 @@ import { decCat } from "@/utils/decorationCategories";
 import cityData from "@/utils/cityData";
 import { useRouter } from "next/router";
 import React, { useEffect, useState, useCallback } from "react";
-import "../../../css/decoration.css";
 import FAQSection from "@/components/FAQSection";
 
 // URL ke pehle segment se city slug nikalo, jaise "/hyderabad/balloon-decoration" -> "hyderabad"

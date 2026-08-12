@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import Head from "next/head";
-import "./Eventdatebanner.css";
 import calendarBgimage from "@/assets/calendarBgimage.webp";
 import calendarBarBgimage from "@/assets/calendarBarBgimage.webp";
 import plannerImage from "@/assets/Planner.webp";

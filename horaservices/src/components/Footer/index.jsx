@@ -5,7 +5,6 @@ import horaFooterImage from '../../assets/hora-footer-bg.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { Container, Row, Col } from 'react-bootstrap';
-import './footer.css';
 import Link from "next/link";
 import { useCity } from "@/utils/cityContext";
 

@@ -8,7 +8,6 @@ import Link from "next/link";
 import Image from "next/image";
 // import styles from "../../app/page.module.css"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../../styles/customGlobal.css';
 import Slider from 'react-slick'; 
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
@@ -17,7 +16,6 @@ import PhotographyIcon from '../../assets/photography_icon.png';
 import FoodIcon from '../../assets/food_icon.png';
 import { sendGTMEvent  } from '@next/third-parties/google';
 
-import '../../styles/homepage.css'
 import axiosApi from "@/utils/axiosApi";
 import { safeGetItem } from "@/utils/safeStorage";
 // remove later

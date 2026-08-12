@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import "./topbanner.css";
 import { FaHeart } from "react-icons/fa";
 
 const TopBanner = ({

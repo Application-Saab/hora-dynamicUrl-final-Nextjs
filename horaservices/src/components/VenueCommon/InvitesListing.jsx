@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./venuelist.css";
 import VenueAmenityBar from "../Venue/VenueAmenityBar";
 import vegIcon from "@/assets/veg.svg";
 import nonVegIcon from "@/assets/nonveg.svg";

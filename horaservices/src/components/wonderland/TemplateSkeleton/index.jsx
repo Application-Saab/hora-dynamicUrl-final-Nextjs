@@ -1,6 +1,4 @@
 import React from "react";
-import "./TemplateSkeleton.css";
-
 const TemplateSkeleton = ({ onlyCards = false }) => {
   return (
     <div className="tempskeleton-container">

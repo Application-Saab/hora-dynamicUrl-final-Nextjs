@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import CommonPopup from "@/components/CommonPop";
-import "@/components/Gallery/headerCards.css";
 import allPhotos from "@/assets/allPhotos.svg";
 import myPhoto from "../../../assets/myPhotos.svg";
 import user2 from "@/assets/user2.svg";

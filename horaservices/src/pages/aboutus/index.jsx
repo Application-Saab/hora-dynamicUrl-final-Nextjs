@@ -4,7 +4,6 @@ import how_1 from '../../assets/how_1.webp';
 import how_2 from '../../assets/how_2.webp';
 import how_3 from "../../assets/how_3.webp";
 import Image from "next/image";
-import '../../pages/aboutus/aboutus.css';
 import Head from "next/head";
 
 const AboutUs = () => {

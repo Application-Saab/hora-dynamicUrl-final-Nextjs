@@ -1,6 +1,5 @@
 
 import React from "react";
-import "./finalInvteDisplay.css";
 import Head from "next/head";
 import Image from "next/image";
 import imageBackground from "@/assets/imageBackground.jpg";

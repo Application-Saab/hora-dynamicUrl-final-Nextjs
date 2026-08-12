@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import "./guestlistbanner.css";
 import guestImg from "@/assets/wonderland/guestlistbanner.webp";
 import arrowIcon from "@/assets/arrowicon.svg";
 const GuestListBanner = ({onCreateInvite}) => {

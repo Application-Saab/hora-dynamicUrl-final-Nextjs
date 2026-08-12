@@ -2,7 +2,6 @@ import Index from "@/pages/photography-page";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import cityData from "@/utils/cityData";
-import "../../../styles/homepage.css";
 import {faqData} from "@/utils/photographyFAQData";
 import PhotographyDescription from "@/components/PhotographyDescription";
 import PhotographySEOKeywords from "@/components/PhotographySEOKeywords";

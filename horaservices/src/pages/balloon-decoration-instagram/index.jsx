@@ -12,9 +12,7 @@
 // import Image from "next/image";
 // import logo from '../../assets/new_logo_light.png';
 // import { useDispatch } from "react-redux";
-// import '../../css/decoration.css';
-// import '../../components/DecorationLandingSlider/decorationladingslider.css';
-// import DecorationLandingSlider from  '../../components/DecorationLandingSlider';
+// // // import DecorationLandingSlider from  '../../components/DecorationLandingSlider';
 // import HaldiImage from '../../assets/HaldiImage.png';
 // import MehendiImage from '../../assets/MehendiImage.png';
 // import BacheloretteImage from '../../assets/Bachelorette.jpg';

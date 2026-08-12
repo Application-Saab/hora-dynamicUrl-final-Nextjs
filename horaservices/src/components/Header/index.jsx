@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import "./header.css";
 import { usePathname, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
@@ -11,10 +10,10 @@ import logo from "../../assets/new_logo_light.png";
 import MobileDrawer from "./MobileDrawer";
 import DesktopMenu from "./DesktopMenu";
 import OtploginPopup from "../OtpLoginPopup";
-import LogoutModal from "@/utils/logoutmodal.css";
 import cityNameToSlug from "../../utils/Citynametoslug.json";
 import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
+import LogoutModal from "@/utils/LogoutModal";
 
 const CITY_LIST = Object.values(cityNameToSlug);
 

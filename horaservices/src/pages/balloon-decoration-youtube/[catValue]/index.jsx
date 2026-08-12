@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons"
 import CardSkeleton from "../../../components/CardSkeleton";
 import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
-import '../../../css/decoration.css';
 import { setState } from '../../../actions/action';
 import { useDispatch } from 'react-redux';
 import { useRouter } from "next/router";

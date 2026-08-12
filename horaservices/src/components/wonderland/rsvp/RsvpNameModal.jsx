@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import LocationIcon from "@/assets/wonderland/LocationGradientIcon.svg";
 import Image from "next/image";
-import "../create-invite/CreateInviteModal.css";
 import CustomButton from "../common/CustomButton";
 import CustomModal from "../common/CustomModal";
 

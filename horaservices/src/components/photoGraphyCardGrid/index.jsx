@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import "./photoGraphyCardgrid.css";
 import React from "react";
 
 const PhotoGraphyCard = ({

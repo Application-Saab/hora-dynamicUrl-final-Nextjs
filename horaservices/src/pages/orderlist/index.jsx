@@ -9,7 +9,6 @@ import executerDetails from "../../assets/executerDetails.png";
 import dangerImage from "../../assets/danger.png";
 import Popup from "../../utils/popup";
 import OtpLoginPopup from '../../components/OtpLoginPopup';
-import './orderlist.css';
 import Head from "next/head";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";

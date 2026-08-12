@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import "./GroupsList.css";
 import Image from "next/image";
-import "../wonderland/EventInvitation.css";
 import PinBanner from "../../assets/pinBanner.jpg";
 import SearchIcon from "@/assets/wonderland/chat/SearchIcon.svg";
 import { useRouter } from "next/router";

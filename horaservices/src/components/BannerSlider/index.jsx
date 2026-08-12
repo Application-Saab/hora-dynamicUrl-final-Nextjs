@@ -4,9 +4,7 @@
 // import { Pagination, Autoplay } from 'swiper/modules';
 // import 'swiper/css';
 // import 'swiper/css/pagination';
-// import './BannerSlider.css';
-
-// const BannerSlider = ({ images = [] }) => {
+// // const BannerSlider = ({ images = [] }) => {
 //   return (
 //     <div className="banner-slider-container">
      
@@ -41,7 +39,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import './BannerSlider.css';
 import { useRouter } from 'next/navigation';
 
  

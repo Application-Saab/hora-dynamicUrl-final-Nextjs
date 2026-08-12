@@ -5,8 +5,6 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
-import "./CategoryTabs.css";
-
 const CategoryTabs = ({
   data,
   city = "",

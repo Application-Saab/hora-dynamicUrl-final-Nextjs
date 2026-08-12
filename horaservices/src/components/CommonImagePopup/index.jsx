@@ -5,8 +5,6 @@ import ArrowImg from "../../assets/arrow.svg";
 import nextIcon from "../../assets/nextIcon.svg";
 import Image from "next/image";
 import Crossicon from "../../assets/Crossicon.svg";
-import "./commonPopup.css";
-
 const PrevArrow = ({ className, onClick }) => (
   <div className={`${className} custom-arrow prev-arrow`} onClick={onClick}>
     <Image src={ArrowImg} alt="Back" width={30} height={30} />

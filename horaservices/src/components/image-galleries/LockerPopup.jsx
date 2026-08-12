@@ -4,8 +4,6 @@ import eyeIcon from "../../assets/eye-icon.svg";
 import shieldIcon from "../../assets/Shield-icon.svg";
 import lockIcon from "../../assets/themeLock.svg";
 
-import "./LockerPopup.css";
-
 const LockerPopup = ({ onClose, onMoveToLocker }) => {
   return (
     <div className="locker-overlay">

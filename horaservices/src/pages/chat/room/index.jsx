@@ -1,7 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import "../GroupsList.css";
 import EmojiPickerButton from "@/components/EmojiPicker";
 import emojiIcon from "@/assets/wonderland/chat/Emoji.svg";
 import keyboardIcon from "@/assets/wonderland/chat/keyboardIcon.svg";

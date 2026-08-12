@@ -3,7 +3,6 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import Slider from "react-slick";
 import Image from 'next/image';
 
-import './gallery.css';
 import photogallryIcon from '../../assets/gallry-loading.gif';
 import LazyImage from '../../components/LazyImage';
 import PaginationControls from '../../components/PaginationControls';

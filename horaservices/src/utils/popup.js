@@ -1,6 +1,5 @@
 import React from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import "../css/popup.css";
 import orderWarning from "../assets/OrderWarning.png"
 
   import imageivew from '../assets/logout.png';

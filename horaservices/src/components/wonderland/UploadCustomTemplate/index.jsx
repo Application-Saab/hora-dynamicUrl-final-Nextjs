@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { BASE_URL } from "@/utils/apiconstants";
 import { saveTemplate } from "@/utils/indexedDB";
 import CustomButton from "@/components/wonderland/common/CustomButton";
-import "./UploadCustomTemplate.css";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const UploadCustomTemplate = ({

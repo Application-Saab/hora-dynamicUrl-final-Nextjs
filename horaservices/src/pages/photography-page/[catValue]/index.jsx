@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
 import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
 import CardSkeleton from "@/components/CardSkeleton";

@@ -2,8 +2,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { getPhotographyOrganizationSchema } from "../../utils/schema";
 import dynamic from "next/dynamic";
-import "./photo.css";
-
 import PhotoBanner from "../../assets/PhotoBanner.jpg";
 import Banner1 from "../../assets/banner1.webp";
 import Banner2 from "../../assets/Banner2.webp";

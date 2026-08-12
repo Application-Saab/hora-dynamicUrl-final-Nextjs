@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { FaPlayCircle } from "react-icons/fa";
-import "./LazyVideo.css";
-
 const LazyVideo = ({
   previewSrc,
   fullVideoSrc,

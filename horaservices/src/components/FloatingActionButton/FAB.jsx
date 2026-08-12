@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaEdit } from 'react-icons/fa';
-import './FloatingEditButton.css'; // You'll create this CSS file
+// You'll create this CSS file
 import editIcon from "../../assets/icon.jpeg"
 import Image from "next/image";
 const FloatingEditButton = ({ onClick }) => {

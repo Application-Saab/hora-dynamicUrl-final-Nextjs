@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import "./FilterBar.css";
-
 const FilterBar = ({ priceFilter, setPriceFilter }) => {
   const barRef = useRef(null);
   const [isFixed, setIsFixed] = useState(false);

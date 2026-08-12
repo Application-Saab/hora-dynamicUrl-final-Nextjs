@@ -1,6 +1,4 @@
 import Image from "next/image";
-import "./topbanner.css";
-
 const TopBanner = ({ image, alt = "Banner" }) => {
   return (
  

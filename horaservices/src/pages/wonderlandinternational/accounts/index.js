@@ -5,16 +5,15 @@ import {
 } from "@/utils/apiconstants";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import "./AccountsPage.css";
 import ArrowIcon from "@/assets/forward_arrow.svg";
 import CallIcon from "@/assets/call_icon.svg";
 import LogoutIcon from "@/assets/logout_icon.svg";
 import myordericon from "@/assets/Myordersicon.png";
 import { useUserDetailsStore } from "@/hooks/UserDetailsContext";
 import LoginModal from "@/components/wonderland/common/login/LoginModal";
-import LogoutModal from "@/utils/logoutmodal.css";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
+import LogoutModal from "@/utils/LogoutModal";
 
 const AccountPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

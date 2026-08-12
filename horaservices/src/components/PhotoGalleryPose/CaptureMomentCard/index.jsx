@@ -1,5 +1,3 @@
-import "./capturemomentcard.css";
-
 const CaptureMomentCard = ({
   title = "Let's Capture your special moment",
   subtitle = "Love These poses?",

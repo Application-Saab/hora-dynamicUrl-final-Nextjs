@@ -1,7 +1,6 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import "./ReviewSection.css";
 import "swiper/css";
 
 const getStars = (rating) => {

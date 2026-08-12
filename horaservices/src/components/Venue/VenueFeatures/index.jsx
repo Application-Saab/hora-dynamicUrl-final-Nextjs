@@ -3,8 +3,6 @@ import verifiedIcon from "@/assets/venuelanding/verified.svg";
 import supportIcon from "@/assets/venuelanding/support.svg";
 import priceIcon from "@/assets/venuelanding/price.svg";
 import bookingIcon from "@/assets/venuelanding/booking.svg";
-import "./venuefeatures.css";
-
 const features = [
   {
     icon: verifiedIcon,

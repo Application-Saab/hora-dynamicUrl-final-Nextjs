@@ -3,8 +3,6 @@
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { getCategorySlugFromPath } from "@/utils/getCategorySlugFromPath";
-import "./DecorGrid.css";
-
 const DecorGrid = ({ largeCard, smallCards, city = "", locality = "", decCat = [] }) => {
   const router = useRouter();
   const pathname = usePathname();

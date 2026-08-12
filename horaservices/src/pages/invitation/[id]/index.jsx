@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import "../invitation.css";
 import { fetchWithError } from "@/utils/fetchWithError";
 
 const products = [

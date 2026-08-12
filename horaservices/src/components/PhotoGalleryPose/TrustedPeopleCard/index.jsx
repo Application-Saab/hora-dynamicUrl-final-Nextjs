@@ -1,4 +1,3 @@
-import "./trustedpeoplecard.css";
 import Image from "next/image";
 import camera from "@/assets/poselink/Camera.svg";
 import star from "@/assets/poselink/Star.svg";

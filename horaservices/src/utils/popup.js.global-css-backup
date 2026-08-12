@@ -1,0 +1,141 @@
+import React from "react";
+import { AiOutlineClose } from "react-icons/ai";
+import "../css/popup.css";
+import orderWarning from "../assets/OrderWarning.png"
+
+  import imageivew from '../assets/logout.png';
+import Image from "next/image";
+
+const Popup = ({
+  onClose,
+  popupMessage,
+  primaryButtonAction = () => {},
+
+  overlayClass = "",
+  contentClass = "",
+  bodyClass = "",
+  titleClass = "",
+  textClass = "",
+  buttonClass = "",
+  imageClass = "",
+}) => {
+
+  const handleContinue = () => {
+    onClose();
+  };
+
+  const handleContactUs = () => {
+    window.open(
+      "https://wa.me/+917338584828/?text=Hello%20I%20have%20some%20queries%20for%20food%20delivey%20and%20live%20Catering%20service"
+    );
+    onClose();
+  };
+
+  const handleAddMore = () => {
+    onClose();
+  };
+
+  const handleOk = () => {
+    onClose();
+  };
+  const handleCallExecutor = () => {
+    if (popupMessage?.onButtonClick && popupMessage.executorPhone) {
+      popupMessage.onButtonClick(popupMessage.executorPhone); 
+    }
+    onClose();
+  };
+  const cancleOrder = () => {
+    primaryButtonAction();
+    onClose();
+  };
+
+  return (
+    <div className={`popup-overlay ${overlayClass}`}>
+      <div className={`popup-content ${contentClass}`}>
+        <div className="logout-popup-header">
+          <AiOutlineClose className="close-icon" onClick={onClose} size={20} />
+        </div>
+
+        <div className={`popup-body ${bodyClass}`}>
+
+          {popupMessage?.img ? (
+            <Image
+              src={popupMessage.img}
+              alt="Popup"
+              className={`popup-image ${imageClass}`}
+            />
+          ) : (
+            <Image
+              src={imageivew}
+              alt="Default"
+              className={`popup-image ${imageClass}`}
+            />
+          )}
+{popupMessage?.rating && (
+  <p className="rating-text">
+    Rating : {popupMessage.rating}
+  </p>
+)}
+          <h1>{popupMessage?.title}</h1>
+          <p>{popupMessage?.body}</p>
+          {popupMessage?.button == "Continue" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleContinue}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
+          {popupMessage?.button == "Contact Us" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleContactUs}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
+          {popupMessage?.button == "Add More" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleAddMore}
+            >
+              + {popupMessage?.button}
+            </button>
+          )}
+
+          {popupMessage?.button === "OK" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleOk}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
+          {popupMessage?.button === "Call Vendor" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={handleCallExecutor}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
+          {popupMessage?.button === "Yes ,Cancel Order" && (
+            <button
+              className={`add-more-button ${buttonClass}`}
+              onClick={cancleOrder}
+            >
+              {popupMessage?.button}
+            </button>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Popup;
