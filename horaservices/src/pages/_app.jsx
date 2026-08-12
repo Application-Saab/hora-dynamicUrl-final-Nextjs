@@ -204,10 +204,17 @@ function MyApp({ Component, pageProps }) {
       );
     };
     router.events.on("routeChangeStart", saveScroll);
-    window.addEventListener("beforeunload", saveScroll);
+
+    // 🔑 MOBILE FIX: "pagehide" use karo, "beforeunload" nahi.
+    // beforeunload listener hone se iOS Safari aur modern mobile Chrome
+    // page ko bfcache (fast back/forward cache) se DISQUALIFY kar dete
+    // hain — jisse mobile pe back navigation slow/inconsistent ho jaata
+    // hai. pagehide same kaam karta hai, bina bfcache todte hue.
+    window.addEventListener("pagehide", saveScroll);
+
     return () => {
       router.events.off("routeChangeStart", saveScroll);
-      window.removeEventListener("beforeunload", saveScroll);
+      window.removeEventListener("pagehide", saveScroll);
     };
   }, [router]);
 
@@ -225,117 +232,160 @@ function MyApp({ Component, pageProps }) {
       j.async = true;
       j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
       f.parentNode.insertBefore(j, f);
-      console.log("GTM Script Loaded"); // Debugging log
+      console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, []);
 
-// ================= SCROLL: restore on back/forward, top on normal nav =================
-useLayoutEffect(() => {
-  document.body.style.position = "";
-  document.body.style.top = "";
-  document.body.style.overflow = "";
+  // ================= SCROLL: restore on back/forward, top on normal nav =================
+  useLayoutEffect(() => {
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.overflow = "";
 
-  const wasPop = isPopRef.current;
-  isPopRef.current = false;
+    const wasPop = isPopRef.current;
+    isPopRef.current = false;
 
-  document.documentElement.style.visibility = "hidden";
+    document.documentElement.style.visibility = "hidden";
 
-  const instantScrollTo = (y) => {
-    window.scrollTo({ top: y, left: 0, behavior: "instant" });
-  };
-
-  if (wasPop) {
-    const saved = sessionStorage.getItem(`scrollPos:${router.asPath}`);
-    const targetY = saved ? parseInt(saved, 10) : 0;
-
-    let revealed = false;
-    let done = false;
-    const startTime = Date.now();
-    const maxDuration = 20000;
-
-    const reveal = () => {
-      if (!revealed) {
-        revealed = true;
-        document.documentElement.style.visibility = "visible";
-      }
+    const instantScrollTo = (y) => {
+      window.scrollTo({ top: y, left: 0, behavior: "instant" });
     };
 
-    const stopCorrecting = () => {
-      if (done) return;
-      done = true;
-      ro.disconnect();
-      reveal();
-      clearTimeout(settleTimer);
-      clearTimeout(revealFallback);
-      clearTimeout(hardStop);
-      removeUserInteractionListeners();
-    };
+    if (wasPop) {
+      const saved = sessionStorage.getItem(`scrollPos:${router.asPath}`);
+      const targetY = saved ? parseInt(saved, 10) : 0;
 
-    const userInteractionEvents = ["wheel", "touchstart", "pointerdown", "keydown"];
-    const handleUserInteraction = () => stopCorrecting();
-    const addUserInteractionListeners = () => {
-      userInteractionEvents.forEach((evt) =>
-        window.addEventListener(evt, handleUserInteraction, { passive: true })
-      );
-    };
-    const removeUserInteractionListeners = () => {
-      userInteractionEvents.forEach((evt) =>
-        window.removeEventListener(evt, handleUserInteraction)
-      );
-    };
-    addUserInteractionListeners();
+      let revealed = false;
+      let done = false;
+      const startTime = Date.now();
+      const maxDuration = 20000; // infinite-scroll/auto-pagination pages ke liye generous cap
 
-    instantScrollTo(targetY);
+      const reveal = () => {
+        if (!revealed) {
+          revealed = true;
+          document.documentElement.style.visibility = "visible";
+        }
+      };
 
-    const isTallEnough = () =>
-      document.documentElement.scrollHeight - window.innerHeight >= targetY;
+      const isTallEnough = () =>
+        document.documentElement.scrollHeight - window.innerHeight >= targetY;
 
-    let settleTimer = null;
-    const SETTLE_MS = 1500;
+      let settleTimer = null;
+      const SETTLE_MS = 1500;
 
-    const ro = new ResizeObserver(() => {
-      if (done) return;
+      let ro = null;
+      let revealFallback = null;
+      let hardStop = null;
+
+      const removeUserInteractionListeners = () => {
+        userInteractionEvents.forEach((evt) =>
+          window.removeEventListener(evt, handleUserInteraction)
+        );
+      };
+
+      // ================= CONTENT-READY EVENT (naya) =================
+      // Pages (jaise DecorationCatPage) jab apna data-fetch / cache-hydrate
+      // complete kar lete hain, tab "page-content-ready" event dispatch
+      // karte hain. Hum uska wait karte hain, isse pehle blind revealFallback
+      // timer premature reveal karke "footer dikhta hai fir jump hota hai"
+      // wala bug create karta tha.
+      const onContentReady = () => {
+        if (!revealed) {
+          instantScrollTo(targetY);
+          reveal();
+        }
+      };
+      window.addEventListener("page-content-ready", onContentReady, {
+        once: true,
+      });
+
+      const stopCorrecting = () => {
+        if (done) return;
+        done = true;
+        if (ro) ro.disconnect();
+        reveal();
+        clearTimeout(settleTimer);
+        clearTimeout(revealFallback);
+        clearTimeout(hardStop);
+        window.removeEventListener("page-content-ready", onContentReady);
+        removeUserInteractionListeners();
+      };
+
+      // 🔑 MOBILE FIX: iOS/Android ka "back-swipe gesture" khud ek touch
+      // hai — page load hote hi uska residual touchstart naye page par
+      // fire ho sakta hai. Agar hum "touchstart" par hi turant correction
+      // cancel kar dete, to woh gesture hi galti se "user ne khud scroll
+      // karna chaha" maan liya jaata aur position kabhi sahi set hi nahi
+      // hoti. Isliye:
+      //  1) "touchstart" ki jagah "touchmove" use karte hain — matlab
+      //     sirf tab cancel hoga jab user ne SACH MEIN finger drag/scroll
+      //     kiya ho, sirf tap/gesture-release se nahi.
+      //  2) In listeners ko turant attach nahi karte — ek chhoti si
+      //     grace period (350ms) dete hain taaki back-gesture ka
+      //     residual touch guzar jaaye, uske baad hi genuine user-scroll
+      //     ko sunna shuru karte hain.
+      const userInteractionEvents = ["wheel", "touchmove", "pointerdown", "keydown"];
+      const handleUserInteraction = () => stopCorrecting();
+
+      let interactionListenerTimer = setTimeout(() => {
+        userInteractionEvents.forEach((evt) =>
+          window.addEventListener(evt, handleUserInteraction, { passive: true })
+        );
+      }, 350);
+
       instantScrollTo(targetY);
 
-      if (isTallEnough()) {
-        reveal();
-      }
+      ro = new ResizeObserver(() => {
+        if (done) return;
+        instantScrollTo(targetY);
 
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(() => {
         if (isTallEnough()) {
+          reveal();
+        }
+
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(() => {
+          if (isTallEnough()) {
+            stopCorrecting();
+          }
+        }, SETTLE_MS);
+
+        if (Date.now() - startTime > maxDuration) {
           stopCorrecting();
         }
-      }, SETTLE_MS);
+      });
 
-      if (Date.now() - startTime > maxDuration) {
+      ro.observe(document.body);
+
+      // ================= SAFETY-NET (badla hua) =================
+      // Yeh ab primary reveal-trigger NAHI hai — "page-content-ready"
+      // event hi primary trigger hai. Yeh sirf un pages ke liye fallback
+      // hai jo woh event kabhi fire nahi karte (taaki page hamesha ke
+      // liye hidden na reh jaaye). Isliye time badha diya (800ms -> 1500ms).
+      revealFallback = setTimeout(() => {
+        instantScrollTo(targetY);
+        reveal();
+      }, 1500);
+
+      hardStop = setTimeout(() => {
         stopCorrecting();
-      }
-    });
+      }, maxDuration);
 
-    ro.observe(document.body);
+      return () => {
+        clearTimeout(interactionListenerTimer);
+        if (ro) ro.disconnect();
+        clearTimeout(settleTimer);
+        clearTimeout(revealFallback);
+        clearTimeout(hardStop);
+        window.removeEventListener("page-content-ready", onContentReady);
+        removeUserInteractionListeners();
+      };
+    } else {
+      instantScrollTo(0);
+      document.documentElement.style.visibility = "visible";
+    }
+  }, [router.asPath]);
 
-    const revealFallback = setTimeout(() => {
-      instantScrollTo(targetY);
-      reveal();
-    }, 800);
-
-    const hardStop = setTimeout(() => {
-      stopCorrecting();
-    }, maxDuration);
-
-    return () => {
-      ro.disconnect();
-      clearTimeout(settleTimer);
-      clearTimeout(revealFallback);
-      clearTimeout(hardStop);
-      removeUserInteractionListeners();
-    };
-  } else {
-    instantScrollTo(0);
-    document.documentElement.style.visibility = "visible";
-  }
-}, [router.asPath]);
   return (
     <>
       <Head>

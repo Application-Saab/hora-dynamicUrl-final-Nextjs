@@ -315,6 +315,9 @@ const DecorationCatPage = ({ locality }) => {
       setLoading(false);
       setIsInitialLoad(false);
       hasHydratedFromCache.current = true;
+       if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("page-content-ready"));
+  }
       return; // getSubCatId API call bhi skip
     }
 
@@ -469,7 +472,7 @@ const DecorationCatPage = ({ locality }) => {
     }
   });
 
-  const getSubCatItems = async (page) => {
+const getSubCatItems = async (page) => {
     if (!catId) return;
 
     try {
@@ -555,16 +558,28 @@ const DecorationCatPage = ({ locality }) => {
         setHasMore(page < response.data.pagination.totalPages);
       }
     } catch (error) {
+      // 👇 NAYA: error ho jaaye tab bhi page-1 ke case mein event fire karo,
+      // warna page hamesha ke liye hidden reh jaayega (sirf safety-net
+      // timer se hi reveal hoga, jo 1500ms baad hai)
+      if (page === 1 && typeof window !== "undefined") {
+        window.dispatchEvent(new Event("page-content-ready"));
+      }
     } finally {
       if (page === 1) {
         setLoading(false);
+
+        // 👇 NAYA: page-1 ka data successfully aa gaya, ab _app.tsx ko
+        // batao reveal karne ke liye
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("page-content-ready"));
+        }
       } else {
         setIsPaginating(false);
       }
       setIsInitialLoad(false);
     }
   };
-
+  
   function trimText(text) {
     if (text.length > 60) {
       return text.slice(0, 60) + "...";
