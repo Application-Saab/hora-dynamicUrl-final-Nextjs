@@ -1,5 +1,5 @@
 // pages/_app.tsx
-import React, { useEffect, useState, useLayoutEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -22,6 +22,7 @@ import { safeGetItem } from "@/utils/safeStorage";
 import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorReporter";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -31,24 +32,8 @@ function MyApp({ Component, pageProps }) {
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
   );
 
-  // ================= SCROLL RESTORATION: track back/forward vs normal nav =================
-  const isPopRef = useRef(false);
-
-  // ================= DISABLE BROWSER'S NATIVE SCROLL RESTORATION =================
-  // Yeh zaroori hai - browser khud bhi popstate par scroll restore karne ki
-  // koshish karta hai, jo humare manual restore se takra kar "top phir sahi
-  // position" wala double-jump/flicker banata hai. Isse off karke sirf hum
-  // control karenge.
-  useEffect(() => {
-    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
-    }
-    return () => {
-      if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
-        window.history.scrollRestoration = "auto";
-      }
-    };
-  }, []);
+  // ================= SCROLL RESTORATION (moved to hooks/useScrollRestoration.js) =================
+  useScrollRestoration(router);
 
   // ================= GLOBAL ERROR HANDLERS =================
   useEffect(() => {
@@ -187,37 +172,6 @@ function MyApp({ Component, pageProps }) {
     setCurrentUrl(router.asPath);
   }, [router.asPath]);
 
-  // ================= DETECT BACK/FORWARD NAVIGATION (vs normal link click) =================
-  useEffect(() => {
-    router.beforePopState(() => {
-      isPopRef.current = true;
-      return true;
-    });
-  }, [router]);
-
-  // ================= SAVE SCROLL POSITION BEFORE LEAVING A ROUTE =================
-  useEffect(() => {
-    const saveScroll = () => {
-      sessionStorage.setItem(
-        `scrollPos:${router.asPath}`,
-        String(window.scrollY)
-      );
-    };
-    router.events.on("routeChangeStart", saveScroll);
-
-    // 🔑 MOBILE FIX: "pagehide" use karo, "beforeunload" nahi.
-    // beforeunload listener hone se iOS Safari aur modern mobile Chrome
-    // page ko bfcache (fast back/forward cache) se DISQUALIFY kar dete
-    // hain — jisse mobile pe back navigation slow/inconsistent ho jaata
-    // hai. pagehide same kaam karta hai, bina bfcache todte hue.
-    window.addEventListener("pagehide", saveScroll);
-
-    return () => {
-      router.events.off("routeChangeStart", saveScroll);
-      window.removeEventListener("pagehide", saveScroll);
-    };
-  }, [router]);
-
   // ================= GOOGLE TAG MANAGER (LOADS ONLY ONCE) =================
   useEffect(() => {
     (function (w, d, s, l, i) {
@@ -235,156 +189,6 @@ function MyApp({ Component, pageProps }) {
       console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
   }, []);
-
-  // ================= SCROLL: restore on back/forward, top on normal nav =================
-  useLayoutEffect(() => {
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.overflow = "";
-
-    const wasPop = isPopRef.current;
-    isPopRef.current = false;
-
-    document.documentElement.style.visibility = "hidden";
-
-    const instantScrollTo = (y) => {
-      window.scrollTo({ top: y, left: 0, behavior: "instant" });
-    };
-
-    if (wasPop) {
-      const saved = sessionStorage.getItem(`scrollPos:${router.asPath}`);
-      const targetY = saved ? parseInt(saved, 10) : 0;
-
-      let revealed = false;
-      let done = false;
-      const startTime = Date.now();
-      const maxDuration = 20000; // infinite-scroll/auto-pagination pages ke liye generous cap
-
-      const reveal = () => {
-        if (!revealed) {
-          revealed = true;
-          document.documentElement.style.visibility = "visible";
-        }
-      };
-
-      const isTallEnough = () =>
-        document.documentElement.scrollHeight - window.innerHeight >= targetY;
-
-      let settleTimer = null;
-      const SETTLE_MS = 1500;
-
-      let ro = null;
-      let revealFallback = null;
-      let hardStop = null;
-
-      const removeUserInteractionListeners = () => {
-        userInteractionEvents.forEach((evt) =>
-          window.removeEventListener(evt, handleUserInteraction)
-        );
-      };
-
-      // ================= CONTENT-READY EVENT (naya) =================
-      // Pages (jaise DecorationCatPage) jab apna data-fetch / cache-hydrate
-      // complete kar lete hain, tab "page-content-ready" event dispatch
-      // karte hain. Hum uska wait karte hain, isse pehle blind revealFallback
-      // timer premature reveal karke "footer dikhta hai fir jump hota hai"
-      // wala bug create karta tha.
-      const onContentReady = () => {
-        if (!revealed) {
-          instantScrollTo(targetY);
-          reveal();
-        }
-      };
-      window.addEventListener("page-content-ready", onContentReady, {
-        once: true,
-      });
-
-      const stopCorrecting = () => {
-        if (done) return;
-        done = true;
-        if (ro) ro.disconnect();
-        reveal();
-        clearTimeout(settleTimer);
-        clearTimeout(revealFallback);
-        clearTimeout(hardStop);
-        window.removeEventListener("page-content-ready", onContentReady);
-        removeUserInteractionListeners();
-      };
-
-      // 🔑 MOBILE FIX: iOS/Android ka "back-swipe gesture" khud ek touch
-      // hai — page load hote hi uska residual touchstart naye page par
-      // fire ho sakta hai. Agar hum "touchstart" par hi turant correction
-      // cancel kar dete, to woh gesture hi galti se "user ne khud scroll
-      // karna chaha" maan liya jaata aur position kabhi sahi set hi nahi
-      // hoti. Isliye:
-      //  1) "touchstart" ki jagah "touchmove" use karte hain — matlab
-      //     sirf tab cancel hoga jab user ne SACH MEIN finger drag/scroll
-      //     kiya ho, sirf tap/gesture-release se nahi.
-      //  2) In listeners ko turant attach nahi karte — ek chhoti si
-      //     grace period (350ms) dete hain taaki back-gesture ka
-      //     residual touch guzar jaaye, uske baad hi genuine user-scroll
-      //     ko sunna shuru karte hain.
-      const userInteractionEvents = ["wheel", "touchmove", "pointerdown", "keydown"];
-      const handleUserInteraction = () => stopCorrecting();
-
-      let interactionListenerTimer = setTimeout(() => {
-        userInteractionEvents.forEach((evt) =>
-          window.addEventListener(evt, handleUserInteraction, { passive: true })
-        );
-      }, 350);
-
-      instantScrollTo(targetY);
-
-      ro = new ResizeObserver(() => {
-        if (done) return;
-        instantScrollTo(targetY);
-
-        if (isTallEnough()) {
-          reveal();
-        }
-
-        clearTimeout(settleTimer);
-        settleTimer = setTimeout(() => {
-          if (isTallEnough()) {
-            stopCorrecting();
-          }
-        }, SETTLE_MS);
-
-        if (Date.now() - startTime > maxDuration) {
-          stopCorrecting();
-        }
-      });
-
-      ro.observe(document.body);
-
-      // ================= SAFETY-NET (badla hua) =================
-      // Yeh ab primary reveal-trigger NAHI hai — "page-content-ready"
-      // event hi primary trigger hai. Yeh sirf un pages ke liye fallback
-      // hai jo woh event kabhi fire nahi karte (taaki page hamesha ke
-      // liye hidden na reh jaaye). Isliye time badha diya (800ms -> 1500ms).
-      revealFallback = setTimeout(() => {
-        instantScrollTo(targetY);
-        reveal();
-      }, 1500);
-
-      hardStop = setTimeout(() => {
-        stopCorrecting();
-      }, maxDuration);
-
-      return () => {
-        clearTimeout(interactionListenerTimer);
-        if (ro) ro.disconnect();
-        clearTimeout(settleTimer);
-        clearTimeout(revealFallback);
-        clearTimeout(hardStop);
-        window.removeEventListener("page-content-ready", onContentReady);
-        removeUserInteractionListeners();
-      };
-    } else {
-      instantScrollTo(0);
-      document.documentElement.style.visibility = "visible";
-    }
-  }, [router.asPath]);
 
   return (
     <>

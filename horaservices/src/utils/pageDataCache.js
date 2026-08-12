@@ -1,21 +1,14 @@
 // utils/pageDataCache.js
 //
-// Simple module-level (in-memory) cache. Next.js pages-router mein jab aap
-// ek route se doosre route pe jaate ho (jaise category -> product detail),
-// purana page COMPONENT UNMOUNT ho jaata hai aur uska saara React state
-// (useState) kho jaata hai. Lekin JS module-level variables (yeh `cache`
-// Map) tab tak zinda rehte hain jab tak tab/session poora reload nahi hota
-// — SPA navigation (router.push / back button) isse touch nahi karti.
-//
-// Isliye: fetch karne se pehle is cache mein check karo. Agar mil jaaye,
-// turant wahi data use karo (koi API call nahi, koi skeleton nahi).
-// Fetch complete hone ke baad, result yahan save kar do agli baar ke liye.
+// Module-level in-memory cache. Route change pe component unmount hota hai
+// aur useState kho jaata hai, lekin module-level variable session/tab reload
+// tak zinda rehta hai. Isliye fetch se pehle yahan check karo — mile to
+// turant use karo, warna fetch karke yahan save kar do.
 
 const cache = new Map();
 
-// Kitni der tak cache "fresh" maana jaaye (ms). Isके baad bhi cache se
-// data turant dikhega (koi blank/skeleton nahi), lekin background mein
-// silently refetch ho jayega taaki data zyada purana na ho jaaye.
+// Cache itni der "fresh" maani jaaye (ms). Iske baad bhi data turant
+// dikhega, bas background mein silently refetch ho jayega.
 const DEFAULT_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
 export function getPageCache(key, maxAge = DEFAULT_MAX_AGE) {
