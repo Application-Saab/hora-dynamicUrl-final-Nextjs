@@ -18,7 +18,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-
+import arrowIcon from "@/assets/arrowicon.svg"
 // Dynamic imports
 const BrandBanner = dynamic(() => import("@/components/BrandBanner"));
 const ReviewSlider = dynamic(() => import("@/components/ReviewSection"), {
@@ -203,28 +203,31 @@ const index = () => {
           </div>
         </div>
 
-        <div class="poses">
-          <div className="pose-grid">
-            {poseGridData.map((pose, index) => (
-              <a
-                key={index}
-                href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
-                  pose.folder,
-                )}&customerId=${pose.customerId}`}
-                className="pose-card"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => firePoseClickEvent(pose.title)}
-              >
-                <Image src={pose.image} alt={pose.title} />
-                <div className="TextBackground">
-                  <p>{pose.title}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+   <div className="poses">
+  <div className="pose-grid">
+    {poseGridData.map((pose, index) => (
+      <a
+        key={index}
+        href={`https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(
+          pose.folder,
+        )}&customerId=${pose.customerId}`}
+        className="pose-card"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => firePoseClickEvent(pose.title)}
+      >
+        <Image src={pose.image} alt={pose.title} fill />
+        <div className="TextBackground">
+          <p>{pose.title}</p>
+          <span className="pose-arrow">
+           <Image src={arrowIcon}
+           />
+          </span>
         </div>
-
+      </a>
+    ))}
+  </div>
+</div>
         <section className="BabyShowerBanner">
           <Image
             src={BrandBannerIMG}
