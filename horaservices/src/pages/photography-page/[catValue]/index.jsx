@@ -28,9 +28,39 @@ import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
+import PhotoPackageGrid from "@/components/PhotoPackageGrid";
+import ChooseYourMoment from "@/components/Chooseyourmoment";
+import DecorationBanner from "@/components/CategoryDecorationBanner";
+import PreWeddingImg from "@/assets/pre-wedding.webp";
+import HaldiMahandiImg from "@/assets/haldi-mahandi.webp";
+import Weddings from "@/assets/wedding.webp";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 import PhotoGallery from "@/pages/photo-gallery";
 
+const isWeddingCategory = (category) => {
+  if (typeof category !== "string") return false;
+  const val = category.trim();
+  return /(^|-)wedding(-|$)/i.test(val) && !/(^|-)pre-wedding(-|$)/i.test(val);
+};
+
+const MOMENT_SLUG_TO_KEY = {
+  "pre-wedding": "pre-wedding",
+  "haldi-mehndi": "haldi-mahandi",
+  "wedding": "wedding",
+};
+
+const MOMENT_KEY_TO_SLUG = {
+  "pre-wedding": "pre-wedding",
+  "haldi-mahandi": "haldi-mehndi",
+  "wedding": "wedding",
+};
+
+const MOMENT_NAME_FILTERS = {
+  "pre-wedding": (name) => /pre[\s-]?wedding/i.test(name),
+  "haldi-mahandi": (name) => /haldi|mehandi|mehndi|mahandi|sangeet/i.test(name),
+  "wedding": (name) =>
+    /wedding/i.test(name) && !/pre[\s-]?wedding/i.test(name),
+};
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -42,6 +72,7 @@ const getDiscountedPrice = (price = 0) => {
     discountDifference: Math.round(discountDifference),
   };
 };
+
 
 export const categoryBannerMap = {
   "Engagement-Photography": Engagement,
@@ -55,7 +86,6 @@ export const categoryBannerMap = {
   "Maternity-Photography": Maternity,
   "New-Born-Baby-Photography": NewBorn,
 };
-
 export const normalizeCatValue = (val) => {
   if (!val) return "";
 
@@ -124,9 +154,16 @@ export default function CatValuePage() {
   let { city } = router.query;
   let { locality } = router.query;
   const [open, setOpen] = useState(false);
-  const content = seoData?.[catValue] || {};
+  const [activeMoment, setActiveMoment] = useState(null);
 
-  const title = content.h1 || catValue?.replace(/-/g, " ");
+
+  const effectiveCatValue =
+    typeof catValue === "string" && MOMENT_SLUG_TO_KEY[catValue]
+      ? "Wedding-Photography"
+      : catValue;
+
+  const content = seoData?.[effectiveCatValue] || {};
+  const title = content.h1 || effectiveCatValue?.replace(/-/g, " ");
   const intro = content.description || "";
   const preview = intro?.slice(0, 60) + "...";
   const getSubCatId = useCallback(async (subCategory) => {
@@ -145,7 +182,23 @@ export default function CatValuePage() {
     }
   }, []);
 
- useEffect(() => {
+  useEffect(() => {
+    if (typeof catValue === "string" && MOMENT_SLUG_TO_KEY[catValue]) {
+      setActiveMoment(MOMENT_SLUG_TO_KEY[catValue]);
+    } else {
+      setActiveMoment(null);
+    }
+  }, [catValue]);
+
+  useEffect(() => {
+    if (effectiveCatValue) {
+      getSubCatId(effectiveCatValue);
+      const gallery = categoryToGallery[effectiveCatValue] || null;
+      setGalleryData(gallery);
+    }
+  }, [effectiveCatValue, getSubCatId]);
+
+  useEffect(() => {
     if (!catValue) return;
 
     const cacheKey = `catvaluephoto:${catValue}`;
@@ -199,7 +252,7 @@ export default function CatValuePage() {
   useEffect(() => {
     if (!catId) return;
 
-   const cacheKey = catValue ? `catvaluephoto:${catValue}` : null;
+    const cacheKey = catValue ? `catvaluephoto:${catValue}` : null;
     const cached = cacheKey ? getPageCache(cacheKey) : null;
     if (cached) return;
 
@@ -211,7 +264,7 @@ export default function CatValuePage() {
 
   const handleViewMore = (work) => {
     const slug = slugify(work.name);
-    const categorySlug = slugify(catValue || "photography");
+    const categorySlug = slugify(effectiveCatValue || "photography");
 
     // router.query se nahi, asPath se parse karo
     const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
@@ -240,8 +293,25 @@ export default function CatValuePage() {
     });
   };
 
-  const normalizedCat = normalizeCatValue(catValue);
+  const handleSelectMoment = (key) => {
+    const slug = MOMENT_KEY_TO_SLUG[key] || "Wedding-Photography";
+    const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
+    const photoIndex = pathParts.findIndex((p) => p === "photography-page");
+    if (photoIndex === -1) return;
+
+    pathParts[photoIndex + 1] = slug;
+    const newPath = "/" + pathParts.join("/");
+    router.push(newPath);
+  };
+
+  const normalizedCat = normalizeCatValue(effectiveCatValue);
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
+  const showMomentPicker = isWeddingCategory(normalizedCat);
+
+  const displayedProducts =
+    showMomentPicker && activeMoment && MOMENT_NAME_FILTERS[activeMoment]
+      ? products.filter((item) => MOMENT_NAME_FILTERS[activeMoment](item.name || ""))
+      : products;
 
   const words = intro.split(' ');
   const firstLine = words.slice(0, 8).join(' ');         // ~1 line
@@ -249,27 +319,44 @@ export default function CatValuePage() {
 
   return (
     <div className="featured-photo-works">
-      <SeoCategory city={city} locality={locality} catValue={catValue} scriptTag={scriptTag} seoData={seoData} />
+      <SeoCategory city={city} locality={locality} catValue={effectiveCatValue} scriptTag={scriptTag} seoData={seoData} />
       {loading ? (
-
         <SkeletonGrid count={6} />
       ) : error ? (
         <p className="error-text">{error}</p>
       ) : (
         <>
+          <div style={{ padding: "clamp(4px, 1.27vw, 5px)" }}>
 
-          <div style={{ padding: "10px" }}>
-            <section className="cc-banner" >
-              <Image
-                src={bannerToShow}
-                alt={title}
-                fill
-                className="cc-banner-img"
-                priority
+            {showMomentPicker ? (
+              <DecorationBanner category={normalizedCat} title="Choose Your Moment" />
+            ) : (
+              <section className="cc-banner" >
+                <Image
+                  src={bannerToShow}
+                  alt={title}
+                  fill
+                  className="cc-banner-img"
+                  priority
+                />
+                <div className="cc-banner-overlay" />
+                <h1 className="cc-banner-title" style={{ color: content?.color || "#fff" }}>{title}</h1>
+              </section>
+            )}
+
+            {/* Wedding category: show the moment picker below the decoration banner. */}
+            {showMomentPicker ? (
+              <ChooseYourMoment
+                category={normalizedCat}
+                activeMoment={activeMoment}
+                onSelectMoment={handleSelectMoment}
+                moments={[
+                  { key: "pre-wedding", label: "Pre Wedding", image: PreWeddingImg, accent: "purple" },
+                  { key: "haldi-mahandi", label: "Haldi & Mahandi", image: HaldiMahandiImg, accent: "amber" },
+                  { key: "wedding", label: "Wedding", image: Weddings, accent: "rose" },
+                ]}
               />
-              <div className="cc-banner-overlay" />
-              <h1 className="cc-banner-title" style={{ color: content?.color || "#fff" }}>{title}</h1>
-            </section>
+            ) : null}
 
             {/* Stats */}
             <div className="cc-stats">
@@ -319,13 +406,19 @@ export default function CatValuePage() {
               </div>
             </div>
           </div>
+
           <EventDateBanner userId={userId} />
-          {products.length > 0 ? (
-            <ProductGrid
-              data={products}
+
+          {displayedProducts.length > 0 ? (
+            <PhotoPackageGrid
+              data={displayedProducts}
               onCardClick={handleViewMore}
               categoryType="photography"
             />
+          ) : showMomentPicker && activeMoment ? (
+            <p className="cc-no-results">
+              No packages found for this moment yet.
+            </p>
           ) : (
             <div className="skeleton-wrapper">
               {Array.from({ length: 6 }).map((_, index) => (
@@ -346,15 +439,15 @@ export default function CatValuePage() {
           </div>
 
           {/* Gallery Section */}
-         {galleryData && galleryData.folderName && galleryData.customerId && (
-  <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
-    <PhotoGallery
-      folderName={galleryData.folderName}
-      customerId={galleryData.customerId}
-      embedded={true}
-    />
-  </div>
-)}
+          {galleryData && galleryData.folderName && galleryData.customerId && (
+            <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
+              <PhotoGallery
+                folderName={galleryData.folderName}
+                customerId={galleryData.customerId}
+                embedded={true}
+              />
+            </div>
+          )}
         </>
       )}
     </div>
