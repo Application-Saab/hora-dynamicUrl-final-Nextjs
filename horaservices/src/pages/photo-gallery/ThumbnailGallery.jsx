@@ -189,7 +189,7 @@ useEffect(() => {
     setSelectedIndex(null);
   }
 }, []);
- const handlePageChange = useCallback((page) => {
+ const handlepaginationChange = useCallback((page) => {
   setCurrentPage(page);
   setTimeout(() => {
     // ✅ gallery ke top wrapper par scroll karo — bottom pagination bar par nahi
@@ -355,7 +355,7 @@ return result;
       {totalPages > 1 && (
         <div className="gallery-header">
           <div className="gallery-header-content">
-            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
+            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlepaginationChange} inline />
           </div>
         </div>
       )}
