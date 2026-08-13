@@ -1,5 +1,5 @@
 // pages/_app.tsx
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../app/globals.css";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -22,6 +22,7 @@ import { safeGetItem } from "@/utils/safeStorage";
 import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
 import { fetchWithError } from "@/utils/fetchWithError";
 import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorReporter";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -30,6 +31,9 @@ function MyApp({ Component, pageProps }) {
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
   );
+
+  // ================= SCROLL RESTORATION (moved to hooks/useScrollRestoration.js) =================
+  useScrollRestoration(router);
 
   // ================= GLOBAL ERROR HANDLERS =================
   useEffect(() => {
@@ -182,20 +186,9 @@ function MyApp({ Component, pageProps }) {
       j.async = true;
       j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
       f.parentNode.insertBefore(j, f);
-      console.log("GTM Script Loaded"); // Debugging log
+      console.log("GTM Script Loaded");
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
-  }, []); 
-  useLayoutEffect(() => {
-    // reset any scroll lock
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.overflow = "";
-
-    // force scroll to top
-    window.scrollTo(0, 0);
-
-    console.log("scrolling app");
-  }, [pathname]);
+  }, []);
 
   return (
     <>

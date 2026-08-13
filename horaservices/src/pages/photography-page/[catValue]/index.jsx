@@ -14,7 +14,7 @@ import NamingCeremony from "@/assets/photographyCategories/photography4.webp";
 import BabyShower from "@/assets/photographyCategories/photography8.webp";
 import Bachelorette from "@/assets/photographyCategories/photography7.webp";
 import Maternity from "@/assets/photographyCategories/photography11.webp";
-import NewBorn from "@/assets/photographyCategories/photography12.webp"; 
+import NewBorn from "@/assets/photographyCategories/photography12.webp";
 import { useSelector } from "react-redux";
 import {
   BASE_URL,
@@ -28,43 +28,44 @@ import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 import PhotoGallery from "@/pages/photo-gallery";
 
 
 const getDiscountedPrice = (price = 0) => {
-  const discountedPrice = price / 0.78; 
-  const discountDifference = discountedPrice - price; 
-  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0); 
+  const discountedPrice = price / 0.78;
+  const discountDifference = discountedPrice - price;
+  const discount = ((discountDifference / discountedPrice) * 100).toFixed(0);
   return {
-    discount: Number(discount),            
-    discountedPrice: Math.round(discountedPrice), 
-    discountDifference: Math.round(discountDifference), 
+    discount: Number(discount),
+    discountedPrice: Math.round(discountedPrice),
+    discountDifference: Math.round(discountDifference),
   };
 };
 
+export const categoryBannerMap = {
+  "Engagement-Photography": Engagement,
+  "Wedding-Photography": Wedding,
+  "Anniversary-Photography": Anniversary,
+  "Birthday-Photography": Birthday,
+  "House-Warming-Photography": HouseWarming,
+  "Naming-Ceremony-Photography": NamingCeremony,
+  "Baby-Shower-Photography": BabyShower,
+  "Bachelorette-Photography": Bachelorette,
+  "Maternity-Photography": Maternity,
+  "New-Born-Baby-Photography": NewBorn,
+};
 
-  export const categoryBannerMap = {
-    "Engagement-Photography": Engagement,
-    "Wedding-Photography": Wedding,
-    "Anniversary-Photography": Anniversary,
-    "Birthday-Photography": Birthday,
-    "House-Warming-Photography": HouseWarming,
-    "Naming-Ceremony-Photography": NamingCeremony,
-    "Baby-Shower-Photography": BabyShower,
-    "Bachelorette-Photography": Bachelorette,
-    "Maternity-Photography": Maternity,
-    "New-Born-Baby-Photography": NewBorn,
-  };
- export const normalizeCatValue = (val) => {
-    if (!val) return "";
+export const normalizeCatValue = (val) => {
+  if (!val) return "";
 
-    // Check if exact match (case-sensitive) exists in the map
-    const exactMatch = Object.keys(categoryBannerMap).find(
-      (key) => key.toLowerCase() === val.toLowerCase()
-    );
+  // Check if exact match (case-sensitive) exists in the map
+  const exactMatch = Object.keys(categoryBannerMap).find(
+    (key) => key.toLowerCase() === val.toLowerCase()
+  );
 
-    return exactMatch || val.toLowerCase().replace(/ /g, "-");
-  };
+  return exactMatch || val.toLowerCase().replace(/ /g, "-");
+};
 const categoryToGallery = {
   "Engagement-Photography": {
     folderName: "engagement weblink",
@@ -125,8 +126,8 @@ export default function CatValuePage() {
   const [open, setOpen] = useState(false);
   const content = seoData?.[catValue] || {};
 
-const title = content.h1 || catValue?.replace(/-/g, " ");
-const intro = content.description || "";
+  const title = content.h1 || catValue?.replace(/-/g, " ");
+  const intro = content.description || "";
   const preview = intro?.slice(0, 60) + "...";
   const getSubCatId = useCallback(async (subCategory) => {
     try {
@@ -144,12 +145,24 @@ const intro = content.description || "";
     }
   }, []);
 
-  useEffect(() => {
-    if (catValue) {
-      getSubCatId(catValue);
-      const gallery = categoryToGallery[catValue] || null;
-      setGalleryData(gallery);
+ useEffect(() => {
+    if (!catValue) return;
+
+    const cacheKey = `catvaluephoto:${catValue}`;
+    const cached = getPageCache(cacheKey);
+
+    if (cached) {
+      setCatId(cached.data.catId);
+      setProducts(cached.data.products);
+      setGalleryData(cached.data.galleryData);
+      setLoading(false);
+      setError("");
+      return; // fresh fetch skip
     }
+
+    getSubCatId(catValue);
+    const gallery = categoryToGallery[catValue] || null;
+    setGalleryData(gallery);
   }, [catValue, getSubCatId]);
 
   const fetchProducts = useCallback(async (categoryId) => {
@@ -165,132 +178,148 @@ const intro = content.description || "";
       });
 
       setProducts(productsWithDiscount);
+
+      // Fetch success — cache mein save kar do taaki agli baar (back
+      // navigation par) dobara fetch na karna pade.
+      if (catValue) {
+        setPageCache(`catvaluephoto:${catValue}`, {
+          catId: categoryId,
+          products: productsWithDiscount,
+          galleryData: categoryToGallery[catValue] || null,
+        });
+      }
     } catch (err) {
       setProducts([]);
       setError("Failed to fetch products");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [catValue]);
 
   useEffect(() => {
-    if (catId) fetchProducts(catId);
-  }, [catId, fetchProducts]);
+    if (!catId) return;
+
+   const cacheKey = catValue ? `catvaluephoto:${catValue}` : null;
+    const cached = cacheKey ? getPageCache(cacheKey) : null;
+    if (cached) return;
+
+    fetchProducts(catId);
+  }, [catId, fetchProducts, catValue]);
 
   const slugify = (text) =>
     text.replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-const handleViewMore = (work) => {
-  const slug = slugify(work.name);
-  const categorySlug = slugify(catValue || "photography");
+  const handleViewMore = (work) => {
+    const slug = slugify(work.name);
+    const categorySlug = slugify(catValue || "photography");
 
-  // router.query se nahi, asPath se parse karo
-  const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
-  // e.g. ['delhi', 'dwarka', 'photography-page', 'Birthday-Photography']
-  // e.g. ['delhi', 'photography-page', 'Birthday-Photography']
-  // e.g. ['photography-page', 'Birthday-Photography']
+    // router.query se nahi, asPath se parse karo
+    const pathParts = router.asPath.split("?")[0].split("/").filter(Boolean);
+    // e.g. ['delhi', 'dwarka', 'photography-page', 'Birthday-Photography']
+    // e.g. ['delhi', 'photography-page', 'Birthday-Photography']
+    // e.g. ['photography-page', 'Birthday-Photography']
 
-  const photoIndex = pathParts.findIndex((p) => p === "photography-page");
+    const photoIndex = pathParts.findIndex((p) => p === "photography-page");
 
-  const city =
-    photoIndex > 0 ? pathParts[0] : router.query.city || null;
-  const locality =
-    photoIndex > 1 ? pathParts[1] : router.query.locality || null;
+    const city =
+      photoIndex > 0 ? pathParts[0] : router.query.city || null;
+    const locality =
+      photoIndex > 1 ? pathParts[1] : router.query.locality || null;
 
-  let basePath = `/photography-page/${categorySlug}/product/${slug}`;
+    let basePath = `/photography-page/${categorySlug}/product/${slug}`;
 
-  if (city && locality) {
-    basePath = `/${city.toLowerCase()}/${locality.toLowerCase()}${basePath}`;
-  } else if (city) {
-    basePath = `/${city.toLowerCase()}${basePath}`;
-  }
+    if (city && locality) {
+      basePath = `/${city.toLowerCase()}/${locality.toLowerCase()}${basePath}`;
+    } else if (city) {
+      basePath = `/${city.toLowerCase()}${basePath}`;
+    }
 
-  router.push({
-    pathname: basePath,
-    query: { id: work._id },
-  });
-};
- 
-  
- const normalizedCat = normalizeCatValue(catValue);
+    router.push({
+      pathname: basePath,
+      query: { id: work._id },
+    });
+  };
+
+  const normalizedCat = normalizeCatValue(catValue);
   const bannerToShow = categoryBannerMap[normalizedCat] || categoryBannerMap["default"];
 
-const words = intro.split(' ');
-const firstLine = words.slice(0, 8).join(' ');         // ~1 line
-const restText = words.slice(8).join(' ');  
+  const words = intro.split(' ');
+  const firstLine = words.slice(0, 8).join(' ');         // ~1 line
+  const restText = words.slice(8).join(' ');
+
   return (
     <div className="featured-photo-works">
-         <SeoCategory city={city} locality={locality} catValue={catValue} scriptTag={scriptTag} seoData={seoData} />
+      <SeoCategory city={city} locality={locality} catValue={catValue} scriptTag={scriptTag} seoData={seoData} />
       {loading ? (
-       
-         <SkeletonGrid count={6} />
+
+        <SkeletonGrid count={6} />
       ) : error ? (
         <p className="error-text">{error}</p>
       ) : (
         <>
-  
-  <div style={{padding:"10px"}}>
-               <section className="cc-banner" >
-        <Image
-          src={bannerToShow}
-          alt={title}
-          fill
-          className="cc-banner-img"
-          priority
-        />
-        <div className="cc-banner-overlay" />
-        <h1 className="cc-banner-title"   style={{ color: content?.color || "#fff" }}>{title}</h1>
-      </section>
 
-      {/* Stats */}
-     <div className="cc-stats">
-        <div className="cc-stat">
-          <div className="cc-stat-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div className="cc-stat-info">
-            <h2>1000+</h2>
-            <p>Verified photographers</p>
-          </div>
-        </div>
+          <div style={{ padding: "10px" }}>
+            <section className="cc-banner" >
+              <Image
+                src={bannerToShow}
+                alt={title}
+                fill
+                className="cc-banner-img"
+                priority
+              />
+              <div className="cc-banner-overlay" />
+              <h1 className="cc-banner-title" style={{ color: content?.color || "#fff" }}>{title}</h1>
+            </section>
 
-        <div className="cc-stat">
-          <div className="cc-stat-icon">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-              <circle cx="12" cy="9" r="2.5"/>
-            </svg>
-          </div>
-          <div className="cc-stat-info">
-            <h2>Pan India</h2>
-            <p>coverage available</p>
-          </div>
-        </div>
-      </div>
+            {/* Stats */}
+            <div className="cc-stats">
+              <div className="cc-stat">
+                <div className="cc-stat-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+                <div className="cc-stat-info">
+                  <h2>1000+</h2>
+                  <p>Verified photographers</p>
+                </div>
+              </div>
 
-      {/* Accordion */}
-      <div className="cc-accordion">
-    <button className={`cc-acc-btn ${open ? "open" : ""}`} onClick={() => setOpen(!open)}>
-    <span className="cc-acc-preview">
-      {firstLine}{!open && '…'}
-    </span>
-    <span className={`cc-acc-icon ${open ? "open" : ""}`}>
-      <svg viewBox="0 0 24 24">
-        <polyline points="6 9 12 15 18 9" />
-      </svg>
-    </span>
-  </button>
-  <div className={`cc-acc-body ${open ? "open" : ""}`}>
-    <p className="cc-acc-text">{restText}</p>
-  </div>
-</div>
-       </div>
-       <EventDateBanner userId={userId} />
+              <div className="cc-stat">
+                <div className="cc-stat-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                    <circle cx="12" cy="9" r="2.5" />
+                  </svg>
+                </div>
+                <div className="cc-stat-info">
+                  <h2>Pan India</h2>
+                  <p>coverage available</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Accordion */}
+            <div className="cc-accordion">
+              <button className={`cc-acc-btn ${open ? "open" : ""}`} onClick={() => setOpen(!open)}>
+                <span className="cc-acc-preview">
+                  {firstLine}{!open && '…'}
+                </span>
+                <span className={`cc-acc-icon ${open ? "open" : ""}`}>
+                  <svg viewBox="0 0 24 24">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </button>
+              <div className={`cc-acc-body ${open ? "open" : ""}`}>
+                <p className="cc-acc-text">{restText}</p>
+              </div>
+            </div>
+          </div>
+          <EventDateBanner userId={userId} />
           {products.length > 0 ? (
             <ProductGrid
               data={products}
