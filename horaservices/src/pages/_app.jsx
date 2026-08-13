@@ -1,7 +1,7 @@
 // pages/_app.tsx
 import "../app/globals.css";
-import '../app/home.css';
-import '../app/homepage.css';
+import "../app/home.css";
+import "../app/homepage.css";
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
@@ -17,17 +17,20 @@ import { UserDetailsProvider } from "@/hooks/UserDetailsContext";
 import ChatProviderMain from "@/hooks/ChatProvider";
 // import { FIREBASE_VAPID_KEY } from "@/utils/constants";
 import { BASE_URL, SUBSCRIBE_NOTIFICATION } from "@/utils/apiconstants";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { getVisitorId, getDeviceInfo, getBrowserInfo } from "@/utils/analytics";
 import VisitorTracker from "@/utils/VisitorTracker";
 import { safeGetItem } from "@/utils/safeStorage";
 import ErrorBoundary from "@/components/ErrorBoundary/Errorboundary";
 import { fetchWithError } from "@/utils/fetchWithError";
-import { setupGlobalErrorHandlers, startMemoryMonitoring } from "@/utils/errorReporter";
+import {
+  setupGlobalErrorHandlers,
+  startMemoryMonitoring,
+} from "@/utils/errorReporter";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = router.asPath;
   const [currentUrl, setCurrentUrl] = useState("");
   const [loggedinUserId, setLoggedinUserId] = useState(
     (typeof window !== "undefined" && safeGetItem("userID")) || "",
@@ -36,7 +39,7 @@ function MyApp({ Component, pageProps }) {
   // ================= GLOBAL ERROR HANDLERS =================
   useEffect(() => {
     setupGlobalErrorHandlers();
-    startMemoryMonitoring()
+    startMemoryMonitoring();
   }, []);
 
   // ================= BLOCK KEYS + CONTEXT MENU =================
@@ -186,18 +189,47 @@ function MyApp({ Component, pageProps }) {
       f.parentNode.insertBefore(j, f);
       console.log("GTM Script Loaded"); // Debugging log
     })(window, document, "script", "dataLayer", "GTM-K3SCKLTZ");
-  }, []); 
+  }, []);
+
   useLayoutEffect(() => {
-    // reset any scroll lock
+    if (typeof window === "undefined") return; // ← yeh line add karo
+
     document.body.style.position = "";
     document.body.style.top = "";
     document.body.style.overflow = "";
-
-    // force scroll to top
     window.scrollTo(0, 0);
-
-    console.log("scrolling app");
   }, [pathname]);
+
+  const appContent = (
+    <ChatProvider>
+      <ChatProviderMain>
+        <PageLayout>
+          <ErrorBoundary componentName="RootApp">
+            <Component {...pageProps} />
+          </ErrorBoundary>
+
+          <noscript>
+            <iframe
+              src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            ></iframe>
+          </noscript>
+
+          {pathname !== "/weblink-gallery" && (
+            <div className="whatsapp-container">
+              <WhatsAppIcon router={router} />
+            </div>
+          )}
+
+          <div>
+            <VisitorTracker />
+          </div>
+        </PageLayout>
+      </ChatProviderMain>
+    </ChatProvider>
+  );
 
   return (
     <>
@@ -225,35 +257,10 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
 
-      <Provider store={store}>
+     <Provider store={store}>
         <UserDetailsProvider>
-          <PersistGate loading={null} persistor={persistor}>
-            <ChatProvider>
-              <ChatProviderMain>
-                <PageLayout>
-                  <ErrorBoundary componentName="RootApp">
-                    <Component {...pageProps} />
-                  </ErrorBoundary>
-
-                  <noscript>
-                    <iframe
-                      src="https://www.googletagmanager.com/ns.html?id=GTM-K3SCKLTZ"
-                      height="0"
-                      width="0"
-                      style={{ display: "none", visibility: "hidden" }}
-                    ></iframe>
-                  </noscript>
-                  {pathname !== "/weblink-gallery" && (
-                    <div className="whatsapp-container">
-                      <WhatsAppIcon router={router} />
-                    </div>
-                  )}
-                  <div>
-                    <VisitorTracker />
-                  </div>
-                </PageLayout>
-              </ChatProviderMain>
-            </ChatProvider>
+          <PersistGate loading={appContent} persistor={persistor}>
+            {appContent}
           </PersistGate>
         </UserDetailsProvider>
       </Provider>
