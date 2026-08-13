@@ -26,11 +26,20 @@ import { getPhotoCategoryUrl } from "@/utils/Getphotocategoryurl.js";
 import { reviewsData } from "@/utils/poselinkreviews";
 import Head from "next/head";
 
-const PhotoGallery = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const folderName = urlParams.get('folderName');
-  const customerId = urlParams.get('customerId');
+const PhotoGallery = ({ folderName: folderNameProp, customerId: customerIdProp, embedded = false }) => {
   const router = useRouter();
+const [urlParams, setUrlParams] = useState({ folderName: null, customerId: null });
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setUrlParams({
+        folderName: params.get('folderName'),
+        customerId: params.get('customerId'),
+      });
+    }
+  }, []);
+const folderName = folderNameProp ?? urlParams.folderName;
+  const customerId = customerIdProp ?? urlParams.customerId;
 
   const bannerConfig     = getBannerConfig(folderName);
   const planningCardData = getPlanningCardData(folderName);
@@ -179,33 +188,42 @@ const PhotoGallery = () => {
     );
   };
 
-  const handleViewPackages = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "view_packages_click",
-      eventLabel: bannerConfig.title || folderName || "unknown",
-      folder_name: folderName || "unknown",
-      customer_id: customerId || "guest",
-      last_component_seen: lastViewedComponent.current,
-      scroll_position_pct: lastScrollPercent.current,
-    });
+const handleViewPackages = () => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "view_packages_click",
+    eventLabel: bannerConfig.title || folderName || "unknown",
+    folder_name: folderName || "unknown",
+    customer_id: customerId || "guest",
+    last_component_seen: lastViewedComponent.current,
+    scroll_position_pct: lastScrollPercent.current,
+  });
 
+  if (embedded) {
+    // CatValuePage pe already isi category ka page hai — navigate nahi, sirf top pe scroll
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
     router.push(categoryUrl);
-  };
+  }
+};
 
-  const handleBookNow = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "book_now_click",
-      eventLabel: bannerConfig.title || folderName || "unknown",
-      folder_name: folderName || "unknown",
-      customer_id: customerId || "guest",
-      last_component_seen: lastViewedComponent.current,
-      scroll_position_pct: lastScrollPercent.current,
-    });
+const handleBookNow = () => {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "book_now_click",
+    eventLabel: bannerConfig.title || folderName || "unknown",
+    folder_name: folderName || "unknown",
+    customer_id: customerId || "guest",
+    last_component_seen: lastViewedComponent.current,
+    scroll_position_pct: lastScrollPercent.current,
+  });
 
+  if (embedded) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
     router.push(categoryUrl);
-  };
+  }
+};
 
   // ==============================
   // SHARE ICON
@@ -276,6 +294,8 @@ const PhotoGallery = () => {
     </div>,
   ];
 
+  if (!folderName || !customerId) return null;
+
   // ==============================
   // RENDER
   // ==============================
@@ -284,94 +304,97 @@ const PhotoGallery = () => {
       className="photo-container"
       style={{ padding: "8px", maxWidth: "480px", margin: "auto", paddingBottom: "10px" }}
     >
-      <Head>
-        <title>
-          {bannerConfig.title
-            ? `${bannerConfig.title} Poses & Photography Ideas | Book Photographer | HORA`
-            : `Professional Photography Poses & Ideas | Book Photographer | HORA`}
-        </title>
-        <meta
-          name="description"
-          content={
-            bannerConfig.title
-              ? `Explore 2500+ ${bannerConfig.title} poses and book the best photographer for your ${bannerConfig.title} event. Trusted by 10,000+ people. 100+ expert photographers. Book HORA now.`
-              : `Explore 2500+ photography poses for weddings, birthdays, maternity & more. Book expert photographers across India. Trusted by 10,000+ people. Book HORA now.`
-          }
-        />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Hora Services" />
-        <link
-          rel="canonical"
-          href={
-            folderName
-              ? `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}`
-              : `https://horaservices.com/photo-gallery`
-          }
-        />
-        <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" />
-        <meta
-          property="og:title"
-          content={
-            bannerConfig.title
-              ? `${bannerConfig.title} Poses & Photography Ideas | HORA`
-              : `Professional Photography Poses & Ideas | HORA`
-          }
-        />
-        <meta
-          property="og:description"
-          content={
-            bannerConfig.title
-              ? `Book photographers for ${bannerConfig.title} events. 2500+ pose ideas, 100+ expert photographers.`
-              : `Book photographers for weddings, birthdays & events across India.`
-          }
-        />
-        <meta
-          property="og:url"
-          content={
-            folderName
-              ? `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}`
-              : `https://horaservices.com/photo-gallery`
-          }
-        />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content={bannerConfig.backgroundImage || "https://horaservices.com/api/uploads/attachment-1711520474508.png"}
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content={
-            bannerConfig.title
-              ? `${bannerConfig.title} Poses & Photography Ideas | HORA`
-              : `Professional Photography Poses & Ideas | HORA`
-          }
-        />
-        <meta
-          name="twitter:description"
-          content={
-            bannerConfig.title
-              ? `${bannerConfig.title} photography poses & booking. Trusted by 10,000+ people.`
-              : `Photography poses & booking for all events across India.`
-          }
-        />
-        <meta
-          name="twitter:image"
-          content={bannerConfig.backgroundImage || "https://horaservices.com/api/uploads/attachment-1711520474508.png"}
-        />
-      </Head>
+     {!embedded && (
+        <Head>
+          <title>
+            {bannerConfig.title
+              ? `${bannerConfig.title} Poses & Photography Ideas | Book Photographer | HORA`
+              : `Professional Photography Poses & Ideas | Book Photographer | HORA`}
+          </title>
+          <meta
+            name="description"
+            content={
+              bannerConfig.title
+                ? `Explore 2500+ ${bannerConfig.title} poses and book the best photographer for your ${bannerConfig.title} event. Trusted by 10,000+ people. 100+ expert photographers. Book HORA now.`
+                : `Explore 2500+ photography poses for weddings, birthdays, maternity & more. Book expert photographers across India. Trusted by 10,000+ people. Book HORA now.`
+            }
+          />
+          <meta name="robots" content="index, follow" />
+          <meta name="author" content="Hora Services" />
+          <link
+            rel="canonical"
+            href={
+              folderName
+                ? `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}`
+                : `https://horaservices.com/photo-gallery`
+            }
+          />
+          <link rel="icon" href="https://horaservices.com/api/uploads/logo-icon.png" />
+          <meta
+            property="og:title"
+            content={
+              bannerConfig.title
+                ? `${bannerConfig.title} Poses & Photography Ideas | HORA`
+                : `Professional Photography Poses & Ideas | HORA`
+            }
+          />
+          <meta
+            property="og:description"
+            content={
+              bannerConfig.title
+                ? `Book photographers for ${bannerConfig.title} events. 2500+ pose ideas, 100+ expert photographers.`
+                : `Book photographers for weddings, birthdays & events across India.`
+            }
+          />
+          <meta
+            property="og:url"
+            content={
+              folderName
+                ? `https://horaservices.com/photo-gallery?folderName=${encodeURIComponent(folderName)}`
+                : `https://horaservices.com/photo-gallery`
+            }
+          />
+          <meta property="og:type" content="website" />
+          <meta
+            property="og:image"
+            content={bannerConfig.backgroundImage || "https://horaservices.com/api/uploads/attachment-1711520474508.png"}
+          />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta
+            name="twitter:title"
+            content={
+              bannerConfig.title
+                ? `${bannerConfig.title} Poses & Photography Ideas | HORA`
+                : `Professional Photography Poses & Ideas | HORA`
+            }
+          />
+          <meta
+            name="twitter:description"
+            content={
+              bannerConfig.title
+                ? `${bannerConfig.title} photography poses & booking. Trusted by 10,000+ people.`
+                : `Photography poses & booking for all events across India.`
+            }
+          />
+          <meta
+            name="twitter:image"
+            content={bannerConfig.backgroundImage || "https://horaservices.com/api/uploads/attachment-1711520474508.png"}
+          />
+        </Head>
+      )}
 
-      {/* Top Banner */}
-      <div ref={topBannerRef}>
-        <TopBanner
-          backgroundImage={bannerConfig.backgroundImage}
-          highlightText={bannerConfig.highlightText}
-          title={bannerConfig.title}
-          description={bannerConfig.description}
-          ctaText={bannerConfig.ctaText}
-          onCtaClick={handleViewPackages}
-        />
-      </div>
+    {!embedded && (
+        <div ref={topBannerRef}>
+          <TopBanner
+            backgroundImage={bannerConfig.backgroundImage}
+            highlightText={bannerConfig.highlightText}
+            title={bannerConfig.title}
+            description={bannerConfig.description}
+            ctaText={bannerConfig.ctaText}
+            onCtaClick={handleViewPackages}
+          />
+        </div>
+      )}
 
       {/* Chat Banner */}
       <div ref={chatBannerRef}>
@@ -396,26 +419,28 @@ const PhotoGallery = () => {
       </div>
 
       {/* Sticky Bottom CTA */}
-      <div
-        ref={bottomCTARef}
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100%",
-          maxWidth: "480px",
-          zIndex: 99,
-          backgroundColor: "#fff",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
-        }}
-      >
-        <PhotogalleryCTA
-          image1={image1}
-          image2={image2}
-          onBookNow={handleBookNow}
-        />
-      </div>
+ {!embedded && (
+  <div
+    ref={bottomCTARef}
+    style={{
+      position: "fixed",
+      bottom: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "100%",
+      maxWidth: "480px",
+      zIndex: 99,
+      backgroundColor: "#fff",
+      boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+    }}
+  >
+    <PhotogalleryCTA
+      image1={image1}
+      image2={image2}
+      onBookNow={handleBookNow}
+    />
+  </div>
+)}
     </div>
   );
 };
