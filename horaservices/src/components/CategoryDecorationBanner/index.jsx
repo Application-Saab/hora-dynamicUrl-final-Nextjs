@@ -1,3 +1,4 @@
+// DecorationBanner.jsx
 "use client";
 
 import Image from "next/image";
@@ -26,9 +27,8 @@ const categoryTitleMap = {
   "engagement-decoration": "Engagement Decoration",
 };
 
-
-export default function DecorationBanner({ category, title }) {
-  const resolvedTitle = title || categoryTitleMap[category] || "Decoration";
+export default function DecorationBanner({ category }) {
+  const title = categoryTitleMap[category] || "Decoration";
 
   return (
     <section className="decorationBanner">
@@ -36,7 +36,7 @@ export default function DecorationBanner({ category, title }) {
         <Image src={starSparkle} alt="" priority />
       </span>
 
-      <h1 className="decorationBanner-text">{resolvedTitle}</h1>
+      <h1 className="decorationBanner-text">{title}</h1>
 
       <span className="decorationBanner-heart">
         <Image src={heartStarGroup} alt="" priority />
