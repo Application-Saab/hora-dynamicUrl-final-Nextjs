@@ -28,7 +28,7 @@ import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
-import { getPageCache, setPageCache } from "@/utils/pageDataCache";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;

@@ -44,7 +44,7 @@ import DecorationBanner from "@/components/CategoryDecorationBanner";
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
-import { getPageCache, setPageCache } from "@/utils/pageDataCache";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 
 const DecorationCatPage = ({ locality }) => {
   const dispatch = useDispatch();
