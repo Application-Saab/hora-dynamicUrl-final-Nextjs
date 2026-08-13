@@ -102,10 +102,10 @@ useEffect(() => {
   }
 }, [selectedIndex]);
 
-  const getItemsPerPage = useCallback(() => {
-    if (typeof window === 'undefined') return 12;
+ const getItemsPerPage = useCallback(() => {
+  if (typeof window === 'undefined') return 12;
     if (isIOSMobile) return window.innerWidth >= 400 ? 15 : 9;
-    return window.innerWidth >= 768 ? 36 : 24;
+  return window.innerWidth >= 768 ? 36 : 24;
   }, [isIOSMobile]);
 
   const [ITEMS_PER_PAGE, setItemsPerPage] = useState(getItemsPerPage());
@@ -152,13 +152,13 @@ useEffect(() => {
     fetch_();
   }, [folderName, customerId]);
 
-  const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
+const { currentThumbnailsOnPage, totalPages } = useMemo(() => {
     if (isIOSMobile) {
-      const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
-      const start = (currentPage - 1) * ITEMS_PER_PAGE;
-      return { currentThumbnailsOnPage: allThumbnails.slice(start, start + ITEMS_PER_PAGE), totalPages: total };
-    }
-    return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
+    const total = Math.ceil(allThumbnails.length / ITEMS_PER_PAGE);
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return { currentThumbnailsOnPage: allThumbnails.slice(start, start + ITEMS_PER_PAGE), totalPages: total };
+  }
+  return { currentThumbnailsOnPage: allThumbnails, totalPages: 1 };
   }, [allThumbnails, currentPage, ITEMS_PER_PAGE, isIOSMobile]);
 
   const handleImageClick = useCallback((i) => {
@@ -189,13 +189,17 @@ useEffect(() => {
     setSelectedIndex(null);
   }
 }, []);
-  const handlePageChange = useCallback((page) => {
-    setCurrentPage(page);
-    setTimeout(() => {
-      const el = document.querySelector('.gallery-header');
-      (el ? el.scrollIntoView({ behavior:'smooth', block:'start' }) : window.scrollTo({ top:0, behavior:'smooth' }));
-    }, 100);
-  }, []);
+ const handlepaginationChange = useCallback((page) => {
+  setCurrentPage(page);
+  setTimeout(() => {
+    // ✅ gallery ke top wrapper par scroll karo — bottom pagination bar par nahi
+    if (galleryRef.current) {
+      galleryRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, 100);
+}, []);
 
  const sliderSettings = useMemo(() => ({
   dots: false,
@@ -302,11 +306,7 @@ return result;
       style={{ width: '100%', overflow: 'hidden', boxSizing: 'border-box', display: 'block' }}
     >
       {/* Top pagination iOS */}
-      {isIOSMobile && totalPages > 1 && (
-        <div className="gallery-pagination-container" style={{ padding: '8px' }}>
-          <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
-        </div>
-      )}
+
 
       {/* Grid */}
       {currentThumbnailsOnPage.length > 0 ? renderGallery() : null}
@@ -355,7 +355,7 @@ return result;
       {totalPages > 1 && (
         <div className="gallery-header">
           <div className="gallery-header-content">
-            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} inline />
+            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={handlepaginationChange} inline />
           </div>
         </div>
       )}
