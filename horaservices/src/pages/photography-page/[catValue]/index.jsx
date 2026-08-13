@@ -29,6 +29,8 @@ import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+import PhotoGallery from "@/pages/photo-gallery";
+
 
 const getDiscountedPrice = (price = 0) => {
   const discountedPrice = price / 0.78;
@@ -344,15 +346,15 @@ export default function CatValuePage() {
           </div>
 
           {/* Gallery Section */}
-          {galleryData && galleryData.folderName && galleryData.customerId && (
-            <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
-              <ThumbnailGallery
-                folderName={galleryData.folderName}
-                customerId={galleryData.customerId}
-                disablePopup={true}
-              />
-            </div>
-          )}
+         {galleryData && galleryData.folderName && galleryData.customerId && (
+  <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
+    <PhotoGallery
+      folderName={galleryData.folderName}
+      customerId={galleryData.customerId}
+      embedded={true}
+    />
+  </div>
+)}
         </>
       )}
     </div>
