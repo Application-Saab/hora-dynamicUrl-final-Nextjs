@@ -89,7 +89,6 @@
 .gallery-header { width: 100%; }
 
 .gallery-header-content {
-  display: flex;
   justify-content: flex-end;
   align-items: center;
   padding: 10px;
@@ -98,7 +97,6 @@
 .gallery-share-icon { cursor: pointer; }
 
 .gallery-pagination-container {
-  display: flex;
   align-items: center;
 }
 
