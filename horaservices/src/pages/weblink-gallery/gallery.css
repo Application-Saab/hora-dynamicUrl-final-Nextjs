@@ -288,7 +288,7 @@ svg.svg-inline--fa.fa-arrow-left.fa-xl.closeEffect {
 .buttons-container{
   display: flex;
   gap: 6px;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
   align-items: center;
   width: 100%;
 }
@@ -613,8 +613,7 @@ display: flex;
   display: flex;
   align-items: center;
 
-  height: clamp(28px, 7vw, 33px);
-
+  min-height: 33px !important;
   font-size: clamp(10px, 2.8vw, 11px);
 
   box-sizing: border-box;

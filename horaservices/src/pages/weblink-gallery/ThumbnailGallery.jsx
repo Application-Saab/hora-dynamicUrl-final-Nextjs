@@ -1512,55 +1512,42 @@ const handleAddToLocker = async (imgData) => {
         <div className="thumbnail-gallery-content">
           <div>
             <div>
-              {(activeTab !== "my-photos" && privateLocker?._id !== activeTab) && (
-                <div>
-                  {!isMyPhotosTab && activeSubFolderId && !isEditing && (
-                    <div className="buttons-container">
-                      <button
-                        className="add-new-btn"
-                        onClick={() => {
-                          setSelectedImages(initialSubfolderImages);
-                          setIsEditing(true);
-                        }}
-                      >
-                        <span className="add-icon">+</span>
-                        <span>Add Photos To Album</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {!isMyPhotosTab && activeSubFolderId && isEditing && (
-                    <button
-                      className="save-image-btn"
-                      onClick={handleSave}
-                      disabled={!hasChanges}
-                      style={{
-                        opacity: !hasChanges ? 0.75 : 1,
-                        cursor: !hasChanges ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      <span className="save-icon">
-                        <Image
-                          src={checkWithBoard}
-                          alt="share"
-                          height={13}
-                          width={11}
-                        />
-                      </span>
-                      <span>Save Photos To Album</span>
-                    </button>
-                  )}
-                </div>
-              )}
             </div>
-            {!loading && (activeTab === "all" || activeTab === privateLocker?._id) && (
+            {(!loading || !isBannerLoading) && (
               <div ref={buttonsRef} className="buttons-container">
                 <button
                   className="add-photo-btn"
-                  onClick={() => addMoreImagesRef.current?.click()}
+                  disabled={isEditing && !hasChanges} 
+                  style={{
+                    opacity: isEditing && !hasChanges ? 0.6 : 1, 
+                    cursor: isEditing && !hasChanges ? "not-allowed" : "pointer",
+                  }}
+                  onClick={() => {
+                    if (activeTab === "all") {
+                      addMoreImagesRef.current?.click();
+                    } else {
+                      if (isEditing) {
+                        if (hasChanges) handleSave(); 
+                      } else {
+                        setSelectedImages(initialSubfolderImages);
+                        setIsEditing(true);
+                      }
+                    }
+                  }}
                 >
-                  <span className="add-photo-icon">+</span>
-                  <span>Add Photos</span>
+                  {
+                    isEditing ?
+                     <>
+                        <span>Save Photos</span>
+                    </>
+                    :
+                      <>
+                        <span className="add-photo-icon">+</span>
+                        <span>Add Photos</span>
+                      </>
+                   
+                  }
+                  
                 </button>
                 <button className="share-capsule-btn" onClick={() => handleShareicon(mainFolderId, shortCode)}>
                   <span className="">
@@ -1710,6 +1697,7 @@ const handleAddToLocker = async (imgData) => {
 
             {/* ================= SEARCHING STATE ================= */}
             {!loading &&
+             !isBannerLoading &&
               isStreamSearching &&
               isSearching &&
               isActualMyPhotos &&
@@ -1719,7 +1707,7 @@ const handleAddToLocker = async (imgData) => {
                     Searching Photos....{" "}
                   </div>
                   <div className="gallery-image-grid">
-                    {[...Array(6)].map((_, index) => {
+                    {[...Array(24)].map((_, index) => {
                       const type = getBlockType(index);
                       return (
                         <div key={index} className={`grid-item ${type}`}>
@@ -1872,7 +1860,7 @@ const handleAddToLocker = async (imgData) => {
                           handleDownloadImage(current);
                         }}
                       >
-                        <Image src={downloadVector} width={15} height={15} />
+                        <Image src={downloadVector} width={19} height={15} />
                         <span>Download</span>
                       </div>
                     )}
@@ -1886,7 +1874,7 @@ const handleAddToLocker = async (imgData) => {
                       }}
                       className="action-item flex gallery-share-icon"
                     >
-                      <Image src={shareVector} width={13} height={14} />
+                      <Image src={shareVector} width={19} height={15} />
                       <span>Share</span>
                     </div>
                     {String(rawPhoneNumber) === String(localPhoneNumber) && (
@@ -1937,7 +1925,7 @@ const handleAddToLocker = async (imgData) => {
                           }
                         }}
                       >
-                        <Image src={deleteVector} width={13} height={17} />
+                        <Image src={deleteVector} width={19} height={15} />
                         <span>Delete</span>
                       </div>
                     )}

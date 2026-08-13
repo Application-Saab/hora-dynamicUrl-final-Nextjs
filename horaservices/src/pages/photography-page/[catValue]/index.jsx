@@ -34,6 +34,7 @@ import DecorationBanner from "@/components/CategoryDecorationBanner";
 import PreWeddingImg from "@/assets/pre-wedding.webp";
 import HaldiMahandiImg from "@/assets/haldi-mahandi.webp";
 import Weddings from "@/assets/wedding.webp";
+import PhotoGallery from "@/pages/photo-gallery";
 
 const isWeddingCategory = (category) => {
   if (typeof category !== "string") return false;
@@ -402,15 +403,15 @@ const restText = words.slice(8).join(' ');
           </div>
 
           {/* Gallery Section */}
-          {galleryData && galleryData.folderName && galleryData.customerId && (
-            <div className="photo-gallery-wrapper" style={{padding:"10px"}}>
-              <ThumbnailGallery
-                folderName={galleryData.folderName}
-                customerId={galleryData.customerId}
-                disablePopup={true}
-              />
-            </div>
-          )}
+         {galleryData && galleryData.folderName && galleryData.customerId && (
+  <div className="photo-gallery-wrapper" style={{ padding: "10px" }}>
+    <PhotoGallery
+      folderName={galleryData.folderName}
+      customerId={galleryData.customerId}
+      embedded={true}
+    />
+  </div>
+)}
         </>
       )}
     </div>
