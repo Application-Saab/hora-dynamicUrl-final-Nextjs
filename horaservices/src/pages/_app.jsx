@@ -1,14 +1,14 @@
 // pages/_app.tsx
-import "../styles/customGlobal.css";
-import '../styles/home.css';
-import '../styles/homepage.css';
+import "../app/globals.css";
+import '../app/home.css';
+import '../app/homepage.css';
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import PageLayout from "@/components/pagelayout";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "../store/store";
 import { useRouter } from "next/router";
-import WhatsAppIcon from "../app_backup/WhatsAppIconGtm.jsx";
+import WhatsAppIcon from "../app/WhatsAppIconGtm.jsx";
 import Head from "next/head";
 // import { getToken } from "firebase/messaging";
 // import { messaging } from "../firebase";
