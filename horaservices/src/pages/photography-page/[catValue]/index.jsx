@@ -4,7 +4,6 @@ import Image from "next/image";
 import "./catvaluephoto.css";
 import PhotoBanner from "@/assets/PhotoBanner.jpg"
 import ThumbnailGallery from "@/pages/photo-gallery/ThumbnailGallery";
-import CardSkeleton from "@/components/CardSkeleton";
 import Engagement from "@/assets/photographyCategories/photography9.webp";
 import Wedding from "@/assets/photographyCategories/photography10.webp";
 import Anniversary from "@/assets/photographyCategories/photography5.webp";
@@ -21,10 +20,8 @@ import {
   GET_DECORATION_CAT_ID,
   GET_PHOTOGRAPHY_BY_TAG,
 } from "@/utils/apiconstants.js";
-import ProductGrid from "@/components/productGrid";
 import { getPhotographyOrganizationSchema } from "@/utils/schema";
 import { SeoCategory } from "@/utils/photoGraphyHead";
-import SkeletonGrid from "@/components/SkeletonGrid";
 import { seoData } from "@/utils/photoCategories";
 import axiosApi from "@/utils/axiosApi";
 import EventDateBanner from "@/components/Eventdatebanner";
@@ -36,6 +33,7 @@ import HaldiMahandiImg from "@/assets/haldi-mahandi.webp";
 import Weddings from "@/assets/wedding.webp";
 import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
 import PhotoGallery from "@/pages/photo-gallery";
+import PhotographyCardSkeleton from "@/components/PhotographyCardSkeleton";
 
 const isWeddingCategory = (category) => {
   if (typeof category !== "string") return false;
@@ -321,7 +319,7 @@ export default function CatValuePage() {
     <div className="featured-photo-works">
       <SeoCategory city={city} locality={locality} catValue={effectiveCatValue} scriptTag={scriptTag} seoData={seoData} />
       {loading ? (
-        <SkeletonGrid count={6} />
+        <PhotographyCardSkeleton count={6} />
       ) : error ? (
         <p className="error-text">{error}</p>
       ) : (
@@ -422,7 +420,7 @@ export default function CatValuePage() {
           ) : (
             <div className="skeleton-wrapper">
               {Array.from({ length: 6 }).map((_, index) => (
-                <CardSkeleton key={index} />
+                <PhotographyCardSkeleton key={index} />
               ))}
             </div>
           )}

@@ -1,0 +1,157 @@
+.photography-skeleton-card {
+  width: 100%;
+  min-height: 210px;
+  display: flex;
+  grid-column: 1 / -1;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+/* =========================
+   IMAGE
+========================= */
+
+.photography-skeleton-image {
+  width: 38%;
+  min-width: 38%;
+  background: #e8e8e8;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.photography-skeleton-content {
+  width: 62%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+.photography-skeleton-title {
+  width: 65%;
+  height: 13px;
+  border-radius: 4px;
+  background: #e3e3e3;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   FEATURES
+========================= */
+
+.photography-skeleton-feature-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.photography-skeleton-feature {
+  width: 100%;
+  height: 10px;
+  border-radius: 4px;
+  background: #e5e5e5;
+}
+
+.photography-skeleton-feature.short {
+  width: 80%;
+}
+
+/* =========================
+   DETAILS
+========================= */
+
+.photography-skeleton-details {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.photography-skeleton-detail {
+  width: 25%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e7e7e7;
+}
+
+/* =========================
+   PRICE
+========================= */
+
+.photography-skeleton-price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.photography-skeleton-price {
+  width: 70px;
+  height: 14px;
+  border-radius: 4px;
+  background: #dddddd;
+}
+
+.photography-skeleton-old-price {
+  width: 55px;
+  height: 9px;
+  border-radius: 4px;
+  background: #e7e7e7;
+}
+
+.photography-skeleton-offer {
+  margin-left: auto;
+  width: 50px;
+  height: 18px;
+  border-radius: 3px;
+  background: #e2e2e2;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.photography-skeleton-button {
+  width: 100%;
+  height: 25px;
+  border-radius: 4px;
+  background: #dddddd;
+}
+
+/* =========================
+   SHIMMER
+========================= */
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  width: 150px;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+
+  animation: photographySkeletonShimmer 1.5s infinite;
+}
+
+
+
