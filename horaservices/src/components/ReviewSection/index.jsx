@@ -10,6 +10,13 @@ const getStars = (rating) => {
   return [...filled, ...blank];
 };
 
+const getAvatarSrc = (avatar) => {
+  if (!avatar) return null;
+  if (typeof avatar === "string") return avatar;
+  if (typeof avatar === "object" && avatar.src) return avatar.src;
+  return null;
+};
+
 const ReviewSlider = ({ reviews = [], title = "" }) => {
   return (
     <div className="review-section">
@@ -23,24 +30,33 @@ const ReviewSlider = ({ reviews = [], title = "" }) => {
         slidesPerView={1.85}
         centeredSlides={true}
       >
-        {reviews.map((review, idx) => (
-          <SwiperSlide key={idx}>
-            <div className="review-card final-card">
-              <div className="top-row">
-                <img
-                  src={review.avatar}
-                  className="avatar-circle"
-                  alt={review.name}
-                />
-                <div className="top-info">
-                  <div className="review-name-mono">{review.name}</div>
-                  <div className="review-stars">{getStars(review.rating)}</div>
+        {reviews.map((review, idx) => {
+          const avatarSrc = getAvatarSrc(review.avatar);
+          return (
+            <SwiperSlide key={idx}>
+              <div className="review-card final-card">
+                <div className="top-row">
+                  {avatarSrc ? (
+                    <img
+                      src={avatarSrc}
+                      className="avatar-circle"
+                      alt={review.name}
+                    />
+                  ) : (
+                    <div className="avatar-circle avatar-initial">
+                      {review.initial || review.name?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="top-info">
+                    <div className="review-name-mono">{review.name}</div>
+                    <div className="review-stars">{getStars(review.rating)}</div>
+                  </div>
                 </div>
+                <div className="review-text-block">{review.text}</div>
               </div>
-              <div className="review-text-block">{review.text}</div>
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );

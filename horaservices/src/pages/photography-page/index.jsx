@@ -93,7 +93,7 @@ const index = () => {
 
   return (
     <>
-      <div style={{ maxWidth: "800px", margin: "auto" }}>
+      <div style={{ maxWidth: "480px", margin: "auto" }}>
         <SeoMain city={city} locality={locality} scriptTag={scriptTag} />
         <div className="party-services homeslider">
           <div className="image-banner-slider">
