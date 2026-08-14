@@ -547,11 +547,12 @@ useEffect(() => {
 const handleWhatsAppClick = () => {
   const PHONE = "7338584828";
   const message = `Looking for a Custom Decoration? Our support team is ready to help!`;
-
+if (typeof window !== "undefined") {
   window.open(
     `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`,
     "_blank"
   );
+}
 };
   return (
     <div className="decCatPage">

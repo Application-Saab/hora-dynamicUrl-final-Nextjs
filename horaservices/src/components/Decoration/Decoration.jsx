@@ -254,7 +254,9 @@ const Decoration = ({ city, locality }) => {
     trackWAClicks();
     const phoneNumber = "7338584828";
     const message = encodeURIComponent("I want to customize a decoration");
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    if (typeof window !== "undefined") {
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    }
   };
   const handleSeeMoreClick = () => {
     setTimeout(() => {

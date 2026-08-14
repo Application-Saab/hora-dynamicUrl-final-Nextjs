@@ -44,6 +44,7 @@ const ChefCheckout = () => {
     const router = useRouter();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     const [combinedDateTime, setCombinedDateTime] = useState(null);
     const [combinedDateTimeError, setCombinedDateTimeError] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -60,6 +61,14 @@ const ChefCheckout = () => {
    
  const numericPeopleCount = Number(peopleCount) || 1;
 const dishBasePrice = Number(selectedDishPrice) || 0;
+
+useEffect(() => {
+  setIsClient(true);
+  const handleResize = () => setIsMobile(window.innerWidth < 800);
+  handleResize();
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
 
 
    const safeCharge = selectedCount >= 7 ? 700 : 0; 
@@ -81,10 +90,20 @@ const dishBasePrice = Number(selectedDishPrice) || 0;
         }
       }, [isLoggedIn]); // This will run when `isLoggedIn` state changes
 
+    const safeJsonParse = (value, fallback) => {
+        if (value == null || value === "") return fallback;
+        if (typeof value === "object") return value;
+        try {
+            return JSON.parse(value);
+        } catch {
+            return fallback;
+        }
+    };
+
     if (selectedDishDictionary) {
         try {
-            selectedDishDictionary = JSON.parse(selectedDishDictionary);
-            selectedDishes = JSON.parse(selectedDishes);
+            selectedDishDictionary = safeJsonParse(selectedDishDictionary, {});
+            selectedDishes = safeJsonParse(selectedDishes, []);
         } catch (error) {
             console.error('Error parsing selectedDishDictionary:', error);
         }
@@ -423,7 +442,7 @@ const contactUsRedirection = () => {
         <div className="App">
             {!isLoggedIn && isModalOpen && <OtpLoginPopup setIsModalOpen={setIsModalOpen} fromCheckout />} 
             {loading && <Loader />}
-            {isClient && window.innerWidth > 800 ?
+            {isClient && !isMobile ?
                 <div style={{ padding: "1% 2%", backgroundColor: "#edededc9" }}>
                     <div style={{ display: "flex", alignItems: "start", margin: "0 !important", padding: "10px 0" }}
                         className='checoutSec my-3 gap-3'>
@@ -536,7 +555,7 @@ const contactUsRedirection = () => {
                                     </div>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "top", flexWrap: "wrap" }}>
-                                    {Object.values(selectedDishDictionary).map((item) => {
+                                    {Object.values(selectedDishDictionary || {})?.map((item) => {
                                         return (
                                             <div className="ordersummaryproduct">
                                                 <div>
@@ -674,7 +693,7 @@ const contactUsRedirection = () => {
                                             Dishes Selected
                                         </h1>
                                         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", flexFlow: "wrap" }}>
-                                            {Object.values(selectedDishDictionary).map((item) => {
+                                            {Object.values(selectedDishDictionary || {})?.map((item) => {
                                                 return (
                                                     <div style={{ width: "48%", border: "1px solid rgb(149 142 142 / 73%)", flexDirection: "row", display: "flex", borderRadius: "10px", padding: "6px 10px", boxSizing: "border-box" }} className='dishes-checkout-page'>
                                                         <div style={{ marginRight: 2, width: "90%" }}>
@@ -717,7 +736,7 @@ const contactUsRedirection = () => {
                         </div>
                     </div>
 
-                    {window.innerWidth < 800 ?
+                    {isMobile ?
                         <div style={{
                             position: "fixed",
                             bottom: 0,
