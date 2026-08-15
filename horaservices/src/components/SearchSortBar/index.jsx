@@ -9,8 +9,8 @@ import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import { useLockBodyScroll } from "@/utils/Uselockbodyscroll";
 import { trackSearch } from "@/utils/track";
 import { useRouter } from "next/router";
-import searchIcon from "@/assets/searchbar.svg"
-import closeIcon from "@/assets/sortbar.svg"
+import searchIcon from "@/assets/searchbar.svg";
+import closeIcon from "@/assets/sortbar.svg";
 const sortOptions = [
   { id: "popularity", label: "Popularity" },
   { id: "newArrival", label: "New Arrival" },
@@ -19,20 +19,29 @@ const sortOptions = [
 ];
 
 // ---- Typewriter placeholder ke liye tuning values ----
-const TYPE_SPEED = 90;          // har character type hone ki speed (ms)
-const DELETE_SPEED = 45;        // har character delete hone ki speed (ms)
-const PAUSE_AFTER_TYPE = 1300;  // word poora type hone ke baad kitni der ruke (ms)
+const TYPE_SPEED = 90; // har character type hone ki speed (ms)
+const DELETE_SPEED = 45; // har character delete hone ki speed (ms)
+const PAUSE_AFTER_TYPE = 1300; // word poora type hone ke baad kitni der ruke (ms)
 const PAUSE_AFTER_DELETE = 300; // word poora delete hone ke baad next word se pehle pause (ms)
 const DEFAULT_PLACEHOLDER = "Search Themes";
 
 function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
-  // Sort sheet open hote hi background scroll lock ho jayega
-  useLockBodyScroll(isOpen);
+  const [mounted, setMounted] = useState(false);
 
-  if (typeof window === "undefined") return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useLockBodyScroll(isOpen && mounted);
+
+  // Server + pehla client render dono pe null → hydration match
+  if (!mounted) return null;
 
   return createPortal(
-    <div className={`sort-overlay ${isOpen ? "sort-overlay-open" : ""}`} onClick={onClose}>
+    <div
+      className={`sort-overlay ${isOpen ? "sort-overlay-open" : ""}`}
+      onClick={onClose}
+    >
       <div className="sort-sheet-container">
         {isOpen && (
           <button
@@ -47,7 +56,10 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
             <X size={22} strokeWidth={2.25} />
           </button>
         )}
-        <div className={`sort-sheet ${isOpen ? "sort-sheet-open" : ""}`} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={`sort-sheet ${isOpen ? "sort-sheet-open" : ""}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           <h3 className="sort-title">Sort</h3>
           <hr className="sort-divider" />
           {sortOptions.map((opt) => {
@@ -61,7 +73,9 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
                 aria-checked={isSelected}
                 tabIndex={0}
               >
-                <span className={`sort-radio ${isSelected ? "sort-radio-selected" : ""}`} />
+                <span
+                  className={`sort-radio ${isSelected ? "sort-radio-selected" : ""}`}
+                />
                 <span className="sort-option-label">{opt.label}</span>
               </div>
             );
@@ -69,7 +83,7 @@ function SortSheet({ isOpen, onClose, sortOption, onSelect }) {
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -89,14 +103,14 @@ function SearchDropdown({
   const matchingCategories = useMemo(() => {
     if (!normalizedQuery) return [];
     return (searchCategoryList || []).filter((c) =>
-      c.label?.toLowerCase().includes(normalizedQuery)
+      c.label?.toLowerCase().includes(normalizedQuery),
     );
   }, [searchCategoryList, normalizedQuery]);
 
   const matchingProducts = useMemo(() => {
     if (!normalizedQuery) return [];
     return (products || []).filter((p) =>
-      (p.name || p.product_name || "").toLowerCase().includes(normalizedQuery)
+      (p.name || p.product_name || "").toLowerCase().includes(normalizedQuery),
     );
   }, [products, normalizedQuery]);
 
@@ -111,7 +125,8 @@ function SearchDropdown({
     ? matchingProducts
     : matchingProducts.slice(0, PRODUCT_LIMIT);
 
-  const hasNoResults = matchingCategories.length === 0 && matchingProducts.length === 0;
+  const hasNoResults =
+    matchingCategories.length === 0 && matchingProducts.length === 0;
 
   const getProductThumb = (item) => {
     if (categoryType === "photography") {
@@ -145,15 +160,16 @@ function SearchDropdown({
         <div className="search-section">
           <div className="search-section-header">
             <span>Matching Categories</span>
-            {matchingCategories.length > CATEGORY_LIMIT && !showAllCategories && (
-              <button
-                type="button"
-                className="search-view-all-btn"
-                onClick={() => setShowAllCategories(true)}
-              >
-                View All
-              </button>
-            )}
+            {matchingCategories.length > CATEGORY_LIMIT &&
+              !showAllCategories && (
+                <button
+                  type="button"
+                  className="search-view-all-btn"
+                  onClick={() => setShowAllCategories(true)}
+                >
+                  View All
+                </button>
+              )}
           </div>
 
           {visibleCategories.map((cat) => (
@@ -164,7 +180,12 @@ function SearchDropdown({
             >
               <div className="search-category-thumb">
                 {cat.image && (
-                  <Image src={cat.image} alt={cat.label} fill style={{ objectFit: "cover" }} />
+                  <Image
+                    src={cat.image}
+                    alt={cat.label}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
                 )}
               </div>
               <div className="search-category-info">
@@ -195,12 +216,18 @@ function SearchDropdown({
                     <img
                       src={thumb}
                       alt={product.name || "product"}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
                     />
                   )}
                 </div>
                 <div className="search-product-name">{product.name}</div>
-                <div className="search-product-price">{getProductPrice(product)}</div>
+                <div className="search-product-price">
+                  {getProductPrice(product)}
+                </div>
               </div>
             );
           })}
@@ -243,7 +270,7 @@ export default function SearchSortBar({
   const route = useRouter();
 
   const pathname = route.asPath;
- 
+
   const queryRef = useRef(query);
   useEffect(() => {
     queryRef.current = query;
@@ -257,9 +284,9 @@ export default function SearchSortBar({
     return words.length ? words : [DEFAULT_PLACEHOLDER];
   }, [searchCategoryList]);
 
- useEffect(() => {
+  useEffect(() => {
     if (query.trim().length > 0 || isFocused) {
-     return;
+      return;
     }
 
     let wordIdx = 0;
@@ -327,7 +354,7 @@ export default function SearchSortBar({
   const commitSearch = useCallback(() => {
     const trimmed = queryRef.current.trim();
     onSearchChange?.(trimmed);
-    trackSearch({ searchTerm: trimmed, userId, pageName : pathname });
+    trackSearch({ searchTerm: trimmed, userId, pageName: pathname });
   }, [onSearchChange, userId]);
 
   // Close dropdown on outside click / Escape
@@ -384,20 +411,20 @@ export default function SearchSortBar({
     }
   };
 
-const handleCategoryClick = (cat) => {
-  trackSearch({
-    searchTerm: query,
-    clickedItemId: null, 
-    clickedTitle: cat.label,
-    clickedType: "category",
-    userId,
-    pageName: pathname
-  });
-  setIsDropdownOpen(false);
-  setQuery("");
-  onSearchChange?.("");
-  onCategorySelect?.(cat);
-};
+  const handleCategoryClick = (cat) => {
+    trackSearch({
+      searchTerm: query,
+      clickedItemId: null,
+      clickedTitle: cat.label,
+      clickedType: "category",
+      userId,
+      pageName: pathname,
+    });
+    setIsDropdownOpen(false);
+    setQuery("");
+    onSearchChange?.("");
+    onCategorySelect?.(cat);
+  };
 
   const handleProductClick = (product) => {
     trackSearch({
@@ -406,7 +433,7 @@ const handleCategoryClick = (cat) => {
       clickedTitle: product.name,
       clickedType: "product",
       userId,
-      pageName : pathname
+      pageName: pathname,
     });
     setIsDropdownOpen(false);
     setQuery("");
@@ -421,13 +448,12 @@ const handleCategoryClick = (cat) => {
         className="search-sort-placeholder"
         style={{ height: isFixed ? topBarRef.current?.offsetHeight || 0 : 0 }}
       />
-      <div className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`} ref={topBarRef}>
+      <div
+        className={`search-sort-top-bar ${isFixed ? "fixed" : ""}`}
+        ref={topBarRef}
+      >
         <div className="search-box">
-       <Image
-  src={searchIcon}
-  alt="Search"
-  className="search-icons"
-/>
+          <Image src={searchIcon} alt="Search" className="search-icons" />
           <input
             type="text"
             placeholder={placeholderText}
@@ -466,11 +492,7 @@ const handleCategoryClick = (cat) => {
             setIsSortOpen(true);
           }}
         >
-             <Image
-  src={closeIcon}
-  alt="Close"
-  className="sort-close-icon"
-/>
+          <Image src={closeIcon} alt="Close" className="sort-close-icon" />
           Sort by
         </button>
       </div>

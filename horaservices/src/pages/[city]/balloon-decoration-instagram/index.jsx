@@ -1,6 +1,6 @@
 "use client";
 
-import Decoration from "@/pages/balloon-decoration";
+import Decoration from "@/components/Decoration/Decoration";
 import { useParams } from "next/navigation";
 
 const BalloonDecorationInstagramCity = () => {

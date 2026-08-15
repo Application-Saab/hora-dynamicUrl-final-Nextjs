@@ -1,0 +1,242 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap");
+.decCatPage {
+      margin-top: 10px;
+    max-width:480px;
+    margin:auto;
+}
+
+/* === Page Header === */
+.pageHeader {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.mainHeading {
+  font-size: 16px;
+  color: #9252aa;
+  padding-top: 14px;
+}
+.noProductsWrapper h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #97538c;
+  margin-bottom: 8px;
+    text-align: center;
+  padding: 60px 16px;
+}
+
+.priceContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sentinel {
+  height: 1px;
+}
+
+.noData {
+  text-align: center;
+  width: 100%;
+  padding: 20px 0;
+}
+
+/* === Category === */
+.categoryContent {
+  padding: 20px;
+}
+
+.categoryItem {
+  margin-bottom: 20px;
+}
+
+.itemContent {
+  margin-top: 10px;
+}
+
+.noContentMessage {
+  text-align: center;
+  font-weight: 500;
+}
+
+.toggleBtn {
+  background-color: #9252aa;
+  color: #fff;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  margin: 10px auto;
+  display: block;
+  cursor: pointer;
+}
+
+.decorationBanner{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.decorationBanner-image {
+  width: 100%;
+  height: auto;
+  
+}
+.highlight-wrapper {
+  text-align: center;
+  padding: 30px 10px;
+  background: #fff;
+  max-width: 100%;
+}
+
+.highlight-title {
+  font-size: 18px;
+  color: #8a3f98;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.highlight-cards {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.highlight-card {
+  background: #f9f9f9;
+  border-radius: 10px;
+  width: calc((100% - 16px) / 3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  padding:  5px;
+  box-sizing: border-box;
+}
+
+.highlight-card:hover {
+  transform: scale(1.05);
+}
+
+.highlight-card p {
+  font-size: 10px;
+  font-weight: 600;
+  color: #333;
+  margin-top: 10px;
+  line-height: 1.3;
+}
+/* ======================================================================================================= */
+/* .category-content {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+} */
+
+.category-content h1 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.item-content {
+  font-size: 16px;
+  /* line-height: 1.8; */
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.no-content-message {
+  font-size: 18px;
+  color: #999;
+  text-align: center;
+  padding: 30px;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+}
+
+.category-item {
+  margin-bottom: 10px;
+  padding: 15px 15px 0 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.item-content ul li{
+  list-style:none
+}
+.category-tabs-container{
+   padding: 0px 0px 0px 10px ;
+}
+@media only screen and (max-width: 600px) {
+  .category-content {
+    padding: 15px;
+  }
+
+  .category-content h1 {
+    font-size: 15px;
+  }
+
+  .item-content {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .category-item {
+    margin-bottom: 10px;
+  }
+
+  .no-content-message {
+    font-size: 16px;
+    padding: 20px;
+  }
+}
+
+.toggle-btn {
+  background-color: rgb(150, 82, 141);
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 15px;
+  display: inline-block;
+}
+
+.toggle-btn:hover {
+  background-color: rgb(120, 62, 100);
+  transform: scale(1.05);
+}
+
+.toggle-btn:focus {
+  outline: none;
+}
+
+.toggle-btn:active {
+  transform: scale(0.95);
+}
+
+
+.skeleton-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ 2 per row */
+  gap: 20px;
+  justify-items: center;
+  padding: 10px 20px;
+}
+
+.filterBar { /* wrapper — only spacing */
+  margin:auto;
+}
+.filterBarInner {
+  position: sticky;
+  top: 70px;  /* aapke header ki height ke hisaab se */
+  background: #fff;
+  z-index: 999;
+}

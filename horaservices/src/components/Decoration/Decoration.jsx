@@ -45,22 +45,6 @@ import decorationWedding from "@/assets/decorationwedding.webp";
 import decorationBridetobe from "@/assets/decorationBride-tobe.webp";
 import decorationhaldi from "@/assets/decorationhaldi-Mhendi.webp";
 import Engagementdecoration from "@/assets/engament.webp";
-// const ReviewSlider = dynamic(() => import("@/components/ReviewSection"), {
-//   ssr: false,
-// });
-
-// const BannerSlider = dynamic(() => import("@/components/BannerSlider"), {
-//   ssr: false,
-// });
-
-// const DecorSlider = dynamic(() => import("@/components/DecorSlider"), {
-//   ssr: false,
-// });
-
-// const ProductSliderSection = dynamic(
-//   () => import("@/components/ProductSliderSection"),
-//   { ssr: false },
-// );
 const BannerSlider = dynamic(() => import("@/components/BannerSlider"));
 const DecorSlider = dynamic(() => import("@/components/DecorSlider"));
 const ProductSliderSection = dynamic(() => import("@/components/ProductSliderSection"));

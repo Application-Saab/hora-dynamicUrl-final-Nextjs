@@ -1,37 +1,33 @@
-"use client";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import React from 'react';
+import { useEffect, useState, useRef, useMemo } from "react";
+import React from "react";
 
 import {
   BASE_URL,
   GET_DECORATION_CAT_ID,
   GET_DECORATION_CAT_ITEM,
   API_SUCCESS_CODE,
-} from "../../../utils/apiconstants";
+} from "../../utils/apiconstants";
 import { useSelector } from "react-redux";
-import Head from "next/head";
-import { useSearchParams } from "next/navigation";
-import { getDecorationCatOrganizationSchema } from "../../../utils/schema";
-import { setState } from "../../../actions/action";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
-import logo from "../../../assets/new_logo_light.png";
+import {
+  getSubCategory,
+  getDiscountedPrice,
+  getRandomNumber,
+  getRandomRating,
+} from "@/utils/decorationCatHelpers";
 import DecorationCatDescriptionData from "@/utils/decorationCatDescritionData";
 import { NamingCeremonyThemes, themeFilters } from "@/utils/themeFilters";
 import "./catvaluedecor.css"
 import ProductGrid from "@/components/productGrid";
 import FilterBar from "@/components/FilterBar";
-import customize from "../../../assets/Customizetationbanner.webp";
-import DidyouKnow from "../../../assets/didyouknow.jpg";
-import makeItMemorable from "../../../assets/makeitmemorable.png";
-import steps from "../../../assets/steps.webp";
-import makeitmemorablebanner from "../../../assets/makeitmemorablebanner.png";
-import googleRating from "../../../assets/goglerating.png";
-import Gurantee from "../../../assets/gurantee.jpg";
-import ontime from "../../../assets/ontime.png"
+import DidyouKnow from "../../assets/didyouknow.jpg";
+import makeItMemorable from "../../assets/makeitmemorable.png";
+import steps from "../../assets/steps.webp";
+import makeitmemorablebanner from "../../assets/makeitmemorablebanner.png";
+import googleRating from "../../assets/goglerating.png";
+import Gurantee from "../../assets/gurantee.jpg";
+import ontime from "../../assets/ontime.png";
 import CategoryTabs from "@/components/CategoryTabs/index.jsx";
 import CardSkeleton from "@/components/CardSkeleton";
 import HighPriceProduct from "@/components/Highpriceproduct";
@@ -44,60 +40,57 @@ import DecorationBanner from "@/components/CategoryDecorationBanner";
 import EventDateBanner from "@/components/Eventdatebanner";
 import axiosApi from "@/utils/axiosApi";
 import MakeItYoursBanner from "@/components/MakeItYoursBanner";
-const DecorationCatPage = ({ locality }) => {
-  const dispatch = useDispatch();
+const DecorationCatPage = ({
+  city: cityProp = "",
+  locality = null,
+  catValue: catValueProp = "",
+  initialCatalogueData = [],
+  initialCatId = "",
+  initialHasMore = false,
+}) => {
   const router = useRouter();
-  const pathname = usePathname();
-  const [city, setCity] = useState("");
-  const [catValue, setCatValue] = useState("");
+  const pathname = router.asPath.split("?")[0];
+  const skipInitialFetch = useRef(initialCatalogueData.length > 0);
+
+  const [city, setCity] = useState(cityProp || "");
+  const [catValue, setCatValue] = useState(catValueProp || "");
 
   useEffect(() => {
-    if (router.isReady) {
-      const { catValue: queryCatValue, city: queryCity } = router.query;
-
-      if (queryCatValue) {
-        setCatValue(queryCatValue);
-      }
-
-      if (queryCity) {
-        setCity(queryCity);
-      }
-    } else {
-      const path = window.location.pathname;
-      const parts = path.split("/");
-      const dynamicValue = parts[2];
-      setCatValue(dynamicValue);
+    if (catValueProp) {
+      setCatValue(catValueProp);
+    } else if (router.isReady && router.query.catValue) {
+      setCatValue(router.query.catValue);
     }
-  }, [router.isReady, router.query]);
 
-  const altTagCatValue = catValue.replace(/-/g, " ");
-  const [orderType, setOrderType] = useState(1);
-  const hasCityPageParam = city ? true : false;
-  const containerRef = useRef(null);
+    if (cityProp) {
+      setCity(cityProp);
+    } else if (router.isReady && router.query.city) {
+      setCity(String(router.query.city));
+    }
+  }, [router.isReady, router.query, catValueProp, cityProp]);
+
+  const hasCityPageParam = !!city;
   const [selCat, setSelCat] = useState("");
-  const [catId, setCatId] = useState("");
+  const [catId, setCatId] = useState(initialCatId || "");
   const [showAll, setShowAll] = useState(false);
   const [currentCategoryContent, setCurrentCategoryContent] = useState(
-    DecorationCatDescriptionData[catValue] || []
+    DecorationCatDescriptionData[catValueProp || catValue] || []
   );
   const { theme } = router.query;
-  const [loading, setLoading] = useState(true);
-const [isPaginating, setIsPaginating] = useState(false); // 👈 naya
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [discountedPrice, setDiscountedPrice] = useState(0);
-  const [discountDifference, setDiscountDifference] = useState(0);
+  const hasInitialData = initialCatalogueData.length > 0;
+  const [loading, setLoading] = useState(!hasInitialData);
+  const [isPaginating, setIsPaginating] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(!hasInitialData);
   const [currentPage, setCurrentPage] = useState(1);
-  const [catalogueData, setCatalogueData] = useState([]);
-  const [defaultCatalogueData, setDefaultCatalogueData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [catalogueData, setCatalogueData] = useState(initialCatalogueData);
+  const [defaultCatalogueData, setDefaultCatalogueData] =
+    useState(initialCatalogueData);
+  const [hasMore, setHasMore] = useState(
+    hasInitialData ? initialHasMore : true
+  );
   const [themeFilter, setThemeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const schemaOrg = getDecorationCatOrganizationSchema(catValue);
-  const scriptTag = JSON.stringify(schemaOrg);
-  const searchParams = useSearchParams();
-  const selectedTheme = searchParams.get("theme");
+  const selectedTheme = router.query.theme;
   const isThemePage = !!selectedTheme;
 
   // ---- Price-range theme selector state (Budget / Value / Photogenic / Stage) ----
@@ -190,69 +183,12 @@ const [isPaginating, setIsPaginating] = useState(false); // 👈 naya
     return [];
   }, [catValue]);
 
-  function getSubCategory(catValue) {
-    if (!catValue) {
-      const path = window.location.pathname;
-      const parts = path.split("/");
-      const dynamicValue = parts[2];
-      return dynamicValue;
-    }
-
-    if (catValue === "birthday-decoration") {
-      return "Birthday";
-    } else if (catValue === "anniversary-decoration") {
-      return "Anniversary";
-    } else if (catValue === "haldi-mehendi-decoration") {
-      return "Haldi-Mehandi";
-    } else if (catValue === "first-night-decoration") {
-      return "FirstNight";
-    } else if (catValue === "baby-shower-decoration") {
-      return "BabyShower";
-    } else if (catValue === "welcome-baby-decoration") {
-      return "WelcomeBaby";
-    } else if (catValue === "premium-decoration") {
-      return "PremiumDecoration";
-    } else if (catValue === "bachelorette-decoration") {
-      return "bachelorette";
-    } else if (catValue === "naming-ceremony-decoration") {
-      return "NamingCeremony";
-    } else if (catValue === "coorporate-showrooms-decoration") {
-      return "Coorporateshowrooms"
-    } else if (catValue === "car-decoration") {
-      return "CarDecoration"
-    } else if (catValue === "festivals-decoration") {
-      return "Festivals"
-    } else if (catValue === "pet-animals-decoration") {
-      return "PetAnimalsDecoration";
-    } else if (catValue === "engagement-decoration") {
-      return "Engagementdecoration"
-    } else {
-      const parts = catValue.split("-");
-      return parts
-        .slice(0, 2)
-        .map(
-          (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-        )
-        .join("");
-    }
-  }
-
-  const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector(
+  const { subCategory: stateSubCategory } = useSelector(
     (state) => state.state || {}
   );
   const subCategory = getSubCategory(catValue) || stateSubCategory;
-  const imgAlt = stateImgAlt || "default alt text";
 
-  // Search tracking ke liye — apni actual redux auth slice ke naam se adjust kar lena
   const { userId } = useSelector((state) => state.auth || {});
-
-  const getRandomNumber = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  const getRandomRating = () => {
-    return (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
-  };
 
   useEffect(() => {
     // Price-range segmentation (Budget/Value/Photogenic/Stage) aur
@@ -270,8 +206,10 @@ const [isPaginating, setIsPaginating] = useState(false); // 👈 naya
 
   useEffect(() => {
     addSpaces(subCategory);
-    getSubCatId(subCategory);
-  }, [subCategory]);
+    if (!initialCatId) {
+      getSubCatId(subCategory);
+    }
+  }, [subCategory, initialCatId]);
 
   useEffect(() => {
     const handleStickyScroll = () => {
@@ -342,33 +280,9 @@ useEffect(() => {
     }
   };
 
-  const getDiscountedPrice = (price) => {
-    let discount;
-    if (price < 3000) {
-      discount = 20;
-    } else if (price >= 3000 && price <= 5000) {
-      discount = 27;
-    } else {
-      discount = 35;
-    }
+  const getDiscountedPriceLocal = getDiscountedPrice;
 
-    const discountedPrice = price * (1 + discount / 100);
-    const discountDifference = Math.abs(price - discountedPrice);
-    return { discount, discountedPrice, discountDifference };
-  };
-
-  // Re-fetch page 1 whenever anything that changes the *query* (as opposed to
-  // just the page number) changes: category, theme, sort order, the
-  // price-range theme (Budget/Value/Photogenic/Stage), or a text search.
-  useEffect(() => {
-    if (catId) {
-      setCatalogueData([]);
-      setCurrentPage(1);
-      getSubCatItems(1);
-    }
-  }, [catId, themeFilter, sortOption, selectedPriceTheme, searchQuery]);
-
- const getSubCatItems = async (page) => {
+  const getSubCatItems = async (page) => {
     if (!catId) return;
 
     try {
@@ -413,7 +327,8 @@ useEffect(() => {
       if (response.status === API_SUCCESS_CODE) {
         const decoratedData = response.data.data.map((item) => {
           const numericPrice = Number(item.price);
-          const { discount, discountedPrice, discountDifference } = getDiscountedPrice(numericPrice);
+          const { discount, discountedPrice, discountDifference } =
+            getDiscountedPriceLocal(numericPrice);
           return {
             ...item,
             price: numericPrice,
@@ -445,13 +360,6 @@ useEffect(() => {
       setIsInitialLoad(false);
     }
   };
-
-  function trimText(text) {
-    if (text.length > 60) {
-      return text.slice(0, 60) + "...";
-    }
-    return text;
-  }
 
   const normalizeCatValue = (val) => {
     if (!val) return "";
@@ -528,11 +436,9 @@ useEffect(() => {
   const sortedCatalogueData = catalogueData;
   const priceThemeFilteredData = catalogueData;
 
-  const shouldShowSearchBar =
-    isPriceThemeSelectorPage ||
-    catValue?.toLowerCase() === "naming-ceremony-decoration";
-
-  const highPriceProducts = sortedCatalogueData.filter((item) => Number(item.price) > 11000);
+  const highPriceProducts = sortedCatalogueData.filter(
+    (item) => Number(item.price) > 11000
+  );
 
   // Small reusable skeleton block used whenever we're (re)fetching after a
   // filter/theme/sort/search change, so the UI never has to guess "empty" vs
@@ -547,13 +453,13 @@ useEffect(() => {
 const handleWhatsAppClick = () => {
   const PHONE = "7338584828";
   const message = `Looking for a Custom Decoration? Our support team is ready to help!`;
-if (typeof window !== "undefined") {
+
   window.open(
     `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`,
     "_blank"
   );
-}
 };
+
   return (
     <div className="decCatPage">
       <SeoHead

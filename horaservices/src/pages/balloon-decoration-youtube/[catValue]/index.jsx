@@ -20,121 +20,99 @@ import axiosApi from "@/utils/axiosApi";
 const DecorationCatPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  //   let { city } = useParams();
-  const [city, setCity] = useState('');
-  const [catValue, setCatValue] = useState('');
+
+  const [city, setCity] = useState("");
+  const [catValue, setCatValue] = useState("");
+
+  // ✅ SSR safe — window NAHI
   useEffect(() => {
-    if (router.isReady) {
-      const { catValue: queryCatValue, city: queryCity } = router.query;
+    if (!router.isReady) return;
 
-      if (queryCatValue) {
-        setCatValue(queryCatValue);
-        //alert(`catValue: ${queryCatValue}`);
-      }
+    const { catValue: queryCatValue, city: queryCity } = router.query;
 
-      if (queryCity) {
-        setCity(queryCity);
-        ///alert(`city: ${queryCity}`);
-      }
-      
+    if (queryCatValue) {
+      setCatValue(
+        Array.isArray(queryCatValue) ? queryCatValue[0] : queryCatValue
+      );
     }
-    else {
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split('/'); // Split by '/'
-      const dynamicValue = parts[2];
-
-      setCatValue(dynamicValue);
-
+    if (queryCity) {
+      setCity(Array.isArray(queryCity) ? queryCity[0] : queryCity);
     }
   }, [router.isReady, router.query]);
-  const altTagCatValue = catValue.replace(/-/g, ' ');
+
+  const altTagCatValue = (catValue || "").replace(/-/g, " ");
   const [orderType, setOrderType] = useState(1);
   const hasCityPageParam = city ? true : false;
-  //   const { catValue } = useParams();
   const [selCat, setSelCat] = useState("");
   const [catId, setCatId] = useState("");
   const [showAll, setShowAll] = useState(false);
   const currentCategoryContent = DecorationCatDescriptionData[catValue] || [];
   const [loading, setLoading] = useState(true);
-  const [discountPercentage, setDiscountPercentage] = useState(0); // State for the discount percentage
-  const [discountedPrice, setDiscountedPrice] = useState(0); // State for the discounted price
-  const [discountDifference , setDiscountDifference] = useState(0)
+  const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
+  const [discountDifference, setDiscountDifference] = useState(0);
   const [catalogueData, setCatalogueData] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null); // State to track hovered container index
-  //   const navigate = useNavigate();
-  const [priceFilter, setPriceFilter] = useState("all"); // Default: Show all
-  const [themeFilter, setThemeFilter] = useState("all"); // Default: Show all
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [themeFilter, setThemeFilter] = useState("all");
   const schemaOrg = getDecorationCatOrganizationSchema(catValue);
   const scriptTag = JSON.stringify(schemaOrg);
-  const themeFilters = [
-    { label: 'Select Theme', value: 'all' },
-    { label: 'Astronaut space theme', value: 'Astronaut-space' },
-    { label: 'Avengers theme', value: 'Avengers' },
-    { label: 'Boss baby theme', value: 'Boss' },
-    { label: 'Baby shark theme', value: 'shark' },
-    { label: 'Barbie theme', value: 'Barbie' },
-    { label: 'Cocomelon Theme', value: 'Cocomelon' },
-    { label: 'Car Theme', value: 'car' },
-    { label: 'Circus Theme', value: 'Circus' },
-    { label: 'Dinosaur Theme', value: 'Dinosaur' },
-    { label: 'Elsa Theme', value: 'Elsa' },
-    { label: 'Flamingo Theme', value: 'Flamingo' },
-    { label: 'Jungle Theme', value: 'Jungle' },
-    { label: 'Kitty Theme', value: 'Kitty' },
-    { label: 'Lion King', value: 'Lion' },
-    { label: 'Mickey Mouse Theme', value: 'Mickey-Mouse' },
-    { label: 'Mickey and Minnie Theme', value: 'Mickey-Minnie' },
-    { label: 'Minecraft Theme', value: 'Minecraft' },
-    { label: 'Mermaid Theme', value: 'Mermaid' },
-    { label: 'Pokemon and Pikachu theme', value: 'Pikachu-Pokemon' },
-    { label: 'Princess Theme', value: 'Princess' },
-    { label: 'Panda Theme', value: 'Panda' },
-    { label: 'Traffic Theme', value: 'Traffic' },
-    { label: 'Super dogs theme', value: 'dogs' },
-    { label: 'Super Hero theme', value: 'Hero' },
-    { label: 'Sport Football theme', value: 'Football' },
-    { label: 'Unicorn Theme', value: 'Unicorn' },
-  ];
-  function getSubCategory(catValue) {
-    if (!catValue){
-      
-      const path = window.location.pathname; // e.g., /balloon-decoration/kids-birthday-decoration
-      const parts = path.split('/'); // Split by '/'
-      const dynamicValue = parts[2];
-      return dynamicValue
-    }
 
-    if (catValue === 'birthday-decoration') {
-      return 'Birthday';
-    } 
-    else if (catValue === 'anniversary-decoration') {
-      return 'Anniversary';
-    }
-    else if (catValue === 'haldi-mehendi-decoration') {
-    return 'Haldi-Mehandi';
-  } else if (catValue === 'first-night-decoration') {
-    return 'FirstNight';
-  } else if (catValue === 'baby-shower-decoration') {
-    return 'BabyShower';
-  } else if (catValue === 'welcome-baby-decoration') {
-    return 'WelcomeBaby';
-  } else if (catValue === 'premium-decoration') {
-    return 'PremiumDecoration';
-  } else if (catValue === 'bachelorette-decoration') {
-    return 'bachelorette';
-  } else {
-      const parts = catValue.split('-'); // Split by hyphens
-      return parts.slice(0, 2) // Take only the first two parts
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()) // Capitalize each part
-        .join(''); // Join parts together without spaces
-    }
+  const themeFilters = [
+    { label: "Select Theme", value: "all" },
+    { label: "Astronaut space theme", value: "Astronaut-space" },
+    { label: "Avengers theme", value: "Avengers" },
+    { label: "Boss baby theme", value: "Boss" },
+    { label: "Baby shark theme", value: "shark" },
+    { label: "Barbie theme", value: "Barbie" },
+    { label: "Cocomelon Theme", value: "Cocomelon" },
+    { label: "Car Theme", value: "car" },
+    { label: "Circus Theme", value: "Circus" },
+    { label: "Dinosaur Theme", value: "Dinosaur" },
+    { label: "Elsa Theme", value: "Elsa" },
+    { label: "Flamingo Theme", value: "Flamingo" },
+    { label: "Jungle Theme", value: "Jungle" },
+    { label: "Kitty Theme", value: "Kitty" },
+    { label: "Lion King", value: "Lion" },
+    { label: "Mickey Mouse Theme", value: "Mickey-Mouse" },
+    { label: "Mickey and Minnie Theme", value: "Mickey-Minnie" },
+    { label: "Minecraft Theme", value: "Minecraft" },
+    { label: "Mermaid Theme", value: "Mermaid" },
+    { label: "Pokemon and Pikachu theme", value: "Pikachu-Pokemon" },
+    { label: "Princess Theme", value: "Princess" },
+    { label: "Panda Theme", value: "Panda" },
+    { label: "Traffic Theme", value: "Traffic" },
+    { label: "Super dogs theme", value: "dogs" },
+    { label: "Super Hero theme", value: "Hero" },
+    { label: "Sport Football theme", value: "Football" },
+    { label: "Unicorn Theme", value: "Unicorn" },
+  ];
+
+  // ✅ SSR safe — window NAHI
+  function getSubCategory(val) {
+    if (!val) return "";
+
+    if (val === "birthday-decoration") return "Birthday";
+    if (val === "anniversary-decoration") return "Anniversary";
+    if (val === "haldi-mehendi-decoration") return "Haldi-Mehandi";
+    if (val === "first-night-decoration") return "FirstNight";
+    if (val === "baby-shower-decoration") return "BabyShower";
+    if (val === "welcome-baby-decoration") return "WelcomeBaby";
+    if (val === "premium-decoration") return "PremiumDecoration";
+    if (val === "bachelorette-decoration") return "bachelorette";
+
+    const parts = val.split("-");
+    return parts
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join("");
   }
 
-  // UseSelector to get state from Redux
-  const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector((state) => state.state || {});
-  // Determine the value for subCategory and imgAlt
-  const subCategory = getSubCategory(catValue) || stateSubCategory  ;
-  const imgAlt = stateImgAlt || 'default alt text'; // Replace with a default alt text if needed
+  const { subCategory: stateSubCategory, imgAlt: stateImgAlt } = useSelector(
+    (state) => state.state || {}
+  );
+  const subCategory = getSubCategory(catValue) || stateSubCategory || "";
+  const imgAlt = stateImgAlt || "default alt text";
   const getRandomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
@@ -145,28 +123,26 @@ const DecorationCatPage = () => {
   };
 
 
-  useEffect(() => {
-    addSpaces(subCategory);
-    getSubCatId(subCategory); // Fetch category ID based on the selected subcategory
-    window.addEventListener('scroll', handleScroll); // Add scroll event listener
+useEffect(() => {
+  if (!subCategory) return;
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll); // Cleanup on unmount
-    };
-  }, [subCategory]);
+  addSpaces(subCategory);
+  getSubCatId(subCategory);
 
   const handleScroll = () => {
-    const filterElement = document.querySelector('.filterdropdown');
-    if (filterElement) {
-      if (window.scrollY > 50) {
-        filterElement.classList.add('sticky');
-      } else {
-        filterElement.classList.remove('sticky');
-      }
+    const filterElement = document.querySelector(".filterdropdown");
+    if (!filterElement) return;
+    if (window.scrollY > 50) {
+      filterElement.classList.add("sticky");
+    } else {
+      filterElement.classList.remove("sticky");
     }
   };
 
-  
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [subCategory]);
+
   const filteredData = catalogueData.filter(item => {
     let priceCondition = true;
     let themeCondition = true;
