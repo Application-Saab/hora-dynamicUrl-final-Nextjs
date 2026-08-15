@@ -3,28 +3,8 @@ import fallbackImg from "@/assets/fallback-image.png";
 import { COMPRESSED_WEBP_IMG_URL } from "@/utils/apiconstants";
 import "./PhotoPackageGrid.css";
 
-// icon images
-import editedTeaser from "@/assets/inclusionIcons/editedTeaser.svg";
-import unlimitedPhotos from "@/assets/inclusionIcons/unlimitedPhotos.svg";
-import editedPhotos from "@/assets/inclusionIcons/editedPhotos.svg";
-import candidShots from "@/assets/inclusionIcons/candidShots.svg";
-import traditionalVideo from "@/assets/inclusionIcons/traditionalVideo.svg";
-import saveTheDateReel from "@/assets/inclusionIcons/traditionalVideo.svg";
-import posedShots from "@/assets/inclusionIcons/posedShots.svg";
-import umbrellaLight from "@/assets/inclusionIcons/umbrellaLight.svg";
-import colorCorrection from "@/assets/inclusionIcons/colorCorrection.svg";
-import album from "@/assets/inclusionIcons/album.svg";
-import basicProps from "@/assets/inclusionIcons/basicProps.svg";
-import uniqueThemes from "@/assets/inclusionIcons/uniqueThemes.svg";
-import heavyProps from "@/assets/inclusionIcons/heavyProps.svg";
-import digitalTheme from "@/assets/inclusionIcons/digitalTheme.svg";
-import themeBackdrop from "@/assets/inclusionIcons/themeBackdrop.svg";
-import premiumGrows from "@/assets/inclusionIcons/Premiumgown.svg";
-import premiumProp from "@/assets/inclusionIcons/premiumProp.svg";
-import maternityProp from "@/assets/inclusionIcons/maternityProp.svg";
 import arrowicon from "@/assets/arrowicon.svg";
-import  cinematic from "@/assets/inclusionIcons/CinematicVideo.svg";
-import twin from "@/assets/inclusionIcons/Twinmegacollageprints.svg";
+import { TAG_RULES } from "@/utils/photoPackageTags";
 
 const getImageUrl = (item) => {
   let fileName = null;
@@ -43,37 +23,15 @@ const getImageUrl = (item) => {
   return `${COMPRESSED_WEBP_IMG_URL}${fileName.split(".")[0]}.webp`;
 };
 
-// EXACTLY these 17 tags. "words" = ALL of these must appear (as substrings) in the
-// inclusion line for it to match. A single line can match MULTIPLE tags now.
-const TAG_RULES = [
-  { words: ["unlimited"], title: "Unlimited", subtitle: "Photos", icon: unlimitedPhotos },
-  { words: ["traditional", "video"], title: "Traditional", subtitle: "Video", icon: traditionalVideo },
-  { words: ["teaser"], title: "Edited", subtitle: "Teaser", icon: editedTeaser },
-  { words: ["edited", "photo"], title: "Edited", subtitle: "Photos", icon: editedPhotos },
-  { words: ["candid"], title: "Candid", subtitle: "Shots", icon: candidShots},
-  { words: ["posed"], title: "Posed", subtitle: "Shots", icon: posedShots },
-  { words: ["umbrella"], title: "Umbrella", subtitle: "Light", icon: umbrellaLight },
-  { words: ["color"], title: "Color", subtitle: "Correction", icon: colorCorrection},
-  { words: ["colour"], title: "Color", subtitle: "Correction", icon: colorCorrection },
-  { words: ["album"], title: "Album", subtitle: "", icon: album },
-  { words: ["basic", "prop"], title: "Basic", subtitle: "Props", icon: basicProps },
-  { words: ["unique", "theme"], title: "Unique", subtitle: "Themes", icon: uniqueThemes },
-  { words: ["heavy", "prop"], title: "Heavy", subtitle: "Props", icon: heavyProps },
-  { words: ["digital", "theme"], title: "Digital", subtitle: "Theme", icon: digitalTheme },
-  { words: ["theme", "backdrop"], title: "Theme", subtitle: "Backdrop", icon: themeBackdrop },
-  { words: ["premium", "gowns"], title: "Premium", subtitle: "Grows", icon: premiumGrows},
-  { words: ["premium", "prop"], title: "Premium", subtitle: "Prop", icon: premiumProp},
-  { words: ["maternity", "prop"], title: "Maternity", subtitle: "Prop", icon: maternityProp },
-  { words: ["save the date"], title: "Save the Date", subtitle: "Reel", icon: saveTheDateReel },
-  { words: ["twin", "collage"], title: "Twin Mega Collage", subtitle: "Prints", icon: twin },
-  { words: ["cinematic"], title: "Cinematic", subtitle: "Video", icon: cinematic },
-];
-
 // Returns ALL tags that match a given line (a line can contain multiple
 // keywords, e.g. "Unlimited Posed & Candid Photos" matches 3 tags at once).
 const getTagsForText = (text) => {
   const lower = text.toLowerCase();
-  return TAG_RULES.filter((r) => r.words.every((w) => lower.includes(w)));
+  return TAG_RULES.filter(
+    (r) =>
+      r.words.every((w) => lower.includes(w)) &&
+      !(r.exclude || []).some((w) => lower.includes(w))
+  );
 };
 
 // Extracts a leading number/range from the start of a line, e.g.
@@ -177,36 +135,60 @@ const getDurationText = (durationRaw) => {
   return match ? match[0].trim() : text.trim();
 };
 
+// Small inline icons for the meta row (duration / crew) — no extra
+// asset imports needed, colored via currentColor to match the text.
+const ClockIcon = () => (
+  <svg className="photoPkgMetaIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+    <path d="M12 7v5l3.5 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const PersonIcon = () => (
+  <svg className="photoPkgMetaIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="2" />
+    <path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const VideoIcon = () => (
+  <svg className="photoPkgMetaIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="3" y="6" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
+    <path d="M15 10l6-3v10l-6-3" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+  </svg>
+);
+
 const PhotoPackageCard = ({ item, onClick }) => {
   const inclusionItems = parseInclusions(item.inclusion);
 
   // Prefer counts parsed from the inclusion text; fall back to explicit
   // item.photographers / item.videographers fields if the backend ever
   // sends those directly and the inclusion text doesn't mention a count.
- const { photographers: parsedPhotographers, videographers: parsedVideographers, assistants: parsedAssistants } =
+  const { photographers: parsedPhotographers, videographers: parsedVideographers, assistants: parsedAssistants } =
     getCrewCounts(item.inclusion);
-const photographerCount = parsedPhotographers ?? item.photographers ?? null;
-const videographerCount = parsedVideographers ?? item.videographers ?? null;
-const assistantCount = parsedAssistants ?? item.assistants ?? null;
+  const photographerCount = parsedPhotographers ?? item.photographers ?? null;
+  const videographerCount = parsedVideographers ?? item.videographers ?? null;
+  const assistantCount = parsedAssistants ?? item.assistants ?? null;
+
   return (
     <div className="photoPkgCard" onClick={() => onClick?.(item)}>
-    <div className="photoPkgCardLeft">
-  {/* Blurred background fill */}
-  <Image
-    src={getImageUrl(item)}
-    alt=""
-    fill
-    aria-hidden="true"
-    className="photoPkgCardImgBlur"
-  />
-  {/* Actual image, fully visible, no crop */}
-  <Image
-    src={getImageUrl(item)}
-    alt={item.name}
-    fill
-    className="photoPkgCardImg"
-  />
-</div>
+      <div className="photoPkgCardLeft">
+        {/* Blurred background fill */}
+        <Image
+          src={getImageUrl(item)}
+          alt=""
+          fill
+          aria-hidden="true"
+          className="photoPkgCardImgBlur"
+        />
+        {/* Actual image, fully visible, no crop */}
+        <Image
+          src={getImageUrl(item)}
+          alt={item.name}
+          fill
+          className="photoPkgCardImg"
+        />
+      </div>
 
       <div className="photoPkgCardRight">
         <h3 className="photoPkgCardTitle">{item.name}</h3>
@@ -215,19 +197,19 @@ const assistantCount = parsedAssistants ?? item.assistants ?? null;
           <div className="photoPkgGrid">
             {inclusionItems.map((inc, idx) => (
               <div className="photoPkgItem" key={idx}>
-              <div className="photoPkgIconWrap">
-  <Image
-    src={inc.icon}
-    alt={inc.title}
-    fill
-    className="photoPkgIconImg"
-  />
-</div>
+                <div className="photoPkgIconWrap">
+                  <Image
+                    src={inc.icon}
+                    alt={inc.title}
+                    fill
+                    className="photoPkgIconImg"
+                  />
+                </div>
                 <p className="photoPkgText">
                   <span className="photoPkgItemTitle">{inc.title}</span>
                   {inc.subtitle && (
                     <>
-                      <br />
+                      {" "}
                       <span className="photoPkgItemSubtitle">{inc.subtitle}</span>
                     </>
                   )}
@@ -238,11 +220,32 @@ const assistantCount = parsedAssistants ?? item.assistants ?? null;
         )}
 
         <p className="photoPkgMeta">
-  Duration: {getDurationText(item.event_duration || item.duration)}
-  {photographerCount ? `  |  ${photographerCount} Photographer${photographerCount > 1 ? "s" : ""}` : ""}
-  {videographerCount ? `  |  ${videographerCount} Videographer${videographerCount > 1 ? "s" : ""}` : ""}
-  {assistantCount ? `  |  ${assistantCount} Assistant${assistantCount > 1 ? "s" : ""}` : ""}
-</p>
+          <span className="photoPkgMetaItem">
+            <ClockIcon />
+            Duration: {getDurationText(item.event_duration || item.duration)}
+          </span>
+          {photographerCount && (
+            <span className="photoPkgMetaItem">
+              <span className="photoPkgMetaDivider">|</span>
+              <PersonIcon />
+              {photographerCount} Photographer{photographerCount > 1 ? "s" : ""}
+            </span>
+          )}
+          {videographerCount && (
+            <span className="photoPkgMetaItem">
+              <span className="photoPkgMetaDivider">|</span>
+              <VideoIcon />
+              {videographerCount} Videographer{videographerCount > 1 ? "s" : ""}
+            </span>
+          )}
+          {assistantCount && (
+            <span className="photoPkgMetaItem">
+              <span className="photoPkgMetaDivider">|</span>
+              <PersonIcon />
+              {assistantCount} Assistant{assistantCount > 1 ? "s" : ""}
+            </span>
+          )}
+        </p>
 
         <div className="photoPkgPriceRow">
           <span className="photoPkgFinalPrice">₹{item.price}/-</span>
@@ -257,12 +260,8 @@ const assistantCount = parsedAssistants ?? item.assistants ?? null;
             onClick?.(item);
           }}
         >
-          View Full Package 
-         <Image
-    className="photoPkgArrow"
-    src={arrowicon}
-    alt="Arrow"
-  />
+          View Full Package
+          <Image className="photoPkgArrow" src={arrowicon} alt="Arrow" />
         </button>
       </div>
     </div>
