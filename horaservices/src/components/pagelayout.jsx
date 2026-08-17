@@ -8,8 +8,8 @@ import Head from "next/head";
 import { usePathname } from "next/navigation";
 import ConsultationPopupProvider from "@/components/ConsultationPopupProvider";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
-import CitySelector from "@/components/Venue/CitySelector";
-import { CityProvider, useCity } from "@/utils/cityContext";
+// import CitySelector from "@/components/Venue/CitySelector";
+// import { CityProvider, useCity } from "@/utils/cityContext";
 import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
 import EventReminderPopup from "@/components/EventReminderPopup";
 import { BASE_URL } from "@/utils/apiconstants";
@@ -123,7 +123,7 @@ const LayoutInner = ({ children }) => {
   const [visitorId, setVisitorId] = useState("");
   const [pincode, setPincode] = useState("");
   const [idsReady, setIdsReady] = useState(false);
- const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
+  // const { showCityModal, selectCity, isCityDisabledRoute, dismissCityModal } = useCity();
   const { setDateResolved } = useDateGate();
 
   const [showDateSheet, setShowDateSheet] = useState(false);
@@ -133,22 +133,23 @@ const LayoutInner = ({ children }) => {
   const checkStarted = useRef(false);
   const dateSheetTimerRef = useRef(null);
 
-  const [cityResolved, setCityResolved] = useState(false);
-  const prevShowCityModal = useRef(showCityModal);
+  // City gate removed — treat city as always resolved so the date-sheet flow isn't blocked.
+  const [cityResolved, setCityResolved] = useState(true);
+  // const prevShowCityModal = useRef(showCityModal);
 
-  useEffect(() => {
-    if (isCityDisabledRoute) {
-      setCityResolved(true);
-      return;
-    }
-    if (prevShowCityModal.current === true && showCityModal === false) {
-      setCityResolved(true);
-    }
-    if (!showCityModal && !prevShowCityModal.current) {
-      setCityResolved(true);
-    }
-    prevShowCityModal.current = showCityModal;
-  }, [showCityModal, isCityDisabledRoute]);
+  // useEffect(() => {
+  //   if (isCityDisabledRoute) {
+  //     setCityResolved(true);
+  //     return;
+  //   }
+  //   if (prevShowCityModal.current === true && showCityModal === false) {
+  //     setCityResolved(true);
+  //   }
+  //   if (!showCityModal && !prevShowCityModal.current) {
+  //     setCityResolved(true);
+  //   }
+  //   prevShowCityModal.current = showCityModal;
+  // }, [showCityModal, isCityDisabledRoute]);
 
   const isDateSheetAllowedPath = /(^|\/)(balloon-decoration|photography-page)(\/|$)/.test(pathname || "");
 
@@ -261,7 +262,7 @@ const LayoutInner = ({ children }) => {
 
     if (!idsReady) return;
     if (!userId && !visitorId) return;
-    if (!cityResolved) return;
+    if (!cityResolved) return; // always true now since city flow is disabled
     if (checkStarted.current) return;
     checkStarted.current = true;
 
@@ -299,9 +300,9 @@ const LayoutInner = ({ children }) => {
           <meta name="fast2sms" content="p8oFAZAbcm2E8mwWaW6YA5iS1ZYtRGJe" />
         </Head>
 
-       {showCityModal && !isCityDisabledRoute && (
-      <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
-        )}
+        {/* {showCityModal && !isCityDisabledRoute && (
+          <CitySelector onSelect={selectCity} onDismiss={dismissCityModal} />
+        )} */}
 
         {isDateSheetAllowedPath && showDateSheet && (
           <DateSelectionBottomSheet
@@ -350,11 +351,11 @@ const LayoutInner = ({ children }) => {
 
 const PageLayout = ({ children }) => {
   return (
-    <CityProvider>
+    // <CityProvider>
       <DateGateProvider>
         <LayoutInner>{children}</LayoutInner>
       </DateGateProvider>
-    </CityProvider>
+    // </CityProvider>
   );
 };
 
