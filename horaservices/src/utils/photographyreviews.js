@@ -1,11 +1,11 @@
-import Pooja from "@/assets/photographyReview/Pooja.jpg";
-import Priya from "@/assets/photographyReview/Priya.jpg";
-import Krutika from "@/assets/photographyReview/Krutika.jpg";
-import Pragya from "@/assets/photographyReview/Pragya.jpg";
-import Chitra  from "@/assets/photographyReview/Chitra.jpg";
-import jyoti from "@/assets/photographyReview/jyoti.jpg";
-import Bhanupriya from "@/assets/photographyReview/Bhanupriya.jpg";
-import Vibpri from "@/assets/photographyReview/Vibpri.jpg"
+import Pooja from "@/assets/photographyReview/Pooja.webp";
+import Priya from "@/assets/photographyReview/Priya.webp";
+import Krutika from "@/assets/photographyReview/Krutika.webp";
+import Pragya from "@/assets/photographyReview/Pragya.webp";
+import Chitra  from "@/assets/photographyReview/Chitra.webp";
+import jyoti from "@/assets/photographyReview/jyoti.webp";
+import Bhanupriya from "@/assets/photographyReview/Bhanupriya.webp";
+import Vibpri from "@/assets/photographyReview/Vibpri.webp"
 export const photographyreviews = [
   {
     name: "Pooja Purohit",
