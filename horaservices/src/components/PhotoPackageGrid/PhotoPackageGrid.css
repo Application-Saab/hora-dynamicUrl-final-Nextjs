@@ -75,7 +75,7 @@ font-size: clamp(9.77px, 3.05vw, 14.66px);
   display: flex;
   align-items: center;
   gap: clamp(4px, 1.2vw, 6px);
-  padding: clamp(7.73px, 2.42vw, 11.6px);
+ padding: clamp(3px, 1.02vw, 4px);
   box-sizing: border-box;
 }
 
@@ -134,8 +134,6 @@ height: clamp(10.16px, 3.18vw, 15.28px);
 .photoPkgText {
   margin: 0;
   line-height: 0.7;
-  width: 100%;
-  min-width: 0;
   text-align: left;
 }
 
@@ -143,7 +141,7 @@ height: clamp(10.16px, 3.18vw, 15.28px);
 font-family: "Inter", sans-serif;
 font-weight: 600;
 font-style: normal;
-font-size: clamp(5.57px, 1.74vw, 8.35px);
+font-size: clamp(8px, 2.54vw, 10px);
 color: #000000;
   word-break: normal;
   overflow-wrap: break-word;
@@ -152,7 +150,7 @@ color: #000000;
 .photoPkgItemSubtitle {
   font-family: "Inter", sans-serif;
   font-weight: 400;
-  font-size: clamp(5.57px, 1.74vw, 8.35px);
+font-size: clamp(8px, 2.54vw, 10px);
   color: #000000;
   word-break: normal;
   overflow-wrap: break-word;

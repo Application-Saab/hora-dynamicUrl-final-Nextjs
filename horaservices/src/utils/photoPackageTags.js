@@ -18,7 +18,7 @@ import premiumProp from "@/assets/inclusionIcons/premiumProp.svg";
 import maternityProp from "@/assets/inclusionIcons/maternityProp.svg";
 import cinematic from "@/assets/inclusionIcons/CinematicVideo.svg";
 import twin from "@/assets/inclusionIcons/Twinmegacollageprints.svg";
-
+import Magazine from "@/assets/inclusionIcons/Magazine.svg";
 // saveTheDateReel same icon use kar raha tha traditionalVideo ka, wahi rakha hai
 const saveTheDateReel = traditionalVideo;
 
@@ -47,4 +47,5 @@ export const TAG_RULES = [
   { words: ["save the date"], title: "Save the Date", subtitle: "Reel", icon: saveTheDateReel },
   { words: ["twin", "collage"], title: "Twin Mega Collage", subtitle: "Prints", icon: twin },
   { words: ["cinematic"], title: "Cinematic", subtitle: "Video", icon: cinematic },
+  {words :["magazine"],title:"Magazine",icon:Magazine}
 ];
