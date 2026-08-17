@@ -13,7 +13,7 @@ import DesktopMenu from "./DesktopMenu";
 import OtploginPopup from "../OtpLoginPopup";
 import LogoutModal from "@/utils/LogoutModal";
 import cityNameToSlug from "@/utils/cityNameToSlug";
-import { useCity } from "@/utils/cityContext";
+// import { useCity } from "@/utils/cityContext";
 import { safeGetItem } from "@/utils/safeStorage";
 
 const CITY_LIST = Object.values(cityNameToSlug);
@@ -30,7 +30,7 @@ const Header = () => {
   const drawerRef = useRef(null);
 
   // ✅ ab city state yahan se nahi, shared context se aayegi
-  const { selectedCityName, setShowCityModal, isPillHiddenRoute } = useCity();
+  // const { selectedCityName, setShowCityModal, isPillHiddenRoute } = useCity();
 
   /** -----------------------
    * PAGE TYPE LOGIC
@@ -133,8 +133,8 @@ const Header = () => {
           {/* MOBILE HEADER */}
           {!isWonderlandInternational && (
             <div className="mobile-only mobile-header">
-              {/* CITY SELECTOR PILL — sirf /photo-gallery par hide hogi, baaki sab routes par dikhegi */}
-              {!isPillHiddenRoute && (
+              {/* CITY SELECTOR PILL — city feature disabled, kept commented for later re-enable */}
+              {/* {!isPillHiddenRoute && (
                 <div className="citySelectorPill" onClick={() => setShowCityModal(true)}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ marginBottom: "2px" }}>
                     <path
@@ -159,7 +159,7 @@ const Header = () => {
                     />
                   </svg>
                 </div>
-              )}
+              )} */}
 
               {isHomeLikePage ? (
                 <FontAwesomeIcon
