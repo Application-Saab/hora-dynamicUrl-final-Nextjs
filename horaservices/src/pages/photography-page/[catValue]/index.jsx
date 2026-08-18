@@ -189,14 +189,6 @@ export default function CatValuePage() {
   }, [catValue]);
 
   useEffect(() => {
-    if (effectiveCatValue) {
-      getSubCatId(effectiveCatValue);
-      const gallery = categoryToGallery[effectiveCatValue] || null;
-      setGalleryData(gallery);
-    }
-  }, [effectiveCatValue, getSubCatId]);
-
-  useEffect(() => {
     if (!catValue) return;
 
     const cacheKey = `catvaluephoto:${catValue}`;
@@ -211,10 +203,13 @@ export default function CatValuePage() {
       return; // fresh fetch skip
     }
 
-    getSubCatId(catValue);
-    const gallery = categoryToGallery[catValue] || null;
+    if (!effectiveCatValue) return;
+
+    setError("");
+    getSubCatId(effectiveCatValue);
+    const gallery = categoryToGallery[effectiveCatValue] || null;
     setGalleryData(gallery);
-  }, [catValue, getSubCatId]);
+  }, [catValue, effectiveCatValue, getSubCatId]);
 
   const fetchProducts = useCallback(async (categoryId) => {
     if (!categoryId) return;

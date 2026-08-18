@@ -65,9 +65,8 @@ const getInclusionLines = (inclusion) => {
 const parseInclusions = (inclusion) => {
   const rawItems = getInclusionLines(inclusion);
 
-  // only keep items that match one of the known tags — no extra/unknown tags shown
-  // if a single line matches multiple tags (e.g. "Unlimited Posed & Candid Photos"),
-  // ALL of them are kept, not just the first
+  // Only keep items that match a known tag — no extra/unknown tags shown.
+  // If a single line matches multiple tags, ALL of them are kept.
   const seen = new Set();
   const tags = [];
   rawItems.forEach((text) => {
@@ -75,7 +74,7 @@ const parseInclusions = (inclusion) => {
     const num = extractLeadingNumber(text);
 
     matchedTags.forEach((tag) => {
-      const key = tag.title + tag.subtitle;
+      const key = `${tag.title}|${tag.subtitle || ""}`.trim().toLowerCase();
       if (!seen.has(key)) {
         seen.add(key);
         tags.push({
@@ -161,6 +160,10 @@ const VideoIcon = () => (
 const PhotoPackageCard = ({ item, onClick }) => {
   const inclusionItems = parseInclusions(item.inclusion);
 
+  const totalItems = inclusionItems.length;
+  const itemsInLastRow = totalItems % 3 === 0 ? 3 : totalItems % 3;
+  const lastRowStartIndex = totalItems - itemsInLastRow;
+
   // Prefer counts parsed from the inclusion text; fall back to explicit
   // item.photographers / item.videographers fields if the backend ever
   // sends those directly and the inclusion text doesn't mention a count.
@@ -196,7 +199,11 @@ const PhotoPackageCard = ({ item, onClick }) => {
         {inclusionItems.length > 0 && (
           <div className="photoPkgGrid">
             {inclusionItems.map((inc, idx) => (
-              <div className="photoPkgItem" key={idx}>
+              <div
+                className="photoPkgItem"
+                key={idx}
+                data-last-row={idx >= lastRowStartIndex ? "true" : undefined}
+              >
                 <div className="photoPkgIconWrap">
                   <Image
                     src={inc.icon}
@@ -226,21 +233,18 @@ const PhotoPackageCard = ({ item, onClick }) => {
           </span>
           {photographerCount && (
             <span className="photoPkgMetaItem">
-              <span className="photoPkgMetaDivider">|</span>
               <PersonIcon />
               {photographerCount} Photographer{photographerCount > 1 ? "s" : ""}
             </span>
           )}
           {videographerCount && (
             <span className="photoPkgMetaItem">
-              <span className="photoPkgMetaDivider">|</span>
               <VideoIcon />
               {videographerCount} Videographer{videographerCount > 1 ? "s" : ""}
             </span>
           )}
           {assistantCount && (
             <span className="photoPkgMetaItem">
-              <span className="photoPkgMetaDivider">|</span>
               <PersonIcon />
               {assistantCount} Assistant{assistantCount > 1 ? "s" : ""}
             </span>
