@@ -1,0 +1,160 @@
+.vsb-wrap {
+  background: #fff;
+  width: clamp(300px, calc(380 * 100vw / 393), 480px);
+  margin: -30px auto 10px auto;
+  padding: clamp(6px, calc(9 * 100vw / 393), 11px);
+  border-radius: clamp(14px, calc(18 * 100vw / 393), 22px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #00000014;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, calc(10 * 100vw / 393), 12px);
+}
+
+/* ── Search row ── */
+.vsb-search-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, calc(10 * 100vw / 393), 12px);
+  border: 1px solid #eee0ea;
+  border-radius: clamp(10px, calc(12 * 100vw / 393), 14px);
+  padding: clamp(4px, calc(5 * 100vw / 393), 6px);
+}
+
+.vsb-search-icon {
+  flex-shrink: 0;
+  width: clamp(32px, calc(38 * 100vw / 393), 44px);
+  height: clamp(32px, calc(38 * 100vw / 393), 44px);
+  border-radius: clamp(8px, calc(10 * 100vw / 393), 12px);
+  background: #97538C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vsb-search-icon svg {
+  width: clamp(15px, calc(18 * 100vw / 393), 21px);
+  height: clamp(15px, calc(18 * 100vw / 393), 21px);
+}
+
+.vsb-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(13px, calc(16 * 100vw / 393), 18px);
+  color: #97538C;
+  min-width: 0;
+}
+
+.vsb-search-input::placeholder {
+  color: #97538C;
+  opacity: 0.85;
+  font-weight: 600;
+}
+.vsb-filters-row.menu-open {
+  overflow: visible;
+}
+/* ── Filters row ── */
+.vsb-filters-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, calc(8 * 100vw / 393), 10px);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.vsb-filters-row::-webkit-scrollbar {
+  display: none;
+}
+
+.vsb-filter-item {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.vsb-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: clamp(5px, calc(6 * 100vw / 393), 7px);
+  background: #fff;
+  border: 1px solid #e5dde5;
+  border-radius: clamp(8px, calc(10 * 100vw / 393), 12px);
+  padding: clamp(7px, calc(9 * 100vw / 393), 11px) clamp(9px, calc(11 * 100vw / 393), 13px);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vsb-more-btn {
+  margin-left: auto;
+}
+
+.vsb-filter-label {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: clamp(10.5px, calc(13 * 100vw / 393), 15px);
+  color: #333;
+}
+
+.vsb-chevron {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.vsb-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown ── */
+.vsb-dropdown {
+  position: absolute;
+  /* top/left ab JS se aayega */
+  min-width: clamp(140px, calc(170 * 100vw / 393), 200px);
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: clamp(10px, calc(12 * 100vw / 393), 14px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: clamp(4px, calc(6 * 100vw / 393), 7px) 0;
+}
+
+.vsb-dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.vsb-option {
+  font-family: "Inter", sans-serif;
+  font-size: clamp(10.5px, calc(13 * 100vw / 393), 15px);
+  font-weight: 400;
+  color: #555;
+  padding: clamp(9px, calc(11 * 100vw / 393), 13px) clamp(14px, calc(18 * 100vw / 393), 22px);
+  cursor: pointer;
+  border-bottom: 0.5px solid #f0f0f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.vsb-option:last-child {
+  border-bottom: none;
+}
+
+.vsb-option:hover {
+  background: #f9f4ff;
+  color: #7C3FB1;
+}
+
+.vsb-option.active {
+  color: #7C3FB1;
+  font-weight: 600;
+}

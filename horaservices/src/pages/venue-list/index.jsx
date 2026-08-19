@@ -15,6 +15,7 @@ import "./venue/venue.css";
 import { venueReviews } from "@/utils/veneureviews";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import { useCity } from "@/utils/cityContext";
+import VenueSearchBar from "@/components/Venue/Venuesearchbar";
 
 const venuelandMainPage = () => {
   const router = useRouter();
@@ -29,6 +30,7 @@ const venuelandMainPage = () => {
   const [activeEvent, setActiveEvent] = useState("Birthday");
   const [activeVenueType, setActiveVenueType] = useState("all");
   const [guestCapacity, setGuestCapacity] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   const { selectedCityName } = useCity();
 
@@ -73,17 +75,28 @@ const venuelandMainPage = () => {
       <div className="venue-container">
         <div style={{ position: "relative" }}>
           <TopBanner image={venueTopBanner} alt="Venue" />
-          <VenueCategories active={activeEvent} onSelect={setActiveEvent} />
+          {/* <VenueCategories active={activeEvent} onSelect={setActiveEvent} /> */}
+          <VenueSearchBar
+            searchValue={searchText}
+            onSearchChange={setSearchText}
+            eventType={activeEvent}
+            onEventTypeChange={setActiveEvent}
+            guestCapacity={guestCapacity}
+            onGuestCapacityChange={setGuestCapacity}
+            onMoreFilterClick={() => {
+              /* open your filter modal here */
+            }}
+          />
         </div>
 
-        <VenueBannertitle eventType={activeEvent} />
+        {/* <VenueBannertitle eventType={activeEvent} /> */}
         <VenueCircle active={activeVenueType} onSelect={setActiveVenueType} />
 
-        <VenueListHeader
+        {/* <VenueListHeader
           eventType={activeEvent}
           value={guestCapacity}
           onChange={setGuestCapacity}
-        />
+        /> */}
 
         <VenueList
           eventType={activeEvent}
