@@ -3,7 +3,7 @@ import "./venuelist.css";
 import vegIcon from "@/assets/venuelanding/Veg.svg";
 import nonVegIcon from "@/assets//venuelanding/Nonveg.svg";
 import locationIcon from "@/assets/venuelanding/location.svg";
-import tagIcon from "@/assets/venuelanding/Veg.svg";
+import tagIcon from "@/assets/venuelanding/tagIcon.svg";
 import guestIcon from "@/assets/venuelanding/guest.svg";
 import parkingIcon from "@/assets/venuelanding/parking.svg";
 import hallIcon from "@/assets/venuelanding/halls.svg";
