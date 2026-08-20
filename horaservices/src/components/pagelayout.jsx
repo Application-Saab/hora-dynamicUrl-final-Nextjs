@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 import ConsultationPopupProvider from "@/components/ConsultationPopupProvider";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 // import CitySelector from "@/components/Venue/CitySelector";
-// import { CityProvider, useCity } from "@/utils/cityContext";
+import { CityProvider } from "@/utils/cityContext";
 import DateSelectionBottomSheet from "@/components/DateSelectionBottomSheet";
 import EventReminderPopup from "@/components/EventReminderPopup";
 import { BASE_URL } from "@/utils/apiconstants";
@@ -351,11 +351,11 @@ const LayoutInner = ({ children }) => {
 
 const PageLayout = ({ children }) => {
   return (
-    // <CityProvider>
+    <CityProvider>
       <DateGateProvider>
         <LayoutInner>{children}</LayoutInner>
       </DateGateProvider>
-    // </CityProvider>
+    </CityProvider>
   );
 };
 
