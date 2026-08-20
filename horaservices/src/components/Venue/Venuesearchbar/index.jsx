@@ -1,43 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import "./venuesearchbar.css";
+import Image from "next/image";
+import "./Venuesearchbar.css";
 
-/* ---- Inline icons ---- */
-const SearchIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <circle cx="11" cy="11" r="7" stroke="#fff" strokeWidth="2.2" />
-    <path d="M21 21l-4.3-4.3" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
-  </svg>
-);
+/* ---- Image icons (reused from VenueCategories + venue list icon set) ---- */
+import searchIcon from "@/assets/searchbar.svg";
+import guestIcon from "@/assets/venuelanding/guest.svg";
+import filterIcon from "@/assets/venuelanding/Filter.svg";
+import defaultEventIcon  from "@/assets/venuelanding/Eventtypeicon.svg"
+import birthdayIcon from "@/assets/venuelanding/cake.png";
+import babyshowerIcon from "@/assets/venuelanding/baby-shower.png";
+import engagementIcon from "@/assets/venuelanding/wedding-ring.png";
+import corporateIcon from "@/assets/venuelanding/happy.png";
+import receptionIcon from "@/assets/venuelanding/hall.png";
+import anniversaryIcon from "@/assets/venuelanding/glass.png";
 
-const EventTypeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 2l1.6 4.9L18.5 8l-4.9 1.6L12 14.5l-1.6-4.9L5.5 8l4.9-1.1L12 2Z"
-      fill="#97538C"
-    />
-    <path d="M19 14l.8 2.4L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.6L19 14Z" fill="#97538C" />
-    <path d="M5 14l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2Z" fill="#97538C" />
-  </svg>
-);
-
-const GuestIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-    <circle cx="9" cy="8" r="3.2" fill="#97538C" />
-    <circle cx="17" cy="9" r="2.6" fill="#97538C" opacity="0.55" />
-    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#97538C" strokeWidth="2" strokeLinecap="round" />
-    <path d="M15 14.2c2.6.3 4.6 2.4 4.8 5" stroke="#97538C" strokeWidth="1.8" strokeLinecap="round" opacity="0.55" />
-  </svg>
-);
-
-const FilterIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-    <path d="M4 6h16M4 12h16M4 18h16" stroke="#97538C" strokeWidth="2" strokeLinecap="round" />
-    <circle cx="9" cy="6" r="2" fill="#fff" stroke="#97538C" strokeWidth="1.6" />
-    <circle cx="16" cy="12" r="2" fill="#fff" stroke="#97538C" strokeWidth="1.6" />
-    <circle cx="10" cy="18" r="2" fill="#fff" stroke="#97538C" strokeWidth="1.6" />
-  </svg>
-);
-
+/* ---- Chevron stays inline SVG (pure directional arrow, rotates via CSS) ---- */
 const ChevronIcon = ({ open }) => (
   <svg
     className={`vsb-chevron ${open ? "open" : ""}`}
@@ -56,13 +33,15 @@ const ChevronIcon = ({ open }) => (
   </svg>
 );
 
+// Same list + same icons as VenueCategories, so event type stays visually
+// consistent everywhere on the venue landing page.
 const DEFAULT_EVENTS = [
-  "Birthday",
-  "Baby Shower",
-  "Engagement",
-  "Reception",
-  "Corporate",
-  "Anniversary",
+  { label: "Birthday", icon: birthdayIcon },
+  { label: "Baby Shower", icon: babyshowerIcon },
+  { label: "Engagement", icon: engagementIcon },
+  { label: "Reception", icon: receptionIcon },
+  { label: "Corporate", icon: corporateIcon },
+  { label: "Anniversary", icon: anniversaryIcon },
 ];
 
 const DEFAULT_CAPACITIES = [
@@ -79,6 +58,16 @@ const DEFAULT_CAPACITIES = [
   { value: "300", label: "300 Guests" },
   { value: "500", label: "500 Guests" },
 ];
+const ClearIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M6 6l12 12M18 6L6 18"
+      stroke="#97538C"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
 
 
 const VenueSearchBar = ({
@@ -100,6 +89,10 @@ const VenueSearchBar = ({
 
   const selectedGuest =
     capacities.find((c) => c.value === guestCapacity) || capacities[0];
+
+  // Look up the icon for whichever event is currently selected, so the
+  // filter button itself shows that event's icon (not just a generic one).
+  const selectedEvent = events.find((e) => e.label === eventType);
 
   const openDropdown = (key, btnRef) => {
     if (openMenu === key) {
@@ -127,7 +120,9 @@ const VenueSearchBar = ({
     <div className="vsb-wrap" ref={wrapRef}>
       {/* ── Search input ── */}
       <div className="vsb-search-row">
-        <span className="vsb-search-icon"><SearchIcon /></span>
+        <span className="vsb-search-icon">
+          <Image src={searchIcon} alt="Search" width={18} height={18} />
+        </span>
         <input
           className="vsb-search-input"
           type="text"
@@ -138,7 +133,7 @@ const VenueSearchBar = ({
       </div>
 
       {/* ── Filter pills ── */}
-      <div className="vsb-filters-row">
+      <div className={`vsb-filters-row ${openMenu ? "menu-open" : ""}`}>
         <div className="vsb-filter-item">
           <button
             type="button"
@@ -146,9 +141,30 @@ const VenueSearchBar = ({
             className="vsb-filter-btn"
             onClick={() => openDropdown("event", eventBtnRef)}
           >
-            <EventTypeIcon />
+            <Image
+              src={selectedEvent ? selectedEvent.icon : defaultEventIcon}
+              alt={selectedEvent ? selectedEvent.label : "Event Type"}
+              width={16}
+              height={16}
+              className="vsb-filter-icon"
+            />
             <span className="vsb-filter-label">{eventType || "Event Type"}</span>
-            <ChevronIcon open={openMenu === "event"} />
+            {eventType ? (
+              <span
+                className="vsb-clear-btn"
+                role="button"
+                aria-label="Clear event type filter"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenMenu(null);
+                  onEventTypeChange?.("");
+                }}
+              >
+                <ClearIcon />
+              </span>
+            ) : (
+              <ChevronIcon open={openMenu === "event"} />
+            )}
           </button>
         </div>
 
@@ -159,30 +175,49 @@ const VenueSearchBar = ({
             className="vsb-filter-btn"
             onClick={() => openDropdown("guest", guestBtnRef)}
           >
-            <GuestIcon />
+            <Image src={guestIcon} alt="Guests" width={17} height={17} className="vsb-filter-icon" />
             <span className="vsb-filter-label">
               {selectedGuest.value ? selectedGuest.label : "Guest Count"}
             </span>
-            <ChevronIcon open={openMenu === "guest"} />
+            {selectedGuest.value ? (
+              <span
+                className="vsb-clear-btn"
+                role="button"
+                aria-label="Clear guest count filter"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenMenu(null);
+                  onGuestCapacityChange?.("");
+                }}
+              >
+                <ClearIcon />
+              </span>
+            ) : (
+              <ChevronIcon open={openMenu === "guest"} />
+            )}
           </button>
         </div>
 
         <button type="button" className="vsb-filter-btn vsb-more-btn" onClick={onMoreFilterClick}>
-          <FilterIcon />
+          <Image src={filterIcon} alt="Filter" width={17} height={17} className="vsb-filter-icon" />
           <span className="vsb-filter-label">More Filter</span>
         </button>
       </div>
 
-      {/* ── Dropdown now lives OUTSIDE the scrollable row ── */}
+      {/* ── Dropdown lives OUTSIDE the scrollable row ── */}
       {openMenu === "event" && (
         <div className="vsb-dropdown" style={{ top: dropdownPos.top, left: dropdownPos.left }}>
-          {events.map((label) => (
+          {events.map(({ label, icon }) => (
             <div
               key={label}
               className={`vsb-option ${eventType === label ? "active" : ""}`}
-              onClick={() => { onEventTypeChange?.(label); setOpenMenu(null); }}
+              onClick={() => {
+                onEventTypeChange?.(label);
+                setOpenMenu(null);
+              }}
             >
-              {label}
+              <Image src={icon} alt={label} width={16} height={16} className="vsb-option-icon" />
+              <span>{label}</span>
             </div>
           ))}
         </div>
@@ -190,15 +225,20 @@ const VenueSearchBar = ({
 
       {openMenu === "guest" && (
         <div className="vsb-dropdown" style={{ top: dropdownPos.top, left: dropdownPos.left }}>
-          {capacities.filter((c) => c.value !== "").map((c) => (
-            <div
-              key={c.value}
-              className={`vsb-option ${guestCapacity === c.value ? "active" : ""}`}
-              onClick={() => { onGuestCapacityChange?.(c.value); setOpenMenu(null); }}
-            >
-              {c.label}
-            </div>
-          ))}
+          {capacities
+            .filter((c) => c.value !== "")
+            .map((c) => (
+              <div
+                key={c.value}
+                className={`vsb-option ${guestCapacity === c.value ? "active" : ""}`}
+                onClick={() => {
+                  onGuestCapacityChange?.(c.value);
+                  setOpenMenu(null);
+                }}
+              >
+                {c.label}
+              </div>
+            ))}
         </div>
       )}
     </div>
