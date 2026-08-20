@@ -25,16 +25,12 @@
   align-items: center;
   gap: clamp(8px, calc(10 * 100vw / 393), 12px);
   border: 1px solid #eee0ea;
-  border-radius: clamp(10px, calc(12 * 100vw / 393), 14px);
+  border-radius: clamp(8.51px, 2.66vw, 12.75px);
   padding: clamp(4px, calc(5 * 100vw / 393), 6px);
 }
 
 .vsb-search-icon {
   flex-shrink: 0;
-  width: clamp(32px, calc(38 * 100vw / 393), 44px);
-  height: clamp(32px, calc(38 * 100vw / 393), 44px);
-  border-radius: clamp(8px, calc(10 * 100vw / 393), 12px);
-  background: #97538C;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,10 +38,8 @@
 
 .vsb-search-icon svg,
 .vsb-search-icon img {
-  width: clamp(15px, calc(18 * 100vw / 393), 21px);
-  height: clamp(15px, calc(18 * 100vw / 393), 21px);
-  /* icon asset is a dark/line icon by default; invert so it reads white on the purple pill */
-  filter: brightness(0) invert(1);
+width: clamp(26.26px, 8.21vw, 39.38px);
+height: clamp(25.44px, 7.95vw, 38.26px);
 }
 
 .vsb-search-input {

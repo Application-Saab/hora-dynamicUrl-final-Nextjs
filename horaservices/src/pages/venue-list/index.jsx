@@ -103,6 +103,7 @@ const venuelandMainPage = () => {
           venueType={activeVenueType}
           guestCapacity={guestCapacity}
           city={selectedCityName}
+          search={searchText}
         />
 
         <VenueFeatures />

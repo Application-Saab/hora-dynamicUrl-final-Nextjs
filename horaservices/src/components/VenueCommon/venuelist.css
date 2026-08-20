@@ -47,21 +47,25 @@
 .see-photos-btn {
   position: absolute;
   left: clamp(4.071px, calc(1.272vw), 6.107px);
-  bottom: clamp(4.071px, calc(1.272vw), 6.107px);
+ bottom: clamp(5.071px, calc(1.272vw), 7.107px);
   display: flex;
   align-items: center;
   gap: clamp(4.071px, calc(1.272vw), 6.107px);
-  background: rgba(0, 0, 0, 0.55);
+  background: #97538CE5;
   color: #fff;
   border: none;
-  border-radius: clamp(13.028px, calc(4.071vw), 19.542px);
+  border-radius: clamp(3.39px, 1.06vw, 5.09px);
   padding: clamp(4.071px, calc(1.272vw), 6.107px) clamp(8.142px, calc(2.545vw), 12.214px);
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  font-size: clamp(8.142px, calc(2.545vw), 12.214px);
+ font-family: Inter, sans-serif;
+font-weight: 500;
+font-style: normal;
+font-size: clamp(5.42px, 1.69vw, 8.17px);
   cursor: pointer;
 }
-
+.gallery-icon{
+  width: clamp(9.04px, 2.82vw, 13.49px);
+height: clamp(9.04px, 2.82vw, 13.49px);
+}
 .see-photos-btn svg {
   width: clamp(8.957px, calc(2.799vw), 13.435px);
   height: clamp(8.957px, calc(2.799vw), 13.435px);
@@ -75,7 +79,10 @@
 /* ── Body ── */
 .venue-card-body {
   flex: 1;
-  padding: clamp(4.064px, calc(1.27vw), 6.096px) clamp(8.128px, calc(2.54vw), 12.192px);
+  padding: clamp(4.064px, 1.27vw, 6.096px)
+         clamp(2.46px, 0.769vw, 3.69px)
+         clamp(4.064px, 1.27vw, 6.096px)
+         clamp(8.128px, 2.54vw, 12.192px);
   border-radius: 0 clamp(13.028px, calc(4.071vw), 19.542px) clamp(13.028px, calc(4.071vw), 19.542px) 0;
   display: flex;
   flex-direction: column;
@@ -153,36 +160,60 @@
   flex-shrink: 0;
 }
 
-/* ── Stats row (guests / parking / halls / rooms) ── */
-.venue-stats-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(8.142px, calc(2.545vw), 12.214px);
-  flex-wrap: wrap;
+/* ── Stats grid (guests / parking / halls / rooms) — 3 per row, auto dividers ── */
+.venue-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: clamp(4px, calc(1.2vw), 6px);
+  column-gap: clamp(8.21px, 2.545vw, 12.31px);
 }
-
+.stat-icon{
+width: clamp(5.73px, 1.80vw, 8.61px);
+height: clamp(5.73px, 1.80vw, 8.61px);
+}
 .stat-item {
+  position: relative;
   display: flex;
   align-items: center;
+  align-self: center;
   gap: clamp(2.85px, calc(0.891vw), 4.275px);
-  color: #2b2b2b;
-  font-family: Inter;
-  font-weight: 600;
-  font-size: clamp(5.568px, calc(1.74vw), 8.352px);
-  white-space: nowrap;
+ font-family: Inter, sans-serif;
+font-weight: 600;
+font-style: normal;
+font-size: clamp(5.61px, 1.75vw, 8.41px);
+color:#000000;
 }
 
-.stat-item svg {
-  width: clamp(10.56px, calc(3.3vw), 15.84px);
-  height: clamp(9.504px, calc(2.97vw), 14.256px);
+.stat-item strong {
+  font-weight: 600;
+}
+
+.stat-item svg,
+.stat-item img {
+  width: clamp(9px, calc(2.8vw), 13.5px);
+  height: clamp(8px, calc(2.5vw), 12px);
   flex-shrink: 0;
 }
 
-.stat-divider {
-  width: 1px;
-  align-self: stretch;
-  background: #e0dbe0;
-  min-height: clamp(14.656px, calc(4.58vw), 21.985px);
+/* vertical dotted line — fixed short height, vertically centered — right edge of
+   every cell except the last in its row of 3, and not the very last cell */
+.stat-item:not(:nth-child(3n)):not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  height: clamp(12px, calc(3.2vw), 16px);
+  border-right: 0.5px dotted #A4A3A3;
+}
+
+/* horizontal dotted line — top edge, only for cells that start a new row (4th cell, 7th cell...) */
+.stat-item:nth-child(3n + 1):not(:nth-child(1)) {
+  border-top: 0.5px dotted #A4A3A3;
+}
+
+.stat-item:nth-child(n + 4) {
+  padding-top: clamp(4px, calc(1.2vw), 6px);
 }
 
 /* ── Food ── */
@@ -240,24 +271,18 @@
 
 /* ── CTA ── */
 .venue-menu-btn {
-  width: 100%;
-  height: clamp(20.352px, calc(6.36vw), 30.528px);
-  margin-top: clamp(4.064px, calc(1.27vw), 6.096px);
-  background: #97538C;
-  border: none;
-  border-radius: clamp(3.104px, calc(0.97vw), 4.656px);
-  padding: clamp(6.208px, calc(1.94vw), 9.312px);
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: clamp(9.536px, calc(2.98vw), 14.304px);
-  line-height: 100%;
-  letter-spacing: 0%;
-  text-align: center;
-  color: #fff;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-  box-sizing: border-box;
+    background: #97538C;
+    border: none;
+    border-radius: clamp(3.104px, calc(0.97vw), 4.656px);
+    padding: clamp(6.208px, calc(1.94vw), 9.312px);
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: clamp(9.536px, calc(2.98vw), 14.304px);
+    text-align: center;
+    color: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 .venue-menu-btn:hover {
   opacity: 0.9;

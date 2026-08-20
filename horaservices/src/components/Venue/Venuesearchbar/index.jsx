@@ -133,7 +133,7 @@ const VenueSearchBar = ({
       </div>
 
       {/* ── Filter pills ── */}
-      <div className={`vsb-filters-row ${openMenu ? "menu-open" : ""}`}>
+      {/* <div className={`vsb-filters-row ${openMenu ? "menu-open" : ""}`}>
         <div className="vsb-filter-item">
           <button
             type="button"
@@ -202,7 +202,7 @@ const VenueSearchBar = ({
           <Image src={filterIcon} alt="Filter" width={17} height={17} className="vsb-filter-icon" />
           <span className="vsb-filter-label">More Filter</span>
         </button>
-      </div>
+      </div> */}
 
       {/* ── Dropdown lives OUTSIDE the scrollable row ── */}
       {openMenu === "event" && (
