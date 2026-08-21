@@ -79,16 +79,13 @@ height: clamp(9.04px, 2.82vw, 13.49px);
 /* ── Body ── */
 .venue-card-body {
   flex: 1;
-  padding: clamp(4.064px, 1.27vw, 6.096px)
-         clamp(2.46px, 0.769vw, 3.69px)
-         clamp(4.064px, 1.27vw, 6.096px)
-         clamp(8.128px, 2.54vw, 12.192px);
+padding: clamp(3.2px, 1.018vw, 4px) clamp(6.4px, 2.036vw, 8px);
   border-radius: 0 clamp(13.028px, calc(4.071vw), 19.542px) clamp(13.028px, calc(4.071vw), 19.542px) 0;
   display: flex;
   flex-direction: column;
   gap: clamp(4.064px, calc(1.27vw), 6.096px);
   box-sizing: border-box;
-  justify-content: center;
+  justify-content: space-around;
   min-width: 0;
 }
 
@@ -144,16 +141,19 @@ height: clamp(9.04px, 2.82vw, 13.49px);
   gap: clamp(1.632px, calc(0.51vw), 2.448px);
   background: #fff;
   color: #97538C;
-  font-family: Inter;
-  font-weight: 500;
-  font-size: clamp(5.44px, calc(1.7vw), 8.16px);
-  padding: clamp(4.288px, calc(1.34vw), 6.432px) clamp(2.176px, calc(0.68vw), 3.264px);
-  border: 1.1px solid #97538C;
+ font-family: "Inter", sans-serif;
+font-weight: 600;
+font-size: clamp(5.38px, 1.7vw, 8.02px);
+ padding: clamp(1.6px, 0.509vw, 2px) clamp(3.2px, 1.018vw, 4px);
+  border: 0.58px solid #97538C;
   border-radius: clamp(1.92px, calc(0.6vw), 2.88px);
   white-space: nowrap;
   flex-shrink: 0;
 }
-
+.pill-icon{
+width: clamp(5.65px, 1.785vw, 7.02px);
+height: clamp(5.65px, 1.785vw, 7.02px);
+}
 .venue-tag-pill svg {
   width: clamp(5.728px, calc(1.79vw), 8.592px);
   height: clamp(5.728px, calc(1.79vw), 8.592px);
@@ -163,25 +163,23 @@ height: clamp(9.04px, 2.82vw, 13.49px);
 /* ── Stats grid (guests / parking / halls / rooms) — 3 per row, auto dividers ── */
 .venue-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  row-gap: clamp(4px, calc(1.2vw), 6px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: 10px;
   column-gap: clamp(8.21px, 2.545vw, 12.31px);
+  position: relative;
 }
-.stat-icon{
-width: clamp(5.73px, 1.80vw, 8.61px);
-height: clamp(5.73px, 1.80vw, 8.61px);
-}
+
 .stat-item {
   position: relative;
   display: flex;
-  align-items: center;
-  align-self: center;
-  gap: clamp(2.85px, calc(0.891vw), 4.275px);
- font-family: Inter, sans-serif;
-font-weight: 600;
-font-style: normal;
-font-size: clamp(5.61px, 1.75vw, 8.41px);
-color:#000000;
+  align-items: center;   /* icon text ke center mein rahega, image jaisa */
+  gap: clamp(2.85px, 0.891vw, 4.275px);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: clamp(6.94px, 2.176vw, 10.47px);
+  line-height: 130%;      /* 2-line text ke liye proper spacing */
+  color: #000000;
+  min-width: 0;
 }
 
 .stat-item strong {
@@ -190,32 +188,32 @@ color:#000000;
 
 .stat-item svg,
 .stat-item img {
-  width: clamp(9px, calc(2.8vw), 13.5px);
-  height: clamp(8px, calc(2.5vw), 12px);
+  width: clamp(13.18px, 4.125vw, 19.84px);
+  height: clamp(12.61px, 3.95vw, 19.11px);
   flex-shrink: 0;
 }
 
-/* vertical dotted line — fixed short height, vertically centered — right edge of
-   every cell except the last in its row of 3, and not the very last cell */
-.stat-item:not(:nth-child(3n)):not(:last-child)::after {
+/* Vertical dotted line between columns (col 1 only) */
+.stat-item:nth-child(odd)::after {
   content: "";
   position: absolute;
   top: 50%;
-  right: 0;
+  right: calc(clamp(8.21px, 2.545vw, 12.31px) / 2 * -1);
   transform: translateY(-50%);
-  height: clamp(12px, calc(3.2vw), 16px);
+  height: clamp(20px, 5vw, 26px);   /* thodi lambi kari taaki 2-line text ke sath bhi na chhu paaye */
   border-right: 0.5px dotted #A4A3A3;
 }
 
-/* horizontal dotted line — top edge, only for cells that start a new row (4th cell, 7th cell...) */
-.stat-item:nth-child(3n + 1):not(:nth-child(1)) {
+/* Horizontal dotted line before row 2 */
+.stat-item:nth-child(3)::before,
+.stat-item:nth-child(4)::before {
+  content: "";
+  position: absolute;
+  top: calc(10px / 2 * -1);
+  left: 0;
+  width: calc(200% + clamp(8.21px, 2.545vw, 12.31px));
   border-top: 0.5px dotted #A4A3A3;
 }
-
-.stat-item:nth-child(n + 4) {
-  padding-top: clamp(4px, calc(1.2vw), 6px);
-}
-
 /* ── Food ── */
 .venue-food {
   display: flex;

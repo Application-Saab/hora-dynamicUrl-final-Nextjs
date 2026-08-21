@@ -1,11 +1,3 @@
-// import React from "react";
-
-// const VenuePage = () => {
-//   return <div>Venue Page</div>;
-// };
-
-// export default VenuePage;
-
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "./venue.css";
 import InviteActions from "@/components/wonderland/common/InviteActions";
@@ -27,11 +19,13 @@ import VenueFoodModal from "@/components/VenueFoodModal";
 import VenueFoodCard from "@/components/VenueFoodCard";
 // import { getFoodPackagesByEventId } from "@/utils/venuedatalist/eventFoodPackages.js";
 import TermsModal from "@/components/TermsModal";
-import VenueAddressSection from "@/components/VenueCommon/VenueAddressSection";
+
 // import { getTermsByEventId } from "@/utils/venuedatalist/EventTerms";
 import useRsvpStatus from "@/hooks/useRsvpStatus";
 import { safeGetItem } from "@/utils/safeStorage";
-
+import VenueAddressSection from "@/components/VenueAddressSection";
+import VenueHighlights from "@/components/VenueHighlights";
+import VenueCategoryPills from "@/components/VenueCategoryPills";
 const VenuePage = () => {
   const router = useRouter();
   const { venueid: queryVenueId } = router.query;
@@ -64,7 +58,18 @@ const VenuePage = () => {
   } = useApi();
   const { makeRequest: fetchUserData } = useApi();
   const { makeRequest: fetchVenuePackages } = useApi();
+const { guests, parking, rooms, halls: hallsParam } = router.query;
 
+// eventDetails ke sath merge karo before passing to VenueHighlights
+const venueForHighlights = eventDetails
+  ? {
+      ...eventDetails,
+      guestCapacity: eventDetails.guestCapacity || guests,
+      isParkingAvailable: eventDetails.isParkingAvailable ?? (parking === "1"),
+      totalRoomsAvailable: eventDetails.totalRoomsAvailable || Number(rooms) || 0,
+      hallType: eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
+    }
+  : null;
   // Event ID ke hisaab se food packages
   // const foodPackages = getFoodPackagesByEventId(queryVenueId);
 
@@ -234,14 +239,14 @@ const VenuePage = () => {
           </div>
 
           {/* Address + Google Map — date/time hide */}
-          {(eventDetails?.location || eventDetails?.googleMapLink) && (
-            <div className="invite-address-section">
-              <VenueAddressSection
-                eventData={eventDetails}
-                hideDateAndTime={true}
-              />
-            </div>
-          )}
+         {(eventDetails?.location || eventDetails?.googleMapLink) && (
+  <div className="invite-address-section">
+    <VenueAddressSection
+      eventData={eventDetails}
+      hideDateAndTime={true}
+    />
+  </div>
+)}
 
           {/* InviteActions — sirf actual host ko */}
           {/* {showHostActionSection && (
@@ -255,11 +260,11 @@ const VenuePage = () => {
 
           {/* Food Packages */}
           {venuePackages.length > 0 && (
-            <div
+          <div
               className="whos-joining-container"
               style={{ marginTop: "10px", marginBottom: "10px" }}
             >
-              <h2 className="wall-heading text-center m-0 p-0">Packages</h2>
+
               <div
                 style={{
                   marginTop: "10px",
@@ -280,7 +285,7 @@ const VenuePage = () => {
             </div>
           )}
 
-          {eventDetails?.termsAndConditionsHtml && (
+          {/* {eventDetails?.termsAndConditionsHtml && (
             <>
               <div
                 className="terms-strip"
@@ -318,11 +323,22 @@ const VenuePage = () => {
                 data={eventDetails?.termsAndConditionsHtml}
               />
             </>
-          )}
+          )} */}
+          <div className="venue-tax-note">
+        <span className="venue-tax-line" />
+        <span className="venue-tax-text">* Included All Plus Taxes *</span>
+        <span className="venue-tax-line" />
+      </div>
+          <div className="enquire-card">
+          <VenueHighlights venue={venueForHighlights} onEnquire={() => {}} />
+<VenueCategoryPills categories={eventDetails?.venueType} />
+</div>
           {/* Celebration Wall */}
           <div className="event-wall-container">
-            <h2 className="wall-heading text-center mt-2 p-0">Explore Spaces</h2>
-            <VenueWallSection
+          <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
+    Explore Spaces
+  </h2>
+     <VenueWallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={false}

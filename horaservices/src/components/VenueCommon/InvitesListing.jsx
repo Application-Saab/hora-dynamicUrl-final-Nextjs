@@ -181,7 +181,8 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   <div className="venue-tags-row">
                     {tags.map((t, i) => (
                       <span className="venue-tag-pill" key={i}>
-                        <Image src={tagIcon} alt="Tag" className="stat-icon" width={12} height={12} />
+                        <Image src={tagIcon} alt="Tag" className="
+                        " width={12} height={12} />
                         {t}
                       </span>
                     ))}
@@ -195,7 +196,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                     statCells.push(
                       <span className="stat-item" key="guests">
                         <Image src={guestIcon} alt="Guests" className="stat-icon" width={18} height={18} />
-                        {v.guestCapacity} Guests
+                        {v.guestCapacity} - Guests
                       </span>
                     );
                   }
@@ -206,7 +207,6 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                         <Image src={parkingIcon} alt="Parking" className="stat-icon" width={20} height={16} />
                         <span>
                           Parking
-                          <br />
                           Available
                         </span>
                       </span>
@@ -219,7 +219,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                         <Image src={hallIcon} alt="Hall" className="stat-icon" width={18} height={18} />
                         <span>
                           {halls.length} Hall{halls.length > 1 ? "s" : ""}
-                          <br />
+                      <br/>
                           {hallLabel}
                         </span>
                       </span>
@@ -231,7 +231,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                       <span className="stat-item" key="rooms">
                         <Image src={roomIcon} alt="Rooms" className="stat-icon" width={20} height={16} />
                         {v.totalRoomsAvailable} Room
-                        <br />
+                    
                         Available
                       </span>
                     );
@@ -262,12 +262,24 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   <span>Starting Price</span>
                 </p>
 
-                <button
-                  className="venue-menu-btn"
-                  onClick={() => router.push(`/venue-list/venue?venueid=${v._id}`)}
-                >
-                  View Full Package ➜
-                </button>
+               <button
+  className="venue-menu-btn"
+  onClick={() =>
+    router.push({
+      pathname: "/venue-list/venue",
+      query: {
+        venueid: v._id,
+        guests: v.guestCapacity || "",
+        parking: v.isParkingAvailable ? "1" : "",
+        rooms: v.totalRoomsAvailable || "",
+        halls: JSON.stringify(halls), // halls array already destructured upar
+      },
+    })
+  }
+>
+  View Full Package ➜
+</button>
+                
               </div>
             </div>
           );
