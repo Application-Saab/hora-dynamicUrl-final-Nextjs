@@ -39,7 +39,7 @@ export const TAG_RULES = [
   { words: ["basic", "prop"], title: "Basic", subtitle: "Props", icon: basicProps },
   { words: ["unique", "theme"], title: "Unique", subtitle: "Themes", icon: uniqueThemes },
   { words: ["heavy", "prop"], title: "Heavy", subtitle: "Props", icon: heavyProps },
-  { words: ["digital", "theme"], title: "Digital", subtitle: "Theme", icon: digitalTheme },
+  { words: ["digital", "theme"], title: "Digital", subtitle: "Backdrop", icon: digitalTheme },
   { words: ["theme", "backdrop"], title: "Theme", subtitle: "Backdrop", icon: themeBackdrop },
   { words: ["premium", "gowns"], title: "Premium", subtitle: "Grows", icon: premiumGrows },
   { words: ["premium", "prop"], title: "Premium", subtitle: "Prop", icon: premiumProp },
