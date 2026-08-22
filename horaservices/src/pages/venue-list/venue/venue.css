@@ -19,7 +19,6 @@
 .default-template-wrapper {
   position: relative;
   width: 100%;
-  margin-top: 13px;
   border-radius: 10px;
   overflow: hidden;
 }

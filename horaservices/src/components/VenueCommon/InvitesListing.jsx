@@ -13,19 +13,38 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { BASE_URL, VENUE_PUBLIC_LISTING } from "@/utils/apiconstants";
 import { fetchWithError } from "@/utils/fetchWithError";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+
+const BATCH_SIZE = 10;
+
+const getCacheKey = (eventType, venueType, guestCapacity, city) =>
+  `venue-list-${JSON.stringify({ eventType, venueType, guestCapacity, city })}`;
 
 const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
-  const [venues, setVenues] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(5);
+  const cacheKey = getCacheKey(eventType, venueType, guestCapacity, city);
+  const cached = getPageCache(cacheKey);
+
+  const [venues, setVenues] = useState(cached?.data || []);
+  const [loading, setLoading] = useState(!cached);
+  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [loadingMore, setLoadingMore] = useState(false);
   const router = useRouter();
-  const sentinelRef = useRef(null);
   const loadTimerRef = useRef(null);
 
   useEffect(() => {
-    setLoading(true);
-    setVisibleCount(5);
+    const key = getCacheKey(eventType, venueType, guestCapacity, city);
+    const existing = getPageCache(key);
+
+    if (existing) {
+      setVenues(existing.data);
+      setLoading(false);
+      setVisibleCount(BATCH_SIZE);
+      if (!existing.isStale) return; // fresh hai, refetch skip
+      // stale hai to neeche background me chupke se refetch ho jayega
+    } else {
+      setLoading(true);
+      setVisibleCount(BATCH_SIZE);
+    }
 
     const params = new URLSearchParams();
 
@@ -37,7 +56,9 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
     fetchWithError(`${BASE_URL}${VENUE_PUBLIC_LISTING}?${params}`)
       .then((r) => r.json())
       .then((res) => {
-        setVenues(res.data || []);
+        const dataList = res.data || [];
+        setPageCache(key, dataList);
+        setVenues(dataList);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -60,42 +81,25 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
     });
   }, [venues, search]);
 
-  // Reset how many cards are visible whenever the filtered result set changes
+  // Reset how many cards are visible whenever the search term changes
   useEffect(() => {
-    setVisibleCount(5);
+    setVisibleCount(BATCH_SIZE);
   }, [search]);
 
-  // Infinite scroll: when the sentinel (end of list) comes into view,
-  // load the next 5 venues after a 1 second delay.
+  // Auto-load: every 1 second, load the next batch automatically —
+  // no scroll/sentinel needed.
   useEffect(() => {
     if (loading) return;
     if (visibleCount >= filteredVenues.length) return;
 
-    const node = sentinelRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const isVisible = entries[0]?.isIntersecting;
-        if (!isVisible) return;
-
-        // Avoid stacking multiple timers if it stays in view
-        if (loadTimerRef.current) return;
-
-        setLoadingMore(true);
-        loadTimerRef.current = setTimeout(() => {
-          setVisibleCount((prev) => Math.min(prev + 5, filteredVenues.length));
-          setLoadingMore(false);
-          loadTimerRef.current = null;
-        }, 1000);
-      },
-      { rootMargin: "150px" } // start loading a bit before it's fully in view
-    );
-
-    observer.observe(node);
+    setLoadingMore(true);
+    loadTimerRef.current = setTimeout(() => {
+      setVisibleCount((prev) => Math.min(prev + BATCH_SIZE, filteredVenues.length));
+      setLoadingMore(false);
+      loadTimerRef.current = null;
+    }, 1000);
 
     return () => {
-      observer.disconnect();
       if (loadTimerRef.current) {
         clearTimeout(loadTimerRef.current);
         loadTimerRef.current = null;
@@ -103,7 +107,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
     };
   }, [loading, visibleCount, filteredVenues.length]);
 
-  if (loading) return <p className="venue-status">Loading venues...</p>;
+  if (loading) return null;
 
   if (!venues.length) {
     return (
@@ -135,10 +139,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
     <>
       <div className="venue-list">
         {displayedVenues.map((v) => {
-          // venueType comes back as an array e.g. ["Restaurant"]
           const tags = Array.isArray(v.venueType) ? v.venueType : v.venueType ? [v.venueType] : [];
-
-          // hallType comes back as an array e.g. ["Indoor"] / ["Indoor","Outdoor"]
           const halls = Array.isArray(v.hallType) ? v.hallType : v.hallType ? [v.hallType] : [];
           const hallLabel = halls
             .map((h) =>
@@ -146,12 +147,10 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
             )
             .join(" & ");
 
-          // short location line, e.g. "Madiwala New Extension, Bangalore"
           const shortLocation = [v.locality, v.city].filter(Boolean).join(", ") || v.city || "N/A";
 
           return (
             <div className="venue-card" key={v._id}>
-              {/* ── Image with See Photos overlay (static, always shown) ── */}
               <div className="venue-card-img-wrap">
                 <img
                   src={v.venueImageUrl || "/placeholder.jpg"}
@@ -161,14 +160,24 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                 <button
                   type="button"
                   className="see-photos-btn"
-                  onClick={() => router.push(`/venue-list/venue?venueid=${v._id}`)}
+                  onClick={() =>
+                    router.push({
+                      pathname: "/venue-list/venue",
+                      query: {
+                        venueid: v._id,
+                        guests: v.guestCapacity || "",
+                        parking: v.isParkingAvailable ? "1" : "",
+                        rooms: v.totalRoomsAvailable || "",
+                        halls: JSON.stringify(halls),
+                      },
+                    })
+                  }
                 >
                   <Image src={galleryIcon} alt="Gallery" className="stat-icon" width={14} height={14} />
                   See Photos (20+)
                 </button>
               </div>
 
-              {/* ── Details ── */}
               <div className="venue-card-body">
                 <h3 className="venue-name">{v.venueName}</h3>
 
@@ -181,8 +190,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   <div className="venue-tags-row">
                     {tags.map((t, i) => (
                       <span className="venue-tag-pill" key={i}>
-                        <Image src={tagIcon} alt="Tag" className="
-                        " width={12} height={12} />
+                        <Image src={tagIcon} alt="Tag" className="" width={12} height={12} />
                         {t}
                       </span>
                     ))}
@@ -219,7 +227,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                         <Image src={hallIcon} alt="Hall" className="stat-icon" width={18} height={18} />
                         <span>
                           {halls.length} Hall{halls.length > 1 ? "s" : ""}
-                      <br/>
+                          <br />
                           {hallLabel}
                         </span>
                       </span>
@@ -230,9 +238,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                     statCells.push(
                       <span className="stat-item" key="rooms">
                         <Image src={roomIcon} alt="Rooms" className="stat-icon" width={20} height={16} />
-                        {v.totalRoomsAvailable} Room
-                    
-                        Available
+                        {v.totalRoomsAvailable} Room Available
                       </span>
                     );
                   }
@@ -262,36 +268,29 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   <span>Starting Price</span>
                 </p>
 
-               <button
-  className="venue-menu-btn"
-  onClick={() =>
-    router.push({
-      pathname: "/venue-list/venue",
-      query: {
-        venueid: v._id,
-        guests: v.guestCapacity || "",
-        parking: v.isParkingAvailable ? "1" : "",
-        rooms: v.totalRoomsAvailable || "",
-        halls: JSON.stringify(halls), // halls array already destructured upar
-      },
-    })
-  }
->
-  View Full Package ➜
-</button>
-                
+                <button
+                  className="venue-menu-btn"
+                  onClick={() =>
+                    router.push({
+                      pathname: "/venue-list/venue",
+                      query: {
+                        venueid: v._id,
+                        guests: v.guestCapacity || "",
+                        parking: v.isParkingAvailable ? "1" : "",
+                        rooms: v.totalRoomsAvailable || "",
+                        halls: JSON.stringify(halls),
+                      },
+                    })
+                  }
+                >
+                  View Full Package ➜
+                </button>
               </div>
             </div>
           );
         })}
       </div>
-
-      {/* Sentinel: when this scrolls into view, next batch loads after 1s */}
-      {visibleCount < filteredVenues.length && (
-        <div ref={sentinelRef} className="venue-load-more-sentinel">
-          {loadingMore && <p className="venue-status">Loading more venues...</p>}
-        </div>
-      )}
+.
     </>
   );
 };

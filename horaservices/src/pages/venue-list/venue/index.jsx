@@ -26,6 +26,9 @@ import { safeGetItem } from "@/utils/safeStorage";
 import VenueAddressSection from "@/components/VenueAddressSection";
 import VenueHighlights from "@/components/VenueHighlights";
 import VenueCategoryPills from "@/components/VenueCategoryPills";
+import { getPageCache, setPageCache } from "@/utils/scrollDataCache";
+import VenueNameOverlay from "@/components/VenueNameOverlay";
+
 const VenuePage = () => {
   const router = useRouter();
   const { venueid: queryVenueId } = router.query;
@@ -58,18 +61,18 @@ const VenuePage = () => {
   } = useApi();
   const { makeRequest: fetchUserData } = useApi();
   const { makeRequest: fetchVenuePackages } = useApi();
-const { guests, parking, rooms, halls: hallsParam } = router.query;
+  const { guests, parking, rooms, halls: hallsParam } = router.query;
 
-// eventDetails ke sath merge karo before passing to VenueHighlights
-const venueForHighlights = eventDetails
-  ? {
-      ...eventDetails,
-      guestCapacity: eventDetails.guestCapacity || guests,
-      isParkingAvailable: eventDetails.isParkingAvailable ?? (parking === "1"),
-      totalRoomsAvailable: eventDetails.totalRoomsAvailable || Number(rooms) || 0,
-      hallType: eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
-    }
-  : null;
+  // eventDetails ke sath merge karo before passing to VenueHighlights
+  const venueForHighlights = eventDetails
+    ? {
+        ...eventDetails,
+        guestCapacity: eventDetails.guestCapacity || guests,
+        isParkingAvailable: eventDetails.isParkingAvailable ?? (parking === "1"),
+        totalRoomsAvailable: eventDetails.totalRoomsAvailable || Number(rooms) || 0,
+        hallType: eventDetails.hallType || (hallsParam ? JSON.parse(hallsParam) : []),
+      }
+    : null;
   // Event ID ke hisaab se food packages
   // const foodPackages = getFoodPackagesByEventId(queryVenueId);
 
@@ -89,57 +92,98 @@ const venueForHighlights = eventDetails
     return () => clearTimeout(timer);
   }, [router.isReady, queryVenueId, loggedinUserId]);
 
+  // ── Venue Categories: cache-first ──
+  useEffect(() => {
+    const cached = getPageCache("venue-categories");
+    if (cached) {
+      setVenueCategories(cached.data);
+    }
+    // agar cache stale hai (ya mila hi nahi), useApi hook (upar wala `data`)
+    // apne aap fetch kar dega — neeche wala effect usse pakad lega
+  }, []);
+
   useEffect(() => {
     if (data?.data) {
       setVenueCategories(data.data);
+      setPageCache("venue-categories", data.data);
     }
   }, [data]);
 
+  // ── Event/Venue Details: cache-first ──
   useLayoutEffect(() => {
     const fetchEventDetails = async () => {
-      if (queryVenueId && loggedinUserId) {
-        try {
-          await fetchEventInvite(
-            `${GET_VENUE_DETAILS_BY_ID}/${queryVenueId}`,
-            "GET",
-          );
-        } catch (err) {
-          console.error("Error fetching event details:", err);
-        }
+      if (!queryVenueId || !loggedinUserId) return;
+
+      const cacheKey = `venue-details-${queryVenueId}`;
+      const cached = getPageCache(cacheKey);
+
+      if (cached) {
+        setEventDetails(cached.data);
+        setFullPageLoader(false);
+        if (!cached.isStale) return; // fresh hai, refetch skip
+      }
+
+      try {
+        await fetchEventInvite(
+          `${GET_VENUE_DETAILS_BY_ID}/${queryVenueId}`,
+          "GET",
+        );
+      } catch (err) {
+        console.error("Error fetching event details:", err);
       }
     };
     fetchEventDetails();
   }, [queryVenueId, loggedinUserId]);
 
+  // ── User Data: cache-first ──
   useLayoutEffect(() => {
     const fetchUserDetails = async () => {
-      if (queryVenueId && loggedinUserId) {
-        try {
-          let resp = await fetchUserData(
-            `${GET_USER_BY_ID}/${loggedinUserId}`,
-            "GET",
-          );
-          setUserData(resp?.data);
-        } catch (err) {
-          console.error("Error fetching user details:", err);
-        }
+      if (!queryVenueId || !loggedinUserId) return;
+
+      const cacheKey = `venue-user-${loggedinUserId}`;
+      const cached = getPageCache(cacheKey);
+
+      if (cached) {
+        setUserData(cached.data);
+        if (!cached.isStale) return;
+      }
+
+      try {
+        let resp = await fetchUserData(
+          `${GET_USER_BY_ID}/${loggedinUserId}`,
+          "GET",
+        );
+        setUserData(resp?.data);
+        setPageCache(cacheKey, resp?.data);
+      } catch (err) {
+        console.error("Error fetching user details:", err);
       }
     };
     fetchUserDetails();
   }, [queryVenueId, loggedinUserId]);
 
+  // ── Venue Packages: cache-first ──
   useLayoutEffect(() => {
     const fetchVenuePackage = async () => {
-      if (queryVenueId && loggedinUserId) {
-        try {
-          let resp = await fetchVenuePackages(
-            `${GET_VENUE_PACKAGES_BY_VENUE_ID}/${queryVenueId}`,
-            "GET",
-          );
-          setVenuePackages(resp?.data);
-        } catch (err) {
-          console.error("Error fetching venue packages:", err);
-        }
+      if (!queryVenueId || !loggedinUserId) return;
+
+      const cacheKey = `venue-packages-${queryVenueId}`;
+      const cached = getPageCache(cacheKey);
+
+      if (cached) {
+        setVenuePackages(cached.data);
+        if (!cached.isStale) return;
+      }
+
+      try {
+        let resp = await fetchVenuePackages(
+          `${GET_VENUE_PACKAGES_BY_VENUE_ID}/${queryVenueId}`,
+          "GET",
+        );
+        setVenuePackages(resp?.data);
+        setPageCache(cacheKey, resp?.data);
+      } catch (err) {
+        console.error("Error fetching venue packages:", err);
       }
     };
     fetchVenuePackage();
@@ -149,8 +193,12 @@ const venueForHighlights = eventDetails
     if (eventData?.data) {
       setEventDetails(eventData.data);
       setFullPageLoader(false);
+      if (queryVenueId) {
+        setPageCache(`venue-details-${queryVenueId}`, eventData.data);
+      }
     }
   }, [eventData]);
+
   useLayoutEffect(() => {
     if (eventDetails && loggedinUserId) {
       if (eventDetails?.userId === loggedinUserId) {
@@ -160,7 +208,6 @@ const venueForHighlights = eventDetails
       }
     }
   }, [eventDetails, loggedinUserId]);
-  console.log("loggedinUserId", loggedinUserId);
 
   useEffect(() => {
     const syncLoginState = () =>
@@ -198,12 +245,16 @@ const venueForHighlights = eventDetails
         setOpenCreateInviteModal(false);
         return;
       }
-      router.back();
+      // Koi modal open nahi hai — browser ne already back navigate kar
+      // diya hai (popstate fire hone se pehle URL change ho chuka hota
+      // hai). Yahan router.back() call karna double-back cause karta
+      // hai, isliye kuch mat karo.
     };
 
     window.addEventListener("popstate", handleBack);
     return () => window.removeEventListener("popstate", handleBack);
   }, [selectedPackage, showGuestLoginModal, openCreateInviteModal]);
+
   useEffect(() => {
     setTimeout(() => {
       if (eventDetails && eventDetails?.userId === loggedinUserId) {
@@ -213,6 +264,7 @@ const venueForHighlights = eventDetails
       }
     }, 1000);
   }, [eventDetails, loggedinUserId]);
+
   if (fullPageLoader) return <InvitePageFlashLoader />;
 
   return (
@@ -220,51 +272,41 @@ const venueForHighlights = eventDetails
       <div className="invite-page">
         <div className="invite-page-container">
           {/* Template */}
-          <div className="invite-template-shell">
-            {fetchEventLoading ? (
-              <TemplatecardSkeleton
-                width="100%"
-                height="200px"
-                borderRadius="10px"
-              />
-            ) : (
-              <TemplateRenderer
-                fetchEventLoading={fetchEventLoading}
-                eventDetails={eventDetails}
-                orderDetails={eventDetails}
-                isHost={true}
-                isVenue={true}
-              />
-            )}
-          </div>
+      <div className="invite-template-shell" style={{ position: "relative",marginTop: "12px" }}>
+  {fetchEventLoading ? (
+    <TemplatecardSkeleton width="100%" height="200px" borderRadius="10px" />
+  ) : (
+    <>
+    
+      <TemplateRenderer
+        fetchEventLoading={fetchEventLoading}
+        eventDetails={eventDetails}
+        orderDetails={eventDetails}
+        isHost={true}
+        isVenue={true}
+      />
+      <VenueNameOverlay venueName={eventDetails?.venueName} />
+    </>
+  )}
+</div>
 
           {/* Address + Google Map — date/time hide */}
-         {(eventDetails?.location || eventDetails?.googleMapLink) && (
-  <div className="invite-address-section">
-    <VenueAddressSection
-      eventData={eventDetails}
-      hideDateAndTime={true}
-    />
-  </div>
-)}
-
-          {/* InviteActions — sirf actual host ko */}
-          {/* {showHostActionSection && (
-            <div className="invite-action-container">
-              <InviteActions
-                refetchInvite={() => refetchEventInvite()}
+          {(eventDetails?.location || eventDetails?.googleMapLink) && (
+            <div className="invite-address-section">
+              <VenueAddressSection
                 eventData={eventDetails}
+                hideDateAndTime={true}
               />
             </div>
-          )} */}
+          )}
+
 
           {/* Food Packages */}
           {venuePackages.length > 0 && (
-          <div
+            <div
               className="whos-joining-container"
               style={{ marginTop: "10px", marginBottom: "10px" }}
             >
-
               <div
                 style={{
                   marginTop: "10px",
@@ -285,66 +327,27 @@ const venueForHighlights = eventDetails
             </div>
           )}
 
-          {/* {eventDetails?.termsAndConditionsHtml && (
-            <>
-              <div
-                className="terms-strip"
-                onClick={() => setShowTermsModal(true)}
-              >
-                <div className="terms-blob" />
-                <div className="terms-blob2" />
-                <div className="terms-seal">
-                  <svg viewBox="0 0 24 24" fill="none" width={20} height={20}>
-                    <path
-                      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                      stroke="#fff"
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M9 12l2 2 4-4"
-                      stroke="#fff"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="terms-body">
-                  <p className="terms-title">Terms &amp; Conditions</p>
-                  <p className="terms-sub">Tap to read before booking</p>
-                </div>
-                <div className="terms-view-btn">View</div>
-              </div>
-
-              <TermsModal
-                isOpen={showTermsModal}
-                onClose={() => setShowTermsModal(false)}
-                data={eventDetails?.termsAndConditionsHtml}
-              />
-            </>
-          )} */}
           <div className="venue-tax-note">
-        <span className="venue-tax-line" />
-        <span className="venue-tax-text">* Included All Plus Taxes *</span>
-        <span className="venue-tax-line" />
-      </div>
+            <span className="venue-tax-line" />
+            <span className="venue-tax-text">* Included All Plus Taxes *</span>
+            <span className="venue-tax-line" />
+          </div>
           <div className="enquire-card">
-          <VenueHighlights venue={venueForHighlights} onEnquire={() => {}} />
-<VenueCategoryPills categories={eventDetails?.venueType} />
-</div>
+            <VenueHighlights venue={venueForHighlights} onEnquire={() => {}} />
+            <VenueCategoryPills categories={eventDetails?.venueType} />
+          </div>
           {/* Celebration Wall */}
           <div className="event-wall-container">
-          <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
-    Explore Spaces
-  </h2>
-     <VenueWallSection
+            <h2 className="wall-heading mt-2 p-0" style={{ textAlign: "left" }}>
+              Explore Spaces
+            </h2>
+            <VenueWallSection
               userData={userData}
               setPushRsvpClick={setPushRsvpClick}
               rsvpSubmitted={false}
               isHost={eventDetails?.userId === loggedinUserId}
               isVenueHost={true}
-               venueImageUrl={eventDetails?.venueImageUrl}  
+              venueImageUrl={eventDetails?.venueImageUrl}
             />
           </div>
         </div>

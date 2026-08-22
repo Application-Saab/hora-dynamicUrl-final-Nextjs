@@ -1,0 +1,50 @@
+/* components/venueNameOverlay.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap");
+
+.venue-name-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  pointer-events: none;
+
+  width: clamp(135px, 45.8vw, 180px);
+ height: clamp(108px, 38.17vw, 150px);
+  opacity: 1;
+
+  border-top-left-radius: clamp(7px, 2.29vw, 11px);
+  border-bottom-right-radius: clamp(175px, 58.52vw, 280px);
+
+  background: linear-gradient(
+    180deg,
+    #1a1b2f 0%,
+    rgba(63, 64, 75, 0.7) 82.69%,
+    #3a3744 100%
+  );
+
+  /* Content hamesha box ke center me — chota ho ya bada */
+  display: flex;
+      align-items: flex-start;
+    justify-content: flex-start;
+
+  padding: clamp(10px, 3vw, 16px);
+  box-sizing: border-box;
+  overflow: hidden; /* agar shrink ke baad bhi barely overflow ho to safety net */
+}
+
+.venue-name-text {
+  width: 100%;
+ 
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  font-style: normal;
+
+  font-size: clamp(16px, 5.09vw, 20px);
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: #ffffff;
+
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
