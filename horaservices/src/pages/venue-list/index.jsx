@@ -10,9 +10,9 @@ import VenueCircle from "@/components/Venue/VenueCircle";
 import VenueList from "@/components/venueCommon/InvitesListing";
 import VenueListHeader from "@/components/Venue/VenueListHeader";
 import VenueFeatures from "@/components/Venue/VenueFeatures";
-import ReviewSlider from "@/components/ReviewSection";
+// import ReviewSlider from "@/components/ReviewSection";
 import "./venue/venue.css";
-import { venueReviews } from "@/utils/veneureviews";
+// import { venueReviews } from "@/utils/veneureviews";
 import { safeGetItem, safeSetItem } from "@/utils/safeStorage";
 import { useCity } from "@/utils/cityContext";
 import VenueSearchBar from "@/components/Venue/Venuesearchbar";
@@ -105,10 +105,10 @@ const venuelandMainPage = () => {
           city={selectedCityName}
           search={searchText}
         />
-
+        
         <VenueFeatures />
 
-        <div
+        {/* <div
           style={{
             margin: "clamp(16px, calc((20 / 393) * 100vw), 24px) 0",
             maxWidth: "480px",
@@ -120,7 +120,7 @@ const venuelandMainPage = () => {
             <p className="trusted-subtitle">Real experiences From Happy Customers</p>
           </div>
           <ReviewSlider reviews={venueReviews} />
-        </div>
+        </div> */}
       </div>
 
       <LoginModal

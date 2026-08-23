@@ -4,7 +4,7 @@
   align-items: stretch;
   padding: clamp(4px, calc((5 / 393) * 100vw), 6px);
   gap: 0;
- margin-top: clamp(16px, calc((20 / 393) * 100vw), 24px);
+ margin: clamp(16px, calc((20 / 393) * 100vw), 24px) 0px;
 }
 
 .venue-feature-item {

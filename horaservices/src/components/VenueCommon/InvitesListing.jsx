@@ -190,7 +190,7 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   <div className="venue-tags-row">
                     {tags.map((t, i) => (
                       <span className="venue-tag-pill" key={i}>
-                        <Image src={tagIcon} alt="Tag" className="" width={12} height={12} />
+                        <Image src={tagIcon} alt="Tag" className="pill-icon-venue" width={12} height={12} />
                         {t}
                       </span>
                     ))}
@@ -248,20 +248,22 @@ const VenueList = ({ eventType, venueType, guestCapacity, city, search }) => {
                   return <div className="venue-stats-grid">{statCells}</div>;
                 })()}
 
-                <div className="venue-food">
-                  {v.foodTypes?.includes("veg") && (
-                    <span className="veg">
-                      <Image src={vegIcon} alt="Veg" className="food-icon" />
-                      Veg Available
-                    </span>
-                  )}
-                  {v.foodTypes?.includes("non-veg") && (
-                    <span className="nonveg">
-                      <Image src={nonVegIcon} alt="Non Veg" className="food-icon" />
-                      Non-Veg Available
-                    </span>
-                  )}
-                </div>
+            {(v.foodTypes?.includes("veg") || v.foodTypes?.includes("non-veg")) && (
+  <div className="venue-food">
+    {v.foodTypes?.includes("veg") && (
+      <span className="veg">
+        <Image src={vegIcon} alt="Veg" className="food-icon" />
+        Veg Available
+      </span>
+    )}
+    {v.foodTypes?.includes("non-veg") && (
+      <span className="nonveg">
+        <Image src={nonVegIcon} alt="Non Veg" className="food-icon" />
+        Non-Veg Available
+      </span>
+    )}
+  </div>
+)}
 
                 <p className="venue-price">
                   ₹{v.startingPrice?.toLocaleString("en-IN") || "N/A"}/-{" "}

@@ -150,10 +150,11 @@ font-size: clamp(5.38px, 1.7vw, 8.02px);
   white-space: nowrap;
   flex-shrink: 0;
 }
-.pill-icon{
+.pill-icon-venue{
 width: clamp(5.65px, 1.785vw, 7.02px);
 height: clamp(5.65px, 1.785vw, 7.02px);
 }
+
 .venue-tag-pill svg {
   width: clamp(5.728px, calc(1.79vw), 8.592px);
   height: clamp(5.728px, calc(1.79vw), 8.592px);
@@ -200,8 +201,8 @@ height: clamp(5.65px, 1.785vw, 7.02px);
   top: 50%;
   right: calc(clamp(8.21px, 2.545vw, 12.31px) / 2 * -1);
   transform: translateY(-50%);
-  height: clamp(20px, 5vw, 26px);   /* thodi lambi kari taaki 2-line text ke sath bhi na chhu paaye */
-  border-right: 0.5px dotted #A4A3A3;
+ height: clamp(15px, 4.58vw, 18px);
+   border-right: 0.5px dotted #A4A3A3;
 }
 
 /* Horizontal dotted line before row 2 */
